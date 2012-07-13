@@ -1,0 +1,7 @@
+
+<table class="contentProviderTable">
+    <tr><th>$i18n.getString( "rss_health" )</th></tr>
+    #foreach ( $item in $healthItems )
+    <tr><td><a href="$item.link" target="_blank">$item.title</a>&nbsp;$item.date</td></tr>
+    #end
+</table>

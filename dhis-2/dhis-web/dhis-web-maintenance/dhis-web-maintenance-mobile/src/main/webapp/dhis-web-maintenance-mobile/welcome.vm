@@ -1,0 +1,13 @@
+<script type="text/javascript">
+jQuery(function() {
+	/* make sure that the leftBar is always visible when entering page. */
+	leftBar.showAnimated()
+});
+</script>
+
+<h3>$i18n.getString( "mobile_configuration" ) </h3>
+
+<ul class="introList">
+    #introListImgItem( "showMobileDataSet.action" "mobile_dataset" "mobile" )
+    #introListImgItem( "patientMobileSetting.action" "patient_mobile_setting" "mobile" )
+</ul>

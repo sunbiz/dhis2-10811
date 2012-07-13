@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOption" table="catalogtypeattributeoption">
+    <id name="id" column="catalogtypeattributeoptionid">
+      <generator class="native"/>
+    </id>
+
+    <property name="name" not-null="true" length="160"/>
+	<!--<property name="name" not-null="true" unique="true" length="160"/>-->
+    
+    <many-to-one name="catalogTypeAttribute" column="catalogtypeattributeid" class="org.hisp.dhis.coldchain.catalog.CatalogTypeAttribute"
+      foreign-key="fk_catalogtypeattributeoption_catalogtypeAttributeid" />
+
+  </class>
+</hibernate-mapping>

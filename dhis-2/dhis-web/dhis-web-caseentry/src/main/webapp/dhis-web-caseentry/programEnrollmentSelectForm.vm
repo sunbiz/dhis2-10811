@@ -1,0 +1,111 @@
+<div>
+	<table class='mainPageTable'>
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<td class='bold text-column'>$i18n.getString( "full_name" ): </td>
+						<td>$encoder.htmlEncode( $patient.getFullName() )</td>
+					</tr>
+					<tr>
+						<td class='bold text-column'>$i18n.getString( "gender" ):</td>
+						<td>$i18n.getString( $patient.gender )</td>
+					</tr>
+					<tr>
+						<td class='bold text-column'>$i18n.getString( "date_of_birth" ):</td>
+						<td>$format.formatDate( $patient.birthDate ) $patient.getAge()</td>
+					</tr>
+				</table>
+			<td>
+			#if( $patient.programs.size() > 0 )
+			<td align="right">
+				<table>
+					<tr>
+						<td class='bold text-column' style="vertical-align:top">$i18n.getString( "enrolled_for" ):</td>
+						<td rowspan='$patient.programs.size()' style="vertical-align:right">
+							#foreach( $program in $patient.programs ) 
+								$program.name<br>
+							#end
+						</td>
+					</tr>
+				</table>
+			</td>
+			#end
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td colspan='2'>
+				<input type="button" class='button' value="$i18n.getString( 'back_to_registration' )" onclick="loadPatientList();" >
+			</td>
+		</tr>
+	</table>
+	
+	<p></p>
+	
+	<div class='enrollment-form'>
+		<form id='programEnrollmentSelectDiv' name='programEnrollmentSelectDiv' method='POST'>
+			<input type="hidden" id="patientId" name="patientId" value="$patient.id">    
+
+			<table>
+				<tr>
+					<td class='text-column'><label for="programId">$i18n.getString( "program" )</label></td>
+					<td class='input-column'>
+						<select id="programId" name="programId" onchange="showProgramEnrollmentForm('$patient.id', this.value);" >
+							<option value="0">[$i18n.getString( "select" )]</option>
+							#foreach( $program in $programs )
+								<option value="$program.id" type='$program.type'>$encoder.htmlEncode( $program.name )</option>
+							#end
+						</select>
+					</td>
+					<td></td>
+					</td></td>
+				</tr>   
+				<tr id='enrollmentDateTR' class='hidden'>
+					<td class='text-column'><label for="enrollmentDate"><span id='enrollmentDateDescription'></span><em title="$i18n.getString( "required" )" class="required"> * </em></label></td>
+					<td colspan='2' class='input-column'><input type="text" id="enrollmentDate" name="enrollmentDate" ></td>
+				</tr>
+				
+				<tr id='dateOfIncidentTR' class='hidden'>
+					<td class='text-column'><label for="dateOfIncident"><span id='dateOfIncidentDescription'></span><em title="$i18n.getString( "required" )" class="required"> * </em></label></td>
+					<td colspan='2' class='input-column'><input type="text" id="dateOfIncident" name="dateOfIncident" ></td>
+				</tr>
+			
+				<tr>
+					<td></td>
+					<td></td>   
+					<td></td>                             
+				</tr>
+				
+				<tr>
+					<td></td>
+					<td colspan='2'>
+						<input type="submit" id='enrollBtn' name='enrollBtn' class='button hidden' value="$i18n.getString( 'enroll' )" />
+						<input type="button" id='unenrollBtn' name='unenrollBtn' class='button hidden' value="$i18n.getString( 'unenroll' )" onclick='unenrollmentForm()'/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan='3'><span id='message'></span></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+	<p></p>
+	<div id='programEnrollmentDiv' class='hidden'></div>
+</div>
+
+<script>
+	var i18n_enroll = '$encoder.jsEscape( $i18n.getString( "enroll" ) , "'")';
+	var i18n_program_stage = '$encoder.jsEscape( $i18n.getString( "program_stage" ) , "'")';
+
+	jQuery('#programEnrollmentSelectDiv').ready(function()
+		{
+			validation( 'programEnrollmentSelectDiv', function(form){
+                validateProgramEnrollment();
+            });
+			
+			datePickerInRangeValid( 'dateOfIncident' , 'enrollmentDate' );
+		}); 
+</script>

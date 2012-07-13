@@ -1,0 +1,18 @@
+{ "catalog":
+  {
+    "id": "${catalog.id}",
+	"name": "$!encoder.jsonEncode( ${catalog.name} )",
+	"description": "$!encoder.jsonEncode( ${catalog.description} )",
+	"catalogType": "${catalogType.name}",
+	
+	#set( $size = ${catalogTypeAttributes.size()} )
+	"catalogTypeAttribute": [
+	#foreach($typeAttribute in $catalogTypeAttributes)
+	  {
+		"id": "${typeAttribute.catalogTypeAttribute.id}",
+		"name": "$!encoder.jsonEncode( ${typeAttribute.catalogTypeAttribute.name} )"
+	  }#if( $velocityCount < $size ),#end
+	#end
+	]
+  }
+}

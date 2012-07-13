@@ -1,0 +1,91 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){	
+		tableSorter( 'listTable' );	
+	});
+	
+	function exportPDF( type )
+	{
+		var params = "type=" + type;
+		
+		exportPdfByType( type, params );
+	}
+	
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_validation_rule" ) , "'")';
+	var i18n_none = '$encoder.jsEscape( $i18n.getString( "none" ) , "'")';
+	var i18n_equal_to = '$encoder.jsEscape( $i18n.getString( "equal_to" ) , "'")';
+	var i18n_not_equal_to = '$encoder.jsEscape( $i18n.getString( "not_equal_to" ) , "'")';
+	var i18n_greater_than = '$encoder.jsEscape( $i18n.getString( "greater_than" ) , "'")';
+	var i18n_greater_than_or_equal_to = '$encoder.jsEscape( $i18n.getString( "greater_than_or_equal_to" ) , "'")';
+	var i18n_less_than = '$encoder.jsEscape( $i18n.getString( "less_than" ) , "'")';
+	var i18n_less_than_or_equal_to = '$encoder.jsEscape( $i18n.getString( "less_than_or_equal_to" ) , "'")';
+</script>
+
+<h3>$encoder.htmlEncode( $i18n.getString( "validation_rule_management" ) ) #openHelp( "validationRule" )</h3>
+
+<table class="mainPageTable">
+	<tr>
+		<td style="vertical-align:top">
+			<table width="100%">
+				<tr>
+					<td>#filterDiv( "validationRule" )</td>
+					<td style="text-align:right">
+						<input type="button" value="$i18n.getString( 'get_pdf' )" onclick="exportPDF( 'validationRule' );" style="width:80px"/>
+						<input type="button" value="$i18n.getString( 'add_new' )" onclick="window.location.href='showAddValidationRuleForm.action'">
+					</td>
+				</tr>	
+			</table>
+			<table class="listTable" id="listTable"> 
+				<col/>
+				<col/>
+				<col width="120px">				
+				<thead>							
+				<tr>
+					<th>$i18n.getString( "name" )</th>
+					<th  width="100px">$i18n.getString('periodtype')</th>
+					<th class="{sorter: false}">$i18n.getString( "operations" )</th>	
+				</tr>
+				</thead>			
+				<tbody id="list">
+				#foreach( $validationRule in $validationRulesList )
+				<tr id="tr${validationRule.id}">
+					<td onclick="showValidationRuleDetails( $validationRule.id )">$!encoder.htmlEncode( $validationRule.displayName )</td>
+					<td onclick="showValidationRuleDetails( $validationRule.id )">$i18n.getString($!validationRule.periodType.name) </td>
+					<td style="text-align:right">
+						<a href="showUpdateValidationRuleForm.action?id=$validationRule.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>
+						<a href="javascript:translate( 'ValidationRule', '$validationRule.id' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+						#if( $auth.hasAccess( "dhis-web-validationrule", "removeValidationRule" ) )
+						<a href="javascript:removeValidationRule( $validationRule.id, '$encoder.jsEncode( $validationRule.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
+						#else <img src="../images/delete-denied.png"> #end
+						<a href="javascript:showValidationRuleDetails( $validationRule.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"></a>
+					</td>
+				</tr>
+				#end
+				</tbody>               
+			</table>
+			<p></p>
+			#parse( "/dhis-web-commons/paging/paging.vm" )
+
+		</td>
+		<td style="width:20em; padding-left:2em; vertical-align:top">
+
+			<div id="detailsArea" style="display:none">
+				<div style="float:right">
+					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_details' )"></a>
+				</div>				
+				<p><label>$i18n.getString( "name" ):</label><br><span id="nameField"></span></p>
+				<p><label>$i18n.getString( "description" ):</label><br><span id="descriptionField"></span></p>
+				<p><label>$i18n.getString( "left_side_description" ):</label><br><span id="leftSideDescriptionField"></span></p>
+				<p><label>$i18n.getString( "operator" ):</label><br><span id="operatorField"></span></p>
+				<p><label>$i18n.getString( "right_side_description" ):</label><br><span id="rightSideDescriptionField"></span></p>
+			</div>
+			
+			<div id="warningArea" style="position:fixed;right:10px;top:200px;display:none">
+				<div style="float:right">
+					<a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_warning' )"></a>
+				</div>
+				<p><span id="warningField"></span></p>
+			</div>
+
+		</td>
+	</tr>
+</table>

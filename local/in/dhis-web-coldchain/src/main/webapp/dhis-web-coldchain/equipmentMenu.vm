@@ -1,0 +1,10 @@
+
+<a href="index.action"><h2>$i18n.getString( "coldchain_management" )&nbsp;</h2></a>
+
+<ul>
+    <li><a href="enquipmentSelect.action">$i18n.getString( "equipment_registration" )</a></li>
+</ul>
+
+<br>
+#parse( "/dhis-web-commons/ouwt/orgunittree.vm" )
+

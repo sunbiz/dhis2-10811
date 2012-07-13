@@ -1,0 +1,18 @@
+
+<h2>$i18n.getString("anonymous_menu")</h2>
+<p>
+<ul>
+#foreach( $program in $programs)
+	<li><a href="showAnonymousForm.action?programId=$program.id">$program.name</a></li>
+#end
+</ul>
+</p>
+
+<div id="footer">
+<h2>$i18n.getString( "navigate_to" )</h2>
+<ul>
+    <li><a href="feedback.action">$i18n.getString("feedback")</a></li>
+	<li><a href="../dhis-web-commons-security/logout.action">$i18n.getString("logout")</a></li>
+    <li style="padding-top: 5px;"><a href="../">$i18n.getString("desktop_version")</a></li>
+</ul>
+</div>

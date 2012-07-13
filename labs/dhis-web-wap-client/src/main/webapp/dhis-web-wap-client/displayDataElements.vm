@@ -1,0 +1,18 @@
+## Velocity Template.
+
+<head>
+ <link type="text/css" rel="stylesheet" media="screen" href="/../dhis-web-wap-client/style/default.css" />
+</head>
+
+<form name="displayDataElements" action="validationFormAction.action">
+
+<h3>Please fill this:</h3>
+
+#foreach($element in $dataElements)
+<p>$element.name<br>
+<input type="text" id="$element.id"+":"+"$element.comboid"/> </p>
+#end
+<input type="submit" value="Send"/>
+ </form> 
+
+

@@ -1,0 +1,91 @@
+
+#macro ( linkDropDownButtonDiv $dropDownId $areaDivId )
+<div class="buttonArea">
+    <a href="javascript:showDropDown( '${dropDownId}' )">$i18n.getString( "insert" )</a>
+    <a href="javascript:hideDropDown()">$i18n.getString( "close" )</a>
+    <a href="javascript:clearArea( '${areaDivId}' )">$i18n.getString( "clear" )</a>
+</div>
+#end
+
+#macro ( chartDropDownButtonDiv $dropDownId $areaDivId $chart )
+<div class="buttonArea">
+    <a href="javascript:showDropDown( '${dropDownId}' )">$i18n.getString( "insert" )</a>
+    <a href="javascript:hideDropDown()">$i18n.getString( "close" )</a>
+    <a href="javascript:clearArea( '${areaDivId}' )">$i18n.getString( "clear" )</a>
+    #if( $chart )
+    <a href="javascript:explore( '${chart.uid}' )">$i18n.getString( "explore" )</a>
+    <a href="javascript:viewShareForm( '${chart.uid}', '${encoder.htmlEncode( $chart.name )}' )">$i18n.getString( "share" )</a>
+    #end
+</div>
+#end
+
+#macro ( linkDropDownListDiv $divId $listId $page )
+<div id="$divId" class="linkArea">
+    <div id="$listId" class="menuDropDownArea">
+        <ul class="menuDropDownBox">
+        #foreach( $provider in $providerNames )
+            <li><a href="javascript:setAreaItem( '$divId', '$provider' )">$i18n.getString( "$provider" )&nbsp;</a></li>
+        #end
+        </ul>
+    </div>
+    #if ( $page )
+        #parse( "/dhis-web-dashboard-integration/${page}.vm" )
+    #else
+        <div class="labelText">$i18n.getString( 'this_is_a_link_area' )</div>
+    #end
+</div>
+#end
+
+#macro ( chartDropDownListDiv $divId $listId $chart )
+<div id="$divId" class="chartArea">
+    <div id="$listId" class="menuDropDownArea">
+        <ul class="menuDropDownBox">
+        #foreach( $availableChart in $charts )
+            <li><a href="javascript:setAreaItem( '${divId}', '${availableChart.id}' )">${availableChart.name}&nbsp;</a></li>
+        #end
+        </ul>
+    </div>
+    #if ( $chart )
+        <img style="cursor:pointer" src="../api/charts/${chart.uid}/data?width=310&height=310" onclick="viewChart( '../api/charts/${chart.uid}/data', '${encoder.htmlEncode( $chart.name )}' )">
+    #else
+        <div class="labelText">$i18n.getString( 'this_is_a_chart_area' )</div>
+    #end
+</div>
+#end
+
+<table cellspacing="0" cellpadding="0" style="width:960px">
+<tr>
+    <td style="width:305px">        
+        #linkDropDownButtonDiv( "dropDownA" "areaA" )
+        #linkDropDownListDiv( "areaA" "dropDownA" $areaA )
+
+        #linkDropDownButtonDiv( "dropDownB" "areaB" )
+        #linkDropDownListDiv( "areaB" "dropDownB" $areaB )
+
+        #linkDropDownButtonDiv( "dropDownC" "areaC" )
+        #linkDropDownListDiv( "areaC" "dropDownC" $areaC )      
+    </td>
+	<td>
+
+<table>
+
+#set( $sizeHalf = $chartAreas.size() / 2 )
+
+#foreach( $chart in $chartAreas )
+#set( $count0 = $velocityCount - 1 )
+#set( $count1 = $velocityCount )
+#set( $startHr = ($count0 % $sizeHalf) == 0 )
+#set( $endHr =  ($count0 % $sizeHalf) == ($sizeHalf - 1) )
+
+#if( $startHr )<tr> #end
+	<td style="width:305px; padding-left: 10px;">
+		#chartDropDownButtonDiv( "chartDropDown${count1}" "chartArea${count1}" $chart )
+		#chartDropDownListDiv( "chartArea${count1}" "chartDropDown${count1}" $chart )
+	</td>
+#end
+#if( $endHr )</tr> #end
+</table>
+
+	</td>
+</tr>
+</table>

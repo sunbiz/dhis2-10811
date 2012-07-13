@@ -1,0 +1,22 @@
+
+<table class="contentProviderTable">
+    <tr>
+        <th colspan="2">$i18n.getString( "map_view" )</th>
+    </tr>
+    #foreach ( $view in $mapViews )
+    <tr>
+        <td>
+            <a href="javascript:window.location.href='../dhis-web-mapping/mapping/index.html?id=${view.uid}'">$encoder.htmlEncode( $view.name )</a>
+        </td>
+        <td style="width:10px">
+            <a href="javascript:window.location.href='removeMapView.action?id=$view.id'" title="$i18n.getString( 'remove' )">
+            <img class="removeIcon" src="../images/hide.png" alt="$i18n.getString( 'remove' )"></a>
+        </td>
+    </tr>
+    #end
+</table>
+
+#if( $mapViews.size() == 0 )
+<div class="labelText">$i18n.getString( "insert_links_by_going_to" ) 
+<a href="../dhis-web-mapping/mapping/index.html">$i18n.getString( "map_view" )</a></div>
+#end

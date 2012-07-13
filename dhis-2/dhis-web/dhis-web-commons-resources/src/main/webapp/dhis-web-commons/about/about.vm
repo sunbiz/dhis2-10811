@@ -1,0 +1,25 @@
+<h3>$i18n.getString( "about_dhis2" )</h3>
+
+<dl>
+  <dt>$i18n.getString( "current_user" ):</dt><dd>$!currentUsername</dd>
+  <dt>$i18n.getString( "version" ):</dt><dd>$!version</dd>
+  <dt>$i18n.getString( "build_revision" ):</dt><dd>#if( $revision == '${revision}' ) NA #else $!revision #end</dd>
+  <dt>$i18n.getString( "build_date" ):</dt><dd>$format.formatDateTime( $!buildTime )</dd>
+  <dt>$i18n.getString( "user_agent" ):</dt><dd>$!userAgent</dd>
+  <dt>$i18n.getString( "external_configuration_directory" ):</dt><dd>$!externalDirectory</dd>
+  <dt>$i18n.getString( "environment_variable" ):</dt><dd>$!environmentVariable</dd>
+  <dt>$i18n.getString( "database_type" ):</dt><dd>$!info.type</dd>
+  <dt>$i18n.getString( "database_name" ):</dt><dd>$!info.name</dd>
+  <dt>$i18n.getString( "database_user" ):</dt><dd>$!info.user</dd>
+  #if ( $currentUserIsSuper )
+  <dt>$i18n.getString( "java_opts" ):</dt><dd>$!javaOpts</dd>
+  <dt>$i18n.getString( "java_version" ):</dt><dd>$systemProperties.get( "java.version" )</dd>
+  <dt>$i18n.getString( "java_vendor" ):</dt><dd>$systemProperties.get( "java.vendor" )</dd>
+  <dt>$i18n.getString( "os_name" ):</dt><dd>$systemProperties.get( "os.name" )</dd>
+  <dt>$i18n.getString( "os_architecture" ):</dt><dd>$systemProperties.get( "os.arch" )</dd>
+  <dt>$i18n.getString( "os_version" ):</dt><dd>$systemProperties.get( "os.version" )</dd>
+  <dt>$i18n.getString( "server_date" ):</dt><dd>$format.formatDateTime( $serverDate )</dd>
+  #end
+</dl>
+<br/>
+<div><input type="button" value="$i18n.getString( 'back' )" onclick="window.location.href='$!backUrl'" style="width:140px"/></div>

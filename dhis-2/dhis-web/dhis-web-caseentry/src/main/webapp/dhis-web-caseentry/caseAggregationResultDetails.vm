@@ -1,0 +1,84 @@
+<table class='mainPageTable listTable'>
+	<tbody>
+	#if( $mapPatients )
+		#set($hasDataValue = true )
+		#foreach( $patient in $mapPatients.keySet())
+			#if( $hasDataValue == true)
+			<tr height='5em'>
+				<th>$i18n.getString( "full_name" )</th>
+				<th>$i18n.getString( "gender" )</th>
+                <th>$i18n.getString( "date_of_birth" )</th>
+                <th>$i18n.getString( "age" )</th>
+			</tr>
+			#end
+			<tr>
+				<td>$!patient.getFullName()</td>
+				<td>$i18n.getString($!patient.gender)</td>
+				<td>$format.formatDate($!patient.birthDate)</td>
+				<td>$!patient.getAge()</td>
+			</tr>
+			
+			#set($dataValues = $mapPatients.get($patient) )
+			#if ( $!dataValues.size() == 0 )
+				#set($hasDataValue = false )
+				<tr>
+					<td colspan='4'></td>
+				</tr>
+			#else
+				#set($hasDataValue = true )
+				<tr style='background-color: #cccccc'>
+					<td>$i18n.getString('program_stage')</td>
+					<td>$i18n.getString('data_element')</td>
+					<td>$i18n.getString('value')</td>
+					<td>$i18n.getString('date_of_edit')</td>
+				</tr>
+				#set( $mark = false )
+				#foreach( $dataValue in $dataValues )
+				<tr #alternate( $mark )>
+					<td>$dataValue.programStageInstance.programStage.name</td>
+					<td>$dataValue.dataElement.name</td>
+					<td>$dataValue.value</td>
+					<td>$format.formatDate($dataValue.timestamp)</td>
+				</tr>
+				#set( $mark = !$mark)
+				#end
+			#end
+		#end
+	
+	#else
+		<tr height='5em'>
+			<th>$i18n.getString('program_stage')</th>
+			<th>$i18n.getString('data_element')</th>
+			<th>$i18n.getString('value')</th>
+			<th>$i18n.getString('date_of_edit')</th>
+		</tr>
+		#foreach( $stageInstance in $mapEvents.keySet() )
+			#set($dataValues = $mapEvents.get($stageInstance) )
+			#if ( $dataValues.size() == 0 )
+				#set($hasDataValue = false )
+				<tr>
+					<td colspan='4'></td>
+				</tr>
+			#else
+				#set($hasDataValue = true )
+				<tr style='background-color: #cccccc'>
+					<td>$i18n.getString('program_stage')</td>
+					<td>$i18n.getString('data_element')</td>
+					<td>$i18n.getString('value')</td>
+					<td>$i18n.getString('date_of_edit')</td>
+				</tr>
+				#set( $mark = false )
+				#foreach( $dataValue in $dataValues )
+					<tr #alternate( $mark )>
+						<td>$dataValue.programStageInstance.programStage.name</td>
+						<td>$dataValue.dataElement.name</td>
+						<td>$dataValue.value</td>
+						<td>$format.formatDate($dataValue.timestamp)</td>
+					</tr>
+					#set( $mark = !$mark)
+				#end
+			#end
+		#end
+	#end
+	</tbody>
+</table>

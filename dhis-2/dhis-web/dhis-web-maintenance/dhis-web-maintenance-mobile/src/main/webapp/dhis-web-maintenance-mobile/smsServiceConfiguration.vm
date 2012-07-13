@@ -1,0 +1,164 @@
+<style>
+	.generalOverlaps
+	{
+		border: 1px solid #12CD17;
+		display: none;
+		margin: 1em;
+		padding: 1em;
+		width: 500px;
+	}
+	
+	.overlaps
+	{
+		background-color: #BAFFBC;
+	}
+	
+	.overlapsWarning
+	{
+		background-color: #F08080;
+	}
+</style>
+
+<script type="text/javascript">
+	jQuery(document).ready( function() {
+		validation2( "saveSmsConfigurationForm", function( form ) {
+			form.submit();
+		}, {
+			'rules': getValidationRules( 'SMSConfig' )
+		} );
+
+		#if ( $!smsServiceStatus && ( $!smsServiceStatus == "service_started" || $!smsServiceStatus == "service_starting" ) )
+			actionType = "stop";
+			jQuery( "#startStopButton" ).attr( "value", i18n_stop_sms_service );
+		#else
+			actionType = "start";
+			jQuery( "#startStopButton" ).attr( "value", i18n_start_sms_service );
+		#end
+	} );
+
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_gateway" ) , "'")';
+	var i18n_stop_sms_service = '$encoder.jsEscape( $i18n.getString( "stop_sms_service" ) , "'")';
+	var i18n_start_sms_service = '$encoder.jsEscape( $i18n.getString( "start_sms_service" ) , "'")';
+	var i18n_sms_service_started = '$encoder.jsEscape( $i18n.getString( "service_started" ) , "'")';
+	var i18n_sms_service_stopped = '$encoder.jsEscape( $i18n.getString( "service_stopped" ) , "'")';
+	var actionType = "start";
+	
+</script>
+
+<h3>$i18n.getString( "sms_service_configuration" )</h3>
+
+<form id="saveSmsConfigurationForm" name="saveSmsConfigurationForm" action="saveSmsConfiguration.action" method="post" >
+  <table id="detailsList">
+    <col/> ## Labels
+    <col/> ## Input
+    <thead>
+      <tr>
+        <th colspan="2">$i18n.getString( "service_status" )</th>
+      </tr>
+    </thead>
+    <tbody>
+		<tr>
+			<td colspan="2">
+				#if( $!smsConfig )
+				<div class="generalOverlaps overlaps" id="noOverlapsDiv" style="display: block;">
+					$i18n.getString( $!encoder.htmlEncode( $!smsServiceStatus ) )
+				</div>
+				#else
+				<div class="generalOverlaps overlapsWarning" id="noOverlapsDiv" style="display: block;">
+					$i18n.getString( "sms_configuration_not_initialized" )
+				</div>
+				#end
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="right">
+				<input type="button" value="$i18n.getString( 'reload_configuration' )" onclick="reloadStartStopService( 'reload' );" />
+				<input type="button" id="startStopButton" value="$i18n.getString( 'stop_sms_service' )" onclick="reloadStartStopService( actionType );" />
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+    </tbody>
+
+	<thead>
+      <tr>
+        <th colspan="2">$i18n.getString("configuration")</th>
+      </tr>
+
+	<tbody>
+		<tr>
+			<td><label for="pollingInterval">$i18n.getString( "polling_interval_in_seconds" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td><input type="text" id="pollingInterval" name="pollingInterval" style="width:20em" value="$!smsConfig.pollingInterval"/></td>
+		</tr>
+		<tr>
+			<td><label for="serverPhoneNumber">$i18n.getString( "server_phone_number" )</label></td>
+			<td><input type="text" id="serverPhoneNumber" name="serverPhoneNumber" style="width:20em" value="$!smsConfig.longNumber"/>
+			<input type="submit" value="$i18n.getString( 'save_settings' )" style="width:13em"/></td>
+		</tr>
+		<tr>
+			<td align="right" colspan="2">
+				<input type="button" value="$i18n.getString( 'add_update_gw' )" style="width:13em" #if( !$smsConfig )disabled="true"#end onclick="window.location.href='showUpdateGateWayConfigForm.action'"/>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<table id="listTable" class="listTable">
+					<thead>
+						<tr>
+							<th>$i18n.getString("gateways")</th>
+							<th style="text-align:center; width: 50px;">$i18n.getString( "operation" )</th>
+						</tr>
+					</thead>
+					<tbody id="list">
+					#set( $keys = $!gatewayConfigMap1.keySet() )
+					#foreach ($key in $!keys )
+						<tr id="tr${key}">
+							#set( $gw = $!gatewayConfigMap1.get( $key ) )
+							<td>$!encoder.htmlEncode( $gw.name )</td>
+							<td style="text-align:right">
+							  <a href="javascript:removeGateway( $key, '$!encoder.jsEncode( $gw.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+							</td>
+						</tr>
+					#end 					
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+	</table>
+</form>
+
+<script type="text/javascript">
+	
+	function reloadStartStopService( type )
+	{
+		jQuery.getJSON( "reloadStartStopService.action",
+		{
+			actionType: type
+		}, function( json ) {
+			if ( json.response == "success" ) {
+				showSuccessMessage( json.message );
+				
+				if ( actionType == "start" )
+				{
+					actionType = "stop";
+					jQuery( "#startStopButton" ).attr( "value", i18n_stop_sms_service );
+					setInnerHTML( "noOverlapsDiv", i18n_sms_service_started );
+				}
+				else if ( actionType == "stop" )
+				{
+					actionType = "start";
+					jQuery( "#startStopButton" ).attr( "value", i18n_start_sms_service );
+					setInnerHTML( "noOverlapsDiv", i18n_sms_service_stopped );
+				}
+			}
+			else {
+				showErrorMessage( json.message, 7000 );
+			}
+		} );
+	}
+	
+	function removeGateway( key, name )
+	{
+		removeItem( key, name, i18n_confirm_delete, "removeGatewayConfig.action" );
+	}
+</script>

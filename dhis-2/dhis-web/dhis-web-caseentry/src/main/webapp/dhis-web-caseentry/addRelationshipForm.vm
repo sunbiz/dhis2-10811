@@ -1,0 +1,119 @@
+<script>
+	jQuery('#relationshipSelectForm').ready(	function(){
+		
+		jQuery('name').focus();
+			
+		validation( 'relationshipSelectForm', function(form){
+			validateSearchPartner();
+		}); 
+		
+	});		
+</script>
+
+<h4>$i18n.getString( "adding_new_relationship_for" ):  $encoder.htmlEncode( $patient.getFullName() )  </h4>
+
+<form id="relationshipSelectForm" name="relationshipSelectForm" method="post" action="showAddRelationshipForm.action">
+<input type="hidden" id="patientId" name="patientId" value="$patient.id"/>
+<table>
+<tr>
+    <td class='information'>
+        <table>
+			<tr>
+				<th colspan='2'>$i18n.getString('patient_profile')</th>
+			</tr>
+            <tr>
+                <td class="bold">$i18n.getString( "full_name" ):</td>
+                <td>           
+                    $encoder.htmlEncode( $patient.getFullName() )  
+                </td>
+            </tr>
+            <tr>
+                <td class="bold">$i18n.getString( "gender" ):</td>
+                <td>            
+                    $encoder.htmlEncode( $patient.gender )
+                </td>
+            </tr>    
+            <tr>
+                <td class="bold">$i18n.getString( "date_of_birth" ):</td>
+                <td>            
+                    $format.formatDate( $patient.birthDate )
+                </td>
+            </tr>
+            <tr>
+                <td class="bold">$i18n.getString( "age" ):</td>
+                <td>            
+                    $encoder.htmlEncode( $patient.getAge() )
+                </td>
+            </tr>    
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </td>    
+    <td class='information'>
+        <table>  
+			<tr>
+				<th colspan='2'>$i18n.getString('relationship_for') $patient.getFullName()</th>
+			</tr>
+            <tr>
+                <td>$encoder.htmlEncode( $patient.getFullName() ) $i18n.getString( "'s" )</td>
+            </tr>
+            <tr>  
+                <td>
+                    <select id="relationshipTypeId" name="relationshipTypeId" class="{validate:{required:true}}" >
+                        <option value="">[$i18n.getString( "select_relationship" )]</option>
+                        #foreach( $relationshipType in $relationshipTypes )                        
+                            <option value="$relationshipType.id:$encoder.htmlEncode( $relationshipType.aIsToB )" #if( $relationshipTypeId && "$relationshipType.id:$encoder.htmlEncode( $relationshipType.aIsToB )" == $relationshipTypeId ) selected="selected" #end>$encoder.htmlEncode( $relationshipType.aIsToB )</option>
+                            <option value="$relationshipType.id:$encoder.htmlEncode( $relationshipType.bIsToA )" #if( $relationshipTypeId && "$relationshipType.id:$encoder.htmlEncode( $relationshipType.bIsToA )" == $relationshipTypeId ) selected="selected" #end>$encoder.htmlEncode( $relationshipType.bIsToA )</option>
+                        #end
+                    </select>
+                    &nbsp; $i18n.getString( "is" )
+                </td>
+            </tr>           
+                                    
+            <tr>           
+                <td>
+                    <select id="searchingAttributeId" name="searchingAttributeId" #if( $patientAttributes.size() == 0 ) disabled="disabled" #end style='width:119px'>
+                        <option value="">$i18n.getString( "search_by_name_identifier" )</option>
+                        #foreach( $attribute in $patientAttributes )
+                            <option value="$attribute.id" #if( $searchingAttributeId && $attribute.id == $searchingAttributeId ) selected="selected" #end>$encoder.htmlEncode( $attribute.name )</option>
+                        #end
+                    </select> 
+                    <em title="$i18n.getString( 'required' )" class="required">*</em>
+                    <input type="text" id="searchText" name="searchText" maxlength="30" onchange="validateSearchPartner();" style='width:119px'/>        
+                    <input type="button" value="$i18n.getString( 'search' )" onclick="validateSearchPartner();" class='large-button' />
+                </td> 
+            </tr>                  
+            <tr>  
+                <td> 
+                    $i18n.getString( "result_matching_the_search_criteria" )
+                    #if( $searchText )  
+                        $encoder.htmlEncode( $searchText ) 
+                    #end
+                </td>                               
+            </tr>  
+            <tr>
+                <td colspan='2'>
+                    <select size="15" id="availablePartnersList" name="availablePartnersList" class="{validate:{required:true}}">                        
+                        #foreach ( $partner in $patients )
+                            <option value="$partner.id"> $encoder.htmlEncode( $partner.getFullName() )</option>
+                        #end                
+                    </select>
+                </td>                     
+            </tr>
+            <tr>
+            	<td>
+					<input type="button" value="$i18n.getString( 'assign_relationship' )" onclick="javascript:addRelationship()" />
+					<input type="button" value="$i18n.getString( 'back_to_relationship' )" onclick="showRelationshipList($patient.id)" />
+				</td>
+            </tr>            
+        </table>
+    </td>
+</tr>
+</table>       
+</form>
+
+<script type="text/javascript">
+    var i18n_please_select_relationship_type = '$encoder.jsEscape( $i18n.getString( "please_select_relationship_type" ) , "'" )';
+    var i18n_please_select_partner = '$encoder.jsEscape( $i18n.getString( "please_select_partner" ) , "'" )';    
+</script>

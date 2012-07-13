@@ -1,0 +1,23 @@
+
+#shareForm
+{
+  display: none;
+}
+
+.interpretationArea
+{
+  height: 125px;
+  width: 510px;
+  border: 1px solid #ccc;
+  resize: none;
+  overflow: auto;
+  margin: 10px 4px 6px 4px;
+  padding: 4px 0 0px 6px;
+}
+
+.interpretationButton
+{
+  width: 120px;
+  height: 24px;
+  margin: 0 0 6px 4px;
+}

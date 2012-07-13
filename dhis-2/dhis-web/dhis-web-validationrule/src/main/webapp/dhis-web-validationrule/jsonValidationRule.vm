@@ -1,0 +1,10 @@
+{ "validationRule":
+  {
+	"name": "$!encoder.jsonEncode( ${validationRule.name} )",
+	"description": "$!encoder.jsonEncode( ${validationRule.description} )",
+	"type": "$!encoder.jsonEncode( ${validationRule.type} )",
+	"operator": "${validationRule.operator}",
+	"leftSideDescription": "$!encoder.jsonEncode( ${validationRule.leftSide.description} )",
+	"rightSideDescription": "$!encoder.jsonEncode( ${validationRule.rightSide.description} )"
+  }
+}

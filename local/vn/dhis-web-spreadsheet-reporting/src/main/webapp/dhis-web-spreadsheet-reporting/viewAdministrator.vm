@@ -1,0 +1,23 @@
+﻿<h3>$i18n.getString( "administration" )</h3>
+
+<ul class="introList">
+    #introListImgItem( "getConfiguration.action" "configuration" "systemsettings" )
+    #introListImgItem( "listAllExportReport.action" "design_export_reports" "export" )
+	#introListImgItem( "listAllImportReport.action" "design_import_reports" "import" )
+    #introListImgItem( "openOptionComboAssociations.action" "define_categoryoptioncombo_associations" "dhis-web-maintenance-datadictionary" )
+    #introListImgItem( "attributeValueGroupOrders.action" "attribute_group_order" "attribute_group_order" )
+    #introListImgItem( "listDataEntryStatus.action" "data_status_management" "validationcriteria" )
+    #introListImgItem( "listAllExcelTemplates.action" "excel_template_management" "excel" )
+	#introListImgItem( "javascript: cleanUp();" "clean_up" "clean-up" )
+	<!--#introListImgItem( "jcharts.action" "chart" "jchart")-->
+</ul>
+<script>
+	function go(action){
+		window.location = action;
+	}
+	function cleanUp(){
+		jQuery.postJSON( 'cleanUpDraftFile.action', {}, function( json ) {
+			setHeaderDelayMessage( json.message );
+		} );
+	}
+</script>

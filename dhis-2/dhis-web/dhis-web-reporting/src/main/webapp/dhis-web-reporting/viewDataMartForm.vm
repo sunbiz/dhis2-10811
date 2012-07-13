@@ -1,0 +1,38 @@
+<h3>$i18n.getString( "data_mart_management" ) #openHelp( "data_mart" )</h3>
+
+<div id="critiera" class="inputCriteria" style="width:430px;height:170px;">
+<table>
+<col width="100">
+<col width="290">
+<tr>
+	<td>$i18n.getString( "period_types" )</td>
+	<td><label for="weekly">$i18n.getString( "Weekly" )</label><input type="checkbox" id="weekly" name="periodType" value="Weekly">&nbsp;
+		<label for="monthly">$i18n.getString( "Monthly" )</label><input type="checkbox" id="monthly" name="periodType" value="Monthly" checked="checked">&nbsp;
+		<label for="biMonthly">$i18n.getString( "BiMonthly" )</label><input type="checkbox" id="biMonthly" name="periodType" value="BiMonthly">&nbsp;
+		<label for="quarterly">$i18n.getString( "Quarterly" )</label><input type="checkbox" id="quarterly" name="periodType" value="Quarterly" checked="checked"><br>
+		<label for="sixMonthly">$i18n.getString( "SixMonthly" )</label><input type="checkbox" id="sixMonthly" name="periodType" value="SixMonthly" checked="checked">&nbsp;
+		<label for="yearly">$i18n.getString( "Yearly" )</label><input type="checkbox" id="yearly" name="periodType" value="Yearly" checked="checked">&nbsp;
+		<label for="financialYearly">$i18n.getString( "financial_yearly" )</label><input type="checkbox" id="financialYearly" name="periodType" value="FinancialJuly"><br><br>
+	</td>
+</tr>
+<tr>
+	<td>$i18n.getString( "start_date" )</td>
+	<td><input type="text" id="startDate" style="width:200px"></td>
+</tr>
+<tr>
+	<td>$i18n.getString( "end_date" )</td>
+	<td><input type="text" id="endDate" style="width:200px"></td>
+</tr>
+<tr>
+	<td></td>
+	<td><input type="button" onclick="startExport()" value="$i18n.getString( 'start_export' )" style="width:120px"></td>
+</tr>
+</table>
+</div>
+
+<div>
+<table id="notificationTable" class="notificationTable" style="display:none">
+<col width="120">
+<col width="380">
+</table>
+</div>

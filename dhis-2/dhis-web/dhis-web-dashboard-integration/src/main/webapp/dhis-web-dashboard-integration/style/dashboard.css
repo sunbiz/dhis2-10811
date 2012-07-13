@@ -1,0 +1,262 @@
+
+/*----------------------------------------------------------------------------*/
+/* Dashboard                                                                  */
+/*----------------------------------------------------------------------------*/
+
+.contentProviderTable
+{
+  width:295px;
+}
+
+.contentProviderTable td
+{
+  padding-top:3px;
+  padding-bottom:3px;
+  border-bottom:1px solid #cad5e5;
+}
+
+#contentDiv
+{
+  position:relative;
+  top: 38px;
+}
+
+.removeIcon
+{
+   padding:3px 3px 2px 3px;
+}
+
+.linkArea
+{
+  border:1px solid #d0d0d0;
+  padding:1px;
+  height:196px;
+  width:295px;
+  overflow:hidden;
+  margin-bottom:15px;
+}
+
+.linkArea div
+{
+  position:absolute;
+}
+
+.chartArea
+{
+  border:1px solid #d0d0d0;
+  padding:1px;
+  height:310px;
+  width:310px;
+  overflow:hidden;
+  margin-bottom:15px;
+}
+
+.chartArea div
+{
+  position:absolute;
+}
+
+.buttonArea
+{
+  margin-bottom:2px;
+}
+
+.labelText
+{
+  color:#888;
+  padding:3px;
+}
+
+#subMenu
+{
+  position:absolute;
+}
+
+#subMenu ul
+{
+  list-style-type:none;
+  margin: 0;
+}
+
+#subMenu li
+{
+  float:left;
+}
+
+#subMenu a
+{
+  padding: 6px 12px;
+  height: 25px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-family: LiberationSansBold, arial;
+  font-size: 13px;
+  color: #606060;
+  background-color: #f3f3f3;
+}
+
+#subMenu a:hover
+{
+  text-decoration: none;
+  background-color: #f8f8f8;
+}
+
+#shareForm
+{
+  display: none;
+}
+
+#chartView
+{
+  display: none; 
+  padding: 0; 
+  margin: 0;
+}
+
+.interpretationArea
+{
+  height: 125px;
+  width: 510px;
+  border: 1px solid #ccc;
+  resize: none;
+  overflow: auto;
+  margin: 10px 4px 6px 4px;
+  padding: 4px 0 0px 6px;
+}
+
+.interpretationButton
+{
+  width: 120px;
+  height: 24px;
+  margin: 0 0 6px 4px;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Message                                                                    */
+/*----------------------------------------------------------------------------*/
+
+.plainList
+{
+  border-collapse:collapse;
+}
+
+.plainList td
+{
+  border-bottom:1px solid #c0c0c0;
+  cursor:pointer;
+}
+
+.unread td
+{
+  background-color:#ebf0f6;
+}
+
+.messageDiv
+{
+  width:50%;
+  border-bottom:1px solid #cccccc; 
+  margin-bottom:15px;
+  padding-bottom:15px;
+}
+
+.messageBottomDiv
+{
+  width:50%;
+  border-top:1px solid #cccccc; 
+  margin-top:20px;
+  padding-top:15px;
+  margin-bottom:20px;
+  padding-bottom:15px;
+}
+
+.replyArea
+{
+  width:495px;
+  height:80px;
+  border: 1px solid #ccc;
+  resize: none;
+  overflow: auto;
+  padding: 4px 0px 0px 6px;
+}
+
+div#selectionTree 
+{
+  height:200px;
+}
+
+.grey
+{
+  color: #555;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Interpretation                                                             */
+/*----------------------------------------------------------------------------*/
+
+#interpretationFeed
+{
+  width: 550px;
+  border-top: 1px solid #ccc;
+}
+
+#shareLink
+{
+  color: #777;
+  font-size: 11pt;
+  margin-bottom: 9px;
+}
+
+.interpretation
+{
+  width: 550px;
+  border-bottom: 1px solid #ccc;
+  padding: 22px 10px 16px 10px;
+}
+
+.interpretationName
+{
+  margin-bottom: 7px;
+}
+
+.interpretationText
+{
+  margin-bottom: 16px;
+}
+
+.interpretationChart
+{
+  margin-bottom: 16px;
+}
+
+.interpretationCommentArea
+{
+  margin-top: 10px;
+  padding: 18px 20px 14px 20px;
+  background-color: #e9edef;
+  border-radius: 3px;
+}
+
+.commentArea
+{
+  height: 18px;
+  width: 370px;
+  border: 1px solid #ccc;
+  resize: none;
+  overflow: auto;
+  padding: 4px 0px 0px 6px;
+}
+
+.commentButton
+{
+  width: 120px;
+  height: 24px;
+  margin: 1px 0 0 5px;
+  float: right;
+}
+
+.pointer
+{
+  cursor:pointer;
+}
+

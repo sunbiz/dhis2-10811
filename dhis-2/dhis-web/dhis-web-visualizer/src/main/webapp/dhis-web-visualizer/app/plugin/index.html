@@ -1,0 +1,173 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../../../dhis-web-commons/javascripts/ext/resources/css/ext-plugin-gray.css" />
+    <script type="text/javascript" src="../../../dhis-web-commons/javascripts/ext/ext-all.js"></script>
+    <script type="text/javascript" src="../../../dhis-web-commons/javascripts/plugin/plugin.js"></script>
+	
+    <style type="text/css">
+		body {font-family: sans-serif; margin: 0 0 0 60px;}
+		
+		h1 {font-size: 20px; margin: 20px 0;}
+		
+		#chart1, #chart2, #chart3, #table1, #table2 {width: 1000px; margin-bottom: 50px;}
+		
+		#chart1, #chart2, #chart3 {height: 400px; border: 2px solid #d1d1d1; border-radius: 3px;}
+		
+		table {border-collapse: collapse;}
+		
+		table th, td {text-align: left; border: 1px solid #ccc;}
+		
+		table .val {text-align: center;}
+    </style>
+    
+	<script type="text/javascript">
+		Ext.onReady( function() {
+			var url = '../../../'; // http://apps.dhis2.org/dev/
+		
+			DHIS.getChart({
+				uid: 'UlfTKWZWV4u',
+				callbackName: 'chart1',
+				el: 'chart1',
+				url: url
+			});
+			
+			DHIS.getChart({
+				type: 'stackedcolumn',
+				indicators: ['Uvn6LCg7dVU'],
+				periods: 'last12Months',
+				category: 'period',
+				filter: 'organisationunit',
+				organisationunits: ['ImspTQPwCqd'],
+				orgUnitIsParent: false,
+				showData: true,
+				trendLine: true,
+				hideLegend: false,
+				hideSubtitle: false,
+				userOrganisationUnit: false,
+				userOrganisationUnitChildren: true,
+				targetLineValue: 80,
+				targetLineLabel: null,
+				baseLineValue: null,
+				baseLineLabel: null,
+				domainAxisLabel: null,
+				rangeAxisLabel: null,
+				callbackName: 'chart2',
+				el: 'chart2',
+				url: url
+			});
+			
+			DHIS.getChart({
+				type: 'stackedcolumn',
+				indicators: ['Uvn6LCg7dVU'],
+				periods: 'thisYear',
+				category: 'organisationunit',
+				filter: 'period',
+				organisationunits: ['ImspTQPwCqd'],
+				orgUnitIsParent: true,
+				skipAnimation: true,
+				showData: true,
+				trendLine: true,
+				hideLegend: false,
+				hideSubtitle: false,
+				targetLineValue: 80,
+				targetLineLabel: null,				
+				baseLineValue: 20,
+				baseLineLabel: null,
+				callbackName: 'chart3',
+				el: 'chart3',
+				url: url
+			});
+			
+			DHIS.getTable({
+				indicators: ['Uvn6LCg7dVU'],
+				periods: ['last12Months'],
+				orgunits: ['ImspTQPwCqd'],
+				crosstab: ['periods'],
+				orgUnitIsParent: true,
+				hiddenCols: [0],
+				useExtGrid: false,
+				callbackName: 'table1',
+				el: 'table1',
+				url: url
+			});
+			
+			DHIS.getTable({
+				indicators: ['OdiHJayrsKo'],
+				periods: ['last12Months'],
+				orgunits: ['ImspTQPwCqd'],
+				crosstab: ['periods'],
+				orgUnitIsParent: true,
+				hiddenCols: [0],
+				useExtGrid: true,
+				el: 'table2',
+				url: url
+			});
+			
+			var url1 = DHIS.getUrl({
+				indicators: ['OdiHJayrsKo'],
+				periods: ['last12Months'],
+				orgunits: ['ImspTQPwCqd'],
+				crosstab: ['periods'],
+				orgUnitIsParent: true,
+				format: 'pdf',
+				url: url
+			});
+			
+			Ext.get('url1').update(url1);
+		});
+	</script>
+	
+	<!--
+	CONFIG              	TYPE            DEFAULT             DESCRIPTION
+
+	uid                 	string                              (Optional) A chart uid. If provided, only 'el' and 'url' are required.
+		
+	type                			string          'column'            (Optional) Chart types: 'column', 'stackedcolumn', 'bar', 'stackedbar', 'line', 'area', 'pie'
+	indicators          			[integer]                           (Required*) Indicator uids. Required if no data elements are provided.
+	dataelements        			[integer]                           (Required*) Data element uids. Required if no indicators are provided.
+	periods             			[string]        'last12Months'      (Optional) Relative period names.
+	organisationunits   			[integer]                           (Required) Organisation unit uids.
+	series              			string          'data'              (Optional) Series: 'data', 'period' or 'organisationunit'.
+	category            			string          'period'            (Optional) Category: 'indicator', 'dataelement', 'period' or 'organisationunit'.
+	filter              			string          'organisationunit'  (Optional) Filter: 'indicator', 'dataelement', 'period' or 'organisationunit'.
+	orgUnitIsParent					boolean			false				(Optional) If true, the children of the provided orgunit are displayed.
+	showData						boolean			false				(Optional) If true, the exact data are displayed on the chart.
+	trendLine						boolean			false				(Optional) If true, trend line(s) are added.
+	hideLegend						boolean			false				(Optional) If true, the legend is not visible.
+	hideSubtitle					boolean			false				(Optional) If true, the subtitle is not visible.
+	userOrganisationUnit			boolean			false				(Optional) If true, the provided orgunits are replaced by the user orgunit.
+	userOrganisationUnitChildren	boolean			false				(Optional) If true, the provided orgunits are replaced by the user orgunit children.
+	targetLineValue					integer								(Optional) The value of the target line.
+	targetLineLabel					string								(Optional) The legend name of the target line. Requires targetLineValue, otherwise ignored.
+	baseLineValue					integer								(Optional) The value of the base line.
+	baseLineLabel					string								(Optional) The legend name of the base line. Requires baseLineValue, otherwise ignored.
+	domainAxisLabel					string								(Optional) Domain axis (usually the x axis) label.
+	rangeAxisLabel					string								(Optional) Range axis (usually the y axis) label.
+	legendPosition      			string          'top'               (Optional) Positions: 'top', 'right', 'bottom' or 'left'.
+	el                  			string                              (Required) The element id to render the chart.
+	width               			integer         <el width>          (Optional) Chart width. Default is the element width.
+	height              			integer         <el height>         (Optional) Chart height. Default is the element height.
+	url                 			string                              (Required) The base url of the DHIS instance.
+	-->
+</head>
+
+<body>
+    <h1>My chart 1</h1>
+	<div id="chart1"></div>
+	
+    <h1>My chart 2</h1>
+	<div id="chart2"></div>
+	
+    <h1>My chart 3</h1>
+	<div id="chart3"></div>
+	
+	<h1>My table 1</h1>
+	<div id="table1"></div>
+		
+	<h1>My table 2</h1>
+	<div id="table2"></div>
+	
+	<h1>My URL</h1>
+	<div id="url1"></div>
+</body>
+</html>

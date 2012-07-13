@@ -1,0 +1,77 @@
+<script type="text/javascript">
+$( document ).ready( function() {
+	$( '#text' ).autogrow();
+} );
+	
+var i18n_sender = '$encoder.jsEscape( $i18n.getString( "sender" ), "'")';
+var i18n_enter_text = '$encoder.jsEscape( $i18n.getString( "enter_text" ), "'")';
+var i18n_sending_message = '$encoder.jsEscape( $i18n.getString( "sending_message" ), "'")';
+</script>
+
+<div id="senderInfo" style="display:none" class="page">
+<h3><span id="senderName"></span></h3>
+<table>
+<tr>
+<td><label>$i18n.getString( "email" ):</label></td>
+<td><span id="senderEmail"></span></td>
+</tr>
+<tr>
+<td><label>$i18n.getString( "username" ):</label></td>
+<td><span id="senderUsername"></span></td>
+</tr>
+<tr>
+<td><label>$i18n.getString( "phone_number" ):</label></td>
+<td><span id="senderPhoneNumber"></span></td>
+</tr>
+<tr>
+<td><label>$i18n.getString( "organisation_units" ):</label></td>
+<td><span id="senderOrganisationUnits"></span></td>
+</tr>
+<tr>
+<td><label>$i18n.getString( "user_roles" ):</label></td>
+<td><span id="senderUserRoles"></span></td>
+</tr>
+<tr>
+<td colspan="2" style="height:15px"></td>
+</tr>
+#if( $auth.hasAccess( "dhis-web-dashboard-integration", "sendMessage" ) )
+<tr>
+<td><label>$i18n.getString( "meta_data" ):</label></td>
+<td><span id="messageMetaData"></span></td>
+</tr>
+#end
+</table>
+</div>
+
+<input type="hidden" id="conversationId" value="${conversation.id}"/>
+
+<div class="messageDiv">
+<input type="button" value="$i18n.getString( 'mark_unread' )" onclick="window.location.href='unreadMessage.action?id=${conversation.id}'" style="width:120px">
+<input type="button" value="$i18n.getString( 'remove' )" onclick="window.location.href='removeMessageRedirect.action?id=${conversation.id}'" style="width:120px">
+<input type="button" value="$i18n.getString( 'back' )" onclick="window.location.href='message.action?currentPage=${keyCurrentPage}'" style="width:120px">
+</div>
+
+<div>
+<h3>$encoder.htmlEncode( $conversation.subject )</h3>
+</div>
+
+#foreach( $message in $conversation.messages )
+<div class="messageDiv">
+<span class="bold" style="cursor:pointer" onclick="showSenderInfo( ${message.id}, ${message.sender.id} )">$encoder.htmlEncode( $message.sender.name )</span>&nbsp;
+<span class="grey">$format.formatDate( $message.lastUpdated )</span>
+
+<p>$!dhisTextUtils.htmlLinks( $encoder.htmlEncode( $message.text ) )</p>
+<span id="metaData${message.id}" style="display:none">$!encoder.htmlEncode( $message.metaData )</span>
+</div>
+#end
+
+<div>
+<textarea id="text" name="text" class="replyArea"></textarea><br>
+<input type="button" id="replyButton" value="$i18n.getString( 'reply' )" onclick="sendReply()" style="width:120px">
+</div>
+
+<div class="messageBottomDiv">
+<input type="button" value="$i18n.getString( 'mark_unread' )" onclick="window.location.href='unreadMessage.action?id=${conversation.id}'" style="width:120px">
+<input type="button" value="$i18n.getString( 'remove' )" onclick="window.location.href='removeMessageRedirect.action?id=${conversation.id}'" style="width:120px">
+<input type="button" value="$i18n.getString( 'back' )" onclick="window.location.href='message.action'" style="width:120px">
+</div>

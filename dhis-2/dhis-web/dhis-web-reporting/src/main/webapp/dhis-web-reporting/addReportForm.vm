@@ -1,0 +1,65 @@
+<script type="text/javascript">
+	var i18n_please_specify_file = '$encoder.jsEscape( $i18n.getString( "please_specify_file" ) , "'")';
+</script>
+
+<h3>$i18n.getString( 'create_new_report' )</h3>
+
+<form id="reportForm" action="addReport.action" method="post" enctype="multipart/form-data">
+
+<input type="hidden" id="id" name="id" value="$!report.id" />
+<input type="hidden" id="currentDesign" name="currentDesign" value="$!report.design" />
+
+<table>
+    <tr>
+        <th colspan="2">$i18n.getString( "details" )</th>
+    </tr>
+    <tr>
+        <td><label for="name">$i18n.getString( "name" )</label></td>
+        <td><input type="text" id="name" name="name" style="width:95%" value="$!report.name"></td>
+    </tr>
+	<tr>
+		<td><label for="upload">$i18n.getString( "jasper_design" )</label></td>
+		<td><input type="file" id="upload" name="upload" size="35" /></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+		#if( $report )
+			<input type="button" value="$i18n.getString( 'get_current_design' )" onclick="window.location.href='getReportDesign.action?id=${report.id}'">
+		#end
+		</td>
+	</tr>
+	<tr>
+		<td><label for="reportTableId">$i18n.getString( "report_table" )</td>
+		<td>
+			<select id="reportTableId" name="reportTableId" style="min-width:325px">
+			<option value="0">[ $i18n.getString( "none" ) ]</option>
+			#foreach( $table in $reportTables )
+				<option value="$table.id"#if( $!report.reportTable.id == $table.id ) selected="selected"#end>$table.name</option>
+			#end
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><label for="usingOrgUnitGroupSets">$i18n.getString( "include_organisation_unit_group_sets" )</label></td>
+		<td>
+			<select id="usingOrgUnitGroupSets" name="usingOrgUnitGroupSets" style="min-width:325px">
+			<option value="false"#if ( $report && $report.usingOrgUnitGroupSets )selected="selected"#end>$i18n.getString( "no" )</option>
+			<option value="true"#if ( $report && $report.usingOrgUnitGroupSets )selected="selected"#end>$i18n.getString( "yes" )</option>			
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			<input type="button" value="$i18n.getString( 'save' )" style="width:10em" onclick="addReport()" />
+			<input type="button" value="$i18n.getString( 'cancel' )" style="width:10em" onclick="window.location.href='displayViewReportForm.action'" />
+		</td>
+	</tr>
+</table>
+	
+</form>
+
+<span id="info">$i18n.getString( "omit_report_table_explanation" ).</span>
+
+<span id="message"#if ( $message ) style="display:block"#end>$!message</span>

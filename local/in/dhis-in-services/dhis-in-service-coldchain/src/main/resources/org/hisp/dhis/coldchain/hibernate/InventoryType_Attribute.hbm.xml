@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.inventory.InventoryType_Attribute" table="inventorytype_attributes">
+
+    <composite-id>
+      <key-many-to-one name="inventoryType" class="org.hisp.dhis.coldchain.inventory.InventoryType" column="inventorytypeid"
+        foreign-key="fk_inventorytype_attribute_display_inventorytypeid" />
+      <key-many-to-one name="inventoryTypeAttribute" class="org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute" column="inventorytypeattributeid"
+        foreign-key="fk_fk_inventorytype_attribute_display_inventorytypeattributeid" />
+    </composite-id>
+
+    <property name="display" column="display" not-null="true" />
+	  
+	<property name="sortOrder" column="sort_order" /> 
+
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,182 @@
+
+<script type="text/javascript">
+	 jQuery(document).ready(function() {
+		checkNewMsg();
+	});
+
+	function checkNewMsg()
+	{	
+		$.get( 'checkNewMessage.action',
+		{},
+		function ( json ){ 
+			
+			if ( json.message )
+			{
+				setHeaderDelayMessage( json.message );
+			}			
+		});
+	
+		setTimeout( "checkNewMsg()", 10000 );
+	};
+	
+	checked = false;
+	
+	function checkAll()
+	{
+		var aa = document.getElementById( 'receiveSmsPage' );
+		if (checked == false)
+		{
+			checked = true
+		}
+		else
+		{
+			checked = false
+		}
+		for (var i = 0; i < aa.elements.length; i++) 
+		{
+		 aa.elements[i].checked = checked;
+		}
+	};
+	
+	function deleteChecked()
+	{
+		var aa = document.getElementById( 'receiveSmsPage' );
+		var result = "";
+		for (var i = 0; i < aa.elements.length; i++) 
+		{
+			if ( aa.elements[i].checked )
+			{
+				result += "ids=" + aa.elements[i].value + "&";
+			}
+		}
+		result = result.substring(0 , result.length - 1);
+		
+		if( result != "")
+		{
+			var confirmation = window.confirm( "$i18n.getString( 'confirm_delete_items' )" );
+			if ( confirmation )
+			{
+				jQuery.get( 'deleteReceiveSMS.action?' + result, {},
+					function ( json ) {
+						if ( json.response == "success" ) {
+							window.location = "showReceivingPage.action";
+						} else {
+							showMessage( json.message );
+						}
+					});	
+			}
+		}
+		else
+		{
+			showErrorMessage( "$i18n.getString( 'error_delete' )", 7000 );
+		}
+	};
+	
+	function importChecked()
+	{
+		var aa = document.getElementById( 'receiveSmsPage' );
+		var result = "";
+		for (var i = 0; i < aa.elements.length; i++) 
+		{
+			if ( aa.elements[i].checked )
+			
+			{
+				result += "ids=" + aa.elements[i].value + "&";
+			}
+		}
+		result = result.substring(0 , result.length - 1);
+		
+		if ( result != "" )
+		{
+			jQuery.get( 'importReceiveSMS.action?' + result, {},
+				function ( json ) {
+					if ( json.response == "success") {
+						showSuccessMessage( "Import Successfully!" );
+					} else {
+						showErrorMessage( "error!" );
+					}
+				});
+		}
+		else
+		{
+			showErrorMessage( "$i18n.getString( 'error_import' )", 7000 );
+		}		
+	};
+	function removeSingleItem( key, name )
+	{
+		removeItem( key, name, i18n_confirm_delete, "deleteReceiveSMS.action" );
+	};
+	
+	function makeVisible( idInput, idText )
+	{
+		if ( document.getElementById( idInput ).type == 'hidden')
+		{
+			document.getElementById( idInput ).type = 'text';
+			
+			jQuery( '#' + idInput).focus();
+			tmpStr = jQuery( '#' + idInput).val();
+			jQuery( '#' + idInput).val('');
+			jQuery( '#' + idInput).val(tmpStr);
+			
+			document.getElementById( idText ).style.display = 'none';
+		}
+		else
+		{		
+			document.getElementById( idInput ).type = 'hidden';
+			document.getElementById( idText ).style.display = 'block';
+			
+			jQuery.get( 'updateReceiveSMS.action', {id: idInput, text: getFieldValue( ''+idInput )},
+				function ( json )
+				{
+					if ( json.response == "success" ) {
+						//window.confirm( jQuery( 'a[id=' + idText + ']' ).html() );
+						//jQuery( 'label[id=' + idText + '] > a' ).html( getFieldValue( idInput ) );
+						jQuery( 'a[id=' + idText + ']' ).html( getFieldValue( idInput ) );
+						showSuccessMessage( "$i18n.getString( 'update_success' )" );
+					} else {
+						showErrorMessage( "error!" );
+					}
+				}
+			);
+		}
+	};
+
+	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_sms" ) , "'")';
+</script>
+
+<h3>$i18n.getString( "show_receive_sms_form" )</h3>
+<form id="receiveSmsPage" name="receiveSmsPage" action="showReceivingPage.action" method="post" >
+	<br/>
+	<table id="detailsSmsList" class="listTable" style="width:800px">
+		<col width="40px"/>
+		<col width="400px"/>
+		<col width="150px"/>
+		<col width="60px"/>
+		<thead>
+			<th style="text-align:center">$i18n.getString( "no." )</th>
+			<th>$i18n.getString( "message" )</th>
+			<th>$i18n.getString( "phone_number" )</th>
+			<th>$i18n.getString( "status" )</th>
+			<th style="text-align:center">$i18n.getString( "delete" )</th>
+			<th style="text-align:center"><a href="#" onclick="checkAll()" title="$i18n.getString( 'check_all' )"><img src="../images/check.png"/></a></th>
+		</thead>
+		
+		#foreach( $incomingSms in $listIncomingSms )
+		<tr id="tr${incomingSms.id}">
+			<td style="text-align:center">$velocityCount</td>
+			<td>
+				<a id="$velocityCount" style="display: block" href="#" onclick="makeVisible( $incomingSms.id, $velocityCount )">$incomingSms.text</a>
+				<input type="hidden" id="$incomingSms.id" value="$incomingSms.text" onblur="makeVisible( $incomingSms.id, $velocityCount )"/></td>
+			<td>$incomingSms.originator</td>
+			<td>update</td>
+			<td style="text-align:center"><a href="javascript:removeSingleItem( '$incomingSms.id', '$incomingSms.getText()' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></td>
+			<td style="text-align:center"><input type="checkbox" name="mycheck" value="$incomingSms.id"/></td>			
+		</tr>
+		#end
+	</table>
+	<br/>
+	<input type="button" name="btnShowConfig" value="$i18n.getString( 'config_my_gateway' )" onclick="window.location='showSMSConfigureForm.action'"/>
+	<input type="button" name="btnDelete" value="$i18n.getString( 'delete_checked_option' )" onclick="deleteChecked()"/>
+	<input type="button" name="btnImport" value="$i18n.getString( 'import' )" onclick="importChecked()"/>		
+	
+</form>

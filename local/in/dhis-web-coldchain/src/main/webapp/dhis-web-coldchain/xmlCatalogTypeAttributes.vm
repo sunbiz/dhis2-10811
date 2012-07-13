@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalogTypeAttributes>
+#foreach( $catalogTypeAttribute in $catalogTypeAttributes )
+	<catalogTypeAttribute>
+		<id>$catalogTypeAttribute.id</id>
+		<name>$encoder.xmlEncode( $catalogTypeAttribute.name )</name>
+		<description>$!encoder.xmlEncode( $catalogTypeAttribute.description )</description>
+		<valueType>$catalogTypeAttribute.valueType</valueType>
+		<mandatory>$catalogTypeAttribute.mandatory</mandatory>
+	</catalogTypeAttribute>
+#end
+</catalogTypeAttributes>

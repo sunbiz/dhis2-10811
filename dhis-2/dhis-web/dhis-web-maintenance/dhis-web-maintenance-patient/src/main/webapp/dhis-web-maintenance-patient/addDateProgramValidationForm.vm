@@ -1,0 +1,35 @@
+<h3>$i18n.getString( "validation_for_date_data_elements" )</h3>
+
+<form id='programValidationForm' name='programValidationForm' method='post' action='addProgramValidation.action'>
+
+<input type='hidden' id='programId' name='programId' value='$program.id'>
+<input type='hidden' id='dateType' name='dateType' value='true'>
+<table>
+	<tr>
+		<th colspan='3'>
+			<label>$i18n.getString('program_stage')</label>
+		</th>
+	</tr>
+	<tr>
+		<td colspan='3'>
+			<select style="width:630px" id='programStage' name='programStage' onchange="getDateDataElements();">
+				<option value=''>[$i18n.getString( "please_select" )]</option>
+				#foreach($stage in $program.programStages)
+				<option value='$stage.id'>$stage.name</option>
+				#end
+			</select>
+		</td>
+	</tr>
+	<tbody id='dataElementValidation'></tbody>
+	<tr>
+		<td colspan='3'>
+			#parse( "dhis-web-commons/loader/loader.vm" )
+		</td>
+	<tr>
+	<tr>
+		<td>
+			<input type='button' value="$i18n.getString( "cancel" )" style="width:10em" onclick="window.location.href='programValidation.action?programId=$program.id'">
+		</td>
+		<td></td>
+	</tr>
+</table>

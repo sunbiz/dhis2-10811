@@ -1,0 +1,71 @@
+var i18n_month_short_january = '$encoder.jsEscape($i18n.getString( 'month.short.january' ) , "'")';
+var i18n_month_short_february = '$encoder.jsEscape($i18n.getString( 'month.short.february' ) , "'")';
+var i18n_month_short_march = '$encoder.jsEscape($i18n.getString( 'month.short.march' ) , "'")';
+var i18n_month_short_april = '$encoder.jsEscape($i18n.getString( 'month.short.april' ) , "'")';
+var i18n_month_short_may = '$encoder.jsEscape($i18n.getString( 'month.short.may' ) , "'")';
+var i18n_month_short_june = '$encoder.jsEscape($i18n.getString( 'month.short.june' ) , "'")';
+var i18n_month_short_july = '$encoder.jsEscape($i18n.getString( 'month.short.july' ) , "'")';
+var i18n_month_short_august = '$encoder.jsEscape($i18n.getString( 'month.short.august' ) , "'")';
+var i18n_month_short_september = '$encoder.jsEscape($i18n.getString( 'month.short.september' ) , "'")';
+var i18n_month_short_october = '$encoder.jsEscape($i18n.getString( 'month.short.october' ) , "'")';
+var i18n_month_short_november = '$encoder.jsEscape($i18n.getString( 'month.short.november' ) , "'")';
+var i18n_month_short_december = '$encoder.jsEscape($i18n.getString( 'month.short.december' ) , "'")';
+var monthNamesShort = [i18n_month_short_january, 
+						i18n_month_short_february,
+						i18n_month_short_march,
+						i18n_month_short_april,
+						i18n_month_short_may,
+						i18n_month_short_june,
+						i18n_month_short_july,
+						i18n_month_short_august,
+						i18n_month_short_september,
+						i18n_month_short_october,
+						i18n_month_short_november,
+						i18n_month_short_december];
+						
+var i18n_month_january = '$encoder.jsEscape($i18n.getString( 'month.january' ) , "'")';
+var i18n_month_february = '$encoder.jsEscape($i18n.getString( 'month.february' ) , "'")';
+var i18n_month_march = '$encoder.jsEscape($i18n.getString( 'month.march' ) , "'")';
+var i18n_month_april = '$encoder.jsEscape($i18n.getString( 'month.april' ) , "'")';
+var i18n_month_may = '$encoder.jsEscape($i18n.getString( 'month.may' ) , "'")';
+var i18n_month_june = '$encoder.jsEscape($i18n.getString( 'month.june' ) , "'")';
+var i18n_month_july = '$encoder.jsEscape($i18n.getString( 'month.july' ) , "'")';
+var i18n_month_august = '$encoder.jsEscape($i18n.getString( 'month.august' ) , "'")';
+var i18n_month_september = '$encoder.jsEscape($i18n.getString( 'month.september' ) , "'")';
+var i18n_month_october = '$encoder.jsEscape($i18n.getString( 'month.october' ) , "'")';
+var i18n_month_november = '$encoder.jsEscape($i18n.getString( 'month.november' ) , "'")';
+var i18n_month_december = '$encoder.jsEscape($i18n.getString( 'month.december' ) , "'")';
+var monthNames = [i18n_month_january, 
+						i18n_month_february,
+						i18n_month_march,
+						i18n_month_april,
+						i18n_month_may,
+						i18n_month_june,
+						i18n_month_july,
+						i18n_month_august,
+						i18n_month_september,
+						i18n_month_october,
+						i18n_month_november,
+						i18n_month_december];
+						
+var i18n_weekday_short_monday = '$encoder.jsEscape($i18n.getString( 'weekday.short.monday' ) , "'")';
+var i18n_weekday_short_tuesday = '$encoder.jsEscape($i18n.getString( 'weekday.short.tuesday' ) , "'")';
+var i18n_weekday_short_wednesday = '$encoder.jsEscape($i18n.getString( 'weekday.short.wednesday' ) , "'")';
+var i18n_weekday_short_thursday = '$encoder.jsEscape($i18n.getString( 'weekday.short.thursday' ) , "'")';
+var i18n_weekday_short_friday= '$encoder.jsEscape($i18n.getString( 'weekday.short.friday' ) , "'")';
+var i18n_weekday_short_saturday = '$encoder.jsEscape($i18n.getString( 'weekday.short.saturday' ) , "'")';
+var i18n_weekday_short_sunday = '$encoder.jsEscape($i18n.getString( 'weekday.short.sunday' ) , "'")';
+var dayNamesShort = [i18n_weekday_short_sunday,
+						i18n_weekday_short_monday,
+						i18n_weekday_short_tuesday,
+						i18n_weekday_short_wednesday,
+						i18n_weekday_short_thursday,
+						i18n_weekday_short_friday,
+						i18n_weekday_short_saturday];
+var dayNamesMin = [i18n_weekday_short_sunday,
+						i18n_weekday_short_monday,
+						i18n_weekday_short_tuesday,
+						i18n_weekday_short_wednesday,
+						i18n_weekday_short_thursday,
+						i18n_weekday_short_friday,
+						i18n_weekday_short_saturday]

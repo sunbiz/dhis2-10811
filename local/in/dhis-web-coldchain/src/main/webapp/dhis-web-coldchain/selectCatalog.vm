@@ -1,0 +1,56 @@
+<div id='selectDiv'>
+    
+    <h3>$i18n.getString( "catalog_management" ) #openHelp( "catalog" )</h3>
+    
+    <table>     
+		<tr>
+			<td><label>$i18n.getString( "catalogType" )</label></td>
+			<td style="padding-right:5px">
+				<select id="catalogType" style="min-width:16em" onchange="getCatalogTypeChange( this.value )">
+					<option value="0">$i18n.getString( "please_select_catalog_type" )</option>
+					#foreach( $catalogType in $catalogTypes )
+						<option value="$catalogType.id">$catalogType.name</option>
+					#end
+				</select>
+			</td>
+            <td style="padding-right:5px"><input type="button" id='listAllCatalogBtn'  value="$i18n.getString( 'list_all_catalogs' )" onclick='loadAllCatalogs();'></td>
+            <td><span id='warnmessage' style='color:red'></span></td>
+        </tr>
+    </table>
+
+</div>
+<div id='searchCatalogDiv' style='display:none'>
+    <table id='advancedSearchTB'>   
+        <tbody>
+            <tr id='advSearchBox0'>        
+                <td id='searchingAttributeIdTD'>
+                  <select id="searchingAttributeId" name="searchingAttributeId" style="width:20.2em"  #if( $catalogTypeAttributes.size() == 0 ) disabled="disabled" #end >
+                  </select> 
+                  <em title="$i18n.getString( "required" )" class="required">*</em></label>
+                </td>       
+                <td>
+                    <input type="text" id="searchText" name="searchText" maxlength="30" style="width:20em" value="$!searchText">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>   
+                <td></td>
+                <td><input type="button" value='$i18n.getString( "search" )' style="width:8.2em" onclick='loadCatalogsByFilter();'></td>
+                <td>&nbsp;</td>
+                <td><input type="button" value='$i18n.getString( "add_new" )' style="width:8.2em" onclick="showAddCatalogForm();"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id='listCatalogDiv'></div> <!-- List All/Filtered Catalogs -->
+<div id='addEditCatalogFormDiv'></div> <!-- Add Catalog Form -->
+<div id='uploadCatalogImageDiv'></div> <!-- Upload catalog Image -->
+<div id='resultSearchDiv'></div> <!-- List searching Equipment -->
+
+#parse( "/dhis-web-commons/loader/loader.vm" )
+
+<script>
+	var i18n_equipment_status_history = '$encoder.jsEscape( $i18n.getString( "equipment_status_history" ) , "'")';
+	var i18n_equipment_details = '$encoder.jsEscape( $i18n.getString( "equipment_details" ) , "'")';
+    var i18n_select_please_select_catalog_type = '$encoder.jsEscape( $i18n.getString( "please_select_catalog_type" ) , "'")';
+</script>
+

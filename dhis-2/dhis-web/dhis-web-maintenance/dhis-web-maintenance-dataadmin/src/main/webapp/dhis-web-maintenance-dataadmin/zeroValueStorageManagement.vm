@@ -1,0 +1,71 @@
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		jQuery("#ignoreZeroValueDataElements").dhisAjaxSelect({
+			source: "../dhis-web-commons-ajax-json/getDataElements.action",
+			iterator: "dataElements",
+			connectedTo: 'zeroDataValueElements',
+			handler: function(item) {
+				var option = jQuery("<option data-id='" + item.groups + "' />");
+				option.text( item.name );
+				option.attr( "value", item.id );
+	
+				return option;
+			},
+			filter: {
+				source: "../dhis-web-commons-ajax-json/getDataElementGroups.action",
+				label: 'dataelement group',
+				iterator: "dataElementGroups",
+				handler: function(item) {
+					return "<option data-key='id' data-value='" + item.id + "'>" + item.name + "</option>";
+				}
+			}
+		});
+	});
+</script>
+
+<h3>$i18n.getString( "zero_storage_management" ) #openHelp( "zeroValueStorage" )</h3>
+<br/>
+<form id="ZeroDataValueManagement" method="POST" action="updateZeroIsSignificantForDataElements.action" onsubmit="selectAllById( 'zeroDataValueElements' )">
+<table>
+    <col style="width: 450px"/>
+    <col/>
+    <col style="width: 450px"/>
+
+	<thead>
+		<tr>
+			<th>$i18n.getString( "ignore_zero_data_values" )</th>
+			<td></td>
+			<th>$i18n.getString( "store_zero_data_values" )</th>			
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr>
+			<td>
+				<select id="ignoreZeroValueDataElements" name="ignoreZeroValueDataElements" multiple="multiple" style="height: 200px; width: 100%;"></select>
+			</td>
+		
+	        <td>
+	        	<input type="button" value="&gt;" title="$i18n.getString( 'move_selected' )" style="width:50px" onclick="dhisAjaxSelect_moveAllSelected( 'ignoreZeroValueDataElements' );"/><br/>
+	            <input type="button" value="&lt;" title="$i18n.getString( 'remove_selected' )" style="width:50px" onclick="dhisAjaxSelect_moveAllSelected( 'zeroDataValueElements' );"/><br/>
+				<input type="button" value="&gt;&gt;" title="$i18n.getString('move_all')" style="width:50px" onclick="dhisAjaxSelect_moveAll( 'ignoreZeroValueDataElements' );"/><br/>
+				<input type="button" value="&lt;&lt;" title="$i18n.getString('remove_all')" style="width:50px" onclick="dhisAjaxSelect_moveAll( 'zeroDataValueElements' );"/>
+	        </td>       
+	
+			<td>
+				<select id="zeroDataValueElements" name="zeroDataValueElements" multiple="multiple" style="height: 200px; width: 100%; margin-top: 45px;">
+					#foreach( $zero in $zeroDataValueElements )
+						<option value='$zero.id'>$encoder.htmlEncode( $zero.displayName )</option>
+					#end
+				</select>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>
+	<input type="submit" value="$i18n.getString( 'save' )" style="width:100px"/>
+	<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='index.action'" style="width:100px"/>
+</p>
+
+</form>

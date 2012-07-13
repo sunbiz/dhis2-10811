@@ -1,0 +1,11 @@
+{ "patientAttribute":
+  {
+    "id": "${patientAttribute.id}",
+	"name": "$!encoder.jsonEncode( ${patientAttribute.name} )",
+	"description": "$!encoder.jsonEncode( ${patientAttribute.description} )",
+	"mandatory":  "$!{patientAttribute.mandatory}",
+	"inheritable": "$!{patientAttribute.inheritable}",
+	"valueType": "$!encoder.jsonEncode( ${patientAttribute.valueType} )",
+	"program": "$!encoder.jsonEncode( ${patientAttribute.program.name} )"
+  }
+}

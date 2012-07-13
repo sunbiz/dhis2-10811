@@ -1,0 +1,21 @@
+#set( $size = $operands.size() )
+{ "operands": [
+#foreach( $operand in $operands )
+  {
+  	"operandName": "$!{operand.operandName}",
+    "dataElement": {
+    	"id": "$!{operand.dataElement.id}",
+    	"name": "$!{operand.dataElement.name}",
+    	"type": "$!{operand.dataElement.type}"
+    },
+    "categoryOptionCombo": {
+    	"id": "$!{operand.categoryOptionCombo.id}",
+    	"name": "$!{operand.categoryOptionCombo.name}"
+    }
+  }#if( $velocityCount < $size ),#end
+#end
+]
+#if( $usePaging ),
+	"paging":#parse( "/dhis-web-commons/ajax/jsonPaging.vm" )
+#end
+}

@@ -1,0 +1,9 @@
+{ "validation":
+  {
+    "id": "${validation.id}",
+	"description": "$!encoder.htmlEncode( ${validation.description} )",
+	"leftSide": "$!encoder.htmlEncode( ${validation.leftSide} )",
+	"rightSide": "$!encoder.htmlEncode( ${validation.rightSide} )",
+	"program": "$!encoder.htmlEncode( ${validation.program.name} )"
+  }
+}

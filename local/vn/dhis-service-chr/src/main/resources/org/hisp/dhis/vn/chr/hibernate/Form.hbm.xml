@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="org.hisp.dhis.vn.chr.Form" table="form" schema="public">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        <property name="name" type="string" unique="false">
+            <column name="name" not-null="true" />
+        </property>
+        <property name="label" type="string" unique="false">
+            <column name="label" not-null="true" />
+        </property>
+        <property name="noColumn" type="int">
+            <column name="noColumn" not-null="true" />
+        </property>
+        <property name="noColumnLink" type="int">
+            <column name="nocolumnlink" not-null="true" />
+        </property>
+        <property name="icon" type="string">
+            <column name="icon" />
+        </property>
+        <property name="visible" type="boolean">
+            <column name="visible" not-null="true" />
+        </property>
+        <property name="created" type="boolean">
+            <column name="created" not-null="true" />
+        </property>
+        <set name="elements" inverse="true" order-by="sortOrder asc">
+            <key>
+                <column name="formid" not-null="true" />
+            </key>
+            <one-to-many class="org.hisp.dhis.vn.chr.Element" />
+        </set>
+        <set name="egroups" inverse="true" order-by="sortOrder asc">
+            <key>
+                <column name="formid" not-null="true" />
+            </key>
+            <one-to-many class="org.hisp.dhis.vn.chr.Egroup" />
+        </set>
+        
+		
+    </class>
+</hibernate-mapping>

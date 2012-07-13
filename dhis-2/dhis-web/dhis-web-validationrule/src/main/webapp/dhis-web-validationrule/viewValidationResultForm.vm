@@ -1,0 +1,129 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){	
+		tableSorter( 'validationRuleList' );
+	});
+	
+	var i18n_analysing_please_wait = '$encoder.jsEscape( $i18n.getString( "analysing_please_wait" ) , "'")';
+</script>
+
+<input type="hidden" id="organisationUnitId" value="$!{organisationUnit.id}" />
+
+<h3>$encoder.htmlEncode( $i18n.getString( "validation_violations" ) ) - $encoder.htmlEncode( $!{organisationUnit.name} )</h3>
+
+<table>
+	<colgroup>
+	    <col width="150">
+	    <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+	</colgroup>
+	<tr>
+		<td>$i18n.getString( "start_date" ):</td>
+		<td>$startDate</td>
+		<td><input type="button" value="$i18n.getString( 'get_report_as_pdf' )" style="width:140px" onclick="exportValidationResult( 'pdf' )"></td>
+		<td><input type="button" value="$i18n.getString( 'get_report_as_xls' )" style="width:140px" onclick="exportValidationResult( 'xls' )"></td>
+		<td>#if( $aggregate )<input id="resultTypeButton" type="button" value="$i18n.getString( 'see_statistics' )" style="width:140px" onclick="showAggregateResults()">#end</td>
+    </tr>
+	<tr>
+		<td>$i18n.getString( "end_date" ):</td>
+		<td>$endDate</td>
+		<td><input type="button" value="$i18n.getString( 'get_report_as_csv' )" style="width:140px" onclick="exportValidationResult( 'csv' )"></td>
+		<td><input name="button" type="button" style="width:140px" onclick="window.location.href='showRunValidationForm.action'" value="$i18n.getString( 'done' )"></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td colspan="5" height="15"></td>
+	</tr>
+</table>
+
+<span id="info">
+#if( $validationResults.size() == 0 )
+	$i18n.getString( "validation_passed_successfully" )
+#elseif( $maxExceeded )
+	$i18n.getString( "max_values_exceeded" )
+#else
+	$validationResults.size() $i18n.getString( "values_found" )
+#end
+</span>
+
+#if( $validationResults.size() > 0 )
+
+<div id="validationResults">
+
+<table class="listTable" id="validationRuleList" style="width:100%">
+	<colgroup>
+	    <col>
+	    <col>
+	    <col>
+	    <col>
+	    <col width="40">
+	    <col>
+	    <col>
+		<col width="40">
+	</colgroup>
+	<thead>
+		<tr>
+			<th>$i18n.getString( "organisation_unit" )</th>
+			<th>$i18n.getString( "period" )</th>
+			<th class="{sorter: false}">$i18n.getString( "left_side_description" )</th>
+			<th class="{sorter: false}">$i18n.getString( "value" )</th>
+			<th class="{sorter: false}">$i18n.getString( "operator" )</th>
+			<th class="{sorter: false}">$i18n.getString( "value" )</th>
+			<th class="{sorter: false}">$i18n.getString( "right_side_description" )</th>
+			<th class="{sorter: false}">$i18n.getString( "details" )</th>
+		</tr>
+	</thead>
+	<tbody>
+		#foreach( $result in $validationResults )
+		<tr id="tr${result.id}">
+		  <td#if( $aggregate ) style="cursor:pointer" onclick="drillDownValidation( '$!result.source.id' )"#end>$!result.source.name</td>
+		  <td>$!format.formatPeriod( $result.period )</td>
+		  <td>$!result.validationRule.leftSide.description</td>
+		  <td>$!result.leftsideValue</td>
+		  <td style="text-align:center">$i18n.getString( $!result.validationRule.operator.mathematicalOperator )</td>
+		  <td>$!result.rightsideValue</td>
+		  <td>$!result.validationRule.rightSide.description</td>
+		  <td style="text-align:center">
+		    <a href="#" onclick="viewValidationResultDetails( $result.validationRule.id, $result.source.id, $result.period.id )" title="$i18n.getString( 'show_details' )">
+		      <img src="../images/information.png" alt="$i18n.getString( 'show_details' )">
+			</a>
+		  </td>
+		</tr>
+		#end
+	</tbody>
+</table>
+
+</div>
+
+<div id="aggregateResults" style="display:none">
+
+#if( $aggregate )
+	
+<table class="listTable" style="width:100%">
+	<thead>
+		#foreach( $col in $aggregateResults.getRow( 0 ) )
+		<th>$col</th>
+		#end
+	</thead>
+	<tbody>
+		#set( $lastIndex = $aggregateResults.rows.size() - 1 )
+		#foreach( $row in $aggregateResults.rows )
+		#if ( $velocityCount <= $lastIndex )
+		<tr style="height:32px">
+			#foreach( $col in $aggregateResults.getRow( $velocityCount ) )
+			<td>$col</td>
+			#end
+		</tr>
+		#end
+		#end
+	</tbody>
+</table>
+
+#end
+
+</div>
+
+#end
+
+<div id="validationResultDetailsDiv" class="page"></div>

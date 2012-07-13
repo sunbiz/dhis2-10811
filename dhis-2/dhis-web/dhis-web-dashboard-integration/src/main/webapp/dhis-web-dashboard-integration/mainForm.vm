@@ -1,0 +1,27 @@
+<script type="text/javascript">
+var i18n_share_your_interpretation_of = '$encoder.jsEscape( $i18n.getString( "share_your_interpretation_of" ), "'")';
+var i18n_interpretation_was_shared = '$encoder.jsEscape( $i18n.getString( "interpretation_was_shared" ), "'")';
+var i18n_viewing = '$encoder.jsEscape( $i18n.getString( "viewing" ), "'")';
+</script>
+
+<h3>$i18n.getString( "dashboard" ) #openHelp( "dashboards_setup" )
+&#8226; <a href="showSendFeedback.action">$i18n.getString( "write_feedback" )</a>
+#if( $messageCount > 0 )&#8226; <a href="message.action">$messageCount #if( $messageCount > 1 )$i18n.getString( "unread_messages" )#else$i18n.getString( "unread_message" )#end</a> #end
+#if( $interpretationCount > 0 )&#8226; <a href="interpretation.action">$interpretationCount #if( $interpretationCount > 1 )$i18n.getString( "new_interpretations" )#else$i18n.getString( "new_interpretation" )#end</a> #end
+</h3>
+
+<div id="subMenu">
+	<ul><li><a href="message.action">Messages</a></li><li><a href="interpretation.action">Interpretations</a></li></ul>
+</div>
+
+<div id="contentDiv"></div>
+
+<div id="chartView">
+	<img id="chartImage" src="" style="padding: 10px;"></img>
+</div>
+
+<div id="shareForm">
+	<textarea id="interpretationArea" class="interpretationArea" placeholder="$i18n.getString( 'write_your_interpretation' )..."></textarea>
+	<input type="button" class="interpretationButton" value="$i18n.getString( 'share' )" onclick="shareInterpretation()">
+	<input type="hidden" id="interpretationChartId">
+</div>

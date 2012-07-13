@@ -1,0 +1,29 @@
+<script type="text/javascript">
+jQuery(function() {
+	/* make sure that the leftBar is always visible when entering page. */
+	leftBar.showAnimated()
+});
+</script>
+
+<h3>$i18n.getString( "data_administration" )</h3>
+
+<ul class="introList">
+    #introListImgItem( "displayDataBrowserForm.action" "data_browser" "databrowser" )
+    #introListImgItem( "displayDataIntegrityForm.action" "data_integrity" "dataintegrity" )
+    #introListImgItem( "displayDataArchiveForm.action" "data_archive" "dataarchive" )
+	#introListImgItem( "displayPatientDataArchiveForm.action" "patient_data_archive" "dataarchive" )
+    #introListImgItem( "displayMaintenanceForm.action" "maintenance" "maintenance" )
+    #introListImgItem( "displayResourceTableForm.action" "resource_table" "resourcetable" )
+    #introListImgItem( "showSqlViewListForm.action" "sql_view" "sqlview" )
+    #introListImgItem( "displayOrganisationUnitMergeForm.action" "organisation_unit_merge" "organisationunitmerge" )
+    #introListImgItem( "displayDuplicateDataEliminationForm.action" "duplicate_data_elimination" "duplicatedataelimination" )
+    #introListImgItem( "viewStatistics.action" "data_statistics" "datastatistics" )
+    #introListImgItem( "lockException.action" "lock_exception" "datalocking" )
+    #introListImgItem( "zeroValueStorageManagement.action" "zero_storage_management" "zerovaluestorage" )
+	#introListImgItem( "getMinMaxValidationParams.action" "min_max_value_generation" "minmaxvaluegeneration" ) 
+    #introListImgItem( "constant.action" "constant" "constant" )
+	#introListImgItem( "optionSet.action" "option_set" "resource" )
+    #introListImgItem( "showCache.action" "cache_statistics" "cachestatistics" )
+	#introListImgItem( "attribute.action" "attribute" "attribute" )
+	#introListImgItem( "viewScheduledTasks.action" "scheduling" "scheduling" )
+</ul>

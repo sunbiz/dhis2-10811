@@ -1,0 +1,13 @@
+#if( $notifications.size() > 0 )
+<table class="notificationTable">
+<col width="120">
+<col width="380">
+#foreach( $notification in $notifications )
+<tr>
+	<td>${format.formatDateTime( $notification.time )}:</td>
+	<td>${encoder.htmlEncode( $notification.message )} #if( $velocityCount == 1 )&nbsp;
+		#if( $notification.completed )<img src='../images/completed.png'>#else<img src='../images/ajax-loader-bar.gif'>#end#end</td>
+</tr>
+#end
+</table>
+#end

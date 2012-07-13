@@ -1,0 +1,30 @@
+[
+#set( $size = $units.size() )
+#foreach( $unit in $units )
+{
+  "id": ${unit.id},
+  "level": ${unit.level},
+  "text": "$encoder.jsonEncode( ${unit.name} )",
+  "hasChildrenWithCoordinates": $!{unit.hasChildrenWithCoordinates()},
+#if( $unit.hasChild() )
+  "children": [
+  #set( $innerSize = $unit.children.size() )
+  #set( $level = $unit.level + 1 )
+#foreach( $child in $unit.getSortedChildren() )
+  {
+    "id": ${child.id},
+    "level": ${level},
+    "text": "$encoder.jsonEncode( ${child.name} )",
+    "hasChildrenWithCoordinates": $!{child.hasChildrenWithCoordinates()}#if( !$child.hasChild() ),
+    "leaf": true
+#end
+
+  }#if( $velocityCount < $innerSize ),#end
+#end
+  ]
+#else
+  "leaf": true
+  #end
+}#if( $velocityCount < $size ),#end
+#end
+]

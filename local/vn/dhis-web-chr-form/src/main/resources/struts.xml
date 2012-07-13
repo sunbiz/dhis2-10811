@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<include file="dhis-web-commons.xml" />
+
+	<package name="dhis-web-chr-form" extends="dhis-web-commons"
+		namespace="/dhis-web-chr-form">
+
+		<!--  Start action  -->
+		<action name="index"
+			class="org.hisp.dhis.vn.chr.form.action.GetVisibleFormsAction">
+			<result name="success" type="chain">indexChain</result>
+			<param name="page">/dhis-web-chr-form/intro.vm</param>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+			<param name="stylesheets">styles/intro.css</param>
+			<param name="javascripts">javascripts/intro.js</param>
+		</action>
+
+		<action name="indexChain"
+			class="org.hisp.dhis.vn.chr.form.action.GetInformationForSystemAction">
+			<result name="success" type="velocity">/main.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+			<param name="stylesheets">styles/intro.css</param>
+		</action>
+
+		<!--  --><!--  --><!--  -->
+		<!-- Form Action -->
+		<!--  --><!--  --><!--  -->
+
+		<!-- List Form -->
+		<action name="listForm" class="org.hisp.dhis.vn.chr.form.action.ListFormAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/forms.vm</param>
+			<param name="requiredAuthorities">F_LIST_FORM_CHR</param>
+		</action>
+
+		<!--  Add Form  -->
+		<action name="addForm" class="org.hisp.dhis.vn.chr.form.action.AddFormAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Update Form  -->
+		<action name="updateForm"
+			class="org.hisp.dhis.vn.chr.form.action.UpdateFormAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Get Forms by Name  -->
+		<action name="getFormsByName" class="org.hisp.dhis.vn.chr.form.action.GetFormsByName">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseForms.vm</result>
+		</action>
+
+		<!--  Get Form by Name  -->
+		<action name="getFormByName" class="org.hisp.dhis.vn.chr.form.action.GetFormByName">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseForm.vm</result>
+		</action>
+
+		<!--  Get Form by Id -->
+		<action name="getFormById" class="org.hisp.dhis.vn.chr.form.action.GetFormById">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseForm.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Get Visible Form  -->
+		<action name="getVisibleForms"
+			class="org.hisp.dhis.vn.chr.form.action.GetVisibleFormsAction">
+			<result name="success" type="velocity">/main.vm</result>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+			<param name="javascripts">javascripts/forms.js,javascripts/dhtmlgoodies_calendar.js,
+				javascripts/intro.js</param>
+		</action>
+
+		<!--  Varidate Form  -->
+		<action name="validateForm"
+			class="org.hisp.dhis.vn.chr.form.action.ValidateFormAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Get Element for Egroup  -->
+		<action name="openAssociateElementsForEgroup" class="org.hisp.dhis.vn.chr.form.action.GetFormById">
+			<result name="success" type="chain">
+				openAssociateElementsForEgroupChain</result>
+		</action>
+
+		<!--  Get Element for Egroup Chain -->
+		<action name="openAssociateElementsForEgroupChain"
+			class="org.hisp.dhis.vn.chr.form.action.GetElementsForGroupAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseForm.vm</result>
+		</action>
+
+		<!--  --><!--  --><!--  -->
+		<!--  Egroup  -->
+		<!--  --><!--  --><!--  -->
+
+		<!-- List Egroup -->
+		<action name="listEgroup"
+			class="org.hisp.dhis.vn.chr.egroup.action.ListEgroupAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/egroups.vm</param>
+		</action>
+
+		<!-- Add Egroup -->
+		<action name="addEgroup"
+			class="org.hisp.dhis.vn.chr.egroup.action.AddEgroupAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Update Egroup -->
+		<action name="updateEgroup"
+			class="org.hisp.dhis.vn.chr.egroup.action.UpdateEgroupAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+		</action>
+
+		<!-- Delete Egroup -->
+		<action name="deleteEgroup"
+			class="org.hisp.dhis.vn.chr.egroup.action.DeleteEgroupAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Validate Egroup -->
+		<action name="getEgroupById" class="org.hisp.dhis.vn.chr.egroup.action.GetEgroupById">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseEgroup.vm</result>
+		</action>
+
+		<!-- Get Egroup By Id -->
+		<action name="validateEgroup"
+			class="org.hisp.dhis.vn.chr.egroup.action.ValidateEgroupAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Update Elements for Egroup -->
+		<action name="updateElementsForEgroup"
+			class="org.hisp.dhis.vn.chr.egroup.action.UpdateElementsForEgroupAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+		</action>
+
+		<!--  --><!--  --><!--  -->
+		<!--  Element  -->
+		<!--  --><!--  --><!--  -->
+
+		<!-- List Element -->
+		<action name="listElement"
+			class="org.hisp.dhis.vn.chr.element.action.ListElementAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/elements.vm</param>
+		</action>
+
+		<!-- Add Element -->
+		<action name="addElement"
+			class="org.hisp.dhis.vn.chr.element.action.AddElementAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Update Element -->
+		<action name="updateElement"
+			class="org.hisp.dhis.vn.chr.element.action.UpdateElementAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Delete Element -->
+		<action name="deleteElement"
+			class="org.hisp.dhis.vn.chr.element.action.DeleteElementAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Validate Element -->
+		<action name="getElementById"
+			class="org.hisp.dhis.vn.chr.element.action.GetElementById">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseElement.vm</result>
+		</action>
+
+		<!-- Get Element by Id -->
+		<action name="validateElement"
+			class="org.hisp.dhis.vn.chr.element.action.ValidateElementAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  --><!--  --><!--  -->
+		<!--  configuration  -->
+		<!--  --><!--  --><!--  -->
+		<action name="getFormConfiguration"
+			class="org.hisp.dhis.vn.chr.configuration.action.GetFormConfigurationAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/configuration.vm</param>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+			<param name="javascripts">javascripts/forms.js</param>
+			<param name="requiredAuthorities">F_FORM_CONFIGURATION_CHR</param>
+		</action>
+
+		<action name="setImageDirectoryOnServer"
+			class="org.hisp.dhis.vn.chr.configuration.action.SetImageDirectoryOnServerAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+		</action>
+
+		<action name="setNumberOfRecords"
+			class="org.hisp.dhis.vn.chr.configuration.action.SetNumberOfRecordsAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+		</action>
+
+		<!--  --><!--  --><!--  -->
+		<!--  load  -->
+		<!--  --><!--  --><!--  -->
+
+		<!--  Show Add Form  -->
+		<action name="addObjectForm"
+			class="org.hisp.dhis.vn.chr.object.action.AddObjectFormAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/addForm.vm</param>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+			<param name="javascripts">
+			     
+				javascripts/forms.js,
+				javascripts/dhtmlgoodies_calendar.js,
+				javascripts/calendar.js</param>
+			<param name="stylesheets">styles/dhtmlgoodies_calendar.css</param>
+		</action>
+
+		<!--  Show List Object  -->
+		<action name="listObject"
+			class="org.hisp.dhis.vn.chr.configuration.action.GetFormConfigurationAction">
+			<result name="success" type="chain">listObjectData
+			</result>
+		</action>
+
+		<action name="listObjectData"
+			class="org.hisp.dhis.vn.chr.object.action.ListObjectAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/listForm.vm</param>
+			<!-- <param name="stylesheets">styles/black-style.css</param>  -->
+		</action>
+
+		<!--  Show List relative Object  -->
+
+		<action name="listRelativeObject"
+			class="org.hisp.dhis.vn.chr.object.action.ListRelativeObjectAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/listForm.vm</param>
+		</action>
+
+		<!--  Add Object  -->
+		<action name="addObject"
+			class="org.hisp.dhis.vn.chr.object.action.AddObjectAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!-- Update Object Form  -->
+		<action name="updateObjectForm"
+			class="org.hisp.dhis.vn.chr.object.action.GetObjectAction">
+			<result name="success" type="chain">addObjectForm
+			</result>
+			<param name="page">/dhis-web-chr-form/addForm.vm</param>
+		</action>
+
+		<!--  Update Object  -->
+		<action name="updateObject"
+			class="org.hisp.dhis.vn.chr.object.action.UpdateObjectAction">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Delete Object  -->
+		<action name="deleteObject"
+			class="org.hisp.dhis.vn.chr.object.action.DeleteObjectAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Get Object  -->
+		<action name="getObject"
+			class="org.hisp.dhis.vn.chr.object.action.GetObjectAction">
+			<result name="success" type="velocity-xml">responseObject.vm
+			</result>
+		</action>
+
+		<!--  Search Object  -->
+		<action name="searchObject"
+			class="org.hisp.dhis.vn.chr.object.action.SearchObjectAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/listForm.vm</param>
+			<param name="javascripts">../dhis-web-commons/oust/oust.js,javascript/dataElementsList.js,javascript/associations.js,javascripts/forms.js</param>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+		</action>
+
+		<!--  List Form  -->
+		<action name="createForm" class="org.hisp.dhis.vn.chr.form.action.ListFormAction">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/createForm.vm</param>
+			<param name="requiredAuthorities">F_CREATE_FORM_CHR</param>
+		</action>
+
+		<!--  Create table by Form  -->
+		<action name="createTableByForm"
+			class="org.hisp.dhis.vn.chr.object.action.CreateTableByFormAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  Upload function -->
+
+		<!--
+			<param name="allowedTypes"> image/pjpeg, image/jpeg </param>
+		-->
+
+		<action name="upload"
+			class='org.hisp.dhis.vn.chr.object.action.UploadFileAction'>
+			<interceptor-ref name="fileUpload">
+				<param name="maximumSize">5000000</param>
+				<param name="allowedTypes">
+					image/jpeg, image/jpg, image/png, image/gif
+				</param>
+			</interceptor-ref>
+
+			<interceptor-ref name="basicStack" />
+
+			<!-- <param name="menu">/dhis-web-chr-form/menu.vm</param>  -->
+			<param name="javascripts">javascripts/forms.js</param>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+			<result name="success" type="velocity">/dhis-web-chr-form/upload.vm
+			</result>
+		</action>
+
+		<!-- Validate data of an object -->
+		<action name="validateObject"
+			class="org.hisp.dhis.vn.chr.object.action.ValidateObjectAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<!--  --><!--  --><!--  -->
+		<!--  FormReport -->
+		<!--  --><!--  --><!--  -->
+
+		<action name="getDataSetsAndForms" class="org.hisp.dhis.vn.chr.form.action.ListFormAction">
+			<result name="success" type="chain">getDataSets</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<action name="getDataSets"
+			class="org.hisp.dhis.vn.chr.formreport.action.GetDataSets">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/createFormReport.vm</param>
+			<param name="javascripts">../dhis-web-commons/oust/oust.js,javascript/dataElementsList.js,javascript/associations.js,javascripts/forms.js</param>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+		</action>
+
+		<action name="getDataElementsOfDataSet"
+			class="org.hisp.dhis.vn.chr.formreport.action.GetDataelementsOfDataSet">
+			<result name="success" type="velocity-xml">
+				/dhis-web-chr-form/responseDataElementsOfDataSet.vm</result>
+		</action>
+
+		<action name="addFormReport"
+			class="org.hisp.dhis.vn.chr.formreport.action.AddFormReport">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<action name="listFormReports"
+			class="org.hisp.dhis.vn.chr.formreport.action.ListFormReports">
+			<result name="success" type="chain">getVisibleForms
+			</result>
+			<param name="page">/dhis-web-chr-form/formReports.vm</param>
+			<param name="javascripts">../dhis-web-commons/oust/oust.js,javascript/dataElementsList.js,javascript/associations.js,javascripts/forms.js</param>
+			<param name="menu">/dhis-web-chr-form/menu.vm</param>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+			<param name="requiredAuthorities">F_LIST_FORMULA_CHR</param>
+		</action>
+
+		<action name="deleteFormReport"
+			class="org.hisp.dhis.vn.chr.formreport.action.DeleteFormReportAction">
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+		<action name="getFormReport"
+			class="org.hisp.dhis.vn.chr.formreport.action.GetFormReportAction">
+			<result name="success" type="chain">getDataSetsAndForms
+			</result>
+		</action>
+
+		<action name="updateFormReport"
+			class="org.hisp.dhis.vn.chr.formreport.action.UpdateFormReport">
+			<!--  <result name="success" type="chain">listFormReports</result>  -->
+			<result name="success" type="velocity">
+				/dhis-web-chr-form/responseSuccess.vm</result>
+			<result name="error" type="velocity-xml">/dhis-web-chr-form/responseError.vm
+			</result>
+		</action>
+
+	</package>
+</struts>

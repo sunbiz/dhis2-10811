@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<programStage>
+  <dataElements>
+    #foreach( $dataElement in $dataElementList )
+		<dataElement>
+			<id>$dataElement.id</id>
+			<name>$encoder.xmlEncode( $dataElement.name )</name>
+			<shortName>$encoder.xmlEncode( $dataElement.shortName )</shortName>
+			<type>$dataElement.type</type>
+			<json>$dataElement.toJSON()</json>
+			<optionCombos> 
+			#foreach( $optionCombo in $dataElement.categoryCombo.optionCombos)
+				<optionCombo>
+					<optionComboid>$optionCombo.id</optionComboid>
+					<optionComboname>$encoder.xmlEncode($optionCombo.name)</optionComboname>
+				</optionCombo>
+			#end
+			</optionCombos>
+		</dataElement>      
+    #end
+  </dataElements>
+</programStage>

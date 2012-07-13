@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>DHIS 2</title>        
+        <script type="text/javascript" src="../javascripts/jQuery/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('#j_username').focus();
+
+                $('#loginForm').bind('submit', function() {
+					$('#submit').attr('disabled', 'disabled');
+					$('#reset').attr('disabled', 'disabled');
+
+	                sessionStorage.removeItem( 'orgUnitSelected' );
+                });
+            });
+        </script>
+        <link type="text/css" rel="stylesheet" href="../css/login.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+    	<div id="headerArea">		
+		#if ( $keyFlag )
+			<img id="flagArea" src="../flags/${keyFlagImage}">
+		#end
+		#if ( $applicationTitle )
+        	<span id="titleArea">$encoder.htmlEncode( $applicationTitle )</span>
+        #end
+	    </div>
+        <div id="loginField">
+            <div id="bannerArea"><a href="http://dhis2.org"><img alt="" src="logo_banner.png"></a></div>
+            
+            <form id="loginForm" action="../../dhis-web-commons-security/login.action" method="post">
+                <table>
+                    <tr>
+                        <td><label for="j_username">Username</label></td>
+                        <td><input type="text" id="j_username" name="j_username" style="width:240px; height:20px;"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="j_password">Password</label></td>
+                        <td><input type="password" id="j_password" name="j_password" style="width:240px; height:20px;"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                        	<input id="submit" class="button" type="submit" value="Login" style="width:120px">
+                            <input id="reset" class="button" type="reset" value="Clear" style="width:120px">
+						</td>
+                    </tr>
+                </table>
+            </form>
+            #if( $failed == true )
+            <span id="loginMessage">Wrong username or password</span>
+			#end            
+        </div>
+    </body>
+</html>

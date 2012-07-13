@@ -1,0 +1,86 @@
+<script type="text/javascript">
+	var i18n_greater_then_from_date = '$encoder.jsEscape( $i18n.getString( "greater_then_from_date" ) , "'" )';
+	var i18n_please_select = '$encoder.jsEscape( $i18n.getString( "please_select" ) , "'" )';
+	var isSubmit = true;
+</script>
+
+<div id='caseAggregationDiv'>
+
+	<h1> $i18n.getString( "case_aggregation_form" ) #openHelp('run_case_aggregation')</h1>
+	<hr/>
+	<form id="caseAggregationForm" name="caseAggregationForm" action="caseAggregationResult.action" method="post">
+		<table>
+			<tr>
+				<td>
+					$i18n.getString( "dataset_list" )
+				</td>
+				<td>
+					<select id="dataSetId" name="dataSetId" onchange="dataSetSelected()" style="width: 30em">
+						<option value=''>[$i18n.getString('please_select')]</option>
+						#foreach ( $dataSet in $datasets )
+							<option value='$dataSet.id' title='$dataSet.name'>$dataSet.name</option>
+						#end
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					$i18n.getString( "from" )
+				</td>
+				<td>
+					<input type="button" class='small-button' value="<<" onclick="getPreviousPeriodForStart()" id="previousPeriodForStartBtn" disabled />
+					<select id="sDateLB" name="sDateLB" style='width:295px;'></select>
+					<input type="button" class='small-button'value=">>"  onclick="getNextPeriodForStart()" id="nextPeriodForStartBtn" disabled />
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					$i18n.getString( "to" )
+				</td>
+				<td>
+					<input type="button" class='small-button' value="<<" onclick="getPreviousPeriodForEnd()" id="previousPeriodForEndBtn" disabled />
+					<select id="eDateLB" name="eDateLB" style='width:295px;'></select>
+					<input type="button" class='small-button' value=">>"  onclick="getNextPeriodForEnd()" id="nextPeriodForEndBtn" disabled />
+					<i><span id='warningMessage' style="color:red"></span></i>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+				   $i18n.getString( "use_data_from_level" )
+				</td>
+				<td>
+					<select id="facilityLB" name="facilityLB" style="width: 30em">
+						<option value="all" selected="selected" >$i18n.getString( "all" )</option>
+						<option value="childrenOnly" >$i18n.getString( "children_only" )</option>
+						<option value="selected" >$i18n.getString( "selected" )</option>
+					</select>
+				</td>
+			</tr>
+			
+			<tr><td colspan='2' style="height:1em"></td></tr>
+			
+			<tr>
+				<td colspan='2'>
+					#organisationUnitSelectionTree( true, false, false )
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<input type="submit" name="Aggregate" value="$i18n.getString( 'aggregate' )"/></td>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+	</form>
+</div>
+
+#parse( "dhis-web-commons/loader/loader.vm" )
+
+<div id='caseAggregationResult' style='none'></div>
+
+<span id='message'></span>
+

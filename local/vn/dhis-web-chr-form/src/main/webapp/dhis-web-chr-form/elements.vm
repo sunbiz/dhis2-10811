@@ -1,0 +1,263 @@
+<input type="hidden" value="$form.id" id="formid" name="formid">
+<h2>$!encoder.htmlEncode($!form.name)</h2>
+<p align="left"><input type="button" onClick="openAddElementForm()" value="$i18n.getString('add')" /></p>
+<table width="100%">
+	<tr>
+		<th>$i18n.getString('name')</th>
+		<th>$i18n.getString('label')</th>
+		<th>$i18n.getString('type')</th>		
+		<th>$i18n.getString('sortOrder')</th>		
+		<th>$i18n.getString('egroup')</th>		
+		<th>$i18n.getString('controlType')</th>
+		<th>$i18n.getString('required')</th>		
+		<th width="5%">$i18n.getString('operations')</th>		
+  </tr>
+	#set( $mark = false )
+	#foreach($element in $elements)
+		<tr #alternate( $mark )>
+			<td>$i18n.getString( $!element.name )</td>
+			<td>$i18n.getString( $!element.label )</td>
+			<td>$encoder.htmlEncode( $!element.type )</td>
+			<td>$encoder.htmlEncode( $!element.sortOrder )</td>
+			<td>$!encoder.htmlEncode( $!element.egroup.name )</td>
+			<td>$encoder.htmlEncode( $!element.controlType )</td>
+			<td>$encoder.htmlEncode( $!element.required )</td>
+			<td>
+			<input type="hidden" name="elementId" id="elementId">
+			<input type="hidden" name="elementName" id="elementName">
+				<a href="javascript: openUpdateElementForm($element.id);" title="$i18n.getString('edit')">
+                	<img src="../images/edit.png" alt="$i18n.getString('edit')"></a>
+    			<a href="javascript: deleteElement($element.id);" title="$i18n.getString('delete')">
+                	<img src="../images/delete.png" alt="$i18n.getString('delete')"></a>
+            
+            </td>
+		</tr>
+		#if( $mark )
+			#set( $mark = false )
+		#else
+			#set( $mark = true )
+		#end
+	#end
+</table>
+
+<script type="text/javascript">
+	var i18n_confirm_delete = '$encoder.jsEscape($i18n.getString( "confirm_delete" ) , "'")';
+	
+	var mode = null;
+	
+	// --------------------------------------------------------------------------------------
+	//  Add Element Form
+	// --------------------------------------------------------------------------------------
+	
+	function openAddElementForm(){
+			
+		document.getElementById('name').value ="";
+		document.getElementById('sortOrder').value ="";
+		
+		setPositionCenter( 'element' );
+		showDivEffect();
+		showById( 'element' );
+		mode = "ADD";
+		enable('name');
+	}
+	
+	// --------------------------------------------------------------------------------------
+	//  Update Element Form
+	// --------------------------------------------------------------------------------------
+
+	function openUpdateElementForm( id ){
+		
+		var request = new Request();
+		request.setResponseTypeXML( 'element' );
+		request.setCallbackSuccess( openUpdateElementReceived );
+		
+		request.send( "getElementById.action?id=" + id );
+	}
+	
+	function openUpdateElementReceived( element ){		
+		
+		document.getElementById('id').value = getElementValue(element, 'id');
+		
+		document.getElementById('name').value = getElementValue(element, 'name');
+		
+		document.getElementById('label').value = getElementValue(element, 'label');
+		
+		document.getElementById('type').value = getElementValue(element, 'type');
+		
+		document.getElementById('controlType').value = getElementValue(element, 'controlType');
+		
+		document.getElementById('initialValue').value = getElementValue(element, 'initialValue');
+		
+		document.getElementById('formLink').value = getElementValue(element, 'formLink');
+		
+		if(getElementValue(element, 'required') == 'true'){
+			document.getElementById('required').checked = true;
+		}else{
+			document.getElementById('required').checked = false;
+		}
+		
+		document.getElementById('sortOrder').value = getElementValue(element, 'sortOrder');
+		
+		setPositionCenter( 'element' );
+		
+		showDivEffect();
+		
+		showById( 'element' );
+		
+		mode = "UPDATE";
+		
+		disable('name');
+	}	
+</script>
+
+<form name="elementForm" method="post">
+  <div id="element" style="position:fixed;display:none;width:320px;z-index:10001;background-color: white;border: medium solid silver;height:370px;padding:20px;">
+	<div id="close" style="position:absolute;top:2px;right:2px;cursor: pointer;color:red;" onClick="hideById('element');deleteDivEffect();">[x]</div>
+	<input type="hidden" id="id" name="id" value=""/>
+	<table>
+	<tr>
+		<td width="180"><label>$i18n.getString('name')<em title="$i18n.getString( 'name' )" class="required">*</em></lable></td> 
+		<td><input type="text" id="name" name="name" style="width:15em"/></td>
+	  </tr>
+	<tr>
+		<td><lable>$i18n.getString('label')<em title="$i18n.getString( 'label' )" class="required">*</em></lable></td>
+		<td><input type="text" id="label" name="label" style="width:15em"/></td>
+	  </tr>
+	</tr>	
+		<tr><td><label>$i18n.getString('sortOrder')<em title="$i18n.getString( 'sortOrder' )" class="required">*</em></lable></td>
+		  <td><input type="text" id="sortOrder" name="sortOrder" style="width:15em"/></td>
+	  </tr>
+	<tr>
+		<td><label> $i18n.getString('controlType')</lable></td>
+		<td> 
+			<select id="controlType" name="controlType" style="width:8em; overflow:scroll" onChange="javascript: checkControlType(this);">
+				<option value="textfield" selected>$i18n.getString('textfield')</option>
+                <option value="checkbox">$i18n.getString('checkbox')</option>
+                <option value="combobox">$i18n.getString('combobox')</option>
+                <!-- <option value="autocompleted">$i18n.getString('autocompleted')</option> -->
+                <option value="textarea">$i18n.getString('textarea')</option>
+                <option value="date">$i18n.getString('date')</option>
+		    	<!-- <option value="tree">$i18n.getString('tree')</option> -->
+		    	<option value="break">$i18n.getString('break')</option>
+		</select>
+			<label> $i18n.getString('required') ?</lable>
+			<input type="checkbox"  id="required" name="required"/>
+            </td>
+	  </tr>		
+	<tr>
+		<td><lable>$i18n.getString('type')</lable></td>
+		<td width="359"><select id="type" name="type" style="width:15em ; overflow:scroll">
+		  <option value="varchar" checked>$i18n.getString('varchar')</option>
+          <option value="integer">$i18n.getString('integer')</option>		 
+          <option value="date">$i18n.getString('date')</option>
+		  <option value="numeric">$i18n.getString('numeric')</option>
+		  <option value="boolean">$i18n.getString('boolean')</option>
+        </select><br>
+<font size="-2"> $i18n.getString('guide_type') </font></td>
+	  </tr>
+	<tr>
+		<td><label> $i18n.getString('formLink')  </lable></td>
+		<td>
+			<select id="formLink" name="formLink" style="width:15em; overflow:scroll">
+				<option value="" selected></option>
+				#foreach($form in $forms)				
+  					<option value="$form.id">$form.label</option>
+				#end	
+			</select>
+		</td>
+	  </tr>	
+	  	<td></td>
+	  	<td><font size="-2">$i18n.getString('guide_formLink')</font></td>
+	  </tr>				
+	<tr>
+	  <td>$i18n.getString('initialvalue')</td>
+	  <td><textarea id="initialValue" name="initialValue" style="width:15em"></textarea></td>
+	  </tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td> <font size="-2">$i18n.getString('guide_initialvalue')</font> </td>
+	  </tr>
+	</table>
+	<p align="center">
+	<input type="button" value="$i18n.getString('save')" onClick="javascript: validateElement();"/>
+	<input type="button" value="$i18n.getString('cancel')" onClick="hideById('element');deleteDivEffect();"/>
+	</p>
+</div>
+<div id="associationDataelement" style="position:fixed;display:none;width:660px;z-index:10001;background-color: white;border: medium solid silver;height:210px;padding:20px;">
+  <div id="close" style="position:absolute;top:2px;right:2px;cursor: pointer;color:red;" onClick="hideById('associationDataelement');deleteDivEffect();">[x]</div>
+  <input type="hidden" id="egroupID" name="egroupID">
+<table >
+
+	<tr>
+		<th width="138" >$i18n.getString( 'available_dataSets' )</th>
+		<td width="140"><select id="availableDataSet" name="availableDataSet" style="width:100%" onChange="javascript:getDataElements(this.value ); ">
+		</select></td>
+		<th width="142" >$i18n.getString( 'available_forms' )</th>
+		<td width="172" ><select id="availableForms" name="availableForms" style="width:100%" onChange="javascript: getElementsByForm(this.value ); " >
+		</select></td>
+    </tr>
+	<tr>
+	
+	<td colspan='2'><br> $i18n.getString( 'choose_operand' ) </td>
+	<td><br> $i18n.getString( 'choose_element' ) </td>
+	<td><br> $i18n.getString( 'formular_for_element' )</td>
+	</tr>
+	<tr>
+		<td colspan='2' heigh='100%'>
+		<select size="6" id="availabelDataelements"  name="availabelDataelements" style="width:100%; height"100%" >
+        </select></td>
+		
+        <td colspan='2'>
+		<table width="100%">
+	  		
+			<tr>
+	 		 	<td width="137" ><select size="6" id="availableElements"  name="availableElements" style="width:100%" ondblclick="javascript: var value = document.getElementById('availableForms').value + '.' + this.value;insertFormulaText( value );"></select></td>
+	  		 	<td width="169"><textarea name="formular" id="formular" style="width:100% " rows="5"></textarea></td>
+	  		</tr>
+			
+		</table>
+	  <tr>
+		<td colspan='2'><input name="button2" type="button" onClick="javascript: associateDataElement();deleteDivEffect();hideById('associationDataelement');" value="$i18n.getString( 'save' )"/>
+	    <input name="button" type="button" onClick="javascript:deleteDivEffect();hideById('associationDataelement');" value="$i18n.getString( 'cancel' )"/></td>
+		<td colspan='2'>
+		<a href="#" onclick="insertFormulaText('(' )"><img src="images/left_parent.png" alt="$i18n.getString( 'left_brackets' )"></a>
+				<a href="#" onclick="insertFormulaText( ')' )"><img src="images/right_parent.png" alt="$i18n.getString( 'right_brackets' )"></a>
+				<!-- <a href="#" onclick="insertFormulaText( '*' )"><img src="images/multiply.png" alt="$i18n.getString( 'multiply' )"></a>-->
+				<!--<a href="#" onclick="insertFormulaText( '/' )"><img src="images/divide.png" alt="$i18n.getString( 'divide' )"></a>-->
+				<!--<a href="#" onclick="insertFormulaText( '+' )"><img src="images/plus.png" alt="$i18n.getString( 'plus' )"></a> -->
+				<a href="#" onclick="insertFormulaText( '-' )"><img src="images/minus.png" alt="$i18n.getString( 'minus' )"></a>
+				
+				
+		 <input type="button" name="interval" id="interval" value="$i18n.getString( 'interval' )" onClick=" javascript: document.getElementById('formular').value += ' ' + this.name ;">
+					  <input type="button" name="and" id="and2" value="$i18n.getString( 'and' )" onClick="insertFormulaText(this.value)">
+					  <input type="button" name="or" id="or" value="$i18n.getString( 'or' )" onClick="insertFormulaText(this.value)">
+					  <input type="button" name="greater" id="greater2" value="$i18n.getString( 'greater_than' )" onClick="insertFormulaText(this.value)">
+					  <input type="button" name="less" id="less2" value="$i18n.getString( 'less_than' )" onClick="insertFormulaText(this.value)">
+					  <input type="button" name="equal" id="equal2" value="$i18n.getString( 'equal' )" onClick="insertFormulaText(this.value)"></td>
+	  </tr>
+	</td>
+	</tr>
+	</table>
+	
+	</td>
+	
+	</tr>
+</table>
+		
+</div>
+
+</form>
+<span id="message" style="top:100px;right:5px;position:fixed;width:200px;z-index:10004" onclick="hideById(this.id);"></span>
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;" onclick="hideById(this.id)"></span>
+
+<script language="javascript">
+	function checkControlType(object){
+		var typeObject = document.getElementById('type')
+		if(object.value=='checkbox' || object.value=='date'){
+			typeObject.value=(object.value=='checkbox')?'boolean':'date';
+			typeObject.disabled = true;
+		}else{
+			typeObject.disabled = false;
+		}
+	}
+</script>

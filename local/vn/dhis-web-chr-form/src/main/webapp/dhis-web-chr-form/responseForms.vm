@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forms>
+#foreach($form in $forms)
+<form>
+	<id>$form.id</id>
+	<name>$encoder.xmlEncode( $form.name )</name>
+	<label>$encoder.xmlEncode($form.label)</label>	
+	<noColumn>$form.noColumn</noColumn>
+	<noColumnLink>$form.noColumnLink</noColumnLink>
+	<icon>$encoder.xmlEncode($form.icon)</icon>
+	<visible>$encoder.xmlEncode($form.visible)</visible>
+	<created>$encoder.xmlEncode($form.created)</created>
+</form>
+#end
+</forms>

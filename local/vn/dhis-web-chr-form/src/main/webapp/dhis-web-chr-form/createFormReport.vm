@@ -1,0 +1,122 @@
+<h1>
+#if($!formReport)
+	$i18n.getString( 'update_formula' )
+#else
+	$i18n.getString( 'create_formula' )
+#end	
+</h1>
+<hr>
+<br>
+<table width="100%">
+
+	<tr>
+	  <th height="26" colspan="4">$i18n.getString( 'common_info' )</th>
+  </tr>
+	<tr>
+	  <td height="26" width="16%">$i18n.getString( 'name' )</td>
+	  <td colspan="3"><input type="text" name="name" id="name" style="width:100% " value="$!formReport.name"></td>
+  </tr>
+	<tr>
+	  <td>$i18n.getString( 'main_form' )</td>
+	  <td colspan="3" rowspan="2"><select size="7" id="mainForm" name="mainForm" value="$!formReport.mainForm.id" style="width:100%" ondblclick="javascript: document.getElementById('selectedMainForm').value = this.value;" >
+	    
+    	#foreach($form in $forms)
+      		#if($!formReport.mainForm.id== $!form.id)
+	    		<option value="$!form.id" selected>$encoder.xmlEncode($!form.label)</option>
+			#else 
+				<option value="$!form.id" >$encoder.xmlEncode($!form.label)</option>
+			#end
+		#end
+      
+      </select></td>
+  </tr>
+	<tr>
+	  <td>&nbsp;</td>
+  </tr>
+	<tr>
+	  <td width="16%">$i18n.getString( 'available_dataSets' )</td>
+      <td colspan="3"><select id="availableDataSet" name="availableDataSet" style="width:100%" onChange="javascript:getDataElements(this.value ); ">
+        <option value="0"></option>
+		#foreach($dataSet in $dataSets)
+        	<option value="$!dataSet.id">$encoder.xmlEncode( $!dataSet.name )</option>
+		#end
+      
+      </select></td>
+  </tr>
+	<tr>
+	  <td align="right"`>$i18n.getString( 'choose_operand')</td>
+	  <td width="38%"><select size='6' multiple id="availableOperands" name="availableOperands" value="$!formReport.operand" style="width:100%; height:100%;"  ondblclick="javascript: document.getElementById('operand').value = this.value;" >
+      </select></td>
+	<td width="4%"></td>
+	<td width="38%"><textarea name="operand" id="operand" value="$!formReport.operand" style="width:100%; height"100%" rows='5' >$!formReport.operand</textarea></td>
+	</tr>
+	<tr>
+	  <td heigh='100%' colspan="4">&nbsp;</td>
+  <tr>
+    <th heigh='100%' colspan="4">$i18n.getString( 'formula_for_element' )</th>
+		
+  <tr>
+        <td >$i18n.getString( 'available_forms' )</td>
+        <td colspan="3"><select id="availableForms" name="availableForms" style="width:100%" onChange="javascript: getElementsByForm(this.value ); " >
+          <option value="0"></option>
+          
+          
+			#foreach($form in $forms)
+				
+          
+          <option value="$encoder.xmlEncode( $form.name )">$encoder.xmlEncode($form.label)</option>
+          
+          
+			#end
+        
+        
+        
+        </select></td>
+  </tr>
+      <tr>
+        <td align='right'>&nbsp;</td>
+        <td >$i18n.getString('choose_element') </td>
+        <td >&nbsp;</td>
+        <td >$i18n.getString('formula')</td>
+      </tr>
+      <tr>
+	    <td align='right'>&nbsp;</td>
+        <td ><select size="8"  id="availableElementsInForm"  name="availableElementsInForm" style="width:100%;" ondblclick="javascript: var value = document.getElementById('availableForms').value + '.' + this.value; insertFormulaText( value );">
+        </select></td>
+        <td >&nbsp;</td>
+        <td >        <textarea name="formula" id="formula" style="width:100% " rows="7" >$!formReport.formula</textarea></td>
+  </tr>
+	  <tr>
+	    <td >&nbsp;</td>
+	    <td>&nbsp;</td>
+	    <td>&nbsp;</td>
+	    <td>
+		<img src="images/left_parent.png" alt="$i18n.getString( 'left_brackets' )"onClick="insertFormulaText('(' )" style="cursor:pointer; ">
+		<img src="images/right_parent.png" alt="$i18n.getString( 'right_brackets' )"onClick="insertFormulaText( ')' )" style="cursor:pointer; ">
+		<img src="images/plus.png" alt="$i18n.getString( 'plus' )" onClick="insertFormulaText( '+' )" style="cursor:pointer; ">
+		<img src="images/minus.png" alt="$i18n.getString( 'minus' )" onClick="insertFormulaText( '-' )" style="cursor:pointer; ">
+		<img src="images/multiply.png" alt="$i18n.getString( 'multiply' )" onClick="insertFormulaText( '*' )" style="cursor:pointer; ">
+		<img src="images/divide.png" alt="$i18n.getString( 'divide' )" onClick="insertFormulaText( '/' )" style="cursor:pointer; ">
+		<img src="images/greater.png" alt="$i18n.getString( 'greater' )" onClick="insertFormulaText( '>' )" style="cursor:pointer; ">
+		<img src="images/less.png" alt="$i18n.getString( 'less' )" onClick="insertFormulaText( '<' )" style="cursor:pointer; ">
+		<img src="images/equal.png" alt="$i18n.getString( 'equal' )" onClick="insertFormulaText( '=' )" style="cursor:pointer; ">
+		<img src="images/and.png" alt="$i18n.getString( 'and' )" onClick="insertFormulaText( 'and' )" style="cursor:pointer; ">
+		<img src="images/or.png" alt="$i18n.getString( 'or' )" onClick="insertFormulaText( 'or' )" style="cursor:pointer; "></td>
+  </tr>
+	  <tr>
+		<td colspan='4'><input name="button2" type="button" onClick="javascript: var formReport = '$!formReport'; if( formReport != '' ){updateFormula();} else {associateFormula();}" value="$i18n.getString( 'save' )"/>
+	    <input name="button" type="button" onClick="javascript:deleteDivEffect();hideById('associationDataelement');" value="$i18n.getString( 'cancel' )"/></td>
+		<td width="0%">
+		  <!-- <a href="#" onclick="insertFormulaText( '*' )"><img src="images/multiply.png" alt="$i18n.getString( 'multiply' )"></a>-->
+				<!--<a href="#" onclick="insertFormulaText( '/' )"><img src="images/divide.png" alt="$i18n.getString( 'divide' )"></a>-->
+				<!--<a href="#" onclick="insertFormulaText( '+' )"><img src="images/plus.png" alt="$i18n.getString( 'plus' )"></a> -->	    </td>
+	  </tr>
+	<td width="16%"></td>
+	</tr>
+	</table>
+	
+	</td>
+	
+	</tr>
+</table>
+		

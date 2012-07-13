@@ -1,0 +1,77 @@
+<script>
+	jQuery('#addRelationshipPatientForm').ready(	function(){
+
+		checkedDuplicate = false;
+		
+		jQuery("#addRelationshipPatientForm").validate({
+			 meta:"validate"
+			,errorElement:"span"
+			,submitHandler: function(form)
+				{
+					validateAddRelationshipPatient();
+				}
+			,beforeValidateHandler: function(form)
+				{
+					var birthDate = $('#addRelationshipPatientForm [id=birthDate]').val();
+					var age = $('#addRelationshipPatientForm [id=age]').val();
+					if(age !=''){
+						$( "#addRelationshipPatientForm [id=memberValidator]").val(age);
+					}else{
+						$( "#addRelationshipPatientForm [id=memberValidator]").val(birthDate);
+					}
+				}
+		});
+		
+		hideById('addRelationshipPatientForm [id=underAgeDiv]');
+		addEventForPatientForm('addRelationshipPatientForm');
+	});		
+</script>
+
+<h4>$i18n.getString("add_new_relationship_for"):  $patient.getFullName()</h4>
+																		
+<form id="addRelationshipPatientForm" action="addRelationshipPatient.action" method="get" >
+<input type="hidden" id="relationshipId"  name="relationshipId" value="$patient.id"/> 
+<table>	
+	<tr>
+		<td class='text-column'><label for="relationship_type">$i18n.getString("relationship_type")<em title="$i18n.getString( "required" )" class="required">*</em></label></td>
+		<td class="input-column">
+			<select name="relationshipTypeId" id="relationshipTypeId" class="{validate:{required:true}}" >
+				<option value="">[$i18n.getString( "please_select" )]</option>        
+				#foreach ($relationship in $relationshipTypes)
+					<option value="$relationship.id">${relationship.aIsToB} - ${relationship.bIsToA}</option>
+				#end
+			</select>
+		</td>
+	</tr>
+	
+	#parse( "/dhis-web-caseentry/patientForm.vm" )
+
+	<tr><td><p></p></td></tr>
+	<tr>
+		<td></td>
+		<td>
+			<input type="submit" class='button' value="$i18n.getString( 'add' )" />
+			<input type="button" class='button' id='backbtn' value="$i18n.getString( 'back_to_registration' )" onclick="showRelationshipList($patient.id);">
+		</td>
+	</tr>
+	</table>
+
+<p>
+	
+
+</form> 	
+
+<script>
+	var i18n_back_to_registration = '$encoder.jsEscape( $i18n.getString( "back_to_registration" ) , "'" )';
+    var i18n_back_to_relationship = '$encoder.jsEscape( $i18n.getString( "back_to_relationship" ) , "'" )';
+    
+	if( getFieldValue('isShowPatientList') == 'false' )
+	{
+		jQuery('#backbtn').val(i18n_back_to_relationship);
+	}
+	else
+	{
+		jQuery('#backbtn').val(i18n_back_to_registration);
+	}
+</script>
+

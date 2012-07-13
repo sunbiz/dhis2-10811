@@ -1,0 +1,28 @@
+
+
+<h3>$i18n.getString( "equipment_details" )</h3>   
+
+    <table>
+        <tr>
+            <td>$i18n.getString( "registering_unit" ) : </td>
+            <td>$equipmentInstance.organisationUnit.name</td>
+        </tr>   
+        <tr>
+            <td>$i18n.getString( "inventorytype" ) : </th>
+            <td>$equipmentInstance.inventoryType.name</th>
+        </tr>
+
+        <!-- InventoryType Attributes  -->
+        <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+        <tr><th colspan="2" class="heading-column">$i18n.getString( "inventory_attribute_details" )</th></tr>
+        #foreach( $attribute in $inventoryTypeAttributes )
+            #set( $attributeValue = "" )
+            #set( $attributeValue = $!equipmentValueMap.get( $attribute.id ) )
+            <tr>
+                <td class='text-column'><label>$attribute.name #if($attribute.mandatory)<em title="$i18n.getString( 'required' )" class="required">*</em> #end</label></td>
+                <td class="text-column">$!attributeValue</td>
+            </tr>
+        #end
+    </table>
+
+

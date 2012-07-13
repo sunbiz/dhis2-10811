@@ -1,0 +1,102 @@
+<span id="message" style="top:100px;right:5px;position:fixed;width:200px;z-index:10004" onclick="hideById(this.id);"></span>
+<input type="hidden" id="formID" name="formID" value="$!form.id" style="width:20em"/>
+<h2>$!encoder.htmlEncode($!form.name)</h2>
+<p align="left"><input type="button" onClick="openAddEgroupForm()" value="$i18n.getString('add')"/></p>
+<table width="100%">
+	<tr>
+		<th width="65%">$i18n.getString('name')</th>
+		<th width="30%">$i18n.getString('sortOrder')</th>
+		<th width="5%">$i18n.getString('operations')</th>
+  </tr>
+	#set( $mark = false )
+	#foreach($egroup in $egroups)
+		<tr #alternate( $mark )>
+			<td>$encoder.htmlEncode( $i18n.getString( $egroup.name ) )</td>
+			<td>$egroup.sortOrder</td>
+			<td>
+    			<a href="javascript: openUpdateEgroupForm($egroup.id);" title="$i18n.getString('edit')">
+                	<img src="../images/edit.png" alt="$i18n.getString('edit')"></a>
+    			<a href="javascript: deleteEgroup($egroup.id);" title="$i18n.getString('delete')"><img src="../images/delete.png" alt="$i18n.getString('delete')"></a>
+            </td>
+		</tr>
+		#if( $mark )
+			#set( $mark = false )
+		#else
+			#set( $mark = true )
+		#end
+	#end
+</table>
+
+<script type="text/javascript">
+	var i18n_confirm_delete = '$encoder.jsEscape($i18n.getString( "confirm_delete" ) , "'")';
+	
+	var mode = null;
+	
+	// --------------------------------------------------------------------------------------
+	//  Add Egroup Form
+	// --------------------------------------------------------------------------------------
+	
+	function openAddEgroupForm(){
+			
+		document.getElementById('name').value ="";
+		document.getElementById('sortOrder').value ="";
+		
+		setPositionCenter( 'egroup' );
+		showDivEffect();
+		showById( 'egroup' );
+		mode = "ADD";
+		enable('name');
+	}
+	
+	// --------------------------------------------------------------------------------------
+	//  Update Egroup Form
+	// --------------------------------------------------------------------------------------
+
+	function openUpdateEgroupForm( id ){
+		
+		var request = new Request();
+		request.setResponseTypeXML( 'egroup' );
+		request.setCallbackSuccess( openUpdateEgroupReceived );
+		
+		request.send( "getEgroupById.action?id=" + id );
+	}
+	
+	function openUpdateEgroupReceived( egroup ){		
+		
+		document.getElementById('id').value = getElementValue(egroup, 'id');
+		
+		document.getElementById('name').value = getElementValue(egroup, 'name');
+		
+		document.getElementById('sortOrder').value = getElementValue(egroup, 'sortOrder');
+		
+		document.getElementById('formID').value = getElementValue(egroup, 'formid');
+		
+		setPositionCenter( 'egroup' );
+		showDivEffect();
+		showById( 'egroup' );
+		mode = "UPDATE";
+		//disable('name');
+	}	
+</script>
+<form name="egroupForm" method="post">
+<div id="egroup" style="position:fixed;display:none;width:250px;z-index:10001;background-color: white;border: medium solid silver;height:80px;padding:20px;">
+	<div id="close" style="position:absolute;top:2px;right:2px;cursor: pointer;color:red;" onClick="hideById('egroup');deleteDivEffect();">[x]</div>
+	<input type="hidden" id="id" name="id" value="$!egroup.id"/>
+	<input type="hidden" value="" id="id" name="id"/>
+	<table>
+		<tr>
+			<td><label>$i18n.getString('name')<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td><input type="text" id="name" name="name" style="width:15em"/></td>
+		</tr>	
+		<tr>
+			<td><label>$i18n.getString('sortOrder')<em title="$i18n.getString( 'sortOrder' )" class="required">*</em></label></td>
+			<td><input type="text" id="sortOrder" name="sortOrder" style="width:15em"/></td>
+		</tr>	
+	</table>
+	<p align="center">
+	<input type="button" value="$i18n.getString('save')" onClick="javascript: validateEgroup();"/>
+	<input type="button" value="$i18n.getString('cancel')" onClick="hideById('egroup');deleteDivEffect();"/>
+	</p>
+</div>
+</form>
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;" onclick="hideById(this.id)"></span>

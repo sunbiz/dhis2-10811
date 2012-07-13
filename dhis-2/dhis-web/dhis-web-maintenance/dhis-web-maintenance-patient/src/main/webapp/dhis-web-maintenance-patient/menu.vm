@@ -1,0 +1,14 @@
+<h2>$i18n.getString( "patients" )</h2>
+<ul>
+	<li><a href="patientAttribute.action">$i18n.getString( "patient_attribute" )</a></li>
+	<li><a href="patientAttributeGroup.action">$i18n.getString( "patient_attribute_group" )</a></li>
+	<li><a href="patientIdentifierType.action">$i18n.getString( "patient_identifier_type" )</a></li>
+	<li><a href="relationshipType.action">$i18n.getString( "relationship_type" )</a></li>
+</ul>
+
+<h2>$i18n.getString( "programs" )</h2>
+<ul>
+	<li><a href="program.action">$i18n.getString( "program" )</a></li>
+	<li><a href="caseAggregation.action">$i18n.getString( "aggregation_query_builder" )</a></li>
+	<li><a href="validationCriteria.action">$i18n.getString( "validation_criteria" )</a></li>
+</ul>

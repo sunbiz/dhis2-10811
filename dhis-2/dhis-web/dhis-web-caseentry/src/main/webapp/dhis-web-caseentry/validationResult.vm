@@ -1,0 +1,25 @@
+<h3>$encoder.htmlEncode( $i18n.getString( "validation_result" ) )</h3>
+
+#if( $programValidations.size()==0 )  
+    <p class="bold">$encoder.htmlEncode( $i18n.getString( "successful_validation" ) )</p>
+#else
+    <p class="bold">$encoder.htmlEncode( $i18n.getString( "unsuccessful_validation" ) )</p>
+
+	<p class="bold">$encoder.htmlEncode( $i18n.getString( "the_following_dataelements_are_in_multi_stages" ) )</p>
+	<table class="listTable" style="width:100%">
+		<tr>
+			<th>$i18n.getString( "description" )</th>
+			<th>$i18n.getString( "leftSide" )</th>
+			<th>$i18n.getString( "rightSide" )</th>
+		</tr>
+		#set( $mark = false )	    
+		#foreach( $programValidation in $programValidations ) 
+			<tr #alternate( $mark )>	    
+				<td>$programValidation.description</td>
+				<td>$leftsideFormulaMap.get( $programValidation.id )</td>
+				<td style="height:32px">$rightsideFormulaMap.get( $programValidation.id )</td>	        
+			</tr>
+			#set( $mark = !$mark )
+		#end
+	</table>
+#end

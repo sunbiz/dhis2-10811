@@ -1,0 +1,89 @@
+<script type="text/javascript">
+	jQuery(document).ready( function() {
+		validation( "sendSMSForm", function( form ) { sendSMSMessage( form ); } );
+		
+		selectionTreeSelection.setListenerFunction( selectedOrganisationUnitSendSMS );
+
+		toggleSMSGUI( "phone" );
+	});
+	
+	var i18n_no_recipient = '$encoder.jsEscape( $i18n.getString( "no_recipient" ) , "'")';
+	var i18n_please_verify_phone = '$encoder.jsEscape( $i18n.getString( "please_verify_phone" ) , "'")';
+	var i18n_please_select_orgunit = '$encoder.jsEscape( $i18n.getString( "please_select_orgunit" ) , "'")';
+</script>
+
+<style type="text/css">
+    .statusBar{
+        color: white;
+        padding: 5px 5px;
+        margin: -16px 0 20px -20px;
+        font-weight: bold;
+        background-color: #8FABC7;
+    }
+</style>
+
+<h3>$i18n.getString( "send_sms" )</h3>
+#if ( $!gatewayMap && $!gatewayMap.size() > 0 )
+<form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action">
+	<table id="detailsList">
+	    <col width="300px"/>
+		<col width="80px"/>
+		<tbody>
+			<tr>
+				<th colspan="2">$i18n.getString( "gateway_type" )</th>
+			</tr>
+			<tr>
+				<td><label for="type">$i18n.getString( "type" ):</label></td>
+				<td>
+				#set( $keys = $!gatewayMap.keySet() )
+					<select id="gatewayId" name="gatewayId" style="width: 100%;">
+						#foreach( $key in $!keys )
+						<option value="$gatewayMap.get( $key )">$i18n.getString( $key )</option>
+						#end
+					</select>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>$i18n.getString( "send_sms_to_target" )</td>
+				<td>
+					<select id="sendTarget" name="sendTarget" onchange="javascript:toggleSMSGUI( this.value );">
+						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
+						<option value="user">$i18n.getString( "assigned_user_number" )</option>
+						<option value="unit">$i18n.getString( "selected_unit_number" )</option>
+						<option value="patient">$i18n.getString( "patient_number" )</option>
+					</select>
+				</td>
+			</tr>
+			
+			<tr><th colspan="2">$i18n.getString( "message" )</th></tr>
+			<tr><td colspan="2"><textarea id="smsMessage" name="smsMessage" cols="95" rows="5" class="{validate:{required:true}}"></textarea></td></tr>
+		</tbody>
+	</table>
+
+	<table id="detailsList">
+		<col width="300px"/>
+		<col width="80px"/>
+		<tbody id="phoneType">
+			<tr><th colspan="2">$i18n.getString( "phone_number" ):</th></tr>
+			<tr><td colspan="2"><input type="text" id="recipient" name="recipient" style="width:520px" /></td></tr>
+		</tbody>
+	
+		<tbody id="orgunitType" style="display:none">
+			<tr><td>#organisationUnitSelectionTree( true, true, false )</td></tr>
+		</tbody>
+		
+		<tbody>
+			<tr>
+				<td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )"/></td>
+				<td><input type="button" name="viewSentSms" value="View Sent Sms" onclick="window.location='showSentPage.action'"/></td>				
+			</tr>
+		</tbody>
+	</table>
+</form>
+</div>
+
+#parse( "dhis-web-commons/loader/loader.vm" )
+#else
+<p>No Sms service available</p>
+#end

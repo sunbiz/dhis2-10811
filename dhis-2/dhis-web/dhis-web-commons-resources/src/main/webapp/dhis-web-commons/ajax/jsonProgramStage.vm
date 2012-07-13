@@ -1,0 +1,21 @@
+{ "programStage":
+  {
+    "id": "${programStage.id}",
+	"name": "$!encoder.jsonEncode( ${programStage.name} )",
+	"description": "$!encoder.jsonEncode( ${programStage.description} )",
+	"stageInProgram": "${programStage.stageInProgram}",
+	"minDaysFromStart": "${programStage.minDaysFromStart}",
+	"dataElementCount": "${programStageDataElements.size()}",
+	"standardInterval": "$!programStage.standardInterval",
+	
+	#set( $size = ${programStageDataElements.size()} )
+	"dataElement": [
+	#foreach($d in $programStageDataElements)
+	  {
+		"id": "${d.dataElement.id}",
+		"name": "$!encoder.jsonEncode( ${d.dataElement.name} )"
+	  }#if( $velocityCount < $size ),#end
+	#end
+	]
+  }
+}

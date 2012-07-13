@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+  
+  <!-- ResourceTable -->
+
+  <bean id="org.hisp.dhis.resourcetable.ResourceTableStore" class="org.hisp.dhis.resourcetable.jdbc.JdbcResourceTableStore">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+  </bean>
+
+  <bean id="org.hisp.dhis.resourcetable.ResourceTableService" class="org.hisp.dhis.resourcetable.DefaultResourceTableService">
+    <property name="resourceTableStore" ref="org.hisp.dhis.resourcetable.ResourceTableStore" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    <property name="categoryService" ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
+    <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
+    <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
+    <property name="batchHandlerFactory" ref="batchHandlerFactory" />
+  </bean>
+  
+  <!-- Data integrity -->
+
+  <bean id="org.hisp.dhis.dataintegrity.DataIntegrityService" class="org.hisp.dhis.dataintegrity.DefaultDataIntegrityService">
+    <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
+    <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
+    <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+    <property name="sectionService" ref="org.hisp.dhis.dataset.SectionService" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    <property name="validationRuleService" ref="org.hisp.dhis.validation.ValidationRuleService" />
+    <property name="expressionService" ref="org.hisp.dhis.expression.ExpressionService" />
+	<property name="dataEntryFormService" ref="org.hisp.dhis.dataentryform.DataEntryFormService" />
+  </bean>
+  
+  <!-- Maintenance -->
+
+  <bean id="org.hisp.dhis.maintenance.MaintenanceStore" class="org.hisp.dhis.maintenance.jdbc.JdbcMaintenanceStore">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+    <property name="statementBuilder" ref="statementBuilder" />
+  </bean>
+
+  <bean id="org.hisp.dhis.maintenance.MaintenanceService" class="org.hisp.dhis.maintenance.DefaultMaintenanceService">
+    <property name="maintenanceStore" ref="org.hisp.dhis.maintenance.MaintenanceStore" />
+  </bean>
+  
+  <!-- Statistics -->
+
+  <bean id="org.hisp.dhis.statistics.StatisticsProvider" class="org.hisp.dhis.statistics.jdbc.JdbcStatisticsProvider">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+  </bean>
+  
+  <!-- Databrowser Grid -->
+
+  <bean id="org.hisp.dhis.databrowser.DataBrowserGridStore" class="org.hisp.dhis.databrowser.jdbc.JDBCDataBrowserStore">
+    <property name="statementBuilder" ref="statementBuilder" />
+    <property name="statementManager" ref="statementManager" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.databrowser.DataBrowserGridService" class="org.hisp.dhis.databrowser.DefaultDataBrowserGridService">
+    <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+    <property name="dataBrowserGridStore" ref="org.hisp.dhis.databrowser.DataBrowserGridStore" />
+  </bean>
+
+  <!-- Data merge -->
+
+  <bean id="org.hisp.dhis.datamerge.DataMergeStore" class="org.hisp.dhis.datamerge.jdbc.JdbcDataMergeStore">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+    <property name="statementBuilder" ref="statementBuilder" />
+  </bean>
+
+  <bean id="org.hisp.dhis.datamerge.DataMergeService" class="org.hisp.dhis.datamerge.DefaultDataMergeService">
+    <property name="dataMergeStore" ref="org.hisp.dhis.datamerge.DataMergeStore" />
+    <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+  </bean>
+  
+  <!-- Data archive -->
+
+  <bean id="org.hisp.dhis.dataarchive.DataArchiveStore" class="org.hisp.dhis.dataarchive.jdbc.JdbcDataArchiveStore">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+    <property name="statementBuilder" ref="statementBuilder" />
+  </bean>
+
+  <bean id="org.hisp.dhis.dataarchive.DataArchiveService" class="org.hisp.dhis.dataarchive.DefaultDataArchiveService">
+    <property name="dataArchiveStore" ref="org.hisp.dhis.dataarchive.DataArchiveStore" />
+  </bean>
+  
+  <!-- User audit -->
+
+  <bean id="org.hisp.dhis.useraudit.UserAuditService" class="org.hisp.dhis.useraudit.DefaultUserAuditService">
+    <property name="userAuditStore" ref="org.hisp.dhis.useraudit.UserAuditStore" />
+    <property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
+  </bean>
+
+  <bean id="org.hisp.dhis.useraudit.UserAuditStore" class="org.hisp.dhis.useraudit.hibernate.HibernateUserAuditStore">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <!--DeletionHandler -->
+
+  <bean id="org.hisp.dhis.dataarchive.ArchivedDataValueDeletionHandler" class="org.hisp.dhis.dataarchive.ArchivedDataValueDeletionHandler">
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+  </bean>
+
+  <!-- DeletionManager -->
+
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="deletionManager" />
+    <property name="targetMethod" value="addDeletionHandlers" />
+    <property name="arguments">
+      <list>
+        <list>
+          <ref local="org.hisp.dhis.dataarchive.ArchivedDataValueDeletionHandler" />
+        </list>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- Sql View -->
+
+  <bean id="org.hisp.dhis.sqlview.SqlViewStore" class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
+    <property name="clazz" value="org.hisp.dhis.sqlview.SqlView" />
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="org.hisp.dhis.sqlview.SqlViewExpandStore" class="org.hisp.dhis.sqlview.jdbc.JdbcSqlViewExpandStore">
+    <property name="statementManager" ref="statementManager" />
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
+  </bean>
+
+  <bean id="org.hisp.dhis.sqlview.SqlViewService" class="org.hisp.dhis.sqlview.DefaultSqlViewService">
+    <property name="sqlViewStore" ref="org.hisp.dhis.sqlview.SqlViewStore" />
+    <property name="sqlViewExpandStore" ref="org.hisp.dhis.sqlview.SqlViewExpandStore" />
+  </bean>
+  
+  <!-- AOP definitions -->
+
+  <aop:config>
+
+    <aop:aspect ref="statementInterceptor">
+      <aop:around pointcut="execution( * org.hisp.dhis.dataintegrity.DataIntegrityService.getInvalidIndicatorNumerators() )"
+        method="intercept" />
+      <aop:around pointcut="execution( * org.hisp.dhis.dataintegrity.DataIntegrityService.getInvalidIndicatorDenominators() )"
+        method="intercept" />
+      <aop:around
+        pointcut="execution( * org.hisp.dhis.dataintegrity.DataIntegrityService.getInvalidValidationRuleLeftSideExpressions() )"
+        method="intercept" />
+      <aop:around
+        pointcut="execution( * org.hisp.dhis.dataintegrity.DataIntegrityService.getInvalidValidationRuleRightSideExpressions() )"
+        method="intercept" />
+    </aop:aspect>
+
+  </aop:config>
+
+</beans>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<minmax>
+	#foreach( $minMaxDataElement in $minMaxDataElements )
+    	<dataelement>
+    		<dataelementId>$encoder.xmlEncode( $minMaxDataElement.dataElement.id )</dataelementId>
+    		<optionComboId>$encoder.xmlEncode( $minMaxDataElement.optionCombo.id )</optionComboId>
+    		<minLimit>$encoder.xmlEncode( $minMaxDataElement.min )</minLimit>
+    		<maxLimit>$encoder.xmlEncode( $minMaxDataElement.max )</maxLimit>
+    	</dataelement>
+	#end
+</minmax>

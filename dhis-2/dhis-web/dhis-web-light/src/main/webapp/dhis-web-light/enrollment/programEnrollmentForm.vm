@@ -1,0 +1,34 @@
+<h2>$i18n.getString( "enroll" ) $patient.getFullName() to $program.getName()</h2>
+<form action="saveMobileProgramEnrollment.action" method="POST">
+<div class="header-box" align="center">
+<input type="hidden" name="patientId" value="$patientId"/>	
+<input type="hidden" name="programId" value="$programId"/>	
+	<p style="text-align: left;">
+		<label>$i18n.getString( "enrollment_date" ) [yyyy-MM-dd] </label>
+		#if( $validationMap.get( "enrollmentDate" ) )
+           	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "enrollmentDate" ))</span>
+     	#end
+		<input type="text" name="enrollmentDate" value="#if($previousValues.get("enrollmentDate"))$previousValues.get("enrollmentDate")#else$now#end" />
+		<label>$i18n.getString( "incident_date" ) [yyyy-MM-dd] </label>
+		#if( $validationMap.get( "incidentDate" ) )
+           	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "incidentDate" ))</span>
+     	#end
+		<input type="text" name="incidentDate" value="$!previousValues.get("incidentDate")" />
+	</p>
+</div>
+
+<div class="header-box" align="center">
+	<p>
+		<input type="submit" style="width: 100%;" value="$i18n.getString("enroll")" />
+	</p>
+</div>
+
+</form>
+
+<div id="footer">
+<h2>$i18n.getString( "navigate_to" )</h2>
+<ul>
+	<li> <a href="selectEnrollmentProgram.action?patientId=$patientId"> $i18n.getString("program_list")</a> </li>
+	<li><a href="index.action">$i18n.getString("home")</a></li>
+</ul>
+</div>

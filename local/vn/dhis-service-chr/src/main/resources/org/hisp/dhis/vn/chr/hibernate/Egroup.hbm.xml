@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="org.hisp.dhis.vn.chr.Egroup" table="egroup" >
+    
+    	<cache usage="read-write"/>
+    	
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        
+        <many-to-one name="form" class="org.hisp.dhis.vn.chr.Form" fetch="select">
+            <column name="formid" not-null="true" />
+        </many-to-one>
+        
+        <property name="name" type="string">
+            <column name="name" length="50" />
+        </property>
+        
+        <property name="sortOrder" type="int">
+            <column name="sortorder" not-null="true" />
+       </property>
+       
+        <set name="elements" inverse="true" order-by="sortOrder asc">
+            <key>
+                <column name="groupid"/>
+            </key>
+            <one-to-many class="org.hisp.dhis.vn.chr.Element" />
+        </set>
+        
+    </class>
+</hibernate-mapping>

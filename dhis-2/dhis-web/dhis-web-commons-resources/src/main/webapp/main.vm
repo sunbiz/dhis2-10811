@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html#if( $offline && $offline == "true" ) manifest="../dhis-web-commons/cacheManifest.action"#end>
+  <head>
+    <title>DHIS 2</title>
+	<link type="text/css" rel="stylesheet" media="screen" href="../dhis-web-commons/javascripts/jQuery/ui/css/redmond/jquery-ui-1.8.12.custom.css" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../dhis-web-commons/css/${stylesheet}" />
+    <link type="text/css" rel="stylesheet" media="screen" href="../dhis-web-commons/css/widgets.css" />
+    #foreach ( $style in $stylesheets )
+    <link type="text/css" rel="stylesheet" href="$style">
+    #end    
+    <link type="image/png" rel="icon" href="../images/favicon.png" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript">
+      var dateFormat = 'yy-mm-dd';
+      var maintenanceModulesNo = ${maintenanceModules.size()};
+      var serviceModulesNo = ${serviceModules.size()};
+    </script>
+
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.ext.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.metadata.js"></script>	
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.upload-1.0.2.min.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.dhisAjaxSelect.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.utils.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/ui/jquery-ui-1.8.12.custom.min.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/ui/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.validate.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.validate.ext.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.glob.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.date.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.tmpl.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/jQuery/jquery.autogrow.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/i18nJavaScript.action"></script>
+    <script type="text/javascript" src="../dhis-web-commons/messagesJavaScript.action"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/commons.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/commons.ajax.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/lists.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/periodType.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/date.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/json2.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/validationRules.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/dhis2/dhis2.util.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/dhis2/dhis2.array.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/dhis2/dhis2.select.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/dhis2/dhis2.comparator.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/javascripts/dhis2/dhis2.availability.js"></script>
+    <script type="text/javascript" src="../dhis-web-commons/css/${stylesheetDirectory}/dom.js"></script>		
+    <script type="text/javascript" src="../main.js"></script>  
+    <script type="text/javascript" src="../request.js"></script>
+    #foreach( $javascript in $javascripts )
+    <script type="text/javascript" src="$javascript"></script>
+    #end
+  </head>
+  
+  <body>    
+    #parse( "macros.vm" )
+    <div id="header">
+      <img id="headerBanner" src="../dhis-web-commons/css/${stylesheetDirectory}/logo_banner.png" 
+        onclick="window.location.href='../dhis-web-commons-about/modules.action'" style="cursor:pointer" title="$i18n.getString( 'go_to_system_overview' )">
+      
+      <img id="menuSeparator1" src="../dhis-web-commons/css/${stylesheetDirectory}/logo_separator.png">
+      <img id="menuSeparator2" src="../dhis-web-commons/css/${stylesheetDirectory}/logo_separator.png">
+      <img id="menuSeparator3" src="../dhis-web-commons/css/${stylesheetDirectory}/logo_separator.png">
+      <img id="menuSeparator4" src="../dhis-web-commons/css/${stylesheetDirectory}/logo_separator.png">
+      <img id="menuSeparator5" src="../dhis-web-commons/css/${stylesheetDirectory}/logo_separator.png">
+
+      <div id="menuLink1" class="menuLink">$i18n.getString( "maintenance" )</div>
+      <div id="menuLink2" class="menuLink">$i18n.getString( "services" )</div>
+      <div id="menuLink3" class="menuLink">$i18n.getString( "help" )</div>
+      <div id="menuLink4" class="menuLink">$i18n.getString( "log_out" )</div>
+
+      <div id="menuDropDown1" class="menuDropDownArea" >
+      <ul class="menuDropDownBox">
+      #foreach( $module in $maintenanceModules )
+      #if( $auth.hasAccess( $module.name, "index" ) )
+        <li>
+          <a href="${module.defaultAction}">$i18n.getString( $module.name )&nbsp;</a>
+        </li>
+      #end
+      #end
+      </ul>      
+      </div>
+
+      <div id="menuDropDown2" class="menuDropDownArea">
+      <ul class="menuDropDownBox">
+      #foreach( $module in $serviceModules )
+      #if( $auth.hasAccess( $module.name, "index" ) )
+        <li>
+          <a href="${module.defaultAction}">$i18n.getString( $module.name )&nbsp;</a>
+        </li>
+      #end
+      #end
+      </ul>      
+      </div>
+	  
+      <div id="menuDropDown3" class="menuDropDownArea">
+      <ul class="menuDropDownBox">
+        <li><a id="menuDropDownHelpCenter">$i18n.getString( "help_center" )&nbsp;</a></li>
+        <li><a id="menuDropDownChangeLog">$i18n.getString( "change_log" )&nbsp;</a></li>
+        <li><a id="menuDropDownSupportiveSoftware">$i18n.getString( "supportive_software" )&nbsp;</a></li>
+        <li><a id="menuDropDownUserAccount">$i18n.getString( "user_account" )&nbsp;</a></li>
+        <li><a id="menuDropDownModuleOverview">$i18n.getString( "system_overview" )&nbsp;</a></li>
+        <li><a id="menuDropDownWebApi">$i18n.getString( "web_api" )&nbsp;</a></li>
+        <li><a id="menuDropDownAboutDHIS2">$i18n.getString( "about_dhis2" )&nbsp;</a></li>
+      </ul>
+      </div>
+	  
+      <span id="headerText" onclick="window.location.href='../${startModule}/index.action'" style="cursor:pointer">
+        #if ( $applicationTitle )
+          $encoder.htmlEncode( $applicationTitle )
+        #else
+          District Health Information Software 2
+        #end
+      </span>
+      
+      <span id="showLeftBar">
+        <a href="javascript:leftBar.showAnimated()" title="$i18n.getString( "show_menu" )">
+          <img src="../images/show_menu.png" width="16" height="16" alt="$i18n.getString( "show_menu" )"></a>
+      </span>
+    </div>
+
+    #if( $hideMenu && $hideMenu == "true" )
+    <style type="text/css">
+      #mainPage { margin-left: 28px; }
+    </style>
+    #else
+    <div id="leftBar">    
+      <span id="hideLeftBar">
+        <a href="index.action" title="$i18n.getString( "show_main_menu" )" id="showMainMenuLink">
+          <img src="../images/home_small.png" width="16" height="16" title="$i18n.getString( "show_main_menu" )"></a>
+        <a href="javascript:leftBar.hideAnimated()" title="$i18n.getString( "hide_menu" )" id="hideMainMenuLink">
+          <img src="../images/hide_menu.png" width="16" height="16" title="$i18n.getString( "hide_menu" )"></a>
+      </span>
+      
+      <div id="leftBarContents">
+        #parse( $menu )
+      </div>
+    </div>
+    #end
+        
+    <div id="headerMessage" class="bold"></div>
+        
+    <div class="page" id="mainPage">
+      #if( !$page )
+        <p>$i18n.getString( "no_page_specified" )</p>
+      #else
+        #parse( $page )
+      #end
+    </div>
+    #if( !$menuState.visible )
+      <script type="text/javascript">
+        leftBar.hide();
+      </script>
+    #end
+    
+    <div id="rightBar">
+      <span id="hideRightBar"><a href="javascript:hideHelpContent()" title="$i18n.getString( 'close' )">
+        <img id="hideRightBarImg" src="../images/hide.png" alt="$i18n.getString( 'close' )"></a>
+      </span>
+      <div id="rightBarContents"/>
+    </div>
+	
+  </body>
+</html>

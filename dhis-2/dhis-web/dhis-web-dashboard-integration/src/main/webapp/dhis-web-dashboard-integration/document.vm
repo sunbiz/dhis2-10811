@@ -1,0 +1,27 @@
+
+<table class="contentProviderTable">
+    <tr>
+        <th colspan="2">$i18n.getString( "document" )</th>
+    </tr>
+    #foreach ( $document in $documents )
+    <tr>
+        <td>
+            #if ( $document.external )
+                <a href="${document.url}">
+            #else
+                <a href="../api/documents/${document.uid}/data">
+            #end
+            $document.name</a>
+        </td>
+        <td style="width:10px">
+            <a href="javascript:window.location.href='removeDocument.action?id=$document.id'" title="$i18n.getString( 'remove' )">
+            <img class="removeIcon" src="../images/hide.png" alt="$i18n.getString( 'remove' )"></a>
+        </td>
+    </tr>
+    #end
+</table>
+
+#if( $documents.size() == 0 )
+<div class="labelText">$i18n.getString( "insert_links_by_going_to" ) 
+<a href="../dhis-web-reporting/displayViewDocumentForm.action">$i18n.getString( "document" )</a></div>
+#end

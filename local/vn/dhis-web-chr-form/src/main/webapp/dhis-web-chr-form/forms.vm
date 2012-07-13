@@ -1,0 +1,188 @@
+<span id="message" style="top:100px;right:5px;position:fixed;width:200px;z-index:10004" onclick="hideById(this.id);"></span>
+<input type="hidden" id="formid" name="formid"/>
+<script language="javascript">
+// ----------------------------
+//   Open Add Form
+// ----------------------------
+function openAddForm(){
+
+		document.getElementById('id').value = "";
+		document.getElementById('name').value = "";
+		document.getElementById('label').value = "";
+		document.getElementById('noColumn').value = "7";
+		document.getElementById('noColumnLink').value =  "2";
+		document.getElementById('icon').value = "";
+		document.getElementById("visible").checked = false;
+		
+		setPositionCenter( 'form' );
+		showDivEffect();
+		showById( 'form' );
+		mode = "ADD";
+		enable('name');
+}
+
+// ----------------------------
+// Open Update Form
+// ----------------------------
+function openUpdateForm( id ){
+		var request = new Request();
+		request.setResponseTypeXML( 'form' );
+		request.setCallbackSuccess( openUpdateFormReceived );
+		request.send( "getFormById.action?id=" + id );		
+}
+
+function openUpdateFormReceived( form ){		
+		
+		document.getElementById('id').value = getElementValue(form, 'id');
+		document.getElementById('name').value = getElementValue(form, 'name');
+		document.getElementById('label').value = getElementValue(form, 'label');
+		document.getElementById('noColumn').value = getElementValue(form, 'noColumn');
+		document.getElementById('noColumnLink').value =  getElementValue(form, 'noColumnLink');
+		document.getElementById('icon').value = getElementValue(form, 'icon');
+		
+		if(getElementValue(form, 'visible')=='true'){
+ 			document.getElementById("visible").checked = true;
+		}
+		else{
+			document.getElementById("visible").checked = false;
+		}
+		
+		setPositionCenter( 'form' );
+		showDivEffect();
+		showById( 'form' );
+		mode = "UPDATE";
+		disable('name');
+	}
+	
+</script>
+<body>
+<h2>$i18n.getString("form_list")<h2>
+<p><input type="button" onClick="javascript: openAddForm();" value="$i18n.getString('add')"/></p>
+<table width="100%">
+  <tr height="20">
+    <th width="29%">$i18n.getString("name")</th>
+    <th width="42%">$i18n.getString("label")</th>
+    <th width="29%">$i18n.getString("operations")</th>
+  </tr>
+  #set( $mark = false )
+  #foreach($f in $forms)
+  <tr #alternate( $mark )>
+    <td>$!f.name</td>
+    <td>$!f.label</td>
+    <td>
+	<a href="javascript: document.getElementById('formid').value = $f.id; flag = false; openAssociateElementsForEgroupForm($f.id); " title="$i18n.getString('associate_elements_for_egroup')"><img src="../images/assign.png"  alt="$i18n.getString('associate_elements_for_egroup')"></a><a href="javascript:window.location='listEgroup.action?formID=$f.id';" title="$i18n.getString('group')">
+    	<img src="../images/open.png" alt="$i18n.getString('group')"></a>
+    <a href="javascript:window.location='listElement.action?formID=$f.id';" title="$i18n.getString('elements')">
+    	<img src="../images/edit_formula.png" alt="$i18n.getString('elements')"></a>
+    <a href="javascript: openUpdateForm($f.id);" title="$i18n.getString('edit')">
+    	<img src="../images/edit.png" alt="$i18n.getString('edit')"></a>    </td>
+  </tr>
+  #if( $mark )
+			#set( $mark = false )
+		#else
+			#set( $mark = true )
+		#end
+  #end
+</table>
+
+<div id="form" style="position:fixed;display:none;width:500px;z-index:10001;background-color: white;border: medium solid silver;height:180px;padding:20px;">
+  <div id="close" style="position:absolute;top:2px;right:2px;cursor: pointer;color:red;" onClick="hideById('form');deleteDivEffect();">[x]</div>
+	<input type="hidden" value="" id="id"/>
+<form name="addForm" id="addForm" method="post" action="">
+    <table width="100%">
+	<tr class="formcontrol"> 
+
+		
+      <tr class="formcontrol"> 
+            <td><label>$i18n.getString("name")<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+
+        <td> <input name="name" id="name" type="text"> 
+            <font size="-2">($i18n.getString("noSpace"))</font></td>
+      </tr>
+          <tr>
+            <td><label>$i18n.getString("label")<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+            <td><input name="label" id="label" type="text"></td>
+          </tr>
+         
+          <tr>
+            <td><label>$i18n.getString("noColumn")<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+            <td><input name"noColumn" id="noColumn" value="7" type="text"></td>
+          </tr>
+		  
+          <tr>
+            <td><label>$i18n.getString("noColumnLink")</label></td>
+            <td><input name="noColumnLink" id="noColumnLink" value="2" type="text"></td>
+          </tr>
+		  
+          <tr>
+            <td><label>$i18n.getString("icon")</label></td>
+			  <td> <input name="icon" id="icon" type="text">
+			  <input type='button' onclick="window.open('upload.action','Upload files', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=500,height=300');" value='$i18n.getString("upload_file")'></td>
+          </tr>
+
+          <tr>
+            <td><label>$i18n.getString("visible")</label></td>
+            <td> <input type="checkbox" name="visible" id="visible"></td>
+          </tr>
+		
+          <tr><td colspan="2"></td>
+          <tr>  
+          	<td></td>         
+            <td>
+            <input name="Submit" class="formcontrol" value="$i18n.getString( 'save' )" onClick="javascript:validateForm();" type="button">
+            <input name="Submit" class="formcontrol" value="$i18n.getString( 'cancel' )" onClick="javascript:hideById('form');deleteDivEffect();" type="button"></td>
+          </tr>
+
+	</table>
+</form>
+</div>
+
+
+
+<div id="association" style="position:fixed;display:none;width:450px;z-index:10001;background-color: white;border: medium solid silver;height:180px;padding:20px;">
+  <div id="close" style="position:absolute;top:2px;right:2px;cursor: pointer;color:red;" onClick="hideById('association');deleteDivEffect();">[x]</div>
+  <input type="hidden" id="egroupID" name="egroupID">
+  <table>
+	<colgroup>
+  		<col width="325px">
+  		<col width="80px">
+ 		<col width="325px">
+  	</colgroup>
+	<tr>
+    <th>$i18n.getString( 'available_egroups' )</th>
+    <td colspan="2">
+    	<select id="availableEgroups" name="availableEgroups" style="width:100%" onChange="javascript: getEgroup(this.value); flag=true; openAssociateElementsForEgroupForm( document.getElementById('formid').value ); ">
+		</select>
+    </td></tr>
+  	<tr>
+  		<td>$i18n.getString( 'available_elements' )</td>
+  		<td></td>
+  		<td>$i18n.getString( 'selected_elements' )</td>
+	</tr>
+	
+	<tr>
+		<td><select multiple size="6" id="availableElements" name="availableElements" style="width:100%" ondblclick="moveSelectedById( 'availableElements', 'selectedElements' )">
+        </select>		</td>
+		<td style="text-align:center">	
+		  <input type="button" value="&gt;" title="$i18n.getString('move_selected')" style="width:50px" onclick="moveSelectedById( 'availableElements', 'selectedElements' )"/><br>
+		  <input type="button" value="&lt;" title="$i18n.getString('move_all')" style="width:50px" onclick="moveSelectedById( 'selectedElements', 'availableElements' )"/><br>		
+		  <input type="button" value="&gt;&gt;" title="$i18n.getString('remove_selected')" style="width:50px" onclick="moveAllById( 'availableElements', 'selectedElements' )"/><br>
+
+		  <input type="button" value="&lt;&lt;" title="$i18n.getString('remove_all')" style="width:50px" onclick="moveAllById( 'selectedElements', 'availableElements' )"/>
+		</td>
+		<td>
+		  <select multiple size="6" id="selectedElements" name="selectedElements" style="width:100%" ondblclick="moveSelectedById( 'selectedElements', 'availableElements' )">
+				
+		  </select>
+		</td>
+	</tr>
+
+</table>
+<p>
+<input type="button" value="$i18n.getString( 'save' )" onClick="javascript: updateElementsForEgroup();deleteDivEffect();hideById('association');"/>
+<input name="button" type="button" onClick="javascript:deleteDivEffect();hideById('association');" value="$i18n.getString( 'cancel' )"/>		
+</p>
+  
+</div>
+
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;" onclick="hideById(this.id)"></span>

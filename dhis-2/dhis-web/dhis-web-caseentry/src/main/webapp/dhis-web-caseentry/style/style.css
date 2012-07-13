@@ -1,0 +1,186 @@
+/*----------------------------------------------------------------------------*/
+/* Form
+/*----------------------------------------------------------------------------*/
+
+input[type="button"], input[type="submit"] {
+    width: 130px;
+}
+
+input.small-button[type="button"] {
+    width: 30px;
+}
+
+input.large-button[type="button"] {
+    width: 105px;
+}
+
+input[type="text"] {
+    width: 260px;
+}
+
+select {
+    width: 265px;
+}
+
+textarea {
+    width: 265px;
+}
+
+.button-list
+{
+	text-align:right;
+	padding-bottom:10px;
+	width:100%;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Table
+/*----------------------------------------------------------------------------*/
+
+table {
+    font-size: 13px;
+    line-height: 18px;
+    margin-bottom: 10px;
+}
+
+.heading-column {
+    width: 400px;
+}
+
+td.input-column {
+    padding-left: 5px; 
+	padding-right: 1px; 
+}
+
+td.error {
+    padding-left: 1em;
+}
+
+table.information, td.information
+{
+	border:1px solid #808080; 
+	vertical-align:top;
+	padding:10px;
+}
+
+.text-column {
+    padding-left: 5px;
+    padding-right: 10px;
+    text-align: left;
+}
+
+.errorCell{background-color: #FFCFCF}
+
+#advanced-search
+{
+  position: relative;
+  border: 1px solid #a4d2a3;
+  background-color: #d5efd5;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  padding-left: 20px;
+  margin-bottom: 15px;
+  border-radius: 3px;
+}
+
+/*----------------------------------------------------------------------------*/
+/* button list
+/*----------------------------------------------------------------------------*/
+
+.buttons
+{
+	text-align:right;
+	padding-bottom:10px;
+	width:100%;
+}
+
+div.actions
+{
+  float: right;
+  width: 170px;
+  text-align: right;
+}
+
+div.enrollment-form
+{
+  border:1px solid #c0c0c0; 
+  padding:10px;
+  margin-right:10px;
+  border-radius:3px;
+}
+
+/*----------------------------------------------------------------------------*/
+/* For data entry form                                                        */
+/*----------------------------------------------------------------------------*/
+
+.entryScreen
+{
+ margin-bottom:20px; 
+ width:70%;
+ font-size: 13px; 
+ line-height:18px;
+}
+
+input.criteria
+{
+	width:150px;
+	margin-right: 5px;
+}
+
+input.stage-object[type="button"]
+{
+	width: 100px;
+	height: 40px;
+    white-space: normal;
+	border:2px solid; 
+	cursor:pointer;
+	opacity: 1.0;
+}
+
+input.stage-object[type="button"]:hover
+{
+	opacity: 0.75;
+}
+
+input.stage-object-selected[type="button"]
+{
+	width: 120px;
+	height: 50px;
+    opacity: 0.75;
+}
+
+input.patient-object[type="button"]
+{
+	width: 100px;
+	height: 40px;
+    white-space: normal;
+	border:2px solid; 
+	border-color:#bbbbbb;
+	background-color:#cccccc;
+	cursor:pointer;
+}
+
+input.optionset[type="text"]
+{
+	width:222px; 
+}
+
+div.provided-elsewhere{
+	width:20px; 
+	height:20px; 
+}
+
+.ui-button{
+	max-height: 100px;
+	max-height: 100px;
+}
+
+.ui-autocomplete {
+	max-height: 100px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.hidden {
+    display: none;
+}

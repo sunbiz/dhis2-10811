@@ -1,0 +1,8 @@
+{ "validationRuleGroup":
+  {
+    "id": "$!{validationRuleGroup.id}",
+    "name": "$!encoder.jsonEncode( ${validationRuleGroup.name} )",
+    "description": "$!encoder.jsonEncode( ${validationRuleGroup.description} )",
+    "memberCount": "$!{memberCount}"
+  }
+}

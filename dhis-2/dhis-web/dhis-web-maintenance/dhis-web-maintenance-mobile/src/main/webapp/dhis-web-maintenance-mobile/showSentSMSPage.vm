@@ -1,0 +1,22 @@
+<h3>$i18n.getString( 'list_sent_SMS' )</h3>
+<form id="sentSMSPage" name="sentSMSPage" action="showSentPage.action" method="post" >
+<table id="detailsSentSMSList" class="listTable" style="width:800px">
+	<thead>
+		<th style="text-align:center">$i18n.getString( "no." )</th>
+		<th>$i18n.getString( "message" )</th>
+		<th>$i18n.getString( "admin" )</th>
+		<th>$i18n.getString( "receiver" )</th>
+		<th style="text-align:center"><a href="#" onclick="checkAll()" title="Click Here To Check All"><img src="../images/check.png"/></a></th>			
+	</thead>
+	#foreach( $outboundSms in $ListOutboundSMS)
+	<tr>
+		<td>$velocityCount</td>
+		<td>$outboundSms.message</td>
+		<td>admin</td>
+		<td>$outboundSms.recipients</td>
+		<td></td>
+	</tr>
+	
+	#end
+</table>
+</form>

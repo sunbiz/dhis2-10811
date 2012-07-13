@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.patient.Patient" table="patient">
+
+    <id name="id" column="patientid">
+      <generator class="native" />
+    </id>
+
+    <property name="firstName" column="firstname" length="50" />
+
+    <property name="middleName" column="middlename" length="50" />
+
+    <property name="lastName" column="lastname" length="50" />
+
+    <property name="birthDate" column="birthdate" not-null="true" />
+
+    <property name="deathDate" column="deathdate" />
+
+    <property name="registrationDate" column="registrationdate" not-null="true" />
+
+    <property name="isDead" column="isdead" />
+
+    <property name="gender" column="gender" length="5" not-null="true" />
+
+    <property name="phoneNumber" length="25" />
+
+    <property name="underAge" column="underage" not-null="true" />
+
+    <property name="dobType" column="dobType" />
+
+    <set name="identifiers" cascade="all">
+      <key column="patientid" />
+      <one-to-many class="org.hisp.dhis.patient.PatientIdentifier" />
+    </set>
+
+    <set name="programs" table="patient_programs">
+      <key column="patientid" foreign-key="fk_patient_programs_patientid" />
+      <many-to-many class="org.hisp.dhis.program.Program" column="programid" foreign-key="fk_patient_programid" />
+    </set>
+
+    <set name="attributes" table="patient_attributes">
+      <key column="patientid" foreign-key="fk_patient_attributes_patientid" />
+      <many-to-many class="org.hisp.dhis.patient.PatientAttribute" column="patientattributeid" foreign-key="fk_patient_patientattributeid" />
+    </set>
+
+    <many-to-one name="representative" class="org.hisp.dhis.patient.Patient" column="representativeid"
+      foreign-key="fk_representativeid" />
+
+    <many-to-one name="organisationUnit" class="org.hisp.dhis.organisationunit.OrganisationUnit" column="organisationunitid"
+      foreign-key="fk_patient_organisationunitid" />
+ 	
+  </class>
+</hibernate-mapping>

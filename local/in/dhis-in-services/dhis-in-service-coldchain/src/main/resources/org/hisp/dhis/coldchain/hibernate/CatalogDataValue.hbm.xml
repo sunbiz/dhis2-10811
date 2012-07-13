@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.catalog.CatalogDataValue" table="catalogdatavalue">
+
+    <composite-id>
+      <key-many-to-one name="catalog" class="org.hisp.dhis.coldchain.catalog.Catalog" column="catalogid"
+        foreign-key="fk_catalogdatavlaue_catalogid" />
+      <key-many-to-one name="catalogTypeAttribute" class="org.hisp.dhis.coldchain.catalog.CatalogTypeAttribute" column="catalogtypeattributeid"
+        foreign-key="fk_catalogdatavlaue_catalogtypeattributeid" />
+    </composite-id>
+
+    <property name="value" />
+
+    <many-to-one name="catalogTypeAttributeOption" class="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOption" column="catalogtypeattributeoptionid"
+      foreign-key="fk_catalogdatavlaue_catalogtypeattributeoptionid" />
+
+  </class>
+</hibernate-mapping>

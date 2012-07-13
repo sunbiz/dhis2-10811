@@ -1,0 +1,21 @@
+<span id="message" style="top:70px;right:5px;position:fixed;width:200px;z-index:100009" onclick="hideById(this.id);"></span>
+<h2>$i18n.getString( "generate_form" )</h2>
+<table>
+	<tr>
+		<td>$i18n.getString('form')</td>
+		<td>
+			<select type="text" id="formID" name="formID" style="min-width:20em" >
+				#foreach($form in $forms)
+					<option value='$form.id'>$encoder.htmlEncode( $form.label )</option>				
+				#end
+			</select>		</td>
+	</tr>	
+</table> 
+<div id="orgUnitTree">
+	
+</div>
+<span id="message" style="top:100px;right:5px;position:fixed;width:200px;z-index:10002" onclick="hideById(this.id);"></span>
+<br>
+<hr>
+<p><input type="button" value="$i18n.getString( "generate_form" )" onclick="javascript: createTableByForm();"/></p>
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;" onclick="hideById(this.id)"></span>

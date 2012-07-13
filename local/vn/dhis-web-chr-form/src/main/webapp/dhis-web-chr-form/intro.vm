@@ -1,0 +1,10 @@
+
+<div id="intro" style="display: block; background-image:'images/intro.jpg'">
+    
+    <br><br>
+    
+    <img src="../images/logo_banner.png"><br><br><br><br><br>
+    
+    $i18n.getString( "Child_Health_Record_System" )<br>
+	
+</div>

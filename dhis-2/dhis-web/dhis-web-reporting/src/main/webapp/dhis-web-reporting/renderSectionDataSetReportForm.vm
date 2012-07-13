@@ -1,0 +1,49 @@
+<style>
+.gridTable th, .gridTable td
+{
+  text-align: center;
+  width: 90px;
+  line-height: 170%;
+}
+</style>
+
+<input type="hidden" id="currentDataSetId" value="${selectedDataSet.id}">
+<input type="hidden" id="currentPeriodId" value="${selectedPeriod.externalId}">
+<input type="hidden" id="currentSelectedUnitOnly" value="${selectedUnitOnly}">
+<div id="userInfo" class="page"></div>
+
+<h3>$encoder.htmlEncode( $selectedOrgunit.name ) - $format.formatPeriod( $selectedPeriod )</h3>
+
+<div id="download_buttons" style="margin-bottom:15px">
+<input type="button" value="$i18n.getString( 'get_report_as_xls' )" onclick="exportDataSetReport( 'xls' )" style="width:140px">
+<input type="button" value="$i18n.getString( 'get_report_as_pdf' )" onclick="exportDataSetReport( 'pdf' )" style="width:140px">
+#if( $registration ) &nbsp;<span>$i18n.getString( "completed_by" ): <a href="javascript:setUserInfo( '${registration.storedBy}' )">${registration.storedBy}</a></span>#end
+</div>
+
+#foreach( $grid in $grids )
+<div class="formSection" style="margin-bottom:30px">
+
+<div class="cent"><h3>$!encoder.htmlEncode( $grid.title )</h3></div>
+
+<table class="listTable gridTable">
+<thead>
+<tr>
+#foreach( $header in $grid.getVisibleHeaders() )
+<th #if( $header.meta )style="text-align:left"#end>$!encoder.htmlEncode( $header.name )</th>
+#end
+</tr>
+</thead>
+
+<tbody>    
+#foreach( $row in $grid.getVisibleRows() )
+<tr>
+#foreach( $col in $row )
+#set( $index = ( $velocityCount - 1 ) )
+#if( $grid.getVisibleHeaders().get( $index ).meta )<td style="text-align:left">$!encoder.htmlEncode( $col )</td>#else <td>$!format.formatValue( $col )</td>#end
+#end
+</tr>
+#end
+</tbody>
+</table>
+</div>
+#end

@@ -1,0 +1,51 @@
+
+<h3>Add command</h3>
+<form id="newSMSCommand" name="updateSMSCommand" action="createSMSCommandForm.action" method="post">
+   
+	<table>
+	 <col/> ## Labels
+    <col/> ## Input
+    <thead>
+      <tr>
+        <th colspan="2">$i18n.getString( "command_details" )</th>
+      </tr>
+    </thead>
+		<tr>
+			<td>
+				Name:
+			</td>
+			<td>
+				<input type="text" value="" id="name" name="name" style="width:20em"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Parser:
+			</td>
+			<td>
+				<select name="parser" style="min-width:20em; margin:0;">
+					<option value="syntax1">Syntax1</option>
+					<option value="syntax2">Syntax2</option>
+				</select> 
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Dataset:
+			</td>
+			<td>
+				<select name="selectedDataSetID" >
+					#foreach( $dataSet in $dataSets )
+				<option value="$dataSet.id" #if ($SMSCommand.dataset.id == $dataSet.id) selected #end >$dataSet.name</option>
+					#end
+				</select> 
+			</td>
+		</tr>
+		
+		<tr>
+			<td><input id="save" type="submit" value="Submit" /></td>
+		</tr>
+		
+	</table>
+	
+</form>

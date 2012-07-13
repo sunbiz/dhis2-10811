@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+  [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+>
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.program.ProgramStage" table="programstage">
+
+    <id name="id" column="programstageid">
+      <generator class="native" />
+    </id>
+
+	&identifiableProperties;
+
+    <property name="description" />
+
+    <property name="stageInProgram" column="stageinprogram" not-null="true" />
+
+    <property name="minDaysFromStart" column="mindaysfromstart" not-null="true" />
+
+    <many-to-one name="program" class="org.hisp.dhis.program.Program" column="programid" foreign-key="fk_programstage_program" />
+
+	<property name="irregular" column="irregular" />
+
+    <set name="programStageDataElements" order-by="sort_order" >
+      <key column="programstageid" />
+      <one-to-many class="org.hisp.dhis.program.ProgramStageDataElement" />
+    </set>
+
+    <many-to-one name="dataEntryForm" class="org.hisp.dhis.dataentryform.DataEntryForm"
+      foreign-key="fk_programstage_dataentryform" />
+      
+    <property name="standardInterval" />
+    
+  </class>
+</hibernate-mapping>

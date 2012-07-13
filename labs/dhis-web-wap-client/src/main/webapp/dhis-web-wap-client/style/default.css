@@ -1,0 +1,30 @@
+
+
+body {
+    font-family: arial;
+    background-color: #d5ffc5;
+    }
+h3 {   
+    background-color:#CCC;
+    border: 1px solid;
+    color:#39F;
+    text-align: left;
+    }
+
+p {
+    color:coral;
+    text-indent: 0px;   
+    }
+img {
+    padding:0;
+    border:0;
+    margin:0;
+    }
+radio{
+    color:#0EACDB;
+    padding:0px;
+    border:none;
+    margin:0px;
+    text-decoration:none;
+    }
+

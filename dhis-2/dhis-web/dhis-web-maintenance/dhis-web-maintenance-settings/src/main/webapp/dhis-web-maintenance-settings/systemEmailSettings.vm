@@ -1,0 +1,39 @@
+<script>
+	jQuery(document).ready(function() {
+		validation2( 'emailSettingForm', function( form ) {
+			jQuery.postUTF8( 'setSystemEmailSettings.action', {
+				smtpHostName: getFieldValue( 'smtpHostName' ),
+				smtpUsername: getFieldValue( 'smtpUsername' ),
+				smtpPassword: getFieldValue( 'smtpPassword' )
+			}, function( json ) {
+				if ( json.response == "success" )
+					setHeaderDelayMessage( json.message );
+			});
+		}, {
+			"rules" : getValidationRules( "emailSettings" )
+		});
+		
+		jQuery( '#smtpHostName' ).blur();
+	});
+</script>
+
+
+<h3>$i18n.getString( "smtp_settings" ) #openHelp( "systemEmailSettings" )</h3>
+
+<form id="emailSettingForm">
+
+<h4>$i18n.getString( "host_name" )</h4>
+
+<p><input type="text" id="smtpHostName" name="smtpHostName" style="width:20em" value="$!smtpHostName"/></p>
+
+<h4>$i18n.getString( "username" )</h4>
+
+<p><input type="text" id="smtpUsername" name="smtpUsername" value="$!smtpUsername" style="width:20em" autocomplete="off"/></p>
+
+<h4>$i18n.getString( "password" )</h4>
+
+<p><input type="password" id="smtpPassword" name="smtpPassword" value="$!smtpPassword" style="width:20em" autocomplete="off"/></p>
+
+<p><input type="submit" value="$i18n.getString( 'save' )" style="width:10em"/></p>
+
+</form>

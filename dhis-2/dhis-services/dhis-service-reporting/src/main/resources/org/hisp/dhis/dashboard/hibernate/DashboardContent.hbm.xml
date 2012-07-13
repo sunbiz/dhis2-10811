@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.dashboard.DashboardContent" table="dashboardcontent">
+
+    <cache usage="read-write" />
+
+    <id name="id" column="dashboardcontentid">
+      <generator class="foreign">
+        <param name="property">user</param>
+      </generator>
+    </id>
+
+    <one-to-one name="user" class="org.hisp.dhis.user.User" constrained="true" foreign-key="fk_dashboardcontent_userinfoid" />
+
+    <list name="reports" table="dashboardcontent_reports">
+      <key column="userid" foreign-key="fk_dashboardcontent_reports_userid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="reportid" class="org.hisp.dhis.report.Report" foreign-key="fk_dashboardcontent_reports_reportid" />
+    </list>
+
+    <list name="documents" table="dashboardcontent_documents">
+      <key column="userid" foreign-key="fk_dashboardcontent_documents_userid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="documentid" class="org.hisp.dhis.document.Document" foreign-key="fk_dashboardcontent_documents_documentid" />
+    </list>
+
+    <list name="reportTables" table="dashboardcontent_reporttables">
+      <key column="userid" foreign-key="fk_dashboardcontent_reporttables_userid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="reporttableid" class="org.hisp.dhis.reporttable.ReportTable" foreign-key="fk_dashboardcontent_reporttableid" />
+    </list>
+
+    <list name="mapViews" table="dashboardcontent_mapviews">
+      <key column="userid" foreign-key="fk_dashboardcontent_mapviews_userid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="mapviewid" class="org.hisp.dhis.mapping.MapView" foreign-key="fk_dashboardcontent_mapviews_mapviewid" />
+    </list>
+
+  </class>
+</hibernate-mapping>

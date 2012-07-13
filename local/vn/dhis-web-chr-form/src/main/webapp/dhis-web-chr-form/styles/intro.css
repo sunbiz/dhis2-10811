@@ -1,0 +1,20 @@
+
+div#intro
+{
+  background-image: url('../images/intro.jpg');
+  background-repeat: repeat-x;
+  color: #374565;
+  font-size: 11pt;
+  font-weight: bold;
+  border: 1px solid #5c6988;
+  width: 540px;
+  height: 280px;
+  text-align: center;
+  display: none;
+}
+
+div#intro a
+{
+  color: #374565;
+  font-weight: normal;
+}

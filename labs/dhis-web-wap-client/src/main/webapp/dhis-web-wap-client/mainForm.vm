@@ -1,0 +1,13 @@
+ 
+<link type="text/css" rel="stylesheet"  href="/../dhis-web-wap-client/style/default.css" />
+
+<h3>Choose One Please</h3>
+
+<form method="get" name="choices" action="AvailableFacilityReportsFormAction.action" >
+<input type="submit" id="facility" name="facility" value="Facility Reporting"></input>
+</form>
+
+
+<form method="post" name="choices" action="AvailableNameBasedReportsFormAction.action" method="post">
+<input type="submit" id="tracking" name="tracking" value="Name Based Reporting"></input>
+</form>

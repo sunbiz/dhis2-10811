@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<egroup>
+	<id>$egroup.id</id>
+	<name>$encoder.xmlEncode( $egroup.name )</name>
+	<sortOrder>$egroup.sortOrder</sortOrder>
+	<formid>$egroup.form.id</formid>
+	<elements>
+		#foreach($element in $egroup.elements)
+			<element>
+				<id>$element.id</id>
+				<name>$encoder.xmlEncode( $element.name )</name>
+				<label>$encoder.xmlEncode($element.label)</label>	
+				<type>$encoder.xmlEncode($element.type)</type>
+				<controlType>$encoder.xmlEncode($element.controlType)</controlType>	
+				<initialValue>$encoder.xmlEncode($element.initialValue)</initialValue>
+				<formLink>$element.formLink.id</formLink>
+				<required>$encoder.xmlEncode($element.required)</required>
+				<sortOrder>$element.sortOrder </sortOrder>
+			</element>
+		#end
+	</elements>		
+</egroup>

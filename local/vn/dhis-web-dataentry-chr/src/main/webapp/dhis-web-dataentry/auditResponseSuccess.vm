@@ -1,0 +1,27 @@
+<html> 
+<head>
+<style type="text/css">
+h4 {
+    font-family: arial, sans-serif;
+    font-size: 12px;
+    margin: 15px 0 5px 0;
+    }
+</style>
+</head>
+<h3>$i18n.getString( 'audit' )</h3><br>
+	<strong >
+			$dataElement.name &nbsp; $dataElementCategoryOptionCombo.name<br>
+			$organisationUnit.name<br>	
+	</strong>
+$i18n.getString( 'audit_from' ) $period.startDate $i18n.getString( 'audit_to' ) $period.EndDate <br>	
+	<table border=1><td>$i18n.getString( 'audit_value' )</td><td>$i18n.getString( 'audit_stored_by' )</td><td>$i18n.getString( 'audit_time' )</td><td>$i18n.getString( 'audit_operation' )</td>
+#foreach( $dataValueAudit in $dataValueAudits )
+		<tr>
+			<td> $dataValueAudit.value </td>
+			<td> $dataValueAudit.storedBy </td>
+			<td> $dataValueAudit.timestamp </td>
+			<td> $i18n.getString( $dataValueAudit.revisionType ) </td>
+		</tr>
+#end
+</table>
+</html>

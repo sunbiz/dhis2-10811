@@ -1,0 +1,66 @@
+<h3>$i18n.getString('export_reports') #openHelp( "excelReportingListOfExportReports" )</h3>
+<table width="100%">
+	<tr>
+		<td>
+			$i18n.getString( "filter_by_name" ): <input type="text" onkeyup="filterValues( this.value , 1)" style="width:300px"/>
+		</td>
+		<td align="right">
+			<input type="button" onclick="window.location = 'addExportReportForm.action'" value="$i18n.getString('add')" style="width:100px"/>
+			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location='administration.action'" style="width:100px"/>
+		</td>
+	</tr>
+</table>
+<table width="100%" class="listTable" id="listTable">
+	<thead>
+		<tr>
+			<th>$i18n.getString('name')</th>
+			<th>$i18n.getString('report_type')</th>
+			<th>$i18n.getString('excel_template')</th>		
+			<th width="120px" class="{sorter: false}">$i18n.getString('basic')</th>
+			<th width="100px" class="{sorter: false}">$i18n.getString('advanced')</th>			
+		</tr>
+	</thead>	
+	<tbody id="list">	
+	#foreach( $exportReport in $!exportReports )
+	#set( $exist = $!templateMap.get( $exportReport.excelTemplateFile ) )
+		<tr id="tr${exportReport.id}">
+			<td>$!encoder.htmlEncode( $exportReport.displayName )</td>
+			<td>$i18n.getString( $exportReport.reportType )</td>
+			<td>
+				#if( $exist )
+					<a href="downloadFile.action?fileName=$encoder.htmlEncode( $exportReport.excelTemplateFile )" title="download">$encoder.htmlEncode( $exportReport.excelTemplateFile )</a>
+				#else
+					$encoder.htmlEncode( $exportReport.excelTemplateFile ) <img src="images/question.png" alt="$i18n.getString( 'missing_template' )" title="$i18n.getString( 'missing_template' )"/>
+				#end
+			</td>
+			<td align="left">
+				<a href="openDefineAssociationsForm.action?exportReportId=$exportReport.id" title="$i18n.getString( 'define_associations' )"><img src="../images/assign.png" alt="$i18n.getString( 'define_associations' )"/></a>
+				<a href="openExportReportUserRole.action?id=$exportReport.id" title="$i18n.getString( 'assign_exportreport_userrole' )"><img src="images/user_32.png" alt="$i18n.getString( 'update_exportreport_userrole' )"/></a>				
+				<a href="updateExportReportForm.action?id=$exportReport.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>				
+				<a href="javascript:removeItem( $exportReport.id, '$exportReport.displayName', '$i18n.getString( 'confirm_delete' )', 'deleteExportReport.action');" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+			</td>
+			<td>	
+				<a href="listExportItemAction.action?exportReportId=$exportReport.id" title="$i18n.getString( 'export_item' )"><img src="../images/add_section.png" alt="$i18n.getString( 'export_item' )"/></a>
+				#if( $exportReport.isOrgUnitGroupListing() )
+				<a href="openUpdateOrgUnitGroupListingReport.action?id=$exportReport.id" title="$i18n.getString( 'organisation_unit_group' )"><img src="images/group_1.jpg"/></a>
+				<a href="organisationUnitAtLevels.action?id=$exportReport.id" title="$i18n.getString( 'set_organisationunit_group_level' )"><img src="images/organisationunitlevel.png" alt="$i18n.getString( 'set_organisationunit_group_level' )"/></a>				
+				#elseif( $exportReport.isAttribute() )
+				<a href="listAttributeValueGroupOrderForExportReport.action?id=$exportReport.id" title="$i18n.getString( 'attributevalue_groups' )"><img src="images/group.jpg" alt="$i18n.getString( 'attributevalue_groups' )"/></a>				
+				#elseif( $exportReport.isCategory() )
+				<a href="listDataElementGroupOrderForExportReport.action?id=$exportReport.id" title="$i18n.getString( 'dataelement_groups' )"><img src="images/group.jpg" alt="$i18n.getString( 'dataelement_groups' )"/></a>				
+				#elseif( $exportReport.isCategoryVertical() )
+				<a href="listCategoryOptionGroupOrderForExportReport.action?id=$exportReport.id" title="$i18n.getString( 'categoryoption_groups' )"><img src="images/group.jpg" alt="$i18n.getString( 'categoryoption_groups' )"/></a>				
+				#elseif( $exportReport.isPeriodColumnListing() )
+				<a href="periodColumns.action?id=$exportReport.id" title="$i18n.getString( 'period_columns' )"><img src="images/calendar.png"/></a>
+				#end
+			</td>
+		</tr>		
+	#end
+	</tbody>
+</table>
+
+<script>
+	jQuery(document).ready(function(){	  
+		tableSorter( 'listTable' );	
+    });
+</script>

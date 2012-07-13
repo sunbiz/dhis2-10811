@@ -1,0 +1,9 @@
+{ "inventoryType":
+  {
+    "id": "${inventoryType.id}",
+	"name": "$!encoder.jsonEncode( ${inventoryType.name} )",
+	"description": "$!encoder.jsonEncode( ${inventoryType.description} )",
+	"catalogType": "$!encoder.jsonEncode( ${inventoryType.catalogType.name} )",
+	"tracking":  "$!{inventoryType.tracking}"
+  }
+}

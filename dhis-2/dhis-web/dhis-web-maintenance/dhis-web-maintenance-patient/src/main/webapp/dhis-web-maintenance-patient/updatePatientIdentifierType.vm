@@ -1,0 +1,87 @@
+<script type="text/javascript" src="javascript/updatePatientIdentifierTypeForm.js"></script>
+
+<h3>$i18n.getString( "edit_patient_identifier_type" )</h3>
+									
+<form id="updatePatientIdentifierTypeForm" action="updatePatientIdentifierType.action" method="post" >
+<input type="hidden" id="id" name="id" value="$patientIdentifierType.id"/>
+<table>	
+	 <thead>
+      <tr>
+        <th colspan="4">$i18n.getString( "patient_identifier_type_details" ) </th>
+      </tr>
+    </thead>
+    
+	<tbody>
+		<tr>
+			<td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td><input style="width: 330px;" type="text" id="name" name="name"  value="$encoder.htmlEncode($patientIdentifierType.name)" class="{validate:{required:true,rangelength:[4,100]}}"/></td>
+			<td></td>
+		</tr>
+		
+		<tr>
+			<td><label>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td><input style="width: 330px;" type="text" id="description" name="description" value="$encoder.htmlEncode($!patientIdentifierType.description)" class="{validate:{required:true,minlength:4, maxlength: 150}}"/></td>
+			<td></td>
+		</tr>	
+		
+		<tr>
+			<td><label for="mandatory">$i18n.getString( "mandatory" )</label></td>
+			<td>
+				<input style="margin: 0;" type='checkbox' id="mandatory" name="mandatory" #if( $patientIdentifierType.mandatory ) checked #end >
+			</td>		
+			<td></td>				
+		</tr>
+		
+		<tr>
+			<td><label for="related">$i18n.getString( "related" )</label></td>
+			<td>
+				<input style="margin: 0;" type='checkbox' name="related" #if( $patientIdentifierType.related ) checked #end >
+			</td>		
+			<td></td>				
+		</tr>
+		
+		<tr>
+			<td><label for="noChars">$i18n.getString( "no_of_char" )</label></td>
+			<td>
+				<input style="width: 330px;" type="text" name="noChars" id="noChars" value="$!patientIdentifierType.noChars" class="{validate:{required:false, number:true}}" />
+			</td>		
+			<td></td>				
+		</tr> 	
+		
+		<tr>
+			<td><label for="type">$i18n.getString( "type" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td>
+				<select style="width: 336px;" id="type" name="type" class="{validate:{required:true}}">
+					<option value="text" #if( $patientIdentifierType.type=='text' ) selected="selected" #end>$i18n.getString( "text" )</option>
+					<option value="number" #if( $patientIdentifierType.type=='number' ) selected="selected" #end>$i18n.getString( "number" )</option>
+					<option value="letter" #if( $patientIdentifierType.type=='letter' ) selected="selected" #end>$i18n.getString( "letter_only" )</option>
+				</select>
+			</td>		
+			<td></td>				
+		</tr>
+		
+		<tr>
+			<td><label for="programId">$i18n.getString( "program" )</label></td>
+			<td>
+				<select style="width: 336px;" type="text" name="programId" id="programId" value="$!patientIdentifierType.program" >
+					<option value=''>[$i18n.getString('all')]</option>
+					#foreach( $program in $programs)
+						<option value='$program.id' #if($patientIdentifierType.program.id==$program.id) selected #end>$program.name</option>
+					#end
+				</select>
+			</td>		
+			<td></td>				
+		</tr> 
+		
+	</tbody>
+	<tr>
+		<td></td>
+		<td>
+			<input type="submit" value="$i18n.getString( 'update' )" />
+			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientIdentifierType.action'" />
+		</td>
+	</tr>
+</table>
+
+
+</form>

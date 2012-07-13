@@ -1,0 +1,26 @@
+<h2>$i18n.getString('formula_list')</h2>
+<p><input type="button" onClick="javascript: window.location.href='getDataSetsAndForms.action'" value="$i18n.getString('add')"/></p>
+<table width='100%'>
+	<tr>
+	    <th width='30%'>$i18n.getString('name')</th>
+		<th width='30%'>$i18n.getString('operand')</th>
+		<th width='30%'>$i18n.getString('mainForm')</th>
+		<th width='30%'>$i18n.getString('formula')</th>
+		<th width='30%'>$i18n.getString('forms')</th>
+		<th width='30%'>$i18n.getString('operator')</th>
+	</tr>
+	#foreach($formReport in $formReports)
+	<tr>
+	  	<td>$!formReport.name</td>
+		<td>$!formReport.operand</td>
+		<td>$!formReport.mainForm.name</td>
+		<td>$!formReport.formula</td>
+		<td>$!formReport.forms</td>
+		<td><a href="javascript: window.location = 'getFormReport.action?id=' + $!formReport.id;" title='$i18n.getString('edit')'> 
+				<img src='../images/edit.png' alt='$i18n.getString('edit')'></a>
+			<a href="javascript: var i18n_confirm_delete = '$encoder.jsEscape($i18n.getString( "confirm_delete" ) , "'")'; deleteFormReport('$!formReport.id');" title='$i18n.getString('delete')'> 
+				<img src='../images/delete.png' alt='$i18n.getString('delete')'></a>
+		</td>
+	</tr>
+	#end
+</table>

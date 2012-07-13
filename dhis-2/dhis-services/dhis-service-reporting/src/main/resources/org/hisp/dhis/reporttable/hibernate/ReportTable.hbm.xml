@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+    [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+    >
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.reporttable.ReportTable" table="reporttable">
+
+    <cache usage="read-write" />
+
+    <id name="id" column="reporttableid">
+      <generator class="native" />
+    </id>
+    &identifiableProperties;
+
+    <property name="regression" />
+
+    <property name="cumulative" />
+
+    <list name="dataElements" table="reporttable_dataelements">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_dataelements_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="dataelementid" class="org.hisp.dhis.dataelement.DataElement"
+          foreign-key="fk_reporttable_dataelements_dataelementid" />
+    </list>
+
+    <list name="indicators" table="reporttable_indicators">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_indicators_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="indicatorid" class="org.hisp.dhis.indicator.Indicator"
+          foreign-key="fk_reporttable_indicators_indicatorid" />
+    </list>
+
+    <list name="dataSets" table="reporttable_datasets">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_datasets_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="datasetid" class="org.hisp.dhis.dataset.DataSet"
+          foreign-key="fk_reporttable_datasets_datasetid" />
+    </list>
+
+    <many-to-one name="categoryCombo" class="org.hisp.dhis.dataelement.DataElementCategoryCombo"
+        column="categorycomboid"
+        foreign-key="fk_reporttable_categorycombo" />
+
+    <list name="periods" table="reporttable_periods">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_periods_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="periodid" class="org.hisp.dhis.period.Period"
+          foreign-key="fk_reporttable_periods_periodid" />
+    </list>
+
+    <list name="units" table="reporttable_organisationunits">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_organisationunits_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="organisationunitid" class="org.hisp.dhis.organisationunit.OrganisationUnit"
+          foreign-key="fk_reporttable_organisationunits_organisationunitid" />
+    </list>
+
+    <list name="organisationUnitGroups" table="reporttable_orgunitgroups">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_orgunitunitgroups_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="orgunitgroupid" class="org.hisp.dhis.organisationunit.OrganisationUnitGroup"
+          foreign-key="fk_reporttable_orgunitgroups_orgunitgroupid" />
+    </list>
+
+    <property name="doIndicators" />
+
+    <property name="doPeriods" />
+
+    <property name="doUnits" />
+
+    <component name="relatives">
+      <property name="reportingMonth" />
+      <property name="reportingBimonth" />
+      <property name="reportingQuarter" />
+      <property name="lastSixMonth" />
+      <property name="monthsThisYear" />
+      <property name="quartersThisYear" />
+      <property name="thisYear" />
+      <property name="monthsLastYear" />
+      <property name="quartersLastYear" />
+      <property name="lastYear" />
+      <property name="last5Years" />
+      <property name="last12Months" />
+      <property name="last4Quarters" />
+      <property name="last2SixMonths" />
+      <property name="thisFinancialYear" />
+      <property name="lastFinancialYear" />
+      <property name="last5FinancialYears" />
+    </component>
+
+    <component name="reportParams">
+      <property name="paramReportingMonth" />
+      <property name="paramLeafParentOrganisationUnit" />
+      <property name="paramGrandParentOrganisationUnit" />
+      <property name="paramParentOrganisationUnit" />
+      <property name="paramOrganisationUnit" />
+    </component>
+
+    <property name="sortOrder" />
+
+    <property name="topLimit" />
+
+  </class>
+</hibernate-mapping>

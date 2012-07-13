@@ -1,0 +1,209 @@
+<script type="text/javascript">
+   jQuery(document).ready(function(){
+		
+		$( "#pivotTable" ).click( setPosition );
+
+		selectionTreeSelection.setMultipleSelectionAllowed( false );
+		selectionTreeSelection.setListenerFunction( organisationUnitSelected );
+		selectionTree.clearSelectedOrganisationUnits();
+		selectionTree.buildSelectionTree();
+
+		datePickerInRange( 'startDate' , 'endDate' );	
+	});
+	
+	var i18n_indicator_group = '$encoder.jsEscape( $i18n.getString( "indicator_group" ) , "'")';
+	var i18n_start_date = '$encoder.jsEscape( $i18n.getString( "start_date" ) , "'")';
+	var i18n_end_date = '$encoder.jsEscape( $i18n.getString( "end_date" ) , "'")';
+	var i18n_period_type = '$encoder.jsEscape( $i18n.getString( "period_type" ) , "'")';
+	var i18n_organisation_unit_level = '$encoder.jsEscape( $i18n.getString( "organisation_unit_level" ) , "'")';
+	var i18n_selected_organisation_unit = '$encoder.jsEscape( $i18n.getString( "please_select_org_unit" ) , "'")';
+</script>
+
+<style type="text/css">
+div#control
+{
+  margin-bottom: 15px;
+}
+
+div#pivot
+{
+  position: relative;
+  left: 2px;
+  width: 265px;
+  height: 137px;
+  border: 1px solid #b0b0b0;
+  background-color: #d9ece1;
+  padding-left: 20px;
+  margin-bottom: 6px;
+  border-radius: 3px;
+}
+
+div#pivotMenu
+{
+  position: absolute;
+  display: none;
+}
+
+div.inputSection
+{
+  padding-top: 7px;
+  padding-bottom: 5px;
+}
+
+.pivot
+{ 
+  border-collapse: collapse;
+}
+
+.pivot td
+{
+  border: 1px solid #c0c0c0;
+  padding: 3px 10px 10px 3px;
+  padding-bottom: 3px;
+}
+
+td.column
+{
+  background-color: #dae6f8;
+  min-width: 60px;
+  text-align: center;
+}
+
+td.row
+{
+  background-color: #dae6f8;
+  min-width: 120px;
+}
+
+td.cell
+{
+  text-align: center;
+  cursor: pointer;
+}
+
+</style>
+
+<h3>$i18n.getString( "pivot_table" ) #openHelp( "web_pivot_table" )</h3>
+
+<!-- Control panel -->
+
+<div id="control">
+<input type="button" value="$i18n.getString( 'data' )" style="width:110px" onclick="showCriteria()" />
+<input type="button" value="$i18n.getString( 'pivot' )" style="width:110px" onclick="showPivot()" />
+<input type="button" value="$i18n.getString( 'get_report_as_xls' )" onclick="exportXls()" style="width:130px">
+<input type="button" value="$i18n.getString( 'back' )" style="width:110px" onclick="window.location='index.action'" />&nbsp;&nbsp;
+<label id="dataLabel" style="color:#606060"></label>
+</div>
+
+<!-- Criteria -->
+
+<div id="criteria" class="inputCriteria" style="width:302px;height:520px;">
+
+<div class="inputSection">
+<label>$i18n.getString( "data_type" )</label>
+<select id="dataType" style="width:280px" onchange="toggleDataType()">
+  <option value="0">$i18n.getString( "indicator" )</option>
+  <option value="1">$i18n.getString( "data_element" )</option>
+</select>
+</div>
+
+<div id="indicatorGroupDiv" class="inputSection">
+<label>$i18n.getString( "indicator_group" )</label>
+<select id="indicatorGroup" style="width:280px">
+  <option value="-1">[ All ]</option>
+  #foreach( $group in $indicatorGroups )
+  <option value="${group.id}">$encoder.htmlEncode( $group.name )</option>
+  #end
+</select>
+</div>
+
+<div id="dataElementGroupDiv" class="inputSection" style="display:none">
+<label>$i18n.getString( "data_element_group" )</label>
+<select id="dataElementGroup" style="width:280px">
+  <option value="-1">[ All ]</option>
+  #foreach( $group in $dataElementGroups )
+  <option value="${group.id}">$encoder.htmlEncode( $group.name )</option>
+  #end
+</select>
+</div>
+
+<div class="inputSection">
+<label>$i18n.getString( "start_date" )</label><br>
+<input type="text" id="startDate" style="width:240px">
+</div>
+
+<div class="inputSection">
+<label>$i18n.getString( "end_date" )</label><br>
+<input type="text" id="endDate" style="width:240px">
+</div>
+
+<div class="inputSection">
+<label>$i18n.getString( "period_type" )</label>
+<select id="periodType" style="width:280px">
+  #foreach( $type in $periodTypes )
+  <option value="${type.name}" #if( $type.name == "Monthly" )selected="selected"#end>$i18n.getString(  $type.name )</option>
+  #end
+</select>
+</div>
+
+<div id="selectionTree" style="width:280px; height:200px"></div>
+
+<div class="inputSection">
+<input type="button" value='$i18n.getString( "get_data" )' style="width:120px" onclick="getData()">
+<input type="button" value='$i18n.getString( "cancel" )' style="width:120px" onclick="hideDivs()">
+</div>
+
+</div>
+ 
+<!-- Pivot -->
+
+<div id="pivot" class="inputCriteria" style="width:302px;height:137px;display:none;">
+
+<div class="inputSection">
+<table>
+  <tr>
+    <td><label>$i18n.getString( "indicators" )</label></td>
+    <td><input type="checkbox" id="indicatorBox" checked="checked"></td>
+  </tr>
+  <tr>
+    <td><label>$i18n.getString( "periods" )</label></td>
+    <td><input type="checkbox" id="periodBox"></td>
+  </tr>
+  <tr>
+    <td><label>$i18n.getString( "org_units" )</label></td>
+    <td><input type="checkbox" id="orgunitBox"></td>
+  </tr>
+</table>
+</div>
+
+<div class="inputSection">
+	<input type="button" value='$i18n.getString( "pivot" )' style="width:120px" onclick="pivotData()" />
+	<input type="button" value='$i18n.getString( "cancel" )' style="width:120px" onclick="hideDivs()" />
+</div>
+
+</div>
+
+<!-- Pivot menu -->
+
+<div id="pivotMenu" class="menuDropDownArea" onmouseover="cancelHideDropDownTimeout()" onmouseout="hideDropDownTimeout()">
+  <ul class="menuDropDownBox">
+    <li><a href="javascript:viewChart( 'single', 'period' )">$i18n.getString( "this_indicator_and_periods" )&nbsp;</a></li>
+    <li><a href="javascript:viewChart( 'single', 'orgunit' )">$i18n.getString( "this_indicator_and_orgunits" )&nbsp;</a></li>
+    <li><a href="javascript:viewChart( 'viewChart( 'all', 'period' )">$i18n.getString( "all_indicator_and_periods" )&nbsp;</a></li>
+    <li><a href="javascript:viewChart( 'viewChart( 'all', 'orgunit' )">$i18n.getString( "all_indicator_and_orgunits" )&nbsp;</a></li>
+  </ul>
+</div>
+
+<!-- Pivot table -->
+
+#parse( "dhis-web-commons/loader/loader.vm" )
+
+<div id="contentDiv">
+    
+<table id="pivotTable" class="pivot"></table>
+
+</div>
+
+<div id="chartView" style="display:none; padding:0; margin:0;">
+	<img id="chartImage" src="" style="padding: 10px;"></img>
+</div>

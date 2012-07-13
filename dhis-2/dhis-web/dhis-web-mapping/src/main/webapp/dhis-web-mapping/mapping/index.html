@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>DHIS 2 - OpenHealthMapper</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <!-- CSS -->
+	
+        <!-- ExtJS -->
+        <link rel="stylesheet" type="text/css" href="../resources/ext/resources/css/ext-all.css"/>
+
+            <!-- UX -->
+            <link rel="stylesheet" type="text/css" href="../resources/ext-ux/theme/gray-extend/xtheme-gray-extend.css"/>
+            <link rel="stylesheet" type="text/css" href="../resources/ext-ux/ext-ux.css"/>
+        
+		<!-- DHIS -->
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+</head>
+
+<body>
+    <div id="loading"></div> 
+    
+    <div id="north"></div>
+    
+    <div id="olmap"></div>
+    
+    <div id="south"></div>
+    
+    <div id="mouseposition"></div>
+    
+    <div id="featuredatatext"></div>
+    
+    <div id="polygonlegend"></div>
+    
+    <div id="pointlegend"></div>
+    
+    <div id="symbollegend"></div>
+    
+    <div id="centroidlegend"></div>
+	
+    <form id="exportForm" method="post">
+        <input type="hidden" id="titleField" name="title"/>
+        <input type="hidden" id="viewBoxField" name="viewBox"/>
+        <input type="hidden" id="layerField" name="layer"/>
+        <input type="hidden" id="imageLegendRowsField" name="imageLegendRows"/>
+        <input type="hidden" id="svgField" name="svg"/>
+        <input type="hidden" id="includeLegendsField" name="includeLegends"/>
+        <input type="hidden" id="includeValuesField" name="includeValues"/>
+        <input type="hidden" id="periodField" name="period"/>
+        <input type="hidden" id="periodField2" name="period2"/>
+        <input type="hidden" id="indicatorField" name="indicator"/>
+        <input type="hidden" id="indicatorField2" name="indicator2"/>
+        <input type="hidden" id="legendsField" name="legends"/>
+        <input type="hidden" id="legendsField2" name="legends2"/>
+        <input type="hidden" id="dataValuesField" name="datavalues"/>
+		<input type="hidden" id="imageFormat" name="imageFormat"/>
+    </form>
+    
+    <!-- JavaScript -->
+    
+        <!-- ExtJS -->
+        <script type="text/javascript" src="../resources/ext/adapter/ext/ext-base.js"></script>
+        <script type="text/javascript" src="../resources/ext/ext-all.js"></script>
+        
+            <!-- UX -->
+            <script type="text/javascript" src="../resources/ext-ux/ext-ux.js"></script>
+        
+        <!-- OpenLayers -->
+        <script type="text/javascript" src="../resources/openlayers-2.11/OpenLayers.js"></script>
+		
+			<!-- Extensions -->
+			<script type="text/javascript" src="../resources/openlayers-2.11/script/OpenStreetMap.js"></script>
+		
+            <!-- UX -->
+            <script type="text/javascript" src="../resources/openlayers-ux/newSelectFeature.js"></script>
+        
+        <!-- GeoExt -->
+        <script type="text/javascript" src="../resources/geoext/script/GeoExt.js"></script>
+       
+        <!-- MapFish -->
+        <script type="text/javascript" src="../resources/mapfish/MapFish.js"></script>
+        
+        <!-- DHIS -->
+        <script type="text/javascript" src="i18n.action"></script>
+        <script type="text/javascript">window.google = null;</script>
+        <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="javascript/global.js"></script>
+        <script type="text/javascript" src="javascript/index.js"></script>
+</body>
+
+</html>

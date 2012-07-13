@@ -1,0 +1,178 @@
+   <script language="javascript" src="javascripts/nutritionTable.js"></script>
+   <script language="javascript">
+    	function getData(dataObject){
+			
+			var data = document.getElementById(dataObject).value;
+			var object = data.split(';');
+			return object;
+		}
+    </script>
+  <form name="listObjectForm" method="post" action="" >
+  #set($birthday='')
+    <table width="100%">
+      <tr class="moduleheader">
+        <td colspan="13" class="moduleheader"><font size="+1">$form.label</font></td>
+      </tr>
+      <tr>
+        <td colspan="13">&nbsp;</td>
+      <tr>
+        <td colspan="13">
+          <input name="txtCondition" id="txtCondition" value="" type="text" ><!-- onKeyPress="javascript: if(event.keyCode==13){searchObject('txtCondition');}" -->
+          <input name="Submit" value="$i18n.getString('search')" onClick="javascript: searchObject('txtCondition');" type="button">
+        <input name="button3" class="bodytext" onClick="javascript: addObjectForm(byId('birthday').value);" value="$i18n.getString('add')" type="button">
+        <input name="button32" class="bodytext" onClick="javascript: i18n_confirm_delete = '$encoder.jsEscape($i18n.getString( "confirm_delete" ) , "'")';  deleteObject(byId('deleteid').value);" title="$i18n.getString('delete')" value="$i18n.getString('delete')" type="button">        </td>
+    </table>
+	<table width="100%">
+    #foreach($egroup in $form.egroups)
+      	#foreach($element in $!egroup.elements)		
+			#if($!element.formLink)
+			<tr><td colspan="2" #alternate( 'false' ) align="left"><strong>$!element.egroup.name</strong></td></tr>
+				<tr><td>$!element.label</td>
+				<td><br>
+  				#foreach($dt in $!parentObject)
+			 		$dt
+					 #set($birthday=$dt)
+					<br>
+				#end
+				</td> </tr>
+			#end
+		#end
+	#end
+	<input type='hidden' id='birthday' name='birthday' value='$!birthday'>
+	</table>
+	<br>
+<table width="100%">
+      <tr class="tableheader" valign="middle" height="20" nowrap="nowrap">
+	  #set($i=0)
+	  #set($noColumn = $form.noColumn)
+	  <th>$i18n.getString('STT')</th>
+	
+	  #set ($sex=-1)
+	  #foreach($egroup in $form.egroups)
+      	#foreach($element in $!egroup.elements)		
+		    #if($!element.formLink)
+	  		#elseif($i < $noColumn )
+					<th>$!element.label</th>
+					#if($!element.name=='PNam')
+						#set ($sex=$i)
+					#end
+					#set($i = $i+1)
+			#end 
+			
+        #end
+	#end
+	
+<!--	<th>Add by</th> -->
+	<th>&nbsp;</th>
+	    #if($!formLinks != '[]')
+			<th>$i18n.getString('functions')</th>
+        #end
+        <th>$i18n.getString('operations')</th>
+
+        
+  </tr>
+     
+	  #set($i=1)
+      #set($k=1)
+      #set($id='')
+	  #set( $mark = false )
+      #foreach($dt in $!data)
+      	#set($i=1)
+        #set($array =' ')
+		#set($pos = -1)
+		#set($addby='')
+<tr #alternate( $mark )>
+
+			#foreach($object in $!dt)
+
+				
+				#if($i < $noColumn + 3)
+					#if( $i==1 ) 
+						#set($id=$object)
+						<td> $k </td>
+						#set($k = $k +1)
+					#elseif($i == $noColumn + 2)
+						#set($addby=$!object)
+						#set($i = 0)
+
+						<!-- <td>$!object</td> -->
+					#else
+	  					<td>$!object</td>
+					
+			        #end
+		
+			#set($array = $array + $!object + ";") 
+        		#end
+				
+				#set($i = $i +1)
+			#end
+			<input type="hidden" id="data$id" name="data$id" value="$array">		
+			<input type="hidden" id="deleteid" name="deleteid">		
+			<td><input type="radio" name="delete" id="delete" value="$id" onChange="if(this.checked){byId('deleteid').value=$id}"> </td>
+			#if($!formLinks != '[]')
+               <td>
+               	 #foreach($!e in $!formLinks)
+
+		                   <a href="javascript: openLink('$!e.form.id', '$id', '$!e.name', '$!birthday', '$!sex')" title="$!e.form.label">
+							 <img src="../images/$!e.form.icon"  alt="$!e.form.label" width="24" height="24"> </a>
+                #end
+               </td>
+             #end		
+	    
+               
+			
+               <td>
+			 
+			<!-- <a href="javascript: openUpdateObjectForm($id);" title="$i18n.getString('edit')"> -->
+			 
+						
+<!-- <a href="javascript: openUpdateElementForm($element.id);" title="$i18n.getString('edit')">
+						<img src="../images/edit.png" alt="$i18n.getString('edit')"></a>  -->
+					
+	 					<!-- #if($addby==$curUser.id)
+							<a href="javascript: openUpdateObjectForm($id);" title="$i18n.getString('edit')">
+								<img src="../images/edit.png" alt="$i18n.getString('edit')">
+							</a> 
+						
+
+							<a href="javascript: var i18n_confirm_delete = '$encoder.jsEscape($i18n.getString( "confirm_delete" ) , "'")'; deleteObject($id);" title="$i18n.getString('delete')">
+								<img src="../images/delete.png" alt="$i18n.getString('delete')">
+							</a>
+							
+							
+						#else
+							<img src="../images/edit_disable.png" alt="$i18n.getString('edit')" onClick='javascript: alert("$i18n.getString('access_deny')")' style="cursor:pointer ">
+							<img src="../images/delete_disable.png" alt="$i18n.getString('delete')" onClick='javascript: alert("$i18n.getString('access_deny')")' style="cursor:pointer ">
+						#end  -->
+						
+							<a href="javascript: openUpdateObjectForm($id);" title="$i18n.getString('edit')">
+								<img src="../images/edit.png" alt="$i18n.getString('edit')">
+							</a> 
+						
+							<a href="javascript: var i18n_confirm_delete = '$encoder.jsEscape($i18n.getString( "confirm_delete" ) , "'")'; deleteObject($id);" title="$i18n.getString('delete')">
+								<img src="../images/delete.png" alt="$i18n.getString('delete')">
+							</a>
+							
+					
+                       
+			   </td> 
+               
+    </tr>
+		  
+		  #if( $mark )
+				#set( $mark = false )
+		  #else
+				#set( $mark = true )
+		  #end
+			
+	#end        
+ 
+      </tr>
+	  <tr><td colspan="15" align='right'>        <input name="button3" class="bodytext" onClick="javascript: addObjectForm();" value="$i18n.getString('add')" type="button"></td></td></tr>
+ 
+    </table>
+  </form>
+  <span id="message" style="top:100px;right:5px;position:fixed;width:50%;z-index:10004" onclick="hideById(this.id);"></span>
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;" onclick="hideById(this.id)"></span>
+
+

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="org.hisp.dhis.vn.chr.Element" table="element">
+    
+    	<cache usage="read-write"/>
+    	
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        <many-to-one name="form" class="org.hisp.dhis.vn.chr.Form" fetch="select">
+            <column name="formid" not-null="true" />
+        </many-to-one>
+        <many-to-one name="egroup" class="org.hisp.dhis.vn.chr.Egroup" fetch="select">
+            <column name="groupid" />
+        </many-to-one>
+        <property name="name" type="string">
+            <column name="name" not-null="true" />
+        </property>
+        <property name="label" type="string">
+            <column name="label" not-null="true" />
+        </property>
+        <property name="type" type="string">
+            <column name="type" not-null="true" />
+        </property>
+        <property name="controlType" type="string">
+            <column name="controltype" not-null="true" />
+        </property>
+        <property name="initialValue" type="string">
+            <column name="initialvalue" not-null="true" length="3000"/>
+        </property>
+        
+        <many-to-one name="formLink" class="org.hisp.dhis.vn.chr.Form" fetch="select">
+            <column name="formLink" />
+        </many-to-one>
+        
+        <property name="required" type="boolean">
+            <column name="required" not-null="true" />
+        </property>
+        
+        <property name="sortOrder" type="int">
+            <column name="sortorder" not-null="true" />
+        </property>
+        
+        
+    </class>
+</hibernate-mapping>

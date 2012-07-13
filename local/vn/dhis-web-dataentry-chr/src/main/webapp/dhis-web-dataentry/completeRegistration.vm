@@ -1,0 +1,29 @@
+
+<hr style="clear:both">
+
+<table>
+	<tr>
+	    <td style="min-width:95px"><label for="completeButton">$i18n.getString( "complete" )</label></td>
+	    <td>
+	        <input type="button" id="completeButton" name="completeButton" value="$i18n.getString( 'complete' )" onclick="validateCompleteDataSet()"#if( $registration || $periods.size() == 0 ) disabled="disabled"#end>
+	        <input type="button" id="undoButton" name="undoButton" value="$i18n.getString( 'undo' )" onclick="undoCompleteDataSet()"#if( !$registration || $periods.size() == 0 ) disabled="disabled"#end>
+	        <input type="text" id="dateField" name="dateField" value="$!format.formatDate( $registrationDate )" style="width:160px"#if( $registration || $periods.size() == 0 ) disabled="disabled"#end>
+	        <div id="dateDiv" name="dateDiv" #if( $registration || $periods.size() == 0 ) style="display:none"#else style="display:inline"#end>
+	        <img src="../images/calendar_icon.gif" width="16" height="16" id="getDateField" cursor: pointer;" title="$i18n.getString( "date_selector" )" onmouseover="this.style.background='orange';" onmouseout="this.style.background=''">
+	        </div>
+	    </td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+    Calendar.setup({
+        inputField     :    "dateField",      // id of the input field
+        ifFormat       :    "$i18n.getString("format.date.label")",       // format of the input field
+        button         :    "getDateField"   // trigger for the calendar (button ID)
+    });
+</script>
+
+<script type="text/javascript">
+    var i18n_confirm_complete = '$encoder.jsEscape( $i18n.getString( "confirm_complete" ) , "'")';
+    var i18n_confirm_undo = '$encoder.jsEscape( $i18n.getString( "confirm_undo" ) , "'")';
+</script>

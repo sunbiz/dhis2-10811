@@ -1,0 +1,9 @@
+{ "inventoryTypeAttribute":
+  {
+    "id": "${inventoryTypeAttribute.id}",
+    "name": "$!encoder.jsonEncode( ${inventoryTypeAttribute.name} )",
+    "description": "$!encoder.jsonEncode( ${inventoryTypeAttribute.description} )",
+    "mandatory":  "$!{inventoryTypeAttribute.mandatory}",
+    "valueType": "$!encoder.jsonEncode( ${inventoryTypeAttribute.valueType} )"
+  }
+}

@@ -1,0 +1,13 @@
+{ "program":
+  {
+    "id": "$program.id",
+	"name": "$!encoder.jsEncode( ${program.name} )",
+	"description": "$!encoder.jsEncode( ${program.description} )",
+	"type": "$!program.type",
+	"displayProvidedOtherFacility": "$!program.displayProvidedOtherFacility",
+	"dateOfEnrollmentDescription": "$!encoder.jsEncode( ${program.dateOfEnrollmentDescription} )",
+	"dateOfIncidentDescription": "$!encoder.jsEncode( ${program.dateOfIncidentDescription} )",
+	"programStageCount": "${program.programStages.size()}",
+	"maxDay": "${program.maxDaysAllowedInputData}"
+  }
+}

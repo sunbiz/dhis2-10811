@@ -1,0 +1,113 @@
+<script type="text/javascript" src="javascript/updateProgramStageForm.js"></script>
+
+<h3>$i18n.getString( "edit_program_stage" )</h3>
+
+<form id="updateProgramStageForm" name="updateProgramStageForm" action="updateProgramStage.action" method="post">
+	<input type="hidden" id="id" name="id" value="$programStage.id"/>
+	  
+	<table id="detailsList">
+		<thead>
+			<tr><th colspan="2">$i18n.getString( "program_stage_details" )</th></tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+				<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $programStage.name )" class="{validate:{required:true,rangelength:[4,160]}}"/></td>
+			</tr>
+
+			<tr>
+				<td><label>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+				<td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $programStage.description )" class="{validate:{required:true,minlength:4}}"/></td>
+			</tr>  
+
+			<tr>
+				<td><label>$i18n.getString( "scheduled_days_from_start" )</label></td>
+				<td><input type="text" id="minDaysFromStart" name="minDaysFromStart" value="$programStage.minDaysFromStart" class="{validate:{number:true,min:0}}"/></td>
+			</tr> 
+
+			<tr>
+				<td><label>$i18n.getString( "repeatable" )</label></td>
+				<td><input type="checkbox" id="irregular" name="irregular" value='true' #if( $programStage.irregular && $programStage.irregular=='true' ) checked #end onchange='repeatableOnChange();' /></td>
+			</tr>	
+		  
+			<tr>
+				<td><label>$i18n.getString( "standard_interval_days" )</label></td>
+				<td><input type="text" id="standardInterval" name="standardInterval" value='$!programStage.standardInterval' class="{validate:{required:true,number:true}}" #if($programStage.irregular!='true' ) disabled #end /></td>
+			</tr>
+			<tr><td>&nbsp;</td></tr>       
+		  
+		</tbody>
+	</table>
+
+	<table id="programStageMembersArea">
+		<thead>
+			<tr>
+				<th>$i18n.getString( "available_data_elements" )</th>
+				<th></th>
+				<th>$i18n.getString( "selected_data_elements" )
+					<select id="selectedDataElementsValidator" name='selectedDataElementsValidator' multiple="multiple" class="hidden" > </select>
+					<select id="compulsories" name='compulsories' multiple="multiple" class="hidden"></select>
+					<select id="allowProvidedElsewhere" name='allowProvidedElsewhere' multiple="multiple" class="hidden"></select>
+				</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+		
+		<tr>
+			<td>
+				<select size="15" id="availableList" multiple="multiple" ondblclick="selectDataElements( )">
+				</select>
+			</td>
+			
+			<td style="text-align:center">
+				<input type="button" value="&gt;" class='filterButton' onclick="selectDataElements();"/><br/>
+				<input type="button" value="&lt;" class='filterButton' onclick="unSelectDataElements();"/><br/>
+				<input type="button" value="&gt;&gt;" class='filterButton' onclick="selectAllDataElements();"/><br/>
+				<input type="button" value="&lt;&lt;" class='filterButton' onclick="unSelectAllDataElements();"/>
+			</td>
+			
+			<td>
+				<div class="dataElementDiv">
+					<table>
+						<thead>
+							<tr>
+								<th>$i18n.getString( "dataelement" )</th>
+								<th width="20px">$i18n.getString( "compulsory" )</th>
+								<th width="20px">$i18n.getString( "allow_provided_elsewhere" )</th>
+							</tr>
+						</thead>
+						<tbody id="selectedList">
+							#foreach ( $programStageDataElement in $programStageDataElements )
+								<tr ondblclick="unSelectDataElement( this )" id="$programStageDataElement.dataElement.id">
+									<td onclick="select(this)">$encoder.htmlEncode( $programStageDataElement.dataElement.name )</td>
+									<td align="center"><input type="checkbox" name="compulsory" value="$programStageDataElement.dataElement.id" #if($programStageDataElement.compulsory == true ) checked #end /></td>
+									<td align="center"><input type="checkbox" name="allowProvided" value="$programStageDataElement.dataElement.id" #if($programStageDataElement.allowProvidedElsewhere == true ) checked #end /></td>
+								</tr>
+							#end
+						</tbody>
+					</table>
+				</div>
+			</td>
+			
+			<td>
+				<a href="javascript:moveUpDataElement()"><img src="../images/move_up.png"/></a><br/><br/>
+				<a href="javascript:moveDownDataElement()"><img src="../images/move_down.png"/></a><br/><br/>
+			</td>  
+			
+		</tr>
+		</tbody>
+	</table>
+	<p>
+		<input type="submit" value="$i18n.getString( 'update' )" />
+		<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='programStage.action?id=$programStage.program.id'" />
+	</p>
+
+</form> 	
+
+<script type="text/javascript">     
+    var i18n_invalid_min_max_days = '$encoder.jsEscape( $i18n.getString( "invalid_min_max_days" ) , "'")';
+    var i18n_value_must_positive = '$encoder.jsEscape( $i18n.getString( "value_must_positive" ) , "'")';
+    var i18n_value_must_integer = '$encoder.jsEscape( $i18n.getString( "value_must_integer" ) , "'")';
+    var i18n_compulsory_checkbox_title = '$encoder.jsEscape( $i18n.getString( "compulsory_checkbox_title" ) , "'")';      
+</script>

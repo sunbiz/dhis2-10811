@@ -1,0 +1,27 @@
+<html>
+  <h2>Upload files here</h2>
+ 	<form action="upload.action" method="post" enctype="multipart/form-data">
+      <input type="file" name="uploadFile" id="uploadFile" onChange="document.getElementById('uploadFilename').value = this.value">
+	  <input type="hidden" id="uploadFilename" name="uploadFilename">
+      <input type="submit" value="Upload">
+  	</form>
+  	
+
+   <div id='listfile'>
+   <table>
+	#foreach($file in $files)
+	<tr>
+	<td align='left'>
+		#set($size = $file.length())
+		<a href="#" onclick=" window.opener.document.getElementById('icon').value='$file.name'; self.close();">
+			<img src="../images/$file.name" style="width:16; height:16;" border="0"/>
+			$file.name - $size Byte
+		</a>
+	</td>
+	</tr>
+	#end 
+	</table> 	
+   </div>
+
+</body>
+</html>

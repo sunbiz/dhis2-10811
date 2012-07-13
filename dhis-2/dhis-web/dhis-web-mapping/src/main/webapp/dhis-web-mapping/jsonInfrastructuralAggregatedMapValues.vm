@@ -1,0 +1,1 @@
+#set( $size = $object.size() ){"mapValues":[#foreach( $value in $object ){"dataElementName":"$!{value.dataElementName}","value":$!{value.value}}#if( $velocityCount < $size ),#end#end]}

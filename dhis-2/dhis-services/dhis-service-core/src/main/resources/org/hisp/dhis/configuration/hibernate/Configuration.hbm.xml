@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.configuration.Configuration" table="configuration">
+
+    <id name="id" column="configurationid">
+      <generator class="native" />
+    </id>
+
+    <many-to-one name="feedbackRecipients" class="org.hisp.dhis.user.UserGroup"
+        column="feedbackrecipientsid" foreign-key="fk_configuration_feedback_recipients" />
+
+    <many-to-one name="completenessRecipients" class="org.hisp.dhis.user.UserGroup"
+        column="completenessrecipientsid" foreign-key="fk_configuration_completeness_recipients" />
+
+    <many-to-one name="offlineOrganisationUnitLevel" class="org.hisp.dhis.organisationunit.OrganisationUnitLevel"
+        column="offlineorgunitlevelid" foreign-key="fk_configuration_offline_orgunit_level" />
+
+    <many-to-one name="infrastructuralDataElements" class="org.hisp.dhis.dataelement.DataElementGroup"
+        column="infrastructuraldataelementsid" foreign-key="fk_configuration_infrastructural_dataelements" />
+
+    <many-to-one name="infrastructuralPeriodType" class="org.hisp.dhis.period.PeriodType"
+        column="infrastructuralperiodtypeid" foreign-key="fk_configuration_infrastructural_periodtype" />
+
+  </class>
+</hibernate-mapping>

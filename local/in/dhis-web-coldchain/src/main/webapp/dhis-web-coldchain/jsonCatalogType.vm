@@ -1,0 +1,19 @@
+{ "catalogType":
+  {
+    "id": "${catalogType.id}",
+	"name": "$!encoder.jsonEncode( ${catalogType.name} )",
+	"description": "$!encoder.jsonEncode( ${catalogType.description} )",
+	"catalogTypeAttributeCount": "${catalogTypeAttributes.size()}",
+	"dataEntryForm": "$!encoder.jsonEncode( ${catalogType.dataEntryForm.name} )",
+	
+	#set( $size = ${catalogTypeAttributes.size()} )
+	"catalogTypeAttribute": [
+	#foreach($typeAttribute in $catalogTypeAttributes)
+	  {
+		"id": "${typeAttribute.catalogTypeAttribute.id}",
+		"name": "$!encoder.jsonEncode( ${typeAttribute.catalogTypeAttribute.name} )"
+	  }#if( $velocityCount < $size ),#end
+	#end
+	]
+  }
+}

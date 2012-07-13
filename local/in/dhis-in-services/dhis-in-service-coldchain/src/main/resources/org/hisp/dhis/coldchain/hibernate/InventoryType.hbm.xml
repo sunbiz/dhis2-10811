@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+ 
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.inventory.InventoryType" table="inventorytype">
+    <id name="id" column="inventorytypeid">
+      <generator class="native"/>
+    </id>
+
+    <property name="name" not-null="true" unique="true" length="160"/>
+    
+    <property name="description" not-null="false" length="250"/>
+	
+	<many-to-one name="catalogType" class="org.hisp.dhis.coldchain.catalog.CatalogType" column="catalogtypeid"
+      foreign-key="fk_inventorytype_catalogypeid" />
+
+    <property name="tracking" column="tracking" />
+
+	<set name="dataSets" table="inventorytype_datasets">
+      <key column="inventorytypeid" foreign-key="fk_inventorytype_datasets_inventorytypeid" />
+      <many-to-many class="org.hisp.dhis.dataset.DataSet" column="datasetid"
+          foreign-key="inventorytype_datasets_datasetid" />
+    </set>
+
+	  
+    <set name="inventoryType_Attributes" order-by="sort_order" >
+      <key column="inventorytypeid" foreign-key="fk_inventorytype_inventoryType_Attributes_inventorytypeid" />
+      <one-to-many class="org.hisp.dhis.coldchain.inventory.InventoryType_Attribute" />
+    </set>	  
+	  	  
+	  	
+<!--	
+	<set name="inventoryTypeAttributes" table="inventorytype_attributes">
+      <key column="inventorytypeid" foreign-key="fk_inventorytype_attributes_inventorytypeid" />
+      <many-to-many class="org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute" column="inventorytypeattributeid"
+          foreign-key="fk_inventorytype_attributes_inventorytypeattributeid" />
+    </set>
+-->	
+
+<!--
+	<list name="inventoryTypeAttributes" table="inventorytype_attributes">
+		<key column="inventorytypeid" foreign-key="fk_inventorytype_attributes_inventorytypeid" />					 
+        <list-index column="sort_order" base="0" />
+        <many-to-many class="org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute" column="inventorytypeattributeid"
+			foreign-key="fk_inventorytype_attributes_inventorytypeattributeid" />
+	</list>
+-->
+
+    <many-to-one name="dataEntryForm" class="org.hisp.dhis.dataentryform.DataEntryForm"
+      foreign-key="fk_inventorytype_dataentryform" />		  
+
+  </class>
+</hibernate-mapping>

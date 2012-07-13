@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<operands>
+#foreach ( $operand in $operands )
+	<operand>
+		<id>$operand.id</id>
+		<name>$encoder.xmlEncode( $operand.operandName )</name>		
+	</operand>
+#end
+</operands>
+
+<!-- <dataelements>
+#foreach($dataelement in $dataelements)
+	<dataelement>
+		<id>$dataelement.id</id>
+		<name>$encoder.xmlEncode( $dataelement.name )</name>
+		<alternativeName>$encoder.xmlEncode($dataelement.shortName)</alternativeName>
+		<shortName>$encoder.xmlEncode($dataelement.shortName)</shortName>
+	</dataelement>
+#end
+</dataelements> -->

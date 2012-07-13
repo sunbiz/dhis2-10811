@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+	<id>$form.id</id>
+	<name>$encoder.xmlEncode( $form.name )</name>
+	<label>$encoder.xmlEncode($form.label)</label>	
+	<noColumn>$form.noColumn</noColumn>
+	<noColumnLink>$form.noColumnLink</noColumnLink>
+	<icon>$encoder.xmlEncode($form.icon)</icon>
+	<visible>$encoder.xmlEncode($form.visible)</visible>
+	<created>$encoder.xmlEncode($form.created)</created>
+	
+	<availabelEgroups>
+		#foreach($egroup in $egroups)
+			<egroup>
+				<id>$egroup.id</id>
+				<name>$encoder.xmlEncode( $egroup.name )</name>
+				<sortOrder>$egroup.sortOrder</sortOrder>
+			</egroup>
+		#end
+	</availabelEgroups>
+	
+	<availabelElements>
+		#foreach($element in $form.elements)
+			<element>
+				<id>$element.id</id>
+				<name>$encoder.xmlEncode( $element.name )</name>
+				<label>$encoder.xmlEncode($element.label)</label>	
+				<type>$encoder.xmlEncode($element.type)</type>
+				<controlType>$encoder.xmlEncode($element.controlType)</controlType>	
+				<initialValue>$encoder.xmlEncode($element.initialValue)</initialValue>
+				<formLink>$element.formLink.id</formLink>
+				<required>$encoder.xmlEncode($element.required)</required>
+				<sortOrder>$element.sortOrder </sortOrder>
+			</element>
+		#end
+	</availabelElements>
+	
+</form>

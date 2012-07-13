@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+  [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+>
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.program.Program" table="program">
+
+    <id name="id" column="programid">
+      <generator class="native" />
+    </id>
+
+	&identifiableProperties;
+
+    <property name="description" type="text" />
+
+    <property name="version" />
+
+    <property name="dateOfEnrollmentDescription" type="text" not-null="true" />
+
+    <property name="dateOfIncidentDescription" type="text" not-null="true" />
+
+    <set name="programStages" order-by="stageinprogram" cascade="all">
+      <key column="programid" />
+      <one-to-many class="org.hisp.dhis.program.ProgramStage" />
+    </set>
+
+    <set name="organisationUnits" table="program_organisationunits">
+      <key column="programid" foreign-key="fk_program_organisationunits_programid" />
+      <many-to-many column="organisationunitid" class="org.hisp.dhis.organisationunit.OrganisationUnit" foreign-key="fk_program_organisationunits_organisationunitid" />
+    </set>
+
+    <set name="patientValidationCriteria" table="program_criteria">
+      <key column="programid" foreign-key="fk_program_criteria_programid" />
+      <many-to-many column="validationcriteriaid" class="org.hisp.dhis.validation.ValidationCriteria" foreign-key="fk_program_criteria_validationcriteriaid" />
+    </set>
+    
+    <property name="maxDaysAllowedInputData" />
+
+    <property name="type" />
+    
+    <property name="displayProvidedOtherFacility" />
+        
+  </class>
+</hibernate-mapping>

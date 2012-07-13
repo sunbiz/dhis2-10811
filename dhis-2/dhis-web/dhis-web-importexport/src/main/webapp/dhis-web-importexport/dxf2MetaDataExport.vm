@@ -1,0 +1,90 @@
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        selectAll();
+    });
+
+    function selectAll()
+    {
+        $("#exportForm").find("input:checkbox").attr("checked", true);
+    }
+
+    function selectNone()
+    {
+        $("#exportForm").find("input:checkbox").attr("checked", false);
+    }
+
+    function exportMetaData()
+    {
+        var url = "../api/metaData";
+        var format = $("#format").val();
+        var compression = $("#compression").val();
+
+        url += "." + format;
+
+        if(compression == "zip")
+        {
+            url += ".zip";
+        }
+        else if(compression == "gz")
+        {
+            url += ".gz";
+        }
+
+        url += "?assumeTrue=false&" + $("#exportForm").serialize();
+
+        log("url" + url);
+
+        window.location=url;
+    }
+</script>
+
+<h3>$i18n.getString( "dxf2_metadata_export" )</h3>
+
+<form id="exportForm" name="exportForm">
+
+<fieldset style="width: 80%;">
+    <legend>$i18n.getString( "elements" )</legend>
+    #foreach( $key in $exportClasses.keySet() )
+        <div style="width: 200px; float: left;"><input id="$key" name="$key" type="checkbox" value="true" /> <label for="$key">$exportClasses.get( $key )</label></div>
+    #end
+</fieldset>
+
+<br />
+
+<table>
+<tr>
+    <td colspan="2">
+        <input type="button" value="$i18n.getString( 'select_all' )" style="width:100px;" onclick="selectAll();" />
+        <input type="button" value="$i18n.getString( 'select_none' )" style="width:100px;" onclick="selectNone();" />
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2">
+        <select id="format" style="width: 204px;">
+            <option value="xml">XML</option>
+            <option value="json">Json</option>
+        </select>
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2">
+        <select id="compression" style="width: 204px;">
+            <option value="zip">Zipped</option>
+            <option value="gz">GZipped</option>
+            <option value="uncompressed">Uncompressed</option>
+        </select>
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2">
+        <input type="button" value="$i18n.getString( 'export' )" style="width:204px;" onclick="exportMetaData();" />
+    </td>
+</tr>
+
+</table>
+</form>
+
+<span id="message"></span>

@@ -1,0 +1,15 @@
+<script type="text/javascript">
+jQuery(function() {
+	/* make sure that the leftBar is always visible when entering page. */
+	leftBar.showAnimated()
+});
+</script>
+
+<h3>$i18n.getString( "dhis-web-maintenance-user" ) #openHelp( "users" )</h3>
+
+<ul class="introList">
+    #introListImgItem( "user.action" "user_by_orgunit" "user" )
+    #introListImgItem( "alluser.action" "user" "user" )
+    #introListImgItem( "allRole.action" "user_role" "user" )
+    #introListImgItem( "getAllUserGroups.action" "user_group" "user" )
+</ul>

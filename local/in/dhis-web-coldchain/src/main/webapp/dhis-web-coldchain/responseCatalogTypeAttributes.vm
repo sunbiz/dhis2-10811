@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<catalog-type-attributes>
+	#foreach( $catalogTypeAttribute in $catalogTypeAttributes )	
+		<catalog-type-attribute>
+			<id>$catalogTypeAttribute.id</id>
+			<name>$catalogTypeAttribute.name</name>
+		</catalog-type-attribute>
+	#end
+</catalog-type-attributes>

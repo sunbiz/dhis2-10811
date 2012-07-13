@@ -1,0 +1,7 @@
+{ "dataElementGroup": 
+  {
+    "id": $!{dataElementGroup.id},
+    "name": "$!encoder.jsonEncode( ${dataElementGroup.displayName} )",
+    "memberCount": "$memberCount"
+  } 
+}

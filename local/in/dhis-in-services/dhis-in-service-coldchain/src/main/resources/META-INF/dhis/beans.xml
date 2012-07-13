@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<!-- Store definitions -->
+	<bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogTypeAttributeOptionStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+	<!--
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogTypeAttributeStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+	-->	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogTypeAttributeStore">
+		<property name="clazz" value="org.hisp.dhis.coldchain.catalog.CatalogTypeAttribute" />
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="cacheable" value="true" />
+    </bean>	
+<!--	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogTypeStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+-->	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogTypeStore">
+		<property name="clazz" value="org.hisp.dhis.coldchain.catalog.CatalogType" />
+        <property name="sessionFactory" ref="sessionFactory"/>
+		<property name="cacheable" value="true" />
+    </bean>	
+	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogStore">
+        <property name="clazz" value="org.hisp.dhis.coldchain.catalog.Catalog" />
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="cacheable" value="true" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogDataValueStore"
+        class="org.hisp.dhis.coldchain.catalog.hibernate.HibernateCatalogDataValueStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+<!--	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentDetailsStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateEquipmentDetailsStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+-->	
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateEquipmentStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>	
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentInstanceStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateEquipmentInstanceStore">
+		<property name="clazz" value="org.hisp.dhis.coldchain.inventory.EquipmentInstance" />
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentStatusStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateEquipmentStatusStore">
+		<property name="clazz" value="org.hisp.dhis.coldchain.inventory.EquipmentStatus" />
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryTypeAttributeOptionStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+<!--	
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryTypeAttributeStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+-->	
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryTypeAttributeStore">
+		<property name="clazz" value="org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute" />
+        <property name="sessionFactory" ref="sessionFactory"/>
+		<property name="cacheable" value="true" />
+    </bean>	
+	
+<!--	
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryTypeStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+-->
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryTypeStore">
+        <property name="clazz" value="org.hisp.dhis.coldchain.inventory.InventoryType" />
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="cacheable" value="true" />
+    </bean>		
+
+	<!-- Service definitions -->
+	<bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogTypeAttributeOptionService">
+        <property name="catalogTypeAttributeOptionStore" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionStore"/>
+    </bean>
+<!--	
+	<bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogTypeAttributeService">
+        <property name="catalogTypeAttributeStore" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeStore"/>
+    </bean>
+-->
+	<bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogTypeAttributeService">
+        <property name="catalogTypeAttributeStore" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeStore"/>
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+    </bean>	
+<!--	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogTypeService">
+        <property name="catalogTypeStore" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeStore"/>
+    </bean>
+-->	
+	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogTypeService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogTypeService">
+        <property name="catalogTypeStore" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeStore"/>
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+    </bean>	
+	
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogService">
+        <property name="catalogStore" ref="org.hisp.dhis.coldchain.catalog.CatalogStore"/>
+		<property name="catalogDataValueService" ref="org.hisp.dhis.coldchain.catalog.CatalogDataValueService"/>
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.catalog.CatalogDataValueService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogDataValueService">
+        <property name="catalogDataValueStore" ref="org.hisp.dhis.coldchain.catalog.CatalogDataValueStore"/>
+    </bean>
+<!--
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentDetailsService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultEquipmentDetailsService">
+        <property name="equipmentDetailsStore" ref="org.hisp.dhis.coldchain.inventory.EquipmentDetailsStore"/>
+    </bean>
+-->	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultEquipmentService">
+        <property name="equipmentStore" ref="org.hisp.dhis.coldchain.inventory.EquipmentStore"/>
+    </bean>	
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultEquipmentInstanceService">
+        <property name="equipmentInstanceStore" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceStore"/>
+		<property name="equipmentService" ref="org.hisp.dhis.coldchain.inventory.EquipmentService"/>
+		<property name="equipmentStatusService" ref="org.hisp.dhis.coldchain.inventory.EquipmentStatusService"/>
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentStatusService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultEquipmentStatusService">
+        <property name="equipmentStatusStore" ref="org.hisp.dhis.coldchain.inventory.EquipmentStatusStore"/>
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultInventoryTypeAttributeOptionService">
+        <property name="inventoryTypeAttributeOptionStore" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionStore"/>
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultInventoryTypeAttributeService">
+        <property name="inventoryTypeAttributeStore" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeStore"/>
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryTypeService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultInventoryTypeService">
+        <property name="inventoryTypeStore" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeStore"/>
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+    </bean>
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentDataValueService"
+        class="org.hisp.dhis.coldchain.inventory.DefaultEquipmentDataValueService">
+        <property name="equipmentDataValueStore" ref="org.hisp.dhis.coldchain.inventory.EquipmentDataValueStore"/>
+    </bean>	
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.EquipmentDataValueStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateEquipmentDataValueStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+		<property name="periodStore" ref="org.hisp.dhis.period.PeriodStore"/>
+    </bean>		
+
+	<!-- Catalog Custom data entry form -->
+	
+	<bean id="org.hisp.dhis.coldchain.catalog.CatalogDataEntryService"
+        class="org.hisp.dhis.coldchain.catalog.DefaultCatalogDataEntryService">
+        <property name="catalogTypeAttributeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService"/>
+    </bean>	
+
+	<!-- for Display -->
+	
+	<bean id="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeService"
+		class="org.hisp.dhis.coldchain.inventory.DefaultInventoryType_AttributeService">
+			<property name="inventoryType_AttributeStore"
+	  		ref="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeStore" />
+  	</bean>	
+	<!--
+	<bean id="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeStore"
+		class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryType_AttributeStore">    
+			<property name="clazz" value="org.hisp.dhis.coldchain.inventory.InventoryType_Attribute"/>
+			<property name="sessionFactory" ref="sessionFactory"/>
+			<property name="cacheable" value="true" />
+	</bean>	
+	-->	
+
+    <bean id="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeStore"
+        class="org.hisp.dhis.coldchain.inventory.hibernate.HibernateInventoryType_AttributeStore">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>	
+		
+	
+<!-- CCEM Report Manager -->
+    <bean id="org.hisp.dhis.coldchain.reports.CCEMReportManager"
+        class="org.hisp.dhis.coldchain.reports.DefaultCCEMReportManager">
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>	
+	
+	<!-- DeletionHandlers -->
+	
+</beans>

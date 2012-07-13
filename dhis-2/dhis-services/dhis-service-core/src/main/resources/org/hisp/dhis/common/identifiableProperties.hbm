@@ -1,0 +1,4 @@
+    <property name="name" column="name" not-null="true" unique="true" length="230" />
+    <property name="uid" column="uid" length="11" />
+    <property name="code" column="code" not-null="false" unique="true" length="50" />
+    <property name="lastUpdated" type="timestamp"/>

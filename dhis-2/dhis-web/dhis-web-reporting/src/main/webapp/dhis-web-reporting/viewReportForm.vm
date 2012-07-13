@@ -1,0 +1,69 @@
+<script type="text/javascript">
+	jQuery(document).ready(function(){		
+		tableSorter( 'listTable' );	
+	});
+
+    var i18n_confirm_remove_report = '$encoder.jsEscape( $i18n.getString( "confirm_remove_report" ) , "'")';
+    var i18n_confirm_add_to_dashboard = '$encoder.jsEscape( $i18n.getString( "confirm_add_to_dashboard" ) , "'")';
+</script>
+
+<h3>$i18n.getString( "standard_report" ) #openHelp( "standard_reports" )</h3>
+
+<table class="mainPageTable">
+	<col>		
+	<col width="280">
+    <tr>
+        <td style="vertical-align:top">
+            <table width="100%">
+				 <tr>
+				 	<td>#filterDiv( "displayViewReportForm" )</td>
+                	<td colspan="5" style="text-align:right">
+                		<input type="button" value="$i18n.getString( "add_new" )" onclick="window.location.href='displayAddReportForm.action'" />
+                	</td>
+                </tr>
+			</table>
+            <table class="listTable" id="listTable">
+                <col>
+                <col width="120px">               
+                <thead>               
+                <tr>
+                    <th>$i18n.getString( "name" )</th>
+                    <th class="{sorter: false}">$i18n.getString( "operations" )</th>
+                </tr>
+                </thead>
+                <tbody id="list">
+                #foreach ( $report in $reports )
+                <tr id="tr${report.id}">
+                    <td>$encoder.htmlEncode( $report.name )</td>
+                    <td style="text-align:right">
+                    	#if ( $report.hasReportTable() ) <a href="getReportParams.action?uid=${report.uid}&mode=report" title="$i18n.getString( 'create' )">
+                    	#else <a href="../api/reports/${report.uid}/data.pdf" title="$i18n.getString( 'create' )">#end
+                    	<img src="../images/start_process.png" alt="$i18n.getString( 'create' )"></a>                   
+						<a href="displayAddReportForm.action?id=$report.id" title="$i18n.getString( 'edit_report' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit_report' )"></a>
+						<a href="javascript:addToDashboard( '$report.id' )" title="$i18n.getString( 'add_to_dashboard' )"><img src="../images/add_to_dashboard.png" alt="$i18n.getString( 'add_to_dashboard' )"></a>
+						#if( $auth.hasAccess( "dhis-web-reporting", "removeReport" ) )
+						<a href="javascript:removeReport( $report.id )" title="$i18n.getString( 'remove_report' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove_report' )"></a>
+						#else <img src="../images/delete-denied.png"> #end
+					</td>
+                </tr>
+                #end
+                </tbody>
+            </table>
+			<p></p>
+			#parse( "/dhis-web-commons/paging/paging.vm" )
+                        
+        </td>
+        <td style="width:20em; padding-left:2em; vertical-align:top">
+
+            <div id="detailsArea" style="display:none; padding-top:1em; padding-bottom:1em"></div>
+            
+			<div id="warningArea" style="position:fixed;right:10px;top:200px;display:none">
+				<div style="float:right">
+					<a href="javascript:hideWarning()" title='$i18n.getString( 'hide_warning' )'><img src="../images/close.png" alt=$i18n.getString( "hide_warning" )'></a>
+				</div>
+				<p><span id="warningField"></span></p>
+			</div>
+
+        </td>
+    </tr>
+</table>

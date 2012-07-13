@@ -1,0 +1,40 @@
+{
+	"user":
+	{
+		"id":"$!currentUser.id",
+		"isAdmin":true,
+		"ou":[
+			"$!currentUser.organisationUnit.id",
+			"$!encoder.jsonEncode(${currentUser.organisationUnit.name})"
+		]
+	},
+	"rn":[
+		"$!{rootNode.id}",
+		"$!encoder.jsonEncode(${rootNode.name})"
+	],
+	"programs": [
+		#foreach( $program in $programs )
+		  {
+			"id":  "${program.id}" ,
+			"name": "$!encoder.jsonEncode( ${program.name} )",
+			"type": "$program.type"
+		  }#if( $velocityCount < $programs.size() ),#end
+		#end
+	],
+	"orgunitGroups": [
+		#foreach( $orgunitGroup in $orgunitGroups )
+		  {
+			"id":  "${orgunitGroup.id}" ,
+			"name": "${orgunitGroup.name}"
+		  }#if($velocityCount < $orgunitGroups.size()),#end
+		#end
+	],
+	"levels": [
+		#foreach( $level in $levels )
+		  {
+			"value":  "${level.level}" ,
+			"name": "${level.name}"
+		  }#if($velocityCount < $levels.size()),#end
+		#end
+	]
+}

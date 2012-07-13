@@ -1,0 +1,17 @@
+<script type="text/javascript">
+jQuery(function() {
+	/* make sure that the leftBar is always visible when entering page. */
+	leftBar.showAnimated()
+});
+</script>
+
+<h3>$i18n.getString( "dhis-web-maintenance-organisationunit" ) #openHelp( "ou_hierarchy" )</h3>
+
+<ul class="introList">
+    #introListImgItem( "organisationUnit.action" "org_unit" "organisationunit" )
+    #introListImgItem( "organisationUnitGroup.action" "org_unit_group" "organisationunit" )
+    #introListImgItem( "organisationUnitGroupSet.action" "org_unit_group_set" "organisationunit" )
+    #introListImgItem( "organisationUnitLevel.action" "org_unit_level" "organisationunit" )
+    #introListImgItem( "organisationUnitSearch.action?skipSearch=true" "org_unit_search" "search" )
+    #introListImgItem( "hierarchyOperations.action" "hierarchy_operations_menu" "hierarchy" )
+</ul>

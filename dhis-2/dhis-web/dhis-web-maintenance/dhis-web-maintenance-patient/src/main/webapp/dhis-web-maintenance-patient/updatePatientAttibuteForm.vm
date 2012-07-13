@@ -1,0 +1,108 @@
+<script type="text/javascript" src="javascript/updatePatientAttributeForm.js"></script>
+
+<h3>$i18n.getString( "edit_patient_attribute" )</h3>
+
+<form id="updatePatientAttributeForm" name="updatePatientAttributeForm" action="updatePatientAttribute.action" method="post" >
+
+<div style="display:inline">
+  <input type="hidden" id="id" name="id" value="$patientAttribute.id">
+</div>
+  
+  <table id="detailsList">
+    <thead>
+      <tr>
+        <th colspan="2">$i18n.getString( "patient_attribute_details" )</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>$i18n.getString( "name" ) <em title="$i18n.getString( "required" )" class="required">*</em></td>
+        <td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $patientAttribute.name )" class="{validate:{required:true,rangelength:[2,160]}}"></td>
+      </tr>   
+      <tr>
+        <td>$i18n.getString( "description" ) <em title="$i18n.getString( "required" )" class="required">*</em></td>
+        <td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $patientAttribute.description )" class="{validate:{required:true,minlength:2}}"></td>
+      </tr>
+      
+      <tr>
+		<td><label for="mandatory">$i18n.getString( "mandatory" )</label></td>
+		<td>
+			<input type='checkbox' id="mandatory" name="mandatory" value='true' #if( $patientAttribute.mandatory ) checked #end>
+		</td>		
+		<td></td>				
+	</tr>
+	
+	<tr>
+		<td><label for="inheritable">$i18n.getString( "inheritable" )</label></td>
+		<td>
+			<input type='checkbox' id="inheritable" name="inheritable" value='true' #if( $patientAttribute.inheritable) checked #end>		
+		</td>		
+		<td></td>				
+	</tr>
+	
+    <tr>
+        <td>$i18n.getString( "value_type" ) <em title="$i18n.getString( "required" )" class="required">*</em></td>
+        <td>
+            <select id="valueType" name="valueType" onchange="ATTRIBUTE_OPTION.selectValueType(this);">
+                <option value="NUMBER" #if( $patientAttribute.valueType == 'NUMBER' ) selected="selected" #end>$i18n.getString( "number" )</option>
+                <option value="TEXT" #if( $patientAttribute.valueType == 'TEXT' ) selected="selected" #end>$i18n.getString( "text" )</option>
+                <option value="YES/NO" #if( $patientAttribute.valueType == 'YES/NO' ) selected="selected" #end>$i18n.getString( "yes_no" )</option>
+                <option value="DATE" #if( $patientAttribute.valueType == 'DATE' ) selected="selected" #end>$i18n.getString( "date" )</option>
+                <option value="COMBO" #if( $patientAttribute.valueType == 'COMBO' ) selected="selected" #end>$i18n.getString( "attribute_combo_type" )</option>
+            </select>
+        </td>
+    </tr>
+      
+	<tr id="attributeComboRow"> 
+		<td><label>$i18n.getString( "attribute_options" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
+		<td >
+			<table id="attrOptionContainer">
+			 #foreach($option in $patientAttribute.attributeOptions) 
+				<tr><td>
+					<input type='text' name='attrOption$option.id' value="$option.name" style="width:28em;"/><a href='#' style='text-decoration: none; margin-left:0.5em;' title='$i18n.getString( "remove_option" )'  onClick='ATTRIBUTE_OPTION.remove(this,$option.id)'>[ - ]</a>
+				</td>
+				</tr>
+			 #end
+		</table><a href="#" style="text-decoration: none;margin-top: 0.5em"  onclick="ATTRIBUTE_OPTION.addOption()">[ $i18n.getString( "add_more_option" ) ]</a></td>
+		<td><span id="attrMessage"  name="attrMessage" style="color:red;"></span></td>
+	</tr>
+	
+	<tr>
+		<td><label for="programId">$i18n.getString( "program" )</label></td>
+		<td>
+			<select type="text" name="programId" id="programId" value="$!patientAttribute.program" >
+				<option value=''>[$i18n.getString('all')]</option>
+				#foreach( $program in $programs)
+					<option value='$program.id' #if($patientAttribute.program.id==$program.id) selected #end>$program.name</option>
+				#end
+			</select>
+		</td>		
+		<td></td>				
+	</tr> 
+	
+    </tbody>
+	
+	<tr>
+		<td></td>
+		<td>
+			 <input type="submit" value="$i18n.getString( 'update' )">
+			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientAttribute.action'">
+		</td>
+	</tr>
+  </table>  
+</form>
+
+<script>
+	if( jQuery('#valueType').val() == "COMBO")
+	{
+		jQuery("#attributeComboRow").show();
+	}else
+	{
+		jQuery("#attributeComboRow").hide();
+	}
+	
+	var i18n_remove_option = '$encoder.jsEscape( $i18n.getString( "remove_option" ) , "'") ';
+	var i118_at_least_2_option = '$encoder.jsEscape( $i18n.getString( "at_least_2_option" ) , "'") ';
+	var i18n_field_is_required = '$encoder.jsEscape( $i18n.getString( "field_is_required" ) , "'") ';
+	var isSubmit = true;	
+</script>

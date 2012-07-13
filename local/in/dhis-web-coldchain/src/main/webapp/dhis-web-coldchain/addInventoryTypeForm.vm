@@ -1,0 +1,138 @@
+<script type="text/javascript" src="javascript/addInventoryTypeForm.js"></script>
+<script type="text/javascript">
+
+</script>
+<h3>$i18n.getString( "create_new_inventorytype" )</h3>
+<form id="addInventoryTypeForm" action="addInventoryType.action" method="post" >
+
+<table id="attrTable"> 
+    <thead>
+        <tr><th colspan="2">$i18n.getString( "inventorytype_details" )</th></tr>
+    </thead>
+    
+    <tbody>
+    <tr>
+        <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td><input type="text" id="name" name="name" class="{validate:{required:true,rangelength:[2,160]}}"/></td>
+        <td></td>
+    </tr>   
+    
+    <tr>
+        <td><label>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td><input type="text" id="description" name="description" class="{validate:{required:true,minlength:2}}"/></td>
+        <td></td>
+    </tr>
+    
+    <tr>
+        <td><label for="tracking">$i18n.getString( "tracking" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td>
+            <select id="tracking" name="tracking">
+                <option value="true" >$i18n.getString( "yes" )</option>
+                <option value="false" selected="selected">$i18n.getString( "no" )</option>
+            </select>
+        </td>       
+        <td></td>               
+    </tr>
+            
+    <tr>
+        <td><label for="catalogType">$i18n.getString( "catalogType" )</label></td>
+        <td>
+            <select id="catalogType" name="catalogType">
+            	<option value="">[$i18n.getString( "please_select_catalog_type" )]</option>
+					#foreach( $catalogType in $catalogTypes )
+						<option value="$catalogType.id">$catalogType.name</option>
+					#end
+            </select>
+        </td>
+        <td></td>
+    </tr>  
+    
+    </tbody>
+    
+	</table>
+	
+	<br/>
+  <table id="inventoryTypeMembersArea">
+   
+    <thead>
+      <tr>
+        <th>$i18n.getString( "available_inventorytype_attributes" )</th>
+        <th>$i18n.getString( "filter" )</th>
+        <th>$i18n.getString( "selected_inventorytype_attributes" )
+        	<select id="selectedInventoryTypeAttributeValidator" name='selectedInventoryTypeAttributeValidator' multiple="multiple" class="hidden" ></select>
+        	<select id="display" name='display' multiple="multiple" class="hidden"></select>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+        	 <select size="15" id="availableInventoryTypeAttributeList" name='availableInventoryTypeAttributeList' multiple="multiple" ondblclick="selectInventoryTypeAttributes()"></select>
+          <!--<select id="availableInventoryTypeAttributeList" name="availableInventoryTypeAttributeList" multiple="multiple" style="height: 200px; width: 100%;" ondblclick="moveSelectedById( 'availableInventoryTypeAttributeList', 'selectedInventoryTypeAttributeList' )"></select>-->
+        </td>
+        
+        
+		<td style="text-align:center">
+        	<input type="button" value="&gt;" class='filterButton' onclick="selectInventoryTypeAttributes();"/><br/>
+            <input type="button" value="&lt;" class='filterButton' onclick="unSelectInventoryTypeAttributes();"/><br/>
+			<input type="button" value="&gt;&gt;" class='filterButton' onclick="selectAllInventoryTypeAttributes();"/><br/>
+			<input type="button" value="&lt;&lt;" class='filterButton' onclick="unSelectAllInventoryTypeAttributes();"/>
+		</td>        
+        <!--
+        <td>
+          	<input type="button" value="&gt;" title="$i18n.getString( 'move_selected' )" style="width:50px" onclick="dhisAjaxSelect_moveAllSelected( 'availableInventoryTypeAttributeList' );"/><br/>
+            <input type="button" value="&lt;" title="$i18n.getString( 'remove_selected' )" style="width:50px" onclick="dhisAjaxSelect_moveAllSelected( 'selectedInventoryTypeAttributeList' );"/><br/>
+			<input type="button" value="&gt;&gt;" title="$i18n.getString('move_all')" style="width:50px" onclick="dhisAjaxSelect_moveAll( 'availableInventoryTypeAttributeList' );"/><br/>
+			<input type="button" value="&lt;&lt;" title="$i18n.getString('remove_all')" style="width:50px" onclick="dhisAjaxSelect_moveAll( 'selectedInventoryTypeAttributeList' );"/>
+        </td>
+        -->
+		<td>
+			<div class="inventoryTypeAttributeDiv">
+				<table>
+					<thead>
+						<tr>
+							<th>$i18n.getString( "dataelement" )</th>
+							<th width="20px">$i18n.getString( "display" )</th>
+					</thead>
+					<tbody id="selectedInventoryTypeAttributeList"></tbody>
+				</table>
+			</div>
+			</td>        
+        
+       	<!--      
+        <td>
+            <select id="selectedInventoryTypeAttributeList" name="selectedInventoryTypeAttributeList" multiple="multiple" style="height: 200px; width: 100%" ondblclick="moveSelectedById( 'selectedInventoryTypeAttributeList', 'availableInventoryTypeAttributeList' )"></select>
+        </td>
+        -->
+       	<!--
+		<td>
+            <a href="javascript:moveUpSelectedOption( 'selectedInventoryTypeAttributeList' )"><img src="../images/move_up.png"/></a><br/><br/>
+            <a href="javascript:moveDownSelectedOption( 'selectedInventoryTypeAttributeList' )"><img src="../images/move_down.png"/></a><br/><br/>
+        </td>
+        -->                
+ 
+ 		<td>
+            <a href="javascript:moveUpInventoryTypeAttribute()"><img src="../images/move_up.png"/></a><br/><br/>
+            <a href="javascript:moveDownInventoryTypeAttribute()"><img src="../images/move_down.png"/></a><br/><br/>
+        </td>  
+        
+      </tr>
+	  
+	  <tr>
+        <td colspan="3">
+            <input type="submit" value="$i18n.getString( 'add' )" />
+            <input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='inventoryTypeList.action'" />
+        </td>
+    </tr>
+    </tbody>
+  </table>
+
+<span id='message'></span>
+
+</form>   
+
+<script type="text/javascript">
+    var i18n_remove_option = '$encoder.jsEscape( $i18n.getString( "remove_option" ) , "'") ';
+    var i18n_field_is_required = '$encoder.jsEscape( $i18n.getString( "field_is_required" ) , "'") ';
+    var isSubmit = true;
+</script>

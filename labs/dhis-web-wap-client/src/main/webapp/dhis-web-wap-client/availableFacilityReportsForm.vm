@@ -1,0 +1,16 @@
+<head>
+ <link type="text/css" rel="stylesheet" media="screen" href="/../dhis-web-wap-client/style/default.css" />
+</head>
+<form name="facility" action="DisplayDataElementsFormAction.action">
+
+<h3>Choose a Report</h3>
+#foreach($str in $dataSetsForMobile)
+<p><input type="radio" id="dsRadio" name="dsRadio" value=$str.id >$str.name</p>
+#end
+
+<p>
+<input type="submit" value="Get Form" ></input>
+</p>
+</form>
+    
+

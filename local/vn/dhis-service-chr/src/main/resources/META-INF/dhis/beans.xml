@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  
+  <!--  Store -->
+  
+  <bean id="org.hisp.dhis.vn.chr.FormStore"
+    class="org.hisp.dhis.vn.chr.hibernate.HibernateFormStore">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="org.hisp.dhis.vn.chr.EgroupStore"
+    class="org.hisp.dhis.vn.chr.hibernate.HibernateEgroupStore">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+ 
+ <bean id="org.hisp.dhis.vn.chr.ElementStore"
+    class="org.hisp.dhis.vn.chr.hibernate.HibernateElementStore">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+ 
+  <bean id="org.hisp.dhis.vn.chr.FormReportStore"
+    class="org.hisp.dhis.vn.chr.hibernate.HibernateFormReportStore">
+    <property name="sessionFactory" ref="sessionFactory"/>
+  </bean> 
+  
+  <!--  Service -->
+  
+  <bean id="org.hisp.dhis.vn.chr.FormService"
+    class="org.hisp.dhis.vn.chr.DefaultFormService">
+    <property name="formStore"
+   	  ref="org.hisp.dhis.vn.chr.FormStore"/>
+  </bean>
+ 
+ <bean id="org.hisp.dhis.vn.chr.EgroupService"
+    class="org.hisp.dhis.vn.chr.DefaultEgroupService">
+    <property name="egroupStore"
+   	  ref="org.hisp.dhis.vn.chr.EgroupStore"/>
+  </bean>
+ 
+ <bean id="org.hisp.dhis.vn.chr.ElementService"
+    class="org.hisp.dhis.vn.chr.DefaultElementService">
+    <property name="elementStore"
+   	  ref="org.hisp.dhis.vn.chr.ElementStore"/>
+  </bean> 
+  
+  <bean id="org.hisp.dhis.vn.chr.FormReportService"
+    class="org.hisp.dhis.vn.chr.DefaultFormReportService">
+    <property name="formReportStore"
+   	  ref="org.hisp.dhis.vn.chr.FormReportStore"/>
+  </bean>
+ 
+ <!--  Form Manager -->
+ 
+ <bean id="org.hisp.dhis.vn.chr.jdbc.FormManager"
+    class="org.hisp.dhis.vn.chr.jdbc.JDBCFormManager">
+    <property name="statementManager" ref="statementManager"/>
+    <property name="statementBuilder" ref="statementBuilder"/>
+    <property name="accessMetaDataService"
+      ref="org.hisp.dhis.vn.chr.jdbc.util.AccessMetaDataService"/>
+    <property name="elementService"
+      ref="org.hisp.dhis.vn.chr.ElementService"/>
+  </bean>
+  
+ <!--  Until  -->
+   
+ <bean id="org.hisp.dhis.vn.chr.jdbc.util.AccessMetaDataService"
+    class="org.hisp.dhis.vn.chr.jdbc.util.JDBCAccessMetaData">
+    <property name="statementManager" ref="statementManager"/>
+ </bean>
+  
+</beans>

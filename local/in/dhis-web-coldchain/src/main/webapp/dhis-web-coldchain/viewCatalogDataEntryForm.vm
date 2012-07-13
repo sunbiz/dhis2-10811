@@ -1,0 +1,165 @@
+<script type="text/javascript">
+  
+	jQuery(document).ready(	function()
+	{
+		validation( 'saveCatalogDataEntryForm', function( form )
+		{
+			setInnerHTML( 'designTextarea' , jQuery("#designTextarea").ckeditorGet().getData() );
+			form.submit();
+		} );
+
+		jQuery('#designTextarea').ckeditor();
+		jQuery("#designTextarea").ckeditorGet().setData('$encoder.jsEscape( $dataEntryValue, "'" )');
+		
+		checkValueIsExist( "name", "validateCatalogTypeDataEntryForm.action", { catalogDataEntryFormId: '$!catalogType.dataEntryForm.id' } );
+	});
+
+    var i18n_catalogType_attribute_is_inserted = '$encoder.jsEscape( $i18n.getString( "catalogType_attribute_is_inserted" ) , "'" )';
+	var i18n_specify_catalogType_attribute = '$encoder.jsEscape( $i18n.getString( "specify_catalogType_attribute" ) , "'" )';
+	var i18n_catalogType_attribute = "$i18n.getString( 'catalogType_attribute' )";
+	
+	var previousName = '';
+</script>
+
+<style type="text/css">
+#catalogTypeAttributeSelection{ 
+	padding: 0.5em; 	
+	z-index:999999;
+	font-size:10pt;
+	
+}
+
+.ui-dialog-titlebar
+{
+	padding:0.1em 0.1em 0.1em 0.1em;
+}
+#ui-dialog-title-catalogTypeAttributeSelection{
+	font-size:10pt;
+	color:#FFFFFF;	
+	margin: 0;	
+}
+
+#catalogTypeAttributeSelection tr{
+	cursor:default;	
+}
+
+#catalogTypeAttributeSelection tr.selected{
+	background-color:#2B0AAF;
+	color:#FFFFFF;
+}
+
+#dataElementList{
+	margin-top:5px;
+}
+
+#message_{
+	display:block;
+	color:red;	
+}
+
+</style>
+
+
+
+
+
+
+<form id="saveCatalogDataEntryForm" name="saveCatalogDataEntryForm" action="saveCatalogDataEntryForm.action" method="post">
+<input type="hidden" name="catalogTypeId" id="catalogTypeId" value="$!catalogType.id"/>
+<input type="hidden" name="catalogDataEntryFormId" id="catalogDataEntryFormId" value="$!catalogType.dataEntryForm.id"/>
+<h3>$i18n.getString( "dataentryform_management_for_catalogType" ): $catalogType.name </h3>
+<div class="container" >
+	<table id="detailsList" width="100%">
+		<col/>
+		<tr>
+			<th>$i18n.getString( "dataentryform_details" )</th>			
+			<td align="right" rowspan="2">
+				<!--#if( !$existingDataEntryForms.isEmpty() )
+				<input type="button" style="width:250px" value="$i18n.getString( 'load_existed_form' )" onclick="openloadExistedForm()"/><br>
+				#end -->
+				#if(!$catalogTypeAttributes.isEmpty())
+				<input type="button" style="width:250px" value="$i18n.getString( 'catalogType_attribute' )" onclick="openCatalogTypeAttributeSelector()"/><br>
+				#end
+			</td>			
+		</tr>	
+		<tr>
+			<td>
+				<label>$i18n.getString( "name" ) <em title="$i18n.getString( "required" )" class="required">*</em></label>
+				<input type="text" id="name" value="$!dataEntryForm.name" name="name" class="{validate:{required:true,rangelength:[4,150],alphanumericwithbasicpuncspaces:true,firstletteralphabet:false}}"   style="width:20em">
+			</td>				
+		</tr>	
+	</table>  
+	<table width="100%">
+		<tr>
+			<th>$i18n.getString( "design_dataentry_form" )</th>
+		</tr>
+		<tr>
+			<td>
+	        	<div>
+	        		<textarea id="designTextarea" name="designTextarea"></textarea>
+	        	</div>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<table width="100%">	
+    <tr>
+        <td align="right">
+            <input type="submit" name="save" value="$i18n.getString( 'save' )" style="width:100px"/>
+            <input type="button" name="cancel" value="$i18n.getString( 'cancel' )" style="width:100px" onclick="window.location='catalogType.action'">            
+			#if( $!dataEntryForm )
+			<input type="button" name="delete" value="$i18n.getString( 'delete' )" style="width:100px" onclick="deleteCatalogDataEntryForm( $catalogType.dataEntryForm.id, $catalogType.id )" />
+			#end
+        </td>		
+    </tr>
+</table>
+  	
+</form>
+
+
+<div id="catalogTypeAttributeSelection">	
+	<table>
+		<tr>
+			<td>
+				<span class="bold">$i18n.getString( "catalogType_attribute" )</span><br>
+			</td>
+		</tr>
+		<tr>
+			<td>	
+				<input type="text" style="min-width:290px" onkeyup="filterCatalogTypeAttributes( this.value, '#catalogTypeAttributeSelection', '#catalogTypeAttributeIds')"/>
+			</td>
+		</tr>
+		<tr>
+			<td>	
+				<select id="catalogTypeAttributeIds" name="catalogTypeAttributeIds" style="min-width:300px" multiple="multiple" size="10" ondblclick="insertCatalogTypeAttribute( '#catalogTypeAttributeSelection', '$catalogType.id')">
+					#foreach( $attr in $catalogTypeAttributes)
+					#set($attrJSON = '{' + '"id"' + ":" + $attr.id + "," + '"name"' + ':"' + "$attr.name" + '",' + '"valueType"' + ':"' + "$attr.valueType"  + '"}' );
+					<option value='$attrJSON'>$encoder.htmlEncode( $attr.name )</option>
+					#end
+				</select>
+				<select id="catalogTypeAttributeIdsStore" multiple="multiple" style="display:none">
+					#foreach( $attr in $catalogTypeAttributes)
+					#set($attrJSON = '{' + '"id"' + ":" + $attr.id + "," + '"name"' + ':"' + "$attr.name" + '",' + '"valueType"' + ':"' + "$attr.valueType"  + '"}' );
+					<option value='$attrJSON'>$encoder.htmlEncode( $attr.name )</option>
+					#end
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="button" value="Insert" id="insert" name="insert" onclick="insertCatalogTypeAttribute( '#catalogTypeAttributeSelection', '$catalogType.id')"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<span id="message_"></span>
+			</td>
+		</tr>
+	</table>	
+</div>
+
+<script>
+	var i18n_delete_catalogType_data_entry_confirm = '$encoder.jsEscape( $i18n.getString( "delete_catalogType_data_entry_confirm" ) , "'" )';
+</script>
+

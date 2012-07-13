@@ -1,0 +1,54 @@
+<table>
+#if( $dataElementList.size() > 0 )
+	<col width="30"/>
+    <col width="400"/>
+    <col width="280"/>
+	
+	<tr>
+		<th>$i18n.getString('#')</th>
+		<th>$i18n.getString('data_element')</th>
+		<th>$i18n.getString('condition')</th>
+	</tr>	
+
+	#set( $mark = false )
+	#set( $index = 0 )
+	#foreach( $dataElement in $dataElementList )
+		#set( $id= '[DE:' + $psId + '.' + $dataElement.id + ']')
+		#set( $validationId= $id + '.validation' )
+		#set( $index = $index + 1 )
+		<tr #alternate($mark) >
+			<td>$index</td>
+			<td>$dataElement.name</td>
+			<td> 
+				<select id="$dataElement.id" validationid="$!validationMap.get($dataElement.id).id" onchange="dateValidation('$id','$dataElement.id' ,'$dataElement.name' )" >
+					<option value=''>[$i18n.getString('please_select')] </option>
+					<option value='1'>$i18n.getString('before_current_date') </option>
+					<option value='3'>$i18n.getString('after_current_date') </option>
+					<option value='2'>$i18n.getString('before_or_equals_to_current_date') </option>
+					<option value='4'>$i18n.getString('after_or_equals_to_current_date') </option>
+					<option value='-1'>$i18n.getString('before_due_date') </option>
+					<option value='-3'>$i18n.getString('after_due_date') </option>
+					<option value='-2'>$i18n.getString('before_or_equals_to_due_date') </option>
+					<option value='-4'>$i18n.getString('after_or_equals_to_due_date') </option>
+					<option value='-5'>$i18n.getString('in_range_due_date')</option>
+				</select>
+				<span id="div$dataElement.id" style='display:none;'>
+					+/- <input type='text' id="days$dataElement.id" style="width:50px;" onchange="saveDateValidation('$id','$dataElement.id' ,'$dataElement.name' )">
+				<span>
+				
+				<script>
+					var dataElementId = '$dataElement.id';
+					var rightSide = '$!validationMap.get($dataElement.id).rightSide';
+					parseRightSide( dataElementId, rightSide );
+				</script>
+				
+			</td>
+		</tr>
+		#set ( $mark = !$mark)
+	#end
+#else
+	<tr>
+		<td colspan='2'>$i18n.getString('no_date_data_element_in_selected_program_stage')<td>
+	</tr>
+#end
+</table>

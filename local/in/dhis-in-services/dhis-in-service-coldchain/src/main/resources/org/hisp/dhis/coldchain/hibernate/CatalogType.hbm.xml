@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.catalog.CatalogType" table="catalogtype">
+    <id name="id" column="catalogtypeid">
+      <generator class="native"/>
+    </id>
+
+    <property name="name" not-null="true" unique="true" length="160"/>
+    
+    <property name="description" not-null="false" length="250"/>
+	
+	<property name="catalogTypeImage" not-null="false" column="imageName" length="160"/>   
+	<!--
+	<set name="catalogTypeAttributes" table="catalogtype_attributes">
+      <key column="catalogtypeid" foreign-key="fk_catalogtype_attributes_catalogtypeid" />
+      <many-to-many class="org.hisp.dhis.coldchain.catalog.CatalogTypeAttribute" column="catalogtypeattributeid"
+          foreign-key="fk_catalogtype_attributes_catalogtypeattribtueid" />
+    </set>
+	-->
+	
+	<list name="catalogTypeAttributes" table="catalogtype_attributes">
+		<key column="catalogtypeid" foreign-key="fk_catalogtype_attributes_catalogtypeid" />					 
+        <list-index column="sort_order" base="0" />
+        <many-to-many class="org.hisp.dhis.coldchain.catalog.CatalogTypeAttribute" column="catalogtypeattributeid"
+			foreign-key="fk_catalogtype_attributes_catalogtypeattribtueid" />
+	</list>
+
+    <many-to-one name="dataEntryForm" class="org.hisp.dhis.dataentryform.DataEntryForm"
+      foreign-key="fk_catalogtype_dataentryform" />
+
+	  
+  </class>
+</hibernate-mapping>

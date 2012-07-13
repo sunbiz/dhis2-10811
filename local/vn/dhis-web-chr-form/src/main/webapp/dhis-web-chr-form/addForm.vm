@@ -1,0 +1,261 @@
+ <script language="javascript" src="javascripts/nutritionTable.js"></script>
+<script language="javascript">
+	function init(){
+	
+		 var dataObject = '$!data'; 
+		 
+		 if(dataObject!='')
+		 {
+		 	getData('$!data');
+		 }else
+		 { 
+		 
+		 	var d, s; 
+			d = new Date(); 
+			s  = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); 
+			
+			if( document.getElementById('datangaylapphieuskte')!=null)
+			{ 
+				document.getElementById('datangaylapphieuskte').value = s;
+			}
+			if( document.getElementById('datangaykham')!=null)
+			{ 
+				document.getElementById('datangaykham').value =  s ;  
+				s  = d.getHours() + ':' + d.getMinutes(); 
+				document.getElementById('datagiokham').value =  s ;
+				
+			} 			
+			document.getElementById('tittleForm').innerHTML='$i18n.getString("add_object") - $!form.label';
+		}
+	}
+</script>
+ <body onLoad="javacript:init();">
+
+ <span id="message" style="top:70px;right:5px;position:fixed;width:200px;z-index:100009" onclick="hideById(this.id);"></span>
+ <form name="editForm" id="editForm" method="post" action="">
+ <input type="hidden" name="dataid" id="dataid" value="dataid">
+   <table width="100%">
+      <tr class="moduleheader">
+        <td colspan="13" class="moduleheader"><font size="+1"><div id='tittleForm'>$i18n.getString('update_object') - $!form.label</div></font></td>
+      </tr>
+  </table>
+    <table width="100%">
+      #set( $mark = true )
+	  #set( $pos = -1 )
+      #foreach($egroup in $egroups)
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+          <tr>
+            <td colspan="6" #alternate( $mark ) >$!egroup.name</td>
+          </tr>
+      #set($i=0)
+  <tr> #foreach($element in $egroup.elements)
+  	#set( $pos = $pos + 1 )
+    #if($i==3)
+    #set($i=0) </tr>
+  <tr> #end
+	  <!-- Form link -->
+  	#if($element.formLink)
+		<td>$element.label</td>
+		<td><br>
+  		#foreach($dt in $!parentObject)
+			 $dt<br>
+		#end
+		</td>
+		<!-- maso -->
+		  #elseif($element.name == "Maso")
+    <td>$element.label#if($element.required == "true") <font color="#FF0000">*</font> #end</td>
+    <td>	<div id='code$element.id'>
+		<input type="text" name="data$element.name" id="data$element.name" value="$!code">
+	</div></td>
+    <!-- textfield -->
+	
+    #elseif($element.controlType == "checkbox")
+    <td>$element.label</td>
+    <td><input type="checkbox" name="data$element.name" id="data$element.name"></td>
+    <!-- textarea -->
+    #elseif($element.controlType == "textarea")
+    <td>$element.label
+      #if($element.required == "true") <font color="#FF0000">*</font> #end </td>
+    <td><textarea name="data$element.name" id="data$element.name" value="$!element.initialValue" onBlur="javascript : var strerror =   '$!element.label' + ' ' +  '$i18n.getString("value_not_null")';  validateObject('$element.required', this, strerror); "/></textarea>    </td>
+    <!-- combobox -->
+    #elseif($element.controlType == "combobox")
+    <td>$element.label
+      #if($element.required == "true") <font color="#FF0000">*</font> #end </td>
+    <td><!--<select style="width:145px;" name="data" id="data" onBlur="javascript : validateObject($element.required, this.value); ">
+    </select> -->
+    <div id='$element.name' > 
+						  <select style=" width:145px;" id="data$element.name" name="data$element.name" onFocus="javascript: var name = 'data$element.name' ; fillup(name,'$element.initialValue' );" ></select>
+	    </div>
+      </td>
+    <!-- date -->
+    #elseif($element.controlType == "date")
+    <td>$element.label
+      #if($element.required == "true") <font color="#FF0000">*</font> #end </td>
+    <td>
+	<div id="datainput$element.id">
+	 <input name="data$element.name" id="data$element.name" type="text" value="$!element.initialValue" width="180px" onBlur="javascript : var strerror = '$!element.label' + ' ' +  '$i18n.getString("value_not_null")' ;  validateObject('$element.required', this, strerror); if(this.value != ''){var strerror =  '$i18n.getString("not_date")'; isDate(this, strerror);}"/>
+	
+	</div>
+		<!-- <img src="images/cal.gif"  alt="i18n.getString('click_here_pick_up_date')" width="16" height="16" border="no" onClick="javascript: parent_div=document.getElementById('date$element.id'); if(parent_div.style.display=='block'){parent_div.style.display='none';}else{ parent_div.style.display ='block'; }; displayCalendar(document.getElementById('datainput$element.id').getElementsByTagName('input')[0],'yyyy-mm-dd',this,true); " style="cursor:pointer "/>
+
+      <div id="date$element.id" style="z-index:100001; background-color:#99FF99; display:none" >
+     
+    </div> -->
+	
+	<a href="javascript: var input = document.getElementById('datainput$element.id').getElementsByTagName('input')[0] ;  gfPop.fshowCalendar(input);" onMouseOut="window.status='';return true;" onMouseOver="window.status='Click Here to Pick up the date'; return true;" styleid="popcal">
+<img src="images/cal.gif" alt="Click Here to Pick up the date" width="16" height="16" border="no"/></a>
+<iframe width="168" height="190" name="gToday:normal:agenda.js" id="gToday:normal:agenda.js" src="javascripts/calendar/ipopeng.htm" scrolling="no" frameborder="0" style="border:2px ridge; visibility:visible; z-index:999; position:absolute; left:-500px; top:0px;"></iframe>
+
+          </td>
+    <!-- Text field -->
+    #elseif($element.controlType == "textfield")
+    <td>$element.label
+     #if($element.required == "true") <font color="#FF0000">*</font> #end </td>
+    <td> #set ($ses = $req.getSession())
+      #set ($maso = 'maso')
+      <input name="data$element.name" id="data$element.name" type="$element.controlType" value="$!element.initialValue" width="180px" onKeyPress="javascript: if( isNumber('$element.type')){return keyRestrict(event,'1234567890.');};" onBlur="javascript : var strerror =   '$!element.label' + ' ' +  '$i18n.getString("value_not_null")' ;  validateObject('$element.required', this, strerror) "/></td>
+    #elseif($element.controlType == "break")
+    <td></td>
+    <td><!-- <input name="data" id="data" type="hidden" value="">    --></td>
+    #elseif($element.controlType == "autocompleted")
+    <td>$element.label
+      #if($element.required == "true") <font color="#FF0000">*</font> #end </td>
+    <td><input name="data$element.name" id="data$element.name" type="text" width="180px" value="$!element.initialValue" onBlur="javascript: var strerror =   '$!element.label' + ' ' +  '$i18n.getString("value_not_null")' ;  validateObject('$element.required', this, strerror) "/>
+    </td>
+    #elseif($element.controlType == "tree")
+    <td>$element.label
+      #if($element.required == "true") <font color="#FF0000">*</font> #end </td>
+    <td>
+    	<div id="$element.id" name="$element.id">
+	    	<input name="data$element.name" id="data$element.name" type="text" width="180px" value="$!element.initialValue" onBlur="javascript : var strerror =   '$!element.label' + ' ' +  '$i18n.getString("value_not_null")';  validateObject('$element.required', this, strerror); "/>
+        </div>
+     	    <input type="button"  value="" onClick="javascript: openOrganisationUnitTree('$element.id', 'selectionTree$element.id');">
+        <div id="selectionTree$element.id" style="display:none; position:fixed; border:thin; background-color:#FFFFCC; height:350px; width:150px; overflow:scroll"> Tree </div>
+    </td>
+    #end
+    
+    #set($i = $i + 1)
+    #end
+    
+    #end </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr class="formcontrol">
+    <td height="25" colspan="6"  align="center"><input name="Submit" type="button" value="  $i18n.getString('save')   " onClick="javascript: var dataObject = '$!data';  if(dataObject!=''){ mode='UPDATE' ;} else{ mode='ADD';}; validateDataObject();">
+        <input name="Submit2" type="button" value=" $i18n.getString('cancel') " onClick="javascript: history.back(1)"></td>
+		  </tr>
+    </table>
+</form>
+
+<span id="message"></span>
+<script type="text/javascript">
+
+	// ---------------------------------------------------------------
+    // Fill up data into the controls
+	// ---------------------------------------------------------------
+	/* function getData(data){
+	
+		var dataObject = data.substr(1,data.length - 2).split(", ");
+		
+		var arrayOfElements = document.getElementsByName('data');
+		for(var i=0;i<arrayOfElements.length;i++){
+			
+			
+			if(arrayOfElements[i].type =='checkbox' && dataObject[i] != "null" && dataObject[i] != "" && dataObject[i] != "false"){
+				arrayOfElements[i].checked = true;
+			}
+			if(dataObject[i] != "null"){
+				arrayOfElements[i].value = dataObject[i];
+			} else{
+				arrayOfElements[i].value = '';
+			}
+			
+		}
+	}*/
+	
+	function getData(data){
+	
+		var dataObject = data.substr(1,data.length - 2).split(", ");
+		
+		/*var arrayOfElements = document.getElementsByName('data');
+		for(var i=0;i<arrayOfElements.length;i++){
+			
+			if(arrayOfElements[i].type =='checkbox' && dataObject[i] != "null" && dataObject[i] != "" && dataObject[i] != "false"){
+				arrayOfElements[i].checked = true;
+			}
+			if(dataObject[i] != "null"){
+				arrayOfElements[i].value = dataObject[i];
+			} else{
+				arrayOfElements[i].value = '';
+			}
+			
+		}*/
+		
+		var elements = byId('editForm').elements;
+	
+		for(var i=0;i<elements.length;i++){
+			
+			//byId('data'+elements[i].name).value = dataObject[i];
+			if(elements[i].name.substring(0,4)=='data'){
+				if(elements[i].type =='checkbox' && dataObject[i] != "null" && dataObject[i] != "" && dataObject[i] != "false"){
+					elements[i].checked = true;
+				}
+				if(dataObject[i] != "null"){
+					elements[i].value = dataObject[i];
+				} else{
+					elements[i].value = '';
+				}
+			}
+		}
+	}
+	
+	
+	
+	// ---------------------------------------------------------------
+	// Show Tree Element
+	// ---------------------------------------------------------------
+		
+	flag = true;
+	div = null;
+	function openOrganisationUnitTree(div_id_value, div_id_tree){
+		div = document.getElementById(div_id_value);
+		var div_tree = document.getElementById(div_id_tree).style;
+		if(flag){
+			div_tree.display = 'block';
+			flag = false;
+		}else{
+			div_tree.display = 'none';
+			flag = true;
+		}
+	}
+  
+	function treeClicked()
+	{
+		numberOfSelects++;
+
+		setMessage( i18n_loading );
+
+		div.innerHTML = "<input name='data' id='data' type='text' width='180px' value = 'test_tree'/>";
+		//document.getElementById( "data" ).disabled = false;
+	}
+
+</script>
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;width:200px;z-index:10004" onclick="hideById(this.id)"></span>
+</body>

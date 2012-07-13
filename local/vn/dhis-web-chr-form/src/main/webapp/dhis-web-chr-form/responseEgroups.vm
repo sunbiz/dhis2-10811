@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<egroups>
+#foreach($egroup in $egroups)
+	<egroup>
+		<id>$egroup.id</id>
+		<name>$encoder.xmlEncode( $egroup.name )</name>
+		<sortOrder>$egroup.sortOrder</sortOrder>
+		<formid>$egroup.form.id</formid>	
+	</egroup>
+#end
+</egroups>

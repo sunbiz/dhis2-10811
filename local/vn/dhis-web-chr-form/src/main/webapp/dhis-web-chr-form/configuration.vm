@@ -1,0 +1,24 @@
+
+<h3>$i18n.getString( "form_settings" )</h3>
+<hr>
+<form id="userSettingForm" method="post" action="">
+
+<table>
+<tr>
+	<td><h4>$i18n.getString( "image_directory_on_service" )</h4></td>
+</tr>
+<tr>
+	<td><input type="text" name="imageDirectoryOnServer" size="40" value="$!imageDirectoryOnServer" onBlur="javascript: saveImageDirectoryOnServer(this.value);"></td>
+</tr>
+<tr><td></td><td></td></tr>
+<tr>
+    <td><h4>$i18n.getString('noRow')</h4></td>
+</tr>
+<tr>
+    <td><input id="numberOfRecords" name="numberOfRecords"  size="40" onChange="javascript: saveNumberOfRecords(this.value);" value="$!numberOfRecords"></td>
+</tr>
+
+</table>
+
+</form>
+ <span id="message" style="top:100px;right:5px;position:fixed;width:200px;z-index:10004" onclick="hideById(this.id);"></span>

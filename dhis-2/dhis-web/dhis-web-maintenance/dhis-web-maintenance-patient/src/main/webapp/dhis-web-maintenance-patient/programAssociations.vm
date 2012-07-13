@@ -1,0 +1,31 @@
+
+<h3>$i18n.getString( "assign_program_to_orgunits_for_registering" )</h3>
+
+<h4>$encoder.htmlEncode( $program.name )</h4>
+
+<form id="defineProgramAssociationsForm" action="defineProgramAssociations.action" method="post">
+  <div style="display:inline">
+	<input type="hidden" name="id" value="$program.id">
+  </div>
+  <table id="selectionTable">
+	<tr>
+	  <td>
+		#organisationUnitSelectionTree( false, true, false )
+	  </td>
+    </tr>
+	<tr>
+      <td>
+        <input type="submit" id="submitButton" value="$i18n.getString( "save" )" style="width:10em"><input type="button"
+            onclick="window.location.href='program.action'" value="$i18n.getString( "cancel" )" style="width:10em">
+      </td>
+    </tr>
+  </table>
+
+</form>
+
+<script type="text/javascript">
+
+  var levelMustBeInt = '$encoder.jsEncode( $i18n.getString( "level_must_be_int" ) )';
+  var i18n_loading = '$encoder.jsEncode( $i18n.getString( "loading" ) )';
+
+</script>

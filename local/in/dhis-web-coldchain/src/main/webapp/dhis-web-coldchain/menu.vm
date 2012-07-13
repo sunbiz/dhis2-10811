@@ -1,0 +1,23 @@
+
+<h2>$i18n.getString( "ccem_setup" )</h2>
+<ul>
+	<li><a href="coldChainCatalogTypeAttribute.action">$i18n.getString( "catalogType_attribute" )</a></li>
+	<li><a href="catalogType.action">$i18n.getString( "catalogType" )</a></li>
+	<br/>
+	<li><a href="inventoryTypeAttributeList.action">$i18n.getString( "inventorytype_attribute" )</a></li>
+    <li><a href="inventoryTypeList.action">$i18n.getString( "inventorytype" )</a></li>
+	
+	
+</ul>
+
+<h2>$i18n.getString( "ccem_entry" )</h2>
+<ul>
+	<li><a href="catalog.action">$i18n.getString( "catalog" )</a></li>
+	<li><a href="enquipmentSelect.action">$i18n.getString( "equipment" )</a></li>	
+</ul>
+
+
+<h2>$i18n.getString( "ccem_reports" )</h2>
+<ul>
+	<li><a href="ccemReportsPage.action">$i18n.getString( "ccem_reports_page" )</a></li>    
+</ul>

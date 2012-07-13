@@ -1,0 +1,25 @@
+<table cellspacing="0" cellpadding="0">
+<tr>
+
+#if( $maintenanceModules && $maintenanceModules.size() > 0 )
+<td valign="top">
+<ul class="introList" style="width:340px; margin-top:0px; margin-right:15px;">
+#foreach( $module in $maintenanceModules )
+	#introListImgItem( "${module.defaultAction}" "${module.name}" "${module.name}" )
+#end
+</ul>
+</td>
+#end
+
+#if( $serviceModules && $serviceModules.size() > 0 )
+<td valign="top">
+<ul class="introList" style="width:340px; margin-top:0px;">
+#foreach( $module in $serviceModules )
+	#introListImgItem( "${module.defaultAction}" "${module.name}" "${module.name}" )
+#end
+</ul>
+</td>
+#end
+
+</tr>
+</table>

@@ -1,0 +1,9 @@
+{ "catalogTypeAttribute":
+  {
+    "id": "${catalogTypeAttribute.id}",
+	"name": "$!encoder.jsonEncode( ${catalogTypeAttribute.name} )",
+	"description": "$!encoder.jsonEncode( ${catalogTypeAttribute.description} )",
+	"valueType": "$!encoder.jsonEncode( ${catalogTypeAttribute.valueType} )",
+	"mandatory":  "$!{catalogTypeAttribute.mandatory}"
+  }
+}

@@ -1,0 +1,85 @@
+<table>
+	<tr>
+		<td><label class="bold">$i18n.getString( "common_info" )</label></td>
+	</tr>
+	
+	<tr>
+		<td>
+			<label class="bold">$i18n.getString( "full_name" ) : </label>
+				$partner.getFullName()
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<label class="bold">$i18n.getString( "gender" ) : </label>
+				$i18n.getString($partner.gender)
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<label class="bold">$i18n.getString( "date_of_birth" ) : </label></span>
+				$format.formatDate( $partner.birthDate )
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<label class="bold">$i18n.getString( "age" ) : </label>
+				$partner.getAge()
+		</td>
+	</tr>
+	
+	<tr><td>&nbsp;</td></tr>
+	<tr>
+		<td><label class="bold">$i18n.getString( "identifiers" )</td>
+	</td> 
+	#foreach( $patientIdentifier in $partner.identifiers )
+	<tr>
+		<td>
+			<label class="bold">
+				#if($!patientIdentifier.identifierType)  $!patientIdentifier.identifierType.name
+				#else $i18n.getString( "patient_system_id") #end 
+			</label>
+			 : $patientIdentifier.identifier
+		</td>
+	</tr>
+	#end
+	
+	<tr><td>&nbsp;</td></tr>
+	<tr>
+		<td><label class="bold">$i18n.getString( "attributes" )</label></td>
+	</tr>
+	#foreach( $attribute in $partner.attributes )
+		#if( $patientAttributeValueMap.get( $attribute.id ) != " " )
+		<tr>
+			<td><label class="bold">$attribute.name : </label>
+				$patientAttributeValueMap.get( $attribute.id )
+			</td>
+		</tr>
+		#end
+	#end
+	
+	<tr><td>&nbsp;</td></tr>
+	<tr>
+		<td><label class="bold">$i18n.getString( "enrolled_in_program" )</label></td>
+	</tr>
+	#foreach( $program in $partner.programs )
+	<tr>
+		<td>$program.name</td>
+	</tr>
+	#end
+	
+	<tr><td></td></tr>
+	<tr>
+		#if( $partnerIsRepresentative == 'true' )
+		<td>
+			<input type="button" value="$i18n.getString('is_not_representative')" onclick="javascript:removeRepresentative( getFieldValue('id'), $partner.id );" style='width:150px;' >
+		</td>
+		#else
+		<td>
+			<input type="button" value="$i18n.getString('save')" title="$i18n.getString('set_as_representative')" onclick="javascript:saveRepresentative( getFieldValue('id'), $partner.id, false )" style='width:150px;' >
+			<input type="button" value="$i18n.getString('save_all')" title="$i18n.getString('set_as_representative_and_copy_attributes_for_the_person')" onclick="javascript:saveRepresentative( getFieldValue('id'), $partner.id, true )" style='width:150px;' >
+		</td>    
+		#end
+	</tr>                      
+</table>

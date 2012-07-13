@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute" table="inventorytypeattribute">
+    <id name="id" column="inventorytypeattributeid">
+      <generator class="native"/>
+    </id>
+
+    <property name="name" not-null="true" unique="true" length="160"/>
+    
+    <property name="description" not-null="false" length="250"/>
+	
+	<property name="valueType" column="valuetype" not-null="true" />
+
+    <property name="mandatory" column="mandatory" not-null="true" />
+	  
+	<!--<property name="display" column="display" not-null="true" /> -->  
+
+    <property name="noChars" />
+	
+	<set name="attributeOptions">
+      <key column="inventorytypeattributeid" />
+      <one-to-many class="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOption" />
+    </set>
+	
+  </class>
+</hibernate-mapping>

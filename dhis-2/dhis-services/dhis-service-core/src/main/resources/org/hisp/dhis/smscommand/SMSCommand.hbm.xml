@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+    [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+    >
+<hibernate-mapping package="org.hisp.dhis.smscommand">
+  <class name="SMSCommand" table="smscommands">
+    <cache usage="read-write" />
+    <id name="id" column="smscommandid">
+      <generator class="increment" />
+    </id>
+    <property name="name" type="text" />
+    <property name="parser" type="text" />
+    <property name="seperator" type="text" />
+    <property name="codeSeperator" type="text" />
+    <many-to-one name="dataset" class="org.hisp.dhis.dataset.DataSet" column="datasetid" foreign-key="fk_dataset_datasetid" />
+
+    <set name="codes" table="smscommandcodes">
+      <cache usage="read-write" />
+      <key column="id" />
+      <many-to-many class="org.hisp.dhis.smscommand.SMSCode" column="codeid" unique="true" />
+    </set>
+
+  </class>
+</hibernate-mapping> 

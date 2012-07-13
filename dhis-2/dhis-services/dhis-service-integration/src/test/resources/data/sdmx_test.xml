@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<CrossSectionalData xmlns="http://www.SDMX.org/resources/SDMXML/schemas/v2_0/message" 
+                    xmlns:ns="urn:sdmx:org.sdmx.infomodel.keyfamily.KeyFamily=HP_MOH:OPENMRS:1.0:cross" >
+
+    <Header>
+        <ID>SDMX-HD-CSD</ID>
+        <Test>false</Test>
+        <Truncated>false</Truncated>
+        <Name xml:lang="en">Monthly Facility Report</Name>
+        <Prepared>2012-05-25</Prepared>
+        <Sender id="OpenMRS">
+            <Name>DDU</Name>
+        </Sender>
+    </Header>
+    <ns:DataSet datasetID="DS_A" >
+            <ns:Group VALUE_TYPE="0" FREQ="M" TIME_PERIOD="201201">
+                <ns:Section>
+                  <ns:OBS_VALUE FACILITY="OU_A" DATAELEMENT="DE_A" value="180"/>			
+                  <ns:OBS_VALUE FACILITY="OU_A" DATAELEMENT="DE_B" value="180"/>			
+                  <ns:OBS_VALUE FACILITY="OU_A" DATAELEMENT="DE_C" value="180"/>			
+                  <ns:OBS_VALUE FACILITY="OU_B" DATAELEMENT="DE_A" value="180"/>			
+                  <ns:OBS_VALUE FACILITY="OU_B" DATAELEMENT="DE_B" value="180"/>			
+                  <ns:OBS_VALUE FACILITY="OU_B" DATAELEMENT="DE_C" value="180"/>			
+                </ns:Section>
+            </ns:Group>
+    </ns:DataSet>
+</CrossSectionalData>

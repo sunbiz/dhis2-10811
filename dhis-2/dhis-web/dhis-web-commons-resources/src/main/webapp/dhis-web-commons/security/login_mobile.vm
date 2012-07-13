@@ -1,0 +1,50 @@
+<html>
+
+<head>
+<title>DHIS 2</title>
+
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<link rel="stylesheet" href="../css/login_mobile.css" />
+
+</head>
+
+<body>
+
+<div id="wrap">
+
+<div id="header">
+	<a href="login.action" tabindex="-1"><img src="logo_banner.png" alt="DHIS2" width="47" height="20"></a>
+</div>
+
+<div id="content" align="center" style="text-align: left;">
+
+#if( $failed == true )
+<div class="header-box" align="center">
+	<h3 style="text-align: left; background-color: red; color: black;">Wrong username or password</h3>
+</div>
+#end
+
+
+<form id='loginForm' action="../../dhis-web-commons-security/login.action" method="POST">
+
+<div class="header-box" align="center">
+	<h3 style="text-align: left;">Login</h3>
+	<p style="text-align: left;">
+		<label>Username</label> <input type="text" id="j_username" name="j_username" size="24"> <br />
+		<label>Password</label> <input type="password" id="j_password" name="j_password" size="24"> <br />
+	</p>
+</div>
+
+<div class="header-box" align="center">
+	<p>
+		<input type="submit" style="width: 48%;" value="Login"/>
+		<input type="reset" style="width: 48%;" value="Reset"/>
+	</p>
+</div>
+
+</form>
+</div>
+</div>
+
+</body>
+</html>

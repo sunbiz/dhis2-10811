@@ -1,0 +1,41 @@
+<h2>$i18n.getString( "generate_report" )</h2>
+<table>
+	<tr>
+		<td><label>$i18n.getString('organisation')<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td><input type="text" id="organisation" value="$!organisationUnit.name"  style="width:20em"></td>
+	</tr>
+	<tr>
+		<td><label>$i18n.getString('reports')<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td>
+			<select type="text" id="report" name="report" style="min-width:20em" >
+				#foreach($report in $reports)
+					<option value='$report.id'>$encoder.htmlEncode( $report.name )</option>				
+				#end
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+			<input type="button" value="<<" onclick="lastYear();"/><input type="button" value=">>" onclick="nextYear()"/>
+		</td>
+	</tr>
+	<tr>
+		<td><label>$i18n.getString('period')<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td>
+			<select type="text" id="period" style="min-width:20em">
+				#foreach($period in $periods)
+					<option value='$period.id'>$format.formatPeriod( $period )</option>				
+				#end
+			</select>
+		</td>
+	</tr>	
+</table> 
+<div id="orgUnitTree">
+	
+</div>
+<span id="message" style="top:100px;right:5px;position:fixed;width:200px;z-index:10002" onclick="hideById(this.id);"></span>
+<br>
+<hr>
+<p><input type="button" value="$i18n.getString( "generate_report" )" onclick="validateGenerateReport()"/></p>
+<span id="info" style="display:none;top:70px;right:5px;position:fixed;" onclick="hideById(this.id)"></span>

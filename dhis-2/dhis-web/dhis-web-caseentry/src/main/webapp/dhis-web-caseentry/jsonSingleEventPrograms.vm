@@ -1,0 +1,15 @@
+#set( $size = $programs.size() )
+{ 
+	"programs": [
+		#foreach( $program in $programs )
+		  {
+			"id":  ${program.id} ,
+			"name": "$!encoder.jsonEncode( ${program.name} )",
+			"type": "$program.type",
+			"programStageId": 
+				#foreach( $programStage in $program.programStages )
+					"$programStage.id"
+				#end
+		  }#if( $velocityCount < $size ),#end
+		#end]
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+  <bean id="org.hisp.dhis.sms.outbound.SmsConfigurationManager" class="org.hisp.dhis.sms.SmsConfigurationManagerImpl" />
+  
+  <!-- Outbound SMS service -->
+
+  <bean id="outboundSmsStore" class="org.hisp.dhis.sms.outbound.HibernateOutboundSmsStore">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="org.hisp.dhis.sms.outbound.OutboundSmsService" class="org.hisp.dhis.sms.outbound.OutboundSmsServiceImpl" />
+  
+  <!--  Only for testing! OutboundSmsService stub just logging invocations, replacing the default one or use as the OutboundSmsTransportService..  -->
+  <!--  <bean id="TestOutboundSmsService" class="org.hisp.dhis.sms.outbound.TestOutboundSmsService" /> -->
+
+  <bean id="smsLibService" class="org.hisp.dhis.sms.smslib.SmsLibService" />
+
+  <!--  SMS Message sender -->
+
+  <bean id="org.hisp.dhis.sms.outbound.SmsMessageSender" class="org.hisp.dhis.sms.outbound.SmsMessageSender">
+    <property name="outboundSmsService" ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />
+    <property name="userService" ref="org.hisp.dhis.user.UserService" />
+  </bean>
+  
+  <!-- Inbound SMS service -->
+  
+  <bean id="org.hisp.dhis.sms.incoming.IncomingSmsStore" class="org.hisp.dhis.sms.inbound.HibernateIncomingSmsStore">
+  	<property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <bean id="org.hisp.dhis.sms.incoming.IncomingSmsService" class="org.hisp.dhis.sms.inbound.DefaultInboundSmsService">
+  	<property name="incomingSmsStore" ref="org.hisp.dhis.sms.incoming.IncomingSmsStore"/>
+  </bean>
+  
+</beans>

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="org.hisp.dhis.wp.action.NoAction" class="org.hisp.dhis.wp.action.NoAction"
+		scope="prototype" />
+
+	<bean id="org.hisp.dhis.vn.chr.form.action.GetInformationForSystemAction"
+		class="org.hisp.dhis.vn.chr.form.action.GetInformationForSystemAction"
+		scope="prototype">
+		<property name="userStore" ref="org.hisp.dhis.user.UserStore" /> 
+		<!-- <property name="userAuthorityGroups" ref="org.hisp.dhis.user.UserAuthorityGroup" /> -->
+	</bean>
+
+	<!--  --><!--  --><!--  -->
+		<!-- Form -->
+	<!--  --><!--  --><!--  -->
+
+	<!--  List Form  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.ListFormAction" class="org.hisp.dhis.vn.chr.form.action.ListFormAction"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!--  Add Form  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.AddFormAction" class="org.hisp.dhis.vn.chr.form.action.AddFormAction"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!--  Update Form  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.UpdateFormAction"
+		class="org.hisp.dhis.vn.chr.form.action.UpdateFormAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!--  Get Form by Name  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.GetFormsByName" class="org.hisp.dhis.vn.chr.form.action.GetFormsByName"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.form.action.GetFormByName" class="org.hisp.dhis.vn.chr.form.action.GetFormByName"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!--  Get Form by Id -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.GetFormById" class="org.hisp.dhis.vn.chr.form.action.GetFormById"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!--  Get Visible Form  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.GetVisibleFormsAction"
+		class="org.hisp.dhis.vn.chr.form.action.GetVisibleFormsAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+		<!--
+			<property name="userStore" ref="org.hisp.dhis.user.UserStore"/>
+			<property name="selectionManager"
+			ref="org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager"/>
+		-->
+	</bean>
+
+	<!--  Varidate Form  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.ValidateFormAction"
+		class="org.hisp.dhis.vn.chr.form.action.ValidateFormAction" scope="prototype" />
+
+	<!--  Get Element for Egroup  -->
+	<bean id="org.hisp.dhis.vn.chr.form.action.GetElementsForGroupAction"
+		class="org.hisp.dhis.vn.chr.form.action.GetElementsForGroupAction"
+		scope="prototype">
+	</bean>
+
+	<!--  --><!--  --><!--  -->
+	<!-- Egroup -->
+	<!--  --><!--  --><!--  -->
+
+	<!-- List Egroup -->
+	<bean id="org.hisp.dhis.vn.chr.egroup.action.ListEgroupAction"
+		class="org.hisp.dhis.vn.chr.egroup.action.ListEgroupAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!-- Add Egroup -->
+	<bean id="org.hisp.dhis.vn.chr.egroup.action.AddEgroupAction"
+		class="org.hisp.dhis.vn.chr.egroup.action.AddEgroupAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="egroupService" ref="org.hisp.dhis.vn.chr.EgroupService" />
+	</bean>
+
+	<!-- Update Egroup -->
+	<bean id="org.hisp.dhis.vn.chr.egroup.action.UpdateEgroupAction"
+		class="org.hisp.dhis.vn.chr.egroup.action.UpdateEgroupAction" scope="prototype">
+		<property name="egroupService" ref="org.hisp.dhis.vn.chr.EgroupService" />
+	</bean>
+
+	<!-- Delete Egroup -->
+	<bean id="org.hisp.dhis.vn.chr.egroup.action.DeleteEgroupAction"
+		class="org.hisp.dhis.vn.chr.egroup.action.DeleteEgroupAction" scope="prototype">
+		<property name="egroupService" ref="org.hisp.dhis.vn.chr.EgroupService" />
+	</bean>
+
+	<!-- Validate Egroup -->
+	<bean id="org.hisp.dhis.vn.chr.egroup.action.ValidateEgroupAction"
+		class="org.hisp.dhis.vn.chr.egroup.action.ValidateEgroupAction" scope="prototype" />
+
+	<!-- Get Egroup By Id -->
+	<bean id="org.hisp.dhis.vn.chr.egroup.action.GetEgroupById" class="org.hisp.dhis.vn.chr.egroup.action.GetEgroupById"
+		scope="prototype">
+		<property name="egroupService" ref="org.hisp.dhis.vn.chr.EgroupService" />
+	</bean>
+
+	<!-- Update Elements for Egroup -->
+	<bean
+		id="org.hisp.dhis.vn.chr.egroup.action.UpdateElementsForEgroupAction"
+		class="org.hisp.dhis.vn.chr.egroup.action.UpdateElementsForEgroupAction"
+		scope="prototype">
+		<property name="egroupService" ref="org.hisp.dhis.vn.chr.EgroupService" />
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+	</bean>
+
+	<!--  --><!--  --><!--  -->
+	<!-- Element -->
+	<!--  --><!--  --><!--  -->
+
+	<!-- List Element -->
+	<bean id="org.hisp.dhis.vn.chr.element.action.ListElementAction"
+		class="org.hisp.dhis.vn.chr.element.action.ListElementAction" scope="prototype">
+		<!--
+			<property name="elementService"
+			ref="org.hisp.dhis.vn.chr.ElementService"/>
+		-->
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!-- Add Element -->
+	<bean id="org.hisp.dhis.vn.chr.element.action.AddElementAction"
+		class="org.hisp.dhis.vn.chr.element.action.AddElementAction" scope="prototype">
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!-- Update Element -->
+	<bean id="org.hisp.dhis.vn.chr.element.action.UpdateElementAction"
+		class="org.hisp.dhis.vn.chr.element.action.UpdateElementAction" scope="prototype">
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!-- Delete Element -->
+	<bean id="org.hisp.dhis.vn.chr.element.action.DeleteElementAction"
+		class="org.hisp.dhis.vn.chr.element.action.DeleteElementAction" scope="prototype">
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+	</bean>
+
+	<!-- Validate Element -->
+	<bean id="org.hisp.dhis.vn.chr.element.action.ValidateElementAction"
+		class="org.hisp.dhis.vn.chr.element.action.ValidateElementAction"
+		scope="prototype" />
+
+	<!-- Get Element by Id -->
+	<bean id="org.hisp.dhis.vn.chr.element.action.GetElementById"
+		class="org.hisp.dhis.vn.chr.element.action.GetElementById" scope="prototype">
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+	</bean>
+
+	<!--  --><!--  --><!--  -->
+	<!--  Configuration  -->
+	<!--  --><!--  --><!--  -->
+
+	<bean
+		id="org.hisp.dhis.vn.chr.configuration.action.GetFormConfigurationAction"
+		class="org.hisp.dhis.vn.chr.configuration.action.GetFormConfigurationAction"
+		scope="prototype">
+		<property name="systemSettingManager"
+			ref="org.hisp.dhis.options.SystemSettingManager" />
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.vn.chr.configuration.action.SetImageDirectoryOnServerAction"
+		class="org.hisp.dhis.vn.chr.configuration.action.SetImageDirectoryOnServerAction"
+		scope="prototype">
+        <property name="systemSettingManager"
+            ref="org.hisp.dhis.options.SystemSettingManager" />
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.vn.chr.configuration.action.SetNumberOfRecordsAction"
+		class="org.hisp.dhis.vn.chr.configuration.action.SetNumberOfRecordsAction"
+		scope="prototype">
+        <property name="systemSettingManager"
+            ref="org.hisp.dhis.options.SystemSettingManager" />
+	</bean>
+
+	<!--  --><!--  --><!--  -->
+	<!--  Object -->
+	<!--  --><!--  --><!--  -->
+
+	<!--  Show Add Form  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.AddObjectFormAction"
+		class="org.hisp.dhis.vn.chr.object.action.AddObjectFormAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+	</bean>
+
+	<!--  Show List Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.ListObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.ListObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+		<property name="systemSettingManager"
+			ref="org.hisp.dhis.options.SystemSettingManager" />
+	</bean>
+
+	<!--  Show List Relative Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.ListRelativeObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.ListRelativeObjectAction"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+		<property name="systemSettingManager"
+			ref="org.hisp.dhis.options.SystemSettingManager" />
+	</bean>
+
+	<!--  Add Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.AddObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.AddObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+	</bean>
+
+	<!--  Update Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.UpdateObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.UpdateObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+	</bean>
+
+	<!--  Delete Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.DeleteObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.DeleteObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+	</bean>
+
+	<!--  Get Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.GetObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.GetObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+	</bean>
+
+	<!--  Search Object  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.SearchObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.SearchObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+		<property name="systemSettingManager" ref="org.hisp.dhis.options.SystemSettingManager" />
+		<property name="elementService" ref="org.hisp.dhis.vn.chr.ElementService" />
+	</bean>
+
+	<!--  Create table by Form  -->
+	<bean id="org.hisp.dhis.vn.chr.object.action.CreateTableByFormAction"
+		class="org.hisp.dhis.vn.chr.object.action.CreateTableByFormAction"
+		scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formManager" ref="org.hisp.dhis.vn.chr.jdbc.FormManager" />
+	</bean>
+
+	<!-- - Upload file -->
+	<bean id='org.hisp.dhis.vn.chr.object.action.UploadFileAction'
+		class='org.hisp.dhis.vn.chr.object.action.UploadFileAction' scope="prototype">
+		<property name="systemSettingManager"
+			ref="org.hisp.dhis.options.SystemSettingManager" />
+		<!--
+			<property name="locationManager"
+			ref="org.hisp.dhis.external.location.LocationManager"/>
+		-->
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.object.action.ValidateObjectAction"
+		class="org.hisp.dhis.vn.chr.object.action.ValidateObjectAction" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+	</bean>
+
+	<!--  --><!--  --><!--  -->
+	<!--  FormReport -->
+	<!--  --><!--  --><!--  -->
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.GetDataSets"
+		class="org.hisp.dhis.vn.chr.formreport.action.GetDataSets" scope="prototype">
+		<!--
+			<property name="userStore" ref="org.hisp.dhis.user.UserStore"/>
+			<property name="currentUserService"
+			ref="org.hisp.dhis.user.CurrentUserService"/>
+		-->
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.GetDataelementsOfDataSet"
+		class="org.hisp.dhis.vn.chr.formreport.action.GetDataelementsOfDataSet"
+		scope="prototype">
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+		<property name="categoryService"
+			ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.AddFormReport"
+		class="org.hisp.dhis.vn.chr.formreport.action.AddFormReport" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formReportService" ref="org.hisp.dhis.vn.chr.FormReportService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.ListFormReports"
+		class="org.hisp.dhis.vn.chr.formreport.action.ListFormReports" scope="prototype">
+		<property name="formReportService" ref="org.hisp.dhis.vn.chr.FormReportService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.DeleteFormReportAction"
+		class="org.hisp.dhis.vn.chr.formreport.action.DeleteFormReportAction"
+		scope="prototype">
+		<property name="formReportService" ref="org.hisp.dhis.vn.chr.FormReportService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.GetFormReportAction"
+		class="org.hisp.dhis.vn.chr.formreport.action.GetFormReportAction"
+		scope="prototype">
+		<property name="formReportService" ref="org.hisp.dhis.vn.chr.FormReportService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.vn.chr.formreport.action.UpdateFormReport"
+		class="org.hisp.dhis.vn.chr.formreport.action.UpdateFormReport" scope="prototype">
+		<property name="formService" ref="org.hisp.dhis.vn.chr.FormService" />
+		<property name="formReportService" ref="org.hisp.dhis.vn.chr.FormReportService" />
+	</bean>
+
+</beans>
+
+
+
+

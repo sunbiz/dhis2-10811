@@ -1,0 +1,69 @@
+<script type="text/javascript">
+	jQuery(document).ready( function(){
+		// Override the listener after tree loaded succesfully
+		selectionTreeSelection.setListenerFunction( setSelectedOrganisationUnitIds );
+	});
+
+	var i18n_type_tally_sheet_name = '$encoder.jsEscape( $i18n.getString( "type_tally_sheet_name" ), "'")'; 
+    var i18n_select_data_set = '$encoder.jsEscape( $i18n.getString( "select_data_set" ), "'")';
+    var i18n_select_organisation_unit = '$encoder.jsEscape( $i18n.getString( "select_organisation_unit" ), "'")';
+    var i18n_processing = '$encoder.jsEscape( $i18n.getString( "processing" ), "'")';    
+</script>
+
+<h3>$i18n.getString( "tally_sheet_generator" )</h3>
+
+<form id="tallySheetForm" name="tallySheetForm" action="configureTallySheetGenerator.action" method="post">	
+
+<table>
+  <tr>
+  	<th colspan="2">$i18n.getString( "tally_sheet_step1" )</th>
+  </tr>
+  <tr>
+	  <td><label for="selectedDataSetId">$i18n.getString( "dataset" )</label></td>
+	  <td>
+	      <select id="selectedDataSetId" name="selectedDataSetId" style="min-width:350px" #if( $dataSets.size() == 0 ) disabled="disabled" #end>
+			  <option value="null">[ $i18n.getString( "select" ) ]</option>
+		      #foreach( $dataSet in $dataSets )
+			  <option value="$dataSet.id">$encoder.htmlEncode( $dataSet.name )</option>
+		      #end	      
+		  </select>
+	</td>
+  </tr>
+  <tr>  	
+      <td><label>$i18n.getString( "tally_sheet_name" )</label></td>
+      <td><input type="text" id="tallySheetName" name="tallySheetName" value="$i18n.getString( 'tally_sheet' )"></td>
+  </tr>	
+  <tr>  	
+      <td><label>$i18n.getString( "use_a3_format" )</label></td>
+      <td>
+      	<input type="checkbox" value="true" id="largeFormat" name="largeFormat" />
+      </td>
+  </tr>
+    <tr>  	
+      <td><label>$i18n.getString( "display_facility_name" )</label></td>
+      <td>
+      	<input type="checkbox" value="true" id="displayFacilityName" name="displayFacilityName" checked="checked" />
+      </td>
+  </tr>
+  <tr>
+  	<td colspan="2" style="height:10px"></td>
+  </tr>
+</table>
+
+<table>	
+  <tr>	
+    <td>$i18n.getString( "report_organisation_unit" )</td>	
+  </tr>  
+  <tr>	
+	<td>
+		#organisationUnitSelectionTree( true, false, false )
+    </td>
+  </tr>  
+  <tr>
+	<td><input type="button" value="$i18n.getString( "continue" )" style="width:115px" onclick="continueToStepTwo()" /></td>
+  </tr>  
+</table>
+
+</form>
+
+<span id="message">$!message</span>

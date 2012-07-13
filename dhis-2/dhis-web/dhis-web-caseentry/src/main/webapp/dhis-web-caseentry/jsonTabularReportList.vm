@@ -1,0 +1,11 @@
+#set( $size = ${tabularReports.size()} )
+{ "tabularReports": [
+  #foreach( ${tabularReport} in $!{tabularReports} )
+  {
+	"id": "${tabularReport.id}",
+	"name": "$!encoder.jsonEncode( ${tabularReport.name} )",
+	"lastUpdated": "${tabularReport.lastUpdated}"
+  }#if( $velocityCount < $size ),#end
+  #end
+  ]
+}

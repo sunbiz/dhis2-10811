@@ -1,0 +1,110 @@
+<script langauge="Javascript">
+    function prepSubmit(){
+ 
+      var selectedDataOptions = '{"codes":[';      
+      $("#codes input").each(function(){
+            selectedDataOptions += '{"dataElementId" :' + $(this).attr('name').split('.')[0] +  ',';  
+            selectedDataOptions += '"optionId" :' + $(this).attr('name').split('.')[1] + ',';
+            selectedDataOptions += '"code" :"' + $(this).val() + '"},';
+            $(this).attr('name',''); // avoid error in struts 
+      });
+      selectedDataOptions += ']}';
+     
+      $("#codeDataelementOption").val(selectedDataOptions);
+      $("#updateSMSCommand").submit(); 
+    }
+</script>
+
+
+<div>
+    </div>
+<h3>Edit command</h3>
+<form id="updateSMSCommand" name="updateSMSCommand" action="saveEditSMSCommandForm.action" method="post">
+
+ <!-- 
+    * Unik kommando navn
+    * OID
+ -->
+    
+	
+	
+	<table>
+	<thead>
+      <tr>
+        <th colspan="2">$i18n.getString( "command_details" )</th>
+      </tr>
+    </thead>
+		<tr>
+			<td>
+				<input type="hidden" value="$selectedCommandID" name="selectedCommandID" />
+			</td>
+		</tr>
+		<tr>
+			<td>Name:</td>
+			<td><input type="text" name="name" value="$SMSCommand.name" style="width:20em" /></td>
+		</tr>
+		<tr>
+			<td>DataSet:</td>
+			<td>
+	
+				<!-- onchange="window.location.href='editSMSCommand.action?selectedDataSetID=' + this.options[this.selectedIndex].value" -->
+				<select name="selectedDataSetID" style="min-width:20em; margin:0;" >
+				#foreach( $dataSet in $dataSets )
+				<option value="$dataSet.id" #if ($SMSCommand.dataset.id == $dataSet.id) selected #end >$dataSet.name</option>
+				#end
+				</select> 
+			</td>
+		</tr> 
+		<tr>
+			<td>Separator:</td>
+			<td>
+				<input type="text"  #if($SMSCommand.seperator) value="$SMSCommand.seperator" #end name="seperator" style="width:20em" />
+			</td>
+		</tr>
+		<tr>
+			<td>Code seperator:</td>
+			<td><input type="text" #if($SMSCommand.codeSeperator) value="$SMSCommand.codeSeperator" #end name="codeSeperator" style="width:20em" /></td>
+		</tr>
+	
+	</table>
+	
+	</br>
+	</br>
+	
+	
+    <table id="codes">   
+		<col style="width: 450px"/>
+    <col/>
+    <col style="width: 450px"/>
+    <thead>
+      <tr>
+        <th>Data Element Category Combination</th>
+		<th>Code</th>
+      </tr>
+    </thead>
+		
+         #foreach( $dataElement in $dataSetElements)
+            #if ($dataElement.categoryCombo && $dataElement.categoryCombo.categories) 
+                #foreach($category in $dataElement.categoryCombo.categories)
+                    #foreach($option in $category.categoryOptions)
+                    <tr>
+                        <td>$dataElement.name $option.name</td>
+                        #set ($str = ""+$dataElement.id+""+$option.id)
+                        <td><input type="text" name="$dataElement.id.$option.id" value='$!codes[$str]'></td>
+                    </tr>         
+                    #end
+                #end
+            #else
+            <tr>
+               <td>$dataElement.name</td>
+               <td><input type="text" name="$dataElement.id"></td>   
+            </tr>         
+            #end  
+         #end
+    </table>
+	<br/>
+	
+    <input type="hidden" name="codeDataelementOption" id="codeDataelementOption" />
+    <input  type="button" style="width: 100px" onclick="prepSubmit()" value="save" />
+	
+</form>

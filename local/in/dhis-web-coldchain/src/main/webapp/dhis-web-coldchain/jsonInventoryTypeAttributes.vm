@@ -1,0 +1,12 @@
+#set( $size = $inventoryTypeAttributes.size() )
+{ "inventoryTypeAttributes": [
+#foreach( $inventoryTypeAttribute in $inventoryTypeAttributes )
+{
+      "id": ${inventoryTypeAttribute.id},
+      "name": "$!encoder.jsonEncode( ${inventoryTypeAttribute.name} )",
+      "description": "$!encoder.jsonEncode( ${inventoryTypeAttribute.description} )",
+      "valueType": "$!encoder.jsonEncode( ${inventoryTypeAttribute.valueType} )"
+}#if( $velocityCount < $size ),#end
+#end
+]
+}

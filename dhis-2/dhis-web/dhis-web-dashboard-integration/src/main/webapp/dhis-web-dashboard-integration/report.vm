@@ -1,0 +1,22 @@
+
+<table class="contentProviderTable">
+    <tr>
+    	<th colspan="2">$i18n.getString( "report" )</th>
+    </tr>
+    #foreach ( $report in $reports )
+    <tr>
+    	<td>
+    		<a href="../dhis-web-reporting/getReportParams.action?uid=${report.uid}&mode=report">$encoder.htmlEncode( $report.name )</a>
+    	</td>
+    	<td style="width:10px">
+    		<a href="javascript:window.location.href='removeReport.action?id=$report.id'" title="$i18n.getString( 'remove' )">
+    		<img class="removeIcon" src="../images/hide.png" alt="$i18n.getString( 'remove' )"></a>
+    	</td>
+    </tr>
+    #end
+</table>
+
+#if( $reports.size() == 0 )
+<div class="labelText">$i18n.getString( "insert_links_by_going_to" ) 
+<a href="../dhis-web-reporting/displayViewReportForm.action">$i18n.getString( "report" )</a></div>
+#end

@@ -1,0 +1,48 @@
+{ "patientProperties": [
+  {
+	"id": "fixedAttr_firstName",
+	"name": "$i18n.getString('first_name')"
+  },
+  {
+	"id": "fixedAttr_middleName",
+	"name": "$i18n.getString('middle_name')"
+  },
+  {
+	"id": "fixedAttr_lastName",
+	"name": "$i18n.getString('last_name')"
+  },
+  {
+	"id": "fixedAttr_gender",
+	"name": "$i18n.getString('gender')"
+  },
+  {
+	"id": "fixedAttr_birthDate",
+	"name": "$i18n.getString('date_of_birth')"
+  },
+  {
+	"id": "fixedAttr_dobType",
+	"name": "$i18n.getString('dob_type')"
+  },
+  {
+	"id": "fixedAttr_phoneNumber",
+	"name": "$i18n.getString('phone_number')"
+  },
+  {
+	"id": "fixedAttr_deathdate",
+	"name": "$i18n.getString('death_date')"
+  },
+  #foreach( ${identifierType} in $!{identifierTypes} )
+  {
+	"id": "iden_${identifierType.id}",
+	"name": "$!encoder.jsonEncode( ${identifierType.name} )"
+  },
+  #end
+  #set( $size = $!{patientAttributes.size()} )
+  #foreach( $patientAttribute in $!{patientAttributes} )
+  {
+    "id": "attr_${patientAttribute.id}",
+	"name": "$!encoder.jsonEncode( ${patientAttribute.name} )"
+  }#if( $velocityCount < $size ),#end
+  #end
+  ]
+}

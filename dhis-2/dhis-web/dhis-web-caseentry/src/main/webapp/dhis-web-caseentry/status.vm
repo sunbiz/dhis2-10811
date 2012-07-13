@@ -1,0 +1,9 @@
+<status>
+	<code>$statusCode</code>
+	<validations>
+		#foreach($validation in $resultValidation)
+				<validation>$validation.description</validation>
+		#end
+	</validations>
+	<message>$encoder.xmlEncode($message)</message>
+</status>

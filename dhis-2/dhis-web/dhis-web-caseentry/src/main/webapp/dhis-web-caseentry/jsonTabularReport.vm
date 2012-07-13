@@ -1,0 +1,79 @@
+{
+	"id": "${tabularReport.id}",
+	"name": "$!encoder.jsonEncode( ${tabularReport.name} )",
+	"lastUpdated": "$!format.formatDate( ${tabularReport.lastUpdated} )",
+	"programId": "${programStage.program.id}",
+	"singleEvent": 
+		#if($programStage.program.programStages.size() == 1 )
+			"true",
+		#else
+			"false",
+		#end
+	"type": "${programStage.program.type}",
+	"programStageId": "${programStage.id}",
+	"programStageName": "${programStage.name}",
+	"startDate": "$!format.formatDate( $tabularReport.startDate )",
+	"endDate": "$!format.formatDate( ${tabularReport.endDate} )",
+	"level": "${tabularReport.level}",
+	"sortedOrgunitAsc": "${tabularReport.sortedOrgunitAsc}",
+	"facilityLB": "${tabularReport.facilityLB}",
+	"orgunitIds": [
+		#set( $size = $tabularReport.organisationUnits.size() )
+		#set( $organisationUnits = ${tabularReport.organisationUnits} )
+		#foreach( ${organisationUnit} in $!{organisationUnits} )
+			$organisationUnit.id
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"patientProperties": [
+		#set( $fixedAttributes = ${tabularReport.fixedAttributes} )
+		#foreach( ${fixedAttribute} in $!{fixedAttributes} )
+			{	
+				#set( $attr = $i18n.getString($fixedAttribute) )
+				"id": "fixedAttr_${fixedAttribute}",
+				"name": "$attr"
+			},
+		#end
+		#set( $identifiers = ${tabularReport.identifiers} )
+		#foreach( ${identifier} in $!{identifiers} )
+			{
+				"id": "iden_${identifier.id}",
+				"name": "${identifier.name}"
+			},
+		#end
+		#set( $size = ${tabularReport.attributes.size()} )
+		#set( $attributes = ${tabularReport.attributes} )
+		#foreach( ${attribute} in $!{attributes} )
+			{
+				"id": "attr_${attribute.id}",
+				"name": "${attribute.name}"
+			}
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"fixedAttributes": [
+		#set( $size = ${tabularReport.fixedAttributes.size()} )
+		#set( $fixedAttributes = ${tabularReport.fixedAttributes} )
+		#foreach( ${fixedAttribute} in $!{fixedAttributes} )
+			"fixedAttr_${fixedAttribute}"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"dataElements": [
+		#set( $size = ${tabularReport.programStageDataElements.size()} )
+		#set( $programStageDataElements = ${tabularReport.programStageDataElements} )
+		#foreach( ${programStageDataElement} in $!{programStageDataElements} )
+			{
+				"id": "de_${programStageDataElement.dataElement.id}",
+				"name": "${programStageDataElement.dataElement.name}",
+				"compulsory": "${programStageDataElement.compulsory}",
+				"valueType": #if( $programStageDataElement.dataElement.optionSet )
+								"list"
+							 #else
+								"${programStageDataElement.dataElement.type}"
+							 #end
+			}
+			#if( $velocityCount < $size ),#end
+		#end
+	]
+}

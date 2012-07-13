@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<!-- Home page -->
+	<bean id="org.hisp.dhis.coldchain.action.NoAction"
+        class="org.hisp.dhis.coldchain.action.NoAction"
+        scope="prototype">
+    </bean>
+
+<!-- catalog Type Attribute -->
+	
+	<!-- Catalog Type Attribute List -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetColdChainCatalogTypeAttributeListAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetColdChainCatalogTypeAttributeListAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>	
+	
+	<!-- Add Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.AddColdChainCatalogTypeAttributeForm"
+		class="org.hisp.dhis.coldchain.catalog.action.AddColdChainCatalogTypeAttributeForm"
+		scope="prototype">
+	</bean>
+	
+	<!-- Add -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.AddCatalogTypeAttributeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.AddCatalogTypeAttributeAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />
+		<property name="catalogTypeAttributeOptionService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionService" />		
+	</bean>	
+	
+	<!-- show details -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeAttributeDetailsAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeAttributeDetailsAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>
+	<!-- Remove/Delete -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogTypeAttributeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogTypeAttributeAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>
+	
+	<!-- Remove/Delete Attrobute Option -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogTypeAttributeOptionAction"
+		class="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogTypeAttributeOptionAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeOptionService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionService" />		
+	</bean>
+	
+	<!-- Update Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ShowUpdateCatalogTypeAttributeFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ShowUpdateCatalogTypeAttributeFormAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>
+	
+	<!-- Update -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogTypeAttributeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogTypeAttributeAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />
+		<property name="catalogTypeAttributeOptionService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionService" />	
+	</bean>	
+
+	<!-- Validation --> 
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ValidateCatalogTypeAttributeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ValidateCatalogTypeAttributeAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />
+	</bean>	
+
+<!-- Catalog Type -->
+	
+	<!-- Catalog Type List -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.CatalogTypeListAction"
+		class="org.hisp.dhis.coldchain.catalog.action.CatalogTypeListAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />		
+	</bean>
+
+	<!-- Add Catalog Type Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.AddCatalogTypeFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.AddCatalogTypeFormAction"
+		scope="prototype">
+	</bean>
+
+	<!-- Catalog Type Attributes -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeAttributesAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeAttributesAction"
+		scope="prototype">
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>	
+
+	<!-- Add -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.AddCatalogTypeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.AddCatalogTypeAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>	
+
+	
+	<!-- Update Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogTypeFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogTypeFormAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />		
+	</bean>
+
+	<!-- Update -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogTypeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogTypeAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />		
+	</bean>
+
+	<!-- Remove/Delete -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogTypeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogTypeAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>	
+
+	<!-- Validation -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ValidateCatalogTypeAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ValidateCatalogTypeAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>
+	
+	<!-- show details -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeDetailsAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeDetailsAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />		
+	</bean>	
+
+<!-- catalog -->
+
+<!-- Data Entry Form -->
+	<bean
+		id="org.hisp.dhis.coldchain.catalog.dataentryform.action.ViewCatalogDataEntryFormAction"
+		class="org.hisp.dhis.coldchain.catalog.dataentryform.action.ViewCatalogDataEntryFormAction"
+		scope="prototype">
+		<!--<property name="dataEntryFormService">
+			<ref bean="org.hisp.dhis.dataentryform.DataEntryFormService" />
+		</property>-->
+		<property name="catalogTypeService">
+			<ref bean="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		</property>
+		<property name="catalogDataEntryService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogDataEntryService" />
+	</bean>	
+	
+	<!-- Validation -->
+	<bean
+		id="org.hisp.dhis.coldchain.catalog.dataentryform.action.ValidateCatalogDataEntryFormAction"
+		class="org.hisp.dhis.coldchain.catalog.dataentryform.action.ValidateCatalogDataEntryFormAction"
+		scope="prototype">
+		<property name="dataEntryFormService">
+			<ref bean="org.hisp.dhis.dataentryform.DataEntryFormService" />
+		</property>
+	</bean>	
+
+	<!-- Save Form -->
+	<bean
+		id="org.hisp.dhis.coldchain.catalog.dataentryform.action.SaveCatalogDataEntryFormAction"
+		class="org.hisp.dhis.coldchain.catalog.dataentryform.action.SaveCatalogDataEntryFormAction"
+		scope="prototype">
+		<property name="dataEntryFormService">
+			<ref bean="org.hisp.dhis.dataentryform.DataEntryFormService" />
+		</property>
+		<property name="catalogTypeService">
+			<ref bean="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		</property>		
+	</bean>		
+	
+	<!-- Delete Form -->
+	<bean
+		id="org.hisp.dhis.coldchain.catalog.dataentryform.action.DeleteCatalogDataEntryFormAction"
+		class="org.hisp.dhis.coldchain.catalog.dataentryform.action.DeleteCatalogDataEntryFormAction"
+		scope="prototype">
+		<property name="dataEntryFormService">
+			<ref bean="org.hisp.dhis.dataentryform.DataEntryFormService" />
+		</property>
+		<property name="catalogTypeService">
+			<ref bean="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		</property>		
+	</bean>		
+	
+	
+	<!-- Catalog List -->
+	
+	<bean id="org.hisp.dhis.coldchain.catalog.action.CatalogSelectAction"
+		class="org.hisp.dhis.coldchain.catalog.action.CatalogSelectAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>		
+
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeAttributeListAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetCatalogTypeAttributeListAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>		
+	
+	
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetCatalogListAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetCatalogListAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="catalogTypeAttributeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeService" />				
+	</bean>	
+	
+<!--	
+	<bean id="org.hisp.dhis.coldchain.catalog.action.CatalogListAction"
+		class="org.hisp.dhis.coldchain.catalog.action.CatalogListAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />	
+		<property name="userSettingService"
+			ref="org.hisp.dhis.user.UserSettingService" />					
+	</bean>	
+	
+-->	
+	
+	
+	<!-- Add Catalog  Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.AddCatalogFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.AddCatalogFormAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />		
+	</bean>			
+
+	<!-- Show Add Catalog  Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ShowAddCatalogFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ShowAddCatalogFormAction"
+		scope="prototype">
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="catalogDataEntryService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogDataEntryService" />					
+	</bean>	
+
+
+	<!-- Add -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.AddCatalogAction"
+		class="org.hisp.dhis.coldchain.catalog.action.AddCatalogAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+		<property name="CatalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="catalogTypeAttributeOptionService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionService" />
+		<!--<property name="catalogDataValueService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogDataValueService" />-->							
+	</bean>			
+
+	<!-- Update Form -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogFormAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="catalogDataValueService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogDataValueService" />						
+	</bean>
+	
+	<!-- Update -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UpdateCatalogAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+		<property name="catalogTypeService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />	
+		<property name="catalogTypeAttributeOptionService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOptionService" />
+		<property name="catalogDataValueService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogDataValueService" />						
+	</bean>
+		
+	<!-- Validation -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ValidateCatalogAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ValidateCatalogAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+	</bean>		
+	
+	<!-- show details -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.GetCatalogDetailsAction"
+		class="org.hisp.dhis.coldchain.catalog.action.GetCatalogDetailsAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+		<property name="catalogDataValueService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogDataValueService" />				
+	</bean>	
+	
+	<!-- Remove/Delete -->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogAction"
+		class="org.hisp.dhis.coldchain.catalog.action.RemoveCatalogAction"
+		scope="prototype">
+		<property name="catalogService"
+			ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+	</bean>	
+									
+<!-- InventoryTypeAttribute -->
+    <bean id="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAttributeListAction"
+        class="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAttributeListAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+		<property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.AddInventoryTypeAttributeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.AddInventoryTypeAttributeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+		<property name="inventoryTypeAttributeOptionService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.ValidateInventoryTypeAttributeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.ValidateInventoryTypeAttributeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.ShowUpdateInventoryTypeAttributeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.ShowUpdateInventoryTypeAttributeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.UpdateInventoryTypeAttributeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.UpdateInventoryTypeAttributeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+		<property name="inventoryTypeAttributeOptionService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.RemoveInventoryTypeAttributeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.RemoveInventoryTypeAttributeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.RemoveInventoryTypeAttributeOptionAction"
+        class="org.hisp.dhis.coldchain.inventory.action.RemoveInventoryTypeAttributeOptionAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeOptionService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAttributeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAttributeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+    </bean>
+
+    <bean id="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAttributesAction"
+        class="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAttributesAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+    </bean>	    
+	
+<!-- InventoryType -->
+    <bean id="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeListAction"
+        class="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeListAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.ShowAddInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.ShowAddInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+		<property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+    </bean>
+
+    <bean id="org.hisp.dhis.coldchain.inventory.action.ValidateInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.ValidateInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+    </bean>
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.action.AddInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.AddInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+        <property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+		<property name="inventoryType_AttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.ShowUpdateInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.ShowUpdateInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+		<property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.UpdateInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.UpdateInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+		<property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+		<property name="inventoryType_AttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.RemoveInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.RemoveInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAction"
+        class="org.hisp.dhis.coldchain.inventory.action.GetInventoryTypeAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+    </bean>
+	
+	
+	
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.action.ShowInventoryTypeDataSetFormAction"
+        class="org.hisp.dhis.coldchain.inventory.action.ShowInventoryTypeDataSetFormAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+    </bean>	
+	
+    <bean id="org.hisp.dhis.coldchain.inventory.action.GetDataSetListAction"
+        class="org.hisp.dhis.coldchain.inventory.action.GetDataSetListAction"
+        scope="prototype">
+        <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+    </bean>		
+
+    <bean id="org.hisp.dhis.coldchain.inventory.action.UpdateInventoryTypeDataSetAction"
+        class="org.hisp.dhis.coldchain.inventory.action.UpdateInventoryTypeDataSetAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+    </bean>	
+	
+			
+		
+<!-- EquipmentDetails -->
+    <bean id="org.hisp.dhis.coldchain.equipment.action.EquipmentSelectAction"
+        class="org.hisp.dhis.coldchain.equipment.action.EquipmentSelectAction"
+        scope="prototype">
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+        <property name="selectionManager" ref="org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager" />
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.action.GetOrganisationUnitAction"
+        class="org.hisp.dhis.coldchain.action.GetOrganisationUnitAction"
+        scope="prototype">
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.GetEquipmentInstanceListAction"
+        class="org.hisp.dhis.coldchain.equipment.action.GetEquipmentInstanceListAction"
+        scope="prototype">
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+        <property name="inventoryTypeAttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeService" />
+		<property name="equipmentService" ref="org.hisp.dhis.coldchain.inventory.EquipmentService" />
+		<property name="inventoryType_AttributeService" ref="org.hisp.dhis.coldchain.inventory.InventoryType_AttributeService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.ShowAddEquipmentFormAction"
+        class="org.hisp.dhis.coldchain.equipment.action.ShowAddEquipmentFormAction"
+        scope="prototype">
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.AddEquipmentAction"
+        class="org.hisp.dhis.coldchain.equipment.action.AddEquipmentAction"
+        scope="prototype">
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+        <property name="inventoryTypeAttributeOptionService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionService" />
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.GetEquipmentInstanceDataAction"
+        class="org.hisp.dhis.coldchain.equipment.action.GetEquipmentInstanceDataAction"
+        scope="prototype">
+        <property name="equipmentService" ref="org.hisp.dhis.coldchain.inventory.EquipmentService" />
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.UpdateEquipmentAction"
+        class="org.hisp.dhis.coldchain.equipment.action.UpdateEquipmentAction"
+        scope="prototype">
+        <property name="equipmentService" ref="org.hisp.dhis.coldchain.inventory.EquipmentService" />
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+        <property name="inventoryTypeAttributeOptionService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOptionService" />
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentStatusFormAction"
+        class="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentStatusFormAction"
+        scope="prototype">
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.UpdateEquipmentStatusAction"
+        class="org.hisp.dhis.coldchain.equipment.action.UpdateEquipmentStatusAction"
+        scope="prototype">
+        <property name="equipmentStatusService" ref="org.hisp.dhis.coldchain.inventory.EquipmentStatusService" />
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+        <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />      
+    </bean>
+
+    <bean id="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentStatusHistoryFormAction"
+        class="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentStatusHistoryFormAction"
+        scope="prototype">
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+        <property name="equipmentStatusService" ref="org.hisp.dhis.coldchain.inventory.EquipmentStatusService" />
+    </bean>
+    <bean id="org.hisp.dhis.coldchain.equipment.action.RemoveEquipmentInstanceAction"
+        class="org.hisp.dhis.coldchain.equipment.action.RemoveEquipmentInstanceAction"
+        scope="prototype">
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+    </bean>
+
+<!-- Equipment Data Entry related actions -->
+		
+    <bean id="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentDataEntryFormAction"
+        class="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentDataEntryFormAction"
+        scope="prototype">
+        <property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+		<property name="inventoryTypeService" ref="org.hisp.dhis.coldchain.inventory.InventoryTypeService" />
+		<property name="equipmentService" ref="org.hisp.dhis.coldchain.inventory.EquipmentService" />
+    </bean>	
+<!--
+-->	
+	  <bean id="org.hisp.dhis.coldchain.equipment.action.LoadPeriodsAction" class="org.hisp.dhis.coldchain.equipment.action.LoadPeriodsAction" scope="prototype">   
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService"/>
+	  </bean>		
+		
+
+	  <bean id="org.hisp.dhis.coldchain.equipment.action.LoadNextPrePeriodsAction" class="org.hisp.dhis.coldchain.equipment.action.LoadNextPrePeriodsAction" scope="prototype">   
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService"/>
+	  </bean>
+	
+	  <bean id="org.hisp.dhis.coldchain.equipment.action.LoadDataEntryFormAction"
+		class="org.hisp.dhis.coldchain.equipment.action.LoadDataEntryFormAction" scope="prototype">   
+		<property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService"/>
+		<property name="equipmentDataValueService" ref="org.hisp.dhis.coldchain.inventory.EquipmentDataValueService"/>  
+	  </bean>
+
+	  <bean id="org.hisp.dhis.coldchain.equipment.action.SaveEquipmentDataValueAction"
+		class="org.hisp.dhis.coldchain.equipment.action.SaveEquipmentDataValueAction" scope="prototype">   
+		<property name="equipmentInstanceService" ref="org.hisp.dhis.coldchain.inventory.EquipmentInstanceService" />
+		<property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService"/>
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService"/>
+		<property name="equipmentDataValueService" ref="org.hisp.dhis.coldchain.inventory.EquipmentDataValueService"/>     
+	  
+	  </bean>
+	
+		
+	<!-- Upload Image Form Catalog-->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ShowUploadCatalogImageFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ShowUploadCatalogImageFormAction"
+		scope="prototype">
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+	</bean>
+	
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UploadCatalogImageAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UploadCatalogImageAction"
+		scope="prototype">
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+	</bean>	
+
+	
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ShowImageAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ShowImageAction"
+		scope="prototype">
+		<property name="catalogService" ref="org.hisp.dhis.coldchain.catalog.CatalogService" />
+	</bean>	
+		
+	<!-- Upload Image Form Catalog Type-->
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ShowUploadCatalogTypeImageFormAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ShowUploadCatalogTypeImageFormAction"
+		scope="prototype">
+		<property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.coldchain.catalog.action.UploadCatalogTypeImageAction"
+		class="org.hisp.dhis.coldchain.catalog.action.UploadCatalogTypeImageAction"
+		scope="prototype">
+		<property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>
+				
+	<bean id="org.hisp.dhis.coldchain.catalog.action.ShowCatalogTypeImageAction"
+		class="org.hisp.dhis.coldchain.catalog.action.ShowCatalogTypeImageAction"
+		scope="prototype">
+		<property name="catalogTypeService" ref="org.hisp.dhis.coldchain.catalog.CatalogTypeService" />
+	</bean>
+
+    <!-- CCEM Reports -->
+    <bean id="org.hisp.dhis.coldchain.reports.action.CCEMReportPageAction"
+        class="org.hisp.dhis.coldchain.reports.action.CCEMReportPageAction"
+        scope="prototype">
+        <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    </bean> 
+    <bean id="org.hisp.dhis.coldchain.reports.action.GenerateCCEMReportAction"
+        class="org.hisp.dhis.coldchain.reports.action.GenerateCCEMReportAction"
+        scope="prototype">
+		<property name="ccemReportManager" ref="org.hisp.dhis.coldchain.reports.CCEMReportManager" />
+		<property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+		<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    </bean> 
+			
+</beans>

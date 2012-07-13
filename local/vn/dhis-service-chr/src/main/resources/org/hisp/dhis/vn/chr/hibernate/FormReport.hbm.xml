@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="org.hisp.dhis.vn.chr.FormReport" table="formreport">
+    
+    	<cache usage="read-write"/>
+    	
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        
+        <property name="name" type="string">
+            <column name="name"  not-null="true"/>
+        </property>
+        
+        <property name="formula" type="string">
+            <column name="formula"/>
+        </property>
+        
+        <many-to-one name="mainForm" class="org.hisp.dhis.vn.chr.Form" fetch="select">
+            <column name="mainformid" not-null="true"/>
+        </many-to-one>
+         
+        <property name="operand" type="string">
+            <column name="operand" not-null="true" />
+        </property>
+        
+        <list name="forms" table="formassociations">
+			<key column="formreportid"/>
+			<list-index base="0" column="form_order"/>
+			<many-to-many class="org.hisp.dhis.vn.chr.Form" column="formid" foreign-key="fk_reportid_formid"/>
+		</list>
+		
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+ "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+ "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.coldchain.inventory.Equipment" table="equipment">
+
+    <composite-id>
+      <key-many-to-one name="equipmentInstance" class="org.hisp.dhis.coldchain.inventory.EquipmentInstance" column="equipmentinstanceid"
+        foreign-key="fk_equipment_equipmentmentinstanceid" />
+      <key-many-to-one name="inventoryTypeAttribute" class="org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute" column="inventorytypeattributeid"
+        foreign-key="fk_equipment_inventorytypeattributeid" />
+    </composite-id>
+
+    <property name="value" />
+
+    <many-to-one name="inventoryTypeAttributeOption" class="org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOption" column="inventorytypeattributeoptionid"
+      foreign-key="fk_equipment_inventorytypeattributeoptionid" />
+
+  </class>
+</hibernate-mapping>

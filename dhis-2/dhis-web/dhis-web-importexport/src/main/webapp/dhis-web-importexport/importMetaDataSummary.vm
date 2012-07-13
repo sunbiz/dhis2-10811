@@ -1,0 +1,32 @@
+<h3>$i18n.getString( "import_summary" )</h3>
+
+<h4>Counts</h4>
+
+$summary.importCount.imported Imported<br/>
+$summary.importCount.updated Updated<br/>
+$summary.importCount.ignored Ignored<br/>
+
+<h4>Type Summary</h4>
+
+<table>
+    <thead>
+    <tr>
+        <td>Type</td>
+        <td>Imported</td>
+        <td>Updated</td>
+        <td>Ignored</td>
+        <td>Conflicts</td>
+    </tr>
+    </thead>
+    <tbody>
+        #foreach( $typeSummary in $summary.importTypeSummaries )
+        <tr>
+            <td>$typeSummary.type</td>
+            <td>$typeSummary.importCount.imported</td>
+            <td>$typeSummary.importCount.updated</td>
+            <td>$typeSummary.importCount.ignored</td>
+            <td>$typeSummary.conflicts.size()</td>
+        </tr>
+        #end
+    </tbody>
+</table>

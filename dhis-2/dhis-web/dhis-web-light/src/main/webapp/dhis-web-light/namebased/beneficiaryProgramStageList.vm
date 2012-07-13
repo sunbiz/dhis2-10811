@@ -1,0 +1,47 @@
+<h2>$!encoder.htmlEncode( ${patient.getFullName()} )</h2>
+
+#if( $validated == true)
+		<div class="header-box">
+			<h3 style="text-align: left;">$i18n.getString("successfully_saved")</h3>
+		</div>
+	#else
+	
+	#end
+
+<p>
+<ul>
+#set($i = 0)
+#foreach( $programStageInstance in $programStageInstances )
+	#set($programInstanceId = $programStageInstance.getProgramInstance().getId())
+	#set($i = $i + 1)
+	#if ($i == $programStageInstances.size() - 1)
+		#set($currentProgramStageInstanceId = $programStageInstance.getId())
+	#end
+	<li>
+		 #if( $programStageInstance.isCompleted() == true )
+		 	<a href="showCompletedProgramStageForm.action?programId=$programId&programStageId=$programStageInstance.getProgramStage().getId()&programStageInstanceId=$programStageInstance.getId()&patientId=$patient.getId()&programInstanceId=$programStageInstance.getProgramInstance().getId()&orgUnitId=0">
+			$programStageInstance.getProgramStage().getName()<img src="../dhis-web-light/images/checkmark.jpg" /></a>
+		 #else 
+		 	<a href="showProgramStageForm.action?programId=$programId&programStageId=$programStageInstance.getProgramStage().getId()&programStageInstanceId=$programStageInstance.getId()&patientId=$patient.getId()&programInstanceId=$programStageInstance.getProgramInstance().getId()&orgUnitId=0">
+		 	$programStageInstance.getProgramStage().getName()</a>
+		 #end
+	</li>
+#end
+<br/>
+#foreach($programStage in $repeatableStages)
+	#set($exclusedStage = $exclusedRepeatableStages.get( $programStage.getId() ))
+	#if(!$exclusedStage)
+		<li><a href="showRepeatableEventRegistrationForm.action?programInstanceId=$programInstanceId&programStageId=$programStage.getId()&currentProgramStageInstanceId=$currentProgramStageInstanceId">[+] $i18n.getString("add") $programStage.getName()</a></li>
+	#end
+#end
+
+</ul>
+</p>
+
+<div id="footer">
+<h2>$i18n.getString( "navigate_to" )</h2>
+<ul>
+	<li><a href="showPatientProgramList.action?patientId=$patient.getId()">$!encoder.htmlEncode( ${patient.getFullName()} )</a></li>
+	<li><a href="index.action">$i18n.getString("home")</a></li>
+</ul>
+</div>
