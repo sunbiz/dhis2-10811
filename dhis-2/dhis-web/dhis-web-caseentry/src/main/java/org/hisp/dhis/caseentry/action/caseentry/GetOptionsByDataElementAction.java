@@ -115,9 +115,9 @@ public class GetOptionsByDataElementAction
 
         boolean isNotModified = ( query == null && ContextUtils.isNotModified( ServletActionContext.getRequest(), ServletActionContext.getResponse(), optionSet ) );
         
-        if ( !isNotModified )
+        if ( !isNotModified && optionSet != null )
         {
-            options = optionService.getOptions( optionSet, query, MAX_OPTIONS_DISPLAYED );
+            options = optionService.getOptions( optionSet.getId(), query, MAX_OPTIONS_DISPLAYED );
         }
         
         return SUCCESS;

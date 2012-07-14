@@ -42,6 +42,7 @@ import org.hisp.dhis.external.location.LocationManagerException;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.system.database.DatabaseInfo;
 import org.hisp.dhis.system.database.DatabaseInfoProvider;
+import org.hisp.dhis.system.util.SystemUtils;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.util.ContextUtils;
 
@@ -144,19 +145,7 @@ public class AboutAction
     {
         return javaOpts;
     }
-    
-    private String backUrl;
-
-    public String getBackUrl()
-    {
-        return backUrl;
-    }
-
-    public void setBackUrl( String backUrl )
-    {
-        this.backUrl = backUrl;
-    }
-    
+        
     private Properties systemProperties;
     
     public Properties getSystemProperties()
@@ -176,6 +165,20 @@ public class AboutAction
     public Date getServerDate()
     {
         return serverDate;
+    }
+    
+    private String memoryInfo;
+
+    public String getMemoryInfo()
+    {
+        return memoryInfo;
+    }
+
+    private int cpuCores;
+
+    public int getCpuCores()
+    {
+        return cpuCores;
     }
 
     // -------------------------------------------------------------------------
@@ -254,6 +257,10 @@ public class AboutAction
         
         currentUserIsSuper = currentUserService.currentUserIsSuper();
 
+        memoryInfo = SystemUtils.getMemoryString();
+        
+        cpuCores = SystemUtils.getCpuCores();
+        
         return SUCCESS;
     }
 }

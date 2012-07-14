@@ -45,6 +45,10 @@
         <td>last12Months</td>
         <td> <xsl:value-of select="d:last12Months"/> </td>
       </tr>
+	  <tr>
+        <td>last3Months</td>
+        <td> <xsl:value-of select="d:last3Months"/> </td>
+      </tr>
       <tr>
         <td>last6BiMonths</td>
         <td> <xsl:value-of select="d:last6BiMonths"/> </td>

@@ -34,10 +34,10 @@
       <many-to-many column="reporttableid" class="org.hisp.dhis.reporttable.ReportTable" foreign-key="fk_dashboardcontent_reporttableid" />
     </list>
 
-    <list name="mapViews" table="dashboardcontent_mapviews">
-      <key column="userid" foreign-key="fk_dashboardcontent_mapviews_userid" />
+    <list name="maps" table="dashboardcontent_maps">
+      <key column="userid" foreign-key="fk_dashboardcontent_maps_userid" />
       <list-index column="sort_order" base="0" />
-      <many-to-many column="mapviewid" class="org.hisp.dhis.mapping.MapView" foreign-key="fk_dashboardcontent_mapviews_mapviewid" />
+      <many-to-many column="mapid" class="org.hisp.dhis.mapping.Map" foreign-key="fk_dashboardcontent_maps_mapid" />
     </list>
 
   </class>

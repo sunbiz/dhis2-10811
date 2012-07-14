@@ -42,6 +42,8 @@ public interface ResourceBundleManager
 
     ResourceBundle getSpecificResourceBundle( Class<?> clazz, Locale locale );
 
+    ResourceBundle getSpecificResourceBundle( String clazzName, Locale locale );
+
     ResourceBundle getGlobalResourceBundle( Locale locale ) throws ResourceBundleManagerException;
 
     Collection<Locale> getAvailableLocales() throws ResourceBundleManagerException;

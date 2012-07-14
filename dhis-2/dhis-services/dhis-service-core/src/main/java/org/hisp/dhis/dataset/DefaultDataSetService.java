@@ -27,10 +27,16 @@ package org.hisp.dhis.dataset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.i18n.I18nUtils.getCountByName;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetween;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetweenByName;
-import static org.hisp.dhis.i18n.I18nUtils.i18n;
+import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataentryform.DataEntryForm;
+import org.hisp.dhis.i18n.I18nService;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.system.util.Filter;
+import org.hisp.dhis.system.util.FilterUtils;
+import org.joda.time.DateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,20 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.dataentryform.DataEntryForm;
-import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.period.Period;
-import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.system.util.AuditLogUtil;
-import org.hisp.dhis.system.util.Filter;
-import org.hisp.dhis.system.util.FilterUtils;
-import org.hisp.dhis.user.CurrentUserService;
-import org.joda.time.DateTime;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hisp.dhis.i18n.I18nUtils.*;
 
 /**
  * @author Lars Helge Overland
@@ -63,8 +56,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultDataSetService
     implements DataSetService
 {
-    private static final Log log = LogFactory.getLog( DefaultDataSetService.class );
-
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -90,38 +81,22 @@ public class DefaultDataSetService
         i18nService = service;
     }
 
-    private CurrentUserService currentUserService;
-
-    public void setCurrentUserService( CurrentUserService currentUserService )
-    {
-        this.currentUserService = currentUserService;
-    }
-
     // -------------------------------------------------------------------------
     // DataSet
     // -------------------------------------------------------------------------
 
     public int addDataSet( DataSet dataSet )
     {
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(),
-            AuditLogUtil.ACTION_ADD, DataSet.class.getSimpleName(), dataSet.getName() ) );
-
         return dataSetStore.save( dataSet );
     }
 
     public void updateDataSet( DataSet dataSet )
     {
         dataSetStore.update( dataSet );
-
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(),
-            AuditLogUtil.ACTION_EDIT, DataSet.class.getSimpleName(), dataSet.getName() ) );
     }
 
     public void deleteDataSet( DataSet dataSet )
     {
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(),
-            AuditLogUtil.ACTION_DELETE, DataSet.class.getSimpleName(), dataSet.getName() ) );
-        
         dataSetStore.delete( dataSet );
     }
 
@@ -157,14 +132,14 @@ public class DefaultDataSetService
         return dataSet;
     }
 
-    public DataSet getDataSetByName( String name )
+    public List<DataSet> getDataSetByName( String name )
     {
-        return i18n( i18nService, dataSetStore.getByName( name ) );
+        return new ArrayList<DataSet>( i18n( i18nService, dataSetStore.getAllEqName( name ) ) );
     }
 
-    public DataSet getDataSetByShortName( String shortName )
+    public List<DataSet> getDataSetByShortName( String shortName )
     {
-        return i18n( i18nService, dataSetStore.getByShortName( shortName ) );
+        return new ArrayList<DataSet>( i18n( i18nService, dataSetStore.getAllEqShortName( shortName ) ) );
     }
 
     public DataSet getDataSetByCode( String code )
@@ -296,7 +271,7 @@ public class DefaultDataSetService
 
         return dataElements;
     }
-    
+
     public List<DataSet> getDataSetsByUid( Collection<String> uids )
     {
         return dataSetStore.getByUid( uids );
@@ -384,7 +359,7 @@ public class DefaultDataSetService
     @Override
     public Collection<LockException> getLockExceptionsBetween( int first, int max )
     {
-        return lockExceptionStore.getBetween( first, max );
+        return lockExceptionStore.getAllOrderedName( first, max );
     }
 
     @Override
@@ -403,21 +378,21 @@ public class DefaultDataSetService
     public boolean isLocked( DataSet dataSet, Period period, OrganisationUnit organisationUnit, Date now )
     {
         now = now != null ? now : new Date();
-        
+
         boolean expired = dataSet.getExpiryDays() != DataSet.NO_EXPIRY && new DateTime( period.getEndDate() ).plusDays( dataSet.getExpiryDays() ).isBefore( new DateTime( now ) );
-        
+
         return expired && lockExceptionStore.getCount( dataSet, period, organisationUnit ) == 0l;
     }
-    
+
     @Override
     public boolean isLocked( DataElement dataElement, Period period, OrganisationUnit organisationUnit, Date now )
     {
         now = now != null ? now : new Date();
-        
+
         int expiryDays = dataElement.getExpiryDays();
-        
+
         boolean expired = expiryDays != DataSet.NO_EXPIRY && new DateTime( period.getEndDate() ).plusDays( expiryDays ).isBefore( new DateTime( now ) );
-        
+
         return expired && lockExceptionStore.getCount( dataElement, period, organisationUnit ) == 0l;
     }
 }

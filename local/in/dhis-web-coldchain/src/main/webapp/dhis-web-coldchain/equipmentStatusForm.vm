@@ -28,7 +28,7 @@
         <tr>
             <td>$i18n.getString( "reporting_date" ) : </td>
             <td>
-				<input type="text" id="reportingDate" name="reportingDate" />
+				<input type="text" id="reportingDate" name="reportingDate" class="{validate:{required:true}}" />
 				<script type="text/javascript">
 					datePickerValid( 'reportingDate' );
                 </script>
@@ -37,7 +37,7 @@
         <tr>
             <td>$i18n.getString( "date_of_updation" ) : </td>
             <td>
-				<input type="text" id="dateOfUpdation" name="dateOfUpdation" />
+				<input type="text" id="dateOfUpdation" name="dateOfUpdation" class="{validate:{required:true}}" />
 				<script type="text/javascript">
                     datePickerValid( 'dateOfUpdation' );
                 </script>
@@ -46,17 +46,17 @@
         <tr>
             <td>$i18n.getString( "status" ) : </td>
             <td>
-				<select id="status" name="status" >
+				<select id="status" name="status" class="{validate:{required:true}}">
 					<option value="" >[$i18n.getString( "please_select" )]</option>
+					<option value="NOTWORKING" >$i18n.getString( "notworking" )</option>
+					<option value="UNDERREPAIR" >$i18n.getString( "under_repair" )</option>
                     <option value="WORKING">$i18n.getString( "working" )</option>
-                    <option value="NOTWORKING" >$i18n.getString( "notworking" )</option>
-					<option value="UNDERREPAIR" >$i18n.getString( "under_repair" )</option>					
 				</select>
 			</td>
         </tr>
         <tr>
             <td>$i18n.getString( "description" ) : </td>
-            <td><textarea id="description" name="description"></textarea></td>
+            <td><textarea id="description" name="description" class="{validate:{required:true}}"></textarea></td>
         </tr>
 	</table>
 

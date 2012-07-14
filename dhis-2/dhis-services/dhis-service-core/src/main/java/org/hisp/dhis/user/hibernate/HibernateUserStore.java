@@ -27,28 +27,59 @@ package org.hisp.dhis.user.hibernate;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
-import java.util.Iterator;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserStore;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+
 /**
  * @author Nguyen Hong Duc
  */
 public class HibernateUserStore
-    extends HibernateIdentifiableObjectStore<User> implements UserStore
+    extends HibernateIdentifiableObjectStore<User>
+    implements UserStore
 {
     // -------------------------------------------------------------------------
     // UserStore implementation
     // -------------------------------------------------------------------------
 
-    public Collection<User> getUsersWithoutOrganisationUnit()
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<User> getAllOrderedName( int first, int max )
     {
-        Collection<User> users = getAll();
+        Criteria criteria = getCriteria();
+        criteria.addOrder( Order.asc( "surname" ) ).addOrder( Order.asc( "firstName" ) );
+        criteria.setFirstResult( first );
+        criteria.setMaxResults( max );
+        return criteria.list();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<User> getAllLikeNameOrderedName( String name, int first, int max )
+    {
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.or( Restrictions.ilike( "surname", "%" + name + "%" ),
+            Restrictions.ilike( "firstName", "%" + name + "%" ) ) );
+        criteria.addOrder( Order.asc( "surname" ) ).addOrder( Order.asc( "firstName" ) );
+        criteria.setFirstResult( first );
+        criteria.setMaxResults( max );
+        return criteria.list();
+    }
+
+    public List<User> getUsersWithoutOrganisationUnit()
+    {
+        List<User> users = getAll();
 
         Iterator<User> iterator = users.iterator();
 
@@ -63,8 +94,8 @@ public class HibernateUserStore
         return users;
     }
 
-    @SuppressWarnings( "unchecked" )
-    public Collection<User> getUsersByPhoneNumber( String phoneNumber )
+    @SuppressWarnings("unchecked")
+    public List<User> getUsersByPhoneNumber( String phoneNumber )
     {
         String hql = "from User u where u.phoneNumber = :phoneNumber";
 
@@ -74,18 +105,30 @@ public class HibernateUserStore
         return query.list();
     }
 
-    @SuppressWarnings( "unchecked" )
-    public Collection<User> getUsersByOrganisationUnits( Collection<OrganisationUnit> orgunits )
+    @SuppressWarnings("unchecked")
+    public List<User> getUsersByOrganisationUnits( Collection<OrganisationUnit> orgunits )
     {
         String hql = "select distinct u from User u join u.organisationUnits o where o.id in (:ids)";
 
         return sessionFactory.getCurrentSession().createQuery( hql ).setParameterList( "ids", orgunits ).list();
     }
-    
+
     public void removeUserSettings( User user )
     {
         String hql = "delete from UserSetting us where us.user = :user";
-        
+
         getQuery( hql ).setEntity( "user", user ).executeUpdate();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<User> getUsersByName( String name )
+    {
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.or( Restrictions.ilike( "surname", "%" + name + "%" ),
+            Restrictions.ilike( "firstName", "%" + name + "%" ) ) );
+        criteria.addOrder( Order.asc( "surname" ) ).addOrder( Order.asc( "firstName" ) );
+
+        return criteria.list();
     }
 }

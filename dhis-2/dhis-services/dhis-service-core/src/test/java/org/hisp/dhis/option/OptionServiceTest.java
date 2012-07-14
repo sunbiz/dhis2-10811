@@ -33,67 +33,103 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hisp.dhis.DhisSpringTest;
+import org.hisp.dhis.DhisTest;
 import org.junit.Test;
 
 /**
  * @author Lars Helge Overland
  */
 public class OptionServiceTest
-    extends DhisSpringTest
+    extends DhisTest
 {
     private OptionService optionService;
-    
+
     private List<String> options = new ArrayList<String>();
-    
+
     private OptionSet optionSetA = new OptionSet( "OptionSetA" );
+
     private OptionSet optionSetB = new OptionSet( "OptionSetB" );
+
     private OptionSet optionSetC = new OptionSet( "OptionSetC" );
-    
+
+    @Override
+    public boolean emptyDatabaseAfterTest()
+    {
+        return true;
+    }
+
     @Override
     public void setUpTest()
     {
         optionService = (OptionService) getBean( OptionService.ID );
-        
-        options.add( "OptionA" );
-        options.add( "OptionB" );
-        options.add( "OptionC" );
-        
+
+        options.add( "OptA1" );
+        options.add( "OptA2" );
+        options.add( "OptB1" );
+        options.add( "OptB2" );
+
         optionSetA.setOptions( options );
         optionSetB.setOptions( options );
     }
-    
+
     @Test
     public void testSaveGet()
     {
         int idA = optionService.saveOptionSet( optionSetA );
         int idB = optionService.saveOptionSet( optionSetB );
         int idC = optionService.saveOptionSet( optionSetC );
-        
+
         OptionSet actualA = optionService.getOptionSet( idA );
         OptionSet actualB = optionService.getOptionSet( idB );
         OptionSet actualC = optionService.getOptionSet( idC );
-        
+
         assertEquals( optionSetA, actualA );
         assertEquals( optionSetB, actualB );
         assertEquals( optionSetC, actualC );
-        
-        assertEquals( 3, optionSetA.getOptions().size() );
-        assertEquals( 3, optionSetB.getOptions().size() );
+
+        assertEquals( 4, optionSetA.getOptions().size() );
+        assertEquals( 4, optionSetB.getOptions().size() );
         assertEquals( 0, optionSetC.getOptions().size() );
-        
-        assertTrue( optionSetA.getOptions().contains( "OptionA" ) );
-        assertTrue( optionSetA.getOptions().contains( "OptionB" ) );
-        assertTrue( optionSetA.getOptions().contains( "OptionC" ) );
+
+        assertTrue( optionSetA.getOptions().contains( "OptA1" ) );
+        assertTrue( optionSetA.getOptions().contains( "OptA2" ) );
+        assertTrue( optionSetA.getOptions().contains( "OptB1" ) );
+        assertTrue( optionSetA.getOptions().contains( "OptB2" ) );
     }
-    
+
     @Test
     public void testCodec()
     {
         String decoded = "Malaria Severe Under 5";
-        String encoded = "[Malaria_Severe_Under_5]"; 
-        
+        String encoded = "[Malaria_Severe_Under_5]";
+
         assertEquals( encoded, OptionSet.optionEncode( decoded ) );
         assertEquals( decoded, OptionSet.optionDecode( encoded ) );
+    }
+
+    @Test
+    public void testGetList()
+    {
+        int idA = optionService.saveOptionSet( optionSetA );
+
+        List<String> options = optionService.getOptions( idA, "OptA", 10 );
+        
+        assertEquals( 2, options.size() );
+
+        options = optionService.getOptions( idA, "OptA1", 10 );
+
+        assertEquals( 1, options.size() );
+
+        options = optionService.getOptions( idA, "OptA1", null );
+
+        assertEquals( 1, options.size() );
+
+        options = optionService.getOptions( idA, "Opt", null );
+
+        assertEquals( 4, options.size() );
+
+        options = optionService.getOptions( idA, "Opt", 3 );
+
+        assertEquals( 3, options.size() );
     }
 }

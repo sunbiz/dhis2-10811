@@ -29,13 +29,6 @@ package org.hisp.dhis.importexport.xls.converter;
 
 import java.util.Collection;
 
-import jxl.format.Alignment;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
-import jxl.format.Colour;
-import jxl.format.UnderlineStyle;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -82,22 +75,13 @@ public class DataElementConverter
 
         WritableSheet sheet = workbook.createSheet( i18n.getString( "data_elements" ), sheetIndex );
         
-        WritableCellFormat FORMAT_LABEL = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 13,
-            WritableFont.NO_BOLD, true, UnderlineStyle.NO_UNDERLINE, Colour.WHITE ) );
-        
-        WritableCellFormat FORMAT_TEXT = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 11,
-            WritableFont.NO_BOLD, false ) );
-        
         try
         {
-            setUpFormat( FORMAT_LABEL, Alignment.CENTRE, Border.ALL, BorderLineStyle.THIN, Colour.TAN );
-            setUpFormat( FORMAT_TEXT, Alignment.GENERAL, Border.ALL, BorderLineStyle.DOTTED, Colour.BLACK );
-            
-            printDataElementHeaders( sheet, FORMAT_LABEL, i18n, rowNumber++, columnIndex );
+            printDataElementHeaders( sheet, i18n, rowNumber++, columnIndex );
 
             for ( DataElement element : elements )
             {
-                addDataElementCellToSheet( sheet, FORMAT_TEXT, element, i18n, rowNumber++, columnIndex );
+                addDataElementCellToSheet( sheet, element, i18n, rowNumber++, columnIndex );
             }
         }
         catch ( RowsExceededException e1 )

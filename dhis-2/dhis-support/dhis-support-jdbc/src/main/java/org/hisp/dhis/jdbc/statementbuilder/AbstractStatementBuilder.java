@@ -27,7 +27,10 @@ package org.hisp.dhis.jdbc.statementbuilder;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.system.util.DateUtils.getSqlDateString;
+
 import org.hisp.dhis.jdbc.StatementBuilder;
+import org.hisp.dhis.period.Period;
 
 /**
  * @author Lars Helge Overland
@@ -35,6 +38,7 @@ import org.hisp.dhis.jdbc.StatementBuilder;
 public abstract class AbstractStatementBuilder
     implements StatementBuilder
 {
+    @Override
     public String encode( String value )
     {
         if ( value != null )
@@ -46,10 +50,20 @@ public abstract class AbstractStatementBuilder
         return QUOTE + value + QUOTE;
     }
 
-    public String getCreateAggregatedDataValueTable()
+    @Override
+    public String getPeriodIdentifierStatement( Period period )
     {
         return
-            "CREATE TABLE aggregateddatavalue ( " +
+            "SELECT periodid FROM period WHERE periodtypeid=" + period.getPeriodType().getId() + " " + 
+            "AND startdate='" + getSqlDateString( period.getStartDate() ) + "' " +
+            "AND enddate='" + getSqlDateString( period.getEndDate() ) + "'";
+    }
+
+    @Override
+    public String getCreateAggregatedDataValueTable( boolean temp )
+    {
+        return
+            "CREATE TABLE aggregateddatavalue" + ( temp ? "_temp" : "" ) + " ( " +
             "dataelementid INTEGER, " +
             "categoryoptioncomboid INTEGER, " +
             "periodid INTEGER, " +
@@ -59,10 +73,11 @@ public abstract class AbstractStatementBuilder
             "value " + getDoubleColumnType() + " );";
     }
 
-    public String getCreateAggregatedOrgUnitDataValueTable()
+    @Override
+    public String getCreateAggregatedOrgUnitDataValueTable( boolean temp )
     {
         return
-            "CREATE TABLE aggregatedorgunitdatavalue ( " +
+            "CREATE TABLE aggregatedorgunitdatavalue" + ( temp ? "_temp" : "" ) + " ( " +
             "dataelementid INTEGER, " +
             "categoryoptioncomboid INTEGER, " +
             "periodid INTEGER, " +
@@ -72,11 +87,12 @@ public abstract class AbstractStatementBuilder
             "level INTEGER, " +
             "value " + getDoubleColumnType() + " );";
     }
-    
-    public String getCreateAggregatedIndicatorTable()
+
+    @Override
+    public String getCreateAggregatedIndicatorTable( boolean temp )
     {
         return
-            "CREATE TABLE aggregatedindicatorvalue ( " +
+            "CREATE TABLE aggregatedindicatorvalue" + ( temp ? "_temp" : "" ) + " ( " +
             "indicatorid INTEGER, " +
             "periodid INTEGER, " +
             "organisationunitid INTEGER, " +
@@ -89,10 +105,11 @@ public abstract class AbstractStatementBuilder
             "denominatorvalue " + getDoubleColumnType() + " );";
     }
 
-    public String getCreateAggregatedOrgUnitIndicatorTable()
+    @Override
+    public String getCreateAggregatedOrgUnitIndicatorTable( boolean temp )
     {
         return
-            "CREATE TABLE aggregatedorgunitindicatorvalue ( " +
+            "CREATE TABLE aggregatedorgunitindicatorvalue" + ( temp ? "_temp" : "" ) + " ( " +
             "indicatorid INTEGER, " +
             "periodid INTEGER, " +
             "organisationunitid INTEGER, " +
@@ -106,6 +123,7 @@ public abstract class AbstractStatementBuilder
             "denominatorvalue " + getDoubleColumnType() + " );";
     }
 
+    @Override
     public String getCreateDataSetCompletenessTable()
     {
         return
@@ -120,7 +138,8 @@ public abstract class AbstractStatementBuilder
             "value " + getDoubleColumnType() + ", " +
             "valueOnTime " + getDoubleColumnType() + " );";
     }
-    
+
+    @Override
     public String getCreateOrgUnitDataSetCompletenessTable()
     {
         return

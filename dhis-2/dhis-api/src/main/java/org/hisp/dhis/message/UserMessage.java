@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.user.User;
@@ -43,7 +43,7 @@ import java.util.UUID;
 /**
  * @author Lars Helge Overland
  */
-@JacksonXmlRootElement( localName = "userMessage", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "userMessage", namespace = DxfNamespaces.DXF_2_0 )
 public class UserMessage
 {
     private int id;
@@ -55,6 +55,37 @@ public class UserMessage
     private boolean read;
 
     private boolean followUp;
+    
+    private transient String lastRecipientSurname;
+
+    private transient String lastRecipientFirstname;
+    
+    
+
+    public String getLastRecipientSurname()
+    {
+        return lastRecipientSurname;
+    }
+
+    public void setLastRecipientSurname( String lastRecipientSurname )
+    {
+        this.lastRecipientSurname = lastRecipientSurname;
+    }
+
+    public String getLastRecipientFirstname()
+    {
+        return lastRecipientFirstname;
+    }
+
+    public void setLastRecipientFirstname( String lastRecipientFirstname )
+    {
+        this.lastRecipientFirstname = lastRecipientFirstname;
+    }
+    
+    public String getLastRecipientName()
+    {
+        return lastRecipientFirstname + " " + lastRecipientSurname;
+    }
 
     public UserMessage()
     {
@@ -87,7 +118,7 @@ public class UserMessage
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getKey()
     {
         return key;
@@ -101,7 +132,7 @@ public class UserMessage
     @JsonProperty
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public User getUser()
     {
         return user;
@@ -114,7 +145,7 @@ public class UserMessage
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isRead()
     {
         return read;
@@ -127,7 +158,7 @@ public class UserMessage
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isFollowUp()
     {
         return followUp;

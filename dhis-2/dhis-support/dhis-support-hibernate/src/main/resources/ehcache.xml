@@ -6,11 +6,13 @@
 
   <!-- Hibernate Query Cache -->
 
-  <cache name="org.hibernate.cache.internal.StandardQueryCache" maxElementsInMemory="200000" />
+  <cache name="org.hibernate.cache.internal.StandardQueryCache" maxElementsInMemory="250000" />
 
   <cache name="org.hibernate.cache.spi.UpdateTimestampsCache" maxElementsInMemory="3000" />
 
   <!-- Hibernate entities -->
+
+  <cache name="org.hisp.dhis.configuration.Configuration" maxElementsInMemory="1" />
 
   <cache name="org.hisp.dhis.dataelement.DataElement" maxElementsInMemory="4000" />
 
@@ -48,11 +50,11 @@
 
   <cache name="org.hisp.dhis.expression.Expression" maxElementsInMemory="200" />
 
-  <cache name="org.hisp.dhis.validation.ValidationRule" maxElementsInMemory="200" />
+  <cache name="org.hisp.dhis.validation.ValidationRule" maxElementsInMemory="1000" />
 
   <cache name="org.hisp.dhis.validation.ValidationRuleGroup" maxElementsInMemory="50" />
 
-  <cache name="org.hisp.dhis.organisationunit.OrganisationUnit" maxElementsInMemory="20000" />
+  <cache name="org.hisp.dhis.organisationunit.OrganisationUnit" maxElementsInMemory="60000" />
 
   <cache name="org.hisp.dhis.organisationunit.OrganisationUnitGroup" maxElementsInMemory="100" />
 
@@ -78,7 +80,11 @@
 
   <cache name="org.hisp.dhis.message.UserMessage" maxElementsInMemory="50000" />
 
-  <cache name="org.hisp.dhis.chart.Chart" maxElementsInMemory="100" />
+  <cache name="org.hisp.dhis.chart.Chart" maxElementsInMemory="1000" />
+
+  <cache name="org.hisp.dhis.mapping.MapView" maxElementsInMemory="1000" />
+
+  <cache name="org.hisp.dhis.mapping.Map" maxElementsInMemory="1000" />
 
   <cache name="org.hisp.dhis.reporttable.ReportTable" maxElementsInMemory="100" />
 
@@ -144,7 +150,7 @@
 
   <cache name="org.hisp.dhis.expression.Expression.dataElementsInExpression" maxElementsInMemory="1000" />
 
-  <cache name="org.hisp.dhis.organisationunit.OrganisationUnit.children" maxElementsInMemory="20000" />
+  <cache name="org.hisp.dhis.organisationunit.OrganisationUnit.children" maxElementsInMemory="60000" />
 
   <cache name="org.hisp.dhis.organisationunit.OrganisationUnit.dataSets" maxElementsInMemory="120000" />
 
@@ -170,15 +176,17 @@
   
   <cache name="org.hisp.dhis.reporttable.ReportTable.organisationUnitGroups" maxElementsInMemory="500" />
 
-  <cache name="org.hisp.dhis.chart.Chart.dataElements" maxElementsInMemory="1500" />
+  <cache name="org.hisp.dhis.chart.Chart.dataElements" maxElementsInMemory="2000" />
 
-  <cache name="org.hisp.dhis.chart.Chart.indicators" maxElementsInMemory="500" />
+  <cache name="org.hisp.dhis.chart.Chart.indicators" maxElementsInMemory="2000" />
 
   <cache name="org.hisp.dhis.chart.Chart.periods" maxElementsInMemory="200" />
 
   <cache name="org.hisp.dhis.chart.Chart.organisationUnits" maxElementsInMemory="2000" />
   
   <cache name="org.hisp.dhis.chart.Chart.dataSets" maxElementsInMemory="200" />
+
+  <cache name="org.hisp.dhis.mapping.Map.mapViews" maxElementsInMemory="1000" />
 
   <cache name="org.hisp.dhis.user.User.organisationUnits" maxElementsInMemory="20000" />
 

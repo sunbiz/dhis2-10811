@@ -18,7 +18,7 @@
     "parentOrganisationUnitName": "$!encoder.jsonEncode( ${mapView.parentOrganisationUnit.name} )",
     "parentOrganisationUnitLevel": "$!{mapView.parentOrganisationUnit.level}",
     "organisationUnitLevel": "$!{mapView.organisationUnitLevel.level}",
-    "organisationUnitLevelName": "$!{mapView.organisationUnitLevel.name}",
+    "organisationUnitLevelName": "$!{mapView.organisationUnitLevel.displayName}",
     "mapLegendType": "$!encoder.jsonEncode( ${mapView.mapLegendType} )",
     "method": "$!{mapView.method}",
     "classes": "$!{mapView.classes}",

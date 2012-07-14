@@ -27,30 +27,43 @@ package org.hisp.dhis.user;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import org.hisp.dhis.DhisSpringTest;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Dang Duy Hieu
  * @version $Id$
  */
 public class UserGroupServiceTest
-    extends UserGroupTest
+    extends DhisSpringTest
 {
+    private UserGroupService userGroupService;
+
+    private User user1;
+    private User user2;
+    private User user3;
+
     @Override
     public void setUpTest()
         throws Exception
     {
-        setUpUserGroupTest();
+        userService = (UserService) getBean( UserService.ID );
+        userGroupService = (UserGroupService) getBean( UserGroupService.ID );
+
+        user1 = createUser( 'A' );
+        user2 = createUser( 'B' );
+        user3 = createUser( 'C' );
+
+        userService.addUser( user1 );
+        userService.addUser( user2 );
+        userService.addUser( user3 );
     }
 
     // -------------------------------------------------------------------------
@@ -96,7 +109,7 @@ public class UserGroupServiceTest
 
         userGroupService.addUserGroup( userGroup );
 
-        userGroup = userGroupService.getUserGroupByName( "UserGroupA" );
+        userGroup = userGroupService.getUserGroupByName( "UserGroupA" ).get( 0 );
 
         int id = userGroup.getId();
 
@@ -120,7 +133,7 @@ public class UserGroupServiceTest
 
         userGroupService.addUserGroup( userGroup );
 
-        userGroup = userGroupService.getUserGroupByName( "UserGroupA" );
+        userGroup = userGroupService.getUserGroupByName( "UserGroupA" ).get( 0 );
 
         int id = userGroup.getId();
 
@@ -147,7 +160,7 @@ public class UserGroupServiceTest
     public void testGetAllUserGroups()
     {
         List<UserGroup> userGroups = new ArrayList<UserGroup>();
-        
+
         Set<User> members = new HashSet<User>();
 
         members.add( user1 );
@@ -155,22 +168,22 @@ public class UserGroupServiceTest
 
         UserGroup userGroupA = createUserGroup( 'A', members );
         userGroups.add( userGroupA );
-        
+
         userGroupService.addUserGroup( userGroupA );
 
         members = new HashSet<User>();
-        
+
         members.add( user1 );
         members.add( user2 );
-        
+
         UserGroup userGroupB = createUserGroup( 'B', members );
         userGroups.add( userGroupB );
-        
+
         userGroupService.addUserGroup( userGroupB );
-        
+
         assertEquals( userGroupService.getAllUserGroups(), userGroups );
     }
-    
+
     @Test
     public void testGetUserGroupById()
     {
@@ -183,15 +196,15 @@ public class UserGroupServiceTest
         UserGroup userGroup = createUserGroup( 'A', members );
 
         userGroupService.addUserGroup( userGroup );
-        
-        int id = userGroupService.getUserGroupByName( "UserGroupA" ).getId();
+
+        int id = userGroupService.getUserGroupByName( "UserGroupA" ).get( 0 ).getId();
 
         userGroup = userGroupService.getUserGroup( id );
-        
+
         assertEq( 'A', userGroup );
         assertNotNull( userGroup.getMembers() );
     }
-    
+
     @Test
     public void testGetUserGroupByName()
     {
@@ -203,8 +216,8 @@ public class UserGroupServiceTest
 
         userGroupService.addUserGroup( userGroup );
 
-        userGroup = userGroupService.getUserGroupByName( "UserGroupB" );
-        
+        userGroup = userGroupService.getUserGroupByName( "UserGroupB" ).get( 0 );
+
         assertEq( 'B', userGroup );
         assertNotNull( userGroup.getMembers() );
     }

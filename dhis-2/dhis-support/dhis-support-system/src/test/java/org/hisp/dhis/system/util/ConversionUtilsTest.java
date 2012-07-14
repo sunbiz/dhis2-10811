@@ -27,7 +27,7 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +50,8 @@ public class ConversionUtilsTest
         double[] array = ConversionUtils.getArray( list );
         
         assertEquals( 3, array.length );
-        assertEquals( 1.0, array[0] );
-        assertEquals( 2.0, array[1] );
-        assertEquals( 3.0, array[2] );
+        assertEquals( 1.0, array[0], 0.01 );
+        assertEquals( 2.0, array[1], 0.01 );
+        assertEquals( 3.0, array[2], 0.01 );
     }
 }

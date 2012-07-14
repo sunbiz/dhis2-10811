@@ -10,6 +10,7 @@ jQuery(function() {
 <ul class="introList">
     #introListImgItem( "user.action" "user_by_orgunit" "user" )
     #introListImgItem( "alluser.action" "user" "user" )
+    #introListImgItem( "alluser.action?selfRegistered=true" "self_registered_user" "user" )
     #introListImgItem( "allRole.action" "user_role" "user" )
     #introListImgItem( "getAllUserGroups.action" "user_group" "user" )
 </ul>

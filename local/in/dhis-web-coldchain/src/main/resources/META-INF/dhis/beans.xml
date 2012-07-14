@@ -640,5 +640,16 @@
 		<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
 		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
     </bean> 
+	
+	<bean id="org.hisp.dhis.coldchain.reports.action.GenerateJRXMLReportAction"
+        class="org.hisp.dhis.coldchain.reports.action.GenerateJRXMLReportAction"
+        scope="prototype">
+       <property name="ccemReportManager" ref="org.hisp.dhis.coldchain.reports.CCEMReportManager" />   
+		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService"/>
+		<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+		<property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService"/>
+		    
+  </bean>
 			
 </beans>

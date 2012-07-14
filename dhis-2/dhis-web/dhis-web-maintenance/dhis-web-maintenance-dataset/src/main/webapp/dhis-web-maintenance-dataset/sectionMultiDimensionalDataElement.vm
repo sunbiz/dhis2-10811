@@ -11,7 +11,7 @@
             #set( $cols = $colRepeat.get( $category.id ) )
             #foreach( $col in $cols )
                 #foreach( $categoryOption in $categoryOptions )
-                    <th colspan="$colCount"> <div align="center"> $categoryOption.name </div> </th>
+                    <th colspan="$colCount"> <div align="center"> $categoryOption.displayName </div> </th>
                 #end
             #end                            
         </tr>
@@ -29,9 +29,9 @@
             ##data element name
             <td>
                 #if( $useShortName )
-                    $encoder.htmlEncode( $dataElement.shortName )
+                    $encoder.htmlEncode( $dataElement.displayShortName )
                 #else
-                    $encoder.htmlEncode( $dataElement.name )
+                    $encoder.htmlEncode( $dataElement.displayName )
                 #end
             </td>                                            
             #foreach( $optionCombo in $optionCombos )                      

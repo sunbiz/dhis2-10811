@@ -26,9 +26,11 @@
  */
 package org.hisp.dhis.patient;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import java.util.Collection;
 
-import org.hisp.dhis.program.Program;
+import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -50,6 +52,13 @@ public class DefaultPatientIdentifierTypeService
         this.patientIdentifierTypeStore = patientIdentifierTypeStore;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation methods
     // -------------------------------------------------------------------------
@@ -61,12 +70,12 @@ public class DefaultPatientIdentifierTypeService
 
     public Collection<PatientIdentifierType> getAllPatientIdentifierTypes()
     {
-        return patientIdentifierTypeStore.getAll();
+        return i18n( i18nService, patientIdentifierTypeStore.getAll() );
     }
 
     public PatientIdentifierType getPatientIdentifierType( int id )
     {
-        return patientIdentifierTypeStore.get( id );
+        return i18n( i18nService, patientIdentifierTypeStore.get( id ) );
     }
 
     public int savePatientIdentifierType( PatientIdentifierType patientIdentifierType )
@@ -81,23 +90,17 @@ public class DefaultPatientIdentifierTypeService
 
     public PatientIdentifierType getPatientIdentifierType( String name )
     {
-        return patientIdentifierTypeStore.getByName( name );
+        return i18n( i18nService, patientIdentifierTypeStore.getByName( name ) );
     }
 
     public Collection<PatientIdentifierType> getPatientIdentifierTypes( boolean mandatory )
     {
-        return patientIdentifierTypeStore.get( mandatory );
-    }
-    
-    public Collection<PatientIdentifierType> getPatientIdentifierTypes( Program program )
-    {
-        return patientIdentifierTypeStore.get( program );
-    }
-    
-    public Collection<PatientIdentifierType> getPatientIdentifierTypesWithoutProgram()
-    {
-        return patientIdentifierTypeStore.getWithoutProgram();
+        return i18n( i18nService, patientIdentifierTypeStore.get( mandatory ) );
     }
 
+    public Collection<PatientIdentifierType> getDisplayedPatientIdentifierTypes( boolean personDisplayName )
+    {
+        return i18n( i18nService, patientIdentifierTypeStore.get( personDisplayName ) );
+    }
 
 }

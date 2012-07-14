@@ -39,6 +39,8 @@ import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id$
@@ -47,28 +49,28 @@ public class ReportTableImporter
     extends AbstractImporter<ReportTable> implements Importer<ReportTable>
 {
     protected ReportTableService reportTableService;
-    
+
     protected DataElementService dataElementService;
-    
+
     protected DataElementCategoryService categoryService;
-    
+
     protected IndicatorService indicatorService;
-    
+
     protected DataSetService dataSetService;
-    
+
     protected PeriodService periodService;
-    
+
     protected OrganisationUnitService organisationUnitService;
 
     public ReportTableImporter()
     {
     }
-    
+
     public ReportTableImporter( ReportTableService reportTableService )
     {
         this.reportTableService = reportTableService;
     }
-    
+
     @Override
     public void importObject( ReportTable object, ImportParams params )
     {
@@ -86,7 +88,7 @@ public class ReportTableImporter
     {
         match.setName( object.getName() );
         match.setRegression( object.isRegression() );
-        
+
         match.setDoIndicators( match.isDoIndicators() );
         match.setDoPeriods( match.isDoPeriods() );
         match.setDoUnits( match.isDoUnits() );
@@ -98,18 +100,19 @@ public class ReportTableImporter
         match.getRelatives().setMonthsLastYear( object.getRelatives().isMonthsLastYear() );
         match.getRelatives().setQuartersLastYear( object.getRelatives().isQuartersLastYear() );
         match.getRelatives().setLastYear( object.getRelatives().isLastYear() );
-        
+
         match.getReportParams().setParamReportingMonth( object.getReportParams().isParamReportingMonth() );
         match.getReportParams().setParamParentOrganisationUnit( object.getReportParams().isParamParentOrganisationUnit() );
         match.getReportParams().setParamOrganisationUnit( object.getReportParams().isParamOrganisationUnit() );
-        
+
         reportTableService.saveReportTable( match );
     }
 
     @Override
     protected ReportTable getMatching( ReportTable object )
     {
-        return reportTableService.getReportTableByName( object.getName() );
+        List<ReportTable> reportTableByName = reportTableService.getReportTableByName( object.getName() );
+        return reportTableByName.isEmpty() ? null : reportTableByName.get( 0 );
     }
 
     @Override
@@ -123,7 +126,7 @@ public class ReportTableImporter
         {
             return false;
         }
-        
+
         if ( object.isDoIndicators() != existing.isDoIndicators() )
         {
             return false;
@@ -136,7 +139,7 @@ public class ReportTableImporter
         {
             return false;
         }
-                
+
         return true;
     }
 }

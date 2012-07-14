@@ -35,24 +35,6 @@ import com.opensymphony.xwork2.Action;
 public class NoAction
     implements Action
 {
-    // TODO remove not required with struts2
-
-    // -------------------------------------------------------------------------
-    // Input & Output
-    // -------------------------------------------------------------------------
-
-    private String backUrl;
-
-    public String getBackUrl()
-    {
-        return backUrl;
-    }
-
-    public void setBackUrl( String backUrl )
-    {
-        this.backUrl = backUrl;
-    }
-
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------

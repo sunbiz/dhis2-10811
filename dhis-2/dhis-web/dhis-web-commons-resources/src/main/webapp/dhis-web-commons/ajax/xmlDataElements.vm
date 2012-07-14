@@ -12,7 +12,7 @@
 		<domainType>$dataElement.getDomainTypeNullSafe()</domainType>
 		<type>$dataElement.type</type>
 		<aggregationOperator>$dataElement.aggregationOperator</aggregationOperator>
-		<categoryCombo>$dataElement.categoryCombo</categoryCombo>
+		<categoryCombo>$!encoder.xmlEncode( $dataElement.categoryCombo )</categoryCombo>
 	</dataElement>
 #end
 </dataElements>

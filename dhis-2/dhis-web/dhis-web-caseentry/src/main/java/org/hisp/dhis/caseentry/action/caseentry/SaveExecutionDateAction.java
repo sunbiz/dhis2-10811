@@ -111,6 +111,13 @@ public class SaveExecutionDateAction
         this.executionDate = executionDate;
     }
 
+    private Integer programStageInstanceId;
+    
+    public void setProgramStageInstanceId( Integer programStageInstanceId )
+    {
+        this.programStageInstanceId = programStageInstanceId;
+    }
+
     private Integer programId;
 
     public void setProgramId( Integer programId )
@@ -135,9 +142,8 @@ public class SaveExecutionDateAction
         Date dateValue = format.parseDate( executionDate );
         
         if ( dateValue != null )
-        {
-            // Get program-stage-instance of the patient
-            ProgramStageInstance programStageInstance = selectedStateManager.getSelectedProgramStageInstance();
+        {           
+            ProgramStageInstance programStageInstance = programStageInstanceService.getProgramStageInstance( programStageInstanceId );
 
             // If the program-stage-instance of the patient not exists,
             // create a program-instance and program-stage-instance for
@@ -173,14 +179,13 @@ public class SaveExecutionDateAction
                 }
                 else if ( type == Program.SINGLE_EVENT_WITHOUT_REGISTRATION )
                 {
-                    programInstance = programInstanceService.getProgramInstances( patient, program ).iterator().next();
+                    programInstance = programInstanceService.getProgramInstances( program ).iterator().next();
                 }
 
                 // Add a new program-stage-instance
                 programStageInstance = new ProgramStageInstance();
                 programStageInstance.setProgramInstance( programInstance );
                 programStageInstance.setProgramStage( programStage );
-                programStageInstance.setStageInProgram( programStage.getStageInProgram() );
                 programStageInstance.setDueDate( dateValue );
                 programStageInstance.setExecutionDate( dateValue );
                 programStageInstance.setOrganisationUnit( selectedStateManager.getSelectedOrganisationUnit() );

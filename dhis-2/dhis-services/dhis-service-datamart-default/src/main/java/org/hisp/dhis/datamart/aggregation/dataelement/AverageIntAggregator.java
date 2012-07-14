@@ -86,37 +86,28 @@ public class AverageIntAggregator
             return EMPTY_MAP;
         }
         
-        final Map<DataElementOperand, Double> values = new HashMap<DataElementOperand, Double>(); // <Operand, total value>
+        double days = getDaysInclusive( period.getStartDate(), period.getEndDate() );
         
-        for ( final Integer unitId : organisationUnits )
+        final Collection<CrossTabDataValue> crossTabValues = crossTabService.getCrossTabDataValues( operands, 
+            aggregationCache.getIntersectingPeriods( period.getStartDate(), period.getEndDate() ), organisationUnits, key );
+
+        final Map<DataElementOperand, Double> entries = getAggregate( crossTabValues, period.getStartDate(), 
+            period.getEndDate(), unitLevel ); // <Operand, days x value>
+        
+        for ( DataElementOperand operand : entries.keySet() )
         {
-            final Collection<CrossTabDataValue> crossTabValues = 
-                crossTabService.getCrossTabDataValues( operands, aggregationCache.getIntersectingPeriods( period.getStartDate(), period.getEndDate() ), unitId, key );
-            
-            final Map<DataElementOperand, double[]> entries = getAggregate( crossTabValues, period.getStartDate(), 
-                period.getEndDate(), period.getStartDate(), period.getEndDate(), unitLevel ); // <Operand, [total value, total relevant days]>
-            
-            for ( final Entry<DataElementOperand, double[]> entry : entries.entrySet() ) 
-            {
-                if ( entry.getValue() != null && entry.getValue()[ 1 ] > 0 )
-                {
-                    double average = entry.getValue()[ 0 ] / entry.getValue()[ 1 ];
-                    
-                    average += values.containsKey( entry.getKey() ) ? values.get( entry.getKey() ) : 0;
-                    
-                    values.put( entry.getKey(), average );
-                }
-            }
-        }  
+            double value = entries.get( operand ) / days;
+            entries.put( operand, value );
+        }
         
-        return values;
+        return entries;
     }
     
-    private Map<DataElementOperand, double[]> getAggregate( final Collection<CrossTabDataValue> crossTabValues, 
-        final Date startDate, final Date endDate, final Date aggregationStartDate, final Date aggregationEndDate, int unitLevel )
+    private Map<DataElementOperand, Double> getAggregate( final Collection<CrossTabDataValue> crossTabValues, 
+        final Date startDate, final Date endDate, int unitLevel )
     {
-        final Map<DataElementOperand, double[]> totalSums = new HashMap<DataElementOperand, double[]>(); // <Operand, [total value, total relevant days]>
-
+        final Map<DataElementOperand, Double> values = new HashMap<DataElementOperand, Double>(); // <Operand, [total value, total relevant days]>
+        
         for ( final CrossTabDataValue crossTabValue : crossTabValues )
         {
             final Period period = aggregationCache.getPeriod( crossTabValue.getPeriodId() );
@@ -124,15 +115,15 @@ public class AverageIntAggregator
             final Date currentStartDate = period.getStartDate();
             final Date currentEndDate = period.getEndDate();
 
+            final double duration = getDaysInclusive( currentStartDate, currentEndDate );
+
             final int dataValueLevel = aggregationCache.getLevelOfOrganisationUnit( crossTabValue.getSourceId() );
 
-            final double duration = getDaysInclusive( currentStartDate, currentEndDate );
-            
             if ( duration > 0 )
             {            
                 for ( final Entry<DataElementOperand, String> entry : crossTabValue.getValueMap().entrySet() ) // <Operand, value>
                 {
-                    if ( entry.getValue() != null && entry.getKey().aggregationLevelIsValid( unitLevel, dataValueLevel )  )
+                    if ( entry.getKey() != null && entry.getValue() != null && entry.getKey().aggregationLevelIsValid( unitLevel, dataValueLevel )  )
                     {
                         double value = 0.0;
                         double relevantDays = 0.0;               
@@ -168,19 +159,15 @@ public class AverageIntAggregator
                         
                         value = value * relevantDays;
 
-                        final double[] totalSum = totalSums.get( entry.getKey() );
-                        value += totalSum != null ? totalSum[0] : 0;
-                        relevantDays += totalSum != null ? totalSum[1] : 0;
-                        
-                        final double[] values = { value, relevantDays };
-                        
-                        totalSums.put( entry.getKey(), values );
+                        final Double current = values.get( entry.getKey() );
+                        value += current != null ? current : 0.0;        
+                        values.put( entry.getKey(), value );
                     }
                 }
             }
         }                    
         
-        return totalSums;
+        return values;
     }
 
     public Collection<DataElementOperand> filterOperands( final Collection<DataElementOperand> operands, final PeriodType periodType )

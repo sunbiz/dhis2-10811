@@ -27,22 +27,18 @@ package org.hisp.dhis.indicator;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.i18n.I18nUtils.getCountByName;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetween;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetweenByName;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsByName;
-import static org.hisp.dhis.i18n.I18nUtils.i18n;
+import org.hisp.dhis.common.GenericIdentifiableObjectStore;
+import org.hisp.dhis.i18n.I18nService;
+import org.hisp.dhis.system.util.Filter;
+import org.hisp.dhis.system.util.FilterUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
-import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.system.util.Filter;
-import org.hisp.dhis.system.util.FilterUtils;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hisp.dhis.i18n.I18nUtils.*;
 
 /**
  * @author Lars Helge Overland
@@ -137,25 +133,20 @@ public class DefaultIndicatorService
             }
         } );
     }
-    
+
     public List<Indicator> getIndicatorsByUid( Collection<String> uids )
     {
         return indicatorStore.getByUid( uids );
     }
 
-    public Indicator getIndicatorByName( String name )
+    public List<Indicator> getIndicatorByName( String name )
     {
-        return i18n( i18nService, indicatorStore.getByName( name ) );
+        return new ArrayList<Indicator>( i18n( i18nService, indicatorStore.getAllEqName( name ) ) );
     }
 
-    public Indicator getIndicatorByShortName( String shortName )
+    public List<Indicator> getIndicatorByShortName( String shortName )
     {
-        return i18n( i18nService, indicatorStore.getByShortName( shortName ) );
-    }
-
-    public Indicator getIndicatorByAlternativeName( String alternativeName )
-    {
-        return i18n( i18nService, indicatorStore.getByAlternativeName( alternativeName ) );
+        return new ArrayList<Indicator>( i18n( i18nService, indicatorStore.getAllEqShortName( shortName ) ) );
     }
 
     public Indicator getIndicatorByCode( String code )
@@ -302,12 +293,12 @@ public class DefaultIndicatorService
     public IndicatorGroup getIndicatorGroup( int id, boolean i18nIndicators )
     {
         IndicatorGroup group = getIndicatorGroup( id );
-        
+
         if ( i18nIndicators )
         {
             i18n( i18nService, group.getMembers() );
         }
-        
+
         return group;
     }
 
@@ -334,9 +325,9 @@ public class DefaultIndicatorService
         return i18n( i18nService, indicatorGroupStore.getAll() );
     }
 
-    public IndicatorGroup getIndicatorGroupByName( String name )
+    public List<IndicatorGroup> getIndicatorGroupByName( String name )
     {
-        return i18n( i18nService, indicatorGroupStore.getByName( name ) );
+        return new ArrayList<IndicatorGroup>( i18n( i18nService, indicatorGroupStore.getAllEqName( name ) ) );
     }
 
     public Collection<IndicatorGroup> getGroupsContainingIndicator( Indicator indicator )
@@ -401,16 +392,16 @@ public class DefaultIndicatorService
     {
         return i18n( i18nService, indicatorGroupSetStore.get( id ) );
     }
-    
+
     public IndicatorGroupSet getIndicatorGroupSet( int id, boolean i18nGroups )
     {
         IndicatorGroupSet groupSet = getIndicatorGroupSet( id );
-        
+
         if ( i18nGroups )
         {
             i18n( i18nService, groupSet.getMembers() );
         }
-        
+
         return groupSet;
     }
 
@@ -419,9 +410,9 @@ public class DefaultIndicatorService
         return i18n( i18nService, indicatorGroupSetStore.getByUid( uid ) );
     }
 
-    public IndicatorGroupSet getIndicatorGroupSetByName( String name )
+    public List<IndicatorGroupSet> getIndicatorGroupSetByName( String name )
     {
-        return i18n( i18nService, indicatorGroupSetStore.getByName( name ) );
+        return new ArrayList<IndicatorGroupSet>( i18n( i18nService, indicatorGroupSetStore.getAllEqName( name ) ) );
     }
 
     @Override

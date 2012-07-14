@@ -2,15 +2,14 @@ jQuery(document).ready(	function() {
 	
 	jQuery('name').focus();
 
-	validation2( 'updatePatientAttributeGroupForm', function(form){
-		form.submit();
-	}, {
-		'beforeValidateHandler' : function()
-		{
-			listValidator( 'memberValidator', 'selectedAttributes' );
-		},
-		'rules' : getValidationRules( 'patientAttributeGroup' )
-	});
+	validation( 'updatePatientAttributeGroupForm', function(form){
+			form.submit();
+		}, function(){
+			selectAllById('selectedAttributes');
+			if(jQuery("#selectedAttributes option").length > 0 ){
+				setFieldValue('hasAttributes', 'true');
+			}
+		});
 
 	checkValueIsExist( "name", "validatePatientAttributeGroup.action", {id:getFieldValue('id')});
 	

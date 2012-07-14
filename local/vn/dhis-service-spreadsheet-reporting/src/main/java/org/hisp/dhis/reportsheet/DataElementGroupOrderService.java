@@ -1,5 +1,7 @@
 package org.hisp.dhis.reportsheet;
 
+import java.util.List;
+
 /*
  * Copyright (c) 2004-2011, University of Oslo
  * All rights reserved.
@@ -40,11 +42,12 @@ public interface DataElementGroupOrderService
     // -------------------------------------------------------------------------
 
     public DataElementGroupOrder getDataElementGroupOrder( Integer id );
-    
+
     public DataElementGroupOrder getDataElementGroupOrder( String name, String clazzName, Integer reportId );
 
     public void updateDataElementGroupOrder( DataElementGroupOrder dataElementGroupOrder );
 
     public void deleteDataElementGroupOrder( Integer id );
 
+    public List<DataElementGroupOrder> getDataElementGroupOrders( List<Integer> ids );
 }

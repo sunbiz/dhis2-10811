@@ -5,10 +5,10 @@
   <xsl:template match="*" mode="row">
     <tr>
       <td> <xsl:value-of select="@name"/> </td>
-      <td> <a href="{@link}">html</a> </td>
-      <td> <a href="{@link}.xml">xml</a> </td>
-      <td> <a href="{@link}.json">json</a> </td>
-      <td> <a href="{@link}.jsonp">jsonp</a> </td>
+      <td> <a href="{@href}">html</a> </td>
+      <td> <a href="{@href}.xml">xml</a> </td>
+      <td> <a href="{@href}.json">json</a> </td>
+      <td> <a href="{@href}.jsonp">jsonp</a> </td>
     </tr>
   </xsl:template>
 

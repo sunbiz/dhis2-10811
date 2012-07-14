@@ -34,7 +34,8 @@ public enum Operator
     greater_than( ">" ), 
     greater_than_or_equal_to( ">=" ), 
     less_than( "<" ), 
-    less_than_or_equal_to( "<=" );
+    less_than_or_equal_to( "<=" ),
+    compulsory_pair( "[Compulsory pair]" );
 
     private final String mathematicalOperator;
 

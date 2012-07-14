@@ -27,6 +27,10 @@
           <td> <xsl:value-of select="d:shortName" /> </td>
         </tr>
         <tr>
+          <td>Period Type</td>
+          <td> <xsl:value-of select="d:periodType" /> </td>
+        </tr>
+        <tr>
           <td>Expiry Days</td>
           <td> <xsl:value-of select="d:expiryDays" /> </td>
         </tr>

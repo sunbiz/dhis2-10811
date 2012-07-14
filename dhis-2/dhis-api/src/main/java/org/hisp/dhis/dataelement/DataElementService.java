@@ -108,15 +108,6 @@ public interface DataElementService
     DataElement getDataElementByName( String name );
 
     /**
-     * Returns a DataElement with a given alternative name.
-     *
-     * @param alternativeName the alternative name of the DataElement to return.
-     * @return the DataElement with the given alternative name, or null if no
-     *         match.
-     */
-    DataElement getDataElementByAlternativeName( String alternativeName );
-
-    /**
      * Returns List of DataElements with a given key.
      *
      * @param key the name of the DataElement to return.
@@ -270,23 +261,20 @@ public interface DataElementService
     Collection<DataElement> getDataElementsWithDataSets();
 
     /**
-     * Checks whether a DataElement with the given identifier exists.
-     *
-     * @param id the DataElement identifier.
-     * @return true or false.
+     * Returns all DataElements which are assigned to any of the given DataSets.
+     * 
+     * @param dataSets the collection of DataSets.
+     * @return all DataElements which are assigned to any of the given DataSets.
      */
-    boolean dataElementExists( int id );
+    Collection<DataElement> getDataElementsByDataSets( Collection<DataSet> dataSets );
 
     /**
-     * Checks whether a DataElementCategoryOptionCombo with the given identifier
-     * exists.
-     *
-     * @param id the DataElementCategoryOptionCombo identifier.
-     * @return true or false.
+     * Returns all DataElements which have the given aggregation level assigned.
+     * 
+     * @param aggregationLevel the aggregation level.
+     * @return all DataElements which have the given aggregation level assigned.
      */
-    boolean dataElementCategoryOptionComboExists( int id );
-
-    Collection<DataElement> getDataElementsByDataSets( Collection<DataSet> dataSets );
+    Collection<DataElement> getDataElementsByAggregationLevel( int aggregationLevel );
 
     Collection<DataElement> getDataElementsLikeName( String name );
 
@@ -298,7 +286,9 @@ public interface DataElementService
 
     int getDataElementCountByName( String name );
 
-    Map<Integer, Set<Integer>> getDataElementCategoryOptionCombos();
+    Map<String, Set<String>> getDataElementCategoryOptionCombos();
+    
+    Map<String, Integer> getDataElementUidIdMap();
 
     // -------------------------------------------------------------------------
     // DataElementGroup
@@ -344,13 +334,21 @@ public interface DataElementService
     DataElementGroup getDataElementGroup( int id, boolean i18nDataElements );
 
     /**
-     * Returns data elements with identifiers in the given collection.
+     * Returns data element groups with identifiers in the given collection.
      *
      * @param identifiers the id collection.
      * @return data elements with identifiers in the given collection.
      */
     Collection<DataElementGroup> getDataElementGroups( Collection<Integer> identifiers );
 
+    /**
+     * Returns the data element groups with the given uids.
+     * 
+     * @param uids the uid collection.
+     * @return the data element groups with the given uids.
+     */
+    Collection<DataElementGroup> getDataElementGroupsByUid( Collection<String> uids );    
+    
     /**
      * Returns the DataElementGroup with the given UID.
      *
@@ -457,6 +455,8 @@ public interface DataElementService
     Collection<DataElementGroupSet> getAllDataElementGroupSets();
 
     Collection<DataElementGroupSet> getDataElementGroupSets( Collection<Integer> identifiers );
+    
+    List<DataElementGroupSet> getDataElementGroupSetsByUid( Collection<String> uids );
 
     Collection<DataElementGroupSet> getDataElementGroupSetsBetween( int first, int max );
 
@@ -465,27 +465,4 @@ public interface DataElementService
     int getDataElementGroupSetCount();
 
     int getDataElementGroupSetCountByName( String name );
-
-    // -------------------------------------------------------------------------
-    // DataElementOperand
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns all Operands. Requires the categoryoptioncomboname resource table
-     * to be populated.
-     *
-     * @return a collection of all Operands.
-     */
-    Collection<DataElementOperand> getAllGeneratedOperands();
-
-    /**
-     * Returns all generated permutations of Operands for the given collection
-     * of DataElements. Requires the categoryoptioncomboname resource table to
-     * be populated.
-     *
-     * @param dataElements the DataElements.
-     * @return a collection of all Operands.
-     */
-    Collection<DataElementOperand> getAllGeneratedOperands( Collection<DataElement> dataElements );
-    
 }

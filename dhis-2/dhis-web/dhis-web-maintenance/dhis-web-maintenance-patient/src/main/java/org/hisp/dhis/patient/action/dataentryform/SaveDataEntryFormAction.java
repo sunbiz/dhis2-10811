@@ -133,15 +133,17 @@ public class SaveDataEntryFormAction
         // Save data-entry-form
         // ---------------------------------------------------------------------
 
+        designTextarea = dataEntryFormService.prepareDataEntryFormForSave( designTextarea );
+
         if ( dataEntryForm == null )
         {
-            dataEntryForm = new DataEntryForm( name, dataEntryFormService.prepareDataEntryFormForSave( designTextarea ) );
+            dataEntryForm = new DataEntryForm( name, designTextarea );
             dataEntryFormService.addDataEntryForm( dataEntryForm );
         }
         else
         {
             dataEntryForm.setName( name );
-            dataEntryForm.setHtmlCode( dataEntryFormService.prepareDataEntryFormForSave( designTextarea ) );
+            dataEntryForm.setHtmlCode( designTextarea );
             dataEntryFormService.updateDataEntryForm( dataEntryForm );
         }            
         

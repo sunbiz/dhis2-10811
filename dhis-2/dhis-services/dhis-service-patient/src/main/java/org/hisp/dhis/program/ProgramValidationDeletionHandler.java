@@ -57,7 +57,7 @@ public class ProgramValidationDeletionHandler
     @Override
     public String getClassName()
     {
-        return Program.class.getSimpleName();
+        return ProgramValidation.class.getSimpleName();
     }
 
     @Override

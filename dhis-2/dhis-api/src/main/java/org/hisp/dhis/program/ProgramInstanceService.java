@@ -79,12 +79,14 @@ public interface ProgramInstanceService
     
     Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit, Date startDate, Date endDate );
 
-    Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit, Date startDate, Date endDate,
+    Collection<ProgramInstance> getProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
         int min, int max );
 
     int countProgramInstances( Program program, OrganisationUnit organisationUnit );
     
-    int countProgramInstances( Program program, OrganisationUnit organisationUnit, Date startDate, Date endDate );
+    int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
     
     List<Grid> getProgramInstanceReport( Patient patient, I18n i18n, I18nFormat format );
+    
+    Grid getProgramInstanceReport( ProgramInstance programInstance, I18n i18n, I18nFormat format );
 }

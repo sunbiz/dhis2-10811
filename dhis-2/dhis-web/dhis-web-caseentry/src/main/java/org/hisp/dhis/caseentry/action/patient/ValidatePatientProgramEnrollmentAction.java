@@ -117,10 +117,9 @@ public class ValidatePatientProgramEnrollmentAction
         if ( criteria != null )
         {
             message = i18n.getString( "patient_could_not_be_enrolled_due_to_following_enrollment_criteria" ) + ": " + i18n.getString( criteria.getProperty() );
-
+            
             switch ( criteria.getOperator() )
             {
-
             case ValidationCriteria.OPERATOR_EQUAL_TO:
                 message += " = ";
                 break;

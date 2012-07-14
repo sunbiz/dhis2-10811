@@ -41,6 +41,11 @@ public class IdentifiableObjectNameComparator
     
     public int compare( IdentifiableObject object0, IdentifiableObject object1 )
     {
-        return object0.getDisplayName().compareToIgnoreCase( object1.getDisplayName() );
+        if ( object0 == null )
+        {
+            return object1 == null ? 0 : -1;
+        }
+        
+        return object1 == null ? 1 : object0.getDisplayName().compareToIgnoreCase( object1.getDisplayName() );
     }
 }

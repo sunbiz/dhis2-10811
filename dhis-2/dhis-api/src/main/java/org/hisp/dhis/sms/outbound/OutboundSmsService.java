@@ -50,7 +50,14 @@ public interface OutboundSmsService
      */
     String sendMessage( OutboundSms sms, String gatewayId )
         throws SmsServiceException;
-    
-    List<OutboundSms> getAllOutboundSms();
 
+    List<OutboundSms> getAllOutboundSms();
+    
+    int saveOutboundSms( OutboundSms sms);
+
+    void updateOutboundSms( OutboundSms sms);
+    
+    void deleteById( Integer outboundSmsId );
+    
+    List<OutboundSms> getOutboundSms( OutboundSmsStatus status );
 }

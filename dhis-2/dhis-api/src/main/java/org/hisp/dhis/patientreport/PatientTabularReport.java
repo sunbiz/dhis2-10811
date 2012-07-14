@@ -27,21 +27,19 @@
 
 package org.hisp.dhis.patientreport;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.program.ProgramStageDataElement;
-import org.hisp.dhis.user.User;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Chau Thu Tran
- * 
  * @version $PatientTabularReport.java May 7, 2012 12:41:41 PM$
  */
 public class PatientTabularReport
@@ -50,22 +48,23 @@ public class PatientTabularReport
     private static final long serialVersionUID = -2880334669266185058L;
 
     public static String PREFIX_EXECUTION_DATE = "executiondate";
-    
-    public static String  PREFIX_ORGUNIT = "orgunit";
-    
+
+    public static String PREFIX_ORGUNIT = "orgunit";
+
     public static String PREFIX_META_DATA = "meta";
-    
+
     public static String PREFIX_IDENTIFIER_TYPE = "iden";
 
     public static String PREFIX_FIXED_ATTRIBUTE = "fixedAttr";
-    
+
     public static String PREFIX_PATIENT_ATTRIBUTE = "attr";
 
     public static String PREFIX_DATA_ELEMENT = "de";
 
+    public static String PREFIX_NUMBER_DATA_ELEMENT = "numberDe";
+
     public static String VALUE_TYPE_OPTION_SET = "optionSet";
 
-    
     private Date startDate;
 
     private Date endDate;
@@ -86,7 +85,11 @@ public class PatientTabularReport
 
     private String facilityLB;
 
-    private User user;
+    private Boolean useCompletedEvents;
+
+    private Boolean userOrganisationUnit;
+
+    private Boolean userOrganisationUnitChildren;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -205,14 +208,34 @@ public class PatientTabularReport
         this.facilityLB = facilityLB;
     }
 
-    public User getUser()
+    public Boolean getUserOrganisationUnit()
     {
-        return user;
+        return userOrganisationUnit;
     }
 
-    public void setUser( User user )
+    public void setUserOrganisationUnit( Boolean userOrganisationUnit )
     {
-        this.user = user;
+        this.userOrganisationUnit = userOrganisationUnit;
+    }
+
+    public Boolean getUserOrganisationUnitChildren()
+    {
+        return userOrganisationUnitChildren;
+    }
+
+    public void setUserOrganisationUnitChildren( Boolean userOrganisationUnitChildren )
+    {
+        this.userOrganisationUnitChildren = userOrganisationUnitChildren;
+    }
+
+    public Boolean getUseCompletedEvents()
+    {
+        return useCompletedEvents;
+    }
+
+    public void setUseCompletedEvents( Boolean useCompletedEvents )
+    {
+        this.useCompletedEvents = useCompletedEvents;
     }
 
 }

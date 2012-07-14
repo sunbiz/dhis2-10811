@@ -36,9 +36,6 @@ import java.util.Map;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
-import jxl.format.Alignment;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
 import jxl.format.UnderlineStyle;
 import jxl.write.Label;
@@ -69,206 +66,117 @@ public class ExcelUtils
 {
     public static final String EXTENSION_XLS = ".xls";
 
-    // -------------------------------------------------------------------------
-    //
-    // -------------------------------------------------------------------------
-
-    public static void setUpFormat( WritableCellFormat cellFormat, Alignment alignment, Border border,
-        BorderLineStyle borderLineStyle, Colour colour )
-        throws WriteException
-    {
-        cellFormat.setAlignment( alignment );
-        cellFormat.setBackground( colour );
-        cellFormat.setBorder( border, borderLineStyle );
-    }
-
-    public static void printDataElementHeaders( WritableSheet sheet, WritableCellFormat format, I18n i18n, int row,
+    public static WritableCellFormat FORMAT_LABEL = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 13,
+        WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.BLACK ) );
+    
+    public static WritableCellFormat FORMAT_TEXT = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 11,
+        WritableFont.NO_BOLD, false ) );
+    
+    public static void printDataElementHeaders( WritableSheet sheet, I18n i18n, int row,
         int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column++, row, i18n.getString( "name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "alternative_name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "short_name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "code" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "description" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "active" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "type" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "aggregation_operator" ), format ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "name" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "short_name" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "code" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "description" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "active" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "type" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "aggregation_operator" ), FORMAT_LABEL ) );
     }
 
-    public static void addDataElementCellToSheet( WritableSheet sheet, WritableCellFormat format, DataElement element,
+    public static void addDataElementCellToSheet( WritableSheet sheet, DataElement element,
         I18n i18n, int row, int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column++, row, element.getName(), format ) );
-        sheet.addCell( new Label( column++, row, element.getAlternativeName(), format ) );
-        sheet.addCell( new Label( column++, row, element.getShortName(), format ) );
-        sheet.addCell( new Label( column++, row, element.getCode(), format ) );
-        sheet.addCell( new Label( column++, row, element.getDescription(), format ) );
-        sheet.addCell( new Label( column++, row, getBoolean().get( element.isActive() ), format ) );
-        sheet.addCell( new Label( column++, row, getType().get( element.getType() ), format ) );
+        sheet.addCell( new Label( column++, row, element.getName(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, element.getShortName(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, element.getCode(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, element.getDescription(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, getBoolean().get( element.isActive() ), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, getType().get( element.getType() ), FORMAT_TEXT ) );
         sheet.addCell( new Label( column++, row, getAggregationOperator().get( element.getAggregationOperator() ),
-            format ) );
+            FORMAT_TEXT ) );
     }
 
-    public static void printIndicatorHeaders( WritableSheet sheet, WritableCellFormat format, I18n i18n, int row,
+    public static void printIndicatorHeaders( WritableSheet sheet, I18n i18n, int row,
         int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column++, row, i18n.getString( "name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "alternative_name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "short_name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "code" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "description" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "annualized" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "indicator_type" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "numerator_description" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "numerator_formula" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "denominator_description" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "denominator_formula" ), format ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "name" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "short_name" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "code" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "description" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "annualized" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "indicator_type" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "numerator_description" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "numerator_formula" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "denominator_description" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "denominator_formula" ), FORMAT_LABEL ) );
 
     }
 
-    public static void addIndicatorCellToSheet( WritableSheet sheet, WritableCellFormat format, Indicator indicator,
+    public static void addIndicatorCellToSheet( WritableSheet sheet, Indicator indicator,
         I18n i18n, ExpressionService expressionService, int row, int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column++, row, indicator.getName(), format ) );
-        sheet.addCell( new Label( column++, row, indicator.getAlternativeName(), format ) );
-        sheet.addCell( new Label( column++, row, indicator.getShortName(), format ) );
-        sheet.addCell( new Label( column++, row, indicator.getCode(), format ) );
-        sheet.addCell( new Label( column++, row, indicator.getDescription(), format ) );
-        sheet.addCell( new Label( column++, row, getBoolean().get( indicator.isAnnualized() ), format ) );
-        sheet.addCell( new Label( column++, row, getType().get( indicator.getIndicatorType().getName() ), format ) );
-        sheet.addCell( new Label( column++, row, indicator.getNumeratorDescription(), format ) );
-        sheet.addCell( new Label( column++, row, expressionService.getExpressionDescription( indicator.getNumerator() ), format ) );
-        sheet.addCell( new Label( column++, row, indicator.getDenominatorDescription(), format ) );
-        sheet.addCell( new Label( column++, row, expressionService.getExpressionDescription( indicator.getDenominator() ), format ) );
+        sheet.addCell( new Label( column++, row, indicator.getName(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, indicator.getShortName(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, indicator.getCode(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, indicator.getDescription(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, getBoolean().get( indicator.isAnnualized() ), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, getType().get( indicator.getIndicatorType().getName() ), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, indicator.getNumeratorDescription(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, expressionService.getExpressionDescription( indicator.getNumerator() ), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, indicator.getDenominatorDescription(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, expressionService.getExpressionDescription( indicator.getDenominator() ), FORMAT_TEXT ) );
     }
 
-    public static void printExtendedDataElementHeaders( WritableSheet sheet, WritableCellFormat format1,
-        WritableCellFormat format2, I18n i18n, int row, int column )
-        throws RowsExceededException, WriteException
-    {
-        sheet.addCell( new Label( column, row, i18n.getString( "identifying_and_definitional_attributes" ), format1 ) );
-        sheet.mergeCells( column, row, 16, row );
-
-        column = 17;
-        sheet
-            .addCell( new Label( column, row, i18n.getString( "relational_and_representational_attributes" ), format1 ) );
-        sheet.mergeCells( column, row, 26, row );
-
-        column = 27;
-        sheet.addCell( new Label( column, row, i18n.getString( "administrative_attributes" ), format1 ) );
-        sheet.mergeCells( 27, row, 39, row );
-
-        // row = 2 & column = 1->8
-        row++;
-        column = 1;
-        printDataElementHeaders( sheet, format2, i18n, row, column );
-
-        // row = 2 & column = 9->16
-        column = 9;
-        sheet.addCell( new Label( column++, row, i18n.getString( "mnemonic" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "version" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "context" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "synonyms" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "hononyms" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "keywords" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "status" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "status_date" ), format2 ) );
-
-        // -------------------------------------------------------------------------
-        // Relational and representational attributes
-        // -------------------------------------------------------------------------
-
-        // row = 2 & column = 17->26
-        sheet.addCell( new Label( column++, row, i18n.getString( "data_type" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "representational_form" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "representational_layout" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "minimum_size" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "maximum_size" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "data_domain" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "validation_rules" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "related_data_references" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "guide_for_use" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "collection_methods" ), format2 ) );
-
-        // -------------------------------------------------------------------------
-        // Administrative attributes
-        // -------------------------------------------------------------------------
-
-        // row = 2 & column = 27->36
-        sheet.addCell( new Label( column++, row, i18n.getString( "responsible_authority" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "update_rules" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "access_authority" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "update_frequency" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "location" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "reporting_methods" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "version_status" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "previous_version_references" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "source_document" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "source_organisation" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "comment" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "saved" ), format2 ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "last_updated" ), format2 ) );
-    }
-
-    public static void addExtendedDataElementCellToSheet( WritableSheet sheet, WritableCellFormat format,
-        DataElement element, I18n i18n, int row, int column )
-        throws RowsExceededException, WriteException
-    {
-        // row = 3 & column = 1->8
-        addDataElementCellToSheet( sheet, format, element, i18n, row, column );
-    }
-
-    public static void printOrganisationUnitHeaders( WritableSheet sheet, WritableCellFormat format, I18n i18n,
+    public static void printOrganisationUnitHeaders( WritableSheet sheet, I18n i18n,
         int row, int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column++, row, i18n.getString( "short_name" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "code" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "opening_date" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "closed_date" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "active" ), format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( "comment" ), format ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "short_name" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "code" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "opening_date" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "closed_date" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "active" ), FORMAT_LABEL ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( "comment" ), FORMAT_LABEL ) );
 
     }
 
-    public static void addOrganisationUnitCellToSheet( WritableSheet sheet, WritableCellFormat format,
+    public static void addOrganisationUnitCellToSheet( WritableSheet sheet, 
         OrganisationUnit unit, I18n i18n, I18nFormat i18nFormat, int row, int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column++, row, unit.getShortName(), format ) );
-        sheet.addCell( new Label( column++, row, unit.getCode(), format ) );
-        sheet.addCell( new Label( column++, row, unit.getOpeningDate() != null ? i18nFormat.formatDate( unit
-            .getOpeningDate() ) : "", format ) );
-        sheet.addCell( new Label( column++, row, unit.getClosedDate() != null ? i18nFormat.formatDate( unit
-            .getClosedDate() ) : "", format ) );
-        sheet.addCell( new Label( column++, row, i18n.getString( getBoolean().get( unit.isActive() ) ), format ) );
-        sheet.addCell( new Label( column++, row, unit.getComment(), format ) );
+        sheet.addCell( new Label( column++, row, unit.getShortName(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, unit.getCode(), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, unit.getOpeningDate() != null ? i18nFormat.formatDate( unit.getOpeningDate() ) : "", FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, unit.getClosedDate() != null ? i18nFormat.formatDate( unit.getClosedDate() ) : "", FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, i18n.getString( getBoolean().get( unit.isActive() ) ), FORMAT_TEXT ) );
+        sheet.addCell( new Label( column++, row, unit.getComment(), FORMAT_TEXT ) );
     }
 
-    public static void printOrganisationUnitHierarchyHeaders( WritableSheet sheet, WritableCellFormat format1,
-        WritableCellFormat format2, I18n i18n, int row, int column, int level )
+    public static void printOrganisationUnitHierarchyHeaders( WritableSheet sheet,
+        I18n i18n, int row, int column, int level )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column, row, i18n.getString( "organisation_unit_level" ), format1 ) );
+        sheet.addCell( new Label( column, row, i18n.getString( "organisation_unit_level" ), FORMAT_LABEL ) );
         sheet.mergeCells( column, row, level - 1, row );
 
         row++;
 
         for ( int i = 1; i <= level; i++ )
         {
-            sheet.addCell( new Label( column++, row, (i + ""), format2 ) );
+            sheet.addCell( new Label( column++, row, (i + ""), FORMAT_TEXT ) );
         }
     }
 
-    public static void addOrganisationUnitHierarchyCellToSheet( WritableSheet sheet, WritableCellFormat format,
+    public static void addOrganisationUnitHierarchyCellToSheet( WritableSheet sheet,
         OrganisationUnit unit, I18n i18n, int row, int column )
         throws RowsExceededException, WriteException
     {
-        sheet.addCell( new Label( column, row, unit.getName(), format ) );
+        sheet.addCell( new Label( column, row, unit.getName(), FORMAT_TEXT ) );
     }
 
     // -------------------------------------------------------------------------

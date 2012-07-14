@@ -108,11 +108,13 @@ public class DefaultImportService
             objectBridge.setWriteEnabled( false );
         }
 
-        log.info( "User '" + currentUserService.getCurrentUsername() + "' started import at " + new Date() );
-
-        if(taskId != null)
+        if ( taskId != null )
         {
             notifier.notify( taskId, TaskCategory.METADATA_IMPORT, "Importing meta-data" );
+        }
+        else
+        {
+            log.info( "User '" + currentUserService.getCurrentUsername() + "' started import at " + new Date() );
         }
 
         for ( Map.Entry<Class<? extends IdentifiableObject>, String> entry : ExchangeClasses.getImportMap().entrySet() )
@@ -129,9 +131,13 @@ public class DefaultImportService
                     {
                         String message = "Importing " + objects.size() + " " + StringUtils.capitalize( entry.getValue() );
 
-                        if(taskId != null)
+                        if ( taskId != null )
                         {
                             notifier.notify( taskId, TaskCategory.METADATA_IMPORT, message );
+                        }
+                        else
+                        {
+                            log.info( message );
                         }
 
                         ImportTypeSummary importTypeSummary = doImport( objects, importOptions );
@@ -162,10 +168,14 @@ public class DefaultImportService
         cacheManager.clearCache();
         objectBridge.destroy();
 
-        if(taskId != null)
+        if ( taskId != null )
         {
             notifier.notify( taskId, TaskCategory.METADATA_IMPORT, NotificationLevel.INFO, "Import done", true ).
                 addTaskSummary( taskId, TaskCategory.METADATA_IMPORT, importSummary );
+        }
+        else
+        {
+            log.info( "Import done." );
         }
 
         return importSummary;
@@ -177,7 +187,7 @@ public class DefaultImportService
 
     private <T> Importer<T> findImporterClass( List<?> clazzes )
     {
-        if ( !clazzes.isEmpty() )
+        if ( !clazzes.isEmpty() && clazzes.get( 0 ) != null )
         {
             return findImporterClass( clazzes.get( 0 ).getClass() );
         }
@@ -185,14 +195,16 @@ public class DefaultImportService
         return null;
     }
 
-    @SuppressWarnings( "unchecked" )
     private <T> Importer<T> findImporterClass( Class<?> clazz )
     {
-        for ( Importer<T> i : importerClasses )
+        if ( clazz != null )
         {
-            if ( i.canHandle( clazz ) )
+            for ( Importer<T> i : importerClasses )
             {
-                return i;
+                if ( i.canHandle( clazz ) )
+                {
+                    return i;
+                }
             }
         }
 
@@ -201,7 +213,7 @@ public class DefaultImportService
 
     private <T> ImportTypeSummary doImport( List<T> objects, ImportOptions importOptions )
     {
-        if ( !objects.isEmpty() )
+        if ( !objects.isEmpty() && objects.get( 0 ) != null )
         {
             Importer<T> importer = findImporterClass( objects );
 

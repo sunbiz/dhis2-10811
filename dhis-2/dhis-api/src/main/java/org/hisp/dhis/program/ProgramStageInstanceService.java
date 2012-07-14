@@ -37,6 +37,8 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patientreport.TabularReportColumn;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.sms.outbound.OutboundSms;
 
 /**
  * @author Abyot Asalefew
@@ -87,13 +89,29 @@ public interface ProgramStageInstanceService
 
     List<ProgramStageInstance> getProgramStageInstances( Patient patient, Boolean completed );
 
-    Grid getTabularReport( ProgramStage programStage, List<TabularReportColumn> columns, Collection<Integer> organisationUnits, 
-        int level, Date startDate, Date endDate, boolean descOrder, Integer min, Integer max );
+    Grid getTabularReport( ProgramStage programStage, List<TabularReportColumn> columns,
+        Collection<Integer> organisationUnits, int level, Date startDate, Date endDate, boolean descOrder,
+        Boolean completed, Integer min, Integer max, I18n i18n );
 
     int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
-        Collection<Integer> organisationUnits, int level, Date startDate, Date endDate );
+        Collection<Integer> organisationUnits, int level, Boolean completed, Date startDate, Date endDate );
 
     List<Grid> getProgramStageInstancesReport( ProgramInstance programInstance, I18nFormat format, I18n i18n );
-    
-    void removeEmptyEvents( ProgramStage programStage );
+
+    void removeEmptyEvents( ProgramStage programStage, OrganisationUnit organisationUnit );
+
+    void updateProgramStageInstances( Collection<Integer> programStageInstances, OutboundSms outboundSms );
+
+    Collection<SchedulingProgramObject> getSendMesssageEvents();
+
+    Grid getStatisticalReport( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        I18n i18n, I18nFormat format );
+
+    List<ProgramStageInstance> getStatisticalProgramStageDetailsReport( ProgramStage programStage,
+        Collection<Integer> orgunitIds, Date startDate, Date endDate, int status, Integer max, Integer min );
+
+    Grid getAggregateReport( int position, ProgramStage programStage, Collection<Integer> orgunitIds,
+        String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>>  deFilters, List<Period> periods,
+        String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format, I18n i18n );
+
 }

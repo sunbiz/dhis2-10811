@@ -20,7 +20,7 @@
 <p>
 	<select multiple id="dataSets" name="dataSets" size="25" style="width:680px">
 	#foreach ( $dataSet in $dataSets )
-		<option value="$dataSet.id">$dataSet.name</option>
+		<option value="$dataSet.id">$dataSet.displayName</option>
 	#end
 	</select>
 </p>

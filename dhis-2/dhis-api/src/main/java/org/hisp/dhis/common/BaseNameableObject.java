@@ -27,19 +27,18 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.common.view.DetailedView;
-import org.hisp.dhis.common.view.ExportView;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.common.view.ShortNameView;
 
 /**
  * @author Bob Jolliffe
  */
-@JacksonXmlRootElement( localName = "nameableObject", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement(localName = "nameableObject", namespace = DxfNamespaces.DXF_2_0)
 public class BaseNameableObject
     extends BaseIdentifiableObject
     implements NameableObject
@@ -48,11 +47,6 @@ public class BaseNameableObject
      * Determines if a de-serialized file is compatible with this class.
      */
     private static final long serialVersionUID = 714136796552146362L;
-
-    /**
-     * An alternative name of this Object. Optional but unique.
-     */
-    protected String alternativeName;
 
     /**
      * An short name representing this Object. Optional but unique.
@@ -82,11 +76,10 @@ public class BaseNameableObject
     {
     }
 
-    public BaseNameableObject( int id, String uid, String name, String alternativeName, String shortName,
-                               String code, String description )
+    public BaseNameableObject( int id, String uid, String name, String shortName,
+        String code, String description )
     {
         super( id, uid, name );
-        this.alternativeName = alternativeName;
         this.shortName = shortName;
         this.code = code;
         this.description = description;
@@ -116,19 +109,9 @@ public class BaseNameableObject
         return result;
     }
 
-    public String getAlternativeName()
-    {
-        return alternativeName;
-    }
-
-    public void setAlternativeName( String alternativeName )
-    {
-        this.alternativeName = alternativeName;
-    }
-
     @JsonProperty
-    @JsonView( { ShortNameView.class, DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( isAttribute = true )
+    @JsonView({ ShortNameView.class, DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(isAttribute = true)
     public String getShortName()
     {
         return shortName;
@@ -140,8 +123,8 @@ public class BaseNameableObject
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public String getDescription()
     {
         return description;

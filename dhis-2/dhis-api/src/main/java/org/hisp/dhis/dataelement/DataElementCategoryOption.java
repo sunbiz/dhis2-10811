@@ -36,7 +36,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.BaseNameableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
@@ -48,7 +48,7 @@ import java.util.Set;
 /**
  * @author Abyot Asalefew
  */
-@JacksonXmlRootElement( localName = "dataElement", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "categoryOption", namespace = DxfNamespaces.DXF_2_0)
 public class DataElementCategoryOption
     extends BaseNameableObject
 {
@@ -59,7 +59,7 @@ public class DataElementCategoryOption
 
     public static final String DEFAULT_NAME = "default";
 
-    private DataElementCategory category;
+    private Set<DataElementCategory> categories = new HashSet<DataElementCategory>();
 
     private Concept concept;
 
@@ -156,21 +156,21 @@ public class DataElementCategoryOption
     @JsonProperty
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
-    public DataElementCategory getCategory()
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public Set<DataElementCategory> getCategories()
     {
-        return category;
+        return categories;
     }
 
-    public void setCategory( DataElementCategory category )
+    public void setCategories( Set<DataElementCategory> categories )
     {
-        this.category = category;
+        this.categories = categories;
     }
 
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Concept getConcept()
     {
         return concept;
@@ -184,8 +184,8 @@ public class DataElementCategoryOption
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class} )
-    @JacksonXmlElementWrapper( localName = "categoryOptionCombos", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "categoryOptionCombo", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "categoryOptionCombos", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "categoryOptionCombo", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElementCategoryOptionCombo> getCategoryOptionCombos()
     {
         return categoryOptionCombos;

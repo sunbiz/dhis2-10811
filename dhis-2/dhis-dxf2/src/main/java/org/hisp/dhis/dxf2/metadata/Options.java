@@ -128,7 +128,8 @@ public class Options
             try
             {
                 return Integer.parseInt( str );
-            } catch ( NumberFormatException ignored )
+            } 
+            catch ( NumberFormatException ignored )
             {
             }
         }
@@ -212,4 +213,19 @@ public class Options
     {
         return getDate( "lastUpdated" );
     }
+    
+    //--------------------------------------------------------------------------
+    // Adding options
+    //--------------------------------------------------------------------------
+    
+    public void addOption(String option, String value)
+    {
+        options.put( option, value);
+    }
+    
+    public void addOptions(Map<String,String> newOptions)
+    {
+        options.putAll( options );
+    }
+    
 }

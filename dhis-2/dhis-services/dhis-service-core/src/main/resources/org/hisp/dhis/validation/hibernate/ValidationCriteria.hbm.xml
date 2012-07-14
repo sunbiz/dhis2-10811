@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
   "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+   [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+>
 
 <hibernate-mapping>
   <class name="org.hisp.dhis.validation.ValidationCriteria" table="validationcriteria">
@@ -10,9 +12,7 @@
       <generator class="native" />
     </id>
 
-    <property name="name">
-      <column name="name" not-null="true" unique="true" length="230" />
-    </property>
+    <property name="name" column="name" not-null="true" unique="true" length="230" />
 
     <property name="description" />
 

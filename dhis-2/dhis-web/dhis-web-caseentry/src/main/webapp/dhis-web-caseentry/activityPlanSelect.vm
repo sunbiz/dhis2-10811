@@ -1,0 +1,131 @@
+<script>
+	jQuery(document).ready(	function(){
+		validation( 'activityPlanForm', function(form){
+			if(getFieldValue('export')=='false'){
+				showActitityList();
+			}
+			else{
+				exportActitityList('xls');
+			}
+		});
+		
+		setFieldValue('searchByProgramStage', 'true');
+		setFieldValue('hideLink', 'true');
+	});	
+</script>
+
+<h3>$i18n.getString( "activity_plan" ) #openHelp('visit_schedule')</h3>
+<form id='activityPlanForm' name='activityPlanForm'>
+	<input type='hidden' id='isRegistration' name= 'isRegistration' value='false'>
+	<input type='hidden' id='listAll' name='listAll'>
+	<input type='hidden' id='sendToList' name='sendToList'>
+	<input type='hidden' id='programStageInstanceId' name='programStageInstanceId' value='$programStageInstance.id'>
+	<input type='hidden' id='programStageName' name='programStageName'>
+	<input type='hidden' id='searchByProgramStage' name='searchByProgramStage' value="false">
+	<input type='hidden' id='orgunitId' name='orgunitId' value='$organisationUnit.id' >
+	<input type="hidden" id='hideLink' name='hideLink' value='false'>
+	<input type='hidden' id='isSearchByProgram' name='isSearchByProgram' value='false' >
+	<input type='hidden' id='export' name= 'export'>
+	<div id='advanced-search' style='width:550px;'>
+		<table style="margin-bottom:8px;width:550px;">    
+			<tr>
+				<td>
+					<label>$i18n.getString( "registering_unit" )</label>
+				</td>
+				<td>
+					<input type="text" id='orgunitName' readonly="readonly" #if( $organisationUnit ) value="$encoder.htmlEncode( $organisationUnit.name )" #else value="[$i18n.getString( 'please_select_village' )]" #end >
+				</td>
+			</tr> 
+			<tr>
+				<td>$i18n.getString('program')</td>
+				<td>
+					<select id='programIdAddPatient' name='programIdAddPatient' class="{validate:{required:true}}" >
+						<option value="">[$i18n.getString("please_select")]</option>
+						#foreach($program in $programs)
+							#if($program.type=='1') 
+								<option value="$program.id" type='$program.type'>$program.displayName</option>
+							#end
+						#end
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>$i18n.getString('status')</td>
+				<td>
+					<select id="statusEvent" name="statusEvent" onchange="statusEventOnChange()">
+						<option value='3_4' selected>$i18n.getString("overdue_scheduled")</option>
+						<option value='3'>$i18n.getString("scheduled_in_future")</option> 
+						<option value='4'>$i18n.getString("overdue")</option>
+						<option value='2'>$i18n.getString("incomplete")</option>
+						<option value='2_3_4'>$i18n.getString("scheduled_overdue_incomplete")</option>
+						<option value='1'>$i18n.getString("completed")</option>
+						<option value='1_2_3_4'>$i18n.getString("all")</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>$i18n.getString('show_events_since')</td>
+				<td>
+					<select id="showEventSince" name="showEventSince" onchange="setDateRange();">
+						<option value='-1'>$i18n.getString("one_day")</option>
+						<option value='-3'>$i18n.getString("three_days")</option>
+						<option value='-7' selected>$i18n.getString("one_week")</option>
+						<option value='-30'>$i18n.getString("one_month")</option>
+						<option value='ALL'>$i18n.getString("all")</option>
+					</select>
+					<input type='text' id='startDueDate' name='startDueDate' class='hidden'>
+					&nbsp;
+					<input type='checkbox' id='useCalendar' name='useCalendar' onchange="displayCadendar();"> $i18n.getString('use_calendar')
+				</td>
+			</tr>
+			<tr>
+				<td>$i18n.getString('show_events_up_to')</td>
+				<td>
+					<select id="showEventUpTo" name="showEventUpTo" onchange="setDateRange();">
+						<option value='1'>$i18n.getString("one_day")</option>
+						<option value='3'>$i18n.getString("three_days")</option>
+						<option value='7' selected>$i18n.getString("one_week")</option>
+						<option value='30'>$i18n.getString("one_month")</option>
+						<option value='ALL'>$i18n.getString("all")</option>
+					</select>
+					<input type='text' id='endDueDate' name='endDueDate' class='hidden'>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<input type="submit" class='large-button' id='listPatientBtn' value="$i18n.getString( 'show_activity_list' )" onclick="setFieldValue('export', false);">
+					<input type="submit" class='large-button' value="$i18n.getString( 'export_xls' )" onclick="setFieldValue('export', true);">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+
+<div id='listPatientDiv'></div>
+<div id='contentDataRecord'></div>
+	
+#parse( "dhis-web-commons/loader/loader.vm" )
+	
+<div class='hidden'>
+	<input type='textbox' id='currentDate' name='currentDate'>
+	<script>
+		datePicker( 'currentDate' );
+	</script>
+</div>
+
+<script>
+	unSave = false;
+	var i18n_please_select = '[' + '$encoder.jsEscape( $i18n.getString( "please_select" ) , "'")' + ']';
+	var i18n_color_quick_help = '$encoder.jsEscape( $i18n.getString( "color_quick_help" ) , "'")';
+	var i18n_patient_details_and_history = '$encoder.jsEscape( $i18n.getString( "patient_details_and_history" ) , "'")';
+	var i18n_please_select_program_stage = '[' + '$encoder.jsEscape( $i18n.getString( "please_select_program_stage" ) , "'")' + ']';
+	var i18n_comment_added = '$encoder.jsEscape( $i18n.getString( "comment_added" ) , "'")';
+	var i18n_update = '$encoder.jsEscape( $i18n.getString( "update" ) , "'")';
+	var i18n_comfirm_delete_event = '$encoder.jsEscape( $i18n.getString( "comfirm_delete_event" ) , "'")';
+	var i18n_please_select_criteria = '[' + '$encoder.jsEscape( $i18n.getString( "please_select_criteria" ) , "'")' + ']';
+	var i18n_program_stage = '$encoder.jsEscape( $i18n.getString( "program_stage" ) , "'")';
+	var i18n_show_all_items = '$encoder.jsEscape( $i18n.getString( "show_all_items" ) , "'")';
+
+	setDateRange();
+</script>

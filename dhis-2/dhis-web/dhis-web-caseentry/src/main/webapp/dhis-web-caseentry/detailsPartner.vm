@@ -1,32 +1,29 @@
 <table>
 	<tr>
-		<td><label class="bold">$i18n.getString( "common_info" )</label></td>
+		<td colspan='2'><label class="bold">$i18n.getString( "demographics" )</label></td>
 	</tr>
 	
 	<tr>
-		<td>
-			<label class="bold">$i18n.getString( "full_name" ) : </label>
-				$partner.getFullName()
-		</td>
+		<td>$i18n.getString( "full_name" )</td>
+		<td>: $encoder.htmlEncode($partner.getFullName())</td>
 	</tr>
 	
 	<tr>
-		<td>
-			<label class="bold">$i18n.getString( "gender" ) : </label>
-				$i18n.getString($partner.gender)
-		</td>
+		<td>$i18n.getString( "gender" )</td>
+		<td>: $i18n.getString($partner.gender)</td>
 	</tr>
 	<tr>
-		<td>
-			<label class="bold">$i18n.getString( "date_of_birth" ) : </label></span>
-				$format.formatDate( $partner.birthDate )
-		</td>
+		<td>$i18n.getString( "date_of_birth" )</td>
+		<td>: $format.formatDate( $partner.birthDate )</td>
 	</tr>
 	<tr>
-		<td>
-			<label class="bold">$i18n.getString( "age" ) : </label>
-				$partner.getAge()
-		</td>
+		<td>$i18n.getString( "age" )</td>
+		<td>: $partner.getAge()</td>
+	</tr>
+	
+	<tr>
+		<td>$i18n.getString( "phone_number" )</td>
+		<td>: $!patient.phoneNumber</td>
 	</tr>
 	
 	<tr><td>&nbsp;</td></tr>
@@ -36,50 +33,47 @@
 	#foreach( $patientIdentifier in $partner.identifiers )
 	<tr>
 		<td>
-			<label class="bold">
-				#if($!patientIdentifier.identifierType)  $!patientIdentifier.identifierType.name
+				#if($!patientIdentifier.identifierType)  $!patientIdentifier.identifierType.displayName
 				#else $i18n.getString( "patient_system_id") #end 
-			</label>
-			 : $patientIdentifier.identifier
 		</td>
+		<td>: $patientIdentifier.identifier</td>
 	</tr>
 	#end
 	
-	<tr><td>&nbsp;</td></tr>
-	<tr>
-		<td><label class="bold">$i18n.getString( "attributes" )</label></td>
-	</tr>
-	#foreach( $attribute in $partner.attributes )
-		#if( $patientAttributeValueMap.get( $attribute.id ) != " " )
+	#if($partner.attributes.size() > 0 )
+		<tr><td>&nbsp;</td></tr>
 		<tr>
-			<td><label class="bold">$attribute.name : </label>
-				$patientAttributeValueMap.get( $attribute.id )
-			</td>
+			<td><label class="bold">$i18n.getString( "attributes" )</label></td>
 		</tr>
+		#foreach( $attribute in $partner.attributes )
+			#if( $patientAttributeValueMap.get( $attribute.id ) != " " )
+			<tr>
+				<td>$attribute.displayName</td>
+				<td>: $encoder.htmlEncode($patientAttributeValueMap.get( $attribute.id ))</td>
+			</tr>
+			#end
 		#end
 	#end
 	
 	<tr><td>&nbsp;</td></tr>
 	<tr>
 		<td><label class="bold">$i18n.getString( "enrolled_in_program" )</label></td>
+		<td>: 
+		#foreach( $program in $partner.programs )
+			$encoder.htmlEncode($program.displayName)
+		#end
+		</td>
 	</tr>
-	#foreach( $program in $partner.programs )
-	<tr>
-		<td>$program.name</td>
-	</tr>
-	#end
 	
 	<tr><td></td></tr>
 	<tr>
-		#if( $partnerIsRepresentative == 'true' )
-		<td>
-			<input type="button" value="$i18n.getString('is_not_representative')" onclick="javascript:removeRepresentative( getFieldValue('id'), $partner.id );" style='width:150px;' >
-		</td>
-		#else
-		<td>
-			<input type="button" value="$i18n.getString('save')" title="$i18n.getString('set_as_representative')" onclick="javascript:saveRepresentative( getFieldValue('id'), $partner.id, false )" style='width:150px;' >
-			<input type="button" value="$i18n.getString('save_all')" title="$i18n.getString('set_as_representative_and_copy_attributes_for_the_person')" onclick="javascript:saveRepresentative( getFieldValue('id'), $partner.id, true )" style='width:150px;' >
-		</td>    
-		#end
+		<td colspan='2'>
+			#if( $partnerIsRepresentative == 'true' )
+				<input type="button" value="$i18n.getString('is_not_representative')" onclick="javascript:removeRepresentative( getFieldValue('id'), $partner.id );" style='width:150px;' >
+			#else
+				<input type="button" value="$i18n.getString('save')" title="$i18n.getString('set_as_representative')" onclick="javascript:saveRepresentative( getFieldValue('id'), $partner.id, false )" style='width:150px;' >
+				<input type="button" value="$i18n.getString('save_all')" title="$i18n.getString('set_as_representative_and_copy_attributes_for_the_person')" onclick="javascript:saveRepresentative( getFieldValue('id'), $partner.id, true )" style='width:150px;' >
+			#end
+		</td> 
 	</tr>                      
 </table>

@@ -36,7 +36,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.BaseNameableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
@@ -48,7 +48,7 @@ import java.util.Set;
 /**
  * @author Kristian Nordal
  */
-@JacksonXmlRootElement( localName = "organisationUnitGroup", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "organisationUnitGroup", namespace = DxfNamespaces.DXF_2_0)
 public class OrganisationUnitGroup
     extends BaseNameableObject
 {
@@ -57,6 +57,8 @@ public class OrganisationUnitGroup
      */
     private static final long serialVersionUID = -1131637847640209166L;
 
+    private String symbol;
+    
     @Scanned
     private Set<OrganisationUnit> members = new HashSet<OrganisationUnit>();
 
@@ -161,26 +163,28 @@ public class OrganisationUnitGroup
         return name.equals( other.getName() );
     }
 
-/*
-    @Override
-    public String toString()
-    {
-        return "OrganisationUnitGroup{" +
-            "members=" + members +
-            ", groupSet=" + groupSet.getName() +
-            "} " + super.toString();
-    }
-*/
-
     // -------------------------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------------------------
 
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getSymbol()
+    {
+        return symbol;
+    }
+
+    public void setSymbol( String symbol )
+    {
+        this.symbol = symbol;
+    }
+
     @JsonProperty( value = "organisationUnits" )
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "organisationUnit", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0)
     public Set<OrganisationUnit> getMembers()
     {
         return members;
@@ -194,7 +198,7 @@ public class OrganisationUnitGroup
     @JsonProperty( value = "organisationUnitGroupSet" )
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public OrganisationUnitGroupSet getGroupSet()
     {
         return groupSet;
@@ -207,8 +211,8 @@ public class OrganisationUnitGroup
 
     @JsonProperty( value = "attributes" )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "attributes", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "attribute", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0)
     public Set<AttributeValue> getAttributeValues()
     {
         return attributeValues;

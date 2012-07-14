@@ -1,9 +1,9 @@
 <script>
-	jQuery('#addRelationshipPatientForm').ready(	function(){
+	jQuery('#patientForm').ready(	function(){
 
 		checkedDuplicate = false;
 		
-		jQuery("#addRelationshipPatientForm").validate({
+		jQuery("#patientForm").validate({
 			 meta:"validate"
 			,errorElement:"span"
 			,submitHandler: function(form)
@@ -12,24 +12,41 @@
 				}
 			,beforeValidateHandler: function(form)
 				{
-					var birthDate = $('#addRelationshipPatientForm [id=birthDate]').val();
-					var age = $('#addRelationshipPatientForm [id=age]').val();
+					var birthDate = $('#patientForm [id=birthDate]').val();
+					var age = $('#patientForm [id=age]').val();
 					if(age !=''){
-						$( "#addRelationshipPatientForm [id=memberValidator]").val(age);
+						$( "#patientForm [id=memberValidator]").val(age);
 					}else{
-						$( "#addRelationshipPatientForm [id=memberValidator]").val(birthDate);
+						$( "#patientForm [id=memberValidator]").val(birthDate);
 					}
 				}
 		});
-		
-		hideById('addRelationshipPatientForm [id=underAgeDiv]');
-		addEventForPatientForm('addRelationshipPatientForm');
+		jQuery('#patientForm [id=fullName]').val("");
+		hideById('underAgeDiv');
+		hideById('representativeFormDiv');
+		jQuery('#patientForm [inherit=false]').val("");
+		jQuery('#patientForm [inherit=]').val("");
+		jQuery('#patientForm [id=healthWorkerId]').val("");
+		jQuery('#patientForm [id^="iden"]').val("");
+		hideById('patientForm [id=age]');
+
+		datePickerValid( 'patientForm [id=birthDate]' );
+		addEventForPatientForm('patientForm');
+		jQuery('[name=mainPagelink]').html(i18n_main_form_link);
 	});		
 </script>
 
-<h4>$i18n.getString("add_new_relationship_for"):  $patient.getFullName()</h4>
+<h5>
+	<a name="mainPagelink" href="javascript:onClickBackBtn();">$i18n.getString( 'patient_management' )</a>
+	&#8226; <a href="javascript:showPatientDashboardForm($!patient.id);">$i18n.getString( 'patient_dashboard' )</a>
+	&#8226; <a href="javascript:showRelationshipList( '$patient.id' )">$i18n.getString( "relationship_management" )</a>	
+</h5>
+<h3>
+	&raquo; <a href="javascript:showAddRelationship('$patient.id')" >$i18n.getString( 'seach_available_patient' )</a>
+	&#8226; $i18n.getString( 'add_new_patient' )
+</h3>
 																		
-<form id="addRelationshipPatientForm" action="addRelationshipPatient.action" method="get" >
+<form id="patientForm" action="addRelationshipPatient.action" method="get" >
 <input type="hidden" id="relationshipId"  name="relationshipId" value="$patient.id"/> 
 <table>	
 	<tr>
@@ -38,7 +55,8 @@
 			<select name="relationshipTypeId" id="relationshipTypeId" class="{validate:{required:true}}" >
 				<option value="">[$i18n.getString( "please_select" )]</option>        
 				#foreach ($relationship in $relationshipTypes)
-					<option value="$relationship.id">${relationship.aIsToB} - ${relationship.bIsToA}</option>
+					<option value="$relationship.id" relationshipFromA='true'>$encoder.htmlEncode(${relationship.aIsToB}) $i18n.getString("of") $encoder.htmlEncode($patient.getFullName()) ($encoder.htmlEncode(${relationship.bIsToA}))</option>
+					<option value="$relationship.id" relationshipFromA='false'>$encoder.htmlEncode(${relationship.bIsToA}) $i18n.getString("of") $encoder.htmlEncode($patient.getFullName()) ($encoder.htmlEncode(${relationship.aIsToB}))</option>
 				#end
 			</select>
 		</td>
@@ -51,27 +69,9 @@
 		<td></td>
 		<td>
 			<input type="submit" class='button' value="$i18n.getString( 'add' )" />
-			<input type="button" class='button' id='backbtn' value="$i18n.getString( 'back_to_registration' )" onclick="showRelationshipList($patient.id);">
+			<input type="button" class='button' value="$i18n.getString( 'cancel' )" onclick="showRelationshipList($patient.id);">
 		</td>
 	</tr>
-	</table>
-
-<p>
-	
-
+</table>
 </form> 	
-
-<script>
-	var i18n_back_to_registration = '$encoder.jsEscape( $i18n.getString( "back_to_registration" ) , "'" )';
-    var i18n_back_to_relationship = '$encoder.jsEscape( $i18n.getString( "back_to_relationship" ) , "'" )';
-    
-	if( getFieldValue('isShowPatientList') == 'false' )
-	{
-		jQuery('#backbtn').val(i18n_back_to_relationship);
-	}
-	else
-	{
-		jQuery('#backbtn').val(i18n_back_to_registration);
-	}
-</script>
 

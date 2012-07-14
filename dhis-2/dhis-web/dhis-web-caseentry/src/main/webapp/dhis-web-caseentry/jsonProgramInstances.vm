@@ -4,7 +4,7 @@
 		#foreach( $programInstance in $programInstances )
 		  {
 			"id":  ${programInstance.program.id} ,
-			"name": "$!encoder.jsonEncode( ${programInstance.program.name} )",
+			"name": "$!encoder.jsonEncode( ${programInstance.program.displayName} )",
 			"programInstanceId":  ${programInstance.id}
 		  }#if( $velocityCount < $size ),#end
 		#end]

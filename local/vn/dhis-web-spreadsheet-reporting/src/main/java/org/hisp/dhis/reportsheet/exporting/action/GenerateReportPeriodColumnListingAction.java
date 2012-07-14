@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportPeriodColumnListing;
@@ -52,17 +51,17 @@ public class GenerateReportPeriodColumnListingAction
     extends AbstractGenerateExcelReportSupport
 {
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnit organisationUnit = organisationUnitSelectionManager.getSelectedOrganisationUnit();
 
         ExportReportPeriodColumnListing exportReportInstance = (ExportReportPeriodColumnListing) exportReport;
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnit );
+        this.installReadTemplateFile( exportReportInstance, organisationUnit );
 
         Collection<ExportItem> exportReportItems = null;
-        
+
         for ( Integer sheetNo : exportReportService.getSheets( selectionManager.getSelectedReportId() ) )
         {
             Sheet sheet = this.templateWorkbook.getSheetAt( sheetNo - 1 );
@@ -71,8 +70,10 @@ public class GenerateReportPeriodColumnListingAction
 
             this.generateOutPutFile( exportReportInstance.getPeriodColumns(), exportReportItems, organisationUnit,
                 sheet );
+
+            this.recalculatingFormula( sheet );
         }
-        
+
         /**
          * Garbage
          */
@@ -96,21 +97,25 @@ public class GenerateReportPeriodColumnListingAction
 
                     if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT ) )
                     {
-                        // value = this.getDataValue( reportItem, organisationUnit );
+                        // value = this.getDataValue( reportItem,
+                        // organisationUnit );
 
                         value = MathUtils.calculateExpression( ExpressionUtils.generateExpression( reportItem, p
-                            .getStartdate(), p.getEnddate(), organisationUnit, dataElementService, categoryService, aggregationService ) );
+                            .getStartdate(), p.getEnddate(), organisationUnit, dataElementService, categoryService,
+                            aggregationService ) );
                     }
                     else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_VALUETYPE_TEXT ) )
                     {
-                        String result = this.getTextValue( reportItem, organisationUnit, p.getStartdate(), p.getEnddate() );
+                        String result = this.getTextValue( reportItem, organisationUnit, p.getStartdate(), p
+                            .getEnddate() );
 
                         ExcelUtils.writeValueByPOI( reportItem.getRow(), reportItem.getColumn(), result,
                             ExcelUtils.TEXT, sheet, this.csText );
                     }
                     else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.INDICATOR ) )
                     {
-                        // value = this.getIndicatorValue( reportItem, organisationUnit );
+                        // value = this.getIndicatorValue( reportItem,
+                        // organisationUnit );
 
                         value = MathUtils.calculateExpression( ExpressionUtils.generateIndicatorExpression( reportItem,
                             p.getStartdate(), p.getEnddate(), organisationUnit, indicatorService, aggregationService ) );

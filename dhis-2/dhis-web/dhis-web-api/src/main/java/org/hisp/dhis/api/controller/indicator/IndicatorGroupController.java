@@ -28,17 +28,58 @@ package org.hisp.dhis.api.controller.indicator;
  */
 
 import org.hisp.dhis.api.controller.AbstractCrudController;
+import org.hisp.dhis.api.controller.WebOptions;
+import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.WebUtils;
+import org.hisp.dhis.api.webdomain.IndicatorList;
 import org.hisp.dhis.indicator.IndicatorGroup;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Controller
-@RequestMapping( value = IndicatorGroupController.RESOURCE_PATH )
+@RequestMapping(value = IndicatorGroupController.RESOURCE_PATH)
 public class IndicatorGroupController
     extends AbstractCrudController<IndicatorGroup>
 {
     public static final String RESOURCE_PATH = "/indicatorGroups";
+
+    @RequestMapping( value = "/{uid}/members", method = RequestMethod.GET )
+    public String getMembers( @PathVariable( "uid" ) String uid, @RequestParam Map<String, String> parameters,
+        Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception
+    {
+        WebOptions options = new WebOptions( parameters );
+        IndicatorGroup indicatorGroup = getEntity( uid );
+
+        if ( indicatorGroup == null )
+        {
+            ContextUtils.notFoundResponse( response, "IndicatorGroup not found for uid: " + uid );
+            return null;
+        }
+
+        IndicatorList indicatorList = new IndicatorList();
+        indicatorList.setMembers( indicatorGroup.getMembers() );
+
+        if ( options.hasLinks() )
+        {
+            WebUtils.generateLinks( indicatorGroup );
+            WebUtils.generateLinks( indicatorList );
+        }
+
+        model.addAttribute( "model", indicatorList );
+        model.addAttribute( "viewClass", options.getViewClass( "detailed" ) );
+
+        return StringUtils.uncapitalize( getEntitySimpleName() );
+    }
 }

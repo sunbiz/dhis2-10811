@@ -9,19 +9,30 @@
 		#else
 			"false",
 		#end
+	#if( $tabularReport.programStage)
+		#set($programStage = $tabularReport.programStage)
+	#end
+	
 	"type": "${programStage.program.type}",
 	"programStageId": "${programStage.id}",
-	"programStageName": "${programStage.name}",
+	"programStageName": "$!encoder.jsonEncode( ${programStage.displayName} )",
 	"startDate": "$!format.formatDate( $tabularReport.startDate )",
 	"endDate": "$!format.formatDate( ${tabularReport.endDate} )",
 	"level": "${tabularReport.level}",
 	"sortedOrgunitAsc": "${tabularReport.sortedOrgunitAsc}",
 	"facilityLB": "${tabularReport.facilityLB}",
+	"useCompletedEvents": "$!tabularReport.useCompletedEvents",
+	"userOrganisationUnit": "$!tabularReport.userOrganisationUnit",
+	"userOrganisationUnitChildren": "$!tabularReport.userOrganisationUnitChildren",
 	"orgunitIds": [
 		#set( $size = $tabularReport.organisationUnits.size() )
 		#set( $organisationUnits = ${tabularReport.organisationUnits} )
 		#foreach( ${organisationUnit} in $!{organisationUnits} )
-			$organisationUnit.id
+			{
+				"id": "$organisationUnit.uid",
+				"localid": "$organisationUnit.id",
+				"path":"#foreach($anc in $organisationUnit.getAncestors())/${anc.uid}#end"
+			}
 			#if( $velocityCount < $size ),#end
 		#end
 	],
@@ -38,7 +49,7 @@
 		#foreach( ${identifier} in $!{identifiers} )
 			{
 				"id": "iden_${identifier.id}",
-				"name": "${identifier.name}"
+				"name": "${identifier.displayName}"
 			},
 		#end
 		#set( $size = ${tabularReport.attributes.size()} )
@@ -46,7 +57,7 @@
 		#foreach( ${attribute} in $!{attributes} )
 			{
 				"id": "attr_${attribute.id}",
-				"name": "${attribute.name}"
+				"name": "${attribute.displayName}"
 			}
 			#if( $velocityCount < $size ),#end
 		#end

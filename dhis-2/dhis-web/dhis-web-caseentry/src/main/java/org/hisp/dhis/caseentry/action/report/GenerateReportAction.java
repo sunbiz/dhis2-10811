@@ -31,18 +31,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
 import org.hisp.dhis.paging.ActionPagingSupport;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramService;
-import org.hisp.dhis.program.ProgramStageInstance;
-import org.hisp.dhis.program.ProgramStageInstanceService;
 
 /**
  * @author Abyot Asalefew Gizaw
@@ -76,11 +76,11 @@ public class GenerateReportAction
         this.programInstanceService = programInstanceService;
     }
 
-    private ProgramStageInstanceService programStageInstanceService;
+    private OrganisationUnitService organisationUnitService;
 
-    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
+    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
-        this.programStageInstanceService = programStageInstanceService;
+        this.organisationUnitService = organisationUnitService;
     }
 
     private I18nFormat format;
@@ -115,6 +115,13 @@ public class GenerateReportAction
         this.endDate = endDate;
     }
 
+    private String facilityLB;
+
+    public void setFacilityLB( String facilityLB )
+    {
+        this.facilityLB = facilityLB;
+    }
+
     private OrganisationUnit organisationUnit;
 
     public OrganisationUnit getOrganisationUnit()
@@ -143,6 +150,13 @@ public class GenerateReportAction
         return program;
     }
 
+    private int total;
+
+    public int getTotal()
+    {
+        return total;
+    }
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -159,24 +173,41 @@ public class GenerateReportAction
         Date eDate = format.parseDate( endDate );
 
         // ---------------------------------------------------------------------
-        // Program instances for the selected program
+        // Get orgunitIds
         // ---------------------------------------------------------------------
 
-        int total = programInstanceService.countProgramInstances( program, organisationUnit, sDate, eDate );
+        Collection<Integer> orgunitIds = new HashSet<Integer>();
 
-        this.paging = createPaging( total );
-
-        programInstances = programInstanceService.getProgramInstances( program, organisationUnit, sDate, eDate, paging
-            .getStartPos(), paging.getPageSize() );
-
-        Collection<ProgramStageInstance> programStageInstances = new ArrayList<ProgramStageInstance>();
-
-        for ( ProgramInstance programInstance : programInstances )
+        if ( facilityLB.equals( "selected" ) )
         {
-            programStageInstances.addAll( programInstance.getProgramStageInstances() );
+            orgunitIds.add( organisationUnit.getId() );
+        }
+        else if ( facilityLB.equals( "childrenOnly" ) )
+        {
+            orgunitIds.addAll( organisationUnitService.getOrganisationUnitHierarchy().getChildren(
+                organisationUnit.getId() ) );
+            orgunitIds.remove( organisationUnit.getId() );
+        }
+        else
+        {
+            orgunitIds.addAll( organisationUnitService.getOrganisationUnitHierarchy().getChildren(
+                organisationUnit.getId() ) );
         }
 
-        statusMap = programStageInstanceService.statusProgramStageInstances( programStageInstances );
+        if ( orgunitIds.size() > 0 )
+        {
+            // ---------------------------------------------------------------------
+            // Program instances for the selected program
+            // ---------------------------------------------------------------------
+
+            total = programInstanceService.countProgramInstances( program, orgunitIds, sDate, eDate );
+
+            this.paging = createPaging( total );
+
+            programInstances = programInstanceService.getProgramInstances( program, orgunitIds, sDate, eDate,
+                paging.getStartPos(), paging.getPageSize() );
+
+        }
 
         return SUCCESS;
     }

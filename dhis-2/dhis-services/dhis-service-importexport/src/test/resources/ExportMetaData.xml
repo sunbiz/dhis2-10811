@@ -778,7 +778,6 @@
         <id>374586</id>
         <uuid>8E95E229-4A10-4022-94E8-E64AAA60FB86</uuid>
         <name>ART entry point: TB</name>
-        <alternativeName></alternativeName>
         <shortName>ART entry point: TB</shortName>
         <code></code>
         <description></description>
@@ -792,7 +791,6 @@
         <id>8240</id>
         <uuid>179DEBC9-7E63-4B17-8D25-1EE981321850</uuid>
         <name>ART enrollment stage 1</name>
-        <alternativeName></alternativeName>
         <shortName>ART No stage 1</shortName>
         <code></code>
         <description></description>
@@ -806,7 +804,6 @@
         <id>8244</id>
         <uuid>FDCE22AD-CBA3-4AC6-9789-863849733666</uuid>
         <name>ART entry ponit: No diagnostic testing</name>
-        <alternativeName></alternativeName>
         <shortName>ARTdiag.testing</shortName>
         <code></code>
         <description></description>
@@ -820,7 +817,6 @@
         <id>8245</id>
         <uuid>2F4F0D61-83CF-43A2-9323-0E8E44C8EB11</uuid>
         <name>ART entry point: No walk in</name>
-        <alternativeName></alternativeName>
         <shortName>ART No walk in</shortName>
         <code></code>
         <description></description>
@@ -834,7 +830,6 @@
         <id>8246</id>
         <uuid>25267C95-4B02-42C0-BA5E-6CAE9BFA58E0</uuid>
         <name>ART entry point: No PMTCT</name>
-        <alternativeName></alternativeName>
         <shortName>ART.E.P:PMTCT</shortName>
         <code></code>
         <description></description>
@@ -848,7 +843,6 @@
         <id>8248</id>
         <uuid>76FC7E40-C6BC-44E8-A721-1A5CA55F64C9</uuid>
         <name>ART entry point: No other</name>
-        <alternativeName></alternativeName>
         <shortName>ART.E.P:other</shortName>
         <code></code>
         <description></description>
@@ -862,7 +856,6 @@
         <id>8249</id>
         <uuid>0F295EB0-8FE0-487D-AD64-63A0319E31F7</uuid>
         <name>ART entry point: No transfer in</name>
-        <alternativeName></alternativeName>
         <shortName>ART.E.P:transferIn</shortName>
         <code></code>
         <description></description>
@@ -876,7 +869,6 @@
         <id>8251</id>
         <uuid>0F295EB0-8FE0-487D-AD64-63A0319E31F7</uuid>
         <name>ART entry point: dummy</name>
-        <alternativeName></alternativeName>
         <shortName>ART dummy</shortName>
         <code></code>
         <description></description>
@@ -890,7 +882,6 @@
         <id>8254</id>
         <uuid>236F53A8-9AFA-4B41-AFC6-DFB90BD29806</uuid>
         <name>ART No clients with change of regimen due to drug toxicity</name>
-        <alternativeName></alternativeName>
         <shortName>ARTChangeRegDrugToxi</shortName>
         <code></code>
         <description></description>
@@ -904,7 +895,6 @@
         <id>8255</id>
         <uuid>29A99B8F-1426-4E77-BB3B-D766FA612722</uuid>
         <name>ART No clients who stopped TRT due to TRT failure</name>
-        <alternativeName></alternativeName>
         <shortName>ARTStop.TRTdueFailur</shortName>
         <code></code>
         <description></description>

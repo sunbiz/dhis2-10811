@@ -28,7 +28,7 @@ package org.hisp.dhis.period;
  */
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 
 import java.io.Serializable;
 import java.text.ParseException;
@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @author Kristian Nordal
  */
-@JacksonXmlRootElement( localName = "periodType", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "periodType", namespace = DxfNamespaces.DXF_2_0)
 public abstract class PeriodType
     implements Serializable
 {
@@ -53,7 +53,7 @@ public abstract class PeriodType
     // Available PeriodTypes
     // -------------------------------------------------------------------------
 
-    private static final List<PeriodType> PERIOD_TYPES = new ArrayList<PeriodType>()
+    public static final List<PeriodType> PERIOD_TYPES = new ArrayList<PeriodType>()
     {
         {
             add( new DailyPeriodType() );
@@ -80,7 +80,7 @@ public abstract class PeriodType
     };
 
     /**
-     * Returns all available PeriodTypes in their natural order.
+     * Returns an immutable list of all available PeriodTypes in their natural order.
      *
      * @return all available PeriodTypes in their natural order.
      */
@@ -187,6 +187,13 @@ public abstract class PeriodType
      */
     public abstract int getFrequencyOrder();
 
+    /**
+     * Returns a new date rewinded from now.
+     *
+     * @return the Date.
+     */    
+    public abstract Date getRewindedDate( Date date, Integer rewindedPeriods );
+
     // -------------------------------------------------------------------------
     // Calendar support
     // -------------------------------------------------------------------------
@@ -271,7 +278,7 @@ public abstract class PeriodType
         {
             return new YearlyPeriodType();
         }
-        if ( isoPeriod.matches( "\\b\\d{6}\\b" ) )
+        if ( isoPeriod.matches( "\\b\\d{4}[-]?\\d{2}\\b" ) )
         {
             return new MonthlyPeriodType();
         }

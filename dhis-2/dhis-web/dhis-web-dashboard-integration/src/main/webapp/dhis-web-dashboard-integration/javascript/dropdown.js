@@ -3,6 +3,17 @@ $( document ).ready( function()
 {
 	$( "#interpretationArea" ).autogrow();
 	
+	$( document ).click( hideSearch );
+
+	$( "#searchField" ).focus( function() {
+		$( "#searchDiv" ).css( "border-color", "#999" );
+	} ).blur( function() {
+		$( "#searchDiv" ).css( "border-color", "#bbb" );
+	} );
+
+	$( "#searchField" ).focus();
+	$( "#searchField" ).keyup( search );
+	
 	var viewportWidth = parseInt( $( window ).width() );
 	var linkWidth = parseInt( 338 );
 	var chartWidth = parseInt( 325 );
@@ -98,4 +109,34 @@ function shareInterpretation()
 	    	}    	
 	    } );
     }
+}
+
+function showShareHelp()
+{
+	$( "#shareHelpForm" ).dialog( {
+		modal: true,
+		width: 380,
+		resizable: false,
+		title: "Share your data interpretations"
+	} );
+}
+
+function search( e )
+{
+	var query = $.trim( $( "#searchField" ).val() );
+	
+	if ( query.length == 0 )
+	{
+		hideSearch();
+		return false;
+	}
+	
+	var hits = $.get( "search.action", { q:query }, function( data ) {
+		$( "#hitDiv" ).show().html( data );
+	} );		
+}
+
+function hideSearch()
+{
+	$( "#hitDiv" ).hide();
 }

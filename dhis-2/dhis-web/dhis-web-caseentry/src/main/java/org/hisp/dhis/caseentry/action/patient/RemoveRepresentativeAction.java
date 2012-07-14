@@ -68,8 +68,8 @@ public class RemoveRepresentativeAction
         throws Exception
     {
         Patient patient = patientService.getPatient( patientId );
-
         patient.setRepresentative( null );
+        patient.setUnderAge( false );
 
         patientService.updatePatient( patient );
 

@@ -25,7 +25,7 @@
 		<td><input type="text" id="selectedOrganisationUnit" style="width:360px" readonly="true" value="${orgUnitText}"/></td>
 	</tr>
 	<tr>
-		<td>$i18n.getString( "name" )</th>
+		<td>$i18n.getString( "name_code_identifier" )</th>
 		<td><input type="text" name="name" style="width:360px" value="$!{name}"/></td>
 	</tr>
 	#foreach( $groupSet in $groupSets )
@@ -47,15 +47,18 @@
 	</tr>
 	<tr>
 		<td></td>
-		<td><input type="button" value="$i18n.getString( 'search' )" style="width:120px" onclick="download( '' )"/><input 
-		type="button" onclick="window.location.href='organisationUnitSearch.action?skipSearch=true'" value="$i18n.getString( 'clear' )" style="width:120px"/></td>
+		<td>
+			<input type="button" value="$i18n.getString( 'search' )" style="width:120px" onclick="download( '' )"/>
+		    <input type="button" onclick="window.location.href='organisationUnitSearch.action?skipSearch=true'" value="$i18n.getString( 'clear' )" style="width:120px"/>
+		</td>
 	</tr>
 	<tr>
 		<td style="height:2px" colspan="2"></td>
 	</tr>
 	<tr>
 		<td></td>
-		<td><input type="button" value="$i18n.getString( 'get_report_as_pdf' )" style="width:120px" onclick="download( 'pdf' )"/>
+		<td>
+			<input type="button" value="$i18n.getString( 'get_report_as_pdf' )" style="width:120px" onclick="download( 'pdf' )"/>
 			<input type="button" value="$i18n.getString( 'get_report_as_xls' )" style="width:120px" onclick="download( 'xls' )"/>
 			<input type="button" value="$i18n.getString( 'get_report_as_csv' )" style="width:120px" onclick="download( 'csv' )"/>
 		</td>
@@ -77,6 +80,7 @@
 <table class="listTable" style="width:95%">
 	<thead>
 		<tr>
+            <th style="width:100px">$i18n.getString( "identifier" )</th>
 			<th style="width:100px">$i18n.getString( "code" )</th>
 			<th style="min-width:300px">$i18n.getString( "name" )</th>
 			#foreach( $groupSet in $groupSets )
@@ -89,6 +93,7 @@
 	<tbody id="list">
 		#foreach( $unit in $organisationUnits )
 		<tr>
+            <td>$!encoder.htmlEncode( $unit.uid )</td>
 			<td>$!encoder.htmlEncode( $unit.code )</td>
 			<td>$!encoder.htmlEncode( $unit.name )</td>
 			#foreach( $groupSet in $groupSets )

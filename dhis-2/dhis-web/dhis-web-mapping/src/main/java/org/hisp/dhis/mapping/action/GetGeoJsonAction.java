@@ -34,6 +34,7 @@ import java.util.Collection;
 
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.system.filter.OrganisationUnitWithValidCoordinatesFilter;
 import org.hisp.dhis.system.util.FilterUtils;
@@ -61,29 +62,48 @@ public class GetGeoJsonAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer parentId;
-
-    public void setParentId( Integer id )
+    private String parentId;
+    
+    public void setParentId( String parentId )
     {
-        this.parentId = id;
+        this.parentId = parentId;
     }
 
-    private Integer level;
+    private String level;
 
-    public void setLevel( Integer level )
+    public void setLevel( String level )
     {
         this.level = level;
+    }
+    
+    private String callback;
+    
+    public void setCallback( String callback )
+    {
+        this.callback = callback;
     }
 
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
+    
+    public String getCallback()
+    {
+        return callback;
+    }
 
     private Collection<OrganisationUnit> object = new ArrayList<OrganisationUnit>();
 
     public Collection<OrganisationUnit> getObject()
     {
         return object;
+    }
+    
+    private boolean hasCoordinatesUp;
+
+    public boolean isHasCoordinatesUp()
+    {
+        return hasCoordinatesUp;
     }
 
     // -------------------------------------------------------------------------
@@ -95,32 +115,56 @@ public class GetGeoJsonAction
     {
         OrganisationUnit parent = organisationUnitService.getOrganisationUnit( parentId );
 
-        level = level == null ? organisationUnitService.getLevelOfOrganisationUnit( parent.getId() ) : level;
+        if ( parent == null )
+        {
+            parent = organisationUnitService.getOrganisationUnit( Integer.parseInt( parentId ) );
+        }
+        
+        OrganisationUnitLevel orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( level );
 
-        Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitsAtLevel( level, parent );
+        if ( orgUnitLevel == null )
+        {
+            orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( Integer.parseInt( level ) );
+        }
+        
+        if ( orgUnitLevel == null )
+        {
+            orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( parent.getOrganisationUnitLevel() );
+        }
+
+        Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitsAtLevel(
+            orgUnitLevel.getLevel(), parent );
 
         FilterUtils.filter( organisationUnits, new OrganisationUnitWithValidCoordinatesFilter() );
 
         boolean modified = !clearIfNotModified( ServletActionContext.getRequest(), ServletActionContext.getResponse(), organisationUnits );
-        
-        if ( modified )
-        {        
-            for ( OrganisationUnit unit : organisationUnits )
+
+        if ( !modified )
+        {
+            return SUCCESS;
+        }
+
+        for ( OrganisationUnit unit : organisationUnits )
+        {
+            if ( !unit.getFeatureType().equals( OrganisationUnit.FEATURETYPE_POINT ) )
             {
-                if ( !unit.getFeatureType().equals( OrganisationUnit.FEATURETYPE_POINT ) )
-                {
-                    object.add( unit );
-                }
-            }
-    
-            for ( OrganisationUnit unit : organisationUnits )
-            {
-                if ( unit.getFeatureType().equals( OrganisationUnit.FEATURETYPE_POINT ) )
-                {
-                    object.add( unit );
-                }
+                object.add( unit );
             }
         }
+
+        for ( OrganisationUnit unit : organisationUnits )
+        {
+            if ( unit.getFeatureType().equals( OrganisationUnit.FEATURETYPE_POINT ) )
+            {
+                object.add( unit );
+            }
+        }
+        
+        Collection<OrganisationUnit> organisationUnitsUp = organisationUnitService.getOrganisationUnitsAtLevel( orgUnitLevel.getLevel() - 1 );
+        
+        FilterUtils.filter( organisationUnitsUp, new OrganisationUnitWithValidCoordinatesFilter() );
+        
+        hasCoordinatesUp = organisationUnitsUp.size() > 0;
 
         return SUCCESS;
     }

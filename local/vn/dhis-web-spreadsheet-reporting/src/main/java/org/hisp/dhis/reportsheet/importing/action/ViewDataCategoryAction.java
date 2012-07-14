@@ -28,6 +28,7 @@ package org.hisp.dhis.reportsheet.importing.action;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.hisp.dhis.dataelement.DataElement;
@@ -59,7 +60,7 @@ public class ViewDataCategoryAction
             setUpImportItems( importReport, importItems, categoryImportItems );
 
             xmlStructureResponse = new XMLStructureResponseImport( selectionManager.getUploadFilePath(),
-                importReportService.getAllSheet(), categoryImportItems, true ).getXml();
+                new HashSet<Integer>( importReportService.getAllSheet() ), categoryImportItems ).getXml();
         }
         catch ( Exception ex )
         {
@@ -80,17 +81,17 @@ public class ViewDataCategoryAction
 
             for ( DataElementGroupOrder dataElementGroup : importReport.getDataElementOrders() )
             {
-                rowBegin ++;
-                
+                rowBegin++;
+
                 for ( DataElement dataElement : dataElementGroup.getDataElements() )
                 {
                     ImportItem item = new ImportItem();
-                    
+
                     item.setSheetNo( importItem.getSheetNo() );
-                    item.setRow( rowBegin ++ );
+                    item.setRow( rowBegin++ );
                     item.setColumn( importItem.getColumn() );
                     item.setExpression( importItem.getExpression().replace( "*", dataElement.getId() + "" ) );
-                    
+
                     importItemsDest.add( item );
                 }
             }

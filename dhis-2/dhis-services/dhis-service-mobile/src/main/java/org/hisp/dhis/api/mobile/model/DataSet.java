@@ -47,6 +47,8 @@ public class DataSet
 
     private int version;
 
+    private SMSCommand smsCommand;
+
     public DataSet()
     {
     }
@@ -106,22 +108,17 @@ public class DataSet
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-        dout.writeInt( this.getId() );
-        dout.writeUTF( this.getName() );
-        dout.writeInt( this.getVersion() );
-        dout.writeUTF( this.getPeriodType() );
-
-        if ( this.sections == null )
+        if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            dout.writeInt( 0 );
+            this.serializeVerssion2_8( dout );
         }
-        else
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            dout.writeInt( this.sections.size() );
-            for ( Section section : this.sections )
-            {
-                section.serialize( dout );
-            }
+            this.serializeVerssion2_9( dout );
+        }
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
+        {
+            this.serializeVerssion2_10( dout );
         }
     }
 
@@ -143,11 +140,12 @@ public class DataSet
             dout.writeInt( this.sections.size() );
             for ( Section section : this.sections )
             {
-                section.serializeVerssion2_8( dout );
+                section.setClientVersion( TWO_POINT_EIGHT );
+                section.serialize( dout );
             }
         }
     }
-    
+
     @Override
     public void serializeVerssion2_9( DataOutputStream dout )
         throws IOException
@@ -166,7 +164,8 @@ public class DataSet
             dout.writeInt( this.sections.size() );
             for ( Section section : this.sections )
             {
-                section.serializeVerssion2_9( dout );
+                section.setClientVersion( TWO_POINT_NINE );
+                section.serialize( dout );
             }
         }
     }
@@ -188,7 +187,40 @@ public class DataSet
             section.deSerialize( dataInputStream );
             sections.add( section );
         }
+    }
 
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dout )
+        throws IOException
+    {
+        dout.writeInt( this.getId() );
+        dout.writeUTF( this.getName() );
+        dout.writeInt( this.getVersion() );
+        dout.writeUTF( this.getPeriodType() );
+
+        if ( this.sections == null )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( this.sections.size() );
+            for ( Section section : this.sections )
+            {
+                section.setClientVersion( TWO_POINT_TEN );
+                section.serialize( dout );
+            }
+        }
+
+        if ( this.smsCommand != null )
+        {
+            dout.writeInt( 1 );
+            smsCommand.serialize( dout );
+        }
+        else
+        {
+            dout.writeInt( 0 );
+        }
     }
 
     @Override

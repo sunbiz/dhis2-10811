@@ -50,4 +50,6 @@ public interface OutboundSmsTransportService
     String getServiceStatus();
 
     String getMessageStatus();
+    
+    String getDefaultGateway();
 }

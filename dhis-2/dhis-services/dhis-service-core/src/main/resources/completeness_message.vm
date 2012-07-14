@@ -1,2 +1,1 @@
-The form '$!{object.dataSet.name}' was registered as complete for period $!{object.period.name}
-and organisation unit '$!{object.source.name}'.
+The form '$!{object.dataSet.name}' was registered as complete for period $!{object.periodName} and organisation unit '$!{object.source.name}'.

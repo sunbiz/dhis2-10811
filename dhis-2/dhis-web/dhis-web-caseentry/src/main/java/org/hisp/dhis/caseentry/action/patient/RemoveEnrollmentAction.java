@@ -46,8 +46,6 @@ import com.opensymphony.xwork2.Action;
 public class RemoveEnrollmentAction
     implements Action
 {
-    public static final String PREFIX_ATTRIBUTE = "attr";
-
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------

@@ -23,9 +23,11 @@
 <h3>$i18n.getString( "mobile_dataset" )</h3>
 <form id="updateMobileDataset" name="updateMobileDataset" action="updateMobileDataset.action" method="post">
 <table id="dataSetSelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
     <thead>
       <tr>

@@ -73,11 +73,10 @@ body div#wrap {
  * 
  */
 body div#header {
-	height:	20px;
+	height:	17px;
 	background-color: #1d5288;
 	border-bottom: 4px solid #184572;
-	padding-top: 2px;
-	padding-bottom: 2px;
+	padding: 4px;
 	margin-bottom: .5em;
 }
 

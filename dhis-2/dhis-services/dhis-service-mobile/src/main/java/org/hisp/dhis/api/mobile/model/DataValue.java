@@ -120,4 +120,12 @@ public class DataValue
         // TODO Auto-generated method stub
     }
 
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

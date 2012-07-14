@@ -51,11 +51,4 @@ public class HibernateIdentifiableObjectStore<T extends BaseIdentifiableObject>
         object.setAutoFields();
         super.update( object );
     }
-
-    @Override
-    public void saveOrUpdate( T object )
-    {
-        object.setAutoFields();
-        super.saveOrUpdate( object );
-    }
 }

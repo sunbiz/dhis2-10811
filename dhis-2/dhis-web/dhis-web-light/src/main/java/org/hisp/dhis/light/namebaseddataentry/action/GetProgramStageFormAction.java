@@ -27,6 +27,7 @@
 
 package org.hisp.dhis.light.namebaseddataentry.action;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +35,6 @@ import java.util.Map;
 
 import org.hisp.dhis.api.mobile.model.Activity;
 import org.hisp.dhis.api.mobile.model.ActivityPlan;
-import org.hisp.dhis.api.mobile.model.DataElement;
-import org.hisp.dhis.api.mobile.model.ProgramStage;
 import org.hisp.dhis.light.utils.NamebasedUtils;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.Patient;
@@ -43,14 +42,17 @@ import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramStage;
+import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.program.ProgramStageSection;
+import org.hisp.dhis.program.ProgramStageSectionService;
 
 import com.opensymphony.xwork2.Action;
 
 public class GetProgramStageFormAction
     implements Action
 {
-
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -90,9 +92,9 @@ public class GetProgramStageFormAction
     {
         this.patientDataValueService = patientDataValueService;
     }
-    
+
     private PatientService patientService;
-    
+
     public PatientService getPatientService()
     {
         return patientService;
@@ -102,7 +104,13 @@ public class GetProgramStageFormAction
     {
         this.patientService = patientService;
     }
-    
+
+    private ProgramStageSectionService programStageSectionService;
+
+    public void setProgramStageSectionService( ProgramStageSectionService programStageSectionService )
+    {
+        this.programStageSectionService = programStageSectionService;
+    }
 
     // -------------------------------------------------------------------------
     // Input & Output
@@ -154,13 +162,6 @@ public class GetProgramStageFormAction
     public void setOrganisationUnit( OrganisationUnit organisationUnit )
     {
         this.organisationUnit = organisationUnit;
-    }
-
-    private List<DataElement> dataElements;
-
-    public List<DataElement> getDataElements()
-    {
-        return this.dataElements;
     }
 
     private ProgramStage programStage;
@@ -235,9 +236,9 @@ public class GetProgramStageFormAction
     {
         return prevDataValues;
     }
-    
+
     private Patient patient;
-    
+
     public Patient getPatient()
     {
         return patient;
@@ -246,6 +247,32 @@ public class GetProgramStageFormAction
     public void setPatient( Patient patient )
     {
         this.patient = patient;
+    }
+
+    private Integer programStageSectionId;
+
+    public void setProgramStageSectionId( Integer programStageSectionId )
+    {
+        this.programStageSectionId = programStageSectionId;
+    }
+
+    public Integer getProgramStageSectionId()
+    {
+        return programStageSectionId;
+    }
+
+    private List<ProgramStageSection> listOfProgramStageSections;
+
+    public List<ProgramStageSection> getListOfProgramStageSections()
+    {
+        return listOfProgramStageSections;
+    }
+
+    private ProgramStageSection programStageSection;
+
+    public ProgramStageSection getProgramStageSection()
+    {
+        return programStageSection;
     }
 
     // -------------------------------------------------------------------------
@@ -262,6 +289,18 @@ public class GetProgramStageFormAction
         this.current = current;
     }
 
+    private List<ProgramStageDataElement> dataElements;
+
+    public List<ProgramStageDataElement> getDataElements()
+    {
+        return dataElements;
+    }
+
+    public void setDataElements( List<ProgramStageDataElement> dataElements )
+    {
+        this.dataElements = dataElements;
+    }
+
     @Override
     public String execute()
         throws Exception
@@ -269,13 +308,29 @@ public class GetProgramStageFormAction
         prevDataValues.clear();
         programStage = util.getProgramStage( programId, programStageId );
         patient = patientService.getPatient( patientId );
-        dataElements = programStage.getDataElements();
-        program = programStageInstanceService.getProgramStageInstance( programStageInstanceId ).getProgramInstance().getProgram();
+
+        if ( programStageSectionId != null && programStageSectionId != 0 )
+        {
+            this.programStageSection = programStageSectionService.getProgramStageSection( this.programStageSectionId );
+            dataElements = programStageSection.getProgramStageDataElements();
+        }
+        else
+        {
+            dataElements = new ArrayList<ProgramStageDataElement>( programStage.getProgramStageDataElements() );
+        }
+
+        program = programStageInstanceService.getProgramStageInstance( programStageInstanceId ).getProgramInstance()
+            .getProgram();
         Collection<PatientDataValue> patientDataValues = patientDataValueService
             .getPatientDataValues( programStageInstanceService.getProgramStageInstance( programStageInstanceId ) );
         for ( PatientDataValue patientDataValue : patientDataValues )
         {
             prevDataValues.put( "DE" + patientDataValue.getDataElement().getId(), patientDataValue.getValue() );
+            if ( patientDataValue.getProvidedElsewhere() != null )
+            {
+                prevDataValues.put( "CB" + patientDataValue.getDataElement().getId(), patientDataValue
+                    .getProvidedElsewhere().toString() );
+            }
         }
         return SUCCESS;
     }

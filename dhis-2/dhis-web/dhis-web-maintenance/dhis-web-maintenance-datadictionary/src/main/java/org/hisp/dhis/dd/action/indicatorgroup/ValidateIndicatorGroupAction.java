@@ -27,11 +27,10 @@ package org.hisp.dhis.dd.action.indicatorgroup;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.indicator.IndicatorGroup;
 import org.hisp.dhis.indicator.IndicatorService;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -96,8 +95,8 @@ public class ValidateIndicatorGroupAction
     {
         if ( name != null )
         {
-
-            IndicatorGroup match = indicatorService.getIndicatorGroupByName( name );
+            // TODO compile fix, this should be removed
+            IndicatorGroup match = indicatorService.getIndicatorGroupByName( name ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {

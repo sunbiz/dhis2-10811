@@ -31,7 +31,7 @@ import static org.hisp.dhis.dataelement.DataElement.AGGREGATION_OPERATOR_AVERAGE
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -111,11 +111,6 @@ public class DefaultDataValueService
         DataElementCategoryOptionCombo optionCombo )
     {
         return dataValueStore.getDataValue( source, dataElement, period, optionCombo );
-    }
-
-    public String getValue( int dataElementId, int periodId, int sourceId, int categoryOptionComboId )
-    {
-        return dataValueStore.getValue( dataElementId, periodId, sourceId, categoryOptionComboId );
     }
 
     // -------------------------------------------------------------------------
@@ -200,16 +195,16 @@ public class DefaultDataValueService
         return true;
     }
 
-    public Set<DataElementOperand> getOperandsWithDataValues( Set<DataElementOperand> operands )
-    {
-        return dataValueStore.getOperandsWithDataValues( operands );
-    }
-
     public int getDataValueCount( int days )
     {
         Calendar cal = PeriodType.createCalendarInstance();
         cal.add( Calendar.DAY_OF_YEAR, (days * -1) );
 
         return dataValueStore.getDataValueCount( cal.getTime() );
+    }
+    
+    public Map<DataElementOperand, Double> getDataValueMap( Collection<DataElement> dataElements, Period period, OrganisationUnit unit )
+    {
+        return dataValueStore.getDataValueMap( dataElements, period, unit );
     }
 }

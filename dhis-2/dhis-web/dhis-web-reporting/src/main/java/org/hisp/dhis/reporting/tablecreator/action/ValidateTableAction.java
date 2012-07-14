@@ -27,11 +27,10 @@ package org.hisp.dhis.reporting.tablecreator.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Lars Helge Overland
@@ -75,7 +74,7 @@ public class ValidateTableAction
     {
         this.name = name;
     }
-    
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -110,14 +109,16 @@ public class ValidateTableAction
                 return INPUT;
             }
 
-            ReportTable match = reportTableService.getReportTableByName( name );
+            /*
+            ReportTable match = reportTableService.getReportTableByName( name ).get( 0 );
 
-            if ( match != null && ( id == null || match.getId() != id ) )
+            if ( match != null && (id == null || match.getId() != id) )
             {
                 message = i18n.getString( "name_in_use" );
 
                 return INPUT;
             }
+            */
         }
 
         message = i18n.getString( "ok" );

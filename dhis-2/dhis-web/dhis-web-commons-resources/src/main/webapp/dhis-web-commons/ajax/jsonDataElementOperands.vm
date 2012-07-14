@@ -4,12 +4,12 @@
   {
   	"operandName": "$!{operand.operandName}",
     "dataElement": {
-    	"id": "$!{operand.dataElement.id}",
+    	"id": "$!{operand.dataElement.uid}",
     	"name": "$!{operand.dataElement.name}",
     	"type": "$!{operand.dataElement.type}"
     },
     "categoryOptionCombo": {
-    	"id": "$!{operand.categoryOptionCombo.id}",
+    	"id": "$!{operand.categoryOptionCombo.uid}",
     	"name": "$!{operand.categoryOptionCombo.name}"
     }
   }#if( $velocityCount < $size ),#end

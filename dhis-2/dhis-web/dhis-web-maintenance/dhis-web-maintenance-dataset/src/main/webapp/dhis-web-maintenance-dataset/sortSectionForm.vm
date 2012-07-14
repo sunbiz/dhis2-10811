@@ -20,7 +20,7 @@ type="button" value="$i18n.getString( 'move_to_bottom' )" style="width:130px" on
 <p>
 <select multiple id="sections" name="sections" size="25" style="width:680px">
 #foreach ( $section in $sections )
-    <option value="$section.id">$section.name</option>
+    <option value="$section.id">$section.displayName</option>
 #end
 </select>
 </p>

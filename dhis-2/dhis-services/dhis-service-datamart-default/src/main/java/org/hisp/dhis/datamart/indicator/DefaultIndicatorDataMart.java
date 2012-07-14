@@ -141,7 +141,7 @@ public class DefaultIndicatorDataMart
         
         final AggregatedIndicatorValue indicatorValue = new AggregatedIndicatorValue();
         
-        final Map<Integer, Double> constantMap = constantService.getConstantMap();
+        final Map<String, Double> constantMap = constantService.getConstantMap();
 
         organisationUnitGroups = organisationUnitGroups != null ? organisationUnitGroups : DataMartEngine.DUMMY_ORG_UNIT_GROUPS;
         
@@ -163,11 +163,11 @@ public class DefaultIndicatorDataMart
                     {                
                         for ( final Indicator indicator : indicators )
                         {
-                            final double denominatorValue = calculateExpression( expressionService.generateExpression( indicator.getExplodedDenominator(), valueMap, constantMap, days ) );
+                            final double denominatorValue = calculateExpression( expressionService.generateExpression( indicator.getExplodedDenominator(), valueMap, constantMap, days, false ) );
     
                             if ( !isEqual( denominatorValue, 0d ) )
                             {
-                                final double numeratorValue = calculateExpression( expressionService.generateExpression( indicator.getExplodedNumerator(), valueMap, constantMap, days ) );
+                                final double numeratorValue = calculateExpression( expressionService.generateExpression( indicator.getExplodedNumerator(), valueMap, constantMap, days, false ) );
                              
                                 if ( !( omitZeroNumerator && isEqual( numeratorValue, 0d ) ) )
                                 {

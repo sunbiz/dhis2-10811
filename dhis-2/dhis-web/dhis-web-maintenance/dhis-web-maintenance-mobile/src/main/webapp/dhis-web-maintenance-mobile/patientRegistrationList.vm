@@ -43,6 +43,13 @@
 			#foreach( $attribute in $patientAttributes )
 				#if($attribute)<col/>#end
 			#end
+
+			#foreach( $identifierType in $identifierTypes)
+				<col/>
+			#end
+			#if( $identifierTypes.size()==0 )
+				<col/>       
+			#end
           <col/>
           <col/>
           <col/>
@@ -57,13 +64,20 @@
 				<th>#</th>
 				#foreach( $attribute in $patientAttributes )
 					#if($attribute)
-					<th id="patientAttributeName">$attribute.name</th>
+					<th id="patientAttributeName">$!encoder.htmlEncode( $attribute.name )</th>
 					#end
 				#end
-				<th>$i18n.getString( "full_name" )</th>          
+
+				#foreach( $identifierType in $identifierTypes)
+					<th>$encoder.htmlEncode($identifierType.name)</th>
+				#end
+				#if( $identifierTypes.size()==0 )
+					<th>$i18n.getString( "full_name" )</th>
+				#end
 				<th>$i18n.getString( "gender" )</th>
 				<th>$i18n.getString( "date_of_birth" )</th> 
 				<th class="{sorter: false}">$i18n.getString( "age" )</th>
+				<th class="{sorter: false}">$i18n.getString( "phone_number" )</th>
 				#if($mapPatientOrgunit.size()!=0)
 				<th>$i18n.getString( "hierachy_orgunit" )</th>
 				#end
@@ -93,8 +107,19 @@
 						</td>
 					#end
 				#end
-					
-				<td>$!patient.getFullName()</td>
+				
+				#set($value="")
+				#foreach( $identifierType in $identifierTypes)
+					#foreach( $identifier in $patient.identifiers)
+						#if($identifier.identifierType.id==$identifierType.id)
+							#set($value=$identifier.identifier)
+						#end
+					#end
+				#end
+				#if($value=="")
+					#set($value=$patient.getFullName())
+				#end
+				<td>$encoder.htmlEncode($value)</td>
 				
 				<td>$i18n.getString($!patient.gender)</td>
 				
@@ -108,9 +133,10 @@
 
 				<td>
 					#if ( $!patient.phoneNumber() && $!patient.phoneNumber() != "" )					
-					<a href="javascript:addPhoneToList( 'recipients', '$patient.id', '$patient.getFullName()', '$!patient.phoneNumber' )" title='$i18n.getString( "add_phone_to_list" )'><img src="../images/move_down.png" alt='$i18n.getString( "add_phone_to_list" )'></a>
+					<a href="javascript:addPhoneToList( 'recipients', '$patient.id', '$patient.getFullName()', '$!patient.phoneNumber' )" title='$i18n.getString( "add_phone_to_list" )'>
+					<img src="../images/move_down.png" alt='$i18n.getString( "add_phone_to_list" )' /></a>
 					#else
-					<img src="images/question.png" title='$i18n.getString( "no_phone" )'/>
+					<img src="images/question.png" title='$i18n.getString( "no_phone" )' />
 					#end
 				</td>
 				

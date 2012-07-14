@@ -612,7 +612,7 @@ public class PortalExcelImportResultAction implements Action
                         for( ExcelImport_DeCode deCode : deCodeList )
                         {
                             String deCodeExpression = deCode.getExpression();
-							System.out.println( deCodeExpression );
+			    System.out.println( deCodeExpression );
                             if( deCodeExpression != null && !deCodeExpression.trim().equals( "" ) )
                             {
                                 Integer deId = Integer.parseInt( deCodeExpression.split( "\\." )[0] );
@@ -949,7 +949,7 @@ public class PortalExcelImportResultAction implements Action
     public Integer getOrgUnitIdByURL( String url )
     {
         url = url.replace("'","\\'");
-		System.out.println(url);
+	System.out.println(url);
         String query = "SELECT organisationunitid FROM organisationunit WHERE url LIKE '"+ url +"'";
         SqlRowSet sqlResultSet = jdbcTemplate.queryForRowSet( query );
         if ( sqlResultSet != null && sqlResultSet.next() )

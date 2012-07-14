@@ -28,12 +28,10 @@ package org.hisp.dhis.aggregation;
  */
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.hisp.dhis.completeness.DataSetCompletenessResult;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
-import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -157,13 +155,6 @@ public interface AggregatedDataValueStore
         Collection<Integer> organisationUnitIds );
 
     /**
-     * Deletes AggregatedDataValues registered for the given parameters.
-     * 
-     * @param periodIds a collection of Period identifiers.
-     */
-    void deleteAggregatedDataValues( Collection<Integer> periodIds );
-    
-    /**
      * Deletes all AggregatedDataValues.
      * 
      * @return the number of deleted AggregatedDataValues.
@@ -188,24 +179,6 @@ public interface AggregatedDataValueStore
      */
     public int countDataValuesAtLevel( OrganisationUnit orgunit, OrganisationUnitLevel level, Collection<Period> periods );
 
-    /**
-     * Creates indexes on the aggregateddatavalue and aggregatedindicatorvalue
-     * tables.
-     * 
-     * @param dataElement indicates whether to create an index on aggregateddatavalue.
-     * @param indicator indicates whether to create an index on aggregatedindicatorvalue.
-     */
-    void createIndex( boolean dataElement, boolean indicator );
-    
-    /**
-     * Drops the indexes on the aggregateddatavalue and aggregatedindicatorvalue
-     * tables.
-     * 
-     * @param dataElement indicates whether to drop the index on aggregateddatavalue.
-     * @param indicator indicates whether to drop the index on aggregatedindicatorvalue.
-     */
-    void dropIndex( boolean dataElement, boolean indicator );
-    
     // ----------------------------------------------------------------------
     // AggregatedDataMapValue
     // ----------------------------------------------------------------------
@@ -272,13 +245,6 @@ public interface AggregatedDataValueStore
     void deleteAggregatedIndicatorValues( Collection<Integer> indicatorIds, Collection<Integer> periodIds,
         Collection<Integer> organisationUnitIds );
 
-    /**
-     * Deletes AggregatedIndicatorValue registered for the given parameters.
-     * 
-     * @param periodIds a collection of Period identifiers.
-     */
-    void deleteAggregatedIndicatorValues( Collection<Integer> periodIds );
-    
     /**
      * Deletes all AggregatedIndicatorValue.
      * 
@@ -356,13 +322,4 @@ public interface AggregatedDataValueStore
      * @param sourceId the Source identifier.
      */
     DataValue getDataValue( int dataElementId, int categoryOptionComboId, int periodId, int sourceId );
-    
-    /**
-     * Gets a Map with entries containing Operand and value for all DataValues registered for the given Period and Source.
-     * 
-     * @param periodId the Period identifier.
-     * @param sourceId the Source identifier.
-     * @return map of data values.
-     */
-    Map<DataElementOperand, String> getDataValueMap( int periodId, int sourceId );
 }

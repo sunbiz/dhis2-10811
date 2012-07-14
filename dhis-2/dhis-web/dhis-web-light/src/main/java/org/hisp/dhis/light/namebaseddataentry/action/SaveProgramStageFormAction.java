@@ -28,38 +28,48 @@
 package org.hisp.dhis.light.namebaseddataentry.action;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts2.ServletActionContext;
-import org.hisp.dhis.api.mobile.ActivityReportingService;
-import org.hisp.dhis.api.mobile.NotAllowedException;
-import org.hisp.dhis.api.mobile.model.ActivityValue;
-import org.hisp.dhis.api.mobile.model.DataElement;
-import org.hisp.dhis.api.mobile.model.DataValue;
-import org.hisp.dhis.api.mobile.model.ProgramStage;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.light.utils.NamebasedUtils;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientService;
+import org.hisp.dhis.patientdatavalue.PatientDataValue;
+import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramExpressionService;
+import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageDataElementService;
+import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.program.ProgramStageSection;
+import org.hisp.dhis.program.ProgramStageSectionService;
 import org.hisp.dhis.program.ProgramStageService;
+import org.hisp.dhis.program.ProgramValidation;
+import org.hisp.dhis.program.ProgramValidationResult;
+import org.hisp.dhis.program.ProgramValidationService;
 import org.hisp.dhis.util.ContextUtils;
+
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 
 public class SaveProgramStageFormAction
     implements Action
 {
-    private static final String SUCCESS_AND_BACK_TO_PROGRAMSTAGE = "success_back_to_programstage";
+    private static final String SUCCESS_AND_BACK_TO_PROGRAMSTAGE = "success_back_to_programStage";
 
     private static final String REGISTER_NEXT_DUEDATE = "register_next_duedate";
+
+    private static final String SUCCESS_AND_BACK_TO_PROGRAMSTAGE_SECTION = "success_back_to_programStageSection";
 
     // -------------------------------------------------------------------------
     // Dependencies
@@ -83,21 +93,7 @@ public class SaveProgramStageFormAction
     {
         this.dataElementService = dataElementService;
     }
-
-    private ActivityReportingService activityReportingService;
-
-    public void setActivityReportingService( ActivityReportingService activityReportingService )
-    {
-        this.activityReportingService = activityReportingService;
-    }
-
-    private OrganisationUnitService organisationUnitService;
-
-    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
-    {
-        this.organisationUnitService = organisationUnitService;
-    }
-
+    
     private PatientService patientService;
 
     public PatientService getPatientService()
@@ -146,6 +142,61 @@ public class SaveProgramStageFormAction
         this.programStageDataElementService = programStageDataElementService;
     }
 
+    private PatientDataValueService patientDataValueService;
+
+    public PatientDataValueService getPatientDataValueService()
+    {
+        return patientDataValueService;
+    }
+
+    public void setPatientDataValueService( PatientDataValueService patientDataValueService )
+    {
+        this.patientDataValueService = patientDataValueService;
+    }
+
+    private ProgramValidationService programValidationService;
+
+    public ProgramValidationService getProgramValidationService()
+    {
+        return programValidationService;
+    }
+
+    public void setProgramValidationService( ProgramValidationService programValidationService )
+    {
+        this.programValidationService = programValidationService;
+    }
+
+    private ProgramStageInstanceService programStageInstanceService;
+
+    public ProgramStageInstanceService getProgramStageInstanceService()
+    {
+        return programStageInstanceService;
+    }
+
+    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
+    {
+        this.programStageInstanceService = programStageInstanceService;
+    }
+
+    private ProgramStageSectionService programStageSectionService;
+
+    public void setProgramStageSectionService( ProgramStageSectionService programStageSectionService )
+    {
+        this.programStageSectionService = programStageSectionService;
+    }
+
+    private ProgramExpressionService programExpressionService;
+
+    public ProgramExpressionService getProgramExpressionService()
+    {
+        return programExpressionService;
+    }
+
+    public void setProgramExpressionService( ProgramExpressionService programExpressionService )
+    {
+        this.programExpressionService = programExpressionService;
+    }
+
     // -------------------------------------------------------------------------
     // Input & Output
     // -------------------------------------------------------------------------
@@ -161,8 +212,6 @@ public class SaveProgramStageFormAction
     {
         return orgUnitId;
     }
-
-    private OrganisationUnit organisationUnit;
 
     private Integer programStageInstanceId;
 
@@ -232,6 +281,13 @@ public class SaveProgramStageFormAction
         return programStage;
     }
 
+    private ProgramStageDataElement programStageDataElement;
+
+    public ProgramStageDataElement getProgramStageDataElement()
+    {
+        return programStageDataElement;
+    }
+
     private boolean current;
 
     public void setCurrent( boolean current )
@@ -244,9 +300,9 @@ public class SaveProgramStageFormAction
         return current;
     }
 
-    private List<DataElement> dataElements;
+    private List<ProgramStageDataElement> dataElements;
 
-    public List<DataElement> getDataElements()
+    public List<ProgramStageDataElement> getDataElements()
     {
         return dataElements;
     }
@@ -289,32 +345,99 @@ public class SaveProgramStageFormAction
         this.patient = patient;
     }
 
+    private Map<Integer, String> leftsideFormulaMap = new HashMap<Integer, String>();;
+
+    public Map<Integer, String> getLeftsideFormulaMap()
+    {
+        return leftsideFormulaMap;
+    }
+
+    public void setLeftsideFormulaMap( Map<Integer, String> leftsideFormulaMap )
+    {
+        this.leftsideFormulaMap = leftsideFormulaMap;
+    }
+
+    private Map<Integer, String> rightsideFormulaMap = new HashMap<Integer, String>();;
+
+    public Map<Integer, String> getRightsideFormulaMap()
+    {
+        return rightsideFormulaMap;
+    }
+
+    public void setRightsideFormulaMap( Map<Integer, String> rightsideFormulaMap )
+    {
+        this.rightsideFormulaMap = rightsideFormulaMap;
+    }
+
+    private Integer programStageSectionId;
+
+    public void setProgramStageSectionId( Integer programStageSectionId )
+    {
+        this.programStageSectionId = programStageSectionId;
+    }
+
+    public Integer getProgramStageSectionId()
+    {
+        return programStageSectionId;
+    }
+
+    public ProgramStageSection programStageSection;
+
+    public ProgramStageSection getProgramStageSection()
+    {
+        return programStageSection;
+    }
+
+    private Boolean validated;
+
+    public void setValidated( Boolean validated )
+    {
+        this.validated = validated;
+    }
+
+    public Boolean getValidated()
+    {
+        return validated;
+    }
+
+    private List<ProgramValidationResult> programValidationResults;
+
+    public List<ProgramValidationResult> getProgramValidationResults()
+    {
+        return programValidationResults;
+    }
+
     @Override
     public String execute()
         throws Exception
     {
-        if ( orgUnitId != 0 )
-        {
-            organisationUnit = organisationUnitService.getOrganisationUnit( orgUnitId );
-        }
-        else
-        {
-            organisationUnit = patientService.getPatient( patientId ).getOrganisationUnit();
-        }
-
         programStage = util.getProgramStage( programId, programStageId );
         program = programStageService.getProgramStage( programStageId ).getProgram();
         org.hisp.dhis.program.ProgramStage dhisProgramStage = programStageService.getProgramStage( programStageId );
-        
-        patient = patientService.getPatient( patientId );
-        dataElements = programStage.getDataElements();
 
-        int defaultCategoryOptionId = dataElementCategoryService.getDefaultDataElementCategoryOptionCombo().getId();
+        ProgramStageInstance programStageInstance = programStageInstanceService
+            .getProgramStageInstance( programStageInstanceId );
+
+        List<PatientDataValue> patientDataValues = new ArrayList<PatientDataValue>();
+
+        patient = patientService.getPatient( patientId );
+        
+        if ( programStageSectionId != null && programStageSectionId != 0 )
+        {
+            this.programStageSection = programStageSectionService.getProgramStageSection( this.programStageSectionId );
+
+            dataElements = programStageSection.getProgramStageDataElements();
+        }
+        else
+        {
+            dataElements = new ArrayList<ProgramStageDataElement>( programStage.getProgramStageDataElements() );
+        }
+
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
             ServletActionContext.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
 
-        List<DataValue> dataValues = new ArrayList<DataValue>();
+        // List<DataValue> dataValues = new ArrayList<DataValue>();
 
         typeViolations.clear();
         prevDataValues.clear();
@@ -324,13 +447,12 @@ public class SaveProgramStageFormAction
             if ( key.startsWith( "DE" ) )
             {
                 Integer dataElementId = Integer.parseInt( key.substring( 2, key.length() ) );
-                // Integer categoryOptComboId = Integer.parseInt( splitKey[1] );
                 String value = parameterMap.get( key );
 
-                // validate types
                 org.hisp.dhis.dataelement.DataElement dataElement = dataElementService.getDataElement( dataElementId );
                 ProgramStageDataElement programStageDataElement = programStageDataElementService.get( dhisProgramStage,
                     dataElement );
+
                 value = value.trim();
                 Boolean valueIsEmpty = (value == null || value.length() == 0);
 
@@ -342,47 +464,59 @@ public class SaveProgramStageFormAction
                     {
                         typeViolations.put( key, typeViolation );
                     }
-                    prevDataValues.put( key, value );
                 }
                 else if ( valueIsEmpty && programStageDataElement.isCompulsory() )
                 {
                     typeViolations.put( key, "is_empty" );
-                    prevDataValues.put( key, value );
                 }
 
-                // build dataValue for activity value
-                DataValue dataValue = new DataValue();
-                dataValue.setId( dataElementId );
-                dataValue.setValue( value );
+                prevDataValues.put( key, value );
+                prevDataValues.put( "CB" + dataElement.getId(), parameterMap.get( "CB" + dataElement.getId() ) );
+                
+                // build patient data value
+                PatientDataValue patientDataValue = new PatientDataValue( programStageInstance, dataElement,
+                    new Date(), value );
+                
+                String providedElseWhereValue = parameterMap.get( "CB" + dataElementId );
 
-                dataValue.setCategoryOptComboID( defaultCategoryOptionId );
+                if ( providedElseWhereValue != null )
+                {
+                    patientDataValue.setProvidedElsewhere( Boolean.parseBoolean( providedElseWhereValue ) );
+                }
 
-                dataValues.add( dataValue );
+                patientDataValues.add( patientDataValue );
             }
         }
 
+        // Check type violation
         if ( !typeViolations.isEmpty() )
         {
             return ERROR;
         }
 
-        ActivityValue activityValue = new ActivityValue();
-        activityValue.setDataValues( dataValues );
-        activityValue.setProgramInstanceId( programStageInstanceId );
+        // Save patient data value
+        this.savePatientDataValues( patientDataValues, programStageInstance );
 
-        try
+        // Check validation rule
+        this.runProgramValidation(
+            programValidationService.getProgramValidation( programStageInstance.getProgramStage() ),
+            programStageInstance );
+
+        if ( programValidationResults.size() > 0 )
         {
-            activityReportingService.saveActivityReport( organisationUnit, activityValue );
-        }
-        catch ( NotAllowedException e )
-        {
-            e.printStackTrace();
             return ERROR;
         }
 
         if ( dhisProgramStage.getIrregular() )
         {
             return REGISTER_NEXT_DUEDATE;
+        }
+
+        validated = true;
+
+        if ( programStageSectionId != null && programStageSectionId != 0 )
+        {
+            return SUCCESS_AND_BACK_TO_PROGRAMSTAGE_SECTION;
         }
 
         if ( orgUnitId != 0 )
@@ -393,5 +527,64 @@ public class SaveProgramStageFormAction
         {
             return SUCCESS_AND_BACK_TO_PROGRAMSTAGE;
         }
+    }
+
+    private void savePatientDataValues( List<PatientDataValue> patientDataValues,
+        ProgramStageInstance programStageInstance )
+    {
+        for ( PatientDataValue patientDataValue : patientDataValues )
+        {
+            PatientDataValue previousPatientDataValue = patientDataValueService.getPatientDataValue(
+                patientDataValue.getProgramStageInstance(), patientDataValue.getDataElement() );
+
+            if ( previousPatientDataValue == null )
+            {
+                patientDataValueService.savePatientDataValue( patientDataValue );
+            }
+            else
+            {
+                previousPatientDataValue.setValue( patientDataValue.getValue() );
+                previousPatientDataValue.setTimestamp( new Date() );
+                previousPatientDataValue.setProvidedElsewhere( patientDataValue.getProvidedElsewhere() );
+                patientDataValueService.updatePatientDataValue( previousPatientDataValue );
+            }
+
+        }
+
+        programStageInstance.setCompleted( true );
+        programStageInstance.setExecutionDate( new Date() );
+        programStageInstanceService.updateProgramStageInstance( programStageInstance );
+
+    }
+
+    private void runProgramValidation( Collection<ProgramValidation> validations,
+        ProgramStageInstance programStageInstance )
+    {
+        programValidationResults = new ArrayList<ProgramValidationResult>();
+
+        if ( validations != null )
+        {
+            Collection<ProgramValidationResult> validationResults = programValidationService.validate( validations,
+                programStageInstance );
+            
+            for ( ProgramValidationResult validationResult : validationResults )
+            {
+                if ( validationResult != null )
+                {
+                    programValidationResults.add( validationResult );
+
+                    leftsideFormulaMap.put(
+                        validationResult.getProgramValidation().getId(),
+                        programExpressionService.getExpressionDescription( validationResult.getProgramValidation()
+                            .getLeftSide().getExpression() ) );
+
+                    rightsideFormulaMap.put(
+                        validationResult.getProgramValidation().getId(),
+                        programExpressionService.getExpressionDescription( validationResult.getProgramValidation()
+                            .getRightSide().getExpression() ) );
+                }
+            }
+        }
+
     }
 }

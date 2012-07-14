@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.preview.action;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,147 +27,39 @@ package org.hisp.dhis.reportsheet.preview.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.hisp.dhis.reportsheet.utils.ExcelUtils.convertAlignmentString;
 import static org.hisp.dhis.reportsheet.utils.ExcelUtils.readValueByPOI;
-import static org.hisp.dhis.reportsheet.utils.NumberUtils.PATTERN_DECIMAL_FORMAT1;
-import static org.hisp.dhis.reportsheet.utils.NumberUtils.applyPatternDecimalFormat;
-import static org.hisp.dhis.reportsheet.utils.NumberUtils.resetDecimalFormatByLocale;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hisp.dhis.reportsheet.importitem.ImportItem;
 
 /**
  * 
  * @author Dang Duy Hieu
- * @version $Id XMLStructureResponse.java 2011-06-28 16:08:00$
+ * @version $Id XMLStructureResponseImport.java 2011-06-28 16:08:00$
  */
 
 public class XMLStructureResponseImport
+    extends AbstractXMLStructure
 {
-    /**
-     * The encoding to write
-     */
-    private StringBuffer xml = new StringBuffer( 200000 );
-
-    /**
-     * The workbook we are reading from a given file
-     */
-    private Workbook WORKBOOK;
-
-    private FormulaEvaluator evaluatorFormula;
-
-    private static final String WORKBOOK_OPENTAG = "<workbook>";
-
-    private static final String WORKBOOK_CLOSETAG = "</workbook>";
-
-    private static final String MERGEDCELL_OPENTAG = "<MergedCells>";
-
-    private static final String MERGEDCELL_CLOSETAG = "</MergedCells>";
-
-    // -------------------------------------------------------------------------
-    // Get & Set methods
-    // -------------------------------------------------------------------------
-
-    public String getXml()
-    {
-        return xml.toString();
-    }
-
-    /**
-     * Constructor
-     * 
-     * @param importItems
-     * 
-     * @param w The workbook to interrogate
-     * @param enc The encoding used by the output stream. Null or unrecognized
-     *        values cause the encoding to default to UTF8
-     * @param f Indicates whether the generated XML document should contain the
-     *        cell format information
-     * @exception java.io.IOException
-     */
-
-    public XMLStructureResponseImport( String pathFileName, Collection<Integer> collectSheets,
-        List<ImportItem> importItems, boolean bWriteDescription )
+    public XMLStructureResponseImport( String pathFileName, Set<Integer> collectSheets, List<ImportItem> importItems )
         throws Exception
     {
-        this.cleanUpForResponse();
-
-        FileInputStream inputStream = new FileInputStream( pathFileName );
-
-        if ( getExtension( pathFileName ).equals( "xls" ) )
-        {
-            this.WORKBOOK = new HSSFWorkbook( inputStream );
-        }
-        else
-        {
-            this.WORKBOOK = new XSSFWorkbook( inputStream );
-        }
-
-        resetDecimalFormatByLocale( Locale.GERMAN );
-        applyPatternDecimalFormat( PATTERN_DECIMAL_FORMAT1 );
-
-        this.evaluatorFormula = WORKBOOK.getCreationHelper().createFormulaEvaluator();
-
-        this.writeFormattedXML( collectSheets, importItems, bWriteDescription );
+        super( pathFileName, collectSheets, importItems );
     }
 
-    // -------------------------------------------------------------------------
-    // Private methods
-    // -------------------------------------------------------------------------
-
-    private void cleanUpForResponse()
+    @Override
+    protected void setUpDecimalFormat()
     {
-        System.gc();
+        // TODO: Nothing
     }
 
-    private void writeFormattedXML( Collection<Integer> collectSheets, List<ImportItem> importItems,
-        boolean bWriteDescription )
-        throws Exception
-    {
-        if ( bWriteDescription )
-        {
-            this.writeXMLMergedDescription( collectSheets );
-        }
-
-        xml.append( WORKBOOK_OPENTAG );
-
-        for ( Integer sheet : collectSheets )
-        {
-            this.writeData( sheet, importItems );
-        }
-
-        xml.append( WORKBOOK_CLOSETAG );
-    }
-
-    private void writeXMLMergedDescription( Collection<Integer> collectSheets )
-        throws IOException
-    {
-        xml.append( MERGEDCELL_OPENTAG );
-
-        for ( Integer sheet : collectSheets )
-        {
-            writeBySheetNo( sheet );
-        }
-
-        xml.append( MERGEDCELL_CLOSETAG );
-    }
-
-    private void writeData( int sheetNo, List<ImportItem> importItems )
+    @Override
+    protected void printData( int sheetNo, List<ImportItem> importItems )
     {
         Sheet s = WORKBOOK.getSheetAt( sheetNo - 1 );
 
@@ -214,7 +106,7 @@ public class XMLStructureResponseImport
 
                     xml.append( "<data><![CDATA[" + readValueByPOI( i + 1, j + 1, s, evaluatorFormula ) + "]]></data>" );
 
-                    this.readingDetailsFormattedCell( s, cell );
+                    this.printFormatInfo( s, cell );
 
                     xml.append( "</col>" );
                 }
@@ -227,36 +119,5 @@ public class XMLStructureResponseImport
             xml.append( "</row>" );
         }
         xml.append( "</sheet>" );
-    }
-
-    private void writeBySheetNo( int sheetNo )
-    {
-        Sheet sheet = WORKBOOK.getSheetAt( sheetNo - 1 );
-        CellRangeAddress cellRangeAddress = null;
-
-        for ( int i = 0; i < sheet.getNumMergedRegions(); i++ )
-        {
-            cellRangeAddress = sheet.getMergedRegion( i );
-
-            if ( cellRangeAddress.getFirstColumn() != cellRangeAddress.getLastColumn() )
-            {
-                xml.append( "<cell " + "iKey='" + (sheetNo) + "#" + cellRangeAddress.getFirstRow() + "#"
-                    + cellRangeAddress.getFirstColumn() + "'>"
-                    + (cellRangeAddress.getLastColumn() - cellRangeAddress.getFirstColumn() + 1) + "</cell>" );
-            }
-        }
-    }
-
-    private void readingDetailsFormattedCell( Sheet sheet, Cell objCell )
-    {
-        CellStyle format = objCell.getCellStyle();
-
-        if ( format != null )
-        {
-            xml.append( "<format align='" + convertAlignmentString( format.getAlignment() ) + "'" );
-            xml.append( " width='" + sheet.getColumnWidth( objCell.getColumnIndex() ) + "'" );
-            xml.append( " border='" + format.getBorderBottom() + format.getBorderLeft() + format.getBorderRight()
-                + format.getBorderTop() + "'/>" );
-        }
     }
 }

@@ -384,6 +384,10 @@ public class ReportTableGridTest
     // Tests
     // -------------------------------------------------------------------------
 
+    // -------------------------------------------------------------------------
+    // Org unit group
+    // -------------------------------------------------------------------------
+
     @Test
     public void testGetOrgUnitIndicatorReportTableA()
     {
@@ -395,7 +399,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, null, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, null, "0" );
         
         assertEquals( 21.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 23.0, grid.getRow( 0 ).get( 9 ) );
@@ -419,7 +423,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 21.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 22.0, grid.getRow( 0 ).get( 14 ) );
@@ -445,7 +449,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 21.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 22.0, grid.getRow( 0 ).get( 9 ) );
@@ -469,7 +473,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 21.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 23.0, grid.getRow( 0 ).get( 9 ) );
@@ -493,7 +497,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 21.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 22.0, grid.getRow( 0 ).get( 14 ) );
@@ -519,7 +523,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 21.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 22.0, grid.getRow( 0 ).get( 9 ) );
@@ -531,7 +535,104 @@ public class ReportTableGridTest
         assertEquals( 27.0, grid.getRow( 1 ).get( 10 ) );
         assertEquals( 28.0, grid.getRow( 1 ).get( 11 ) );
     }
+
+    @Test
+    public void testGetCategoryComboOrgUnitReportTableA()
+    {
+        BatchHandler<AggregatedDataValue> dataValueOrgUnitBatchHandler = batchHandlerFactory.createBatchHandler( AggregatedOrgUnitDataValueBatchHandler.class ).init();
+        
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdA, 8, 31 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdB, 8, 32 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdA, 8, 33 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdB, 8, 34 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdA, 8, 35 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdB, 8, 36 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdA, 8, 37 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdB, 8, 38 ) );
+        
+        dataValueOrgUnitBatchHandler.flush();
+        
+        ReportTable reportTable = new ReportTable( "Prescriptions",
+            dataElements, new ArrayList<Indicator>(), new ArrayList<DataSet>(), periods, relativePeriods, new ArrayList<OrganisationUnit>(), new ArrayList<OrganisationUnit>(),
+            groups, categoryComboA, true, true, false, new RelativePeriods(), null, i18nFormat, "january_2000" );
+
+        reportTable.setParentOrganisationUnit( unitA );
+        
+        int id = reportTableService.saveReportTable( reportTable );
+
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
+        
+        assertEquals( 21.0, grid.getRow( 0 ).get( 8 ) );
+        assertEquals( 31.0, grid.getRow( 0 ).get( 9 ) );
+        assertEquals( 23.0, grid.getRow( 0 ).get( 10 ) );
+        assertEquals( 33.0, grid.getRow( 0 ).get( 11 ) );
+        assertEquals( 25.0, grid.getRow( 0 ).get( 12 ) );
+        assertEquals( 35.0, grid.getRow( 0 ).get( 13 ) );
+        assertEquals( 27.0, grid.getRow( 0 ).get( 14 ) );
+        assertEquals( 37.0, grid.getRow( 0 ).get( 15 ) );
+        
+        assertEquals( 22.0, grid.getRow( 1 ).get( 8 ) );
+        assertEquals( 32.0, grid.getRow( 1 ).get( 9 ) );
+        assertEquals( 24.0, grid.getRow( 1 ).get( 10 ) );
+        assertEquals( 34.0, grid.getRow( 1 ).get( 11 ) );
+        assertEquals( 26.0, grid.getRow( 1 ).get( 12 ) );
+        assertEquals( 36.0, grid.getRow( 1 ).get( 13 ) );
+        assertEquals( 28.0, grid.getRow( 1 ).get( 14 ) );
+        assertEquals( 38.0, grid.getRow( 1 ).get( 15 ) );
+    }
+
+    @Test
+    public void testGetCategoryComboOrgUnitReportTableB()
+    {
+        BatchHandler<AggregatedDataValue> dataValueOrgUnitBatchHandler = batchHandlerFactory.createBatchHandler( AggregatedOrgUnitDataValueBatchHandler.class ).init();
+        
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdA, 8, 31 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdB, 8, 32 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdA, 8, 33 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdA, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdB, 8, 34 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdA, 8, 35 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdA, 8, unitIdA, groupIdB, 8, 36 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdA, 8, 37 ) );
+        dataValueOrgUnitBatchHandler.addObject( new AggregatedDataValue( dataElementIdB, categoryOptionComboIdB, periodIdB, 8, unitIdA, groupIdB, 8, 38 ) );
+        
+        dataValueOrgUnitBatchHandler.flush();
+        
+        ReportTable reportTable = new ReportTable( "Prescriptions",
+            dataElements, new ArrayList<Indicator>(), new ArrayList<DataSet>(), periods, relativePeriods, new ArrayList<OrganisationUnit>(), new ArrayList<OrganisationUnit>(),
+            groups, categoryComboA, false, false, true, new RelativePeriods(), null, i18nFormat, "january_2000" );
+
+        
+        reportTable.setParentOrganisationUnit( unitA );
+        
+        int id = reportTableService.saveReportTable( reportTable );
+
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
+
+        assertEquals( 21.0, grid.getRow( 0 ).get( 13 ) );
+        assertEquals( 31.0, grid.getRow( 0 ).get( 14 ) );
+        assertEquals( 22.0, grid.getRow( 0 ).get( 15 ) );
+        assertEquals( 32.0, grid.getRow( 0 ).get( 16 ) );
+        
+        assertEquals( 23.0, grid.getRow( 1 ).get( 13 ) );
+        assertEquals( 33.0, grid.getRow( 1 ).get( 14 ) );
+        assertEquals( 24.0, grid.getRow( 1 ).get( 15 ) );
+        assertEquals( 34.0, grid.getRow( 1 ).get( 16 ) );
+        
+        assertEquals( 25.0, grid.getRow( 2 ).get( 13 ) );
+        assertEquals( 35.0, grid.getRow( 2 ).get( 14 ) );
+        assertEquals( 26.0, grid.getRow( 2 ).get( 15 ) );
+        assertEquals( 36.0, grid.getRow( 2 ).get( 16 ) );
+        
+        assertEquals( 27.0, grid.getRow( 3 ).get( 13 ) );
+        assertEquals( 37.0, grid.getRow( 3 ).get( 14 ) );
+        assertEquals( 28.0, grid.getRow( 3 ).get( 15 ) );
+        assertEquals( 38.0, grid.getRow( 3 ).get( 16 ) );
+    }
     
+    // -------------------------------------------------------------------------
+    // Org unit hierarchy
+    // -------------------------------------------------------------------------
+
     @Test
     public void testGetIndicatorReportTableA()
     {
@@ -541,7 +642,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, null, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, null, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 13.0, grid.getRow( 0 ).get( 9 ) );
@@ -563,7 +664,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 14 ) );
@@ -587,7 +688,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 9 ) );
@@ -609,7 +710,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 13.0, grid.getRow( 0 ).get( 9 ) );
@@ -631,7 +732,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 14 ) );
@@ -655,7 +756,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 9 ) );
@@ -677,7 +778,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 13.0, grid.getRow( 0 ).get( 9 ) );
@@ -699,7 +800,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 14 ) );
@@ -723,7 +824,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 9 ) );
@@ -758,7 +859,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 11.0, grid.getRow( 0 ).get( 9 ) );
@@ -801,7 +902,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 11.0, grid.getRow( 0 ).get( 14 ) );
@@ -846,7 +947,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
                 
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 11.0, grid.getRow( 0 ).get( 9 ) );
@@ -889,7 +990,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 18 ) );
         assertEquals( 11.0, grid.getRow( 0 ).get( 19 ) );
@@ -933,7 +1034,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 13.0, grid.getRow( 0 ).get( 9 ) );
@@ -971,7 +1072,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 14 ) );
@@ -1019,7 +1120,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 9 ) );
@@ -1057,7 +1158,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 3 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 4 ) );
@@ -1078,7 +1179,7 @@ public class ReportTableGridTest
 
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 11.0, grid.getRow( 0 ).get( 18 ) );
         assertEquals( 12.0, grid.getRow( 1 ).get( 18 ) );
@@ -1100,7 +1201,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 2, grid.getHeight() );
         
@@ -1121,7 +1222,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
 
         assertEquals( 17.0, grid.getRow( 0 ).get( 13 ) );
         assertEquals( 18.0, grid.getRow( 0 ).get( 14 ) );
@@ -1147,7 +1248,7 @@ public class ReportTableGridTest
         
         int id = reportTableService.saveReportTable( reportTable );
 
-        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, 0 );
+        Grid grid = reportTableService.getReportTableGrid( id, i18nFormat, date, "0" );
         
         assertEquals( 11.0, grid.getRow( 0 ).get( 8 ) );
         assertEquals( 12.0, grid.getRow( 0 ).get( 9 ) );

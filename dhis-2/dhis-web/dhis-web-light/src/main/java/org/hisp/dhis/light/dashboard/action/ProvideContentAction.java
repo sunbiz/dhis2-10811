@@ -3,6 +3,8 @@ package org.hisp.dhis.light.dashboard.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hisp.dhis.chart.Chart;
+import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.dashboard.DashboardConfiguration;
 import org.hisp.dhis.dashboard.DashboardContent;
 import org.hisp.dhis.dashboard.DashboardManager;
@@ -41,6 +43,13 @@ public class ProvideContentAction
     {
         this.currentUserService = currentUserService;
     }
+    
+    private ChartService chartService;
+
+    public void setChartService( ChartService chartService )
+    {
+        this.chartService = chartService;
+    }
 
     // -------------------------------------------------------------------------
     // Output
@@ -66,6 +75,14 @@ public class ProvideContentAction
     {
         return charts;
     }
+    
+    private List<Chart> chartsForAll;
+
+    public List<Chart> getChartsForAll()
+    {
+        return chartsForAll;
+    }
+
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -74,6 +91,8 @@ public class ProvideContentAction
     public String execute()
         throws Exception
     {
+        chartsForAll = new ArrayList<Chart>( chartService.getSystemAndUserCharts() );
+        
         DashboardConfiguration config = dashboardManager.getConfiguration();
 
         for ( int i = 0; i < 8; i++ )

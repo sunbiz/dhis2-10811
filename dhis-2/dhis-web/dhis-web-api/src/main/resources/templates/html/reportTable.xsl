@@ -11,12 +11,12 @@
 	  <table>
       <tr>
         <td>Resource Data</td>
-        <td><a href="{@link}/data.html">html</a></td>
-        <td><a href="{@link}/data.xml">xml</a></td>
-        <td><a href="{@link}/data.json">json</a></td>
-        <td><a href="{@link}/data.pdf">pdf</a></td>
-        <td><a href="{@link}/data.xls">xls</a></td>
-        <td><a href="{@link}/data.csv">csv</a></td>
+        <td><a href="{@href}/data.html">html</a></td>
+        <td><a href="{@href}/data.xml">xml</a></td>
+        <td><a href="{@href}/data.json">json</a></td>
+        <td><a href="{@href}/data.pdf">pdf</a></td>
+        <td><a href="{@href}/data.xls">xls</a></td>
+        <td><a href="{@href}/data.csv">csv</a></td>
       </tr>
 
       <tr>

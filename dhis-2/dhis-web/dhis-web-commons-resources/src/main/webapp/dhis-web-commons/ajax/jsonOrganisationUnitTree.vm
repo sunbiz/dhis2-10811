@@ -1,5 +1,6 @@
 {
 "version":"$!encoder.jsonEncode( $version )"
+,"realRoot":$realRoot
 ,"roots": [ #foreach( $root in $rootOrganisationUnits )$root.id#if( $velocityCount < $rootOrganisationUnits.size() ),#end#end ]
 #if( ! $versionOnly )
 ,"organisationUnits": {

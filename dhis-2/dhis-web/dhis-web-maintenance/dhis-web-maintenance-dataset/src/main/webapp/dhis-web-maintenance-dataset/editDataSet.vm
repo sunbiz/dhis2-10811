@@ -49,10 +49,10 @@
 
 <h3>$i18n.getString( "edit_dataset" )</h3>
 
-<form id="editDataSetForm" name="editDataSetForm" action="updateDataSet.action" method="post" >
+<form id="editDataSetForm" name="editDataSetForm" action="updateDataSet.action" method="post" class="inputForm">
   <input type="hidden" id="dataSetId" name="dataSetId" value="$dataSet.id"/>
   
-  <table id="detailsList">
+  <table id="detailsList" style="width: 540px;">
     <thead>
       <tr>
         <th colspan="2">$i18n.getString( "dataset_details" )</th>
@@ -61,37 +61,28 @@
     <tbody>
       <tr>
         <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="name" name="name" style="width:20em" value="$!encoder.htmlEncode( $dataSet.name )"/></td>
+        <td><input type="text" id="name" name="name" value="$!encoder.htmlEncode( $dataSet.name )"/></td>
       </tr>
       <tr>
         <td><label>$i18n.getString( "short_name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="shortName" name="shortName" style="width:20em" value="$!encoder.htmlEncode( $dataSet.shortName )"/></td>
+        <td><input type="text" id="shortName" name="shortName" value="$!encoder.htmlEncode( $dataSet.shortName )"/></td>
       </tr>
       <tr>
         <td><label>$i18n.getString( "code" )</label></td>
-        <td><input type="text" id="code" name="code" style="width:20em" value="$!encoder.htmlEncode( $dataSet.code )"/></td>
+        <td><input type="text" id="code" name="code" value="$!encoder.htmlEncode( $dataSet.code )"/></td>
       </tr>
       <tr>
         <td><label>$i18n.getString( "description" )</label></td>
-        <td><input type="text" id="description" name="description" style="width:20em" value="$!encoder.htmlEncode( $dataSet.description )"/></td>
-      </tr>
-      <tr>
-      	<td><label>$i18n.getString( "allow_future_periods" )</label></td>
-      	<td>
-      	  <select id="allowFuturePeriods" name="allowFuturePeriods" style="min-width:20em; margin:0;">
-      	  	<option value="false">$i18n.getString( "no" )</option>
-      	  	<option value="true"#if( $dataSet.allowFuturePeriods == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
-  	      </select>
-	    </td>
+        <td><input type="text" id="description" name="description" value="$!encoder.htmlEncode( $dataSet.description )"/></td>
       </tr>
       <tr>
         <td><label>$i18n.getString( "expiry_days" )</label></td>
-        <td><input type="text" id="expiryDays" name="expiryDays" style="width:20em" value="$!encoder.htmlEncode( $dataSet.expiryDays )"/></td>
+        <td><input type="text" id="expiryDays" name="expiryDays" value="$!encoder.htmlEncode( $dataSet.expiryDays )"/></td>
       </tr>
       <tr>
         <td><label>$i18n.getString( "frequency" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
         <td>
-          <select id="frequencySelect" name="frequencySelect" style="min-width:20em; margin:0;">
+          <select id="frequencySelect" name="frequencySelect">
             #foreach ( $periodType in $periodTypes )
               <option value="$periodType.name" #if( $dataSet.periodType.name.equals( $periodType.name ) ) selected="selected" #end>$i18n.getString( $periodType.name )</option>
             #end
@@ -99,22 +90,87 @@
         </td>
       </tr>	   
       <tr>
-      	<td><label>$i18n.getString( "skip_aggregation" )</label></td>
+        <td><label>$i18n.getString( "notification_recipients" )</label></td>
+        <td>
+          <select id="notificationRecipients" name="notificationRecipients">
+          	<option value="-1">[ $i18n.getString( "none" ) ]</option>
+            #foreach( $group in $userGroups )
+              <option value="$group.id"#if( $dataSet.notificationRecipients && $dataSet.notificationRecipients.equals( $group ) ) selected="selected"#end>$encoder.htmlEncode( $group.name )</option>
+            #end
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label>$i18n.getString( "notify_completing_user" )</label></td>
+        <td>
+          <select id="notifyCompletingUser" name="notifyCompletingUser">
+            <option value="false">$i18n.getString( "no" )</option>
+            <option value="true"#if( $dataSet.notifyCompletingUser == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label>$i18n.getString( "skip_aggregation" )</label></td>
+        <td>
+          <select id="skipAggregation" name="skipAggregation">
+            <option value="false">$i18n.getString( "no" )</option>
+            <option value="true"#if( $dataSet.skipAggregation == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
+          </select>
+        </td>
+      </tr>      
+    </tbody>
+    <thead>
+      <tr>
+        <th colspan="2">$i18n.getString( "form_details" )</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+      	<td><label for="allowFuturePeriods">$i18n.getString( "allow_future_periods" )</label></td>
       	<td>
-      	  <select id="skipAggregation" name="skipAggregation" style="min-width:20em; margin:0;">
+      	  <select id="allowFuturePeriods" name="allowFuturePeriods">
       	  	<option value="false">$i18n.getString( "no" )</option>
-      	  	<option value="true"#if( $dataSet.skipAggregation == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
+      	  	<option value="true"#if( $dataSet.allowFuturePeriods == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
   	      </select>
 	    </td>
+      </tr>
+      <tr>
+      	<td><label for="fieldCombinationRequired">$i18n.getString( "all_fields_for_data_element_required" )</label></td>
+      	<td>
+      	  <select id="fieldCombinationRequired" name="fieldCombinationRequired">
+      	  	<option value="false">$i18n.getString( "no" )</option>
+      	  	<option value="true"#if( $dataSet.fieldCombinationRequired == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
+  	      </select>
+	    </td>
+      </tr>
+      <tr>
+        <td><label for="validCompleteOnly">$i18n.getString( "complete_allowed_only_if_validation_passes" )</label></td>
+        <td>
+          <select id="validCompleteOnly" name="validCompleteOnly">
+            <option value="false">$i18n.getString( "no" )</option>
+            <option value="true"#if( $dataSet.validCompleteOnly == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="skipOffline">$i18n.getString( "skip_offline" )</label></td>
+        <td>
+          <select id="skipOffline" name="skipOffline">
+            <option value="false">$i18n.getString( "no" )</option>
+            <option value="true"#if( $dataSet.skipOffline == true ) selected="selected"#end>$i18n.getString( "yes" )</option>
+          </select>
+        </td>
       </tr>
       <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
     </tbody>
   </table>
 
   <table id="dataElementSelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+      <colgroup>
+        <col style="width: 500px;"/>
+        <col/>
+        <col style="width: 500px;"/>
+      </colgroup>
     <thead>
       <tr>
         <th>$i18n.getString( "available_data_elements" )</th>
@@ -151,10 +207,12 @@
   <br/>
 
   <table id="indicatorSelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
-    <thead>
+      <colgroup>
+        <col style="width: 500px;"/>
+        <col/>
+        <col style="width: 500px;"/>
+      </colgroup>
+      <thead>
       <tr>
         <th>$i18n.getString( "available_indicators" )</th>
 		<th>$i18n.getString( "filter" )</th>

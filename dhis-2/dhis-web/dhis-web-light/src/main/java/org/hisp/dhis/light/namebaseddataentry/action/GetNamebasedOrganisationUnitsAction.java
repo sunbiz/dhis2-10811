@@ -40,7 +40,8 @@ import com.opensymphony.xwork2.Action;
 public class GetNamebasedOrganisationUnitsAction
     implements Action
 {
-
+    public static final String REDIRECT = "redirect";
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -62,6 +63,21 @@ public class GetNamebasedOrganisationUnitsAction
     {
         return organisationUnits;
     }
+    
+    private Integer orgUnitId;
+    
+    public Integer getOrgUnitId()
+    {
+        return orgUnitId;
+    }
+
+
+    public void setOrgUnitId( Integer orgUnitId )
+    {
+        this.orgUnitId = orgUnitId;
+    }
+
+
 
     @Override
     public String execute()
@@ -73,6 +89,11 @@ public class GetNamebasedOrganisationUnitsAction
         {
             organisationUnits = new ArrayList<OrganisationUnit>( user.getOrganisationUnits() );
             Collections.sort( organisationUnits, IdentifiableObjectNameComparator.INSTANCE );
+            
+            if (organisationUnits.size() == 1) {
+                orgUnitId = organisationUnits.get( 0 ).getId();
+                return REDIRECT;
+            }
         }
 
         return SUCCESS;

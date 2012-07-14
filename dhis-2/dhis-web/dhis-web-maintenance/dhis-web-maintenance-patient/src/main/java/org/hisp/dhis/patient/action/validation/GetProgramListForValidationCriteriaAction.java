@@ -111,7 +111,8 @@ public class GetProgramListForValidationCriteriaAction
 
         availablePrograms = programService.getAllPrograms();
         availablePrograms.removeAll( selectedPrograms );
-
+        availablePrograms.removeAll( programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) );
+        
         return SUCCESS;
     }
 }

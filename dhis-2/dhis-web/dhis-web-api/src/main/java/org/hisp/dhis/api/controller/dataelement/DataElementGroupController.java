@@ -28,17 +28,58 @@ package org.hisp.dhis.api.controller.dataelement;
  */
 
 import org.hisp.dhis.api.controller.AbstractCrudController;
+import org.hisp.dhis.api.controller.WebOptions;
+import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.WebUtils;
+import org.hisp.dhis.api.webdomain.DataElementList;
 import org.hisp.dhis.dataelement.DataElementGroup;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Controller
-@RequestMapping( value = DataElementGroupController.RESOURCE_PATH )
+@RequestMapping(value = DataElementGroupController.RESOURCE_PATH)
 public class DataElementGroupController
     extends AbstractCrudController<DataElementGroup>
 {
     public static final String RESOURCE_PATH = "/dataElementGroups";
+
+    @RequestMapping( value = "/{uid}/members", method = RequestMethod.GET )
+    public String getMembers( @PathVariable( "uid" ) String uid, @RequestParam Map<String, String> parameters,
+        Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception
+    {
+        WebOptions options = new WebOptions( parameters );
+        DataElementGroup dataElementGroup = getEntity( uid );
+
+        if ( dataElementGroup == null )
+        {
+            ContextUtils.notFoundResponse( response, "DataElementGroup not found for uid: " + uid );
+            return null;
+        }
+
+        DataElementList dataElementList = new DataElementList();
+        dataElementList.setMembers( dataElementGroup.getMembers() );
+
+        if ( options.hasLinks() )
+        {
+            WebUtils.generateLinks( dataElementGroup );
+            WebUtils.generateLinks( dataElementList );
+        }
+
+        model.addAttribute( "model", dataElementList );
+        model.addAttribute( "viewClass", options.getViewClass( "detailed" ) );
+
+        return StringUtils.uncapitalize( getEntitySimpleName() );
+    }
 }

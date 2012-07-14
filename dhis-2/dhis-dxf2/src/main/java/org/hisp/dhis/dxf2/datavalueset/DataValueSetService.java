@@ -48,9 +48,15 @@ public interface DataValueSetService
     
     ImportSummary saveDataValueSet( InputStream in );
 
+    ImportSummary saveDataValueSetJson( InputStream in );
+
     ImportSummary saveDataValueSet( InputStream in, ImportOptions importOptions );
-    
+
+    ImportSummary saveDataValueSetJson( InputStream in, ImportOptions importOptions );
+
     ImportSummary saveDataValueSet( InputStream in, ImportOptions importOptions, TaskId taskId );
-    
+
+    ImportSummary saveDataValueSetJson( InputStream in, ImportOptions importOptions, TaskId taskId );
+
     ImportSummary saveDataValueSetCsv( Reader reader, ImportOptions importOptions, TaskId id );
 }

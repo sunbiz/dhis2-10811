@@ -27,11 +27,10 @@ package org.hisp.dhis.dd.action.indicator;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -82,13 +81,6 @@ public class ValidateIndicatorAction
         this.shortName = shortName;
     }
 
-    private String alternativeName;
-
-    public void setAlternativeName( String alternativeName )
-    {
-        this.alternativeName = alternativeName;
-    }   
-
     private String code;
 
     public void setCode( String code )
@@ -115,7 +107,8 @@ public class ValidateIndicatorAction
     {
         if ( name != null )
         {
-            Indicator match = indicatorService.getIndicatorByName( name );
+            // TODO compile fix, this should be removed
+            Indicator match = indicatorService.getIndicatorByName( name ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {
@@ -127,7 +120,8 @@ public class ValidateIndicatorAction
 
         if ( shortName != null )
         {
-            Indicator match = indicatorService.getIndicatorByShortName( shortName );
+            // TODO compile fix, this should be removed
+            Indicator match = indicatorService.getIndicatorByShortName( shortName ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {
@@ -137,18 +131,6 @@ public class ValidateIndicatorAction
             }
         }
 
-        if ( alternativeName != null && !alternativeName.trim().isEmpty() )
-        {
-            Indicator match = indicatorService.getIndicatorByAlternativeName( alternativeName );
-
-            if ( match != null && (id == null || match.getId() != id) )
-            {
-                message = i18n.getString( "alternative_name_in_use" );
-
-                return ERROR;
-            }
-        }
-        
         if ( code != null && !code.trim().isEmpty() )
         {
             Indicator match = indicatorService.getIndicatorByCode( code );

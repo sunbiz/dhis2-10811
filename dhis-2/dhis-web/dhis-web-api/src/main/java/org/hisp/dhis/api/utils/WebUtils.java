@@ -27,18 +27,13 @@ package org.hisp.dhis.api.utils;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import javassist.util.proxy.ProxyObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.api.controller.WebMetaData;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.Pager;
-import org.hisp.dhis.dxf2.metadata.ExchangeClasses;
 import org.hisp.dhis.system.util.ReflectionUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +64,7 @@ public class WebUtils
                 {
                     if ( baseType != null )
                     {
-                        log.warn( "baseType already set, overwriting.." );
+                        log.warn( "baseType already set, overwriting" );
                     }
 
                     baseType = objects.get( 0 ).getClass();
@@ -84,126 +79,75 @@ public class WebUtils
 
         if ( metaData.getPager() != null && baseType != null )
         {
-            String basePath = getPath( baseType );
+            String basePath = ContextUtils.getPath( baseType );
             Pager pager = metaData.getPager();
 
             if ( pager.getPage() < pager.getPageCount() )
             {
-                pager.setNextPage( basePath + "?page=" + (pager.getPage() + 1) );
+                String nextPath = basePath + "?page=" + ( pager.getPage() + 1 );
+                nextPath += pager.pageSizeIsDefault() ? "" : "&pageSize=" + pager.getPageSize();
+                
+                pager.setNextPage( nextPath );
             }
 
             if ( pager.getPage() > 1 )
             {
                 if ( (pager.getPage() - 1) == 1 )
                 {
-                    pager.setPrevPage( basePath );
+                    String prevPath = pager.pageSizeIsDefault() ? basePath : basePath + "?pageSize=" + pager.getPageSize();
+                    pager.setPrevPage( prevPath );
                 }
                 else
                 {
-                    pager.setPrevPage( basePath + "?page=" + (pager.getPage() - 1) );
+                    String prevPath = basePath + "?page=" + ( pager.getPage() - 1 );
+                    prevPath += pager.pageSizeIsDefault() ? "" : "&pageSize=" + pager.getPageSize();
+                    
+                    pager.setPrevPage( prevPath );
                 }
-
             }
         }
     }
 
     @SuppressWarnings( "unchecked" )
-    public static void generateLinks( IdentifiableObject identifiableObject )
+    public static void generateLinks( Object object )
     {
-        identifiableObject.setLink( getPathWithUid( identifiableObject ) );
+        if ( IdentifiableObject.class.isAssignableFrom( object.getClass() ) )
+        {
+            IdentifiableObject identifiableObject = (IdentifiableObject) object;
+            identifiableObject.setHref( ContextUtils.getPathWithUid( identifiableObject ) );
+        }
 
-        Collection<Field> fields = ReflectionUtils.collectFields( identifiableObject.getClass(), alwaysTrue );
+        Collection<Field> fields = ReflectionUtils.collectFields( object.getClass(), alwaysTrue );
 
         for ( Field field : fields )
         {
             if ( IdentifiableObject.class.isAssignableFrom( field.getType() ) )
             {
-                Object object = ReflectionUtils.getFieldObject( field, identifiableObject );
+                Object fieldObject = ReflectionUtils.getFieldObject( field, object );
 
-                if ( object != null )
+                if ( fieldObject != null )
                 {
-                    IdentifiableObject idObject = (IdentifiableObject) object;
-                    idObject.setLink( getPathWithUid( idObject ) );
+                    IdentifiableObject idObject = (IdentifiableObject) fieldObject;
+                    idObject.setHref( ContextUtils.getPathWithUid( idObject ) );
                 }
             }
-            else if ( ReflectionUtils.isCollection( field.getName(), identifiableObject, IdentifiableObject.class ) )
+            else if ( ReflectionUtils.isCollection( field.getName(), object, IdentifiableObject.class ) )
             {
-                Object collection = ReflectionUtils.getFieldObject( field, identifiableObject );
+                Object collection = ReflectionUtils.getFieldObject( field, object );
 
                 if ( collection != null )
                 {
-                    Collection<IdentifiableObject> objects = (Collection<IdentifiableObject>) collection;
+                    Collection<IdentifiableObject> collectionObjects = (Collection<IdentifiableObject>) collection;
 
-                    for ( IdentifiableObject object : objects )
+                    for ( IdentifiableObject collectionObject : collectionObjects )
                     {
-                        if ( object != null )
+                        if ( collectionObject != null )
                         {
-                            object.setLink( getPathWithUid( object ) );
+                            collectionObject.setHref( ContextUtils.getPathWithUid( collectionObject ) );
                         }
                     }
                 }
             }
         }
     }
-
-    public static HttpServletRequest getRequest()
-    {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-    }
-
-    public static String getPathWithUid( IdentifiableObject identifiableObject )
-    {
-        return getPath( identifiableObject.getClass() ) + "/" + identifiableObject.getUid();
-    }
-
-    public static String getPath( Class<?> clazz )
-    {
-        if ( ProxyObject.class.isAssignableFrom( clazz ) )
-        {
-            clazz = clazz.getSuperclass();
-        }
-
-        String resourcePath = ExchangeClasses.getExportMap().get( clazz );
-
-        return getRootPath( getRequest() ) + "/" + resourcePath;
-    }
-
-    private static String getRootPath( HttpServletRequest request )
-    {
-        StringBuilder builder = new StringBuilder();
-        String xForwardedProto = request.getHeader( "X-Forwarded-Proto" );
-        String xForwardedPort = request.getHeader( "X-Forwarded-Port" );
-
-        if ( xForwardedProto != null && (xForwardedProto.equalsIgnoreCase( "http" ) || xForwardedProto.equalsIgnoreCase( "https" )) )
-        {
-            builder.append( xForwardedProto );
-        }
-        else
-        {
-            builder.append( request.getScheme() );
-        }
-
-        builder.append( "://" ).append( request.getServerName() );
-
-        int port;
-
-        try
-        {
-            port = Integer.parseInt( xForwardedPort );
-        } catch ( NumberFormatException e )
-        {
-            port = request.getServerPort();
-        }
-
-        if ( port != 80 && port != 443 )
-        {
-            builder.append( ":" ).append( port );
-        }
-
-        builder.append( request.getContextPath() );
-        builder.append( request.getServletPath() );
-
-        return builder.toString();
-    }
-
 }

@@ -27,15 +27,12 @@ package org.hisp.dhis.document;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import org.hisp.dhis.DhisSpringTest;
+import org.junit.Test;
 
 import java.util.Collection;
 
-import org.hisp.dhis.DhisSpringTest;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author Lars Helge Overland
@@ -45,16 +42,16 @@ public class DocumentServiceTest
     extends DhisSpringTest
 {
     private DocumentService documentService;
-    
+
     private Document documentA;
     private Document documentB;
     private Document documentC;
-    
+
     @Override
     public void setUpTest()
     {
         documentService = (DocumentService) getBean( DocumentService.ID );
-        
+
         documentA = new Document( "DocumentA", "UrlA", true, null );
         documentB = new Document( "DocumentB", "UrlB", true, null );
         documentC = new Document( "DocumentC", "UrlC", false, null );
@@ -64,7 +61,7 @@ public class DocumentServiceTest
     public void testSaveGet()
     {
         int id = documentService.saveDocument( documentA );
-        
+
         assertEquals( documentA, documentService.getDocument( id ) );
     }
 
@@ -73,15 +70,15 @@ public class DocumentServiceTest
     {
         int idA = documentService.saveDocument( documentA );
         int idB = documentService.saveDocument( documentB );
-        
+
         assertNotNull( documentService.getDocument( idA ) );
         assertNotNull( documentService.getDocument( idB ) );
-        
+
         documentService.deleteDocument( documentA );
-        
+
         assertNull( documentService.getDocument( idA ) );
         assertNotNull( documentService.getDocument( idB ) );
-        
+
         documentService.deleteDocument( documentB );
 
         assertNull( documentService.getDocument( idA ) );
@@ -94,13 +91,13 @@ public class DocumentServiceTest
         documentService.saveDocument( documentA );
         documentService.saveDocument( documentB );
         documentService.saveDocument( documentC );
-        
+
         Collection<Document> actual = documentService.getAllDocuments();
-        
+
         assertEquals( 3, actual.size() );
         assertTrue( actual.contains( documentA ) );
         assertTrue( actual.contains( documentB ) );
-        assertTrue( actual.contains( documentC ) );        
+        assertTrue( actual.contains( documentC ) );
     }
 
     @Test
@@ -109,7 +106,7 @@ public class DocumentServiceTest
         documentService.saveDocument( documentA );
         documentService.saveDocument( documentB );
         documentService.saveDocument( documentC );
-        
-        assertEquals( documentA, documentService.getDocumentByName( "DocumentA" ) );
+
+        assertEquals( documentA, documentService.getDocumentByName( "DocumentA" ).get( 0 ) );
     }
 }

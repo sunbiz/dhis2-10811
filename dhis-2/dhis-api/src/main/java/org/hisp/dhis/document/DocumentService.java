@@ -27,7 +27,7 @@ package org.hisp.dhis.document;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Lars Helge Overland
@@ -37,10 +37,10 @@ public interface DocumentService
 {
     String ID = DocumentService.class.getName();
     String DIR = "documents";
-    
+
     /**
      * Saves a Document.
-     * 
+     *
      * @param document the Document to save.
      * @return the generated identifier.
      */
@@ -64,32 +64,32 @@ public interface DocumentService
 
     /**
      * Deletes a Document.
-     * 
+     *
      * @param document the Document to delete.
      */
     void deleteDocument( Document document );
 
     /**
      * Retrieves all Documents.
-     * 
+     *
      * @return a Collection of Documents.
      */
-    Collection<Document> getAllDocuments();
-    
+    List<Document> getAllDocuments();
+
     /**
      * Retrieves the Document with the given name.
-     * 
+     *
      * @param name the name of the Document.
      * @return the Document.
      */
-    Document getDocumentByName( String name );
-    
-    Collection<Document> getDocumentsBetween( int first, int max );
-    
-    Collection<Document> getDocumentsBetweenByName( String name, int first, int max );
-    
+    List<Document> getDocumentByName( String name );
+
+    List<Document> getDocumentsBetween( int first, int max );
+
+    List<Document> getDocumentsBetweenByName( String name, int first, int max );
+
     int getDocumentCount();
-    
+
     int getDocumentCountByName( String name );
 
 }

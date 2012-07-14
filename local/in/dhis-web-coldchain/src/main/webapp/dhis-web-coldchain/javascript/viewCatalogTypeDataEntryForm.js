@@ -71,7 +71,8 @@ function insertCatalogTypeAttribute( source, catalogTypeId )
 	var catalogTypeAttributevalueType = catalogTypeAttribute.valueType;
 	
 	var htmlCode = "";
-	var id = catalogTypeId + "-" + catalogTypeAttributeId + "-val" ;
+	//var id = catalogTypeId + "-" + catalogTypeAttributeId + "-val" ;
+	var id = "attr"+catalogTypeAttributeId;
 	
 	if ( catalogTypeAttributevalueType == "YES/NO" )
 	{
@@ -90,9 +91,7 @@ function insertCatalogTypeAttribute( source, catalogTypeId )
 		var titleValue = "-- " + catalogTypeAttributeId + "." + catalogTypeAttributeName +" (" + catalogTypeAttributevalueType + ") --";
 		var displayName = catalogTypeAttributeName;
 		htmlCode += "<input title=\"" + titleValue + "\" value=\"" + displayName + "\" name=\"entryfield\" id=\"" + id + "\" />";
-	}
-	
-	
+	}		
 	else if ( catalogTypeAttributevalueType == "COMBO" ) 
 	{
 		var titleValue = "-- " + catalogTypeAttributeId + "." + catalogTypeAttributeName +" (" + catalogTypeAttributevalueType + ") --";

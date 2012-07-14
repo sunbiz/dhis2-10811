@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "rows", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "rows", namespace = DxfNamespaces.DXF_2_0)
 public class GridRows
 {
     private List<GridRow> rows = new ArrayList<GridRow>();

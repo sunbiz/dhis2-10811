@@ -27,7 +27,9 @@
 
 package org.hisp.dhis.caseentry.action.report;
 
-import static org.hisp.dhis.patientreport.PatientTabularReport.*;
+import static org.hisp.dhis.patientreport.PatientTabularReport.PREFIX_DATA_ELEMENT;
+import static org.hisp.dhis.patientreport.PatientTabularReport.PREFIX_NUMBER_DATA_ELEMENT;
+import static org.hisp.dhis.patientreport.PatientTabularReport.VALUE_TYPE_OPTION_SET;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.exception.SQLGrammarException;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
@@ -46,18 +49,13 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.paging.ActionPagingSupport;
-import org.hisp.dhis.patient.PatientAttribute;
-import org.hisp.dhis.patient.PatientAttributeOption;
-import org.hisp.dhis.patient.PatientAttributeService;
-import org.hisp.dhis.patient.PatientIdentifierType;
-import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.patientreport.TabularReportColumn;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.program.ProgramStageService;
-import org.hisp.dhis.system.util.ConversionUtils;
 import org.hisp.dhis.system.util.TextUtils;
+import org.hisp.dhis.user.CurrentUserService;
 
 /**
  * @author Chau Thu Tran
@@ -99,25 +97,18 @@ public class GenerateTabularReportAction
         this.programStageInstanceService = programStageInstanceService;
     }
 
-    private PatientAttributeService patientAttributeService;
+    private CurrentUserService currentUserService;
 
-    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    public void setCurrentUserService( CurrentUserService currentUserService )
     {
-        this.patientAttributeService = patientAttributeService;
-    }
-
-    private PatientIdentifierTypeService patientIdentifierTypeService;
-
-    public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
-    {
-        this.patientIdentifierTypeService = patientIdentifierTypeService;
+        this.currentUserService = currentUserService;
     }
 
     // -------------------------------------------------------------------------
     // Input/Output
     // -------------------------------------------------------------------------
 
-    private Collection<Integer> orgunitIds;
+    private Collection<Integer> orgunitIds = new HashSet<Integer>();
 
     public void setOrgunitIds( Collection<Integer> orgunitIds )
     {
@@ -173,6 +164,20 @@ public class GenerateTabularReportAction
         this.level = level;
     }
 
+    private Boolean userOrganisationUnit;
+
+    public void setUserOrganisationUnit( Boolean userOrganisationUnit )
+    {
+        this.userOrganisationUnit = userOrganisationUnit;
+    }
+
+    private Boolean userOrganisationUnitChildren;
+
+    public void setUserOrganisationUnitChildren( Boolean userOrganisationUnitChildren )
+    {
+        this.userOrganisationUnitChildren = userOrganisationUnitChildren;
+    }
+
     private Grid grid;
 
     public Grid getGrid()
@@ -213,18 +218,11 @@ public class GenerateTabularReportAction
         this.format = format;
     }
 
-    private List<PatientIdentifierType> identifierTypes = new ArrayList<PatientIdentifierType>();
+    private Boolean useCompletedEvents;
 
-    public List<PatientIdentifierType> getIdentifierTypes()
+    public void setUseCompletedEvents( Boolean useCompletedEvents )
     {
-        return identifierTypes;
-    }
-
-    private List<PatientAttribute> patientAttributes = new ArrayList<PatientAttribute>();
-
-    public List<PatientAttribute> getPatientAttributes()
-    {
-        return patientAttributes;
+        this.useCompletedEvents = useCompletedEvents;
     }
 
     private List<DataElement> dataElements = new ArrayList<DataElement>();
@@ -262,6 +260,13 @@ public class GenerateTabularReportAction
         return mapSuggestedValues;
     }
 
+    private String message;
+
+    public String getMessage()
+    {
+        return message;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
@@ -269,6 +274,38 @@ public class GenerateTabularReportAction
     public String execute()
         throws Exception
     {
+        // ---------------------------------------------------------------------
+        // Get user orgunits
+        // ---------------------------------------------------------------------
+
+        if ( userOrganisationUnit || userOrganisationUnitChildren )
+        {
+            Collection<OrganisationUnit> userOrgunits = currentUserService.getCurrentUser().getOrganisationUnits();
+            orgunitIds = new HashSet<Integer>();
+
+            if ( userOrganisationUnit )
+            {
+                for ( OrganisationUnit userOrgunit : userOrgunits )
+                {
+                    orgunitIds.add( userOrgunit.getId() );
+                }
+            }
+
+            if ( userOrganisationUnitChildren )
+            {
+                for ( OrganisationUnit userOrgunit : userOrgunits )
+                {
+                    if ( userOrgunit.hasChild() )
+                    {
+                        for ( OrganisationUnit childOrgunit : userOrgunit.getSortedChildren() )
+                        {
+                            orgunitIds.add( childOrgunit.getId() );
+                        }
+                    }
+                }
+            }
+        }
+
         // ---------------------------------------------------------------------
         // Get orgunitIds
         // ---------------------------------------------------------------------
@@ -284,23 +321,33 @@ public class GenerateTabularReportAction
             for ( Integer orgunitId : orgunitIds )
             {
                 OrganisationUnit selectedOrgunit = organisationUnitService.getOrganisationUnit( orgunitId );
-                organisationUnits = new HashSet<Integer>( ConversionUtils.getIdentifiers( OrganisationUnit.class,
-                    selectedOrgunit.getChildren() ) );
+                organisationUnits.addAll( organisationUnitService.getOrganisationUnitHierarchy()
+                    .getChildren( orgunitId ) );
+                organisationUnits.remove( selectedOrgunit );
             }
         }
         else
         {
             for ( Integer orgunitId : orgunitIds )
             {
-                OrganisationUnit selectedOrgunit = organisationUnitService.getOrganisationUnit( orgunitId );
+                organisationUnits.addAll( organisationUnitService.getOrganisationUnitHierarchy()
+                    .getChildren( orgunitId ) );
+            }
+        }
 
-                if ( selectedOrgunit.getParent() == null )
+        // ---------------------------------------------------------------------
+        // Get program-stage, start-date, end-date
+        // ---------------------------------------------------------------------
+
+        if ( level == 0 )
+        {
+            level = organisationUnitService.getMaxOfOrganisationUnitLevels();
+            for ( Integer orgunitId : orgunitIds )
+            {
+                int orgLevel = organisationUnitService.getLevelOfOrganisationUnit( orgunitId );
+                if ( level > orgLevel )
                 {
-                    organisationUnits = null; // Ignore unit criteria when root
-                }
-                else
-                {
-                    organisationUnits = organisationUnitService.getOrganisationUnitHierarchy().getChildren( orgunitId );
+                    level = orgLevel;
                 }
             }
         }
@@ -310,9 +357,6 @@ public class GenerateTabularReportAction
         // ---------------------------------------------------------------------
 
         ProgramStage programStage = programStageService.getProgramStage( programStageId );
-
-        // TODO check sql traffic
-
         Date startValue = format.parseDate( startDate );
         Date endValue = format.parseDate( endDate );
         List<TabularReportColumn> columns = getTableColumns();
@@ -320,27 +364,33 @@ public class GenerateTabularReportAction
         // ---------------------------------------------------------------------
         // Generate tabular report
         // ---------------------------------------------------------------------
-
-        if ( type == null ) // Tabular report
+        try
         {
-            totalRecords = programStageInstanceService.getTabularReportCount( programStage, columns, organisationUnits,
-                level, startValue, endValue );
+            if ( type == null ) // Tabular report
+            {
+                totalRecords = programStageInstanceService.getTabularReportCount( programStage, columns,
+                    organisationUnits, level, useCompletedEvents, startValue, endValue );
 
-            total = getNumberOfPages( totalRecords );
+                total = getNumberOfPages( totalRecords );
 
-            this.paging = createPaging( totalRecords );
-            // total = paging.getTotal(); //TODO
+                this.paging = createPaging( totalRecords );
 
-            grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
-                startValue, endValue, !orderByOrgunitAsc, paging.getStartPos(), paging.getPageSize() );
+                grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
+                    startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, getStartPos(), paging.getPageSize(),
+                    i18n );
+            }
+            else
+            // Download as Excel
+            {
+                grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
+                    startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, null, null, i18n );
+            }
         }
-        else
-        // Download as Excel
+        catch ( SQLGrammarException ex )
         {
-            grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
-                startValue, endValue, !orderByOrgunitAsc, null, null );
+            message = i18n.getString( "failed_to_get_events" );
         }
-        
+
         return type == null ? SUCCESS : type;
     }
 
@@ -354,6 +404,17 @@ public class GenerateTabularReportAction
         return (totalRecord % pageSize == 0) ? (totalRecord / pageSize) : (totalRecord / pageSize + 1);
     }
 
+    public int getStartPos()
+    {
+        if ( currentPage == null )
+        {
+            return paging.getStartPos();
+        }
+        int startPos = currentPage <= 0 ? 0 : (currentPage - 1) * paging.getPageSize();
+        startPos = (startPos > total) ? total : startPos;
+        return startPos;
+    }
+
     private List<TabularReportColumn> getTableColumns()
     {
         List<TabularReportColumn> columns = new ArrayList<TabularReportColumn>();
@@ -363,80 +424,42 @@ public class GenerateTabularReportAction
         for ( String searchValue : searchingValues )
         {
             String[] values = searchValue.split( "_" );
-            
+
             if ( values != null && values.length >= 3 )
             {
                 String prefix = values[0];
-    
+
                 TabularReportColumn column = new TabularReportColumn();
                 column.setPrefix( prefix );
                 column.setIdentifier( values[1] );
                 column.setHidden( Boolean.parseBoolean( values[2] ) );
                 column.setQuery( values.length == 4 ? TextUtils.lower( values[3] ) : null );
-    
-                if ( PREFIX_FIXED_ATTRIBUTE.equals( prefix ) )
-                {
-                    column.setName( values[1] );
-                }
-                else if ( PREFIX_IDENTIFIER_TYPE.equals( prefix ) )
-                {
-                    PatientIdentifierType identifierType = patientIdentifierTypeService.getPatientIdentifierType( column
-                        .getIdentifierAsInt() );
-    
-                    column.setName( identifierType.getName() );
-                }
-                else if ( PREFIX_PATIENT_ATTRIBUTE.equals( prefix ) )
-                {
-                    int objectId = Integer.parseInt( values[1] );
-                    PatientAttribute attribute = patientAttributeService.getPatientAttribute( objectId );
-                    patientAttributes.add( attribute );
-    
-                    valueTypes.add( attribute.getValueType() );
-                    mapSuggestedValues.put( index, getSuggestedAttributeValues( attribute ) );
-    
-                    column.setName( attribute.getName() );
-                }
-                else if ( PREFIX_DATA_ELEMENT.equals( prefix ) )
+
+                if ( PREFIX_DATA_ELEMENT.equals( prefix ) )
                 {
                     int objectId = Integer.parseInt( values[1] );
                     DataElement dataElement = dataElementService.getDataElement( objectId );
+                    if ( dataElement.getType().equals( DataElement.VALUE_TYPE_INT ) )
+                    {
+                        column.setPrefix( PREFIX_NUMBER_DATA_ELEMENT );
+                    }
                     dataElements.add( dataElement );
-    
-                    String valueType = dataElement.getOptionSet() != null ? VALUE_TYPE_OPTION_SET : dataElement.getType();
+
+                    String valueType = dataElement.getOptionSet() != null ? VALUE_TYPE_OPTION_SET : dataElement
+                        .getType();
                     valueTypes.add( valueType );
                     mapSuggestedValues.put( index, getSuggestedDataElementValues( dataElement ) );
-    
-                    column.setName( dataElement.getName() );
+
+                    column.setName( dataElement.getFormNameFallback() );
                 }
-    
+
                 columns.add( column );
-    
+
                 index++;
             }
         }
 
         return columns;
-    }
-
-    private List<String> getSuggestedAttributeValues( PatientAttribute patientAttribute )
-    {
-        List<String> values = new ArrayList<String>();
-        String valueType = patientAttribute.getValueType();
-
-        if ( valueType.equals( PatientAttribute.TYPE_BOOL ) )
-        {
-            values.add( i18n.getString( "yes" ) );
-            values.add( i18n.getString( "no" ) );
-        }
-        else if ( valueType.equals( PatientAttribute.TYPE_COMBO ) )
-        {
-            for ( PatientAttributeOption attributeOption : patientAttribute.getAttributeOptions() )
-            {
-                values.add( attributeOption.getName() );
-            }
-        }
-
-        return values;
     }
 
     private List<String> getSuggestedDataElementValues( DataElement dataElement )

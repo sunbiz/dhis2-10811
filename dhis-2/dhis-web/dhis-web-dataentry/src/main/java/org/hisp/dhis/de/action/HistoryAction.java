@@ -113,16 +113,26 @@ public class HistoryAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer dataElementId;
+    private String dataElementId;
 
-    public void setDataElementId( Integer dataElementId )
+    public String getDataElementId()
+    {
+        return dataElementId;
+    }
+
+    public void setDataElementId( String dataElementId )
     {
         this.dataElementId = dataElementId;
     }
 
-    private Integer optionComboId;
+    private String optionComboId;
 
-    public void setOptionComboId( Integer optionComboId )
+    public String getOptionComboId()
+    {
+        return optionComboId;
+    }
+
+    public void setOptionComboId( String optionComboId )
     {
         this.optionComboId = optionComboId;
     }
@@ -162,6 +172,13 @@ public class HistoryAction
     public boolean isHistoryInvalid()
     {
         return historyInvalid;
+    }
+    
+    private boolean minMaxInvalid;
+
+    public boolean isMinMaxInvalid()
+    {
+        return minMaxInvalid;
     }
 
     private DataValue dataValue;
@@ -210,7 +227,7 @@ public class HistoryAction
 
         if ( dataElement == null )
         {
-            throw new Exception( "DataElement doesn't exist: " + dataElementId );
+            throw new IllegalArgumentException( "DataElement doesn't exist: " + dataElementId );
         }
 
         Period period = PeriodType.createPeriodExternalId( periodId );
@@ -228,6 +245,8 @@ public class HistoryAction
         dataElementHistory = historyRetriever.getHistory( dataElement, optionCombo, organisationUnit, period, HISTORY_LENGTH );
 
         historyInvalid = dataElementHistory == null;
+
+        minMaxInvalid = !DataElement.VALUE_TYPE_INT.equals( dataElement.getType() );
 
         // ---------------------------------------------------------------------
         // Data Value Audit

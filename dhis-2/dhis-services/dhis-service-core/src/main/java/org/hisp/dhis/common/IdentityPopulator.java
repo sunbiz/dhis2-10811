@@ -34,8 +34,13 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.system.startup.AbstractStartupRoutine;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * @author bobj
@@ -45,12 +50,12 @@ public class IdentityPopulator
 {
     private static final Log log = LogFactory.getLog( IdentityPopulator.class );
 
-    private static String[] tables = {"chart", "constant", "attribute", "indicatortype", "indicatorgroupset", "indicator",
+    private static String[] tables = { "chart", "constant", "attribute", "indicatortype", "indicatorgroupset", "indicator",
         "indicatorgroup", "datadictionary", "validationrulegroup", "validationrule", "dataset", "orgunitlevel", "document",
         "organisationunit", "orgunitgroup", "orgunitgroupset", "dataelementcategoryoption", "dataelementgroup", "sqlview",
-        "dataelement", "dataelementgroupset", "dataelementcategory", "categorycombo", "categoryoptioncombo", "mapview",
+        "dataelement", "dataelementgroupset", "dataelementcategory", "categorycombo", "categoryoptioncombo", "map", "mapview",
         "reporttable", "report", "messageconversation", "message", "userinfo", "usergroup", "userrole", "maplegend",
-        "maplegendset", "maplayer", "section", "optionset"
+        "maplegendset", "maplayer", "section", "optionset", "program", "programstage"
     };
 
     // -------------------------------------------------------------------------
@@ -107,27 +112,98 @@ public class IdentityPopulator
                     Timestamp now = new Timestamp( new Date().getTime() );
 
                     resultSet = statement.executeQuery( "SELECT * from " + table + " WHERE lastUpdated IS NULL" );
+
                     while ( resultSet.next() )
                     {
                         ++count;
                         resultSet.updateTimestamp( "lastUpdated", now );
                         resultSet.updateRow();
                     }
+
+                    resultSet = statement.executeQuery( "SELECT * from " + table + " WHERE created IS NULL" );
+
+                    while ( resultSet.next() )
+                    {
+                        ++count;
+                        resultSet.updateTimestamp( "created", resultSet.getTimestamp( "lastUpdated" ) );
+                        resultSet.updateRow();
+                    }
+
                     if ( count > 0 )
                     {
                         log.info( count + " timestamps updated on " + table );
                     }
 
-                } catch ( SQLException ex )
+                }
+                catch ( SQLException ex )
                 {
                     log.info( "Problem updating " + table + ": ", ex );
                 }
             }
-        } finally
+        }
+        finally
         {
             if ( statement != null )
             {
                 statement.close();
+            }
+        }
+
+        try
+        {
+            Connection conn = dummyStatement.getConnection();
+
+            statement = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
+
+            ResultSet resultSet = statement.executeQuery( "SELECT * from organisationunit WHERE uuid IS NULL" );
+            int count = 0;
+
+            while ( resultSet.next() )
+            {
+                ++count;
+                resultSet.updateString( "uuid", UUID.randomUUID().toString() );
+                resultSet.updateRow();
+            }
+
+            if ( count > 0 )
+            {
+                log.info( count + " UUIDs updated on organisationunit" );
+            }
+        }
+        catch ( SQLException ex )
+        {
+            log.info( "Problem updating organisationunit: ", ex );
+        }
+        finally
+        {
+            if ( statement != null )
+            {
+                statement.close();
+            }
+        }
+
+        createUidConstraints();
+    }
+
+    private void createUidConstraints()
+    {
+        for ( String table : tables )
+        {
+            StatementHolder holder = statementManager.getHolder();
+
+            try
+            {
+                final String sql = "ALTER TABLE " + table + " ADD CONSTRAINT " + table + "_uid_key UNIQUE(uid)";
+                holder.executeUpdate( sql, true );
+            }
+            catch ( Exception ex )
+            {
+                log.debug( "Could not create uid constraint on table " + table +
+                    ", might already be created or column contains duplicates", ex );
+            }
+            finally
+            {
+                holder.close();
             }
         }
     }

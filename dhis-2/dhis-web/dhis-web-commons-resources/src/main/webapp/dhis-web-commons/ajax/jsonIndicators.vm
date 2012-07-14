@@ -4,6 +4,7 @@
 #set( $groups = $indicator.groups )
   {
     "id": $!{indicator.id},
+    "uid": "$!{indicator.uid}",
     "name": "$!encoder.jsonEncode( ${indicator.displayName} )",
     "alternativeName": "$!encoder.jsonEncode( ${indicator.alternativeNamee} )",
     "shortName": "$!encoder.jsonEncode( ${indicator.displayShortName} )",

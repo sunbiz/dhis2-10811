@@ -75,6 +75,11 @@ public class ListGrid
      * A List which represents the column headers of the grid.
      */
     private List<GridHeader> headers;
+    
+    /**
+     * A Map which can hold arbitrary meta-data.
+     */
+    private Map<String, String> metaData;
 
     /**
      * A two dimensional List which simulates a grid where the first list
@@ -103,6 +108,7 @@ public class ListGrid
     public ListGrid()
     {
         headers = new ArrayList<GridHeader>();
+        metaData = new HashMap<String, String>();
         grid = new ArrayList<List<Object>>();
     }
 
@@ -160,6 +166,18 @@ public class ListGrid
 
         return this;
     }
+    
+    public Grid addEmptyHeaders( int number )
+    {
+        for ( int i = 0; i < number; i++ )
+        {
+            headers.add( new GridHeader( "", false, false ) );
+        }
+        
+        updateColumnIndexMap();
+        
+        return this;
+    }
 
     @JsonProperty
     @JsonView( { DetailedView.class } )
@@ -199,6 +217,23 @@ public class ListGrid
         return (grid != null && grid.size() > 0) ? grid.get( 0 ).size() : 0;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class } )
+    public Map<String, String> getMetaData()
+    {
+        return metaData;
+    }
+    
+    public void setMetaData( Map<String, String> metaData )
+    {
+        this.metaData = metaData;
+    }
+
+    public void addMetaData( String key, String value )
+    {
+        this.metaData.put( key, value );
+    }
+    
     public int getVisibleWidth()
     {
         verifyGridState();
@@ -219,6 +254,28 @@ public class ListGrid
     {
         grid.get( currentRowWriteIndex ).add( value );
 
+        return this;
+    }
+    
+    public Grid addValues( Object[] values )
+    {
+        List<Object> row = grid.get( currentRowWriteIndex );
+        
+        for ( Object value : values )
+        {
+            row.add( value );
+        }
+        
+        return this;
+    }
+    
+    public Grid addEmptyValues( int number )
+    {
+        for ( int i = 0; i < number; i++ )
+        {
+            addValue( "" );
+        }
+        
         return this;
     }
 
@@ -515,7 +572,8 @@ public class ListGrid
             {
                 addHeader( new GridHeader( rsmd.getColumnLabel( i ), false, false ) );
             }
-        } catch ( SQLException ex )
+        } 
+        catch ( SQLException ex )
         {
             throw new RuntimeException( ex );
         }
@@ -523,7 +581,7 @@ public class ListGrid
         return this;
     }
 
-    public Grid addRow( ResultSet rs )
+    public Grid addRows( ResultSet rs )
     {
         try
         {
@@ -538,7 +596,8 @@ public class ListGrid
                     addValue( rs.getObject( i ) );
                 }
             }
-        } catch ( SQLException ex )
+        } 
+        catch ( SQLException ex )
         {
             throw new RuntimeException( ex );
         }

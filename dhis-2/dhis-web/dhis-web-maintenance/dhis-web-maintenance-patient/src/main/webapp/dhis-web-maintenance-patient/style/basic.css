@@ -43,9 +43,20 @@ input.filterButton
 	display: block;
 }
 
-.imgButton
+input.small-button
 {
-	cursor:pointer;
+	width:25px;
+}
+
+input.nornal-button
+{
+	width:55px;
+}
+
+button.ui-button-icon-only {
+    width: 2em !important;
+	height: 2em !important;
+	padding-top:-10px !important;
 }
 
 fieldset
@@ -66,24 +77,12 @@ tr.selected{
 {
 	overflow:auto; 
 	height:20em; 
-	width:30em;
 	border:1px solid #9DA1AA;
 }
 
 .dataElementDiv table
 {
 	width:100%;
-}
-
-.arrow-down {
-	width: 15px;
-	height: 20px;
-	border-left: 1px solid #CCCCCC;
-	border-right: 1px solid #CCCCCC;
-	border-top: 1px solid #CCCCCC;
-	border-bottom: 1px solid #CCCCCC;
-	background: url('../../images/asc.gif') no-repeat center;
-	cursor: pointer;
 }
 
 fieldset

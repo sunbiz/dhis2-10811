@@ -27,7 +27,10 @@
 
 package org.hisp.dhis.caseentry.action.patient;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
@@ -35,6 +38,7 @@ import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.program.comparator.ProgramDisplayNameComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -81,9 +85,9 @@ public class SelectAction
         return patientAttributes;
     }
 
-    private Collection<Program> programs;
+    private List<Program> programs;
 
-    public Collection<Program> getPrograms()
+    public List<Program> getPrograms()
     {
         return programs;
     }
@@ -111,8 +115,10 @@ public class SelectAction
     {
         patientAttributes = patientAttributeService.getAllPatientAttributes();
 
-        programs = programService.getPrograms( Program.MULTIPLE_EVENTS_WITH_REGISTRATION );
-        programs.addAll( programService.getPrograms( Program.SINGLE_EVENT_WITH_REGISTRATION ));
+        programs = new ArrayList<Program>(programService.getProgramsByCurrentUser());
+        programs.removeAll( programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) );
+        
+        Collections.sort( programs, new ProgramDisplayNameComparator() );
 
         organisationUnit = selectionManager.getSelectedOrganisationUnit();
 

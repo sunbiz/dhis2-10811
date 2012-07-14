@@ -30,7 +30,6 @@ package org.hisp.dhis.patient;
 import java.util.Collection;
 
 import org.hisp.dhis.common.GenericNameableObjectStore;
-import org.hisp.dhis.program.Program;
 
 /**
  * @author Abyot Asalefew Gizaw
@@ -47,11 +46,7 @@ public interface PatientAttributeStore
     
     Collection<PatientAttribute> getByMandatory(boolean mandatory);
     
-    Collection<PatientAttribute> get( Program program, PatientAttributeGroup group );
-    
     Collection<PatientAttribute> getWithoutGroup();
 
     PatientAttribute getByGroupBy( boolean groupBy );
-    
-    Collection<PatientAttribute> get( Program program );
 }

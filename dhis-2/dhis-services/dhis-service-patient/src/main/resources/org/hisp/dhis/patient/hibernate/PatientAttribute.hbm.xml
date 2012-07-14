@@ -3,7 +3,7 @@
   "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
   [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
->
+  >
 
 <hibernate-mapping>
   <class name="org.hisp.dhis.patient.PatientAttribute" table="patientattribute">
@@ -11,16 +11,15 @@
     <id name="id" column="patientattributeid">
       <generator class="native" />
     </id>
-	
-	&identifiableProperties;
-    
+    &identifiableProperties;
+
+    <property name="name" column="name" not-null="true" unique="true" length="230" />
+
     <property name="description" />
 
     <property name="valueType" column="valuetype" not-null="true" />
 
     <property name="mandatory" column="mandatory" not-null="true" />
-
-    <property name="inheritable" column="inheritable" />
 
     <property name="groupBy" column="groupby" />
 
@@ -32,7 +31,9 @@
       <one-to-many class="org.hisp.dhis.patient.PatientAttributeOption" />
     </set>
 
-    <many-to-one name="program" class="org.hisp.dhis.program.Program" column="programid" foreign-key="fk_patientattribute_program" />
+    <property name="inherit" column="inherit" />
+
+    <property name="expression" column="expression" />
 
   </class>
 </hibernate-mapping>

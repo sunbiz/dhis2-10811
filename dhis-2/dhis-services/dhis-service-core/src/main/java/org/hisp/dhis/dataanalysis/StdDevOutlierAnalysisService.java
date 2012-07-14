@@ -27,26 +27,31 @@ package org.hisp.dhis.dataanalysis;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.system.util.MathUtils.isEqual;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import org.hisp.dhis.common.AggregatedValue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.system.util.ConversionUtils;
+import org.hisp.dhis.system.util.MathUtils;
 
 /**
- * @author Dag Haavi Finstad
  * @author Lars Helge Overland
  */
 public class StdDevOutlierAnalysisService
     implements DataAnalysisService
 {
+    private static final Log log = LogFactory.getLog( StdDevOutlierAnalysisService.class );
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -58,23 +63,17 @@ public class StdDevOutlierAnalysisService
         this.dataAnalysisStore = dataAnalysisStore;
     }
 
-    private OrganisationUnitService organisationUnitService;
-
-    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
-    {
-        this.organisationUnitService = organisationUnitService;
-    }
-
     // -------------------------------------------------------------------------
-    // OutlierAnalysisService implementation
+    // DataAnalysisService implementation
     // -------------------------------------------------------------------------
 
-    public final Collection<DeflatedDataValue> analyse( OrganisationUnit organisationUnit,
+    public final Collection<DeflatedDataValue> analyse( Collection<OrganisationUnit> organisationUnits,
         Collection<DataElement> dataElements, Collection<Period> periods, Double stdDevFactor )
     {
-        Collection<OrganisationUnit> units = organisationUnitService.getOrganisationUnitWithChildren( organisationUnit
-            .getId() );
+        Set<Integer> units = new HashSet<Integer>( ConversionUtils.getIdentifiers( OrganisationUnit.class, organisationUnits ) );
 
+        log.info( "Starting std dev analysis, no of org units: " + organisationUnits.size() + ", factor: " + stdDevFactor );
+        
         Collection<DeflatedDataValue> outlierCollection = new ArrayList<DeflatedDataValue>();
 
         loop : for ( DataElement dataElement : dataElements )
@@ -88,43 +87,36 @@ public class StdDevOutlierAnalysisService
 
                 for ( DataElementCategoryOptionCombo categoryOptionCombo : categoryOptionCombos )
                 {
-                    for ( OrganisationUnit unit : units )
+                    Map<Integer, Double> standardDeviations = dataAnalysisStore.getStandardDeviation( dataElement, categoryOptionCombo, units );
+                    
+                    Map<Integer, Double> averages = dataAnalysisStore.getAverage( dataElement, categoryOptionCombo, standardDeviations.keySet() );
+                    
+                    Map<Integer, Integer> lowBoundMap = new HashMap<Integer, Integer>();
+                    Map<Integer, Integer> highBoundMap = new HashMap<Integer, Integer>();
+                    
+                    for ( Integer unit : averages.keySet() )
                     {
-                        outlierCollection.addAll( findOutliers( unit, dataElement, categoryOptionCombo, periods,
-                            stdDevFactor ) );
+                        Double stdDev = standardDeviations.get( unit );
+                        Double avg = averages.get( unit );
                         
-                        if ( outlierCollection.size() > MAX_OUTLIERS )
+                        if ( stdDev != null && avg != null )
                         {
-                            break loop;
+                            lowBoundMap.put( unit, (int) MathUtils.getLowBound( stdDev, stdDevFactor, avg ) );
+                            highBoundMap.put( unit, (int) MathUtils.getHighBound( stdDev, stdDevFactor, avg ) );                            
                         }
+                    }
+
+                    outlierCollection.addAll( dataAnalysisStore.getDeflatedDataValues( dataElement, categoryOptionCombo, periods,
+                        lowBoundMap, highBoundMap ) );
+                    
+                    if ( outlierCollection.size() > MAX_OUTLIERS )
+                    {
+                        break loop;
                     }
                 }
             }
         }
 
         return outlierCollection;
-    }
-
-    // -------------------------------------------------------------------------
-    // Supportive methods
-    // -------------------------------------------------------------------------
-
-    private Collection<DeflatedDataValue> findOutliers( OrganisationUnit organisationUnit, DataElement dataElement,
-        DataElementCategoryOptionCombo categoryOptionCombo, Collection<Period> periods, Double stdDevFactor )
-    {
-        Double stdDev = dataAnalysisStore.getStandardDeviation( dataElement, categoryOptionCombo, organisationUnit );
-
-        if ( !isEqual( stdDev, AggregatedValue.ZERO ) ) // No values found or no outliers exist when 0.0
-        {
-            Double avg = dataAnalysisStore.getAverage( dataElement, categoryOptionCombo, organisationUnit );
-
-            double deviation = stdDev * stdDevFactor;
-            Double lowerBound = avg - deviation;
-            Double upperBound = avg + deviation;
-            return dataAnalysisStore.getDeflatedDataValues( dataElement, categoryOptionCombo, periods,
-                organisationUnit, lowerBound.intValue(), upperBound.intValue() );
-        }
-
-        return new ArrayList<DeflatedDataValue>();
     }
 }

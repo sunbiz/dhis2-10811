@@ -29,6 +29,7 @@ package org.hisp.dhis.light.dataentry.action;
 
 import com.opensymphony.xwork2.Action;
 import org.apache.commons.lang.Validate;
+import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.dataset.Section;
@@ -90,6 +91,13 @@ public class GetDataSetOverviewAction
     public void setFormat( I18nFormat format )
     {
         this.format = format;
+    }
+
+    private CompleteDataSetRegistrationService registrationService;
+
+    public void setRegistrationService( CompleteDataSetRegistrationService registrationService )
+    {
+        this.registrationService = registrationService;
     }
 
     // -------------------------------------------------------------------------
@@ -186,6 +194,18 @@ public class GetDataSetOverviewAction
         this.validated = validated;
     }
 
+    private boolean completed;
+
+    public boolean isCompleted()
+    {
+        return completed;
+    }
+
+    public void setCompleted( boolean isCompleted )
+    {
+        this.completed = isCompleted;
+    }
+
     // -------------------------------------------------------------------------
     // Action Implementation
     // -------------------------------------------------------------------------
@@ -204,6 +224,16 @@ public class GetDataSetOverviewAction
         period.setName( format.formatPeriod( period ) );
 
         dataSet = dataSetService.getDataSet( dataSetId );
+
+        if ( registrationService.getCompleteDataSetRegistration( dataSet, period, organisationUnit ) == null )
+        {
+            completed = false;
+        }
+        else
+        {
+            completed = true;
+        }
+        
 
         if ( sectionId != null )
         {

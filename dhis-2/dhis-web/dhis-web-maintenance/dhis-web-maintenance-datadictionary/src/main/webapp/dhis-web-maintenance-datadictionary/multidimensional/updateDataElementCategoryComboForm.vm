@@ -41,9 +41,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="name" name="name" style="width:20em" value="$encoder.htmlEncode( $dataElementCategoryCombo.name )"/></td>
+        <td style="width:120px"><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td><input type="text" id="name" name="name" style="width:20em" value="$encoder.htmlEncode( $dataElementCategoryCombo.displayName )"/></td>
       </tr>      
+      <tr>
+        <td><label>$i18n.getString( "skip_total_in_reports" )</label></td>
+        <td>
+            <select id="skipTotal" name="skipTotal">
+                <option value="false" selected="selected">$i18n.getString( "no" )</option>
+                <option value="true" #if( $dataElementCategoryCombo.skipTotal ) selected="selected"#end>$i18n.getString( "yes" )</option>
+            </select>
+            </td>
+        </tr>
+      </tr>  
       <tr>
       	<td colspan="2" style="height:15px"></td>
       </tr>
@@ -51,10 +61,12 @@
   </table>
 
  <table id="dataElementCategorySelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
-    <col/>
+     <colgroup>
+       <col style="width: 500px;"/>
+       <col/>
+       <col style="width: 500px;"/>
+       <col/>
+     </colgroup>
 
     <thead>
         <tr>        

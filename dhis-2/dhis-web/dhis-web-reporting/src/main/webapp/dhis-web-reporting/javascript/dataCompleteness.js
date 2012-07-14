@@ -18,15 +18,27 @@ function displayCompleteness()
         return false;
     }
 
+    $( '#reportButton' ).attr( 'disabled', true );
+
     showLoader();
 
     var url = "getDataCompleteness.action" + "?periodId=" + periodId + "&criteria=" + criteria + "&dataSetId="
             + dataSetId + "&type=html&" + getDC();
 
+    $( '[name="groupId"]' ).each( function()
+    {
+    	if ( $( this ).val() != '-1' )
+    	{
+    		url += "&groupId=" + $( this ).val();
+    	}
+    } );
+    
     $( "#contentDiv" ).load( url, function()
     {
         hideLoader();
         setTableStyles();
+
+        $( '#reportButton').removeAttr( 'disabled' );
     } );
 }
 
@@ -50,4 +62,11 @@ function completenessIsValid( periodId )
 function getCompleteness( type )
 {
     window.location.href = "getDataCompleteness.action?type=" + type + "&" + getDC();
+}
+
+function showAdvancedOptions()
+{
+	$( "#selectionTree" ).css( "height", "292px" );
+	$( "#advancedOptionsLink" ).hide();
+	$( "#advancedOptions" ).slideDown();
 }

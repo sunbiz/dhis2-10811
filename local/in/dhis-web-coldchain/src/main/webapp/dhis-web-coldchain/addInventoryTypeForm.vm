@@ -91,7 +91,7 @@
 				<table>
 					<thead>
 						<tr>
-							<th>$i18n.getString( "dataelement" )</th>
+							<th>$i18n.getString( "attributes" )</th>
 							<th width="20px">$i18n.getString( "display" )</th>
 					</thead>
 					<tbody id="selectedInventoryTypeAttributeList"></tbody>

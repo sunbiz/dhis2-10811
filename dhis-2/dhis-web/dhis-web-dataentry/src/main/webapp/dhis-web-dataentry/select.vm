@@ -36,9 +36,27 @@ var i18n_no_dataelement_selected = '$encoder.jsEscape( $i18n.getString( "no_data
 var i18n_dataset_is_locked = '$encoder.jsEscape( $i18n.getString( "dataset_is_locked" ) , "'")';
 var i18n_register_complete_failed_dataset_is_locked = '$encoder.jsEscape( $i18n.getString( "register_complete_failed_dataset_is_locked" ) , "'")';
 var i18n_unregister_complete_failed_dataset_is_locked = '$encoder.jsEscape( $i18n.getString( "unregister_complete_failed_dataset_is_locked" ) , "'")';
+var i18n_show_all_sections = '$encoder.jsEscape( $i18n.getString( "show_all_sections" ) , "'")';
+var i18n_all_values_for_data_element_must_be_filled = '$encoder.jsEscape( $i18n.getString( "all_values_for_data_element_must_be_filled" ) , "'")';
+var i18n_validation_result = '$encoder.jsEscape( $i18n.getString( "validation_result" ) , "'")';
+var i18n_successful_validation = '$encoder.jsEscape( $i18n.getString( "successful_validation" ) , "'")';
+var i18n_no_organisationunit_selected = '$encoder.jsEscape( $i18n.getString( "no_organisationunit_selected" ) , "'")';
+var i18n_childrens_forms = '$encoder.jsEscape( $i18n.getString( "childrens_forms" ) , "'")';
+var i18n_no_periods_click_prev_year_button = '$encoder.jsEscape( $i18n.getString( "no_periods_click_prev_year_button" ) , "'")';
+var i18n_view_comment = '$encoder.jsEscape( $i18n.getString( "view_comment" ) , "'")';
 </script>
 
-<h3>$i18n.getString( "data_entry" ) #openHelp( "dataEntry" )</h3>
+<style type="text/css" media="print">
+#moduleHeader, #currentSelection, #actions, #selectionBox, #completenessDiv {
+    display: none;
+}
+
+#contentDiv input, select {
+    display: none;
+}
+</style>
+
+<h3 id="moduleHeader">$i18n.getString( "data_entry" ) #openHelp( "dataEntry" )</h3>
 
 <div id="currentSelection">
 	<span style="float:left;cursor:pointer;margin-right:5px;"><img src="../images/hide.png" title="$i18n.getString( 'close' )" onclick="closeCurrentSelection()"></span>
@@ -47,27 +65,35 @@ var i18n_unregister_complete_failed_dataset_is_locked = '$encoder.jsEscape( $i18
 </div>
 
 <div id="actions">	
-    <input type="button" value="$i18n.getString( 'run_validation' )" onclick="validate()" id="validationButton" style="width:150px;" disabled="disabled"/>
+    <input type="button" value="$i18n.getString( 'run_validation' )" onclick="validate( false )" id="validationButton" style="width:120px;" disabled="disabled"/><br>
+    <input type="button" value="$i18n.getString( 'print' )" onclick="window.print()" id="printButton" style="width:120px"/>
 </div>
 
-<div class="inputCriteria" style="width:504px;height:93px;">
+<div id="selectionBox" class="inputCriteria" style="width:534px;height:95px;">
 <table>
 	<tr>
 		<td><label for="selectedOrganisationUnit">$i18n.getString( "organisation_unit" )</label></td>
-		<td><input type="text" id="selectedOrganisationUnit" readonly="readonly" value="[ $i18n.getString( 'select_from_tree' ) ]" style="width:367px"></td>
-	</tr>	
+		<td><input type="text" id="selectedOrganisationUnit" readonly="readonly" value="[ $i18n.getString( 'select_from_tree' ) ]" style="width: 394px; padding: 3px;"></td>
+	</tr>
 	<tr>
 		<td><label for="selectedDataSetId">$i18n.getString( "data_set" )</label></td>
-		<td><select id="selectedDataSetId" name="selectedDataSetId" style="width:371px" onchange="dataSetSelected()" disabled="disabled"></select>
+		<td><select id="selectedDataSetId" name="selectedDataSetId" style="width:401px" onchange="dataSetSelected()" disabled="disabled"></select>
 			<span id="loaderSpan" style="display:none"><img src='../images/ajax-loader-bar.gif'></span></td>
 	</tr>	
-	<tr>
-		<td><label for="selectedPeriodId">$i18n.getString( "period" )</label></td>
-		<td><select id="selectedPeriodId" name="selectedPeriodId" style="width:215px" onchange="periodSelected()" disabled="disabled"></select>
-			<input type="button" id="prevButton" style="width:75px" value="$i18n.getString( 'prev_year' )" title="$i18n.getString('earlier_periods')" onclick="previousPeriodsSelected()" disabled="disabled">
-			<input type="button" id="nextButton" style="width:75px" value="$i18n.getString( 'next_year' )" title="$i18n.getString('later_periods')" onclick="nextPeriodsSelected()" disabled="disabled">
-		</td>
-	</tr>	
+    <tr>
+   		<td><label for="selectedPeriodId">$i18n.getString( "period" )</label></td>
+   		<td><select id="selectedPeriodId" name="selectedPeriodId" style="width:225px" onchange="periodSelected()" disabled="disabled"></select>
+   			<input type="button" id="prevButton" style="width:85px" value="$i18n.getString( 'prev_year' )" title="$i18n.getString('earlier_periods')" onclick="previousPeriodsSelected()" disabled="disabled">
+   			<input type="button" id="nextButton" style="width:85px" value="$i18n.getString( 'next_year' )" title="$i18n.getString('later_periods')" onclick="nextPeriodsSelected()" disabled="disabled">
+   		</td>
+   	</tr>
+    <tr id="filterDataSetSectionTr" style="display: none;">
+   		<td><label for="filterDataSetSection">$i18n.getString( "filter_on_section" )</label></td>
+   		<td>
+            <select id="filterDataSetSection" name="filterDataSetSection" style="width:401px" onchange="filterOnSection()">
+        </select>
+        </td>
+   	</tr>
 </table>
 </div>
 
@@ -80,9 +106,9 @@ var i18n_unregister_complete_failed_dataset_is_locked = '$encoder.jsEscape( $i18
 <div id="validationDiv" class="page"></div>
 
 <div id="completenessDiv" class="page inputCriteria" style="display:none;width:386px;height:29px;">
-<input type="button" id="completeButton" name="completeButton" value="$i18n.getString( 'complete' )" onclick="validateCompleteDataSet()" style="width:120px">
+<input type="button" id="completeButton" name="completeButton" value="$i18n.getString( 'complete' )" onclick="registerCompleteDataSet()" style="width:120px">
 <input type="button" id="undoButton" name="undoButton" value="$i18n.getString( 'incomplete' )" onclick="undoCompleteDataSet()" style="width:120px">
-<input type="button" value="$i18n.getString( 'run_validation' )" onclick="validate()" style="width:120px">
+<input type="button" id="validateButton" value="$i18n.getString( 'run_validation' )" onclick="validate( false )" style="width:120px">
 </div>
 
 <div id="infoDiv" class="page inputCriteria" style="display:none;width:386px;height:20px;">

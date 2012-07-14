@@ -49,11 +49,12 @@ public class JacksonXmlView
     }
 
     @Override
-    protected void renderMergedOutputModel( Map<String, Object> model, HttpServletRequest request, HttpServletResponse response ) throws Exception
+    protected void renderMergedOutputModel( Map<String, Object> model, HttpServletRequest request,
+        HttpServletResponse response ) throws Exception
     {
         Object object = model.get( "model" );
         Class<?> viewClass = JacksonUtils.getViewClass( model.get( "viewClass" ) );
-        response.setContentType( getContentType() );
+        response.setContentType( getContentType() + "; charset=UTF-8" );
         response.setStatus( HttpServletResponse.SC_OK );
 
         if ( viewClass != null )

@@ -13,5 +13,7 @@
     </id>
     &identifiableProperties;
 
+    <property name="name" column="name" not-null="true" unique="true" length="230" />
+
   </class>
 </hibernate-mapping>

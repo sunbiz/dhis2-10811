@@ -55,7 +55,7 @@ public class OrgUnitsTest
 
         OrgUnits units = new OrgUnits();
         units.setOrgUnits( Arrays.asList( new MobileOrgUnitLinks[] { unit } ) );
-        units.serialize( dos );
+        units.serializeVerssion2_9( dos );
         dos.flush();
         OrgUnits units2 = new OrgUnits();
         units2.deSerialize( new DataInputStream( new ByteArrayInputStream( baos.toByteArray() ) ) );
@@ -82,6 +82,8 @@ public class OrgUnitsTest
         unit.setChangeUpdateDataSetLangUrl( "changeUpdateDataSetLangUrl" );
         unit.setSearchUrl( "search" );
         unit.setUpdateNewVersionUrl( "test" );
+        unit.setUpdateContactUrl( "updateContactUrl" );
+        unit.setFindPatientUrl( "findPatientUrl" );
         return unit;
     }
 }

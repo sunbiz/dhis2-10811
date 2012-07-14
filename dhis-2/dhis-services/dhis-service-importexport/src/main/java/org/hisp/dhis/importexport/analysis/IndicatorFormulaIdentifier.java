@@ -40,9 +40,9 @@ public class IndicatorFormulaIdentifier
     
     private String formula;
     
-    private Integer identifier;
+    private String identifier;
     
-    public IndicatorFormulaIdentifier( String indicator, String formula, Integer identifier )
+    public IndicatorFormulaIdentifier( String indicator, String formula, String identifier )
     {
         this.indicator = indicator;
         this.formula = formula;
@@ -69,12 +69,12 @@ public class IndicatorFormulaIdentifier
         this.formula = formula;
     }
 
-    public Integer getIdentifier()
+    public String getIdentifier()
     {
         return identifier;
     }
 
-    public void setIdentifier( Integer identifier )
+    public void setIdentifier( String identifier )
     {
         this.identifier = identifier;
     }

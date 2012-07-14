@@ -28,7 +28,6 @@
 package org.hisp.dhis.caseentry.action.patient;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +37,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.i18n.I18nFormat;
-import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientIdentifierService;
@@ -47,6 +45,9 @@ import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.validation.ValidationCriteria;
 
 import com.opensymphony.xwork2.Action;
 
@@ -63,8 +64,6 @@ public class ValidatePatientAction
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private OrganisationUnitSelectionManager selectionManager;
-
     private I18nFormat format;
 
     private PatientService patientService;
@@ -75,13 +74,13 @@ public class ValidatePatientAction
 
     private PatientIdentifierTypeService identifierTypeService;
 
+    private ProgramService programService;
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
 
     private String fullName;
-
-    private Character dobType;
 
     private String birthDate;
 
@@ -101,6 +100,8 @@ public class ValidatePatientAction
 
     private Integer relationshipTypeId;
 
+    private Integer programId;
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -108,8 +109,6 @@ public class ValidatePatientAction
     private String message;
 
     private I18n i18n;
-
-    private Patient patient;
 
     private Map<String, String> patientAttributeValueMap = new HashMap<String, String>();
 
@@ -123,46 +122,7 @@ public class ValidatePatientAction
 
     public String execute()
     {
-        Date dateOfBirth;
-
-        if ( selectionManager.getSelectedOrganisationUnit() == null )
-        {
-            message = i18n.getString( "please_select_a_registering_unit" );
-
-            return INPUT;
-        }
-
-        if ( dobType != null && dobType == Patient.DOB_TYPE_APPROXIATED )
-        {
-            Patient patient = new Patient();
-            patient.setBirthDateFromAge( age.intValue(), ageType );
-            
-            if( patient.getIntegerValueOfAge() > 100 )
-            {
-                message = i18n.getString( "age_of_patient_must_be_less_or_equals_to_100" );
-                return INPUT;
-            }
-        }
-        
-        if ( dobType != null && (dobType == Patient.DOB_TYPE_VERIFIED || dobType == Patient.DOB_TYPE_DECLARED) )
-        {
-            birthDate = birthDate.trim();
-
-            dateOfBirth = format.parseDate( birthDate );
-
-            if ( dateOfBirth == null || dateOfBirth.after( new Date() ) )
-            {
-                message = i18n.getString( "please_enter_a_valid_birth_date" );
-
-                return INPUT;
-            }
-        }
-
         fullName = fullName.trim();
-
-        // ---------------------------------------------------------------------
-        // Check duplicated patients
-        // ---------------------------------------------------------------------
 
         int startIndex = fullName.indexOf( ' ' );
         int endIndex = fullName.lastIndexOf( ' ' );
@@ -190,7 +150,7 @@ public class ValidatePatientAction
         {
             patients = patientService.getPatients( firstName, middleName, lastName, format.parseDate( birthDate ),
                 gender );
-            
+
             if ( patients != null && patients.size() > 0 )
             {
                 message = i18n.getString( "patient_duplicate" );
@@ -212,7 +172,7 @@ public class ValidatePatientAction
                         }
                     }
                 }
-                
+
                 if ( flagDuplicate )
                 {
                     return PATIENT_DUPLICATE;
@@ -239,6 +199,7 @@ public class ValidatePatientAction
         }
 
         Patient p = new Patient();
+        p.setGender( gender );
 
         if ( birthDate != null )
         {
@@ -265,11 +226,11 @@ public class ValidatePatientAction
                 if ( !underAge || (underAge && !idType.isRelated()) )
                 {
                     value = request.getParameter( AddPatientAction.PREFIX_IDENTIFIER + idType.getId() );
-                    
+
                     if ( StringUtils.isNotBlank( value ) )
                     {
                         PatientIdentifier identifier = patientIdentifierService.get( idType, value );
-                        
+
                         if ( identifier != null
                             && (id == null || identifier.getPatient().getId().intValue() != id.intValue()) )
                         {
@@ -288,6 +249,46 @@ public class ValidatePatientAction
         }
 
         // ---------------------------------------------------------------------
+        // Check Enrollment for adding patient single event with registration
+        // ---------------------------------------------------------------------
+
+        if ( programId != null )
+        {
+            Program program = programService.getProgram( programId );
+            ValidationCriteria criteria = program.isValid( p );
+
+            if ( criteria != null )
+            {
+                message = i18n.getString( "patient_could_not_be_enrolled_due_to_following_enrollment_criteria" ) + ": "
+                    + i18n.getString( criteria.getProperty() );
+
+                switch ( criteria.getOperator() )
+                {
+                case ValidationCriteria.OPERATOR_EQUAL_TO:
+                    message += " = ";
+                    break;
+                case ValidationCriteria.OPERATOR_GREATER_THAN:
+                    message += " > ";
+                    break;
+                default:
+                    message += " < ";
+                    break;
+                }
+
+                if ( criteria.getProperty() == "birthDate" )
+                {
+                    message += " " + format.formatValue( criteria.getValue() );
+                }
+                else
+                {
+                    message += " " + criteria.getValue().toString();
+                }
+
+                return INPUT;
+            }
+        }
+
+        // ---------------------------------------------------------------------
         // Validation success
         // ---------------------------------------------------------------------
 
@@ -299,6 +300,16 @@ public class ValidatePatientAction
     // -------------------------------------------------------------------------
     // Getter/Setter
     // -------------------------------------------------------------------------
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
+
+    public void setProgramId( Integer programId )
+    {
+        this.programId = programId;
+    }
 
     public Collection<Patient> getPatients()
     {
@@ -313,11 +324,6 @@ public class ValidatePatientAction
     public void setPatientIdentifierService( PatientIdentifierService patientIdentifierService )
     {
         this.patientIdentifierService = patientIdentifierService;
-    }
-
-    public void setSelectionManager( OrganisationUnitSelectionManager selectionManager )
-    {
-        this.selectionManager = selectionManager;
     }
 
     public void setFormat( I18nFormat format )
@@ -358,11 +364,6 @@ public class ValidatePatientAction
     public void setI18n( I18n i18n )
     {
         this.i18n = i18n;
-    }
-
-    public Patient getPatient()
-    {
-        return patient;
     }
 
     public Map<String, String> getPatientAttributeValueMap()
@@ -408,10 +409,5 @@ public class ValidatePatientAction
     public void setAgeType( char ageType )
     {
         this.ageType = ageType;
-    }
-
-    public void setDobType( Character dobType )
-    {
-        this.dobType = dobType;
     }
 }

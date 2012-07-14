@@ -27,10 +27,13 @@
 
 package org.hisp.dhis.program;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.validation.ValidationCriteria;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,6 +57,13 @@ public class DefaultProgramService
         this.programStore = programStore;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation methods
     // -------------------------------------------------------------------------
@@ -75,17 +85,17 @@ public class DefaultProgramService
 
     public Collection<Program> getAllPrograms()
     {
-        return programStore.getAll();
+        return i18n( i18nService, programStore.getAll() );
     }
 
     public Program getProgram( int id )
     {
-        return programStore.get( id );
+        return i18n( i18nService, programStore.get( id ) );
     }
 
     public Program getProgramByName( String name )
     {
-        return programStore.getByName( name );
+        return i18n( i18nService, programStore.getByName( name ) );
     }
 
     public Collection<Program> getPrograms( OrganisationUnit organisationUnit )
@@ -100,7 +110,7 @@ public class DefaultProgramService
             }
         }
 
-        return programs;
+        return i18n( i18nService, programs);
     }
 
     public Collection<Program> getPrograms( ValidationCriteria validationCriteria )
@@ -115,17 +125,26 @@ public class DefaultProgramService
             }
         }
 
-        return programs;
-    }
-    
-    public Collection<Program> getPrograms( int type )
-    {
-        return programStore.getByType( type );
-    }
-    
-    public Collection<Program> getPrograms( int type, OrganisationUnit orgunit )
-    {
-        return programStore.get( type, orgunit );
+        return i18n( i18nService, programs);
     }
 
+    public Collection<Program> getPrograms( int type )
+    {
+        return i18n( i18nService, programStore.getByType( type ) );
+    }
+
+    public Collection<Program> getPrograms( int type, OrganisationUnit orgunit )
+    {
+        return i18n( i18nService, programStore.get( type, orgunit ) );
+    }
+
+    public Collection<Program> getProgramsByCurrentUser()
+    {
+        return i18n( i18nService, programStore.getByCurrentUser() );
+    }
+    
+    public Program getProgram( String uid )
+    {
+        return i18n( i18nService, programStore.getByUid( uid ) );
+    }
 }

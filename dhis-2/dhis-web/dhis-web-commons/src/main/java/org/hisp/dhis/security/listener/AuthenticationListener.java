@@ -34,6 +34,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.util.Assert;
 
 /**
@@ -65,7 +66,7 @@ public class AuthenticationListener
     // -------------------------------------------------------------------------
 
     public void onApplicationEvent( ApplicationEvent applicationEvent )
-    {        
+    {
         Assert.notNull( applicationEvent );
         
         if ( applicationEvent instanceof AuthenticationSuccessEvent )
@@ -73,16 +74,22 @@ public class AuthenticationListener
             AuthenticationSuccessEvent event = (AuthenticationSuccessEvent) applicationEvent;
             
             String username = ((UserDetails) event.getAuthentication().getPrincipal()).getUsername();
+
+            WebAuthenticationDetails details = (WebAuthenticationDetails) event.getAuthentication().getDetails();
             
-            userAuditService.registerLoginSuccess( username );
+            String ip = details != null ? details.getRemoteAddress() : "";
+            
+            userAuditService.registerLoginSuccess( username, ip );
             
             userService.setLastLogin( username );
         }
         else if ( applicationEvent instanceof AbstractAuthenticationFailureEvent )
         {
             AbstractAuthenticationFailureEvent event = (AbstractAuthenticationFailureEvent) applicationEvent;
+
+            WebAuthenticationDetails details = (WebAuthenticationDetails) event.getAuthentication().getDetails();
             
-            userAuditService.registerLoginFailure( (String) event.getAuthentication().getPrincipal() );
+            userAuditService.registerLoginFailure( (String) event.getAuthentication().getPrincipal(), details.getRemoteAddress() );
         }
     }
 }

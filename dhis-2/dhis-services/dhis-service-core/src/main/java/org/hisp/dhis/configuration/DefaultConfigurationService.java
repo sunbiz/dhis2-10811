@@ -53,7 +53,7 @@ public class DefaultConfigurationService
     @Override
     public void setConfiguration( Configuration configuration )
     {
-        configurationStore.saveOrUpdate( configuration );
+        configurationStore.save( configuration );
     }
     
     @Override

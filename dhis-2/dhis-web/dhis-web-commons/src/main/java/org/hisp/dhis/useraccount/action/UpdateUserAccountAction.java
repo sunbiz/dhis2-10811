@@ -37,8 +37,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
- * @version $Id: UpdateUserAction.java 5556 2008-08-20 11:36:20Z abyot $
- * @version $Id: UpdateUserAction.java 5556 2009-11-30 11:18:30Z Chau Thu Tran $
  */
 public class UpdateUserAccountAction
     implements Action

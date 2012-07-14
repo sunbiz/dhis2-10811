@@ -1,10 +1,10 @@
 <script type="text/javascript">
 	jQuery("#representativeDiv").ready(function() {
-		
-		jQuery("#tabs").tabs();
-		hideById('addRepresentativeForm [id=underAgeDiv]');
+		hideById('addRepresentativeForm [id=age]');
 		addEventForPatientForm('addRepresentativeForm');
-		
+		$('#addRepresentativeForm [id=dobType]').removeAttr('onchange');
+		$('#addRepresentativeForm [id=dobType]').attr('onchange', 'dobTypeOnChange( "addRepresentativeForm" );');
+				
 		jQuery("#searchForm").validate({
 			meta:"validate"
 			,errorElement:"span"
@@ -39,12 +39,17 @@
 					}
 				}
 		});
-
+		datePickerValid( 'addRepresentativeForm [id=birthDate]' );
+		hideById('addRepresentativeForm [id=deathCheckboxTR]');
+		hideById('addRepresentativeForm [id=representativeFormDiv]');
+		hideById('addRepresentativeForm [id=underAgeDiv]');
 	}); 
+	
+	jQuery("#addRepresentativeTabs").tabs();
 </script>
 
 <!-- TAB Header -->
-<div id="tabs">
+<div id="addRepresentativeTabs">
 	<ul>
 		<li><a href="#tab-1">$i18n.getString("search_existing_person")</a></li>
 		<li><a href="#tab-2">$i18n.getString("add_new_person")</a></li>
@@ -82,7 +87,7 @@
 						<select name="identifierTypeId" id="identifierTypeId" style='width:18em' >
 							<option value="">[$i18n.getString( "please_select" )]</option>       
 							#foreach($identifierType in $identifierTypes)
-								<option value="$identifierType.id">$identifierType.name</option>
+								<option value="$identifierType.id">$identifierType.displayName</option>
 							#end
 						</select>
 					</td>
@@ -94,7 +99,7 @@
 						<select name="attributeId" id="attributeId" style='width:18em'>
 							<option value="">[$i18n.getString( "please_select" )]</option>       
 							#foreach($attribute in $attributes)
-								<option value="$attribute.id">$attribute.name</option>
+								<option value="$attribute.id">$attribute.displayName</option>
 							#end
 						</select>
 					</td>
@@ -120,9 +125,9 @@
 		<form id="addRepresentativeForm" name="addRepresentativeForm" action="addRepresentative.action" method="post">
 			<table id="formContainer">
 				<tr>
-					<td style='width:12.2em'><label for="relationship_type">$i18n.getString("relationship_type")<em title="$i18n.getString( "required" )" class="required">*</em></label></td>
+					<td><label for="relationship_type">$i18n.getString("relationship_type")<em title="$i18n.getString( "required" )" class="required">*</em></label></td>
 					<td >
-						<select name="relationshipTypeId" id="relationshipTypeId" style="width:28.2em" class="{validate:{required:true}}">
+						<select name="relationshipTypeId" id="relationshipTypeId" class="{validate:{required:true}}">
 							<option value="">[$i18n.getString( "please_select" )]</option>        
 							#foreach ($relationship in $relationshipTypes)
 								<option value="$relationship.id">$relationship.aIsToB</option>
@@ -146,4 +151,8 @@
 		</div>
 	</div>
 </div>
+
+<script>
+	
+</script>
 

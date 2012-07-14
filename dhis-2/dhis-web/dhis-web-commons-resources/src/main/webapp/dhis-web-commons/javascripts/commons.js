@@ -40,6 +40,37 @@ function translate( className, objectId )
 }
 
 /**
+ * Scrolls the view port to the bottom of the document.
+ */
+function scrollToBottom()
+{
+	var scrollTop = parseInt( $( document ).height() - $( window ).height() );
+	
+	if ( scrollIsRelevant() )
+	{
+		$( document ).scrollTop( scrollTop );
+	}
+}
+
+/**
+ * Scrolls the view port to the top of the document.
+ */
+function scrollToTop()
+{
+	$( document ).scrollTop( 0 );
+}
+
+/**
+ * Indicates whether there is a need for scrolling.
+ */
+function scrollIsRelevant()
+{
+	var scrollTop = parseInt( $( document ).height() - $( window ).height() );	
+	var relevant = ( scrollTop > 0 );
+	return relevant;
+}
+
+/**
  * Joins the names of the given array of objects and returns it as a single string.
  */
 function joinNameableObjects( objects )
@@ -845,7 +876,7 @@ function datePicker( id )
 		buttonImage: '../images/calendar.png',
 		buttonImageOnly: true,
 		constrainInput: true,
-        yearRange: '-100:+100',
+        yearRange: '-100:+100'
 	});
 	jQuery( "#" + id ).attr("readonly", true );
 	s = jQuery("#" + id );		
@@ -913,6 +944,36 @@ function datePickerValid( id, today )
 		buttonImage: '../images/calendar.png',
 		buttonImageOnly: true,
 		maxDate: '+0d +0w',
+		constrainInput: true,
+        yearRange: '-100:+100'
+	});
+	jQuery( "#" + id ).attr("readonly", true );
+	
+	if ( today == undefined )
+	{
+		today = false;
+	}
+	
+	if( today )
+	{
+		s = jQuery("#" + id );
+		if( s.val()=='' ) s.val( getCurrentDate() );
+	}
+}
+
+function datePickerFuture( id, today )
+{
+	jQuery("#" + id).datepicker(
+	{
+		dateFormat: dateFormat,
+		changeMonth: true,
+		changeYear: true,
+		monthNamesShort: monthNames,
+		dayNamesMin: dayNamesMin,
+		showOn: 'both',
+		buttonImage: '../images/calendar.png',
+		buttonImageOnly: true,
+		minDate: '+0d +0w',
 		constrainInput: true,
         yearRange: '-100:+100'
 	});
@@ -1102,9 +1163,9 @@ function insertTextCommon( inputAreaName, inputText )
 // -----------------------------------------------------------------------------
 
 /**
- * Create validator for fileds in form *
+ * Create validator for fileds in form
  * 
- * this should replace validation() at some point, but theres just to much code
+ * This should replace validation() at some point, but theres just to much code
  * depending on the old version for now.
  * 
  * See http://bassistance.de/jquery-plugins/jquery-plugin-validation/ for more
@@ -1113,25 +1174,38 @@ function insertTextCommon( inputAreaName, inputText )
  * @param formId form to validate
  * @param submitHandler the submitHandler to use
  * @param kwargs A dictionary of optional arguments, currently supported are:
- *            beforeValidateHandler rules
+ *        beforeValidateHandler, rules
  */
-function validation2(formId, submitHandler, kwargs)
+function validation2( formId, submitHandler, kwargs )
 {
-	var beforeValidateHandler = kwargs["beforeValidateHandler"];
-	var rules = kwargs["rules"];
+	var beforeValidateHandler = null;
+	
+	if ( isDefined( kwargs ) )
+	{
+		beforeValidateHandler = kwargs["beforeValidateHandler"];
+	}
 
-	var validator = jQuery("#" + formId ).validate({
-		meta:"validate",
-		errorElement:"span",
+	var rules = kwargs["rules"];
+	var validator = jQuery( "#" + formId ).validate( {
+		meta: "validate",
+        errorElement: "span",
+        warningElement: "span",
 		beforeValidateHandler: beforeValidateHandler,
 		submitHandler: submitHandler,
-		rules: rules
-	});
+		rules: rules,
+		errorPlacement: function(error, element) {
+			element.parent( "td" ).append( "<br>" ).append( error );
+		}
+	} );
 
-	$("#" + formId + " input").each(function(n) {
-		try {
-			$(this).attr("maxlength", rules[this.id].rangelength[1]);
-		} catch(e) {}
+	$( "#" + formId + " input" ).each( function( n )
+	{
+		try
+		{
+			$( this ).attr( "maxlength", rules[this.id].rangelength[1] );
+		}
+		catch( e )
+		{}
 	});
 
 	var nameField = jQuery('#' + formId + ' :input')[0];
@@ -1149,8 +1223,8 @@ function validation2(formId, submitHandler, kwargs)
  * 
  * @return Validation rules for a given form
  */
-function getValidationRules(form) {
-	if( form !== undefined ) {
+function getValidationRules( form ) {
+	if ( form !== undefined ) {
 		return validationRules[form];
 	}
 	
@@ -1187,6 +1261,17 @@ function checkValueIsExist( inputId, url, params )
 {
 	jQuery("#" + inputId).rules("add",{
 		remote: {
+			url:url,
+			type:'post',
+			data:params
+		}
+	});
+}
+
+function checkValueIsExistWarning( inputId, url, params )
+{
+	jQuery("#" + inputId).rules("add",{
+		remoteWarning: {
 			url:url,
 			type:'post',
 			data:params
@@ -1460,6 +1545,7 @@ function relativePeriodsChecked()
          isChecked( "lastYear" ) ||
          isChecked( "last5Years" ) ||
          isChecked( "last12Months" ) ||
+         isChecked( "last3Months" ) ||
          isChecked( "last6BiMonths" ) ||
          isChecked( "last4Quarters" ) ||
          isChecked( "last2SixMonths" ) ||
@@ -1482,7 +1568,7 @@ function relativePeriodsChecked()
  */
 function isValidZeroNumber( value )
 {
-	var regex = /^0(?:\.0*)?$/;
+	var regex = /^0(\.0*)?$/;
 	return regex.test( value );
 }
 
@@ -1529,6 +1615,11 @@ function isNumber( value )
 	return regex.test( value );
 }
 
+function startsWith( string, substring )
+{
+	return ( string && string.lastIndexOf( substring, 0 ) === 0 ) ? true : false;
+}
+
 function isPositiveNumber( value )
 {
 	return isNumber( value ) && parseFloat( value ) > 0;
@@ -1547,6 +1638,21 @@ function isZeroNumber( value )
 function getRandomNumber()
 {
 	return Math.floor( 100000000 * Math.random() );
+}
+
+function getRandomCode()
+{
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";	
+	var len = 11;	
+	var string = "";
+	
+	for ( var i=0; i < len; i++ ) 
+	{
+		var rnum = Math.floor( Math.random() * chars.length );
+		string += chars.substring( rnum, rnum+1 );
+	}
+	
+	return string;
 }
 
 function getDC()
@@ -1584,37 +1690,20 @@ function pagingList( currentPage, pageSize )
 {
 	var baseLink = jQuery( "#baseLink" ).val();	
 	var url = baseLink + "currentPage=" + currentPage + "&pageSize=" + pageSize;
-
+	
 	var index = url.indexOf( '?' );
 	var link = url.substring( 0, index );
 	var data = url.substring( index + 1 );
 
 	if ( !isAjax )
 	{
-		var keyParam = data.split( '&' )[0];
-
-		if ( keyParam.split( '=' )[0] == "key" )
-		{
-			setFieldValue( 'key', keyParam.split( '=' )[1] )
-		}
-		
-		url = link + "?currentPage=" + currentPage + "&pageSize=" + pageSize;
-		
-		if ( $( '#filterKeyForm' ).length )
-		{
-			$( '#filterKeyForm' ).attr( 'action', url );
-			$( '#filterKeyForm' ).submit();
-		}
-		else
-		{
-			window.location.href = url;
-		}
+		window.location.href = encodeURI( url );
 	}
 	else
 	{		
-		jQuery.postUTF8( link , data, function(html){
+		jQuery.postUTF8( link, data, function( html ) {
 			setInnerHTML( contentDiv, html );
-		});
+		} );
 	}
 }
 

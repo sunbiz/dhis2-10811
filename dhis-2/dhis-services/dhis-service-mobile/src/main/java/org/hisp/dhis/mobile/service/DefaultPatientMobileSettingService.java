@@ -70,5 +70,10 @@ public class DefaultPatientMobileSettingService
     {
         return patientMobileSettingStore.getCurrentSetting();
     }
-
+   
+    @Override
+    public PatientMobileSetting get( int id )
+    {
+        return patientMobileSettingStore.get( id );
+    }    
 }

@@ -17,15 +17,15 @@
 		<td>$i18n.getString('excel_file_directory')</td>		
 	</tr>
 	<tr>
-		<td><input type="text" id="templateDirectory" name="templateDirectory" style="width:400px" value="$!templateDirectory" 
+		<td><input type="text" id="templateDirectory" name="templateDirectory" style="width:300px" value="$!templateDirectory" 
 		class="{validate:{required:true,custome_regex:[/^[\w-\s\/\\]*$/, '$i18n.getString( 'config_path_invalid' )']}}" onblur="replaceFlash( this )"/></td>
-	</tr>
-	<tr>		
-		<td><input type="submit" value="$i18n.getString('ok')" style="width:150px"/>
-			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location='administration.action'" style="width:150px">
+		<td><input type="submit" value="$i18n.getString( 'ok' )" style="width:120px"/>
+			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location='administration.action'" style="width:120px">
 		</td>
 	</tr>
+	
 </table>
+
 </form>
 
 <script type="text/javascript">

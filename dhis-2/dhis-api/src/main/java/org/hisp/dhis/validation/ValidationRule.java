@@ -35,7 +35,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.adapter.JacksonPeriodTypeDeserializer;
 import org.hisp.dhis.common.adapter.JacksonPeriodTypeSerializer;
@@ -51,7 +51,7 @@ import java.util.Set;
 /**
  * @author Kristian Nordal
  */
-@JacksonXmlRootElement( localName = "validationRule", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "validationRule", namespace = DxfNamespaces.DXF_2_0)
 public class ValidationRule
     extends BaseIdentifiableObject
 {
@@ -131,6 +131,10 @@ public class ValidationRule
         return "[" + name + "]";
     }
 
+    // -------------------------------------------------------------------------
+    // Logic
+    // ------------------------------------------------------------------------- 
+
     public void clearExpressions()
     {
         this.leftSide = null;
@@ -148,6 +152,11 @@ public class ValidationRule
         groups.remove( validationRuleGroup );
         validationRuleGroup.getMembers().remove( this );
     }
+    
+    public String getDescriptionNameFallback()
+    {
+        return description != null && !description.trim().isEmpty() ? description : name;
+    }
 
     // -------------------------------------------------------------------------
     // Set and get methods
@@ -155,7 +164,7 @@ public class ValidationRule
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getDescription()
     {
         return description;
@@ -170,7 +179,7 @@ public class ValidationRule
     @JsonSerialize( using = JacksonPeriodTypeSerializer.class )
     @JsonDeserialize( using = JacksonPeriodTypeDeserializer.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public PeriodType getPeriodType()
     {
         return periodType;
@@ -183,7 +192,7 @@ public class ValidationRule
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Operator getOperator()
     {
         return operator;
@@ -196,7 +205,7 @@ public class ValidationRule
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getType()
     {
         return type;
@@ -209,7 +218,7 @@ public class ValidationRule
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Expression getLeftSide()
     {
         return leftSide;
@@ -222,7 +231,7 @@ public class ValidationRule
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Expression getRightSide()
     {
         return rightSide;
@@ -236,8 +245,8 @@ public class ValidationRule
     @JsonProperty( value = "validationRuleGroups" )
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class} )
-    @JacksonXmlElementWrapper( localName = "validationRuleGroups", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "validationRuleGroup", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "validationRuleGroups", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "validationRuleGroup", namespace = DxfNamespaces.DXF_2_0)
     public Set<ValidationRuleGroup> getGroups()
     {
         return groups;
@@ -260,9 +269,17 @@ public class ValidationRule
             description = validationRule.getDescription() == null ? description : validationRule.getDescription();
             type = validationRule.getType() == null ? type : validationRule.getType();
             operator = validationRule.getOperator() == null ? operator : validationRule.getOperator();
-            leftSide = validationRule.getLeftSide() == null ? leftSide : validationRule.getLeftSide();
-            rightSide = validationRule.getRightSide() == null ? rightSide : validationRule.getRightSide();
             periodType = validationRule.getPeriodType() == null ? periodType : validationRule.getPeriodType();
+
+            if ( leftSide != null && validationRule.getLeftSide() != null )
+            {
+                leftSide.mergeWith( validationRule.getLeftSide() );
+            }
+            
+            if ( rightSide != null && validationRule.getRightSide() != null )
+            {
+                rightSide.mergeWith( validationRule.getRightSide() );
+            }
 
             groups.clear();
         }

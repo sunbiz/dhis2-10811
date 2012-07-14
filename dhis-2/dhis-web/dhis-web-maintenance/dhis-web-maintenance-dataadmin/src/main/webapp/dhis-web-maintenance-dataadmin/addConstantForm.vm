@@ -18,7 +18,7 @@
 
 <h3>$i18n.getString( "create_new_constant" )</h3>
 
-<form id="addConstantForm" action="addConstant.action" method="post" >
+<form id="addConstantForm" action="addConstant.action" method="post" class="inputForm">
 
 <table>
 	<tr>
@@ -26,11 +26,11 @@
 	</tr>
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:20em"/></td>
+		<td><input type="text" id="name" name="name"></td>
 	</tr>
 	<tr>
 		<td><label for="name">$i18n.getString( "value" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="value" name="value" style="width:20em"/></td>
+		<td><input type="text" id="value" name="value"></td>
 	</tr>
 	<tr>
 		<td></td>

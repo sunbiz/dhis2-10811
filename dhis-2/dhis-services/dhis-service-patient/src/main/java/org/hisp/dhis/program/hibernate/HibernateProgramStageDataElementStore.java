@@ -29,10 +29,11 @@ package org.hisp.dhis.program.hibernate;
 import java.util.Collection;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageDataElementStore;
@@ -42,32 +43,92 @@ import org.hisp.dhis.program.ProgramStageDataElementStore;
  * @version $Id$
  */
 public class HibernateProgramStageDataElementStore
-    extends HibernateGenericStore<ProgramStageDataElement>
     implements ProgramStageDataElementStore
 {
+    // -------------------------------------------------------------------------
+    // Dependencies
+    // -------------------------------------------------------------------------
+
+    private SessionFactory sessionFactory;
+
+    public void setSessionFactory( SessionFactory sessionFactory )
+    {
+        this.sessionFactory = sessionFactory;
+    }
+
+    // -------------------------------------------------------------------------
+    // Basic ProgramStageDataElement
+    // -------------------------------------------------------------------------
+
+    public void save( ProgramStageDataElement programStageDataElement )
+    {
+        Session session = sessionFactory.getCurrentSession();
+
+        session.save( programStageDataElement );
+    }
+
+    public void update( ProgramStageDataElement programStageDataElement )
+    {
+        Session session = sessionFactory.getCurrentSession();
+
+        session.update( programStageDataElement );
+    }
+
+    public void delete( ProgramStageDataElement programStageDataElement )
+    {
+        Session session = sessionFactory.getCurrentSession();
+
+        session.delete( programStageDataElement );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public Collection<ProgramStageDataElement> getAll()
+    {
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = session.createCriteria( ProgramStageDataElement.class );
+
+        return criteria.list();
+    }
+
     @SuppressWarnings( "unchecked" )
     public Collection<ProgramStageDataElement> get( ProgramStage programStage )
     {
-        return getCriteria( Restrictions.eq( "programStage", programStage ) ).list();
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = session.createCriteria( ProgramStageDataElement.class );
+
+        return criteria.add( Restrictions.eq( "programStage", programStage ) ).list();
     }
 
     @SuppressWarnings( "unchecked" )
     public Collection<ProgramStageDataElement> get( ProgramStage programStage, boolean compulsory )
     {
-        return getCriteria( Restrictions.eq( "programStage", programStage ), Restrictions.eq( "compulsory", compulsory ) )
-            .list();
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = session.createCriteria( ProgramStageDataElement.class );
+        criteria.add( Restrictions.eq( "programStage", programStage ) );
+        criteria.add( Restrictions.eq( "compulsory", compulsory ) );
+
+        return criteria.list();
     }
 
     public ProgramStageDataElement get( ProgramStage programStage, DataElement dataElement )
     {
-        return (ProgramStageDataElement) getCriteria( Restrictions.eq( "programStage", programStage ),
-            Restrictions.eq( "dataElement", dataElement ) ).uniqueResult();
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = session.createCriteria( ProgramStageDataElement.class );
+        criteria.add( Restrictions.eq( "programStage", programStage ) );
+        criteria.add( Restrictions.eq( "dataElement", dataElement ) );
+
+        return (ProgramStageDataElement) criteria.uniqueResult();
     }
 
     @SuppressWarnings( "unchecked" )
     public Collection<DataElement> getListDataElement( ProgramStage programStage )
     {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria( getClazz() );
+        Session session = sessionFactory.getCurrentSession();
+        Criteria criteria = session.createCriteria( ProgramStageDataElement.class );
         criteria.add( Restrictions.eq( "programStage", programStage ) );
         criteria.setProjection( Projections.property( "dataElement" ) );
         return criteria.list();

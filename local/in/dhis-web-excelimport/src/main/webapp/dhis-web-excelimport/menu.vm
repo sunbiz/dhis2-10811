@@ -12,5 +12,8 @@
         <li>
             <a href = "tcsDataImportForm.action">Import XML From TNHMIS</a>
         </li>
+        <li>
+            <a href = "BDDataImportForm.action">Bangladesh Data Import Form</a>
+        </li>
     </ul>
 </ul>

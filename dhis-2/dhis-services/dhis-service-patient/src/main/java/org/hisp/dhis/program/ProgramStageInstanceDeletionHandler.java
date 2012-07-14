@@ -57,23 +57,30 @@ public class ProgramStageInstanceDeletionHandler
     @Override
     public String getClassName()
     {
-        return ProgramStageDataElement.class.getSimpleName();
+        return ProgramStageInstance.class.getSimpleName();
     }
 
     @Override
     public String allowDeleteProgramStage( ProgramStage programStage )
     {
-        String sql = "SELECT COUNT(*) " + "FROM programstageinstance " + "WHERE programstageid=" + programStage.getId();
+        String sql = "SELECT COUNT(*) FROM programstageinstance WHERE programstageid=" + programStage.getId();
 
         return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
     }
     
     @Override
-    public void deleteProgramInstance( ProgramInstance programInstance )
+    public String allowDeleteProgramInstance( ProgramInstance programInstance )
     {
-        String sql = "DELETE FROM programstageinstance " +
-        		"WHERE programinstanceid = " + programInstance.getId();
+        String sql = "SELECT COUNT(*) FROM programstageinstance WHERE programinstanceid=" + programInstance.getId();
 
-        jdbcTemplate.execute( sql );
+        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+    }
+    
+    @Override
+    public String allowDeleteProgram( Program program )
+    {
+        String sql = "SELECT COUNT(*) FROM programstageinstance psi join programinstance pi on pi.programinstanceid=psi.programinstanceid where pi.programid = " + program.getId();
+
+        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
     }
 }

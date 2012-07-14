@@ -37,7 +37,11 @@ import java.util.List;
 public interface StatementBuilder
 {
     final String QUOTE = "'";
-    
+
+    //--------------------------------------------------------------------------
+    // General
+    //--------------------------------------------------------------------------
+
     /**
      * Encodes the provided SQL value.
      * 
@@ -45,6 +49,15 @@ public interface StatementBuilder
      * @return the SQL encoded value.
      */
     String encode( String value );
+    
+    /**
+     * Returns statement for vacuum and analyze operations for a table. Returns
+     * null if such statement is not relevant.
+     * 
+     * @param table the table to vacuum.
+     * @return vacuum and analyze operations for a table.
+     */
+    String getVacuum( String table );
     
     /**
      * Returns the name of a double column type.
@@ -63,24 +76,24 @@ public interface StatementBuilder
     /**
      * Creates a create table statement for the aggregated datavalue table.
      */
-    String getCreateAggregatedDataValueTable();
+    String getCreateAggregatedDataValueTable( boolean temp );
 
     /**
      * Creates a create table statement for the aggregated organisation unit
      * group datavalue table.
      */
-    String getCreateAggregatedOrgUnitDataValueTable();
+    String getCreateAggregatedOrgUnitDataValueTable( boolean temp );
     
     /**
      * Creates a create table statement for the aggregated indicatorvalue table.
      */
-    String getCreateAggregatedIndicatorTable();
+    String getCreateAggregatedIndicatorTable( boolean temp );
 
     /**
      * Creates a create table statement for the aggregated organisation unit
      * group indicatorvalue table.
      */
-    String getCreateAggregatedOrgUnitIndicatorTable();
+    String getCreateAggregatedOrgUnitIndicatorTable( boolean temp );
 
     /**
      * Creates a create table statement for the aggregated datasetcompleteness table.
@@ -99,20 +112,6 @@ public interface StatementBuilder
      */
     String getDeleteZeroDataValues();
     
-    /**
-     * Returns the maximum number of columns in a table.
-     * 
-     * @return the maximum number of columns in a table.
-     */
-    int getMaximumNumberOfColumns();
-    
-    /**
-     *  Drop Dataset foreign key for DataEntryForm table
-     *  
-     * @return
-     */
-    String getDropDatasetForeignKeyForDataEntryFormTable();
-    
     String getMoveDataValueToDestination( int sourceId, int destinationId );
 
     String getSummarizeDestinationAndSourceWhereMatching( int sourceId, int destinationId );
@@ -129,7 +128,17 @@ public interface StatementBuilder
     
     String getDeflatedDataValues( int dataElementId, String dataElementName, int categoryOptionComboId,
     	String periodIds, int organisationUnitId, String organisationUnitName, int lowerBound, int upperBound );
-    	
+    
+    String limitRecord( int min, int max );
+    
+    String getAddDate( String dateField, int days );
+    
+    String getPatientFullName();
+
+    //--------------------------------------------------------------------------
+    // Archiving
+    //--------------------------------------------------------------------------
+
     String archiveData( String startDate, String endDate );
     
     String unArchiveData( String startDate, String endDate );
@@ -157,10 +166,6 @@ public interface StatementBuilder
     String queryDataElementStructureForOrgUnit();
 
     String queryRawDataElementsForOrgUnitBetweenPeriods( Integer orgUnitId, List<Integer> betweenPeriodIds);
-    
-    String limitRecord( int min, int max );
-    
-    String getAddDate( String dateField, int days );
-    
-    String getPatientFullName();
+
+  
 }

@@ -27,6 +27,9 @@ package org.hisp.dhis.reportsheet.utils;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.reportsheet.utils.NumberUtils.getFormattedNumber;
+import static org.apache.poi.ss.usermodel.ErrorConstants.getText;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,10 +48,10 @@ import org.apache.poi.hssf.usermodel.HSSFEvaluationWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.formula.FormulaParser;
 import org.apache.poi.ss.formula.FormulaParsingWorkbook;
+import org.apache.poi.ss.formula.FormulaType;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.ErrorConstants;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 /**
@@ -67,12 +70,6 @@ public class ExcelUtils
 
     private static FormulaParsingWorkbook evaluationWorkbook = HSSFEvaluationWorkbook.create( new HSSFWorkbook() );
 
-    private static final String PATTERN_FOR_ROW = "(\\d{1,})";
-
-    private static final String PATTERN_FOR_COLUMN = "([a-zA-Z])";
-
-    private static final String PATTERN_EXCELFORMULA = "(\\$?([a-zA-Z]{1,})\\$?(\\d{1,}!?))";
-
     private static final Integer NUMBER_OF_LETTER = new Integer( 26 );
 
     private static final Integer POI_CELLSTYLE_BLANK = new Integer( org.apache.poi.ss.usermodel.Cell.CELL_TYPE_BLANK );
@@ -88,6 +85,12 @@ public class ExcelUtils
     public static final String NUMBER = "NUMBER";
 
     public static final String EXTENSION_XLS = ".xls";
+
+    public static final String PATTERN_FOR_ROW = "(\\d{1,})";
+
+    public static final String PATTERN_FOR_COLUMN = "([a-zA-Z]{1,})";
+
+    public static final String PATTERN_EXCELFORMULA = "(\\$?([a-zA-Z]{1,})\\$?(\\d{1,}!?))";
 
     // -------------------------------------------------------------------------
     // JXL methods
@@ -179,7 +182,7 @@ public class ExcelUtils
                 break;
 
             case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_ERROR:
-                value = ErrorConstants.getText( cellPOI.getErrorCellValue() );
+                value = getText( cellPOI.getErrorCellValue() );
                 break;
 
             case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
@@ -228,17 +231,17 @@ public class ExcelUtils
                 break;
 
             case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_ERROR:
-                value = ErrorConstants.getText( cellPOI.getErrorCellValue() );
+                value = getText( cellPOI.getErrorCellValue() );
                 break;
 
             case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_FORMULA:
                 try
                 {
-                    value = NumberUtils.getFormattedNumber( dataFormatter.formatCellValue( cellPOI, evaluator ) );
+                    value = getFormattedNumber( dataFormatter.formatCellValue( cellPOI, evaluator ) );
                 }
                 catch ( Exception ex )
                 {
-                    value = ErrorConstants.getText( cellPOI.getErrorCellValue() );
+                    value = getText( cellPOI.getErrorCellValue() );
                 }
                 break;
             case org.apache.poi.ss.usermodel.Cell.CELL_TYPE_NUMERIC:
@@ -248,7 +251,7 @@ public class ExcelUtils
                 }
                 else
                 {
-                    value = NumberUtils.getFormattedNumber( dataFormatter.formatCellValue( cellPOI ) );
+                    value = getFormattedNumber( dataFormatter.formatCellValue( cellPOI ) );
                 }
                 break;
 
@@ -342,6 +345,7 @@ public class ExcelUtils
                 else
                 {
                     cellPOI.setCellValue( Double.parseDouble( value ) );
+                    // cellPOI.setCellValue( getFormattedNumber( value ) );
                 }
             }
         }
@@ -385,6 +389,7 @@ public class ExcelUtils
                 else
                 {
                     cellPOI.setCellValue( Double.parseDouble( value ) );
+                    // cellPOI.setCellValue( getFormattedNumber( value ) );
                 }
             }
         }
@@ -392,7 +397,7 @@ public class ExcelUtils
 
     /* POI - Write formula without CellStyle */
     public static void writeFormulaByPOI( int row, int column, String formula,
-        org.apache.poi.ss.usermodel.Sheet sheetPOI )
+        org.apache.poi.ss.usermodel.Sheet sheetPOI, FormulaEvaluator evaluator )
     {
         if ( row > 0 && column > 0 )
         {
@@ -417,12 +422,15 @@ public class ExcelUtils
 
             cellPOI.setCellStyle( cellStylePOI );
             cellPOI.setCellFormula( formula );
+
+            evaluator.evaluateFormulaCell( cellPOI );
         }
     }
 
     /* POI - Write formula with customize CellStyle */
     public static void writeFormulaByPOI( int row, int column, String formula,
-        org.apache.poi.ss.usermodel.Sheet sheetPOI, org.apache.poi.ss.usermodel.CellStyle cellStyle )
+        org.apache.poi.ss.usermodel.Sheet sheetPOI, org.apache.poi.ss.usermodel.CellStyle cellStyle,
+        FormulaEvaluator evaluator )
     {
         if ( row > 0 && column > 0 )
         {
@@ -436,6 +444,8 @@ public class ExcelUtils
             org.apache.poi.ss.usermodel.Cell cellPOI = rowPOI.createCell( column - 1 );
             cellPOI.setCellStyle( cellStyle );
             cellPOI.setCellFormula( formula );
+
+            evaluator.evaluateFormulaCell( cellPOI );
         }
     }
 
@@ -606,7 +616,21 @@ public class ExcelUtils
     {
         try
         {
-            FormulaParser.parse( formula, evaluationWorkbook );
+            FormulaParser.parse( formula, evaluationWorkbook, FormulaType.CELL, -1 );
+        }
+        catch ( Exception e )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isValidFormula( String formula, int formulaType, int sheetIndex )
+    {
+        try
+        {
+            FormulaParser.parse( formula, evaluationWorkbook, formulaType, sheetIndex );
         }
         catch ( Exception e )
         {

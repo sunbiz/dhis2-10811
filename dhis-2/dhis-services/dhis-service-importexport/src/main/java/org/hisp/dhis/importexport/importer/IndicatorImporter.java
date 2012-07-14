@@ -35,6 +35,8 @@ import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id: AbstractIndicatorConverter.java 4753 2008-03-14 12:48:50Z larshelg $
@@ -47,18 +49,18 @@ public class IndicatorImporter
     public IndicatorImporter()
     {
     }
-    
+
     public IndicatorImporter( BatchHandler<Indicator> batchHandler, IndicatorService indicatorService )
     {
         this.batchHandler = batchHandler;
         this.indicatorService = indicatorService;
     }
-    
+
     @Override
     public void importObject( Indicator object, ImportParams params )
     {
         NameMappingUtil.addIndicatorMapping( object.getId(), object.getName() );
-        
+
         read( object, GroupMemberType.NONE, params );
     }
 
@@ -72,7 +74,6 @@ public class IndicatorImporter
     protected void importMatching( Indicator object, Indicator match )
     {
         match.setName( object.getName() );
-        match.setAlternativeName( object.getAlternativeName() );
         match.setShortName( object.getShortName() );
         match.setCode( object.getCode() );
         match.setDescription( object.getDescription() );
@@ -82,28 +83,26 @@ public class IndicatorImporter
         match.setDenominator( object.getDenominator() );
         match.setDenominatorDescription( object.getDenominatorDescription() );
         match.setLastUpdated( object.getLastUpdated() );
-        
-        indicatorService.updateIndicator( match );                
+
+        indicatorService.updateIndicator( match );
     }
 
     @Override
     protected Indicator getMatching( Indicator object )
     {
-        Indicator match = indicatorService.getIndicatorByName( object.getName() );
-        
+        List<Indicator> indicatorByName = indicatorService.getIndicatorByName( object.getName() );
+        Indicator match = indicatorByName.isEmpty() ? null : indicatorByName.get( 0 );
+
         if ( match == null )
         {
-            match = indicatorService.getIndicatorByAlternativeName( object.getAlternativeName() );
-        }
-        if ( match == null )
-        {
-            match = indicatorService.getIndicatorByShortName( object.getShortName() );
+            List<Indicator> indicatorByShortName = indicatorService.getIndicatorByShortName( object.getShortName() );
+            match = indicatorByShortName.isEmpty() ? null : indicatorByShortName.get( 0 );
         }
         if ( match == null )
         {
             match = indicatorService.getIndicatorByCode( object.getCode() );
         }
-        
+
         return match;
     }
 
@@ -114,31 +113,27 @@ public class IndicatorImporter
         {
             return false;
         }
-        if ( !isSimiliar( object.getAlternativeName(), existing.getAlternativeName() ) || ( isNotNull( object.getAlternativeName(), existing.getAlternativeName() ) && !object.getAlternativeName().equals( existing.getAlternativeName() ) ) )
-        {
-            return false;
-        }
         if ( !object.getShortName().equals( existing.getShortName() ) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getCode(), existing.getCode() ) || ( isNotNull( object.getCode(), existing.getCode() ) && !object.getCode().equals( existing.getCode() ) ) )
+        if ( !isSimiliar( object.getCode(), existing.getCode() ) || (isNotNull( object.getCode(), existing.getCode() ) && !object.getCode().equals( existing.getCode() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getDescription(), existing.getDescription() ) || ( isNotNull( object.getDescription(), existing.getDescription() ) && !object.getDescription().equals( existing.getDescription() ) ) )
+        if ( !isSimiliar( object.getDescription(), existing.getDescription() ) || (isNotNull( object.getDescription(), existing.getDescription() ) && !object.getDescription().equals( existing.getDescription() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getNumeratorDescription(), existing.getNumeratorDescription() ) || ( isNotNull( object.getNumeratorDescription(), existing.getNumeratorDescription() ) && !object.getNumeratorDescription().equals( existing.getNumeratorDescription() ) ) )
+        if ( !isSimiliar( object.getNumeratorDescription(), existing.getNumeratorDescription() ) || (isNotNull( object.getNumeratorDescription(), existing.getNumeratorDescription() ) && !object.getNumeratorDescription().equals( existing.getNumeratorDescription() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getDenominatorDescription(), existing.getDenominatorDescription() ) || ( isNotNull( object.getDenominatorDescription(), existing.getDenominatorDescription() ) && !object.getDenominatorDescription().equals( existing.getDenominatorDescription() ) ) )
+        if ( !isSimiliar( object.getDenominatorDescription(), existing.getDenominatorDescription() ) || (isNotNull( object.getDenominatorDescription(), existing.getDenominatorDescription() ) && !object.getDenominatorDescription().equals( existing.getDenominatorDescription() )) )
         {
             return false;
         }
-        
+
         return true;
     }
 }

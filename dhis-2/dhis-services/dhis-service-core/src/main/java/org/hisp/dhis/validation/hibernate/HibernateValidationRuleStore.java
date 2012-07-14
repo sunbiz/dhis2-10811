@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.period.PeriodStore;
+import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.ConversionUtils;
 import org.hisp.dhis.validation.ValidationRule;
@@ -52,11 +52,11 @@ public class HibernateValidationRuleStore
     // Dependency
     // -------------------------------------------------------------------------
 
-    private PeriodStore periodStore;
+    private PeriodService periodService;
 
-    public void setPeriodStore( PeriodStore periodStore )
+    public void setPeriodService( PeriodService periodService )
     {
-        this.periodStore = periodStore;
+        this.periodService = periodService;
     }
 
     // -------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public class HibernateValidationRuleStore
     @Override
     public int save( ValidationRule validationRule )
     {
-        PeriodType periodType = periodStore.getPeriodType( validationRule.getPeriodType().getClass() );
+        PeriodType periodType = periodService.reloadPeriodType( validationRule.getPeriodType() );
 
         validationRule.setPeriodType( periodType );
 
@@ -76,7 +76,7 @@ public class HibernateValidationRuleStore
     @Override
     public void update( ValidationRule validationRule )
     {
-        PeriodType periodType = periodStore.getPeriodType( validationRule.getPeriodType().getClass() );
+        PeriodType periodType = periodService.reloadPeriodType( validationRule.getPeriodType() );
 
         validationRule.setPeriodType( periodType );
 

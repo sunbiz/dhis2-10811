@@ -27,10 +27,11 @@ package org.hisp.dhis.report;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.hisp.dhis.report.Report.TYPE_JASPER_REPORT_TABLE;
 
 import java.util.Collection;
 
@@ -77,8 +78,8 @@ public class ReportStoreTest
     @Test
     public void testSaveGet()
     {
-        Report reportA = new Report( "ReportA", "DesignA", reportTableA );
-        Report reportB = new Report( "ReportB", "DesignB", reportTableA );
+        Report reportA = new Report( "ReportA", TYPE_JASPER_REPORT_TABLE, "DesignA", reportTableA );
+        Report reportB = new Report( "ReportB", TYPE_JASPER_REPORT_TABLE, "DesignB", reportTableA );
         
         int idA = reportStore.save( reportA );
         int idB = reportStore.save( reportB );
@@ -90,8 +91,8 @@ public class ReportStoreTest
     @Test
     public void testSaveGetUpdate()
     {
-        Report reportA = new Report( "ReportA", "DesignA", reportTableA );
-        Report reportB = new Report( "ReportB", "DesignB", reportTableA );
+        Report reportA = new Report( "ReportA", TYPE_JASPER_REPORT_TABLE, "DesignA", reportTableA );
+        Report reportB = new Report( "ReportB", TYPE_JASPER_REPORT_TABLE, "DesignB", reportTableA );
         
         int idA = reportStore.save( reportA );
         int idB = reportStore.save( reportB );
@@ -115,8 +116,8 @@ public class ReportStoreTest
     @Test
     public void testDelete()
     {
-        Report reportA = new Report( "ReportA", "DesignA", reportTableA );
-        Report reportB = new Report( "ReportB", "DesignB", reportTableA );
+        Report reportA = new Report( "ReportA", TYPE_JASPER_REPORT_TABLE, "DesignA", reportTableA );
+        Report reportB = new Report( "ReportB", TYPE_JASPER_REPORT_TABLE, "DesignB", reportTableA );
         
         int idA = reportStore.save( reportA );
         int idB = reportStore.save( reportB );
@@ -138,8 +139,8 @@ public class ReportStoreTest
     @Test
     public void testGetAll()
     {
-        Report reportA = new Report( "ReportA", "DesignA", reportTableA );
-        Report reportB = new Report( "ReportB", "DesignB", reportTableA );
+        Report reportA = new Report( "ReportA", TYPE_JASPER_REPORT_TABLE, "DesignA", reportTableA );
+        Report reportB = new Report( "ReportB", TYPE_JASPER_REPORT_TABLE, "DesignB", reportTableA );
         
         reportStore.save( reportA );
         reportStore.save( reportB );

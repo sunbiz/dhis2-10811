@@ -7,6 +7,7 @@
 	
 <package name="dhis-web-coldchain" extends="dhis-web-commons" namespace="/dhis-web-coldchain">
 
+	
 <!-- Home page -->
 	<action name="index" class="org.hisp.dhis.coldchain.action.NoAction">
 		<result name="success" type="velocity">/main.vm</result>
@@ -28,6 +29,7 @@
 	<action name="showAddColdChainCatalogTypeAttributeForm" class="org.hisp.dhis.coldchain.catalog.action.AddColdChainCatalogTypeAttributeForm">
 		<result name="success" type="velocity">/main.vm</result>
 		<param name="page">/dhis-web-coldchain/addColdChainCatalogTypeAttributeForm.vm</param>
+		<param name="menu">/dhis-web-coldchain/menu.vm</param>
 		<param name="javascripts">javascript/catalogTypeAttribute.js</param>
 		<param name="stylesheets">css/style.css</param>
 		<param name="requiredAuthorities">F_CATALOGTYPEATTRIBUTE_ADD</param>
@@ -65,6 +67,7 @@
 	<action name="showUpdateCatalogTypeAttributeForm" class="org.hisp.dhis.coldchain.catalog.action.ShowUpdateCatalogTypeAttributeFormAction">
 		<result name="success" type="velocity">/main.vm</result>
 		<param name="page">/dhis-web-coldchain/updateCatalogTypeAttibuteForm.vm</param>
+		<param name="menu">/dhis-web-coldchain/menu.vm</param>
 		<param name="javascripts">javascript/catalogTypeAttribute.js</param>
 		<param name="stylesheets">css/style.css</param>
 		<param name="requiredAuthorities">F_CATALOGTYPEATTRIBUTE_UPDATE</param>
@@ -363,6 +366,7 @@
         <action name="showAddInventoryTypeForm" class="org.hisp.dhis.coldchain.inventory.action.ShowAddInventoryTypeAction">
             <result name="success" type="velocity">/main.vm</result>
             <param name="page">/dhis-web-coldchain/addInventoryTypeForm.vm</param>
+			<param name="menu">/dhis-web-coldchain/menu.vm</param>
             <param name="javascripts">javascript/inventoryType.js</param>
             <param name="stylesheets">css/basic.css</param>
             <param name="requiredAuthorities">F_INVENTORYTYPE_ADD</param>
@@ -381,6 +385,7 @@
             class="org.hisp.dhis.coldchain.inventory.action.ShowUpdateInventoryTypeAction">
             <result name="success" type="velocity">/main.vm</result>
             <param name="page">/dhis-web-coldchain/updateInventoryTypeForm.vm</param>
+			<param name="menu">/dhis-web-coldchain/menu.vm</param>
             <param name="javascripts">javascript/inventoryType.js,../dhis-web-commons/javascripts/jQuery/ui/jquery.cluetip.min.js</param>
             <param name="stylesheets">css/basic.css</param>
             <param name="requiredAuthorities">F_INVENTORYTYPE_UPDATE</param>
@@ -503,7 +508,7 @@
 	
         <action name="showEquipmentDataEntryForm"
             class="org.hisp.dhis.coldchain.equipment.action.ShowEquipmentDataEntryFormAction">
-            <result name="success" type="velocity">/main.vm</result>
+            <result name="success" type="velocity">/content.vm</result>
             <param name="page">/dhis-web-coldchain/equipmentDataEntry.vm</param>
             <param name="menu">/dhis-web-coldchain/menu.vm</param>
 			<param name="stylesheets">css/equipmentDataentry.css</param>
@@ -546,6 +551,7 @@
 		<result name="success" type="velocity">/main.vm</result>
 		<param name="menu">/dhis-web-coldchain/menu.vm</param>
 		<param name="page">/dhis-web-coldchain/responseUplodImageStatus.vm</param>
+		<!--<result name="success" type="redirect">catalog.action</result>-->
 		<interceptor-ref name="fileUploadStack" />
 	</action>				
 	
@@ -573,10 +579,18 @@
 	</action>	
 
 	<!-- CCEM Reports -->
+	<action name="jrxmlReportsPage" class="org.hisp.dhis.coldchain.reports.action.CCEMReportPageAction">
+        <result name="success" type="velocity">/main.vm</result>
+        <param name="page">/dhis-web-coldchain/jrxmlReportsPage.vm</param>
+        <param name="menu">/dhis-web-coldchain/jrxmlReportMenu.vm</param>
+        <param name="javascripts">../dhis-web-commons/ouwt/ouwt.js,javascript/ccemReports.js</param>
+        <interceptor-ref name="organisationUnitTreeStack" />
+    </action>
+	
 	<action name="ccemReportsPage" class="org.hisp.dhis.coldchain.reports.action.CCEMReportPageAction">
         <result name="success" type="velocity">/main.vm</result>
         <param name="page">/dhis-web-coldchain/ccemReportsPage.vm</param>
-		<param name="menu">/dhis-web-coldchain/menu.vm</param>
+		<param name="menu">/dhis-web-coldchain/ccemReportMenu.vm</param>
 		<param name="javascripts">../dhis-web-commons/ouwt/ouwt.js,javascript/ccemReports.js</param>
 		<interceptor-ref name="organisationUnitTreeStack" />
     </action>
@@ -586,14 +600,21 @@
         <param name="requiredAuthorities">F_CCEM_REPORT</param>
     </action>
 	
-	<action name="exportToExcel" class="org.hisp.dhis.coldchain.action.ExportToExcelAction">
+	<!--<action name="exportToExcel" class="org.hisp.dhis.coldchain.action.ExportToExcelAction">
 		<result name="success" type="stream">
 			<param name="contentType">application/vnd.ms-excel</param>
             <param name="inputName">inputStream</param>
             <param name="contentDisposition">attachment;filename="${fileName}"</param>
             <param name="bufferSize">1024</param>
 		</result>
+    </action>-->
+	
+	<action name="exportTable" class="org.hisp.dhis.coldchain.reports.action.GenerateJRXMLReportAction">     
+			<result name="success" type="velocity">/main.vm</result>
+			<param name="menu">/dhis-web-coldchain/menu.vm</param>
+			<param name="page">/dhis-web-coldchain/welcome.vm</param>		  
     </action>
 		
+	
 </package>
 </struts>

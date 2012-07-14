@@ -40,6 +40,10 @@ import org.hisp.dhis.period.Period;
 public class FollowupAnalysisService
     implements DataAnalysisService
 {
+    // -------------------------------------------------------------------------
+    // Dependencies
+    // -------------------------------------------------------------------------
+
     private DataAnalysisStore dataAnalysisStore;
     
     public void setDataAnalysisStore( DataAnalysisStore dataAnalysisStore )
@@ -47,8 +51,12 @@ public class FollowupAnalysisService
         this.dataAnalysisStore = dataAnalysisStore;
     }
 
+    // -------------------------------------------------------------------------
+    // DataAnalysisService implementation
+    // -------------------------------------------------------------------------
+
     @Override
-    public Collection<DeflatedDataValue> analyse( OrganisationUnit organisationUnit,
+    public Collection<DeflatedDataValue> analyse( Collection<OrganisationUnit> organisationUnits,
         Collection<DataElement> dataElements, Collection<Period> periods, Double stdDevFactor )
     {
         return dataAnalysisStore.getDataValuesMarkedForFollowup();

@@ -49,7 +49,7 @@ public class CategoryOptionComboController
     extends AbstractCrudController<DataElementCategoryOptionCombo>
 {
     // need custom implementation of this since DataElementCategoryOptionCombo does not persist
-    // name (clashes with getBetween)
+    // name (clashes with getAllOrderedName)
     // FIXME add paging also for this?
     @Override
     protected List<DataElementCategoryOptionCombo> getEntityList( WebMetaData metaData, WebOptions options )

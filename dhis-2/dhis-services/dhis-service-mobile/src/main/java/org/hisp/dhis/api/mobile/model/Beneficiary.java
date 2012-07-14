@@ -279,7 +279,9 @@ public class Beneficiary
         {
             dout.writeBoolean( false );
         }
-
+        //doesn't transfer blood group to client
+            dout.writeBoolean( false );
+        
         if ( registrationDate != null )
         {
             dout.writeBoolean( true );
@@ -378,7 +380,7 @@ public class Beneficiary
         {
             dout.writeBoolean( false );
         }
-        
+        //doesn't transfer blood group to client
             dout.writeBoolean( false );
 
         if ( registrationDate != null )
@@ -462,7 +464,7 @@ public class Beneficiary
         {
             dout.writeBoolean( false );
         }
-        
+        //doesn't transfer blood group to client
             dout.writeBoolean( false );
 
         if ( registrationDate != null )
@@ -502,5 +504,13 @@ public class Beneficiary
         {
             each.serializeVerssion2_9( dout );
         }
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

@@ -43,19 +43,27 @@ public class HibernateOptionStore
     extends HibernateIdentifiableObjectStore<OptionSet>
     implements OptionStore
 {
-    @SuppressWarnings("unchecked")
+    // -------------------------------------------------------------------------
+    // Implementation methods
+    // -------------------------------------------------------------------------
+
+    @SuppressWarnings( "unchecked" )
     @Override
-    public List<String> getOptions( OptionSet optionSet, String key, Integer max )
+    public List<String> getOptions( int optionSetId, String key, Integer max )
     {
         String hql = "select option from OptionSet as optionset inner join optionset.options as option where optionset.id = :optionSetId ";
-        if( key != null )
+        if ( key != null )
         {
             hql += " and lower(option) like lower('%" + key + "%') ";
         }
-        
+
+        hql += " order by index(option)";
         Query query = getQuery( hql );
-        query.setInteger( "optionSetId", optionSet.getId() );
-        query.setMaxResults( max );
+        query.setInteger( "optionSetId", optionSetId );
+        if ( max != null )
+        {
+            query.setMaxResults( max );
+        }
         
         return query.list();
     }

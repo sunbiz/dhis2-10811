@@ -35,6 +35,8 @@ import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 import org.hisp.dhis.indicator.IndicatorGroupSet;
 import org.hisp.dhis.indicator.IndicatorService;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id$
@@ -47,18 +49,18 @@ public class IndicatorGroupSetImporter
     public IndicatorGroupSetImporter()
     {
     }
-    
+
     public IndicatorGroupSetImporter( BatchHandler<IndicatorGroupSet> batchHandler, IndicatorService indicatorService )
     {
         this.batchHandler = batchHandler;
         this.indicatorService = indicatorService;
     }
-    
+
     @Override
     public void importObject( IndicatorGroupSet object, ImportParams params )
     {
         NameMappingUtil.addIndicatorGroupSetMapping( object.getId(), object.getName() );
-        
+
         read( object, GroupMemberType.NONE, params );
     }
 
@@ -72,14 +74,15 @@ public class IndicatorGroupSetImporter
     protected void importMatching( IndicatorGroupSet object, IndicatorGroupSet match )
     {
         match.setName( object.getName() );
-        
+
         indicatorService.updateIndicatorGroupSet( match );
     }
 
     @Override
     protected IndicatorGroupSet getMatching( IndicatorGroupSet object )
     {
-        return indicatorService.getIndicatorGroupSetByName( object.getName() );
+        List<IndicatorGroupSet> indicatorGroupSetByName = indicatorService.getIndicatorGroupSetByName( object.getName() );
+        return indicatorGroupSetByName.isEmpty() ? null : indicatorGroupSetByName.get( 0 );
     }
 
     @Override

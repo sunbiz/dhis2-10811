@@ -41,8 +41,8 @@ public class DbmsUtils
 {
     public static void bindSessionToThread( SessionFactory sessionFactory )
     {
-        Session session = SessionFactoryUtils.openSession( sessionFactory );
-        
+        Session session = sessionFactory.openSession();
+
         TransactionSynchronizationManager.bindResource( sessionFactory, new SessionHolder( session ) );        
     }
     

@@ -84,7 +84,7 @@ public class GetPeriodsByImportReportAction
     public String execute()
         throws Exception
     {
-        if ( importReportId == null || importReportId.equals( "null" ) )
+        if ( importReportId == null || importReportId.equals( "null" ) || importReportId.trim().isEmpty() )
         {
             message = i18n.getString( "there_is_no_import_report" );
 

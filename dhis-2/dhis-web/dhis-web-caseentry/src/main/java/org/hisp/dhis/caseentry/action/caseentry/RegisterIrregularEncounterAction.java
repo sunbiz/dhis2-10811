@@ -27,16 +27,17 @@
 
 package org.hisp.dhis.caseentry.action.caseentry;
 
-import org.hisp.dhis.caseentry.state.SelectedStateManager;
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18nFormat;
+import org.hisp.dhis.program.ProgramInstance;
+import org.hisp.dhis.program.ProgramInstanceService;
+import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
-
-import com.opensymphony.xwork2.Action;
+import org.hisp.dhis.program.ProgramStageService;
 
 /**
  * @author Chau Thu Tran
- * 
  * @version $Id: AddIrregularEncounterAction.java Oct 27, 2011 10:58:23 AM $
  */
 public class RegisterIrregularEncounterAction
@@ -46,18 +47,25 @@ public class RegisterIrregularEncounterAction
     // Dependencies
     // -------------------------------------------------------------------------
 
+    private ProgramInstanceService programInstanceService;
+
+    public void setProgramInstanceService( ProgramInstanceService programInstanceService )
+    {
+        this.programInstanceService = programInstanceService;
+    }
+
+    private ProgramStageService programStageService;
+
+    public void setProgramStageService( ProgramStageService programStageService )
+    {
+        this.programStageService = programStageService;
+    }
+
     private ProgramStageInstanceService programStageInstanceService;
 
     public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
     {
         this.programStageInstanceService = programStageInstanceService;
-    }
-
-    private SelectedStateManager selectedStateManager;
-
-    public void setSelectedStateManager( SelectedStateManager selectedStateManager )
-    {
-        this.selectedStateManager = selectedStateManager;
     }
 
     private I18nFormat format;
@@ -70,6 +78,20 @@ public class RegisterIrregularEncounterAction
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
+
+    private Integer programInstanceId;
+
+    public void setProgramInstanceId( Integer programInstanceId )
+    {
+        this.programInstanceId = programInstanceId;
+    }
+
+    private Integer programStageId;
+
+    public void setProgramStageId( Integer programStageId )
+    {
+        this.programStageId = programStageId;
+    }
 
     private String dueDate;
 
@@ -93,18 +115,16 @@ public class RegisterIrregularEncounterAction
     public String execute()
         throws Exception
     {
-        ProgramStageInstance currentStageInstance = selectedStateManager.getSelectedProgramStageInstance();
+        ProgramInstance programInstance = programInstanceService.getProgramInstance( programInstanceId );
+
+        ProgramStage programStage = programStageService.getProgramStage( programStageId );
 
         ProgramStageInstance programStageInstance = new ProgramStageInstance();
-        programStageInstance.setProgramInstance( currentStageInstance.getProgramInstance() );
-        programStageInstance.setProgramStage( currentStageInstance.getProgramStage() );
-        programStageInstance.setStageInProgram( currentStageInstance.getStageInProgram() );
+        programStageInstance.setProgramInstance( programInstance );
+        programStageInstance.setProgramStage( programStage );
         programStageInstance.setDueDate( format.parseDate( dueDate ) );
 
-        int id = programStageInstanceService.addProgramStageInstance( programStageInstance );
-        message = id + "";
-
-        selectedStateManager.setSelectedProgramStageInstance( programStageInstance );
+        message = Integer.toString( programStageInstanceService.addProgramStageInstance( programStageInstance ) );
 
         return SUCCESS;
     }

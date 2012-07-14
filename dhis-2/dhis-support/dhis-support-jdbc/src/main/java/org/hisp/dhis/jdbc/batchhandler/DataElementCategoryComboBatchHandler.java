@@ -89,6 +89,7 @@ public class DataElementCategoryComboBatchHandler
         statementBuilder.setColumn( "uid" );
         statementBuilder.setColumn( "code" );
         statementBuilder.setColumn( "name" );
+        statementBuilder.setColumn( "skiptotal" );
     }
     
     protected void setValues( DataElementCategoryCombo categoryCombo )
@@ -96,5 +97,6 @@ public class DataElementCategoryComboBatchHandler
         statementBuilder.setValue( categoryCombo.getUid() );
         statementBuilder.setValue( categoryCombo.getCode() );
         statementBuilder.setValue( categoryCombo.getName() );
+        statementBuilder.setValue( categoryCombo.isSkipTotal() );
     }
 }

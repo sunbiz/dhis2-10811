@@ -17,7 +17,5 @@
 
     <property name="identifier" length="31" not-null="true" />
 
-    <property name="preferred" not-null="true" />
-
   </class>
 </hibernate-mapping>

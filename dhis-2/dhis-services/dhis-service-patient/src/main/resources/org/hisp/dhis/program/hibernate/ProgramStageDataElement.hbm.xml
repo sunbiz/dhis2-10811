@@ -17,7 +17,9 @@
     
 	<property name="allowProvidedElsewhere" column="allowprovidedelsewhere" />
 	  
-	<property name="sortOrder" column="sort_order" /> 
+	<property name="sortOrder" column="sort_order" />
+	
+	<property name="displayInReports"/>
 
   </class>
 </hibernate-mapping>

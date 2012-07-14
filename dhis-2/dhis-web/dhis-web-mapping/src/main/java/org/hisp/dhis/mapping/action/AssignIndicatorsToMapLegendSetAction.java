@@ -1,8 +1,6 @@
 package org.hisp.dhis.mapping.action;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
@@ -58,14 +56,12 @@ public class AssignIndicatorsToMapLegendSetAction
     {
         MapLegendSet mapLegendSet = mappingService.getMapLegendSet( id );
         
-        Set<Indicator> indicatorSet = new HashSet<Indicator>();
-
         for ( String indicator : indicators )
         {
-            indicatorSet.add( indicatorService.getIndicator( Integer.parseInt( indicator ) ) );
+            Indicator i = indicatorService.getIndicator( Integer.parseInt( indicator ) );
+            i.setLegendSet( mapLegendSet );
+            indicatorService.updateIndicator( i );
         }
-        
-        mapLegendSet.setIndicators( indicatorSet );
         
         mappingService.updateMapLegendSet( mapLegendSet );
         

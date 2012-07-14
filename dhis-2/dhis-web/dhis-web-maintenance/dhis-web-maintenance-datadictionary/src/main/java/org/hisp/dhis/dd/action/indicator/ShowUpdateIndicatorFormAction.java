@@ -41,6 +41,8 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorGroupSet;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.indicator.IndicatorType;
+import org.hisp.dhis.mapping.MapLegendSet;
+import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.system.util.AttributeUtils;
 
 import com.opensymphony.xwork2.Action;
@@ -69,6 +71,13 @@ public class ShowUpdateIndicatorFormAction
     public void setAttributeService( AttributeService attributeService )
     {
         this.attributeService = attributeService;
+    }
+
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
     }
 
     // -------------------------------------------------------------------------
@@ -131,6 +140,13 @@ public class ShowUpdateIndicatorFormAction
         return attributeValues;
     }
 
+    private List<MapLegendSet> legendSets;
+
+    public List<MapLegendSet> getLegendSets()
+    {
+        return legendSets;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -154,9 +170,12 @@ public class ShowUpdateIndicatorFormAction
 
         attributeValues = AttributeUtils.getAttributeValueMap( indicator.getAttributeValues() );
 
+        legendSets = new ArrayList<MapLegendSet>( mappingService.getAllMapLegendSets() );
+        
         Collections.sort( indicatorTypes, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( groupSets, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( attributes, new AttributeSortOrderComparator() );
+        Collections.sort( legendSets, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

@@ -27,27 +27,28 @@
 
 package org.hisp.dhis.caseentry.action.patient;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeGroup;
-import org.hisp.dhis.patient.PatientAttributeGroupService;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.patient.PatientService;
-import org.hisp.dhis.patient.comparator.PatientAttributeGroupSortOrderComparator;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.relationship.RelationshipTypeService;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 
@@ -67,13 +68,15 @@ public class ShowAddRelationshipPatientAction
 
     private PatientAttributeService patientAttributeService;
 
-    private PatientAttributeGroupService patientAttributeGroupService;
-
     private PatientIdentifierTypeService patientIdentifierTypeService;
 
     private RelationshipTypeService relationshipTypeService;
 
     private PatientAttributeValueService patientAttributeValueService;
+
+    private ProgramService programService;
+
+    private OrganisationUnitSelectionManager selectionManager;
 
     // -------------------------------------------------------------------------
     // Input/Output
@@ -81,9 +84,7 @@ public class ShowAddRelationshipPatientAction
 
     private Integer id;
 
-    private Collection<PatientAttribute> noGroupAttributes;
-
-    private List<PatientAttributeGroup> attributeGroups;
+    private Collection<PatientAttribute> noGroupAttributes = new HashSet<PatientAttribute>();
 
     private Collection<PatientIdentifierType> identifierTypes;
 
@@ -91,9 +92,13 @@ public class ShowAddRelationshipPatientAction
 
     private Patient patient;
 
-    private Map<Integer, String> identiferMap;
+    private Map<Integer, String> identiferMap = new HashMap<Integer, String>();
 
-    private Map<Integer, String> attributeMap;
+    private Map<Integer, String> attributeMap = new HashMap<Integer, String>();
+
+    private Map<PatientAttributeGroup, Collection<PatientAttribute>> attributeGroupsMap = new HashMap<PatientAttributeGroup, Collection<PatientAttribute>>();
+
+    private Collection<User> healthWorkers;
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -104,8 +109,36 @@ public class ShowAddRelationshipPatientAction
         patient = patientService.getPatient( id.intValue() );
 
         identifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
+        Collection<PatientAttribute> patientAttributes = patientAttributeService.getAllPatientAttributes();
+        Collection<Program> programs = programService.getAllPrograms();
+        for ( Program program : programs )
+        {
+            identifierTypes.removeAll( program.getPatientIdentifierTypes() );
+            patientAttributes.removeAll( program.getPatientAttributes() );
+        }
 
-        noGroupAttributes = new ArrayList<PatientAttribute>( patientAttributeService.getPatientAttributes( null, null ) );
+        for ( PatientAttribute patientAttribute : patientAttributes )
+        {
+            PatientAttributeGroup attributeGroup = patientAttribute.getPatientAttributeGroup();
+            if ( attributeGroup != null )
+            {
+                if ( attributeGroupsMap.containsKey( attributeGroup ) )
+                {
+                    Collection<PatientAttribute> attributes = attributeGroupsMap.get( attributeGroup );
+                    attributes.add( patientAttribute );
+                }
+                else
+                {
+                    Collection<PatientAttribute> attributes = new HashSet<PatientAttribute>();
+                    attributes.add( patientAttribute );
+                    attributeGroupsMap.put( attributeGroup, attributes );
+                }
+            }
+            else
+            {
+                noGroupAttributes.add( patientAttribute );
+            }
+        }
 
         relationshipTypes = relationshipTypeService.getAllRelationshipTypes();
 
@@ -121,14 +154,8 @@ public class ShowAddRelationshipPatientAction
         // Get patient-attribute values
         // -------------------------------------------------------------------------
 
-        attributeGroups = new ArrayList<PatientAttributeGroup>( patientAttributeGroupService
-            .getPatientAttributeGroupsWithoutProgram() );
-        Collections.sort( attributeGroups, new PatientAttributeGroupSortOrderComparator() );
-
-        noGroupAttributes = patientAttributeService.getPatientAttributes( null, null );
-
         Collection<PatientAttributeValue> patientAttributeValues = patientAttributeValueService
-            .getPatientAttributeValuesWithoutProgram( patient );
+            .getPatientAttributeValues( patient );
 
         for ( PatientAttributeValue patientAttributeValue : patientAttributeValues )
         {
@@ -145,12 +172,35 @@ public class ShowAddRelationshipPatientAction
             }
         }
 
+        OrganisationUnit organisationUnit = selectionManager.getSelectedOrganisationUnit();
+        healthWorkers = organisationUnit.getUsers();
+
         return SUCCESS;
     }
 
     // -------------------------------------------------------------------------
     // Getter/Setter
     // -------------------------------------------------------------------------
+    
+    public void setSelectionManager( OrganisationUnitSelectionManager selectionManager )
+    {
+        this.selectionManager = selectionManager;
+    }
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
+
+    public Collection<User> getHealthWorkers()
+    {
+        return healthWorkers;
+    }
+
+    public Map<PatientAttributeGroup, Collection<PatientAttribute>> getAttributeGroupsMap()
+    {
+        return attributeGroupsMap;
+    }
 
     public void setId( Integer id )
     {
@@ -160,11 +210,6 @@ public class ShowAddRelationshipPatientAction
     public Collection<PatientIdentifierType> getIdentifierTypes()
     {
         return identifierTypes;
-    }
-
-    public Collection<PatientAttributeGroup> getAttributeGroups()
-    {
-        return attributeGroups;
     }
 
     public Collection<PatientAttribute> getNoGroupAttributes()
@@ -200,11 +245,6 @@ public class ShowAddRelationshipPatientAction
     public void setPatientAttributeService( PatientAttributeService patientAttributeService )
     {
         this.patientAttributeService = patientAttributeService;
-    }
-
-    public void setPatientAttributeGroupService( PatientAttributeGroupService patientAttributeGroupService )
-    {
-        this.patientAttributeGroupService = patientAttributeGroupService;
     }
 
     public void setPatientService( PatientService patientService )

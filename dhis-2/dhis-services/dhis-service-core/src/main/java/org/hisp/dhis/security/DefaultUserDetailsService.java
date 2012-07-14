@@ -77,8 +77,10 @@ public class DefaultUserDetailsService
             throw new UsernameNotFoundException( "Username does not exist" );
         }
 
-        return new User( credentials.getUsername(), credentials.getPassword(), true,
-            true, true, true, getGrantedAuthorities( credentials ) );
+        User user = new User( credentials.getUsername(), credentials.getPassword(), 
+            !credentials.isDisabled(), true, true, true, getGrantedAuthorities( credentials ) );
+        
+        return user;
     }
 
     // -------------------------------------------------------------------------

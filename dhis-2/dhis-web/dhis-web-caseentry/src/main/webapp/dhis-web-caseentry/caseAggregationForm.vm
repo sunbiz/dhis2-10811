@@ -6,8 +6,8 @@
 
 <div id='caseAggregationDiv'>
 
-	<h1> $i18n.getString( "case_aggregation_form" ) #openHelp('run_case_aggregation')</h1>
-	<hr/>
+	<h1> $i18n.getString( "manual_person_aggregation_form" ) #openHelp('run_case_aggregation')</h1>
+	
 	<form id="caseAggregationForm" name="caseAggregationForm" action="caseAggregationResult.action" method="post">
 		<table>
 			<tr>
@@ -15,35 +15,29 @@
 					$i18n.getString( "dataset_list" )
 				</td>
 				<td>
-					<select id="dataSetId" name="dataSetId" onchange="dataSetSelected()" style="width: 30em">
+					<select id="dataSetId" name="dataSetId" style="width: 30em">
 						<option value=''>[$i18n.getString('please_select')]</option>
 						#foreach ( $dataSet in $datasets )
-							<option value='$dataSet.id' title='$dataSet.name'>$dataSet.name</option>
+							<option value='$dataSet.id' title='$dataSet.displayName'>$dataSet.displayName</option>
 						#end
 					</select>
 				</td>
 			</tr>
 
 			<tr>
+				<td>$i18n.getString( "from" )</td>
 				<td>
-					$i18n.getString( "from" )
-				</td>
-				<td>
-					<input type="button" class='small-button' value="<<" onclick="getPreviousPeriodForStart()" id="previousPeriodForStartBtn" disabled />
-					<select id="sDateLB" name="sDateLB" style='width:295px;'></select>
-					<input type="button" class='small-button'value=">>"  onclick="getNextPeriodForStart()" id="nextPeriodForStartBtn" disabled />
+					<input type='text' id="startDate" name="startDate" style="width:355px;" />
 				</td>
 			</tr>
 			
 			<tr>
+				<td>$i18n.getString( "to" )</td>
 				<td>
-					$i18n.getString( "to" )
-				</td>
-				<td>
-					<input type="button" class='small-button' value="<<" onclick="getPreviousPeriodForEnd()" id="previousPeriodForEndBtn" disabled />
-					<select id="eDateLB" name="eDateLB" style='width:295px;'></select>
-					<input type="button" class='small-button' value=">>"  onclick="getNextPeriodForEnd()" id="nextPeriodForEndBtn" disabled />
-					<i><span id='warningMessage' style="color:red"></span></i>
+					<input type='text' id="endDate" name="endDate" style="width:355px;" />
+					<script>
+						datePickerInRange( 'startDate','endDate' );
+					</script>
 				</td>
 			</tr>
 			

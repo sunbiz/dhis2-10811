@@ -31,13 +31,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
-import org.hisp.dhis.common.NameableObject;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.PeriodStore;
 import org.hisp.dhis.period.PeriodType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -63,8 +67,6 @@ public class DefaultObjectBridge
 
     private static final List<Class<?>> registeredTypes = new ArrayList<Class<?>>();
 
-    private static final List<Class<?>> shortNameNotUnique = new ArrayList<Class<?>>();
-
     private Map<Class<?>, Collection<?>> masterMap;
 
     private Map<String, PeriodType> periodTypeMap;
@@ -72,10 +74,6 @@ public class DefaultObjectBridge
     private Map<Class<? extends IdentifiableObject>, Map<String, IdentifiableObject>> uidMap;
 
     private Map<Class<? extends IdentifiableObject>, Map<String, IdentifiableObject>> codeMap;
-
-    private Map<Class<? extends IdentifiableObject>, Map<String, IdentifiableObject>> nameMap;
-
-    private Map<Class<? extends NameableObject>, Map<String, NameableObject>> shortNameMap;
 
     private boolean writeEnabled = true;
 
@@ -91,8 +89,6 @@ public class DefaultObjectBridge
         {
             registeredTypes.add( clazz );
         }
-
-        shortNameNotUnique.add( OrganisationUnit.class );
     }
 
     @Override
@@ -104,8 +100,6 @@ public class DefaultObjectBridge
         periodTypeMap = new HashMap<String, PeriodType>();
         uidMap = new HashMap<Class<? extends IdentifiableObject>, Map<String, IdentifiableObject>>();
         codeMap = new HashMap<Class<? extends IdentifiableObject>, Map<String, IdentifiableObject>>();
-        nameMap = new HashMap<Class<? extends IdentifiableObject>, Map<String, IdentifiableObject>>();
-        shortNameMap = new HashMap<Class<? extends NameableObject>, Map<String, NameableObject>>();
 
         for ( Class<?> type : registeredTypes )
         {
@@ -113,8 +107,6 @@ public class DefaultObjectBridge
             populateIdentifiableObjectMap( type );
             populateIdentifiableObjectMap( type, IdentifiableObject.IdentifiableProperty.UID );
             populateIdentifiableObjectMap( type, IdentifiableObject.IdentifiableProperty.CODE );
-            populateIdentifiableObjectMap( type, IdentifiableObject.IdentifiableProperty.NAME );
-            populateNameableObjectMap( type, NameableObject.NameableProperty.SHORT_NAME );
         }
 
         log.info( "Finished updating lookup maps at " + new Date() );
@@ -126,8 +118,6 @@ public class DefaultObjectBridge
         masterMap = null;
         uidMap = null;
         codeMap = null;
-        nameMap = null;
-        shortNameMap = null;
         periodTypeMap = null;
 
         writeEnabled = true;
@@ -137,7 +127,7 @@ public class DefaultObjectBridge
     // Populate Helpers
     //-------------------------------------------------------------------------------------------------------
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void populateIdentifiableObjectMap( Class<?> clazz )
     {
         Collection<IdentifiableObject> map = new ArrayList<IdentifiableObject>();
@@ -153,7 +143,7 @@ public class DefaultObjectBridge
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void populateIdentifiableObjectMap( Class<?> clazz, IdentifiableObject.IdentifiableProperty property )
     {
         Map<String, IdentifiableObject> map = new HashMap<String, IdentifiableObject>();
@@ -172,29 +162,6 @@ public class DefaultObjectBridge
             else if ( property == IdentifiableObject.IdentifiableProperty.CODE )
             {
                 codeMap.put( (Class<? extends IdentifiableObject>) clazz, map );
-            }
-            else if ( property == IdentifiableObject.IdentifiableProperty.NAME )
-            {
-                nameMap.put( (Class<? extends IdentifiableObject>) clazz, map );
-            }
-        }
-    }
-
-    @SuppressWarnings( "unchecked" )
-    private void populateNameableObjectMap( Class<?> clazz, NameableObject.NameableProperty property )
-    {
-        Map<String, NameableObject> map = null;
-
-        if ( NameableObject.class.isAssignableFrom( clazz ) )
-        {
-            map = (Map<String, NameableObject>) manager.getIdMap( (Class<? extends NameableObject>) clazz, property );
-        }
-
-        if ( map != null )
-        {
-            if ( property == NameableObject.NameableProperty.SHORT_NAME )
-            {
-                shortNameMap.put( (Class<? extends NameableObject>) clazz, map );
             }
         }
     }
@@ -262,13 +229,28 @@ public class DefaultObjectBridge
         {
             return objects.iterator().next();
         }
-        else if ( objects.size() > 1 )
-        {
-            log.debug( "Multiple objects found for " + object + ", object discarded, returning null." );
-        }
         else
         {
-            log.debug( "No object found for " + object + ", returning null." );
+            String objectName = null;
+
+            try
+            {
+                // several of our domain objects build toString based on several properties, which is not checked for
+                // null, which means that a NPE is very likely.
+                objectName = object.toString();
+            }
+            catch ( NullPointerException ignored )
+            {
+            }
+
+            if ( objects.size() > 1 )
+            {
+                log.debug( "Multiple objects found for " + objectName + ", object discarded, returning null." );
+            }
+            else
+            {
+                log.debug( "No object found for " + objectName + ", returning null." );
+            }
         }
 
         return null;
@@ -281,7 +263,7 @@ public class DefaultObjectBridge
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T> Collection<T> getAllObjects( Class<T> clazz )
     {
         return (Collection<T>) masterMap.get( clazz );
@@ -313,7 +295,7 @@ public class DefaultObjectBridge
     // Internal Methods
     //-------------------------------------------------------------------------------------------------------
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private <T> Collection<T> _findMatches( T object )
     {
         Collection<T> objects = new HashSet<T>();
@@ -346,31 +328,6 @@ public class DefaultObjectBridge
             if ( identifiableObject.getCode() != null )
             {
                 IdentifiableObject match = getCodeMatch( identifiableObject );
-
-                if ( match != null )
-                {
-                    objects.add( (T) match );
-                }
-            }
-
-            if ( identifiableObject.getName() != null )
-            {
-                IdentifiableObject match = getNameMatch( identifiableObject );
-
-                if ( match != null )
-                {
-                    objects.add( (T) match );
-                }
-            }
-        }
-
-        if ( NameableObject.class.isInstance( object ) )
-        {
-            NameableObject nameableObject = (NameableObject) object;
-
-            if ( _shortNameUnique( object ) && nameableObject.getShortName() != null )
-            {
-                IdentifiableObject match = getShortNameMatch( nameableObject );
 
                 if ( match != null )
                 {
@@ -413,37 +370,6 @@ public class DefaultObjectBridge
 
                 map.put( identifiableObject.getCode(), identifiableObject );
             }
-
-            if ( identifiableObject.getName() != null )
-            {
-                Map<String, IdentifiableObject> map = nameMap.get( identifiableObject.getClass() );
-
-                if ( map == null )
-                {
-                    // might be dynamically sub-classed by javassist or cglib, fetch superclass and try again
-                    map = nameMap.get( identifiableObject.getClass().getSuperclass() );
-                }
-
-                map.put( identifiableObject.getName(), identifiableObject );
-            }
-        }
-
-        if ( NameableObject.class.isInstance( object ) )
-        {
-            NameableObject nameableObject = (NameableObject) object;
-
-            if ( _shortNameUnique( object ) && nameableObject.getShortName() != null )
-            {
-                Map<String, NameableObject> map = shortNameMap.get( nameableObject.getClass() );
-
-                if ( map == null )
-                {
-                    // might be dynamically sub-classed by javassist or cglib, fetch superclass and try again
-                    map = shortNameMap.get( nameableObject.getClass().getSuperclass() );
-                }
-
-                map.put( nameableObject.getShortName(), nameableObject );
-            }
         }
     }
 
@@ -471,30 +397,6 @@ public class DefaultObjectBridge
         return null;
     }
 
-    private IdentifiableObject getNameMatch( IdentifiableObject identifiableObject )
-    {
-        Map<String, IdentifiableObject> map = nameMap.get( identifiableObject.getClass() );
-
-        if ( map != null )
-        {
-            return map.get( identifiableObject.getName() );
-        }
-
-        return null;
-    }
-
-    private NameableObject getShortNameMatch( NameableObject nameableObject )
-    {
-        Map<String, NameableObject> map = shortNameMap.get( nameableObject.getClass() );
-
-        if ( map != null )
-        {
-            return map.get( nameableObject.getShortName() );
-        }
-
-        return null;
-    }
-
     private boolean _typeSupported( Class<?> clazz )
     {
         for ( Class<?> c : registeredTypes )
@@ -506,18 +408,5 @@ public class DefaultObjectBridge
         }
 
         return false;
-    }
-
-    private <T> boolean _shortNameUnique( T object )
-    {
-        for ( Class clazz : shortNameNotUnique )
-        {
-            if ( clazz.isAssignableFrom( object.getClass() ) )
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

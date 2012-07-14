@@ -49,8 +49,6 @@ public class AggregatedDataValueRowMapper
         value.setCategoryOptionComboId( resultSet.getInt( "categoryoptioncomboid" ) );
         value.setPeriodId( resultSet.getInt( "periodid" ) );
         value.setOrganisationUnitId( resultSet.getInt( "organisationunitid" ) );
-        value.setPeriodTypeId( resultSet.getInt( "periodtypeid" ) );
-        value.setLevel( resultSet.getInt( "level" ) );
         value.setValue( resultSet.getDouble( "value" ) );
         
         return value;

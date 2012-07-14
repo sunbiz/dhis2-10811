@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.common.GridHeader;
+import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
@@ -45,6 +48,7 @@ import org.hisp.dhis.relationship.Relationship;
 import org.hisp.dhis.relationship.RelationshipService;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.relationship.RelationshipTypeService;
+import org.hisp.dhis.system.grid.ListGrid;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -249,28 +253,27 @@ public class DefaultPatientService
     @Override
     public Collection<Patient> getPatientsForMobile( String searchText, int orgUnitId )
     {
-        int countPatientName = patientStore.countGetPatientsByName( searchText );
-        int countPatientIndentifier = patientIdentifierService.countGetPatientsByIdentifier( searchText );
-
         Set<Patient> patients = new HashSet<Patient>();
-        patients.addAll( patientIdentifierService.getPatientsByIdentifier( searchText, 0, countPatientIndentifier ) );
+        patients.addAll( patientIdentifierService.getPatientsByIdentifier( searchText, 0, Integer.MAX_VALUE ) );
+        patients.addAll( getPatientsByNames( searchText, 0, Integer.MAX_VALUE ) );
+        patients.addAll( getPatientsByPhone( searchText, 0, Integer.MAX_VALUE ) );
 
-        Collection<Patient> patientByName = getPatientsByNames( searchText, 0, countPatientName );
-
+        // if an orgunit has been selected, filter out every patient that has a
+        // different ou
         if ( orgUnitId != 0 )
         {
             Set<Patient> toRemoveList = new HashSet<Patient>();
-            for ( Patient patient : patientByName )
+
+            for ( Patient patient : patients )
             {
                 if ( patient.getOrganisationUnit().getId() != orgUnitId )
                 {
                     toRemoveList.add( patient );
                 }
             }
-            patientByName.removeAll( toRemoveList );
-        }
 
-        patients.addAll( patientByName );
+            patients.removeAll( toRemoveList );
+        }
 
         return patients;
     }
@@ -348,10 +351,7 @@ public class DefaultPatientService
     @Override
     public Collection<Patient> sortPatientsByAttribute( Collection<Patient> patients, PatientAttribute patientAttribute )
     {
-        // List<PatientAttributeValue> patientsSortedByAttribute = new
-        // ArrayList<PatientAttributeValue>();
-
-        Collection<Patient> sortedPatients = new ArrayList<Patient>();
+         Collection<Patient> sortedPatients = new ArrayList<Patient>();
 
         // ---------------------------------------------------------------------
         // Better to fetch all attribute values at once than fetching the
@@ -523,13 +523,76 @@ public class DefaultPatientService
         patientStore.removeErollmentPrograms( program );
     }
 
-    public Collection<Patient> searchPatients( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max )
+    public Collection<Patient> searchPatients( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+        Integer max )
     {
         return patientStore.search( searchKeys, orgunit, min, max );
     }
-    
+
     public int countSearchPatients( List<String> searchKeys, OrganisationUnit orgunit )
     {
         return patientStore.countSearch( searchKeys, orgunit );
     }
+
+    public Collection<String> getPatientPhoneNumbers( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+        Integer max )
+    {
+        return patientStore.getPatientPhoneNumbers( searchKeys, orgunit, min, max );
+    }
+
+    public Collection<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit,
+        Integer min, Integer max )
+    {
+        return patientStore.getProgramStageInstances( searchKeys, orgunit, min, max );
+    }
+
+    @Override
+    public Collection<Patient> getPatientsByPhone( String phoneNumber, Integer min, Integer max )
+    {
+        return patientStore.getByPhoneNumber( phoneNumber, min, max );
+    }
+
+    @Override
+    public Grid getScheduledEventsReport( List<String> searchKeys, OrganisationUnit orgunit, I18n i18n )
+    {
+        String startDate = "";
+        String endDate = "";
+        for ( String searchKey : searchKeys )
+        {
+            String[] keys = searchKey.split( "_" );
+            if ( keys[0].equals( Patient.PREFIX_PROGRAM_EVENT_BY_STATUS ) )
+            {
+                startDate = keys[2];
+                endDate = keys[3];
+            }
+        }
+
+        Grid grid = new ListGrid();
+        grid.setTitle( i18n.getString( "activity_plan" ) );
+        if ( !startDate.isEmpty() && !endDate.isEmpty() )
+        {
+            grid.setSubtitle( i18n.getString( "from" ) + " " + startDate + " " + i18n.getString( "to" )  + " " + endDate );
+        }
+
+        grid.addHeader( new GridHeader( "patientid", true, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "first_name" ), false, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "middle_name" ), false, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "last_name" ), false, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "gender" ), false, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "phone_number" ), false, true ) );
+        grid.addHeader( new GridHeader( "orgunitid", true, true ) );
+        grid.addHeader( new GridHeader( "programstageinstanceid", true, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "program_stage" ), false, true ) );
+        grid.addHeader( new GridHeader( i18n.getString( "due_date" ), false, true ) );
+
+        return patientStore.getPatientEventReport( grid, searchKeys, orgunit );
+
+    }
+
+    @Override
+    public Collection<Patient> getPatientByFullname( String fullName )
+    {
+        return patientStore.getByFullName( fullName );
+    }
+
 }

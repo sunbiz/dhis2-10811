@@ -24,19 +24,23 @@
     <!-- Statement -->
 	
     <select id="getRoutineDataValues" resultMap="routineDataValueResultMap">
-        SELECT DataElementID, DataPeriodID, OrgUnitID, EntryNumber, EntryYesNo, LastUserID FROM RoutineData
+        SELECT DataElementID, DataPeriodID, OrgUnitID, EntryNumber, EntryYesNo, LastUserID FROM RoutineData UNION
+        SELECT DataElementID, DataPeriodID, OrgUnitID, EntryNumber, EntryYesNo, LastUserID FROM RoutineDataArchive        
     </select>
 
     <select id="getRoutineDataValuesLastUpdated" parameterClass="java.util.Date" resultMap="routineDataValueResultMap">
-        SELECT DataElementID, DataPeriodID, OrgUnitID, EntryNumber, EntryYesNo, LastUserID FROM RoutineData WHERE LastUpdated > #value#
+        SELECT DataElementID, DataPeriodID, OrgUnitID, EntryNumber, EntryYesNo, LastUserID FROM RoutineData WHERE LastUpdated > #value# UNION
+        SELECT DataElementID, DataPeriodID, OrgUnitID, EntryNumber, EntryYesNo, LastUserID FROM RoutineDataArchive WHERE LastUpdated > #value#
     </select>
 
     <select id="getDistinctPeriodIdentifiers" resultClass="java.lang.Integer">
-        SELECT DISTINCT DataPeriodID FROM RoutineData
+        SELECT DISTINCT DataPeriodID FROM RoutineData UNION
+        SELECT DISTINCT DataPeriodID FROM RoutineDataArchive
     </select>
 
 	<select id="getRoutineDataValuesOutOfRange" resultClass="java.lang.Integer">
-		SELECT COUNT(*) FROM RoutineData WHERE EntryNumber > 2147483647
+		SELECT COUNT(*) FROM RoutineData WHERE EntryNumber > 2147483647 UNION
+		SELECT COUNT(*) FROM RoutineDataArchive WHERE EntryNumber > 2147483647
 	</select>
 
 </sqlMap>

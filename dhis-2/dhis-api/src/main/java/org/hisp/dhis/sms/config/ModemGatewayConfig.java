@@ -43,6 +43,8 @@ public class ModemGatewayConfig
     private String pin;
 
     private String simMemLocation;
+    
+    private Integer pollingInterval;
 
     private boolean inbound;
 
@@ -126,6 +128,16 @@ public class ModemGatewayConfig
     public void setSimMemLocation( String simMemLocation )
     {
         this.simMemLocation = simMemLocation;
+    }
+
+    public Integer getPollingInterval()
+    {
+        return pollingInterval;
+    }
+
+    public void setPollingInterval( Integer pollingInterval )
+    {
+        this.pollingInterval = pollingInterval;
     }
 
 }

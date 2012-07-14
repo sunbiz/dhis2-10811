@@ -1,5 +1,7 @@
+package org.hisp.dhis.reportsheet;
+
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,7 +26,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hisp.dhis.reportsheet;
 
 import java.util.Collection;
 import java.util.Map;
@@ -57,6 +58,8 @@ public interface ExportReportService
     public ExportReport getExportReport( int id );
 
     public ExportReport getExportReport( String name );
+
+    public ExportReport getExportReportByDataSet( DataSet dataSet );
 
     public Collection<ExportReport> getExportReportsByOrganisationUnit( OrganisationUnit organisationUnit );
 
@@ -125,12 +128,12 @@ public interface ExportReportService
     public PeriodColumn getPeriodColumn( Integer id );
 
     public void updatePeriodColumn( PeriodColumn periodColumn );
-    
+
     public String validateEmportItems( ExportReport exportReport, I18n i18n );
-    
+
     // -------------------------------------------------------------------------
     // Others
     // -------------------------------------------------------------------------
-    
+
     public Map<Integer, String> getPeriodTypeIdentifierMap( Collection<ExportReport> reports );
 }

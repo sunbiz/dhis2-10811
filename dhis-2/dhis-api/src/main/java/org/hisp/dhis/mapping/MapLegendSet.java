@@ -29,12 +29,11 @@ package org.hisp.dhis.mapping;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
@@ -48,36 +47,25 @@ import java.util.Set;
 /**
  * @author Jan Henrik Overland
  */
-@JacksonXmlRootElement( localName = "mapLegendSet", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement(localName = "mapLegendSet", namespace = DxfNamespaces.DXF_2_0)
 public class MapLegendSet
     extends BaseIdentifiableObject
 {
-    private String type;
-
     private String symbolizer;
 
     @Scanned
     private Set<MapLegend> mapLegends = new HashSet<MapLegend>();
-
-    @Scanned
-    private Set<Indicator> indicators = new HashSet<Indicator>();
-
-    @Scanned
-    private Set<DataElement> dataElements = new HashSet<DataElement>();
 
     public MapLegendSet()
     {
     }
 
     public MapLegendSet( String name, String type, String symbolizer, Set<MapLegend> mapLegends,
-                         Set<Indicator> indicators, Set<DataElement> dataElements )
+        Set<Indicator> indicators, Set<DataElement> dataElements )
     {
         this.name = name;
-        this.type = type;
         this.symbolizer = symbolizer;
         this.mapLegends = mapLegends;
-        this.indicators = indicators;
-        this.dataElements = dataElements;
     }
 
     // -------------------------------------------------------------------------
@@ -87,7 +75,7 @@ public class MapLegendSet
     @Override
     public int hashCode()
     {
-        return name.hashCode();
+        return name == null ? 0 : name.hashCode();
     }
 
     @Override
@@ -117,16 +105,6 @@ public class MapLegendSet
     // Logic
     // -------------------------------------------------------------------------
 
-    public void removeAllDataElements()
-    {
-        dataElements.clear();
-    }
-
-    public void removeAllIndicators()
-    {
-        indicators.clear();
-    }
-
     public void removeAllMapLegends()
     {
         mapLegends.clear();
@@ -137,21 +115,8 @@ public class MapLegendSet
     // -------------------------------------------------------------------------
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
-    public String getType()
-    {
-        return type;
-    }
-
-    public void setType( String type )
-    {
-        this.type = type;
-    }
-
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public String getSymbolizer()
     {
         return symbolizer;
@@ -163,10 +128,10 @@ public class MapLegendSet
     }
 
     @JsonProperty
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "mapLegends", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "mapLegend", namespace = Dxf2Namespace.NAMESPACE )
+    // @JsonDeserialize( using = JacksonMapLegendsDeserializer.class )
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "mapLegends", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "mapLegend", namespace = DxfNamespaces.DXF_2_0)
     public Set<MapLegend> getMapLegends()
     {
         return mapLegends;
@@ -175,36 +140,6 @@ public class MapLegendSet
     public void setMapLegends( Set<MapLegend> mapLegends )
     {
         this.mapLegends = mapLegends;
-    }
-
-    @JsonProperty
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "indicators", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "indicator", namespace = Dxf2Namespace.NAMESPACE )
-    public Set<Indicator> getIndicators()
-    {
-        return indicators;
-    }
-
-    public void setIndicators( Set<Indicator> indicators )
-    {
-        this.indicators = indicators;
-    }
-
-    @JsonProperty
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "dataElements", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "dataElement", namespace = Dxf2Namespace.NAMESPACE )
-    public Set<DataElement> getDataElements()
-    {
-        return dataElements;
-    }
-
-    public void setDataElements( Set<DataElement> dataElements )
-    {
-        this.dataElements = dataElements;
     }
 
     @Override
@@ -216,17 +151,10 @@ public class MapLegendSet
         {
             MapLegendSet mapLegendSet = (MapLegendSet) other;
 
-            type = mapLegendSet.getType() == null ? type : mapLegendSet.getType();
             symbolizer = mapLegendSet.getSymbolizer() == null ? symbolizer : mapLegendSet.getSymbolizer();
 
             removeAllMapLegends();
             mapLegends.addAll( mapLegendSet.getMapLegends() );
-
-            removeAllIndicators();
-            indicators.addAll( mapLegendSet.getIndicators() );
-
-            removeAllDataElements();
-            dataElements.addAll( mapLegendSet.getDataElements() );
         }
     }
 }

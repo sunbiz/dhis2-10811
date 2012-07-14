@@ -33,25 +33,26 @@
 
 <h3>$i18n.getString( "create_new_user_role" )</h3>
 
-<form id="addRoleForm" name="addRoleForm" action="addRole.action" method="post" >
+<form id="addRoleForm" name="addRoleForm" action="addRole.action" method="post" class="inputForm">
 <table>
   	<col style="width: 120px"/>
-    <col style="width: 350px"/>
+  	<col style="width: 500px;"/>
     <col/>
-    <col style="width: 350px"/>
+    <col style="width: 500px;"/>
   
 	<tr>
-		<th colspan="4">$i18n.getString( "details" )</th>
+		<th colspan="2">$i18n.getString( "details" )</th>
+		<td colspan="2"></td>
 	</tr>
 
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td colspan="3"><input type="text" id="name" name="name" style="width:20em"></td>
+		<td colspan="3"><input type="text" id="name" name="name"></td>
 	</tr>
 
 	<tr>
 		<td><label for="description">$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td colspan="3"><input type="text" id="description" name="description" style="width:20em""></td>
+		<td colspan="3"><input type="text" id="description" name="description"></td>
 	</tr>
 
 	<tr>

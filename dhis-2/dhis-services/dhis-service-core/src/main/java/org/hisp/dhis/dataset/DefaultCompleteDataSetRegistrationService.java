@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hisp.dhis.message.MessageService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,14 @@ public class DefaultCompleteDataSetRegistrationService
     {
         this.completeDataSetRegistrationStore = completeDataSetRegistrationStore;
     }
-    
+
+    private MessageService messageService;
+
+    public void setMessageService( MessageService messageService )
+    {
+        this.messageService = messageService;
+    }
+
     // -------------------------------------------------------------------------
     // CompleteDataSetRegistrationService
     // -------------------------------------------------------------------------
@@ -59,6 +67,16 @@ public class DefaultCompleteDataSetRegistrationService
         completeDataSetRegistrationStore.saveCompleteDataSetRegistration( registration );
     }
 
+    public void saveCompleteDataSetRegistration( CompleteDataSetRegistration registration, boolean notify )
+    {
+        saveCompleteDataSetRegistration( registration );
+        
+        if ( notify )
+        {
+            messageService.sendCompletenessMessage( registration );
+        }
+    }
+    
     public void updateCompleteDataSetRegistration( CompleteDataSetRegistration registration )
     {
         completeDataSetRegistrationStore.updateCompleteDataSetRegistration( registration );

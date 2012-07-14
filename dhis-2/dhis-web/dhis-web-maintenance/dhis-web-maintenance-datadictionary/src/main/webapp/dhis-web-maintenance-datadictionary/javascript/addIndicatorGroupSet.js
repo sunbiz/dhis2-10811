@@ -11,5 +11,5 @@ jQuery( document ).ready( function()
         'rules' : getValidationRules( "indicatorGroupSet" )
     } );
 
-    checkValueIsExist( "name", "validateIndicatorGroupSet.action" );
+    // checkValueIsExist( "name", "validateIndicatorGroupSet.action" );
 } );

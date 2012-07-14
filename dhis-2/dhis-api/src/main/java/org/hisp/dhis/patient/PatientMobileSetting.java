@@ -31,16 +31,24 @@ import java.util.List;
 
 import org.hisp.dhis.common.BaseIdentifiableObject;
 
-public class PatientMobileSetting extends BaseIdentifiableObject
+public class PatientMobileSetting
+    extends BaseIdentifiableObject
 {
 
     private static final long serialVersionUID = -5947521380646718129L;
 
     private Boolean gender;
+
     private Boolean dobtype;
+
     private Boolean birthdate;
+
     private Boolean registrationdate;
-    
+
+    private Boolean autoUpdateClient;
+
+    private Double versionToUpdate;
+
     private List<PatientAttribute> patientAttributes;
 
     public PatientMobileSetting()
@@ -95,6 +103,28 @@ public class PatientMobileSetting extends BaseIdentifiableObject
     public void setRegistrationdate( Boolean registrationdate )
     {
         this.registrationdate = registrationdate;
-    } 
-    
+    }
+
+    public Boolean getAutoUpdateClient()
+    {
+        return autoUpdateClient;
+    }
+
+    public void setAutoUpdateClient( Boolean autoUpdateClient )
+    {
+        this.autoUpdateClient = autoUpdateClient;
+    }
+
+    public double getVersionToUpdate()
+    {
+        if( versionToUpdate != null )
+            return versionToUpdate;
+        else
+            return 0;
+    }
+
+    public void setVersionToUpdate( Double versionToUpdate )
+    {
+        this.versionToUpdate = versionToUpdate;
+    }
 }

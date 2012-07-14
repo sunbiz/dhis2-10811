@@ -60,7 +60,6 @@ public class DefaultOrgUnitDistributionService
 {
     private static final String TITLE_SEP = " - ";
     private static final String FIRST_COLUMN_TEXT = "Organisation unit";
-    private static final String HEADER_NONE = "None";
     private static final String HEADER_TOTAL = "Total";
     
     // -------------------------------------------------------------------------
@@ -131,10 +130,7 @@ public class DefaultOrgUnitDistributionService
             grid.addHeader( new GridHeader( group.getName(), false, false )  );
         }
 
-        grid.addHeader( new GridHeader( HEADER_NONE, false, false ) );
         grid.addHeader( new GridHeader( HEADER_TOTAL, false, false ) );
-        
-        boolean hasNone = false;
         
         for ( OrganisationUnit unit : units )
         {            
@@ -155,22 +151,8 @@ public class DefaultOrgUnitDistributionService
                 
                 totalGroup += count;
             }
-            
-            int total = subTree != null ? subTree.size() : 0;
-            int none = total - totalGroup;
 
-            grid.addValue( none );
-            grid.addValue( totalGroup );
-            
-            if ( none > 0 )
-            {
-                hasNone = true;
-            }
-        }
-        
-        if ( !hasNone )
-        {
-            grid.removeColumn( grid.getWidth() - 2 ); // None column
+            grid.addValue( totalGroup );            
         }
         
         return grid;

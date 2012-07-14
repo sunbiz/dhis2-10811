@@ -32,7 +32,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseCollection;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dxf2.metadata.ExchangeClasses;
 import org.springframework.http.MediaType;
@@ -47,7 +47,7 @@ import java.util.*;
  *
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "dxf2", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "dxf2", namespace = DxfNamespaces.DXF_2_0 )
 public class Resources
     extends BaseCollection
 {
@@ -59,8 +59,8 @@ public class Resources
     }
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "resources", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "resource", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "resources", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "resource", namespace = DxfNamespaces.DXF_2_0 )
     public List<Resource> getResources()
     {
         return resources;

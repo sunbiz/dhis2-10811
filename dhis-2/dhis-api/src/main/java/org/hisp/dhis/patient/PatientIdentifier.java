@@ -51,8 +51,6 @@ public class PatientIdentifier
 
     private String identifier;
 
-    private Boolean preferred = false;
-
     // -------------------------------------------------------------------------
     // hashCode, equals and toString
     // -------------------------------------------------------------------------
@@ -127,16 +125,6 @@ public class PatientIdentifier
     public void setIdentifier( String identifier )
     {
         this.identifier = identifier;
-    }
-
-    public Boolean getPreferred()
-    {
-        return preferred;
-    }
-
-    public void setPreferred( Boolean preferred )
-    {
-        this.preferred = preferred;
     }
 
     public void setIdentifierType( PatientIdentifierType identifierType )

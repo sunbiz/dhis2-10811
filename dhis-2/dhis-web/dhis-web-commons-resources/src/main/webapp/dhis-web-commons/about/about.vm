@@ -19,7 +19,7 @@
   <dt>$i18n.getString( "os_architecture" ):</dt><dd>$systemProperties.get( "os.arch" )</dd>
   <dt>$i18n.getString( "os_version" ):</dt><dd>$systemProperties.get( "os.version" )</dd>
   <dt>$i18n.getString( "server_date" ):</dt><dd>$format.formatDateTime( $serverDate )</dd>
+  <dt>$i18n.getString( "server_memory" ):</dt><dd>$memoryInfo</dd>
+  <dt>$i18n.getString( "cpu_cores" ):</dt><dd>$cpuCores</dd>
   #end
 </dl>
-<br/>
-<div><input type="button" value="$i18n.getString( 'back' )" onclick="window.location.href='$!backUrl'" style="width:140px"/></div>

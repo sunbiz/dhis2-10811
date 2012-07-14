@@ -57,6 +57,7 @@ import org.hisp.dhis.program.ProgramStageDataElementService;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.util.ContextUtils;
+import org.hisp.dhis.util.SessionUtils;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -64,6 +65,8 @@ import com.opensymphony.xwork2.ActionContext;
 public class SaveSingleEventAction
     implements Action
 {
+    private static final String REDIRECT = "redirect";
+
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -272,10 +275,49 @@ public class SaveSingleEventAction
         }
     };
 
+    private String keyword;
+
+    public String getKeyword()
+    {
+        return keyword;
+    }
+
+    private int dataElementIdForSearching;
+
+    public int getDataElementIdForSearching()
+    {
+        return dataElementIdForSearching;
+    }
+
+    private String isEditing;
+
+    public String getIsEditing()
+    {
+        return isEditing;
+    }
+
+    public void setIsEditing( String isEditing )
+    {
+        this.isEditing = isEditing;
+    }
+
+    private int programStageInstanceId;
+
+    public int getProgramStageInstanceId()
+    {
+        return programStageInstanceId;
+    }
+
+    public void setProgramStageInstanceId( int programStageInstanceId )
+    {
+        this.programStageInstanceId = programStageInstanceId;
+    }
+
     @Override
     public String execute()
         throws Exception
     {
+
         Program program = programService.getProgram( programId );
         eventName = program.getName();
 
@@ -293,6 +335,15 @@ public class SaveSingleEventAction
         typeViolations.clear();
 
         prevDataValues.clear();
+
+        if ( SessionUtils.getSessionVar( "prevDataValues" ) == null )
+        {
+            SessionUtils.setSessionVar( "prevDataValues", this.prevDataValues );
+        }
+        else
+        {
+            this.prevDataValues = (Map<String, String>) SessionUtils.getSessionVar( "prevDataValues" );
+        }
 
         // -------------------------------------------------------------------------
         // Validation
@@ -338,45 +389,129 @@ public class SaveSingleEventAction
             return ERROR;
         }
 
-        ProgramInstance programInstance = new ProgramInstance();
-        programInstance.setEnrollmentDate( new Date() );
-        programInstance.setDateOfIncident( new Date() );
-        programInstance.setProgram( program );
-        programInstance.setPatient( patient );
-        programInstance.setCompleted( false );
-        programInstanceService.addProgramInstance( programInstance );
-
-        ProgramStageInstance programStageInstance = new ProgramStageInstance();
-        programStageInstance.setOrganisationUnit( organisationUnit );
-        programStageInstance.setProgramInstance( programInstance );
-        programStageInstance.setProgramStage( programStage );
-        programStageInstance.setDueDate( new Date() );
-        programStageInstance.setExecutionDate( new Date() );
-        programStageInstance.setCompleted( false );
-        programStageInstanceService.addProgramStageInstance( programStageInstance );
-
-        for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
+        if ( isSearching( parameterMap ) == true )
         {
-            DataElement dataElement = programStageDataElement.getDataElement();
-
-            PatientDataValue patientDataValue = new PatientDataValue();
-
-            patientDataValue.setDataElement( dataElement );
-
-            String id = "DE" + dataElement.getId();
-
-            patientDataValue.setValue( parameterMap.get( id ) );
-
-            patientDataValue.setProgramStageInstance( programStageInstance );
-
-            patientDataValue.setProvidedElsewhere( false );
-
-            patientDataValue.setTimestamp( new Date() );
-
-            patientDataValueService.savePatientDataValue( patientDataValue );
+            return REDIRECT;
         }
 
+        if ( this.isEditing.equals( "true" ) )
+        {
+            ProgramStageInstance programStageInstance = programStageInstanceService
+                .getProgramStageInstance( this.programStageInstanceId );
+
+            for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
+            {
+                DataElement dataElement = programStageDataElement.getDataElement();
+
+                PatientDataValue patientDataValue = patientDataValueService.getPatientDataValue( programStageInstance,
+                    dataElement );
+
+                String id = "DE" + dataElement.getId();
+
+                String value = parameterMap.get( id );
+
+                if ( patientDataValue == null && value != null )
+                {
+
+                    patientDataValue = new PatientDataValue( programStageInstance, dataElement, new Date(), value );
+
+                    patientDataValue.setProvidedElsewhere( false );
+
+                    patientDataValueService.savePatientDataValue( patientDataValue );
+                }
+                if ( patientDataValue != null && value == null )
+                {
+                    patientDataValueService.deletePatientDataValue( patientDataValue );
+                }
+                else if ( patientDataValue != null && value != null )
+                {
+                    patientDataValue.setValue( value );
+
+                    patientDataValue.setTimestamp( new Date() );
+
+                    patientDataValue.setProvidedElsewhere( false );
+
+                    patientDataValueService.updatePatientDataValue( patientDataValue );
+                }
+            }
+        }
+        else
+        {
+            ProgramInstance programInstance = new ProgramInstance();
+            programInstance.setEnrollmentDate( new Date() );
+            programInstance.setDateOfIncident( new Date() );
+            programInstance.setProgram( program );
+            programInstance.setPatient( patient );
+            programInstance.setCompleted( true );
+            programInstanceService.addProgramInstance( programInstance );
+
+            ProgramStageInstance programStageInstance = new ProgramStageInstance();
+            programStageInstance.setOrganisationUnit( organisationUnit );
+            programStageInstance.setProgramInstance( programInstance );
+            programStageInstance.setProgramStage( programStage );
+            programStageInstance.setDueDate( new Date() );
+            programStageInstance.setExecutionDate( new Date() );
+            programStageInstance.setCompleted( true );
+            programStageInstanceService.addProgramStageInstance( programStageInstance );
+
+            for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
+            {
+                DataElement dataElement = programStageDataElement.getDataElement();
+
+                PatientDataValue patientDataValue = new PatientDataValue();
+
+                patientDataValue.setDataElement( dataElement );
+
+                String id = "DE" + dataElement.getId();
+
+                patientDataValue.setValue( parameterMap.get( id ) );
+
+                patientDataValue.setProgramStageInstance( programStageInstance );
+
+                patientDataValue.setProvidedElsewhere( false );
+
+                patientDataValue.setTimestamp( new Date() );
+
+                patientDataValueService.savePatientDataValue( patientDataValue );
+            }
+        }
+        SessionUtils.removeSessionVar( "prevDataValues" );
+
         return SUCCESS;
+    }
+
+    public boolean isSearching( Map<String, String> parameterMap )
+    {
+        boolean isCorrect = false;
+        for ( ProgramStageDataElement each : this.programStageDataElements )
+        {
+            DataElement dataElement = each.getDataElement();
+
+            if ( dataElement.getOptionSet() != null && dataElement.getOptionSet().getOptions().size() > 15 )
+            {
+                this.keyword = parameterMap.get( "DE" + dataElement.getId() ).trim();
+
+                dataElementIdForSearching = dataElement.getId();
+
+                // if( !parameterMap.get( "preDE"+dataElement.getId() ).equals(
+                // parameterMap.get( "DE"+dataElement.getId() )))
+                for ( String option : dataElement.getOptionSet().getOptions() )
+                {
+                    if ( option != null )
+                    {
+                        if ( option.equals( this.keyword ) )
+                        {
+                            isCorrect = true;
+                        }
+                    }
+                }
+                if ( isCorrect == false && !this.keyword.isEmpty() )
+                    return true;
+                else
+                    isCorrect = false;
+            }
+        }
+        return false;
     }
 
 }

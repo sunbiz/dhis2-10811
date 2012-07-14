@@ -431,43 +431,7 @@
 	</tr>
 	<tr>
 		<td>
-		    <label for="reportingMonth">$i18n.getString( "reporting_month" )</label>
-			<input type="checkbox" id="reportingMonth" name="reportingMonth" value="true"#if( $reportTable.relatives.isReportingMonth() ) checked#end>&nbsp;
-		    <label for="reportingBimonth">$i18n.getString( "reporting_bimonth" )</label>
-			<input type="checkbox" id="reportingBimonth" name="reportingBimonth" value="true"#if( $reportTable.relatives.isReportingBimonth() ) checked#end>&nbsp;
-		    <label for="reportingQuarter">$i18n.getString( "reporting_quarter" )</label>
-			<input type="checkbox" id="reportingQuarter" name="reportingQuarter" value="true"#if( $reportTable.relatives.isReportingQuarter() ) checked#end>&nbsp;
-		    <label for="lastSixMonth">$i18n.getString( "reporting_sixmonth" )</label>
-			<input type="checkbox" id="lastSixMonth" name="lastSixMonth" value="true"#if( $reportTable.relatives.isLastSixMonth() ) checked#end><br><br>
-		
-			<label for="monthsThisYear">$i18n.getString( "months_this_year" )</label>
-			<input type="checkbox" id="monthsThisYear" name="monthsThisYear" value="true""#if( $reportTable.relatives.isMonthsThisYear() ) checked#end>&nbsp;
-			<label for="quartersThisYear">$i18n.getString( "quarters_this_year" )</label>
-			<input type="checkbox" id="quartersThisYear" name="quartersThisYear" value="true"#if( $reportTable.relatives.isQuartersThisYear() ) checked#end>&nbsp;
-			<label for="thisYear">$i18n.getString( "this_year" )</label>
-			<input type="checkbox" id="thisYear" name="thisYear" value="true"#if( $reportTable.relatives.isThisYear() ) checked#end>&nbsp;
-			<label for="thisFinancialYear">$i18n.getString( "this_financial_year" )</label>
-			<input type="checkbox" id="thisFinancialYear" name="thisFinancialYear" value="true"#if( $reportTable.relatives.isThisFinancialYear() ) checked#end><br><br>
-			
-			<label for="monthsLastYear">$i18n.getString( "months_last_year" )</label>
-			<input type="checkbox" id="monthsLastYear" name="monthsLastYear" value="true""#if( $reportTable.relatives.isMonthsLastYear() ) checked#end>&nbsp;
-			<label for="quartersLastYear">$i18n.getString( "quarters_last_year" )</label>
-			<input type="checkbox" id="quartersLastYear" name="quartersLastYear" value="true"#if( $reportTable.relatives.isQuartersLastYear() ) checked#end>&nbsp;
-			<label for="lastYear">$i18n.getString( "last_year" )</label>
-			<input type="checkbox" id="lastYear" name="lastYear" value="true"#if( $reportTable.relatives.isLastYear() ) checked#end>&nbsp;
-			<label for="lastFinancialYear">$i18n.getString( "last_financial_year" )</label>
-			<input type="checkbox" id="lastFinancialYear" name="lastFinancialYear" value="true"#if( $reportTable.relatives.isLastFinancialYear() ) checked#end><br><br>
-				
-			<label for="last5Years">$i18n.getString( "last_5_years" )</label>
-			<input type="checkbox" id="last5Years" name="last5Years" value="true"#if( $reportTable.relatives.isLast5Years() ) checked#end>&nbsp;
-			<label for="last12Months">$i18n.getString( "last_12_months" )</label>
-			<input type="checkbox" id="last12Months" name="last12Months" value="true"#if( $reportTable.relatives.isLast12Months() ) checked#end>&nbsp;
-			<label for="last4Quarters">$i18n.getString( "last_4_quarters" )</label>
-			<input type="checkbox" id="last4Quarters" name="last4Quarters" value="true"#if( $reportTable.relatives.isLast4Quarters() ) checked#end>&nbsp;
-			<label for="last2SixMonths">$i18n.getString( "last_2_sixmonths" )</label>
-			<input type="checkbox" id="last2SixMonths" name="last2SixMonths" value="true"#if( $reportTable.relatives.isLast2SixMonths() ) checked#end>&nbsp;
-			<label for="last5FinancialYears">$i18n.getString( "last_5_financial_years" )</label>
-			<input type="checkbox" id="last5FinancialYears" name="last5FinancialYears" value="true"#if( $reportTable.relatives.isLast5FinancialYears() ) checked#end>
+		    #parse( "/dhis-web-reporting/relativePeriodsInput.vm" )
         </td>
     </tr>
     <tr>
@@ -487,13 +451,10 @@
     	<td>
     		<label for="paramReportingMonth">$i18n.getString( "reporting_period" )</label>
     	    <input type="checkbox" id="paramReportingMonth" name="paramReportingMonth" value="true"#if( $reportTable.reportParams.isParamReportingMonth() ) checked#end>&nbsp;
-    	    <label for="paramLeafParentOrganisationUnit">$i18n.getString( "leaf_parent_organisation_unit" )</label>
-            <input type="checkbox" id="paramLeafParentOrganisationUnit" name="paramLeafParentOrganisationUnit" value="true"#if( $reportTable.reportParams.isParamLeafParentOrganisationUnit() ) checked#end>&nbsp;
     	    <label for="paramGrandParentOrganisationUnit">$i18n.getString( "grand_parent_organisation_unit" )</label>
-            <input type="checkbox" id="paramGrandParentOrganisationUnit" name="paramGrandParentOrganisationUnit" value="true"#if( $reportTable.reportParams.isParamGrandParentOrganisationUnit() ) checked#end><br><br>
-            
+            <input type="checkbox" id="paramGrandParentOrganisationUnit" name="paramGrandParentOrganisationUnit" value="true"#if( $reportTable.reportParams.isParamGrandParentOrganisationUnit() ) checked#end>&nbsp;            
     	    <label for="paramParentOrganisationUnit">$i18n.getString( "parent_organisation_unit" )</label>
-            <input type="checkbox" id="paramParentOrganisationUnit" name="paramParentOrganisationUnit" value="true"#if( $reportTable.reportParams.isParamParentOrganisationUnit() ) checked#end>&nbsp;
+            <input type="checkbox" id="paramParentOrganisationUnit" name="paramParentOrganisationUnit" value="true"#if( $reportTable.reportParams.isParamParentOrganisationUnit() ) checked#end><br><br>
             <label for="paramOrganisationUnit">$i18n.getString( "organisation_unit" )</label>
             <input type="checkbox" id="paramOrganisationUnit" name="paramOrganisationUnit" value="true"#if( $reportTable.reportParams.isParamOrganisationUnit() ) checked#end>
         </td>

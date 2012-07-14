@@ -4,7 +4,7 @@
   {
     "id": "$!{level.id}",
     "level": "$!{level.level}",
-    "name": "$!encoder.jsonEncode( ${level.name} )"
+    "name": "$!encoder.jsonEncode( ${level.displayName} )"
   }#if( $velocityCount < $size ),#end
 #end
 ] }

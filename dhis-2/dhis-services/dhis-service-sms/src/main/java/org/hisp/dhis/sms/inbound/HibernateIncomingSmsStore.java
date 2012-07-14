@@ -49,6 +49,7 @@ public class HibernateIncomingSmsStore
     // -------------------------------------------------------------------------
 
     private SessionFactory sessionFactory;
+    
 
     public void setSessionFactory( SessionFactory sessionFactory )
     {
@@ -63,6 +64,7 @@ public class HibernateIncomingSmsStore
     public int save( IncomingSms sms )
     {
         return (Integer) sessionFactory.getCurrentSession().save( sms );
+        
     }
 
     @Override
@@ -73,6 +75,7 @@ public class HibernateIncomingSmsStore
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<IncomingSms> getSmsByStatus( SmsMessageStatus status )
     {
         Session session = sessionFactory.getCurrentSession();
@@ -81,6 +84,7 @@ public class HibernateIncomingSmsStore
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<IncomingSms> getSmsByOriginator( String originator )
     {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria( IncomingSms.class );
@@ -89,6 +93,7 @@ public class HibernateIncomingSmsStore
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<IncomingSms> getAllSmses()
     {
         return sessionFactory.getCurrentSession().createCriteria( IncomingSms.class ).addOrder( Order.desc( "id" ) ).list();
@@ -117,28 +122,13 @@ public class HibernateIncomingSmsStore
         sessionFactory.getCurrentSession().update( incomingSms );
     }
 
-    // @Override
-    // public Collection<IncomingSms> getSms( String originator, Date startDate,
-    // Date endDate )
-    // {
-    // Criteria crit = sessionFactory.getCurrentSession().createCriteria(
-    // IncomingSms.class );
-    // if ( originator != null && !originator.equals( "" ) )
-    // {
-    // crit.add( Restrictions.eq( "originator", originator ) );
-    // }
-    // if ( startDate != null && endDate != null )
-    // {
-    // crit.add( Restrictions.between( "receiveDate", startDate, endDate ) );
-    // }
-    // return crit.list();
-    // }
-    //
-    // @Override
-    // public Collection<IncomingSms> getSmsByDate( Date startDate, Date endDate
-    // )
-    // {
-    // return getSms( null, startDate, endDate );
-    // }
+    @SuppressWarnings( "unchecked" )
+    @Override
+    public Collection<IncomingSms> getAllUnparsedSmses()
+    {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria( IncomingSms.class );
+        criteria.add( Restrictions.eq( "parsed", false ) );
+        return criteria.list();
+    }
 
 }

@@ -110,9 +110,9 @@ public class SaveValueAction
         this.value = value;
     }
 
-    private int dataElementId;
+    private String dataElementId;
 
-    public void setDataElementId( int dataElementId )
+    public void setDataElementId( String dataElementId )
     {
         this.dataElementId = dataElementId;
     }
@@ -124,9 +124,9 @@ public class SaveValueAction
         this.organisationUnitId = organisationUnitId;
     }
 
-    private int optionComboId;
+    private String optionComboId;
 
-    public void setOptionComboId( int optionComboId )
+    public void setOptionComboId( String optionComboId )
     {
         this.optionComboId = optionComboId;
     }
@@ -164,11 +164,26 @@ public class SaveValueAction
 
         OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
 
+        if ( organisationUnit == null )
+        {
+            return logError( "Invalid organisation unit identifier: " + organisationUnitId );
+        }
+        
         DataElement dataElement = dataElementService.getDataElement( dataElementId );
 
-        String storedBy = currentUserService.getCurrentUsername();
-
+        if ( dataElement == null )
+        {
+            return logError( "Invalid data element identifier: " + dataElementId );
+        }
+        
         DataElementCategoryOptionCombo optionCombo = categoryService.getDataElementCategoryOptionCombo( optionComboId );
+
+        if ( optionCombo == null )
+        {
+            return logError( "Invalid category option combo identifier: " + optionComboId );
+        }
+        
+        String storedBy = currentUserService.getCurrentUsername();
 
         Date now = new Date();
 

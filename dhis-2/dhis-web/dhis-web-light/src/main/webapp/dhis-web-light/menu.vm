@@ -2,7 +2,7 @@
 #if( $dataSet.alternativeName )
     #set( $dataSetName = $dataSet.alternativeName )
 #else
-    #set( $dataSetName = $dataSet.name )
+    #set( $dataSetName = $dataSet.displayName )
 #end
 
 #if( $complete == true )
@@ -20,19 +20,42 @@
 
 <p>
 <ul>
-    <li><a href="selectOrganisationUnit.action">$i18n.getString( "data_entry" )</a></li>
-    <li><a href="trackingMenu.action">$i18n.getString( "tracking" )</a></li>
+	#set ( $trackingAuthority = false)
+	#set ( $aggregateAuthority = false)
+	
+	#foreach( $each in $user.getUserCredentials().getAllAuthorities() )
+		#if ( $each == 'ALL' )
+			#set ($trackingAuthority = true)
+			#set ($aggregateAuthority = true)
+        #else
+            #if ( $each == 'M_dhis-web-maintenance-patient' )                       
+				#set ($trackingAuthority = true)
+			#end
+				
+			#if ( $each == 'M_dhis-web-dataentry' )              
+				#set ($aggregateAuthority = true)
+			#end
+		#end
+	#end
+	
+	#if ( $aggregateAuthority == true)
+		<li><a href="selectOrganisationUnit.action">$i18n.getString( "agregate_reporting" )</a></li>
+	#end
+	
+	#if ( $trackingAuthority == true )
+		<li><a href="trackingMenu.action">$i18n.getString( "tracking" )</a></li>
+	#end
+
     <li><a href="messages.action">$i18n.getString( "messages" ) #if($unreadMessageConversationCount > 0)($unreadMessageConversationCount)#end</a></li>
     <li><a href="reports.action">$i18n.getString( "reports" )</a></li>
-    <li><a href="settings.action">$i18n.getString( "settings" )</a></li>
-	<li><a href="anonymous.action">Anonymous</a></li>
+    <li><a href="settings.action">$i18n.getString( "settings" )</a></li>		
 </ul>
 </p>
 
 <div id="footer">
 <h2>$i18n.getString( "navigate_to" )</h2>
 <ul>
-    <li><a href="feedback.action">$i18n.getString("feedback")</a></li>
+    
 	<li><a href="../dhis-web-commons-security/logout.action">$i18n.getString("logout")</a></li>
     <li style="padding-top: 5px;"><a href="../">$i18n.getString("desktop_version")</a></li>
 </ul>

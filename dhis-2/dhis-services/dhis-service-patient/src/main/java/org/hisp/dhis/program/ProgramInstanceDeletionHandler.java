@@ -118,21 +118,21 @@ public class ProgramInstanceDeletionHandler
 
             for ( ProgramInstance programInstance : programInstances )
             {
-               Set<ProgramStageInstance> programStageInstances = programInstance.getProgramStageInstances();
-               
-               for ( ProgramStageInstance programStageInstance : programStageInstances )
-               { 
-                   programStageInstanceService.deleteProgramStageInstance( programStageInstance );
-               }
+                Set<ProgramStageInstance> programStageInstances = programInstance.getProgramStageInstances();
+
+                for ( ProgramStageInstance programStageInstance : programStageInstances )
+                {
+                    programStageInstanceService.deleteProgramStageInstance( programStageInstance );
+                }
             }
-            
+
             // ---------------------------------------------------------------------
             // Delete Program Instances
             // ---------------------------------------------------------------------
 
             for ( ProgramInstance programInstance : programInstances )
             {
-                 programInstanceService.deleteProgramInstance( programInstance );
+                programInstanceService.deleteProgramInstance( programInstance );
             }
         }
     }
@@ -140,41 +140,10 @@ public class ProgramInstanceDeletionHandler
     @Override
     public void deleteProgram( Program program )
     {
-        // ---------------------------------------------------------------------
-        // Delete Patient data values
-        // ---------------------------------------------------------------------
-
         Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( program );
-
-        Set<PatientDataValue> dataValues = new HashSet<PatientDataValue>();
-
-        for ( ProgramInstance programInstance : programInstances )
+        for( ProgramInstance programInstance : programInstances)
         {
-            Collection<ProgramStageInstance> stageInstances = programInstance.getProgramStageInstances();
-            if ( stageInstances != null && stageInstances.size() > 0 )
-            {
-                dataValues.addAll( patientDataValueService.getPatientDataValues( stageInstances ) );
-            }
-        }
-
-        if ( dataValues != null && dataValues.size() > 0 )
-        {
-            for ( PatientDataValue dataValue : dataValues )
-            {
-                patientDataValueService.deletePatientDataValue( dataValue );
-            }
-        }
-
-        // ---------------------------------------------------------------------
-        // Delete Program Instances
-        // ---------------------------------------------------------------------
-
-        if ( programInstances != null && programInstances.size() > 0 )
-        {
-            for ( ProgramInstance programInstance : programInstances )
-            {
-                programInstanceService.deleteProgramInstance( programInstance );
-            }
+            programInstanceService.deleteProgramInstance( programInstance );
         }
     }
 }

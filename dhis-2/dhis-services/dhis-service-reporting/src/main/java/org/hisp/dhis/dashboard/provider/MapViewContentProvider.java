@@ -33,10 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dashboard.DashboardContent;
 import org.hisp.dhis.dashboard.DashboardService;
-import org.hisp.dhis.mapping.MapView;
-import org.hisp.dhis.mapping.comparator.MapViewNameComparator;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
 
@@ -86,11 +85,11 @@ public class MapViewContentProvider
         {
             DashboardContent dashboardContent = dashboardService.getDashboardContent( user );
 
-            List<MapView> mapViews = new ArrayList<MapView>( dashboardContent.getMapViews() );
+            List<org.hisp.dhis.mapping.Map> maps = new ArrayList<org.hisp.dhis.mapping.Map>( dashboardContent.getMaps() );
 
-            Collections.sort( mapViews, new MapViewNameComparator() );
+            Collections.sort( maps, IdentifiableObjectNameComparator.INSTANCE );
 
-            content.put( key, mapViews );
+            content.put( key, maps );
         }
 
         return content;

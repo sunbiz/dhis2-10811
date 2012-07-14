@@ -236,7 +236,8 @@ public class SearchOrganisationUnitsAction
     private Grid generateGrid()
     {
         final Grid orgUnitGrid = new ListGrid().setTitle( "Organisation unit search result" );
-        
+
+        orgUnitGrid.addHeader( new GridHeader( "Identifier", false, true ) );
         orgUnitGrid.addHeader( new GridHeader( "Code", false, true ) );
         orgUnitGrid.addHeader( new GridHeader( "Name", false, true ) );
         
@@ -249,6 +250,7 @@ public class SearchOrganisationUnitsAction
         {
             orgUnitGrid.addRow();
 
+            orgUnitGrid.addValue( unit.getUid() );
             orgUnitGrid.addValue( unit.getCode() );
             orgUnitGrid.addValue( unit.getName() );
             

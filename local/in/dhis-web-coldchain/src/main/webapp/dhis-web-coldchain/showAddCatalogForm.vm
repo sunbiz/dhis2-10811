@@ -43,7 +43,27 @@
 			<td>$i18n.getString( "catalogType" ) : </th>
 			<td>$catalogType.name</th>
 		</tr>
-	</table>	
+	</table>
+
+<table>
+<tr><td>&nbsp;</td></tr>
+<tr>
+        <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td><input type="text" id="name" name="name" class="{validate:{required:true, rangelength:[4,160]}}"/></td>
+    </tr>   
+    
+    <tr>
+        <td><label>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td><input type="text" id="description" name="description" class="{validate:{required:true, minlength:4}}"/></td>
+    </tr>
+</table>	
+#if( $isCustom )
+
+	$customDataEntryFormCode
+	
+#else
+	
+<div id="defaultScreen" >		
 <!-- ATTRIBUTES -->
 <table>
 	<tr><th colspan="2" class="heading-column">$i18n.getString( "catalogType_details" )</th></tr>
@@ -52,7 +72,7 @@
 <table>
 <tr><td>&nbsp;</td></tr>
 #if ( $catalogTypeAttributes.size() > 0) 	
-	
+	<!--
 	<tr>
 		<td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td><input type="text" id="name" name="name" class="{validate:{required:true, rangelength:[4,160]}}"/></td>
@@ -62,7 +82,7 @@
 		<td><label>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td><input type="text" id="description" name="description" class="{validate:{required:true, minlength:4}}"/></td>
 	</tr>
-	
+	-->
 	<!--<tr><th colspan="2" class="heading-column">$i18n.getString( "catalogType_attribute" )</th></tr>-->
 	#foreach($attribute in $catalogTypeAttributes )
 		<tr>
@@ -81,10 +101,12 @@
 						</script>                    
 				#elseif( $attribute.valueType == "COMBO" )
 					<select  id="attr$attribute.id" name="attr$attribute.id" class='#validate( "default"  $attribute.mandatory )'>
+						<!--Collections.sort($attribute.attributeOptions))-->
+						##set ( $options = $sorter.sort($attribute.attributeOptions))
 						<option value="">[$i18n.getString( "please_select" )]</option>
-						#foreach ($option in $attribute.attributeOptions )
+						#foreach ($option in $!catalogTypeAttributesOptionsMap.get( $attribute.id ) )
 							<option value="$option.id" >$option.name</option>
-						#end
+						#end						
 					</select>
 				#else 
 					<input type="text" id="attr$attribute.id" name="attr$attribute.id" class="{validate:{required:$attribute.mandatory #if($!attribute.noChars),maxlength:$attribute.noChars #end #if($attribute.valueType=='NUMBER'),number:true #end }}" />
@@ -98,15 +120,19 @@
 </td>
 <td>&nbsp;</td>
 <td><!--<img src="$outPutStream" alt="Catalog Image" width="100" height="100"/>-->
-	<img src="showCatalogTypeImage.action?id=$catalogType.id" style="width:200px;height:200px;">
+	<img src="showCatalogTypeImage.action?id=$catalogType.id" style="width:200px;height:200px;" />
 </td>
 </tr>
 </table>
+</div>
+
+#end
 	<p>
 		<input type="submit" class="button" value="$i18n.getString( 'add' )"/>
 		<input type="button" class="button" value="$i18n.getString( 'back' )" onclick="loadAllCatalogs();"/>
 	</p>
 </form>
+
 <script>
     var i18n_error_connect_to_server = '$encoder.jsEscape( $i18n.getString( "error_connect_to_server" ) , "'" )';
     var i18n_add_equipment_successfully = '$encoder.jsEscape( $i18n.getString( "add_equipment_successfully" ) , "'" )';

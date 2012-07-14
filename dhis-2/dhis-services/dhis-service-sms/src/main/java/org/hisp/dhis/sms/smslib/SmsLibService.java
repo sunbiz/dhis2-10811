@@ -39,12 +39,17 @@ import org.hisp.dhis.sms.SmsServiceException;
 import org.hisp.dhis.sms.config.BulkSmsGatewayConfig;
 import org.hisp.dhis.sms.config.ClickatellGatewayConfig;
 import org.hisp.dhis.sms.config.GenericHttpGatewayConfig;
+import org.hisp.dhis.sms.config.SMPPGatewayConfig;
 import org.hisp.dhis.sms.config.SmsConfiguration;
 import org.hisp.dhis.sms.config.SmsGatewayConfig;
 import org.hisp.dhis.sms.outbound.OutboundSms;
+import org.hisp.dhis.sms.outbound.OutboundSmsStatus;
+import org.hisp.dhis.sms.outbound.OutboundSmsStore;
 import org.hisp.dhis.sms.outbound.OutboundSmsTransportService;
+import org.hisp.dhis.sms.parse.SMSConsumer;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
+import org.smslib.IInboundMessageNotification;
 import org.smslib.IOutboundMessageNotification;
 import org.smslib.OutboundMessage;
 import org.smslib.SMSLibException;
@@ -56,6 +61,16 @@ public class SmsLibService
 {
     private static final Log log = LogFactory.getLog( SmsLibService.class );
 
+    private final String BULK_GATEWAY = "bulk_gw";
+
+    private final String CLICKATELL_GATEWAY = "clickatell_gw";
+
+    private final String HTTP_GATEWAY = "generic_http_gw";
+
+    private final String MODEM_GATEWAY = "modem_gw";
+
+    private final String SMPP_GATEWAY = "smpp_gw";
+
     private Map<String, String> gatewayMap = new HashMap<String, String>();
 
     private GateWayFactory gatewayFactory = new GateWayFactory();
@@ -64,17 +79,24 @@ public class SmsLibService
 
     private String message = "success";
 
-    private final String BULK_GATEWAY = "bulk_gw";
+    // -------------------------------------------------------------------------
+    // Dependencies
+    // -------------------------------------------------------------------------
 
-    private final String CLICKATELL_GATEWAY = "clickatell_gw";
+    private IInboundMessageNotification smppInboundMessageNotification;
 
-    private final String HTTP_GATEWAY = "http_gw";
+    private OutboundSmsStore outboundSmsStore;
 
-    private final String MODEM_GATEWAY = "modem_gw";
+    private SMSConsumer smsConsumer;
 
     // -------------------------------------------------------------------------
     // Implementation methods
     // -------------------------------------------------------------------------
+
+    public void setSmsConsumer( SMSConsumer smsConsumer )
+    {
+        this.smsConsumer = smsConsumer;
+    }
 
     @Override
     public boolean isEnabled()
@@ -89,7 +111,6 @@ public class SmsLibService
         {
             reloadConfig();
         }
-
         return gatewayMap;
     }
 
@@ -136,7 +157,7 @@ public class SmsLibService
 
         try
         {
-            log.debug( "Sending message " + sms );
+            log.info( "Sending message " + sms );
 
             if ( gatewayId == null || gatewayId.isEmpty() )
             {
@@ -155,10 +176,14 @@ public class SmsLibService
         catch ( IOException e )
         {
             log.warn( "Unable to send message: " + sms, e );
-
             message = "Unable to send message: " + sms + " " + e.getCause().getMessage();
         }
         catch ( InterruptedException e )
+        {
+            log.warn( "Unable to send message: " + sms, e );
+            message = "Unable to send message: " + sms + " " + e.getCause().getMessage();
+        }
+        catch ( Exception e )
         {
             log.warn( "Unable to send message: " + sms, e );
             message = "Unable to send message: " + sms + " " + e.getCause().getMessage();
@@ -167,19 +192,31 @@ public class SmsLibService
         {
             if ( recipients.size() > 1 )
             {
-                // Make sure we delete tmp. group
+                // Make sure we delete "tmp" group
                 removeGroup( recipient );
             }
+            sms.setStatus( OutboundSmsStatus.ERROR );
         }
 
         if ( sent )
         {
             message = "success";
+            sms.setStatus( OutboundSmsStatus.SENT );
         }
         else
         {
             log.warn( "Message not sent" );
             message = "message_not_sent";
+            sms.setStatus( OutboundSmsStatus.ERROR );
+        }
+
+        if ( sms.getId() == 0 )
+        {
+            outboundSmsStore.save( sms );
+        }
+        else
+        {
+            outboundSmsStore.update( sms );
         }
 
         return message;
@@ -272,6 +309,12 @@ public class SmsLibService
                     {
                         gatewayMap.put( HTTP_GATEWAY, gateway.getGatewayId() );
                     }
+                    else if ( gatewayConfig instanceof SMPPGatewayConfig )
+                    {
+                        gatewayMap.put( SMPP_GATEWAY, gateway.getGatewayId() );
+                        // Service.getInstance().setInboundMessageNotification(
+                        // new InboundNotification() );
+                    }
                     else
                     {
                         gatewayMap.put( MODEM_GATEWAY, gateway.getGatewayId() );
@@ -298,6 +341,21 @@ public class SmsLibService
             try
             {
                 getService().startService();
+                if ( gatewayMap.containsKey( SMPP_GATEWAY ) )
+                {
+                    getService().setInboundMessageNotification( smppInboundMessageNotification );
+                }
+
+                try
+                {
+                    smsConsumer.start();
+                }
+                catch ( Exception e1 )
+                {
+                    message = "Unable to start smsConsumer service " + e1.getMessage();
+                    log.warn( "Unable to start smsConsumer service ", e1 );
+                }
+
             }
             catch ( SMSLibException e )
             {
@@ -330,6 +388,7 @@ public class SmsLibService
         try
         {
             getService().stopService();
+            smsConsumer.stop();
         }
         catch ( SMSLibException e )
         {
@@ -415,10 +474,86 @@ public class SmsLibService
         }
     }
 
+    public void setSmppInboundMessageNotification( IInboundMessageNotification smppInboundMessageNotification )
+    {
+        this.smppInboundMessageNotification = smppInboundMessageNotification;
+    }
+
+    public void setOutboundSmsStore( OutboundSmsStore outboundSmsStore )
+    {
+        this.outboundSmsStore = outboundSmsStore;
+    }
+
     @Override
     public List<OutboundSms> getAllOutboundSms()
     {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public int saveOutboundSms( OutboundSms sms )
+    {
+        return outboundSmsStore.save( sms );
+    }
+
+    @Override
+    public void updateOutboundSms( OutboundSms sms )
+    {
+        outboundSmsStore.update( sms );
+    }
+
+    @Override
+    public List<OutboundSms> getOutboundSms( OutboundSmsStatus status )
+    {
+        return outboundSmsStore.get( status );
+    }
+
+    @Override
+    public void deleteById( Integer outboundSmsId )
+    {
+        OutboundSms sms = outboundSmsStore.get( outboundSmsId );
+
+        outboundSmsStore.delete( sms );
+    }
+
+    public String getDefaultGateway()
+    {
+        SmsGatewayConfig gatewayConfig = config.getDefaultGateway();
+
+        if ( gatewayConfig == null )
+        {
+            return null;
+        }
+
+        if ( getGatewayMap() == null )
+        {
+            return null;
+        }
+
+        String gatewayId;
+
+        if ( gatewayConfig instanceof BulkSmsGatewayConfig )
+        {
+            gatewayId = gatewayMap.get( BULK_GATEWAY );
+        }
+        else if ( gatewayConfig instanceof ClickatellGatewayConfig )
+        {
+            gatewayId = gatewayMap.get( CLICKATELL_GATEWAY );
+        }
+        else if ( gatewayConfig instanceof GenericHttpGatewayConfig )
+        {
+            gatewayId = gatewayMap.get( HTTP_GATEWAY );
+        }
+        else if ( gatewayConfig instanceof SMPPGatewayConfig )
+        {
+            gatewayId = gatewayMap.get( SMPP_GATEWAY );
+        }
+        else
+        {
+            gatewayId = gatewayMap.get( MODEM_GATEWAY );
+        }
+
+        return gatewayId;
     }
 }

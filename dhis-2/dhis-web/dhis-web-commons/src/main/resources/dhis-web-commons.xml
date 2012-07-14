@@ -114,8 +114,23 @@
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
+    <action name="account" class="org.hisp.dhis.useraccount.action.IsSelfRegistrationAllowedAction">
+      <result name="success" type="velocity">/dhis-web-commons/useraccount/account.vm</result>
+      <result name="error" type="redirect">login.action</result>
+    </action>
+    
+    <action name="recovery" class="org.hisp.dhis.useraccount.action.IsAccountRecoveryAllowedAction">
+      <result name="success" type="velocity">/dhis-web-commons/useraccount/recovery.vm</result>
+      <result name="error" type="redirect">login.action</result>
+    </action>
+    
+    <action name="restore" class="org.hisp.dhis.useraccount.action.IsRestoreTokenValidAction">
+      <result name="success" type="velocity">/dhis-web-commons/useraccount/restore.vm</result>
+      <result name="error" type="redirect">login.action</result>
+    </action>
+  
   </package>
-
+  
   <!-- Organisation Unit Selection Tree -->
   
   <package name="dhis-web-commons-oust" extends="dhis-web-commons" namespace="/dhis-web-commons/oust">
@@ -231,13 +246,11 @@
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
-    <action name="getOrganisationUnitByCode" class="org.hisp.dhis.ouwt.action.GetOrganisationUnitByCodeAction">
+    <action name="getOrganisationUnitsByName" class="org.hisp.dhis.ouwt.action.GetOrganisationUnitsByNameAction">
       <result name="success" type="velocity-json">
-        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+        /dhis-web-commons/ouwt/responseSearch.vm
       </result>
-      <result name="input" type="velocity-json">
-        /dhis-web-commons/ajax/jsonResponseInput.vm
-      </result>
+      <param name="onExceptionReturn">plainTextError</param>
     </action>
 
     <action name="loadOrganisationUnitTree" class="org.hisp.dhis.commons.action.NoAction">
@@ -304,11 +317,6 @@
 
     <action name="i18nJavaScript" class="org.hisp.dhis.commons.action.NoAction">
       <result name="success" type="velocity-javascript">/dhis-web-commons/i18n/i18n.vm</result>
-	  <interceptor-ref name="cacheStack"/>
-    </action>
-
-    <action name="messagesJavaScript" class="org.hisp.dhis.commons.action.NoAction">
-      <result name="success" type="velocity-javascript">/dhis-web-commons/i18n/messages.vm</result>
 	  <interceptor-ref name="cacheStack"/>
     </action>
 
@@ -474,7 +482,7 @@
   <!-- Common actions JSON -->
 
   <package name="dhis-web-commons-ajax-json" extends="dhis-web-commons" namespace="/dhis-web-commons-ajax-json">
-   
+
     <action name="getNotifications" class="org.hisp.dhis.commons.action.GetNotificationsAction">
 	  <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonNotifications.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
@@ -602,6 +610,13 @@
     <action name="getDataElementCategories" class="org.hisp.dhis.commons.action.GetDataElementCategoriesAction">
       <result name="success" type="velocity-json">
         /dhis-web-commons/ajax/jsonDataElementCategories.vm
+      </result>
+      <param name="onExceptionReturn">plainTextError</param>
+    </action>
+
+    <action name="getDataElementCategoryOptions" class="org.hisp.dhis.commons.action.GetCategoryOptionsAction">
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonDataElementCategoryOptions.vm
       </result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
@@ -843,13 +858,7 @@
       <result name="success" type="outputStreamResult"></result>
     </action>
 
-    <action name="displayChangeLog" class="org.hisp.dhis.commons.action.NoAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-commons/about/changeLog.vm</param>
-      <param name="menu">/dhis-web-commons/about/menu.vm</param>
-    </action>
-
-    <action name="displaySupportiveSoftware" class="org.hisp.dhis.commons.action.NoAction">
+    <action name="software" class="org.hisp.dhis.commons.action.NoAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-commons/about/software.vm</param>
       <param name="menu">/dhis-web-commons/about/menu.vm</param>
@@ -858,14 +867,30 @@
     <action name="showUpdateUserAccountForm" class="org.hisp.dhis.useraccount.action.GetCurrentUserAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-commons/useraccount/updateUserAccountForm.vm</param>
+      <param name="menu">/dhis-web-commons/about/menuDashboard.vm</param>
+    </action>
+
+    <action name="showUpdateUserProfileForm" class="org.hisp.dhis.useraccount.action.GetCurrentUserAction">
+      <result name="success" type="velocity">/main.vm</result>
+      <param name="page">/dhis-web-commons/useraccount/updateUserProfileForm.vm</param>
+      <param name="menu">/dhis-web-commons/about/menuDashboard.vm</param>
     </action>
 
     <action name="updateUserAccount" class="org.hisp.dhis.useraccount.action.UpdateUserAccountAction">
-      <result name="success" type="velocity-xml">
-        /dhis-web-commons/useraccount/updateUserSuccess.vm
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
       </result>
-      <result name="input" type="velocity-xml">
-        /dhis-web-commons/useraccount/updateUserInput.vm
+      <result name="error" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseError.vm
+      </result>
+    </action>
+
+    <action name="updateUserProfile" class="org.hisp.dhis.useraccount.action.UpdateUserProfileAction">
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+      </result>
+      <result name="error" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseError.vm
       </result>
     </action>
 
@@ -875,6 +900,21 @@
       <param name="menu">/dhis-web-commons/about/menu.vm</param>
     </action>
 
-  </package>
+    <action name="userSettings" class="org.hisp.dhis.settings.user.action.GetGeneralSettingsAction">
+      <result name="success" type="velocity">/main.vm</result>
+      <param name="page">/dhis-web-commons/settings/userGeneralSettings.vm</param>
+      <param name="menu">/dhis-web-commons/about/menuDashboard.vm</param>
+    </action>
 
+    <action name="setUserSettings" class="org.hisp.dhis.settings.user.action.SetGeneralSettingsAction">
+      <result name="success" type="velocity-json">
+		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+	  <param name="onExceptionReturn">plainTextError</param>
+    </action>
+	
+	<action name="redirect" class="org.hisp.dhis.about.action.RedirectAction">
+	  <result name="success" type="redirect">${redirectUrl}</result>
+	</action>
+	
+  </package>
 </struts>

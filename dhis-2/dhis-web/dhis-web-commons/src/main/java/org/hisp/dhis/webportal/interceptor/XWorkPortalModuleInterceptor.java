@@ -82,8 +82,8 @@ public class XWorkPortalModuleInterceptor
     {
         Map<String, Object> handle = new HashMap<String, Object>( 2 );
 
-        handle.put( KEY_MAINTENANCE_MODULES, moduleManager.getMaintenanceMenuModules() );
-        handle.put( KEY_SERVICE_MODULES, moduleManager.getServiceMenuModules() );
+        handle.put( KEY_MAINTENANCE_MODULES, moduleManager.getAccessibleMaintenanceModules() );
+        handle.put( KEY_SERVICE_MODULES, moduleManager.getAccessibleServiceModules() );
 
         actionInvocation.getStack().push( handle );
         

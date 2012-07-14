@@ -81,6 +81,12 @@ public class AddOrganisationUnitGroupAction
         this.name = name;
     }
 
+    private String symbol;
+
+    public void setSymbol( String symbol )
+    {
+        this.symbol = symbol;
+    }
 
     private List<String> jsonAttributeValues;
 
@@ -96,7 +102,9 @@ public class AddOrganisationUnitGroupAction
     public String execute()
         throws Exception
     {
-        OrganisationUnitGroup organisationUnitGroup = new OrganisationUnitGroup( name );
+        OrganisationUnitGroup organisationUnitGroup = new OrganisationUnitGroup();
+        organisationUnitGroup.setName( name );
+        organisationUnitGroup.setSymbol( symbol );
 
         Collection<OrganisationUnit> selectedOrganisationUnits = selectionTreeManager
             .getReloadedSelectedOrganisationUnits();

@@ -37,15 +37,24 @@ import java.util.Map;
 import org.hisp.dhis.caseentry.state.SelectedStateManager;
 import org.hisp.dhis.dataentryform.DataEntryForm;
 import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramDataEntryService;
+import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.program.ProgramStageSection;
+import org.hisp.dhis.program.ProgramStageSectionService;
 import org.hisp.dhis.program.comparator.ProgramStageDataElementSortOrderComparator;
+import org.hisp.dhis.program.comparator.ProgramStageSectionSortOrderComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -69,6 +78,14 @@ public class LoadDataEntryAction
 
     private SelectedStateManager selectedStateManager;
 
+    private PatientAttributeService patientAttributeService;
+
+    private PatientAttributeValueService patientAttributeValueService;
+
+    private ProgramStageSectionService programStageSectionService;
+    
+    private I18nFormat format;
+
     // -------------------------------------------------------------------------
     // Input && Output
     // -------------------------------------------------------------------------
@@ -89,6 +106,12 @@ public class LoadDataEntryAction
 
     private Program program;
 
+    private ProgramStage programStage;
+
+    private List<ProgramStageSection> sections = new ArrayList<ProgramStageSection>();
+
+    private Map<String, Double> calAttributeValueMap = new HashMap<String, Double>();
+
     // -------------------------------------------------------------------------
     // Getters && Setters
     // -------------------------------------------------------------------------
@@ -98,14 +121,44 @@ public class LoadDataEntryAction
         this.programStageInstanceService = programStageInstanceService;
     }
 
+    public void setProgramStageSectionService( ProgramStageSectionService programStageSectionService )
+    {
+        this.programStageSectionService = programStageSectionService;
+    }
+
+    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    {
+        this.patientAttributeService = patientAttributeService;
+    }
+
+    public void setPatientAttributeValueService( PatientAttributeValueService patientAttributeValueService )
+    {
+        this.patientAttributeValueService = patientAttributeValueService;
+    }
+
+    public void setFormat( I18nFormat format )
+    {
+        this.format = format;
+    }
+
     public void setProgramStageInstanceId( Integer programStageInstanceId )
     {
         this.programStageInstanceId = programStageInstanceId;
     }
 
+    public List<ProgramStageSection> getSections()
+    {
+        return sections;
+    }
+
     public Program getProgram()
     {
         return program;
+    }
+
+    public ProgramStage getProgramStage()
+    {
+        return programStage;
     }
 
     public void setSelectedStateManager( SelectedStateManager selectedStateManager )
@@ -153,6 +206,25 @@ public class LoadDataEntryAction
         return patientDataValueMap;
     }
 
+    private String visitor;
+
+    public String getVisitor()
+    {
+        return visitor;
+    }
+
+    private Patient patient;
+
+    public Patient getPatient()
+    {
+        return patient;
+    }
+
+    public Map<String, Double> getCalAttributeValueMap()
+    {
+        return calAttributeValueMap;
+    }
+    
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
@@ -165,14 +237,34 @@ public class LoadDataEntryAction
         // ---------------------------------------------------------------------
         // Get program-stage-instance
         // ---------------------------------------------------------------------
-        
+
         if ( programStageInstanceId != null )
-        { 
+        {
             programStageInstance = programStageInstanceService.getProgramStageInstance( programStageInstanceId );
-       
+
             program = programStageInstance.getProgramStage().getProgram();
-            
+
+            programStage = programStageInstance.getProgramStage();
+
             selectedStateManager.setSelectedProgramStageInstance( programStageInstance );
+
+            if ( program.isRegistration() )
+            {
+                patient = programStageInstance.getProgramInstance().getPatient();
+
+                Collection<PatientAttribute> calAttributes = patientAttributeService
+                    .getPatientAttributesByValueType( PatientAttribute.TYPE_CALCULATED );
+
+                for ( PatientAttribute calAttribute : calAttributes )
+                {
+                    Double value = patientAttributeValueService.getCalculatedPatientAttributeValue( patient,
+                        calAttribute, format );
+                    if ( value != null )
+                    {
+                        calAttributeValueMap.put( calAttribute.getName(), value );
+                    }
+                }
+            }
 
             // ---------------------------------------------------------------------
             // Get data values
@@ -200,12 +292,19 @@ public class LoadDataEntryAction
 
             DataEntryForm dataEntryForm = programStageInstance.getProgramStage().getDataEntryForm();
 
-            if ( dataEntryForm != null )
+            if ( programStage.getDataEntryType().equals( ProgramStage.TYPE_CUSTOM ) )
             {
-                Boolean disabled = ( program.getDisplayProvidedOtherFacility()==null)? true : !program.getDisplayProvidedOtherFacility();
-                customDataEntryFormCode = programDataEntryService.prepareDataEntryFormForEntry( dataEntryForm
-                    .getHtmlCode(), patientDataValues, disabled.toString(), i18n,
+                Boolean disabled = (program.getDisplayProvidedOtherFacility() == null) ? true : !program
+                    .getDisplayProvidedOtherFacility();
+                customDataEntryFormCode = programDataEntryService.prepareDataEntryFormForEntry(
+                    dataEntryForm.getHtmlCode(), patientDataValues, disabled.toString(), i18n,
                     programStageInstance.getProgramStage(), programStageInstance, organisationUnit );
+            }
+            else if ( programStage.getDataEntryType().equals( ProgramStage.TYPE_SECTION ) )
+            {
+                sections = new ArrayList<ProgramStageSection>( programStageSectionService.getProgramStages( programStage ));
+                
+                Collections.sort( sections, new ProgramStageSectionSortOrderComparator() );
             }
         }
 

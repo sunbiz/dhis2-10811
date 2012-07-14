@@ -27,15 +27,15 @@
 
 package org.hisp.dhis.sms.action;
 
-import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.i18n.I18nFormat;
-import org.hisp.dhis.message.MessageService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
+
+import com.opensymphony.xwork2.Action;
 
 public class MenuAction
     implements Action
@@ -43,13 +43,6 @@ public class MenuAction
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
-
-    private MessageService messageService;
-
-    public void setMessageService( MessageService messageService )
-    {
-        this.messageService = messageService;
-    }
 
     private OrganisationUnitService organisationUnitService;
 
@@ -161,7 +154,6 @@ public class MenuAction
             dataSet = dataSetService.getDataSet( dataSetId );
         }
 
-        unreadMessageConversationCount = messageService.getUnreadMessageConversationCount();
 
         return SUCCESS;
     }

@@ -100,7 +100,11 @@ public class DataSetBatchHandler
         statementBuilder.setColumn( "allowfutureperiods" );
         statementBuilder.setColumn( "dataentryform" );
         statementBuilder.setColumn( "expirydays" );
+        statementBuilder.setColumn( "notifycompletinguser" );
         statementBuilder.setColumn( "skipaggregation" );
+        statementBuilder.setColumn( "fieldcombinationrequired" );
+        statementBuilder.setColumn( "validcompleteonly" );
+        statementBuilder.setColumn( "skipoffline" );
     }
 
     protected void setValues( DataSet dataSet )
@@ -114,7 +118,11 @@ public class DataSetBatchHandler
         statementBuilder.setValue( dataSet.isMobile() );
         statementBuilder.setValue( dataSet.isAllowFuturePeriods() );
         statementBuilder.setValue( dataSet.getDataEntryForm() != null ? dataSet.getDataEntryForm().getId() : null );
-        statementBuilder.setValue( dataSet.getExpiryDays() );       
+        statementBuilder.setValue( dataSet.getExpiryDays() );    
+        statementBuilder.setValue( dataSet.isNotifyCompletingUser() );
         statementBuilder.setValue( dataSet.isSkipAggregation() );
+        statementBuilder.setValue( dataSet.isFieldCombinationRequired() );
+        statementBuilder.setValue( dataSet.isValidCompleteOnly() );
+        statementBuilder.setValue( dataSet.isSkipOffline() );
     }
 }

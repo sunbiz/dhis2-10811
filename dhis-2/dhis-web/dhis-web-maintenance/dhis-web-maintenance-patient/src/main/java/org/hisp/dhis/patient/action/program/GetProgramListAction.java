@@ -29,11 +29,14 @@ package org.hisp.dhis.patient.action.program;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageService;
+import org.hisp.dhis.program.comparator.ProgramNameComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -90,14 +93,14 @@ public class GetProgramListAction
         this.associations = associations;
     }
 
-    private Collection<Program> programs = new ArrayList<Program>();
+    private List<Program> programs = new ArrayList<Program>();
 
-    public Collection<Program> getPrograms()
+    public List<Program> getPrograms()
     {
         return programs;
     }
 
-    public void setPrograms( Collection<Program> programs )
+    public void setPrograms( List<Program> programs )
     {
         this.programs = programs;
     }
@@ -109,8 +112,9 @@ public class GetProgramListAction
     public String execute()
         throws Exception
     {
-        programs = programService.getAllPrograms();
-
+        programs = new ArrayList<Program>( programService.getAllPrograms() );
+        Collections.sort( programs, new ProgramNameComparator() );
+        
         if ( id == null )
         {
             associations = programStageService.getAllProgramStages();

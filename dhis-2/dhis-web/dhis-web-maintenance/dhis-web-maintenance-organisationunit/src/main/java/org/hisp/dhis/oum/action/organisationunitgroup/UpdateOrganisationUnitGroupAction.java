@@ -89,6 +89,13 @@ public class UpdateOrganisationUnitGroupAction
         this.name = name;
     }
 
+    private String symbol;
+
+    public void setSymbol( String symbol )
+    {
+        this.symbol = symbol;
+    }
+
     private List<String> jsonAttributeValues;
 
     public void setJsonAttributeValues( List<String> jsonAttributeValues )
@@ -106,6 +113,7 @@ public class UpdateOrganisationUnitGroupAction
         OrganisationUnitGroup organisationUnitGroup = organisationUnitGroupService.getOrganisationUnitGroup( id );
 
         organisationUnitGroup.setName( name );
+        organisationUnitGroup.setSymbol( symbol );
 
         Collection<OrganisationUnit> selectedOrganisationUnits = selectionTreeManager.getReloadedSelectedOrganisationUnits();
 

@@ -66,31 +66,34 @@ function removeAttributeOption( rowId )
 function searchingAttributeOnChange( this_ )
 {	
 	var container = jQuery(this_).parent().parent().attr('id');
-	var attributeId = jQuery('#' + container+ ' [id=searchingAttributeId]').val(); 
-	var element = jQuery('#' + container+ ' [id=searchText]');
-	var valueType = jQuery('#' + container+ ' [id=searchingAttributeId] option:selected').attr('valueType');
+	var attributeId = jQuery('#' + container + ' [id=searchObjectId]').val(); 
+	var element = jQuery('#' + container + ' [id=searchText]');
+	var valueType = jQuery('#' + container+ ' [id=searchObjectId] option:selected').attr('valueType');
 	
-	if( attributeId == '-1' )
+	if( attributeId == 'fixedAttr_birthDate' )
 	{
 		element.replaceWith( getDateField( container ) );
-		datePickerValid( container + ' [id=searchText]' );
+		datePickerValid( 'searchText_' + container );
 		return;
 	}
 	
-	$('#' + container+ ' [id=searchText]').datepicker("destroy");
-	$('#' + container+ ' [id=dateOperator]').replaceWith("");
-
-	if( attributeId == '0' )
+	$( '#searchText_' + container ).datepicker("destroy");
+	$('#' + container + ' [id=dateOperator]').replaceWith("");
+	if( attributeId == 'prg' )
 	{
 		element.replaceWith( programComboBox );
 	}
-	else if ( attributeId == '-2' )
+	else if ( attributeId=='fixedAttr_gender' )
 	{
-		element.replaceWith( genderSelector );
+		element.replaceWith( getGenderSelector() );
+	}
+	else if ( attributeId=='fixedAttr_age' )
+	{
+		element.replaceWith( getAgeTextBox() );
 	}
 	else if ( valueType=='YES/NO' )
 	{
-		element.replaceWith( trueFalseBox );
+		element.replaceWith( getTrueFalseBox() );
 	}
 	else
 	{
@@ -98,13 +101,39 @@ function searchingAttributeOnChange( this_ )
 	}
 }
 
-function getDateField( container )
+function getTrueFalseBox()
 {
-	var dateField = '<select id="dateOperator" name="dateOperator" ><option value="&gt;"> &gt; </option><option value="="> = </option><option value="&lt;"> &lt; </option></select>';
-	dateField += '<input type="text" id="searchText" name="searchText" maxlength="30" style="width:18em" onkeyup="searchPatientsOnKeyUp( event );">';
-	return dateField;
+	var trueFalseBox  = '<select id="searchText" name="searchText">';
+	trueFalseBox += '<option value="true">' + i18n_yes + '</option>';
+	trueFalseBox += '<option value="false">' + i18n_no + '</option>';
+	trueFalseBox += '</select>';
+	return trueFalseBox;
 }
 	
+function getGenderSelector()
+{
+	var genderSelector = '<select id="searchText" name="searchText">';
+		genderSelector += '<option value="M">' + i18n_male + '</option>';
+		genderSelector += '<option value="F">' + i18n_female + '</option>';
+		genderSelector += '<option value="T">' + i18n_transgender + '</option>';
+		genderSelector += '</select>';
+	return genderSelector;
+}
+
+function getAgeTextBox( container )
+{
+	var ageField = '<select id="dateOperator" style="width:40px;" name="dateOperator" ><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option><option value=">"> > </option><option value=">="> >= </option></select>';
+	ageField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:200px;">';
+	return ageField;
+}
+
+function getDateField( container )
+{
+	var dateField = '<select id="dateOperator" name="dateOperator" style="width:30px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
+	dateField += '<input type="text" id="searchText_' + container + '" name="searchText" maxlength="30" style="width:18em" onkeyup="searchPatientsOnKeyUp( event );">';
+	return dateField;
+}
+
 //-----------------------------------------------------------------------------
 // Search Patient
 //-----------------------------------------------------------------------------
@@ -126,30 +155,67 @@ function getKeyCode(e)
 	 return (e)? e.which : null;
 }
 
-function searchAdvancedPatients()
+function validateAdvancedSearch()
 {
 	hideById( 'listPatientDiv' );
-
-	var searchTextFields = jQuery( '[name=searchText]' );
 	var flag = true;
-
-	jQuery( searchTextFields ).each( function( i, item )
+	var params = '';
+	var dateOperator = '';
+	jQuery("#searchDiv :input").each( function( i, item )
     {
-		if( jQuery( item ).val() == '' )
+		var elementName = $(this).attr('name');
+		if( elementName=='searchText' && jQuery( item ).val() == '' )
 		{
 			showWarningMessage( i18n_specify_search_criteria );
 			flag = false;
 		}
 	});
 	
-	if ( !flag ) return;
-	
-	contentDiv = 'listPatientDiv';
-	jQuery( "#loaderDiv" ).show();
-	searchPatient();
-	
+	if(flag){
+		jQuery( '#advancedSearchTB tbody tr' ).each( function( i, row ){
+			var dateOperator = "";
+			jQuery( this ).find(':input').each( function( idx, item ){
+				if( idx == 0){
+					params += "&searchTexts=" + item.value;
+				}
+				else if( item.name == 'dateOperator'){
+					dateOperator = item.value;
+				}
+				else if( item.name == 'searchText'){
+					params += "_";
+					if ( dateOperator.length >0 ) {
+						params += dateOperator + "'" +  item.value.toLowerCase() + "'";
+					}
+					else{
+						params += htmlEncode( item.value.toLowerCase().replace(/^\s*/, "").replace(/\s*$/, "") );
+					}
+				}
+			})
+		});
+		params += '&listAll=false';
+		params += '&searchBySelectedOrgunit=' + byId('searchBySelectedOrgunit').checked;
+		
+		contentDiv = 'listPatientDiv';
+		jQuery( "#loaderDiv" ).show();
+		advancedSearch( params );
+	}
 }
 
+function advancedSearch( params )
+{
+	$.ajax({
+		url: 'searchRegistrationPatient.action',
+		type:"POST",
+		data: params,
+		success: function( html ){
+				statusSearching = 1;
+				setInnerHTML( 'listPatientDiv', html );
+				showById('listPatientDiv');
+				setFieldValue('listAll',false);
+				jQuery( "#loaderDiv" ).hide();
+			}
+		});
+}
 // ----------------------------------------------------------------
 // Get Params form Div
 // ----------------------------------------------------------------

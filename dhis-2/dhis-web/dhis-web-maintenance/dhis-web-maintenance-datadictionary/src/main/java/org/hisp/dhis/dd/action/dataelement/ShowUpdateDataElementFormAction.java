@@ -44,6 +44,8 @@ import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.dataelement.DataElementGroupSet;
 import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.mapping.MapLegendSet;
+import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.option.OptionService;
 import org.hisp.dhis.option.OptionSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
@@ -96,6 +98,13 @@ public class ShowUpdateDataElementFormAction
     public void setOptionService( OptionService optionService )
     {
         this.optionService = optionService;
+    }
+
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
     }
 
     // -------------------------------------------------------------------------
@@ -172,11 +181,18 @@ public class ShowUpdateDataElementFormAction
         return attributeValues;
     }
 
-    private Collection<OptionSet> optionSets;
+    private List<OptionSet> optionSets;
 
-    public Collection<OptionSet> getOptionSets()
+    public List<OptionSet> getOptionSets()
     {
         return optionSets;
+    }
+
+    private List<MapLegendSet> legendSets;
+
+    public List<MapLegendSet> getLegendSets()
+    {
+        return legendSets;
     }
 
     // -------------------------------------------------------------------------
@@ -211,11 +227,15 @@ public class ShowUpdateDataElementFormAction
 
         attributeValues = AttributeUtils.getAttributeValueMap( dataElement.getAttributeValues() );
 
+        optionSets = new ArrayList<OptionSet>( optionService.getAllOptionSets() );
+
+        legendSets = new ArrayList<MapLegendSet>( mappingService.getAllMapLegendSets() );
+        
         Collections.sort( dataElementCategoryCombos, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( groupSets, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( attributes, new AttributeSortOrderComparator() );
-
-        optionSets = optionService.getAllOptionSets();
+        Collections.sort( optionSets, IdentifiableObjectNameComparator.INSTANCE );
+        Collections.sort( legendSets, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

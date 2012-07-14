@@ -27,13 +27,17 @@
 
 package org.hisp.dhis.patient.action.caseaggregation;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.hisp.dhis.caseaggregation.CaseAggregationCondition;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.AGGRERATION_COUNT;
 import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
+import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.program.Program;
 
 import com.opensymphony.xwork2.Action;
 
@@ -58,6 +62,20 @@ public class TestCaseAggregationConditionAction
         this.aggregationConditionService = aggregationConditionService;
     }
 
+    private DataElementService dataElementService;
+
+    public void setDataElementService( DataElementService dataElementService )
+    {
+        this.dataElementService = dataElementService;
+    }
+
+    private I18n i18n;
+
+    public void setI18n( I18n i18n )
+    {
+        this.i18n = i18n;
+    }
+
     // -------------------------------------------------------------------------
     // Getters && Setters
     // -------------------------------------------------------------------------
@@ -69,6 +87,27 @@ public class TestCaseAggregationConditionAction
         this.condition = condition;
     }
 
+    private String operator;
+
+    public void setOperator( String operator )
+    {
+        this.operator = operator;
+    }
+
+    private Integer deSumId;
+
+    public void setDeSumId( Integer deSumId )
+    {
+        this.deSumId = deSumId;
+    }
+
+    private String message;
+
+    public String getMessage()
+    {
+        return message;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -77,8 +116,25 @@ public class TestCaseAggregationConditionAction
     public String execute()
         throws Exception
     {
-        CaseAggregationCondition aggCondition = new CaseAggregationCondition( "", AGGRERATION_COUNT, condition, null,
-            null );
+        CaseAggregationCondition aggCondition = new CaseAggregationCondition( "", operator, condition, null, null );
+        if ( deSumId != null )
+        {
+            aggCondition.setDeSum( dataElementService.getDataElement( deSumId ) );
+        }
+
+        Collection<Program> programs = aggregationConditionService.getProgramsInCondition( condition );
+
+        if ( operator.equals( AGGRERATION_COUNT ) )
+        {
+            for ( Program program : programs )
+            {
+                if ( program.getType() == Program.SINGLE_EVENT_WITHOUT_REGISTRATION )
+                {
+                    message = i18n.getString( "select_operator_number_of_visits_for_this_condition" );
+                    return INPUT;
+                }
+            }
+        }
 
         OrganisationUnit orgunit = new OrganisationUnit();
         orgunit.setId( 1 );
@@ -87,7 +143,7 @@ public class TestCaseAggregationConditionAction
         period.setStartDate( new Date() );
         period.setEndDate( new Date() );
 
-        Double value = aggregationConditionService.parseConditition( aggCondition, orgunit, period );
+        Integer value = aggregationConditionService.parseConditition( aggCondition, orgunit, period );
 
         if ( value == null )
         {
@@ -96,5 +152,4 @@ public class TestCaseAggregationConditionAction
 
         return SUCCESS;
     }
-
 }

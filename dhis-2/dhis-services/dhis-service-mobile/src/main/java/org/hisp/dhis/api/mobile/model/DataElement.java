@@ -102,24 +102,17 @@ public class DataElement
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-        dout.writeInt( this.getId() );
-        dout.writeUTF( this.getName() );
-        dout.writeUTF( this.getType() );
-        dout.writeBoolean( this.isCompulsory() );
-
-        List<Model> cateOptCombos = this.getCategoryOptionCombos().getModels();
-        if ( cateOptCombos == null || cateOptCombos.size() <= 0 )
+        if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            dout.writeInt( 0 );
+            this.serializeVerssion2_8( dout );
         }
-        else
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            dout.writeInt( cateOptCombos.size() );
-            for ( Model each : cateOptCombos )
-            {
-                dout.writeInt( each.getId() );
-                dout.writeUTF( each.getName() );
-            }
+            this.serializeVerssion2_9( dout );
+        }
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
+        {
+            this.serializeVerssion2_10( dout );
         }
     }
 
@@ -142,7 +135,8 @@ public class DataElement
             dout.writeInt( cateOptCombos.size() );
             for ( Model each : cateOptCombos )
             {
-                each.serializeVerssion2_8( dout );
+                each.setClientVersion( TWO_POINT_EIGHT );
+                each.serialize( dout );
             }
         }
     }
@@ -166,7 +160,8 @@ public class DataElement
             dout.writeInt( cateOptCombos.size() );
             for ( Model each : cateOptCombos )
             {
-                each.serializeVerssion2_9( dout );
+                each.setClientVersion( TWO_POINT_NINE );
+                each.serialize( dout );
             }
         }
 
@@ -176,9 +171,45 @@ public class DataElement
         }
         else
         {
-            optionSet.serializeVerssion2_9( dout );
+            optionSet.setClientVersion( TWO_POINT_NINE );
+            optionSet.serialize( dout );
         }
 
+    }
+    
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dout )
+        throws IOException
+    {
+        dout.writeInt( this.getId() );
+        dout.writeUTF( this.getName() );
+        dout.writeUTF( this.getType() );
+        dout.writeBoolean( this.isCompulsory() );
+
+        List<Model> cateOptCombos = this.getCategoryOptionCombos().getModels();
+        if ( cateOptCombos == null || cateOptCombos.size() <= 0 )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( cateOptCombos.size() );
+            for ( Model each : cateOptCombos )
+            {
+                each.setClientVersion( TWO_POINT_TEN );
+                each.serialize( dout );
+            }
+        }
+
+        if ( optionSet == null || optionSet.getOptions().size() <= 0 )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            optionSet.setClientVersion( TWO_POINT_TEN );
+            optionSet.serialize( dout );
+        }
     }
 
 }

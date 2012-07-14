@@ -52,6 +52,8 @@ public class MonthlyPeriodType
 
     private static final String ISO_FORMAT = "yyyyMM";
 
+    private static final String ALTERNATIVE_ISO_FORMAT = "yyyy-MM";
+
     /**
      * The name of the MonthlyPeriodType, which is "Monthly".
      */
@@ -177,6 +179,16 @@ public class MonthlyPeriodType
         }
         catch ( ParseException ex )
         {
+            // Ignore and try alternative format
+        }
+        
+        try
+        {
+            Date date = new SimpleDateFormat( ALTERNATIVE_ISO_FORMAT ).parse( isoDate );
+            return createPeriod( date );
+        }
+        catch ( ParseException ex )
+        {
             throw new RuntimeException( ex );
         }
     }
@@ -185,5 +197,17 @@ public class MonthlyPeriodType
     public String getIsoFormat()
     {
         return ISO_FORMAT;
+    }
+    
+    @Override
+    public Date getRewindedDate( Date date, Integer rewindedPeriods )
+    {
+        date = date != null ? date : new Date();        
+        rewindedPeriods = rewindedPeriods != null ? rewindedPeriods : 1;
+
+        Calendar cal = createCalendarInstance( date );        
+        cal.add( Calendar.MONTH, (rewindedPeriods * -1) );
+
+        return cal.getTime();
     }
 }

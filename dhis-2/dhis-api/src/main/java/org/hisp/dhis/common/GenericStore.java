@@ -27,7 +27,7 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Lars Helge Overland
@@ -38,10 +38,10 @@ public interface GenericStore<T>
      * Class of the object for this store.
      */
     Class<T> getClazz();
-    
+
     /**
      * Saves the given object instance.
-     * 
+     *
      * @param object the object instance.
      * @return the generated identifier.
      */
@@ -49,23 +49,15 @@ public interface GenericStore<T>
 
     /**
      * Updates the given object instance.
-     * 
+     *
      * @param object the object instance.
      */
     void update( T object );
 
     /**
-     * Saves or updates the given object instance depending on the object's
-     * persistent state.
-     * 
-     * @param object the object instance.
-     */
-    void saveOrUpdate( T object );
-
-    /**
      * Retrieves the object with the given identifier. This method will first
      * look in the current Session, then hit the database if not existing.
-     * 
+     *
      * @param id the object identifier.
      * @return the object identified by the given identifier.
      */
@@ -73,45 +65,30 @@ public interface GenericStore<T>
 
     /**
      * Retrieves the object with the given identifier, assuming it exists.
-     * 
+     *
      * @param id the object identifier.
      * @return the object identified by the given identifier or a generated
      *         proxy.
      */
     T load( int id );
-    
-    /**
-     * Retrieves a Collection of objects where the name is like the given name.
-     * 
-     * @param name the name.
-     * @return a Collection of objects.
-     */
-    Collection<T> getLikeName( String name );
 
     /**
-     * Retrieves a Collection of all objects.
-     * 
-     * @return a Collection of all objects.
-     */
-    Collection<T> getAll();
-
-    /**
-     * Retrieves a Collection of all objects (sorted on name).
+     * Retrieves a List of all objects.
      *
-     * @return a Collection of all objects.
+     * @return a List of all objects.
      */
-    Collection<T> getAllSorted();
+    List<T> getAll();
 
     /**
      * Removes the given object instance.
-     * 
+     *
      * @param object the object instance to delete.
      */
     void delete( T object );
-    
+
     /**
      * Gets the count of objects.
-     * 
+     *
      * @return the count of objects.
      */
     int getCount();

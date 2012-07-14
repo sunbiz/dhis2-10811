@@ -42,6 +42,7 @@ public interface MessageSender
      * @param subject the message subject.
      * @param text the message text.
      * @param users the users to send the message to.
+     * @param forceSend force sending the message despite potential user settings.
      */
-    void sendMessage( String subject, String text, User sender, Set<User> users );
+    void sendMessage( String subject, String text, User sender, Set<User> users, boolean forceSend );
 }

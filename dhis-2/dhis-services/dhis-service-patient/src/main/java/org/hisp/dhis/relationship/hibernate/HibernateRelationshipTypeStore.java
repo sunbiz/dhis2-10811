@@ -28,7 +28,7 @@
 package org.hisp.dhis.relationship.hibernate;
 
 import org.hibernate.criterion.Restrictions;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.relationship.RelationshipTypeStore;
 
@@ -37,7 +37,7 @@ import org.hisp.dhis.relationship.RelationshipTypeStore;
  * @version $Id$
  */
 public class HibernateRelationshipTypeStore
-    extends HibernateGenericStore<RelationshipType>
+    extends HibernateIdentifiableObjectStore<RelationshipType>
     implements RelationshipTypeStore
 {
     public RelationshipType getRelationshipType( String aIsToB, String bIsToA )

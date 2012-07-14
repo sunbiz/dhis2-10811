@@ -1,10 +1,7 @@
 package org.hisp.dhis.coldchain.catalog.action;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.sql.Blob;
 
-import org.hibernate.Hibernate;
 import org.hisp.dhis.coldchain.catalog.Catalog;
 import org.hisp.dhis.coldchain.catalog.CatalogService;
 import org.hisp.dhis.system.util.StreamUtils;
@@ -160,16 +157,13 @@ public class UploadCatalogImageAction implements Action
         
         Catalog catalog = catalogService.getCatalog( catalogID );
         
-        
         //File directory = null;
         
         String fileType = fileName.substring(fileName.indexOf( '.' )+1, fileName.length());
         
-        
         System.out.println( "File Name is : " + fileName +" File Type is : " +  fileType );
         
         System.out.println( "UPLOAD is  : " + upload );
-        
         
         
         if ( ! ( fileType.equalsIgnoreCase( "jpg" ) || fileType.equalsIgnoreCase( "png" ) || fileType.equalsIgnoreCase( "gif" ) ||  fileType.equalsIgnoreCase( "jpeg" ) ||  fileType.equalsIgnoreCase( "tiff" ) || fileType.equalsIgnoreCase( "bmp" ) ) )

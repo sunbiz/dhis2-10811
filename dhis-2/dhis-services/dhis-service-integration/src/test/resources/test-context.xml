@@ -2,9 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:camel="http://camel.apache.org/schema/spring"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd"
-       xmlns:d="http://dhis2.org/schema/dxf/2.0"
-  >
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd"
+       xmlns:d="http://dhis2.org/schema/dxf/2.0">
       
   <!-- custom lifecycle strategy -->
   <bean id="lifecyclestrategy" class="org.hisp.dhis.integration.management.DHIS2LifecycleStrategy" />

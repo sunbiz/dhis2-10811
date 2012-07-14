@@ -40,7 +40,6 @@ import org.hisp.dhis.dataelement.DataElementCategory;
 import org.hisp.dhis.dataelement.DataElementCategoryCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
-import org.hisp.dhis.dataelement.DataElementFormNameComparator;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataelement.LocalDataElementService;
@@ -211,21 +210,21 @@ public class LoadFormAction
     {
         DataSet dataSet = dataSetService.getDataSet( dataSetId, true, false, false );
 
-        List<DataElement> dataElements = new ArrayList<DataElement>( dataSet.getDataElements() );
+        List<DataElement> dataElements = null;
 
         if ( value != null && !value.trim().isEmpty() )
         {
-            Collection<DataElement> dataElementsByAttr = localDataElementService.getDataElements( dataSet, value );
-
-            dataElements.retainAll( dataElementsByAttr );
+            dataElements = new ArrayList<DataElement>( localDataElementService.getDataElements( dataSet, value ) );
+        }
+        else
+        {
+            dataElements = new ArrayList<DataElement>( dataSet.getDataElements() );
         }
 
         if ( dataElements.isEmpty() )
         {
             return INPUT;
         }
-
-        Collections.sort( dataElements, new DataElementFormNameComparator() );
 
         orderedDataElements = dataElementService.getGroupedDataElementsByCategoryCombo( dataElements );
 
@@ -354,7 +353,10 @@ public class LoadFormAction
         {
             des = (List<DataElement>) orderedDataElements.get( categoryCombo );
 
-            Collections.sort( des, IdentifiableObjectNameComparator.INSTANCE );
+            if ( value == null || value.trim().isEmpty() )
+            {
+                Collections.sort( des, IdentifiableObjectNameComparator.INSTANCE );
+            }
 
             orderedDataElements.put( categoryCombo, des );
         }

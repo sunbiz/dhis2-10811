@@ -27,16 +27,17 @@ package org.hisp.dhis.organisationunit;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.i18n.I18nUtils.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.hisp.dhis.i18n.I18nUtils.*;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -56,7 +57,7 @@ public class DefaultOrganisationUnitGroupService
     {
         this.organisationUnitGroupStore = organisationUnitGroupStore;
     }
-    
+
     private GenericIdentifiableObjectStore<OrganisationUnitGroupSet> organisationUnitGroupSetStore;
 
     public void setOrganisationUnitGroupSetStore( GenericIdentifiableObjectStore<OrganisationUnitGroupSet> organisationUnitGroupSetStore )
@@ -94,18 +95,23 @@ public class DefaultOrganisationUnitGroupService
     {
         return i18n( i18nService, organisationUnitGroupStore.get( id ) );
     }
-    
+
     public Collection<OrganisationUnitGroup> getOrganisationUnitGroups( final Collection<Integer> identifiers )
     {
         Collection<OrganisationUnitGroup> objects = getAllOrganisationUnitGroups();
-        
+
         return identifiers == null ? objects : FilterUtils.filter( objects, new Filter<OrganisationUnitGroup>()
+        {
+            public boolean retain( OrganisationUnitGroup object )
             {
-                public boolean retain( OrganisationUnitGroup object )
-                {
-                    return identifiers.contains( object.getId() );
-                }
-            } );
+                return identifiers.contains( object.getId() );
+            }
+        } );
+    }
+
+    public List<OrganisationUnitGroup> getOrganisationUnitGroupsByUid( Collection<String> uids )
+    {
+        return organisationUnitGroupStore.getByUid( uids );
     }
 
     public OrganisationUnitGroup getOrganisationUnitGroup( String uid )
@@ -113,16 +119,16 @@ public class DefaultOrganisationUnitGroupService
         return i18n( i18nService, organisationUnitGroupStore.getByUid( uid ) );
     }
 
-    public OrganisationUnitGroup getOrganisationUnitGroupByName( String name )
+    public List<OrganisationUnitGroup> getOrganisationUnitGroupByName( String name )
     {
-        return i18n( i18nService, organisationUnitGroupStore.getByName( name ) );
+        return new ArrayList<OrganisationUnitGroup>( i18n( i18nService, organisationUnitGroupStore.getAllEqName( name ) ) );
     }
 
     public Collection<OrganisationUnitGroup> getAllOrganisationUnitGroups()
     {
         return i18n( i18nService, organisationUnitGroupStore.getAll() );
     }
-    
+
     public Collection<OrganisationUnitGroup> getOrganisationUnitGroupsWithGroupSets()
     {
         return i18n( i18nService, organisationUnitGroupStore.getOrganisationUnitGroupsWithGroupSets() );
@@ -137,7 +143,7 @@ public class DefaultOrganisationUnitGroupService
     {
         return getCountByName( i18nService, organisationUnitGroupStore, name );
     }
-    
+
     public Collection<OrganisationUnitGroup> getOrganisationUnitGroupsBetween( int first, int max )
     {
         return getObjectsBetween( i18nService, organisationUnitGroupStore, first, max );
@@ -175,12 +181,12 @@ public class DefaultOrganisationUnitGroupService
     public OrganisationUnitGroupSet getOrganisationUnitGroupSet( int id, boolean i18nGroups )
     {
         OrganisationUnitGroupSet groupSet = getOrganisationUnitGroupSet( id );
-        
+
         if ( i18nGroups )
         {
             i18n( i18nService, groupSet.getOrganisationUnitGroups() );
         }
-        
+
         return groupSet;
     }
 
@@ -188,23 +194,28 @@ public class DefaultOrganisationUnitGroupService
     {
         return i18n( i18nService, organisationUnitGroupSetStore.getByUid( uid ) );
     }
-    
+
     public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSets( final Collection<Integer> identifiers )
     {
         Collection<OrganisationUnitGroupSet> objects = getAllOrganisationUnitGroupSets();
-        
+
         return identifiers == null ? objects : FilterUtils.filter( objects, new Filter<OrganisationUnitGroupSet>()
+        {
+            public boolean retain( OrganisationUnitGroupSet object )
             {
-                public boolean retain( OrganisationUnitGroupSet object )
-                {
-                    return identifiers.contains( object.getId() );
-                }
-            } );
+                return identifiers.contains( object.getId() );
+            }
+        } );
     }
 
-    public OrganisationUnitGroupSet getOrganisationUnitGroupSetByName( String name )
+    public List<OrganisationUnitGroupSet> getOrganisationUnitGroupSetsByUid( Collection<String> uids )
     {
-        return i18n( i18nService, organisationUnitGroupSetStore.getByName( name ) );
+        return organisationUnitGroupSetStore.getByUid( uids );
+    }
+
+    public List<OrganisationUnitGroupSet> getOrganisationUnitGroupSetByName( String name )
+    {
+        return new ArrayList<OrganisationUnitGroupSet>( i18n( i18nService, organisationUnitGroupSetStore.getAllEqName( name ) ) );
     }
 
     public Collection<OrganisationUnitGroupSet> getAllOrganisationUnitGroupSets()
@@ -215,7 +226,7 @@ public class DefaultOrganisationUnitGroupService
     public Collection<OrganisationUnitGroupSet> getCompulsoryOrganisationUnitGroupSets()
     {
         Collection<OrganisationUnitGroupSet> groupSets = new ArrayList<OrganisationUnitGroupSet>();
-        
+
         for ( OrganisationUnitGroupSet groupSet : getAllOrganisationUnitGroupSets() )
         {
             if ( groupSet.isCompulsory() )
@@ -223,21 +234,21 @@ public class DefaultOrganisationUnitGroupService
                 groupSets.add( groupSet );
             }
         }
-        
+
         return groupSets;
     }
 
     public Collection<OrganisationUnitGroupSet> getCompulsoryOrganisationUnitGroupSetsWithMembers()
     {
         return FilterUtils.filter( getAllOrganisationUnitGroupSets(), new Filter<OrganisationUnitGroupSet>()
+        {
+            public boolean retain( OrganisationUnitGroupSet object )
             {
-                public boolean retain( OrganisationUnitGroupSet object )
-                {
-                    return object.isCompulsory() && object.hasOrganisationUnitGroups();
-                }
-            } );
+                return object.isCompulsory() && object.hasOrganisationUnitGroups();
+            }
+        } );
     }
-    
+
     public OrganisationUnitGroup getOrganisationUnitGroup( OrganisationUnitGroupSet groupSet, OrganisationUnit unit )
     {
         for ( OrganisationUnitGroup group : groupSet.getOrganisationUnitGroups() )
@@ -247,14 +258,14 @@ public class DefaultOrganisationUnitGroupService
                 return group;
             }
         }
-        
+
         return null;
     }
-    
+
     public Collection<OrganisationUnitGroupSet> getCompulsoryOrganisationUnitGroupSetsNotAssignedTo( OrganisationUnit organisationUnit )
     {
         Collection<OrganisationUnitGroupSet> groupSets = new ArrayList<OrganisationUnitGroupSet>();
-        
+
         for ( OrganisationUnitGroupSet groupSet : getCompulsoryOrganisationUnitGroupSets() )
         {
             if ( !groupSet.isMemberOfOrganisationUnitGroups( organisationUnit ) && groupSet.hasOrganisationUnitGroups() )
@@ -262,25 +273,25 @@ public class DefaultOrganisationUnitGroupService
                 groupSets.add( groupSet );
             }
         }
-        
+
         return groupSets;
     }
-    
+
     public int getOrganisationUnitGroupSetCount()
     {
         return organisationUnitGroupSetStore.getCount();
     }
-    
+
     public int getOrganisationUnitGroupSetCountByName( String name )
     {
         return getCountByName( i18nService, organisationUnitGroupSetStore, name );
     }
-    
+
     public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSetsBetween( int first, int max )
     {
         return getObjectsBetween( i18nService, organisationUnitGroupSetStore, first, max );
     }
-    
+
     public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSetsBetweenByName( String name, int first, int max )
     {
         return getObjectsBetweenByName( i18nService, organisationUnitGroupSetStore, name, first, max );

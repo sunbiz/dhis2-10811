@@ -33,6 +33,8 @@ import org.hisp.dhis.importexport.Importer;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id$
@@ -45,12 +47,12 @@ public class OrganisationUnitLevelImporter
     public OrganisationUnitLevelImporter()
     {
     }
-    
+
     public OrganisationUnitLevelImporter( OrganisationUnitService organisationUnitService )
     {
         this.organisationUnitService = organisationUnitService;
     }
-    
+
     @Override
     public void importObject( OrganisationUnitLevel object, ImportParams params )
     {
@@ -68,7 +70,7 @@ public class OrganisationUnitLevelImporter
     {
         match.setLevel( object.getLevel() );
         match.setName( object.getName() );
-        
+
         organisationUnitService.updateOrganisationUnitLevel( match );
     }
 
@@ -76,12 +78,13 @@ public class OrganisationUnitLevelImporter
     protected OrganisationUnitLevel getMatching( OrganisationUnitLevel object )
     {
         OrganisationUnitLevel match = organisationUnitService.getOrganisationUnitLevelByLevel( object.getLevel() );
-        
+
         if ( match == null )
         {
-            match = organisationUnitService.getOrganisationUnitLevelByName( object.getName() );
+            List<OrganisationUnitLevel> organisationUnitLevelByName = organisationUnitService.getOrganisationUnitLevelByName( object.getName() );
+            match = organisationUnitLevelByName.isEmpty() ? null : organisationUnitLevelByName.get( 0 );
         }
-        
+
         return match;
     }
 
@@ -96,7 +99,7 @@ public class OrganisationUnitLevelImporter
         {
             return false;
         }
-        
+
         return true;
     }
 }

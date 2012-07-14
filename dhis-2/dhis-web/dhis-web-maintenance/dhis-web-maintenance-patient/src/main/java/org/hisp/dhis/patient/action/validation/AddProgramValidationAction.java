@@ -27,7 +27,9 @@
 
 package org.hisp.dhis.patient.action.validation;
 
+import org.hisp.dhis.expression.Operator;
 import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramExpression;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramValidation;
 import org.hisp.dhis.program.ProgramValidationService;
@@ -47,71 +49,74 @@ public class AddProgramValidationAction
 
     private ProgramValidationService programValidationService;
 
+    public void setProgramValidationService( ProgramValidationService programValidationService )
+    {
+        this.programValidationService = programValidationService;
+    }
+
     private ProgramService programService;
-
-    // -------------------------------------------------------------------------
-    // Input/Output
-    // -------------------------------------------------------------------------
-
-    private String description;
-
-    private String leftSide;
-
-    private String rightSide;
-
-    private Integer programId;
-
-    private Boolean dateType;
-
-    private String message;
-
-    // -------------------------------------------------------------------------
-    // Setters
-    // -------------------------------------------------------------------------
 
     public void setProgramService( ProgramService programService )
     {
         this.programService = programService;
     }
 
-    public void setDateType( Boolean dateType )
+    // -------------------------------------------------------------------------
+    // Input/Output
+    // -------------------------------------------------------------------------
+
+    private String name;
+
+    public void setName( String name )
     {
-        this.dateType = dateType;
+        this.name = name;
     }
 
-    public void setProgramValidationService( ProgramValidationService programValidationService )
+    private String operator;
+
+    public void setOperator( String operator )
     {
-        this.programValidationService = programValidationService;
+        this.operator = operator;
     }
 
-    public void setDescription( String description )
+    private String leftSideExpression;
+
+    public void setLeftSideExpression( String leftSideExpression )
     {
-        this.description = description;
+        this.leftSideExpression = leftSideExpression;
     }
 
-    public void setLeftSide( String leftSide )
+    private String leftSideDescription;
+
+    public void setLeftSideDescription( String leftSideDescription )
     {
-        this.leftSide = leftSide;
+        this.leftSideDescription = leftSideDescription;
     }
 
-    public String getMessage()
+    private String rightSideExpression;
+
+    public void setRightSideExpression( String rightSideExpression )
     {
-        return message;
+        this.rightSideExpression = rightSideExpression;
     }
 
-    public void setRightSide( String rightSide )
+    private String rightSideDescription;
+
+    public void setRightSideDescription( String rightSideDescription )
     {
-        this.rightSide = rightSide;
+        this.rightSideDescription = rightSideDescription;
+    }
+
+    private Integer programId;
+
+    public void setProgramId( Integer programId )
+    {
+        this.programId = programId;
     }
 
     public Integer getProgramId()
     {
         return programId;
-    }
-
-    public void setProgramId( Integer programId )
-    {
-        this.programId = programId;
     }
 
     // -------------------------------------------------------------------------
@@ -122,17 +127,19 @@ public class AddProgramValidationAction
     public String execute()
         throws Exception
     {
-        ProgramValidation validation = new ProgramValidation();
+        ProgramExpression leftExpression = new ProgramExpression( leftSideExpression, leftSideDescription );
+        ProgramExpression rightExpression = new ProgramExpression( rightSideExpression, rightSideDescription );
 
-        validation.setDescription( description.trim() );
-        validation.setLeftSide( leftSide.trim() );
-        validation.setRightSide( rightSide.trim() );
-        validation.setDateType( dateType );
+        ProgramValidation validation = new ProgramValidation();
+        validation.setName( name.trim() );
+        validation.setOperator( Operator.valueOf( operator ) );
+        validation.setLeftSide( leftExpression );
+        validation.setRightSide( rightExpression );
 
         Program program = programService.getProgram( programId );
         validation.setProgram( program );
 
-        message = programValidationService.addProgramValidation( validation ) + "";
+        programValidationService.addProgramValidation( validation );
 
         return SUCCESS;
     }

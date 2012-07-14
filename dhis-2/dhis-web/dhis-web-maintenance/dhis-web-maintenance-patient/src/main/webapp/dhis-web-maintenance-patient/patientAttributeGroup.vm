@@ -7,36 +7,29 @@
     
       <table class="listTable">
           <col>          
-          <col width="20">
-          <col width="20">
-          <col width="20">          		  
+          <col width="120">       		  
 		  <tr>
 		  	<td></td>
-			<td colspan="3" style="text-align:right">
-				<input type="button" value="$i18n.getString( 'sort' )" onclick="window.location.href='showSortPatientAttributeGroup.action'" style="width:75px"><br>
+			<td style="text-align:right">
 				<input type="button" value="$i18n.getString( 'add_new' )" onclick="window.location.href='showAddPatientAttributeGroupForm.action'" style="width:75px">
+				<input type="button" value="$i18n.getString( 'sort' )" onclick="window.location.href='showSortPatientAttributeGroup.action'" style="width:75px"><br>
 			</td>
 		  </tr>
           <tr>
             <th>$i18n.getString( "name" )</th>
-            <th colspan="3">$i18n.getString( "operations" )</th>
+            <th>$i18n.getString( "operations" )</th>
           </tr>
 
           <tbody id="list">
             #foreach( $patientAttributeGroup in $patientAttributeGroups )
               <tr id="tr${patientAttributeGroup.id}">
               
-                <td onclick="showPatientAttributeGroupDetails( $patientAttributeGroup.id )">$encoder.htmlEncode( $patientAttributeGroup.name )</td>                
+                <td onclick="showPatientAttributeGroupDetails( $patientAttributeGroup.id )">$encoder.htmlEncode( $patientAttributeGroup.displayName )</td>                
                 
-                <td style="text-align:center"#alternate( $mark )>
+                <td>
                   <a href="showUpdatePatientAttributeGroupForm.action?id=$patientAttributeGroup.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>
-                </td>                
- 
-                <td style="text-align:center"#alternate( $mark )>
-                  <a href="javascript:removePatientAttributeGroup( '$patientAttributeGroup.id', '$encoder.jsEncode( $patientAttributeGroup.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
-                </td>            
-                
-                <td style="text-align:center"#alternate( $mark )>
+                  <a href="javascript:translate( 'PatientAttributeGroup', '$patientAttributeGroup.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+			      <a href="javascript:removePatientAttributeGroup( '$patientAttributeGroup.id', '$encoder.jsEncode( $patientAttributeGroup.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
                   <a href="javascript:showPatientAttributeGroupDetails( $patientAttributeGroup.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"></a>
                 </td>
                 
@@ -51,7 +44,7 @@
 
 			<div id="detailsArea" style="display:none">
 				<div style="float:right">
-					<a href="javascript:hideDetails()" title="$i18n.getString( "hide_details" )"><img src="../images/close.png" alt="$i18n.getString( 'hide_details' )"></a>
+					<a href="javascript:hideDetails()" title="$i18n.getString( "hide_details" )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"></a>
 				</div>				
                 <p><label class="bold">$i18n.getString( "name" )</label><br><span id="nameField"></span></p>
                 <p><label class="bold">$i18n.getString( "description" ):</label><br><span id="descriptionField"></span></p>

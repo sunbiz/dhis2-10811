@@ -74,14 +74,6 @@ public class ModelMapping
     {
         DataElementCategoryCombo categoryCombo = dataElement.getCategoryCombo();
 
-        // Set<DataElementCategoryOptionCombo> deCatOptCombs =
-        // dataElement.getCategoryCombo().getOptionCombos();
-
-        // if ( deCatOptCombs.size() < 2 )
-        // {
-        // return null;
-        // }
-
         // Client DataElement
         ModelList deCateOptCombo = new ModelList();
         List<Model> listCateOptCombo = new ArrayList<Model>();

@@ -1,5 +1,13 @@
+#parse("/dhis-web-maintenance-mobile/smscommand/validate_javascript.vm")
+
 <script langauge="Javascript">
+
     function prepSubmit(){
+    
+      if(VALIDATION_ERRORS > 0){
+        alert("$i18n.getString( "sms_command_validation_alert" )");
+        return;
+      }
  
       var selectedDataOptions = '{"codes":[';      
       $("#codes input").each(function(){
@@ -12,22 +20,15 @@
      
       $("#codeDataelementOption").val(selectedDataOptions);
       $("#updateSMSCommand").submit(); 
+
     }
+  
+    
 </script>
 
+<h3>$i18n.getString( "edit_command" )</h3>
 
-<div>
-    </div>
-<h3>Edit command</h3>
 <form id="updateSMSCommand" name="updateSMSCommand" action="saveEditSMSCommandForm.action" method="post">
-
- <!-- 
-    * Unik kommando navn
-    * OID
- -->
-    
-	
-	
 	<table>
 	<thead>
       <tr>
@@ -40,60 +41,56 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Name:</td>
-			<td><input type="text" name="name" value="$SMSCommand.name" style="width:20em" /></td>
+			<td>$i18n.getString( "name" )</td>
+			<td><input type="text" name="name" id="name" value="$SMSCommand.name" style="width:20em" class="validate" /></td>
 		</tr>
+		
 		<tr>
-			<td>DataSet:</td>
+		  <td>$i18n.getString( "dataset" )</td>
+		  <td>#if($SMSCommand.dataset.name) $SMSCommand.dataset.name #end</td>
+		<tr>
+		<tr>
+          <td>$i18n.getString( "parser" )</td>
+          <td>#if($SMSCommand.parserType) $SMSCommand.parserType #end</td>
+        <tr>
+			<td>$i18n.getString( "code_value_separator" )</td>
 			<td>
-	
-				<!-- onchange="window.location.href='editSMSCommand.action?selectedDataSetID=' + this.options[this.selectedIndex].value" -->
-				<select name="selectedDataSetID" style="min-width:20em; margin:0;" >
-				#foreach( $dataSet in $dataSets )
-				<option value="$dataSet.id" #if ($SMSCommand.dataset.id == $dataSet.id) selected #end >$dataSet.name</option>
-				#end
-				</select> 
+				<input type="text"  #if($SMSCommand.separator) value="$SMSCommand.separator" #end name="separator" style="width:20em" class="validate" />
 			</td>
 		</tr> 
-		<tr>
-			<td>Separator:</td>
-			<td>
-				<input type="text"  #if($SMSCommand.seperator) value="$SMSCommand.seperator" #end name="seperator" style="width:20em" />
-			</td>
-		</tr>
-		<tr>
-			<td>Code seperator:</td>
-			<td><input type="text" #if($SMSCommand.codeSeperator) value="$SMSCommand.codeSeperator" #end name="codeSeperator" style="width:20em" /></td>
-		</tr>
-	
+        <tr >
+            <td style="width:150px">$i18n.getString( "no_codes_message" )</td>
+            <td><textarea cols="35" type="text" name="defaultMessage">#if($SMSCommand.defaultMessage)$SMSCommand.defaultMessage#end</textarea></td>
+        </tr>	
 	</table>
 	
 	</br>
 	</br>
 	
 	
-    <table id="codes">   
+    <table id="codes">
 		<col style="width: 450px"/>
     <col/>
     <col style="width: 450px"/>
     <thead>
       <tr>
-        <th>Data Element Category Combination</th>
-		<th>Code</th>
+        <th>$i18n.getString( "data_element_category_combination")</th>
+		<th>$i18n.getString( "code" )</th>
       </tr>
     </thead>
-		
          #foreach( $dataElement in $dataSetElements)
-            #if ($dataElement.categoryCombo && $dataElement.categoryCombo.categories) 
-                #foreach($category in $dataElement.categoryCombo.categories)
-                    #foreach($option in $category.categoryOptions)
-                    <tr>
-                        <td>$dataElement.name $option.name</td>
-                        #set ($str = ""+$dataElement.id+""+$option.id)
-                        <td><input type="text" name="$dataElement.id.$option.id" value='$!codes[$str]'></td>
-                    </tr>         
-                    #end
-                #end
+            #if ($dataElement.categoryCombo && $dataElement.categoryCombo.sortedOptionCombos) 
+                   #foreach($x in $dataElement.categoryCombo.sortedOptionCombos)    
+                       #set ($str = ""+$dataElement.id+""+$x.id)
+                       <tr>
+                           <td>
+                               $dataElement.name $x.name
+                           </td>
+                           <td>
+                               <input type="text" name="$dataElement.id.$x.id" value='$!codes[$str]' class="validate">
+                           </td>
+                       </tr>
+                   #end
             #else
             <tr>
                <td>$dataElement.name</td>
@@ -102,9 +99,10 @@
             #end  
          #end
     </table>
-	<br/>
-	
+    
+
+	<br/>	
     <input type="hidden" name="codeDataelementOption" id="codeDataelementOption" />
-    <input  type="button" style="width: 100px" onclick="prepSubmit()" value="save" />
-	
+    <input  type="button" style="width: 100px" onclick="prepSubmit()" value="$i18n.getString( "save" )" />
+    <input type="button" id ="btnBack" name ="btnBack" value="Back" style="width:8em" onclick="window.location.href='SMSCommands.action'"/>
 </form>

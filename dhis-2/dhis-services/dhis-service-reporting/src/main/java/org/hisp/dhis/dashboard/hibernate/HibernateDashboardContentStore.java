@@ -33,7 +33,7 @@ import org.hisp.dhis.dashboard.DashboardContent;
 import org.hisp.dhis.dashboard.DashboardContentStore;
 import org.hisp.dhis.document.Document;
 import org.hisp.dhis.hibernate.HibernateGenericStore;
-import org.hisp.dhis.mapping.MapView;
+import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.report.Report;
 import org.hisp.dhis.reporttable.ReportTable;
 
@@ -51,10 +51,10 @@ public class HibernateDashboardContentStore
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<DashboardContent> getByMapView( MapView mapView )
+    public Collection<DashboardContent> getByMap( Map map )
     {
-        String hql = "from DashboardContent dc where :mapView in elements(dc.mapViews)";
-        return getQuery( hql ).setEntity( "mapView", mapView ).list();
+        String hql = "from DashboardContent dc where :map in elements(dc.maps)";
+        return getQuery( hql ).setEntity( "map", map ).list();
     }    
 
     @SuppressWarnings("unchecked")

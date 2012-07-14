@@ -27,10 +27,11 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.hierarchy.HierarchyViolationException;
-
-import java.util.Collection;
 
 /**
  * @author Abyot Asalefew
@@ -168,6 +169,14 @@ public interface DataElementCategoryService
     DataElementCategoryOption getDataElementCategoryOptionByName( String name );
 
     /**
+     * Retrieves the DataElementCategoryOption with the given code.
+     *
+     * @param code the code.
+     * @return the DataElementCategoryOption with the given code.
+     */
+    DataElementCategoryOption getDataElementCategoryOptionByCode( String code );
+
+    /**
      * Returns all DataElementCategoryOptions.
      *
      * @return a collection of all DataElementCategoryOptions, or an empty collection if there
@@ -183,7 +192,6 @@ public interface DataElementCategoryService
      *         are no DataElementCategoryOptions.
      */
     Collection<DataElementCategoryOption> getDataElementCategorOptionsByConcept( Concept concept );
-
 
     // -------------------------------------------------------------------------
     // CategoryCombo
@@ -302,6 +310,8 @@ public interface DataElementCategoryService
      * @return a Collection of DataElementCategoryOptionCombos.
      */
     Collection<DataElementCategoryOptionCombo> getDataElementCategoryOptionCombos( Collection<Integer> identifiers );
+    
+    Collection<DataElementCategoryOptionCombo> getDataElementCategoryOptionCombosByUid( Collection<String> uids );
 
     /**
      * Retrieves the DataElementCategoryOptionCombo with the given Collection
@@ -419,7 +429,9 @@ public interface DataElementCategoryService
      * @return a collection of all DataElementCategories, or an empty collection.
      */
     Collection<DataElementCategory> getDataElementCategorysByConcept( Concept concept );
-
+    
+    Map<String, Integer> getDataElementCategoryOptionComboUidIdMap();
+    
     int getDataElementCategoryCount();
 
     int getDataElementCategoryCountByName( String name );

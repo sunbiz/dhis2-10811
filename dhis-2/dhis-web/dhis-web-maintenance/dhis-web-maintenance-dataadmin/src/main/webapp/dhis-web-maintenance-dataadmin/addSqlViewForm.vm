@@ -2,7 +2,7 @@
 
 <h3>$encoder.htmlEncode( $i18n.getString( "add_new_sql_view" ) )</h3>
 
-<form id="addSqlViewForm" action="addSqlView.action" method="post" >
+<form id="addSqlViewForm" action="addSqlView.action" method="post" class="inputForm">
 
 	<table>
 		<tr>
@@ -10,11 +10,11 @@
 		</tr>
 		<tr>
 			<td><label for="name">$encoder.htmlEncode( $i18n.getString( "name" ) ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-			<td><input type="text" id="name" name="name" style="width:25em" /></td>
+			<td><input type="text" id="name" name="name"></td>
 		</tr>
 		<tr>
 			<td><label for="description">$encoder.htmlEncode( $i18n.getString( "description" ) ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-			<td><textarea id="description" name="description" style="width:25em; height:6em"></textarea></td>
+			<td><textarea id="description" name="description"></textarea></td>
 		</tr>
 		<tr>
 			<td><label for="sql_statement">$encoder.htmlEncode( $i18n.getString( "sql_statement" ) ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>

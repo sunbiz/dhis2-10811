@@ -5,7 +5,7 @@
 		},function(){
 		});	
 	
-		checkValueIsExist( "name", "validateDocument.action", {id: "$!document.id"} );
+		// checkValueIsExist( "name", "validateDocument.action", {id: "$!document.id"} );
 	
 		toggleExternal();
 	});	
@@ -17,7 +17,7 @@
 
 <h3>$i18n.getString( 'create_new_resource' )</h3>
 
-<form id="documentForm" action="saveDocument.action" method="post" enctype="multipart/form-data">
+<form id="documentForm" action="saveDocument.action" method="post" enctype="multipart/form-data" class="inputForm">
 <input type='hidden' id='id' name='id' value='$!document.id'/>
 <table>
     <tr>
@@ -25,12 +25,12 @@
     </tr>
     <tr>
         <td style="width:70px"><label for="name">$i18n.getString( "name" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="name" name="name" style="width:20em" value="$!document.name" class="{validate:{required:true,minlength:2,maxlength:160}}"></td>
+        <td><input type="text" id="name" name="name" value="$!document.name" class="{validate:{required:true,minlength:2,maxlength:160}}"></td>
     </tr>
     <tr>
     	<td><label for="external">$i18n.getString( "type" )</label></td>
     	<td>
-			<select id="external" name="external" style="width:20em" onchange="toggleExternal()">
+			<select id="external" name="external" onchange="toggleExternal()">
 				#if( $!document && !$!document.external )
 				<option value="false">$i18n.getString( "upload_file" )</option>
 				#elseif( $!document)
@@ -48,7 +48,7 @@
 <table>
     <tr>
         <td style="width:70px"><label for="upload">$i18n.getString( "file" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="file" id="upload" name="upload" size="25" ></td>
+        <td><input type="file" id="upload" name="upload" size="30" ></td>
     </tr>
 </table>
 </div>
@@ -57,7 +57,7 @@
 <table>
     <tr>
         <td style="width:70px"><label for="url">$i18n.getString( "url" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="url" name="url" style="width:20em" #if($!document) value="$!document.url" #else value="http://" #end ></td>
+        <td><input type="text" id="url" name="url" #if($!document) value="$!document.url" #else value="http://" #end ></td>
     </tr>
 </table>
 </div>

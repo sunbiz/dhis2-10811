@@ -33,7 +33,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseLinkableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.view.DetailedView;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "resource", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "resource", namespace = DxfNamespaces.DXF_2_0 )
 public class Resource
     extends BaseLinkableObject
 {
@@ -84,8 +84,8 @@ public class Resource
     }
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "methods", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "method", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "methods", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "method", namespace = DxfNamespaces.DXF_2_0 )
     public List<String> getMethods()
     {
         return methods;
@@ -97,8 +97,8 @@ public class Resource
     }
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "mediaTypes", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "mediaType", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "mediaTypes", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "mediaType", namespace = DxfNamespaces.DXF_2_0 )
     public List<String> getMediaTypes()
     {
         return mediaTypes;

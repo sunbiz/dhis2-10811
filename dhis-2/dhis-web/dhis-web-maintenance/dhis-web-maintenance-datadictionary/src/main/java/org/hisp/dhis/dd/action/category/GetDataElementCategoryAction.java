@@ -100,7 +100,7 @@ public class GetDataElementCategoryAction
     public String execute()
     {
         dataElementCategory = dataElementCategoryService.getDataElementCategory( id );
-
+        
         concepts = new ArrayList<Concept>( conceptService.getAllConcepts() );
 
         Collections.sort( concepts, IdentifiableObjectNameComparator.INSTANCE );

@@ -38,6 +38,9 @@ import org.hisp.dhis.user.UserGroupService;
 
 import java.util.*;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class EditUserGroupFormAction
     implements Action
 {

@@ -27,14 +27,15 @@ package org.hisp.dhis.datavalue;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.regex.Pattern;
+
 import org.hisp.dhis.common.ImportableObject;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author Kristian Nordal
@@ -48,6 +49,8 @@ public class DataValue
      */
     private static final long serialVersionUID = 6269303850789110610L;
 
+    private static final Pattern ZERO_PATTERN = Pattern.compile( "^0(\\.0*)?$" );
+    
     public static final String TRUE = "true";
     public static final String FALSE = "false";
 
@@ -167,7 +170,7 @@ public class DataValue
     public boolean isZero()
     {
         return dataElement != null && dataElement.getType().equals( DataElement.VALUE_TYPE_INT )
-            && value != null && new Double( value ).intValue() == 0;
+            && value != null && ZERO_PATTERN.matcher( value ).find();
     }
 
     public boolean isNullValue()

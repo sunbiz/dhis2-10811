@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.exporting.action;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,18 @@ package org.hisp.dhis.reportsheet.exporting.action;
  */
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.period.CalendarPeriodType;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodService;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportService;
 import org.hisp.dhis.reportsheet.ReportLocationManager;
@@ -53,6 +64,13 @@ public class ValidateGenerateExportReportAction
         this.exportReportService = exportReportService;
     }
 
+    private DataSetService dataSetService;
+
+    public void setDataSetService( DataSetService dataSetService )
+    {
+        this.dataSetService = dataSetService;
+    }
+
     private SelectionManager selectionManager;
 
     public void setSelectionManager( SelectionManager selectionManager )
@@ -67,6 +85,20 @@ public class ValidateGenerateExportReportAction
         this.reportLocationManager = reportLocationManager;
     }
 
+    private PeriodService periodService;
+
+    public void setPeriodService( PeriodService periodService )
+    {
+        this.periodService = periodService;
+    }
+
+    private CompleteDataSetRegistrationService dataSetRegistrationService;
+
+    public void setDataSetRegistrationService( CompleteDataSetRegistrationService dataSetRegistrationService )
+    {
+        this.dataSetRegistrationService = dataSetRegistrationService;
+    }
+
     // -------------------------------------------------------------------------
     // Input & Output
     // -------------------------------------------------------------------------
@@ -78,11 +110,32 @@ public class ValidateGenerateExportReportAction
         this.exportReportIds = exportReportIds;
     }
 
+    private List<Integer> orderedGroupIds = new ArrayList<Integer>();
+
+    public void setOrderedGroupIds( List<Integer> orderedGroupIds )
+    {
+        this.orderedGroupIds = orderedGroupIds;
+    }
+
     private String periodIndex;
 
     public void setPeriodIndex( String periodIndex )
     {
         this.periodIndex = periodIndex;
+    }
+
+    private Boolean generateByDataSet = false;
+
+    public void setGenerateByDataSet( Boolean generateByDataSet )
+    {
+        this.generateByDataSet = generateByDataSet;
+    }
+
+    private Integer selectedDataSetId;
+
+    public void setSelectedDataSetId( Integer selectedDataSetId )
+    {
+        this.selectedDataSetId = selectedDataSetId;
     }
 
     // -------------------------------------------------------------------------
@@ -92,6 +145,29 @@ public class ValidateGenerateExportReportAction
     public String execute()
         throws Exception
     {
+        if ( generateByDataSet )
+        {
+            DataSet dataSet = dataSetService.getDataSet( selectedDataSetId );
+
+            if ( dataSet == null )
+            {
+                message = i18n.getString( "specified_data_set_unavailable" );
+
+                return ERROR;
+            }
+
+            ExportReport exportReport = exportReportService.getExportReportByDataSet( dataSet );
+
+            if ( exportReport == null )
+            {
+                message = i18n.getString( "specified_data_set_unassign_to_export_report" );
+
+                return ERROR;
+            }
+
+            exportReportIds = new String[] { exportReport.getId() + "" };
+        }
+
         if ( exportReportIds == null || exportReportIds.length == 0 )
         {
             message = i18n.getString( "specify_export_report" );
@@ -110,7 +186,7 @@ public class ValidateGenerateExportReportAction
 
         for ( String exportReportId : exportReportIds )
         {
-            Integer reportId = Integer.parseInt( exportReportId.split( "_" )[0] );
+            Integer reportId = Integer.parseInt( exportReportId );
 
             ExportReport exportReport = exportReportService.getExportReport( reportId );
 
@@ -121,14 +197,6 @@ public class ValidateGenerateExportReportAction
                 return ERROR;
             }
 
-            // message = exportReportService.validateEmportItems( exportReport,
-            // i18n );
-            //
-            // if ( message != null )
-            // {
-            // return ERROR;
-            // }
-
             File templateFile = new File( templateDirectory, exportReport.getExcelTemplateFile() );
 
             if ( templateFile == null || !templateFile.exists() )
@@ -137,6 +205,48 @@ public class ValidateGenerateExportReportAction
 
                 return ERROR;
             }
+
+            /** Validate for exportItems * */
+            // message = exportReportService.validateEmportItems( exportReport,
+            // i18n );
+            //
+            // if ( message != null )
+            // {
+            // return ERROR;
+            // }
+            /** Validate for whether data set completed or not * */
+            // Period period = PeriodType.createPeriodExternalId( periodIndex );
+            //
+            // for ( DataSet ds : exportReport.getDataSets() )
+            // {
+            // CalendarPeriodType periodType = (CalendarPeriodType)
+            // ds.getPeriodType();
+            //
+            // List<Period> periods = periodType.generatePeriods(
+            // period.getStartDate() );
+            // Collection<Period> persistedPeriods =
+            // periodService.getPeriodsByPeriodType( periodType );
+            //
+            // periods.retainAll( persistedPeriods );
+            //
+            // for ( Period p : periods )
+            // {
+            // for ( OrganisationUnit o : ds.getSources() )
+            // {
+            // if ( dataSetRegistrationService.getCompleteDataSetRegistration(
+            // ds, p, o ) == null )
+            // {
+            // message = i18n.getString( "org_unit_with_name" ) + " \"" +
+            // o.getDisplayName() + " \".";
+            // message += i18n.getString( "data_set_with_name" ) + " \"" +
+            // ds.getDisplayName() + "\" ";
+            // message += i18n.getString( "uncompleted" );
+            //
+            // return ERROR;
+            // }
+            // }
+            // }
+            // }
         }
 
         selectionManager.setSelectedPeriodIndex( periodIndex );
@@ -150,7 +260,8 @@ public class ValidateGenerateExportReportAction
             selectionManager.setListObject( exportReportIds );
         }
 
+        selectionManager.setOrderedGroupList( orderedGroupIds );
+
         return SUCCESS;
     }
-
 }

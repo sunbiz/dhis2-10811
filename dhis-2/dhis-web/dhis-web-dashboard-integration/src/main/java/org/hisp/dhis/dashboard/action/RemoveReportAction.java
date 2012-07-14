@@ -38,7 +38,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class RemoveReportAction
     implements Action

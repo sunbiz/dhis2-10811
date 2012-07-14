@@ -36,7 +36,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.BaseNameableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.adapter.JacksonPeriodTypeDeserializer;
 import org.hisp.dhis.common.adapter.JacksonPeriodTypeSerializer;
@@ -49,6 +49,7 @@ import org.hisp.dhis.dataentryform.DataEntryForm;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.user.UserGroup;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,13 +60,14 @@ import java.util.Set;
  *
  * @author Kristian Nordal
  */
-@JacksonXmlRootElement( localName = "dataSet", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "dataSet", namespace = DxfNamespaces.DXF_2_0)
 public class DataSet
     extends BaseNameableObject
 {
     public static final String TYPE_DEFAULT = "default";
     public static final String TYPE_SECTION = "section";
     public static final String TYPE_CUSTOM = "custom";
+    public static final String TYPE_SECTION_MULTIORG = "multiorg_section";
 
     public static final int NO_EXPIRY = 0;
 
@@ -120,11 +122,6 @@ public class DataSet
     private boolean mobile;
 
     /**
-     * Property indicating whether it should allow to enter data for future periods.
-     */
-    private boolean allowFuturePeriods;
-    
-    /**
      * Indicating custom data entry form.
      */
     private DataEntryForm dataEntryForm;
@@ -140,10 +137,44 @@ public class DataSet
     private int expiryDays;
     
     /**
-     * Property indicating whether aggregation should be skipped.
+     * Indicating whether aggregation should be skipped.
      */
     private boolean skipAggregation;
     
+    /**
+     * User group which will receive notifications when data set is marked complete.
+     */
+    private UserGroup notificationRecipients;
+    
+    /**
+     * Indicating whether the user completing this data set should be sent a notification.
+     */
+    private boolean notifyCompletingUser;
+
+    // -------------------------------------------------------------------------
+    // Form properties
+    // -------------------------------------------------------------------------
+
+    /**
+     * Property indicating whether it should allow to enter data for future periods.
+     */
+    private boolean allowFuturePeriods;
+    
+    /**
+     * Property indicating that all fields for a data element must be filled.
+     */
+    private boolean fieldCombinationRequired;
+    
+    /**
+     * Property indicating that all validation rules must pass before the form can be completed.
+     */
+    private boolean validCompleteOnly;
+
+    /**
+     * Property indicating whether offline storage is enabled for this dataSet or not
+     */
+    private boolean skipOffline;
+
     // -------------------------------------------------------------------------
     // Contructors
     // -------------------------------------------------------------------------
@@ -328,12 +359,6 @@ public class DataSet
     // -------------------------------------------------------------------------
 
     @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
-    @Override
     public boolean equals( Object o )
     {
         if ( this == o )
@@ -359,18 +384,26 @@ public class DataSet
     @Override
     public String toString()
     {
-        return "[" + name + "]";
+        return "DataSet{" +
+            "name=" + name +
+            '}';
     }
 
     // -------------------------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------------------------
 
+    @Override
+    public boolean haveUniqueNames()
+    {
+        return false;
+    }
+
     @JsonProperty
     @JsonSerialize( using = JacksonPeriodTypeSerializer.class )
     @JsonDeserialize( using = JacksonPeriodTypeDeserializer.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public PeriodType getPeriodType()
     {
         return periodType;
@@ -399,8 +432,8 @@ public class DataSet
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "dataElements", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "dataElement", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "dataElements", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "dataElement", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElement> getDataElements()
     {
         return dataElements;
@@ -414,8 +447,8 @@ public class DataSet
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "indicators", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "indicator", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "indicators", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "indicator", namespace = DxfNamespaces.DXF_2_0)
     public Set<Indicator> getIndicators()
     {
         return indicators;
@@ -428,8 +461,8 @@ public class DataSet
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "compulsoryDataElementOperands", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "compulsoryDataElementOperand", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "compulsoryDataElementOperands", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "compulsoryDataElementOperand", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElementOperand> getCompulsoryDataElementOperands()
     {
         return compulsoryDataElementOperands;
@@ -443,8 +476,8 @@ public class DataSet
     @JsonProperty( value = "organisationUnits" )
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "organisationUnit", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0)
     public Set<OrganisationUnit> getSources()
     {
         return sources;
@@ -468,8 +501,8 @@ public class DataSet
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "sections", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "section", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "sections", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "section", namespace = DxfNamespaces.DXF_2_0)
     public Set<Section> getSections()
     {
         return sections;
@@ -482,7 +515,7 @@ public class DataSet
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isMobile()
     {
         return mobile;
@@ -495,20 +528,7 @@ public class DataSet
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
-    public boolean isAllowFuturePeriods()
-    {
-        return allowFuturePeriods;
-    }
-
-    public void setAllowFuturePeriods( boolean allowFuturePeriods )
-    {
-        this.allowFuturePeriods = allowFuturePeriods;
-    }
-
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Integer getVersion()
     {
         return version;
@@ -521,7 +541,7 @@ public class DataSet
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public int getExpiryDays()
     {
         return expiryDays;
@@ -534,7 +554,7 @@ public class DataSet
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isSkipAggregation()
     {
         return skipAggregation;
@@ -543,6 +563,84 @@ public class DataSet
     public void setSkipAggregation( boolean skipAggregation )
     {
         this.skipAggregation = skipAggregation;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public UserGroup getNotificationRecipients()
+    {
+        return notificationRecipients;
+    }
+
+    public void setNotificationRecipients( UserGroup notificationRecipients )
+    {
+        this.notificationRecipients = notificationRecipients;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isNotifyCompletingUser()
+    {
+        return notifyCompletingUser;
+    }
+
+    public void setNotifyCompletingUser( boolean notifyCompletingUser )
+    {
+        this.notifyCompletingUser = notifyCompletingUser;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isAllowFuturePeriods()
+    {
+        return allowFuturePeriods;
+    }
+
+    public void setAllowFuturePeriods( boolean allowFuturePeriods )
+    {
+        this.allowFuturePeriods = allowFuturePeriods;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isFieldCombinationRequired()
+    {
+        return fieldCombinationRequired;
+    }
+
+    public void setFieldCombinationRequired( boolean fieldCombinationRequired )
+    {
+        this.fieldCombinationRequired = fieldCombinationRequired;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isValidCompleteOnly()
+    {
+        return validCompleteOnly;
+    }
+
+    public void setValidCompleteOnly( boolean validCompleteOnly )
+    {
+        this.validCompleteOnly = validCompleteOnly;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isSkipOffline()
+    {
+        return skipOffline;
+    }
+
+    public void setSkipOffline( boolean skipOffline )
+    {
+        this.skipOffline = skipOffline;
     }
 
     @Override
@@ -560,6 +658,11 @@ public class DataSet
             dataEntryForm = dataSet.getDataEntryForm() == null ? dataEntryForm : dataSet.getDataEntryForm();
             version = dataSet.getVersion() == null ? version : dataSet.getVersion();
             expiryDays = dataSet.getExpiryDays();
+            skipAggregation = dataSet.isSkipAggregation();
+            allowFuturePeriods = dataSet.isAllowFuturePeriods();
+            fieldCombinationRequired = dataSet.isFieldCombinationRequired();
+            validCompleteOnly = dataSet.isValidCompleteOnly();
+            skipOffline = dataSet.isSkipOffline();
 
             removeAllDataElements();
 

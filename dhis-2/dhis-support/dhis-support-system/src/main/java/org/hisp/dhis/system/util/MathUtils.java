@@ -149,7 +149,7 @@ public class MathUtils
      * @param significantFigures
      * @return
      */
-    public static String roundToString(double value, int significantFigures)
+    public static String roundToString( double value, int significantFigures )
     {
         MathContext mc = new MathContext(significantFigures);
         BigDecimal num = new BigDecimal(value);
@@ -178,6 +178,22 @@ public class MathUtils
     public static int getMax( int number, int max )
     {
         return number > max ? max : number;
+    }
+    
+    /**
+     * Returns the given value if between the min and max value. If lower than
+     * minimum, returns minimum, if higher than maximum, returns maximum.
+     * 
+     * @param value the value.
+     * @param min the minimum value.
+     * @param max the maximum value.
+     * @return an integer value.
+     */
+    public static int getWithin( int value, int min, int max )
+    {
+        value = Math.max( value, min );
+        value = Math.min( value, max );
+        return value;
     }
     
     /**
@@ -220,6 +236,28 @@ public class MathUtils
     public static boolean isEqual( double d1, double d2 )
     {
         return Math.abs( d1 - d2 ) < TOLERANCE;
+    }
+    
+    /**
+     * Tests whether the given double is equal to zero.
+     * 
+     * @param value the value.
+     * @return true or false.
+     */
+    public static boolean isZero( double value )
+    {
+        return isEqual( value, 0d );
+    }
+    
+    /**
+     * Returns 0d if the given value is null, the original value otherwise.
+     * 
+     * @param value the value.
+     * @return a double.
+     */
+    public static double zeroIfNull( Double value )
+    {
+        return value == null ? 0d : value;
     }
     
     /**
@@ -314,5 +352,111 @@ public class MathUtils
         }
         
         return sum;
+    }
+    
+    /**
+     * Parses the given string and returns a double value. Returns null if the
+     * given string is null or cannot be parsed as a double.
+     * 
+     * @param value the string value.
+     * @return a double value.
+     */
+    public static Double parseDouble( String value )
+    {
+        if ( value == null || value.trim().isEmpty() )
+        {
+            return null;
+        }
+        
+        try
+        {
+            return Double.parseDouble( value );
+        }
+        catch ( NumberFormatException ex )
+        {
+            return null;
+        }
+    }
+    
+    /**
+     * Parses an integer silently. Returns the Integer value of the given string.
+     * Returns null if the input string is null, empty or if it cannot be parsed.
+     * 
+     * @param string the string.
+     * @return an Integer.
+     */
+    public static Integer parseInt( String string )
+    {
+        if ( string == null || string.trim().isEmpty() )
+        {
+            return null;
+        }
+        
+        try
+        {
+            return Integer.parseInt( string );
+        }
+        catch ( NumberFormatException ex )
+        {
+            return null;
+        }
+    }
+    
+    /**
+     * Returns the lower bound for the given standard deviation, number of standard
+     * deviations and average.
+     * 
+     * @param stdDev the standard deviation.
+     * @param stdDevNo the number of standard deviations.
+     * @param average the average.
+     * @return a double.
+     */
+    public static double getLowBound( double stdDev, double stdDevNo, double average )
+    {
+        double deviation = stdDev * stdDevNo;
+        return average - deviation;
+    }
+
+    /**
+     * Returns the high bound for the given standard deviation, number of standard
+     * deviations and average.
+     * 
+     * @param stdDev the standard deviation.
+     * @param stdDevNo the number of standard deviations.
+     * @param average the average.
+     * @return a double.
+     */
+    public static double getHighBound( double stdDev, double stdDevFactor, double average )
+    {
+        double deviation = stdDev * stdDevFactor;
+        return average + deviation;
+    }
+    
+    /**
+     * Performs a division and rounds upwards to the next integer.
+     * 
+     * @param numerator the numerator.
+     * @param denominator the denominator.
+     * @return an integer value.
+     */
+    public static int divideToCeil( int numerator, int denominator )
+    {
+        Double result = Math.ceil( (double) numerator / denominator );
+        
+        return result.intValue();
+    }
+    
+    /**
+     * Performs a division and rounds downwards to the next integer.
+     * 
+     * @param numerator the numerator.
+     * @param denominator the denominator.
+     * @return an integer value.
+     */
+    public static int divideToFloor( int numerator, int denominator )
+    {
+        Double result = Math.floor( (double) numerator / denominator );
+        
+        return result.intValue();
     }
 }

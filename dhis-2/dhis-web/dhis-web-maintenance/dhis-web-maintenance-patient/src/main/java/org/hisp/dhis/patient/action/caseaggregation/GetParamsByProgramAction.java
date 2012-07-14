@@ -102,8 +102,15 @@ public class GetParamsByProgramAction
 
         if ( program.isRegistration() )
         {
-            patientAttributes.addAll( attributeService.getPatientAttributes( null, null ) );
-            patientAttributes.addAll( attributeService.getPatientAttributes( program ) );
+            patientAttributes = attributeService.getAllPatientAttributes();
+
+            Collection<Program> programs = programService.getAllPrograms();
+            programs.remove( program );
+            
+            for ( Program _program : programs )
+            {
+                patientAttributes.remove( _program.getPatientAttributes() );
+            }
         }
         
         return SUCCESS;

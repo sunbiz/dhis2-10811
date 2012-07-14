@@ -58,7 +58,6 @@ public class DataElementConverter
     private static final String FIELD_UID = "uid";
     private static final String FIELD_CODE = "code";
     private static final String FIELD_NAME = "name";
-    private static final String FIELD_ALTERNATIVE_NAME = "alternativeName";
     private static final String FIELD_SHORT_NAME = "shortName";
     private static final String FIELD_DESCRIPTION = "description";
     private static final String FIELD_ACTIVE = "active";
@@ -126,9 +125,8 @@ public class DataElementConverter
                 writer.writeElement( FIELD_ID, String.valueOf( element.getId() ) );
                 writer.writeElement( FIELD_UID, element.getUid() );
                 writer.writeElement( FIELD_NAME, element.getName() );
-                writer.writeElement( FIELD_ALTERNATIVE_NAME, element.getAlternativeName() );
                 writer.writeElement( FIELD_SHORT_NAME, element.getShortName() );
-                writer.writeElement( FIELD_CODE, element.getCode() ); // historic positioning from v1.2 :-(
+                writer.writeElement( FIELD_CODE, element.getCode() ); // historic positioning from v1.2
                 writer.writeElement( FIELD_DESCRIPTION, element.getDescription() );
                 writer.writeElement( FIELD_ACTIVE, String.valueOf( element.isActive() ) );
                 writer.writeElement( FIELD_TYPE, element.getType() );
@@ -163,7 +161,6 @@ public class DataElementConverter
             }
 
             element.setName( values.get( FIELD_NAME ) );
-            element.setAlternativeName( values.get( FIELD_ALTERNATIVE_NAME ) );
             element.setShortName( values.get( FIELD_SHORT_NAME ) );
             
             if ( params.minorVersionGreaterOrEqual( "1.2" )) {

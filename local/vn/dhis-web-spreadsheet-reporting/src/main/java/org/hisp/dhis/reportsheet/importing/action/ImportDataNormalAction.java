@@ -27,12 +27,14 @@ package org.hisp.dhis.reportsheet.importing.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Set;
+
+import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.importing.ImportDataGeneric;
 
 /**
- * @author Chau Thu Tran
  * @author Dang Duy Hieu
  * @version $Id$
  */
@@ -44,11 +46,13 @@ public class ImportDataNormalAction
     // Override the abstract method
     // -------------------------------------------------------------------------
 
-    public void executeToImport( OrganisationUnit organisationUnit, Period period, String[] importItemIds )
+    public void executeToImport( OrganisationUnit organisationUnit, Period period, String[] importItemIds,
+        Set<DataValue> oldDataValues, Set<DataValue> newDataValues )
     {
         for ( int i = 0; i < importItemIds.length; i++ )
         {
-            addDataValue( organisationUnit, period, importItemIds[i].split( "_" )[0], importItemIds[i].split( "_" )[1] );
+            addDataValue( organisationUnit, period, importItemIds[i].split( "_" )[0], importItemIds[i].split( "_" )[1],
+                oldDataValues, newDataValues );
         }
     }
 }

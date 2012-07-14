@@ -27,7 +27,7 @@
 
 package org.hisp.dhis.program;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -69,9 +69,9 @@ public class ProgramServiceTest
         
         organisationUnitService.addOrganisationUnit( organisationUnit );              
         
-        programStageA = createProgramStage( 'A', 2, 5 );       
-        programStageB = createProgramStage( 'B', 2, 5 );
-        programStageC = createProgramStage( 'C', 2, 5 );        
+        programStageA = createProgramStage( 'A', 5 );       
+        programStageB = createProgramStage( 'B', 5 );
+        programStageC = createProgramStage( 'C', 5 );        
 
         programStageService.saveProgramStage( programStageA );
         programStageService.saveProgramStage( programStageB );

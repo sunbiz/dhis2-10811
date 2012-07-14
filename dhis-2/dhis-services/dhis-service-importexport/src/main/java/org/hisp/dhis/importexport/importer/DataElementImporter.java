@@ -74,7 +74,6 @@ public class DataElementImporter
     {
         match.setName( object.getName() );
         match.setShortName( object.getShortName() );
-        match.setAlternativeName( object.getAlternativeName() );
         match.setCode( object.getCode() );
         match.setDescription( object.getDescription() );
         match.setActive( object.isActive() );
@@ -93,10 +92,6 @@ public class DataElementImporter
 
         if ( match == null )
         {
-            match = dataElementService.getDataElementByAlternativeName( object.getAlternativeName() );
-        }
-        if ( match == null )
-        {
             match = dataElementService.getDataElementByShortName( object.getShortName() );
         }
         if ( match == null )
@@ -111,10 +106,6 @@ public class DataElementImporter
     protected boolean isIdentical( DataElement object, DataElement existing )
     {
         if ( !object.getName().equals( existing.getName() ) )
-        {
-            return false;
-        }        
-        if ( !isSimiliar( object.getAlternativeName(), existing.getAlternativeName() ) || ( isNotNull( object.getAlternativeName(), existing.getAlternativeName() ) && !object.getAlternativeName().equals( existing.getAlternativeName() ) ) )
         {
             return false;
         }

@@ -40,8 +40,8 @@
 #end
 </select><br><br>
 
-<input type="button" value="$i18n.getString( 'get_report' )" style="width:135px" onclick="displayOrgUnitDistribution( 'html' )" />
-<input type="button" value="$i18n.getString( 'get_chart' )" style="width:135px" onclick="displayOrgUnitDistributionChart()" /><br><br>
+<input id="reportButton" type="button" value="$i18n.getString( 'get_report' )" style="width:135px" onclick="displayOrgUnitDistribution( 'html' )" />
+<input id="chartButton" type="button" value="$i18n.getString( 'get_chart' )" style="width:135px" onclick="displayOrgUnitDistributionChart()" /><br><br>
 
 <input type="button" value="$i18n.getString( 'get_report_as_pdf' )" style="width:135px" onclick="getOrgUnitDistribution( 'pdf' )" />
 <input type="button" value="$i18n.getString( 'get_report_as_xls' )" style="width:135px" onclick="getOrgUnitDistribution( 'xls' )" /><br>

@@ -34,15 +34,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.amplecode.quick.StatementHolder;
 import org.amplecode.quick.StatementManager;
 import org.amplecode.quick.mapper.ObjectMapper;
 import org.amplecode.quick.mapper.RowMapper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.aggregation.AggregatedDataValue;
 import org.hisp.dhis.aggregation.AggregatedDataValueStore;
 import org.hisp.dhis.aggregation.AggregatedIndicatorValue;
@@ -52,7 +48,6 @@ import org.hisp.dhis.completeness.DataSetCompletenessResult;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
-import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -75,24 +70,22 @@ public class JdbcAggregatedDataValueStore
 {
     private int FETCH_SIZE = 1000; // Number of rows to fetch from db for large resultset
 
-    private static final Log log = LogFactory.getLog( JdbcAggregatedDataValueStore.class );
-
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
-
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
 
     private JdbcTemplate jdbcTemplate;
     
     public void setJdbcTemplate( JdbcTemplate jdbcTemplate )
     {
         this.jdbcTemplate = jdbcTemplate;
+    }
+    
+    private StatementManager statementManager; //TODO remove
+
+    public void setStatementManager( StatementManager statementManager )
+    {
+        this.statementManager = statementManager;
     }
 
     // -------------------------------------------------------------------------
@@ -108,7 +101,7 @@ public class JdbcAggregatedDataValueStore
             "AND periodid = " + period + " " +
             "AND organisationunitid = " + organisationUnit;
         
-        return statementManager.getHolder().queryForDouble( sql );
+        return jdbcTemplate.queryForObject( sql, Double.class );
     }
 
     public Double getAggregatedDataValue( int dataElement, int categoryOptionCombo, int period, int organisationUnit )
@@ -121,7 +114,7 @@ public class JdbcAggregatedDataValueStore
             "AND periodid = " + period + " " +
             "AND organisationunitid = " + organisationUnit;
         
-        return statementManager.getHolder().queryForDouble( sql );
+        return jdbcTemplate.queryForObject( sql, Double.class );
     }
 
     public Double getAggregatedDataValue( int dataElement, int categoryOptionCombo, Collection<Integer> periodIds, int organisationUnit )
@@ -134,7 +127,7 @@ public class JdbcAggregatedDataValueStore
             "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
             "AND organisationunitid = " + organisationUnit;
         
-        return statementManager.getHolder().queryForDouble( sql );
+        return jdbcTemplate.queryForObject( sql, Double.class );
     }
     
     public Double getAggregatedDataValue( DataElement dataElement, DataElementCategoryOption categoryOption, Period period, OrganisationUnit organisationUnit )
@@ -149,153 +142,68 @@ public class JdbcAggregatedDataValueStore
             "AND periodid = " + period.getId() + " " +
             "AND organisationunitid = " + organisationUnit.getId();
 
-        return statementManager.getHolder().queryForDouble( sql );
+        return jdbcTemplate.queryForObject( sql, Double.class );
     }
 
     public Collection<AggregatedDataValue> getAggregatedDataValues( Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql = 
+            "SELECT * " +
+            "FROM aggregateddatavalue " +
+            "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        final ObjectMapper<AggregatedDataValue> mapper = new ObjectMapper<AggregatedDataValue>();
-        
-        try
-        {
-            final String sql = 
-                "SELECT * " +
-                "FROM aggregateddatavalue " +
-                "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedDataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated data value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedDataValueRowMapper() );
     }
     
     public Collection<AggregatedDataValue> getAggregatedDataValueTotals( Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql = 
+            "SELECT dataelementid, 0 as categoryoptioncomboid, periodid, organisationunitid, SUM(value) as value " +
+            "FROM aggregateddatavalue " +
+            "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " ) " +
+            "GROUP BY dataelementid, periodid, organisationunitid";
         
-        final ObjectMapper<AggregatedDataValue> mapper = new ObjectMapper<AggregatedDataValue>();
-        
-        try
-        {
-            final String sql = 
-                "SELECT dataelementid, 0 as categoryoptioncomboid, periodid, organisationunitid, periodtypeid, level, SUM(value) as value " +
-                "FROM aggregateddatavalue " +
-                "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " ) " +
-                "GROUP BY dataelementid, periodid, organisationunitid, periodtypeid, level";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedDataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated data value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedDataValueRowMapper() );
     }
 
     public Collection<AggregatedDataValue> getAggregatedDataValues( int dataElementId, 
         Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql = 
+            "SELECT * " +
+            "FROM aggregateddatavalue " +
+            "WHERE dataelementid = " + dataElementId + " " +
+            "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        final ObjectMapper<AggregatedDataValue> mapper = new ObjectMapper<AggregatedDataValue>();
-        
-        try
-        {
-            final String sql = 
-                "SELECT * " +
-                "FROM aggregateddatavalue " +
-                "WHERE dataelementid = " + dataElementId + " " +
-                "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedDataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated data value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedDataValueRowMapper() );
     }
 
     public Collection<AggregatedDataValue> getAggregatedDataValues( Collection<Integer> dataElementIds, Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql = 
+            "SELECT * " +
+            "FROM aggregateddatavalue " +
+            "WHERE dataelementid IN ( " + getCommaDelimitedString( dataElementIds ) + " ) " +
+            "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        final ObjectMapper<AggregatedDataValue> mapper = new ObjectMapper<AggregatedDataValue>();
-        
-        try
-        {
-            final String sql = 
-                "SELECT * " +
-                "FROM aggregateddatavalue " +
-                "WHERE dataelementid IN ( " + getCommaDelimitedString( dataElementIds ) + " ) " +
-                "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedDataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated data value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedDataValueRowMapper() );        
     }
 
     public Collection<AggregatedDataValue> getAggregatedDataValueTotals( Collection<Integer> dataElementIds, Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql = 
+            "SELECT dataelementid, 0 as categoryoptioncomboid, periodid, organisationunitid, SUM(value) as value " +
+            "FROM aggregateddatavalue " +
+            "WHERE dataelementid IN ( " + getCommaDelimitedString( dataElementIds ) + " ) " +
+            "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " ) " +
+            "GROUP BY dataelementid, periodid, organisationunitid";
         
-        final ObjectMapper<AggregatedDataValue> mapper = new ObjectMapper<AggregatedDataValue>();
-        
-        try
-        {
-            final String sql = 
-                "SELECT dataelementid, 0 as categoryoptioncomboid, periodid, organisationunitid, periodtypeid, level, SUM(value) as value " +
-                "FROM aggregateddatavalue " +
-                "WHERE dataelementid IN ( " + getCommaDelimitedString( dataElementIds ) + " ) " +
-                "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " ) " +
-                "GROUP BY dataelementid, periodid, organisationunitid, periodtypeid, level";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedDataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated data value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedDataValueRowMapper() );
     }
 
     public StoreIterator<AggregatedDataValue> getAggregatedDataValuesAtLevel( OrganisationUnit rootOrgunit, OrganisationUnitLevel level, Collection<Period> periods )
@@ -309,7 +217,7 @@ public class JdbcAggregatedDataValueStore
             String periodids = getCommaDelimitedString( getIdentifiers(Period.class, periods));
 
             final String sql =
-                "SELECT dataelementid, categoryoptioncomboid, periodid, adv.organisationunitid, periodtypeid, adv.level, value " +
+                "SELECT dataelementid, categoryoptioncomboid, periodid, adv.organisationunitid, value " +
                 "FROM aggregateddatavalue AS adv " +
                 "INNER JOIN _orgunitstructure AS ous on adv.organisationunitid=ous.organisationunitid " +
                 "WHERE adv.level = " + level.getLevel() +
@@ -348,7 +256,7 @@ public class JdbcAggregatedDataValueStore
             " AND ous.idlevel" + rootOrgunit.getLevel() + "=" + rootOrgunit.getId() +
             " AND adv.periodid IN (" + periodids + ") ";
 
-        return statementManager.getHolder().queryForInteger( sql );
+        return jdbcTemplate.queryForInt( sql );
     }
 
     public void deleteAggregatedDataValues( Collection<Integer> dataElementIds, Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
@@ -359,83 +267,16 @@ public class JdbcAggregatedDataValueStore
             "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
             "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        statementManager.getHolder().executeUpdate( sql );
-    }
-
-    public void deleteAggregatedDataValues( Collection<Integer> periodIds )
-    {
-        final String sql =
-            "DELETE FROM aggregateddatavalue " +
-            "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " )";
-        
-        statementManager.getHolder().executeUpdate( sql );
+        jdbcTemplate.execute( sql );
     }
 
     public void deleteAggregatedDataValues()
     {
         final String sql = "DELETE FROM aggregateddatavalue";
         
-        statementManager.getHolder().executeUpdate( sql );
+        jdbcTemplate.execute( sql );
     }
     
-    public void createIndex( boolean dataElement, boolean indicator )
-    {
-        if ( dataElement )
-        {
-            try
-            {
-                final String sql = "CREATE INDEX aggregateddatavalue_index ON aggregateddatavalue (dataelementid, categoryoptioncomboid, periodid, organisationunitid)";        
-                statementManager.getHolder().executeUpdate( sql, true );
-            }
-            catch ( Exception ex )
-            {
-                log.debug( "Index already exists" );
-            }
-        }
-        
-        if ( indicator )
-        {
-            try
-            {
-                final String sql = "CREATE INDEX aggregatedindicatorvalue_index ON aggregatedindicatorvalue (indicatorid, periodid, organisationunitid)";        
-                statementManager.getHolder().executeUpdate( sql, true );
-            }
-            catch ( Exception ex )
-            {
-                log.debug( "Index already exists" );
-            }
-        }
-    }
-    
-    public void dropIndex( boolean dataElement, boolean indicator )
-    {
-        if ( dataElement )
-        {
-            try
-            {
-                final String sql = "DROP INDEX aggregateddatavalue_index";
-                statementManager.getHolder().executeUpdate( sql, true );
-            }
-            catch ( Exception ex )
-            {
-                log.debug( "Index does not exist" );
-            }
-        }
-        
-        if ( indicator )
-        {
-            try
-            {
-                final String sql = "DROP INDEX aggregatedindicatorvalue_index";
-                statementManager.getHolder().executeUpdate( sql, true );
-            }
-            catch ( Exception ex )
-            {
-                log.debug( "Index does not exist" );
-            }
-        }
-    }
-
     // -------------------------------------------------------------------------
     // AggregatedDataMapValue
     // -------------------------------------------------------------------------
@@ -451,7 +292,7 @@ public class JdbcAggregatedDataValueStore
             "AND a.organisationunitid IN (" + getCommaDelimitedString( organisationUnitIds ) + ") " +
             "GROUP BY a.periodid, o.organisationunitid, o.name";
         
-        return jdbcTemplate.query( sql, new AggregatedDataMapValueRowMapper() );        
+        return jdbcTemplate.query( sql, new AggregatedDataMapValueRowMapper() );
     }
 
     public Collection<AggregatedMapValue> getAggregatedDataMapValues( Collection<Integer> dataElementIds, int periodId, int organisationUnitId )
@@ -492,65 +333,31 @@ public class JdbcAggregatedDataValueStore
             "AND periodid = " + period + " " +
             "AND organisationunitid = " + organisationUnit;
         
-        return statementManager.getHolder().queryForDouble( sql );
+        return jdbcTemplate.queryForObject( sql, Double.class );
     }
 
     public Collection<AggregatedIndicatorValue> getAggregatedIndicatorValues( Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql =
+            "SELECT * " +
+            "FROM aggregatedindicatorvalue " +
+            "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        final ObjectMapper<AggregatedIndicatorValue> mapper = new ObjectMapper<AggregatedIndicatorValue>();
-        
-        try
-        {
-            final String sql =
-                "SELECT * " +
-                "FROM aggregatedindicatorvalue " +
-                "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedIndicatorValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated indicator value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedIndicatorValueRowMapper() );
     }
 
     public Collection<AggregatedIndicatorValue> getAggregatedIndicatorValues( Collection<Integer> indicatorIds, 
         Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql =
+            "SELECT * " +
+            "FROM aggregatedindicatorvalue " +
+            "WHERE indicatorid IN ( " + getCommaDelimitedString( indicatorIds ) + " ) " +
+            "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
+            "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        final ObjectMapper<AggregatedIndicatorValue> mapper = new ObjectMapper<AggregatedIndicatorValue>();
-        
-        try
-        {
-            final String sql =
-                "SELECT * " +
-                "FROM aggregatedindicatorvalue " +
-                "WHERE indicatorid IN ( " + getCommaDelimitedString( indicatorIds ) + " ) " +
-                "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
-                "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new AggregatedIndicatorValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated indicator value", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new AggregatedIndicatorValueRowMapper() );
     }
 
     public void deleteAggregatedIndicatorValues( Collection<Integer> indicatorIds, Collection<Integer> periodIds,
@@ -562,23 +369,14 @@ public class JdbcAggregatedDataValueStore
             "AND periodid IN ( " + getCommaDelimitedString( periodIds ) + " ) " +
             "AND organisationunitid IN ( " + getCommaDelimitedString( organisationUnitIds ) + " )";
         
-        statementManager.getHolder().executeUpdate( sql );
+        jdbcTemplate.execute( sql );
     }
 
-    public void deleteAggregatedIndicatorValues( Collection<Integer> periodIds )
-    {
-        final String sql =
-            "DELETE FROM aggregatedindicatorvalue " +
-            "WHERE periodid IN ( " + getCommaDelimitedString( periodIds ) + " )";
-
-        statementManager.getHolder().executeUpdate( sql );
-    }
-    
     public void deleteAggregatedIndicatorValues()
     {
         final String sql = "DELETE FROM aggregatedindicatorvalue";
         
-        statementManager.getHolder().executeUpdate( sql );
+        jdbcTemplate.execute( sql );
     }
 
     @Override
@@ -607,6 +405,7 @@ public class JdbcAggregatedDataValueStore
             final ResultSet resultSet = statement.executeQuery( sql );
 
             RowMapper<AggregatedIndicatorValue> rm = new AggregatedIndicatorValueRowMapper();
+            
             return new JdbcStoreIterator<AggregatedIndicatorValue>( resultSet, holder, rm );
         }
         catch ( SQLException ex )
@@ -622,38 +421,19 @@ public class JdbcAggregatedDataValueStore
     @Override
     public int countIndicatorValuesAtLevel( OrganisationUnit rootOrgunit, OrganisationUnitLevel level, Collection<Period> periods )
     {
-        final StatementHolder holder = statementManager.getHolder();
+        int rootlevel = rootOrgunit.getLevel();
 
-        try
-        {
-            int rootlevel = rootOrgunit.getLevel();
-
-            String periodids = getCommaDelimitedString( getIdentifiers(Period.class, periods));
-
-            final String sql =
-                "SELECT count(*) as rowcount " +
-                "FROM aggregatedindicatorvalue AS aiv " +
-                "INNER JOIN _orgunitstructure AS ous on aiv.organisationunitid=ous.organisationunitid " +
-                "WHERE aiv.level = " + level.getLevel() +
-                " AND ous.idlevel" + rootlevel + "=" + rootOrgunit.getId() +
-                " AND aiv.periodid IN (" + periodids + ") ";
-
-            Statement statement = holder.getStatement();
-
-            final ResultSet resultSet = statement.executeQuery( sql );
-
-            resultSet.next();
-
-            return resultSet.getInt( "rowcount");
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get aggregated indicator values", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        String periodids = getCommaDelimitedString( getIdentifiers(Period.class, periods));
+        
+        final String sql =
+            "SELECT count(*) as rowcount " +
+            "FROM aggregatedindicatorvalue AS aiv " +
+            "INNER JOIN _orgunitstructure AS ous on aiv.organisationunitid=ous.organisationunitid " +
+            "WHERE aiv.level = " + level.getLevel() +
+            " AND ous.idlevel" + rootlevel + "=" + rootOrgunit.getId() +
+            " AND aiv.periodid IN (" + periodids + ") ";
+        
+        return jdbcTemplate.queryForInt( sql );
     }
 
     // -------------------------------------------------------------------------
@@ -696,33 +476,16 @@ public class JdbcAggregatedDataValueStore
 
     public Collection<DeflatedDataValue> getDeflatedDataValues( int dataElementId, int periodId, Collection<Integer> sourceIds )
     {
-        final StatementHolder holder = statementManager.getHolder();
-            
-        final ObjectMapper<DeflatedDataValue> mapper = new ObjectMapper<DeflatedDataValue>();
+        final String sql =
+            "SELECT * FROM datavalue " +
+            "WHERE dataelementid = " + dataElementId + " " +
+            "AND periodid = " + periodId + " " +
+            "AND sourceid IN ( " + getCommaDelimitedString( sourceIds ) + " )";
         
-        try
-        {
-            final String sql =
-                "SELECT * FROM datavalue " +
-                "WHERE dataelementid = " + dataElementId + " " +
-                "AND periodid = " + periodId + " " +
-                "AND sourceid IN ( " + getCommaDelimitedString( sourceIds ) + " )";
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getCollection( resultSet, new DeflatedDataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get deflated data values", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.query( sql, new DeflatedDataValueRowMapper() );
     }
     
-    public DataValue getDataValue( int dataElementId, int categoryOptionComboId, int periodId, int sourceId )
+    public DataValue getDataValue( int dataElementId, int categoryOptionComboId, int periodId, int sourceId ) //TODO remove
     {
         final StatementHolder holder = statementManager.getHolder();
         
@@ -744,41 +507,6 @@ public class JdbcAggregatedDataValueStore
         catch ( SQLException ex )
         {
             throw new RuntimeException( "Failed to get deflated data values", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
-    }
-    
-    public Map<DataElementOperand, String> getDataValueMap( int periodId, int sourceId )
-    {
-        final StatementHolder holder = statementManager.getHolder();
-            
-        try
-        {
-            final String sql =
-                "SELECT dataelementid, categoryoptioncomboid, value " +
-                "FROM datavalue " +
-                "WHERE periodid = " + periodId + " " +
-                "AND sourceid = " + sourceId;
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            final Map<DataElementOperand, String> map = new HashMap<DataElementOperand, String>();
-            
-            while ( resultSet.next() )
-            {
-                final DataElementOperand operand = new DataElementOperand( resultSet.getInt( 1 ), resultSet.getInt( 2 ) );
-                
-                map.put( operand, resultSet.getString( 3 ) );
-            }
-            
-            return map;
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get DataValues", ex );
         }
         finally
         {

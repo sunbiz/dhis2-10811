@@ -55,6 +55,7 @@ import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
 import org.hisp.dhis.system.filter.AggregatableDataElementFilter;
@@ -242,7 +243,14 @@ public class GetTableOptionsAction
     {
         return reportTable;
     }
-    
+
+    private RelativePeriods relatives;
+
+    public RelativePeriods getRelatives()
+    {
+        return relatives;
+    }
+
     private List<DataElement> selectedDataElements = new ArrayList<DataElement>();
 
     public List<DataElement> getSelectedDataElements()
@@ -362,6 +370,8 @@ public class GetTableOptionsAction
         if ( id != null )
         {
             reportTable = reportTableService.getReportTable( id );
+            
+            relatives = reportTable.getRelatives();
             
             dataElements.removeAll( reportTable.getDataElements() );
             

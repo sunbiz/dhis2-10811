@@ -27,6 +27,7 @@ package org.hisp.dhis.dataset.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.common.DeleteNotAllowedException;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.i18n.I18n;
 
@@ -90,11 +91,22 @@ public class DelDataSetAction
     public String execute()
         throws Exception
     {
-        dataSetService.deleteDataSet( dataSetService.getDataSet( id ) );
-
-        message = i18n.getString( "delete_success" );
-
+        try
+        {
+            dataSetService.deleteDataSet( dataSetService.getDataSet( id ) );
+    
+            message = i18n.getString( "delete_success" );
+        }
+        catch ( DeleteNotAllowedException ex )
+        {
+            if ( ex.getErrorCode().equals( DeleteNotAllowedException.ERROR_ASSOCIATED_BY_OTHER_OBJECTS ) )
+            {
+                message = i18n.getString( "object_not_deleted_associated_by_objects" ) + " " + ex.getMessage();
+                
+                return ERROR;
+            }
+        }
+        
         return SUCCESS;
     }
-
 }

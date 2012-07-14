@@ -1,3 +1,4 @@
+isAjax = true;
 
 function validateAddUpdateSqlView( mode )
 {
@@ -83,7 +84,7 @@ function showDataSqlViewForm( viewId )
 		{
 			if ( json.response == "success" )
 			{
-				window.location.href = "exportSqlView.action?viewTableName=" + json.message;
+				window.location.href = "exportSqlView.action?id=" + viewId;
 			}
 			else if ( json.response == "error" )
 			{
@@ -93,9 +94,9 @@ function showDataSqlViewForm( viewId )
 	);
 }
 
-function exportSqlView( type )
+function exportSqlView( id, type )
 {
-	var url = "exportSqlView.action?type=" + type + "&viewTableName=" + $( "#viewTableName" ).val();
+	var url = "exportSqlView.action?id=" + id + "&type=" + type;
 
     window.location.href = url;
 }

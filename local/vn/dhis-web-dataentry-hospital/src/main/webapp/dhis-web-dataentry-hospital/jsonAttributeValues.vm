@@ -1,10 +1,10 @@
 #set( $size = $values.size() )
 { "attributeValues": [
   #foreach( $value in $values )
-	#if($value!='')
+	#if( $value !='' )
 		"$!encoder.jsonEncode( $value )"
+		#if( $velocityCount < $size ),#end
 	#end
-	#if( $velocityCount < $size ),#end
   #end
   ]
 }

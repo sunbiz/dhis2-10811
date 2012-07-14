@@ -29,13 +29,6 @@ package org.hisp.dhis.importexport.xls.converter;
 
 import java.util.Collection;
 
-import jxl.format.Alignment;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
-import jxl.format.Colour;
-import jxl.format.UnderlineStyle;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -84,24 +77,15 @@ public class IndicatorConverter
 
         WritableSheet sheet = workbook.createSheet( i18n.getString( "indicators" ), sheetIndex );
 
-        WritableCellFormat FORMAT_LABEL = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 13,
-            WritableFont.NO_BOLD, true, UnderlineStyle.NO_UNDERLINE, Colour.WHITE ) );
-
-        WritableCellFormat FORMAT_TEXT = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 11,
-            WritableFont.NO_BOLD, false ) );
-        
         Collection<Indicator> indicators = indicatorService.getIndicators( params.getIndicators() );
         
         try
         {
-            setUpFormat( FORMAT_LABEL, Alignment.CENTRE, Border.ALL, BorderLineStyle.THIN, Colour.TAN );
-            setUpFormat( FORMAT_TEXT, Alignment.GENERAL, Border.ALL, BorderLineStyle.DOTTED, Colour.BLACK );
-            
-            printIndicatorHeaders( sheet, FORMAT_LABEL, i18n, rowNumber++, columnIndex );
+            printIndicatorHeaders( sheet, i18n, rowNumber++, columnIndex );
 
             for ( Indicator indicator : indicators )
             {
-                addIndicatorCellToSheet( sheet, FORMAT_TEXT, indicator, i18n, expressionService, rowNumber++,
+                addIndicatorCellToSheet( sheet, indicator, i18n, expressionService, rowNumber++,
                     columnIndex );
             }
         }

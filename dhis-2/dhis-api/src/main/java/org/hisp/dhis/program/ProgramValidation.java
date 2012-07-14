@@ -27,14 +27,15 @@
 
 package org.hisp.dhis.program;
 
-import java.io.Serializable;
+import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.expression.Operator;
 
 /**
  * @author Chau Thu Tran
  * @version $ ProgramValidation.java Apr 28, 2011 10:27:29 AM $
  */
 public class ProgramValidation
-    implements Serializable
+    extends BaseIdentifiableObject
 {
     /**
      * Determines if a de-serialized file is compatible with this class.
@@ -46,7 +47,6 @@ public class ProgramValidation
     public static final String SEPARATOR_OBJECT = ":";
 
     public static String OBJECT_PROGRAM_STAGE_DATAELEMENT = "DE";
-    
 
     public static final int BEFORE_CURRENT_DATE = 1;
 
@@ -55,7 +55,6 @@ public class ProgramValidation
     public static final int AFTER_CURRENT_DATE = 3;
 
     public static final int AFTER_OR_EQUALS_TO_CURRENT_DATE = 4;
-    
 
     public static final int BEFORE_DUE_DATE = -1;
 
@@ -64,24 +63,22 @@ public class ProgramValidation
     public static final int AFTER_DUE_DATE = -3;
 
     public static final int AFTER_OR_EQUALS_TO_DUE_DATE = -4;
-    
+
     public static final int BEFORE_DUE_DATE_PLUS_OR_MINUS_MAX_DAYS = -5;
+
+    public static final String NOT_NULL_VALUE_IN_EXPRESSION = "{NOT-NULL-VALUE}";
 
     // -------------------------------------------------------------------------
     // Fields
     // -------------------------------------------------------------------------
+    
+    private ProgramExpression leftSide;
 
-    private int id;
+    private Operator operator;
 
-    private String description;
-
-    private String leftSide;
-
-    private String rightSide;
+    private ProgramExpression rightSide;
 
     private Program program;
-
-    private Boolean dateType;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -92,21 +89,13 @@ public class ProgramValidation
 
     }
 
-    public ProgramValidation( String description, String leftSide, String rightSide, Program program )
+    public ProgramValidation( String name, ProgramExpression leftSide, ProgramExpression rightSide,
+        Program program )
     {
-        this.description = description;
+        this.name = name;
         this.leftSide = leftSide;
         this.rightSide = rightSide;
         this.program = program;
-    }
-
-    public ProgramValidation( String description, String leftSide, String rightSide, Program program, Boolean dateType )
-    {
-        this.description = description;
-        this.leftSide = leftSide;
-        this.rightSide = rightSide;
-        this.program = program;
-        this.dateType = dateType;
     }
 
     // -------------------------------------------------------------------------
@@ -186,43 +175,23 @@ public class ProgramValidation
     // -------------------------------------------------------------------------
     // Getters && Setters
     // -------------------------------------------------------------------------
-
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId( int id )
-    {
-        this.id = id;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public void setDescription( String description )
-    {
-        this.description = description;
-    }
-
-    public String getLeftSide()
+    
+    public ProgramExpression getLeftSide()
     {
         return leftSide;
     }
 
-    public void setLeftSide( String leftSide )
+    public void setLeftSide( ProgramExpression leftSide )
     {
         this.leftSide = leftSide;
     }
 
-    public String getRightSide()
+    public ProgramExpression getRightSide()
     {
         return rightSide;
     }
 
-    public void setRightSide( String rightSide )
+    public void setRightSide( ProgramExpression rightSide )
     {
         this.rightSide = rightSide;
     }
@@ -237,13 +206,13 @@ public class ProgramValidation
         this.program = program;
     }
 
-    public Boolean getDateType()
+    public Operator getOperator()
     {
-        return dateType;
+        return operator;
     }
 
-    public void setDateType( Boolean dateType )
+    public void setOperator( Operator operator )
     {
-        this.dateType = dateType;
+        this.operator = operator;
     }
 }

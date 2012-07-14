@@ -579,8 +579,10 @@ public class ExcelImportResultAction
             return SUCCESS;
         }
         
-        Workbook excelImportFile = Workbook.getWorkbook( file );
-       
+        //Workbook excelImportFile = Workbook.getWorkbook( file );
+        
+        Workbook excelImportFile = Workbook.getWorkbook( new File( excelFilePath ) );
+        
         Workbook excelTemplateFile = Workbook.getWorkbook( new File( excelTemplatePath ) );
 
         excelValidator = validateReport( deCodesImportXMLFileName, excelImportFile, excelTemplateFile );
@@ -686,7 +688,9 @@ public class ExcelImportResultAction
                 Sheet sheet = excelImportFile.getSheet( sheetNo );
 
                 String cellContent = sheet.getCell( tempColNo, tempRowNo ).getContents();
-
+                
+                System.out.println( tempColNo + " : " + tempRowNo + " : " + cellContent );
+                
                 value = cellContent;
 
                 if ( cellContent.equalsIgnoreCase( "" ) || cellContent == null || cellContent.equalsIgnoreCase( " " ) )
@@ -744,8 +748,20 @@ public class ExcelImportResultAction
         excelImportFile.close();
 
         statementManager.destroy();
-
+        
         message = "The report has been imported successfully";
+
+        try
+        {
+        }
+        catch( Exception e )
+        {
+        }
+        finally
+        {
+            if( inputStream != null )
+            inputStream.close();             
+        }
 
         return SUCCESS;
     }
@@ -1239,9 +1255,10 @@ public class ExcelImportResultAction
 
         finally
         {
-            in.close();
-
-            out.close();
+            if( in != null ) 
+                in.close();
+            if( out != null )                       
+                out.close();
         }
 
         return 1;

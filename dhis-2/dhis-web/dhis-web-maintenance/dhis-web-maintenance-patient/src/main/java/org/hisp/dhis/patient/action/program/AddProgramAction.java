@@ -27,8 +27,15 @@
 
 package org.hisp.dhis.patient.action.program;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
@@ -46,6 +53,8 @@ public class AddProgramAction
     implements Action
 {
     private static String SINGLE_EVENT = "Single-Event";
+
+    private static String REPORT_DATE_DESCRIPTION = "Report date";
 
     // -------------------------------------------------------------------------
     // Dependency
@@ -70,6 +79,20 @@ public class AddProgramAction
     public void setProgramInstanceService( ProgramInstanceService programInstanceService )
     {
         this.programInstanceService = programInstanceService;
+    }
+
+    private PatientIdentifierTypeService patientIdentifierTypeService;
+
+    public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
+    {
+        this.patientIdentifierTypeService = patientIdentifierTypeService;
+    }
+
+    private PatientAttributeService patientAttributeService;
+
+    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    {
+        this.patientAttributeService = patientAttributeService;
     }
 
     // -------------------------------------------------------------------------
@@ -104,13 +127,6 @@ public class AddProgramAction
         this.dateOfIncidentDescription = dateOfIncidentDescription;
     }
 
-    private Integer maxDaysAllowedInputData;
-
-    public void setMaxDaysAllowedInputData( Integer maxDaysAllowedInputData )
-    {
-        this.maxDaysAllowedInputData = maxDaysAllowedInputData;
-    }
-
     private Integer type;
 
     public void setType( Integer type )
@@ -125,6 +141,48 @@ public class AddProgramAction
         this.displayProvidedOtherFacility = displayProvidedOtherFacility;
     }
 
+    private Boolean displayIncidentDate;
+
+    public void setDisplayIncidentDate( Boolean displayIncidentDate )
+    {
+        this.displayIncidentDate = displayIncidentDate;
+    }
+
+    private List<String> selectedPropertyIds = new ArrayList<String>();
+
+    public void setSelectedPropertyIds( List<String> selectedPropertyIds )
+    {
+        this.selectedPropertyIds = selectedPropertyIds;
+    }
+
+    private List<Boolean> personDisplayNames = new ArrayList<Boolean>();
+
+    public void setPersonDisplayNames( List<Boolean> personDisplayNames )
+    {
+        this.personDisplayNames = personDisplayNames;
+    }
+
+    private Boolean generateBydEnrollmentDate;
+
+    public void setGeneratedByEnrollmentDate( Boolean generateBydEnrollmentDate )
+    {
+        this.generateBydEnrollmentDate = generateBydEnrollmentDate;
+    }
+
+    private Boolean ignoreOverdueEvents;
+
+    public void setIgnoreOverdueEvents( Boolean ignoreOverdueEvents )
+    {
+        this.ignoreOverdueEvents = ignoreOverdueEvents;
+    }
+
+    private Boolean blockEntryForm;
+
+    public void setBlockEntryForm( Boolean blockEntryForm )
+    {
+        this.blockEntryForm = blockEntryForm;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -133,6 +191,10 @@ public class AddProgramAction
         throws Exception
     {
         displayProvidedOtherFacility = (displayProvidedOtherFacility == null) ? false : displayProvidedOtherFacility;
+        displayIncidentDate = (displayIncidentDate == null) ? false : displayIncidentDate;
+        generateBydEnrollmentDate = (generateBydEnrollmentDate == null) ? false : generateBydEnrollmentDate;
+        ignoreOverdueEvents = (ignoreOverdueEvents == null) ? false : ignoreOverdueEvents;
+        blockEntryForm = (blockEntryForm == null) ? false : blockEntryForm;
 
         Program program = new Program();
 
@@ -141,22 +203,63 @@ public class AddProgramAction
         program.setVersion( 1 );
         program.setDateOfEnrollmentDescription( dateOfEnrollmentDescription );
         program.setDateOfIncidentDescription( dateOfIncidentDescription );
-        program.setMaxDaysAllowedInputData( maxDaysAllowedInputData );
         program.setType( type );
         program.setDisplayProvidedOtherFacility( displayProvidedOtherFacility );
-        
+        program.setDisplayIncidentDate( displayIncidentDate );
+        program.setBlockEntryForm( blockEntryForm );
+        if ( type == Program.MULTIPLE_EVENTS_WITH_REGISTRATION )
+        {
+            program.setGeneratedByEnrollmentDate( generateBydEnrollmentDate );
+            program.setIgnoreOverdueEvents( ignoreOverdueEvents );
+        }
+        else
+        {
+            program.setGeneratedByEnrollmentDate( true );
+            program.setIgnoreOverdueEvents( false );
+        }
+
+        List<PatientIdentifierType> identifierTypes = new ArrayList<PatientIdentifierType>();
+        List<PatientAttribute> patientAttributes = new ArrayList<PatientAttribute>();
+        int index = 0;
+        for ( String selectedPropertyId : selectedPropertyIds )
+        {
+            String[] ids = selectedPropertyId.split( "_" );
+
+            if ( ids[0].equals( Patient.PREFIX_IDENTIFIER_TYPE ) )
+            {
+                PatientIdentifierType identifierType = patientIdentifierTypeService.getPatientIdentifierType( Integer
+                    .parseInt( ids[1] ) );
+
+                identifierType.setPersonDisplayName( personDisplayNames.get( index ) );
+                patientIdentifierTypeService.updatePatientIdentifierType( identifierType );
+
+                identifierTypes.add( identifierType );
+            }
+            else if ( ids[0].equals( Patient.PREFIX_PATIENT_ATTRIBUTE ) )
+            {
+                PatientAttribute patientAttribute = patientAttributeService.getPatientAttribute( Integer
+                    .parseInt( ids[1] ) );
+                patientAttributes.add( patientAttribute );
+            }
+
+            index++;
+        }
+
+        program.setPatientIdentifierTypes( identifierTypes );
+        program.setPatientAttributes( patientAttributes );
+
         programService.saveProgram( program );
 
-        if ( program.getType().equals( Program.SINGLE_EVENT_WITH_REGISTRATION ) || 
-            program.getType().equals( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ))
+        if ( program.getType().equals( Program.SINGLE_EVENT_WITH_REGISTRATION )
+            || program.getType().equals( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) )
         {
             ProgramStage programStage = new ProgramStage();
 
             programStage.setName( SINGLE_EVENT + " " + name );
             programStage.setDescription( description );
-            programStage.setStageInProgram( program.getProgramStages().size() + 1 );
             programStage.setProgram( program );
             programStage.setMinDaysFromStart( 0 );
+            programStage.setReportDateDescription( REPORT_DATE_DESCRIPTION );
 
             programStageService.saveProgramStage( programStage );
         }

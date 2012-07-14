@@ -22,19 +22,18 @@ jQuery( document ).ready( function()
 function updateUser()
 {
 	$.postUTF8( 'updateUserAccount.action',
-		{
-			id: getFieldValue( 'id' ),
-			oldPassword: getFieldValue( 'oldPassword' ),
-			rawPassword: getFieldValue( 'rawPassword' ),
-			retypePassword: getFieldValue( 'retypePassword' ),
-			surname: getFieldValue( 'surname' ),
-			firstName: getFieldValue( 'firstName' ),
-			email: getFieldValue( 'email' ),
-			phoneNumber: getFieldValue( 'phoneNumber' )
-		}
-		, function( xmlObject ) 
-		{
-			xmlObject = xmlObject.getElementsByTagName( 'message' )[0];
-			setMessage( xmlObject.firstChild.nodeValue );
-		} );
+	{
+		id: getFieldValue( 'id' ),
+		oldPassword: getFieldValue( 'oldPassword' ),
+		rawPassword: getFieldValue( 'rawPassword' ),
+		retypePassword: getFieldValue( 'retypePassword' ),
+		surname: getFieldValue( 'surname' ),
+		firstName: getFieldValue( 'firstName' ),
+		email: getFieldValue( 'email' ),
+		phoneNumber: getFieldValue( 'phoneNumber' )
+	},
+	function( json ) 
+	{
+		setHeaderDelayMessage( json.message );
+	} );
 }

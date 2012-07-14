@@ -1,6 +1,4 @@
-var G = {};
-
-G.i18n = {
+GIS.i18n = {
     save: '$encoder.jsEscape($i18n.getString( 'save' ) , "'")',
     saved: '$encoder.jsEscape($i18n.getString( 'saved' ) , "'")',
     delete_: '$encoder.jsEscape($i18n.getString( 'delete' ) , "'")',
@@ -326,5 +324,6 @@ G.i18n = {
     centroid_layer:    '$encoder.jsEscape($i18n.getString( 'centroid_layer' ) , "'")',
     no_values_found:    '$encoder.jsEscape($i18n.getString( 'no_values_found' ) , "'")',
     close: '$encoder.jsEscape($i18n.getString( 'close' ) , "'")',
-    boundary_layer: '$encoder.jsEscape($i18n.getString( 'boundary_layer' ) , "'")'
+    boundary_layer: '$encoder.jsEscape($i18n.getString( 'boundary_layer' ) , "'")',
+    register_new_wms_overlay: '$encoder.jsEscape($i18n.getString( 'register_new_wms_overlay' ) , "'")'
 };

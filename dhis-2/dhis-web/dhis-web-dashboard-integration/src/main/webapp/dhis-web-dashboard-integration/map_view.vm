@@ -1,22 +1,22 @@
 
 <table class="contentProviderTable">
     <tr>
-        <th colspan="2">$i18n.getString( "map_view" )</th>
+        <th colspan="2">$i18n.getString( "map" )</th>
     </tr>
-    #foreach ( $view in $mapViews )
+    #foreach ( $map in $maps )
     <tr>
         <td>
-            <a href="javascript:window.location.href='../dhis-web-mapping/mapping/index.html?id=${view.uid}'">$encoder.htmlEncode( $view.name )</a>
+            <a href="javascript:window.location.href='../dhis-web-mapping/app/index.html?id=${map.uid}'">$encoder.htmlEncode( $map.name )</a>
         </td>
         <td style="width:10px">
-            <a href="javascript:window.location.href='removeMapView.action?id=$view.id'" title="$i18n.getString( 'remove' )">
+            <a href="javascript:window.location.href='removeMap.action?id=$map.id'" title="$i18n.getString( 'remove' )">
             <img class="removeIcon" src="../images/hide.png" alt="$i18n.getString( 'remove' )"></a>
         </td>
     </tr>
     #end
 </table>
 
-#if( $mapViews.size() == 0 )
-<div class="labelText">$i18n.getString( "insert_links_by_going_to" ) 
-<a href="../dhis-web-mapping/mapping/index.html">$i18n.getString( "map_view" )</a></div>
+#if( $maps.size() == 0 )
+<div class="labelText">$i18n.getString( "insert_links_by_going_to" )<br>
+<a href="../dhis-web-mapping/app/index.html">$i18n.getString( "gis" )</a></div>
 #end

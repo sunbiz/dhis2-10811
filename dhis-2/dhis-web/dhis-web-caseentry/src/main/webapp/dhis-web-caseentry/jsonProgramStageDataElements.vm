@@ -3,14 +3,15 @@
   #foreach( ${programStageDataElement} in $!{programStageDataElements} )
   {
 	"id": "${programStageDataElement.dataElement.id}",
-	"name": "$!encoder.jsonEncode( ${programStageDataElement.dataElement.name} )",
+	"name": "$!encoder.jsonEncode( ${programStageDataElement.dataElement.getFormNameFallback()} )",
 	"type": 
 		#if( $!programStageDataElement.dataElement.optionSet )
 			"optionset",
 		#else
 			"${programStageDataElement.dataElement.type}",
 		#end
-	"compulsory": "${programStageDataElement.compulsory}"
+	"compulsory": "${programStageDataElement.compulsory}",
+	"displayInReports": "${programStageDataElement.displayInReports}"
   }#if( $velocityCount < $size ),#end
   #end
   ]

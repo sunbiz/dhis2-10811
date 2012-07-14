@@ -28,9 +28,9 @@ package org.hisp.dhis.dataadmin.action.sqlview;
  */
 
 import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.paging.ActionPagingSupport;
+import org.hisp.dhis.sqlview.SqlView;
 import org.hisp.dhis.sqlview.SqlViewService;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * Updates a existing sqlview in database.
@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.Action;
  * @version $Id ExportSqlViewResultAction.java July 12, 2010$
  */
 public class ExportSqlViewResultAction
-    implements Action
+    extends ActionPagingSupport<Grid>
 {
     private static final String DEFAULT_TYPE = "html";
 
@@ -58,32 +58,29 @@ public class ExportSqlViewResultAction
     // Input
     // -------------------------------------------------------------------------
 
-    private String viewTableName;
+    private Integer id;
 
-    public void setViewTableName( String viewTableName )
+    public void setId( Integer id )
     {
-        this.viewTableName = viewTableName;
-    }
-
-    public void setType( String type )
-    {
-        this.type = type;
+        this.id = id;
     }
 
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
 
-    public String getViewTableName()
-    {
-        return viewTableName;
-    }
-
     private Grid grid;
 
     public Grid getGrid()
     {
         return grid;
+    }
+
+    private SqlView sqlView;
+    
+    public SqlView getSqlView()
+    {
+        return sqlView;
     }
 
     private String type;
@@ -93,13 +90,24 @@ public class ExportSqlViewResultAction
         return type;
     }
 
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
 
     public String execute()
     {
-        grid = sqlViewService.getDataSqlViewGrid( viewTableName );
+        sqlView = sqlViewService.getSqlView( id );
+        
+        grid = sqlViewService.getSqlViewGrid( sqlView, null );
+        
+        this.paging = this.createPaging( grid.getHeight() );
+
+        grid.limitGrid( paging.getStartPos(), paging.getEndPos() );
 
         return type != null ? type : DEFAULT_TYPE;
     }

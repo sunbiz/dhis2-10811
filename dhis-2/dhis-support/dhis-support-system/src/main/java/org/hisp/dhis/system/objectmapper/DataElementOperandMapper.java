@@ -57,8 +57,8 @@ public class DataElementOperandMapper
         }
                 
         final DataElementOperand operand = new DataElementOperand(
-            resultSet.getInt( 1 ),
-            resultSet.getInt( 3 ),
+            resultSet.getString( 1 ),
+            resultSet.getString( 3 ),
             operandName );
         
         return operand;

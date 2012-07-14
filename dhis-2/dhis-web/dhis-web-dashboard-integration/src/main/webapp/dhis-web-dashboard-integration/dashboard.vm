@@ -13,7 +13,7 @@
     <a href="javascript:hideDropDown()">$i18n.getString( "close" )</a>
     <a href="javascript:clearArea( '${areaDivId}' )">$i18n.getString( "clear" )</a>
     #if( $chart )
-    <a href="javascript:explore( '${chart.uid}' )">$i18n.getString( "explore" )</a>
+    <a href="javascript:viewChart( '../api/charts/${chart.uid}/data#if( $chart.hasUserOrgUnit() )?ou=${organisationUnit.uid}#end', '${encoder.htmlEncode( $chart.name )}' )">$i18n.getString( "view_full_size" )</a>
     <a href="javascript:viewShareForm( '${chart.uid}', '${encoder.htmlEncode( $chart.name )}' )">$i18n.getString( "share" )</a>
     #end
 </div>
@@ -31,7 +31,10 @@
     #if ( $page )
         #parse( "/dhis-web-dashboard-integration/${page}.vm" )
     #else
-        <div class="labelText">$i18n.getString( 'this_is_a_link_area' )</div>
+        <div class="labelText">
+        	$i18n.getString( 'this_is_a_link_area' )<br><br>
+            $i18n.getString( 'click_insert_and_select_link' )
+        </div>
     #end
 </div>
 #end
@@ -46,9 +49,13 @@
         </ul>
     </div>
     #if ( $chart )
-        <img style="cursor:pointer" src="../api/charts/${chart.uid}/data?width=310&height=310" onclick="viewChart( '../api/charts/${chart.uid}/data', '${encoder.htmlEncode( $chart.name )}' )">
+        <img style="cursor:pointer" src="../api/charts/${chart.uid}/data?width=310&height=310#if( $chart.hasUserOrgUnit() )&ou=${organisationUnit.uid}#end" 
+            onclick="explore( '${chart.uid}' )" title="$i18n.getString( 'click_to_explore' )">
     #else
-        <div class="labelText">$i18n.getString( 'this_is_a_chart_area' )</div>
+        <div class="labelText">
+        	$i18n.getString( 'this_is_a_chart_area' )<br><br>
+            $i18n.getString( 'click_insert_and_select_chart' )
+        </div>
     #end
 </div>
 #end

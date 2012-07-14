@@ -17,15 +17,15 @@
 	<tbody>
 		<tr>
 			<td><label>$i18n.getString( "name" ):</label></td>
-			<td>$section.name</td>        
+			<td>$section.displayName</td>
 		</tr>
 		<tr>
 			<td><label>$i18n.getString( "dataset" ):</label></td>
-			<td>$section.dataSet.name</td>
+			<td>$section.dataSet.displayName</td>
 		</tr>
 		<tr>
 	    <td><label>$i18n.getString( "category_combo" ):</label></td>
-	        <td>$categoryCombo.name</td>
+	        <td>$categoryCombo.displayName</td>
 		</tr>
     </tbody>    
 </table>

@@ -66,7 +66,7 @@ public class GetDataSetAction
     {
         this.selectionTreeManager = selectionTreeManager;
     }
-
+    
     // -------------------------------------------------------------------------
     // Input & output
     // -------------------------------------------------------------------------
@@ -90,14 +90,14 @@ public class GetDataSetAction
         return dataSet;
     }
 
-    private List<DataElement> dataSetDataElements;
+    private List<DataElement> dataSetDataElements = new ArrayList<DataElement>();
 
     public List<DataElement> getDataSetDataElements()
     {
         return dataSetDataElements;
     }
 
-    private List<Indicator> dataSetIndicators;
+    private List<Indicator> dataSetIndicators = new ArrayList<Indicator>();
 
     public List<Indicator> getDataSetIndicators()
     {

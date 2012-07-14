@@ -5,9 +5,14 @@
 	"description": "$!encoder.jsEncode( ${program.description} )",
 	"type": "$!program.type",
 	"displayProvidedOtherFacility": "$!program.displayProvidedOtherFacility",
+	"displayIncidentDate": "$!program.displayIncidentDate",
+	"generatedByEnrollmentDate": "$!program.generatedByEnrollmentDate",
+	"ignoreOverdueEvents": "$!program.ignoreOverdueEvents",
 	"dateOfEnrollmentDescription": "$!encoder.jsEncode( ${program.dateOfEnrollmentDescription} )",
 	"dateOfIncidentDescription": "$!encoder.jsEncode( ${program.dateOfIncidentDescription} )",
 	"programStageCount": "${program.programStages.size()}",
-	"maxDay": "${program.maxDaysAllowedInputData}"
+	"noAttributes": "$!program.patientAttributes.size()",
+	"noIdentifierTypes": "$!program.patientIdentifierTypes.size()",
+	"blockEntryForm": "$!program.blockEntryForm"
   }
 }

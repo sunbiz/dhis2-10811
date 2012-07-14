@@ -30,13 +30,12 @@ package org.hisp.dhis.patient.hibernate;
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeStore;
-import org.hisp.dhis.program.Program;
 
 public class HibernatePatientIdentifierTypeStore
-    extends HibernateGenericStore<PatientIdentifierType>
+    extends HibernateIdentifiableObjectStore<PatientIdentifierType>
     implements PatientIdentifierTypeStore
 {
     @SuppressWarnings( "unchecked" )
@@ -44,16 +43,10 @@ public class HibernatePatientIdentifierTypeStore
     {
         return getCriteria( Restrictions.eq( "mandatory", mandatory ) ).list();
     }
-
+    
     @SuppressWarnings( "unchecked" )
-    public Collection<PatientIdentifierType> get( Program program )
+    public Collection<PatientIdentifierType> getByDisplayed( boolean personDisplayName )
     {
-        return getCriteria( Restrictions.eq( "program", program ) ).list();
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public Collection<PatientIdentifierType> getWithoutProgram()
-    {
-        return getCriteria( Restrictions.isNull( "program" ) ).list();
+        return getCriteria( Restrictions.eq( "personDisplayName", personDisplayName ) ).list();
     }
 }

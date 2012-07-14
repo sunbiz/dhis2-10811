@@ -27,18 +27,22 @@ package org.hisp.dhis.mapping.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.awt.Color;
+import java.io.IOException;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.mapping.export.SVGDocument;
-import org.hisp.dhis.mapping.export.SVGUtils;
-import org.hisp.dhis.system.util.CodecUtils;
-import org.hisp.dhis.util.ContextUtils;
-import org.hisp.dhis.util.SessionUtils;
-import org.hisp.dhis.util.StreamActionSupport;
+import java.io.StringReader;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.system.util.CodecUtils;
+import org.hisp.dhis.util.ContextUtils;
+import org.hisp.dhis.util.StreamActionSupport;
 
 /**
  * @author Tran Thanh Tri
@@ -50,10 +54,8 @@ public class ExportImageAction
 {
     private static final Log log = LogFactory.getLog( ExportImageAction.class );
 
-    private static final String SVGDOCUMENT = "SVGDOCUMENT";
-
     // -------------------------------------------------------------------------
-    // Output & input
+    // Input & Output
     // -------------------------------------------------------------------------
 
     private String svg;
@@ -70,107 +72,16 @@ public class ExportImageAction
         this.title = title;
     }
 
-    private Integer layer;
-
-    public void setLayer( Integer layer )
-    {
-        this.layer = layer;
-    }
-    
-    private Integer imageLegendRows;
-
-    public void setImageLegendRows( Integer imageLegendRows )
-    {
-        this.imageLegendRows = imageLegendRows;
-    }
-
-    private String indicator;
-
-    public void setIndicator( String indicator )
-    {
-        this.indicator = indicator;
-    }
-    
-    private String indicator2;
-
-    public void setIndicator2( String indicator2 )
-    {
-        this.indicator2 = indicator2;
-    }
-
-    private String period;
-
-    public void setPeriod( String period )
-    {
-        this.period = period;
-    }
-
-    private String period2;
-
-    public void setPeriod2( String period2 )
-    {
-        this.period2 = period2;
-    }
-
-    private String legends;
-
-    public void setLegends( String legends )
-    {
-        this.legends = legends;
-    }
-
-    private String legends2;
-
-    public void setLegends2( String legends2 )
-    {
-        this.legends2 = legends2;
-    }
-
-    private boolean includeLegends;
-
-    public void setIncludeLegends( boolean includeLegends )
-    {
-        this.includeLegends = includeLegends;
-    }
-
-    private SVGDocument svgDocument;
-
     @Override
     protected String execute( HttpServletResponse response, OutputStream out )
         throws Exception
     {
-        if ( svg == null || title == null || indicator == null || period == null )
+        if ( svg == null )
         {
-            log.info( "Export map from session" );
+            log.info( "Error: SVG is empty" );
+        }
 
-            svgDocument = (SVGDocument) SessionUtils.getSessionVar( SVGDOCUMENT );
-        }
-        else
-        {
-            log.info( "Export map from request" );
-            
-            svgDocument = new SVGDocument();
-            
-            svgDocument.setTitle( this.title );
-            svgDocument.setSvg( this.svg );
-            svgDocument.setLayer( this.layer );
-            svgDocument.setIndicator( this.indicator );
-            svgDocument.setPeriod( this.period );
-            svgDocument.setLegends( this.legends );
-            svgDocument.setIncludeLegends( this.includeLegends );
-            
-            if ( this.layer == 3 )
-            {
-                svgDocument.setImageLegendRows( this.imageLegendRows );
-                svgDocument.setPeriod2( this.period2 );
-                svgDocument.setIndicator2( this.indicator2 );
-                svgDocument.setLegends2( this.legends2 );
-            }
-            
-            SessionUtils.setSessionVar( SVGDOCUMENT, svgDocument );
-        }
-        
-        SVGUtils.convertToPNG( svgDocument.getSVGForImage(), out );
+        convertToPNG( new StringBuffer( this.svg ), out );
 
         return SUCCESS;
     }
@@ -184,9 +95,23 @@ public class ExportImageAction
     @Override
     protected String getFilename()
     {
-        return "dhis2_gis_" + CodecUtils.filenameEncode( this.title ) + ".png";
+        return "dhis2-gis_" + CodecUtils.filenameEncode( this.title ) + ".png";
     }
-    
+
+    public void convertToPNG( StringBuffer buffer, OutputStream out )
+        throws TranscoderException, IOException
+    {
+        PNGTranscoder t = new PNGTranscoder();
+
+        t.addTranscodingHint( PNGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE );
+
+        TranscoderInput input = new TranscoderInput( new StringReader( buffer.toString() ) );
+
+        TranscoderOutput output = new TranscoderOutput( out );
+
+        t.transcode( input, output );
+    }
+
     @Override
     protected boolean disallowCache()
     {

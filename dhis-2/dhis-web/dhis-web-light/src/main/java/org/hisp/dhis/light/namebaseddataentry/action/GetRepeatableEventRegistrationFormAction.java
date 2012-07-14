@@ -26,14 +26,13 @@
  */
 package org.hisp.dhis.light.namebaseddataentry.action;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageService;
 
-import com.opensymphony.xwork2.Action;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class GetRepeatableEventRegistrationFormAction
     implements Action
@@ -131,7 +130,7 @@ public class GetRepeatableEventRegistrationFormAction
     }
 
     private String defaultDueDate;
-    
+
     public String getDefaultDueDate()
     {
         return defaultDueDate;
@@ -151,10 +150,13 @@ public class GetRepeatableEventRegistrationFormAction
 
         Calendar cal = Calendar.getInstance();
         int standardIntervalDay = 0;
-        if (programStage.getStandardInterval() != null) {
+
+        if ( programStage.getStandardInterval() != null )
+        {
             standardIntervalDay = programStage.getStandardInterval();
         }
-        cal.add( Calendar.DATE,  standardIntervalDay);
+
+        cal.add( Calendar.DATE, standardIntervalDay );
         defaultDueDate = new SimpleDateFormat( "yyyy-MM-dd" ).format( cal.getTime() );
         return SUCCESS;
     }

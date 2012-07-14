@@ -12,7 +12,7 @@
 			</tr>
 			#end
 			<tr>
-				<td>$!patient.getFullName()</td>
+				<td>$encoder.htmlEncode($!patient.getFullName())</td>
 				<td>$i18n.getString($!patient.gender)</td>
 				<td>$format.formatDate($!patient.birthDate)</td>
 				<td>$!patient.getAge()</td>
@@ -35,7 +35,7 @@
 				#set( $mark = false )
 				#foreach( $dataValue in $dataValues )
 				<tr #alternate( $mark )>
-					<td>$dataValue.programStageInstance.programStage.name</td>
+					<td>$dataValue.programStageInstance.programStage.displayName</td>
 					<td>$dataValue.dataElement.name</td>
 					<td>$dataValue.value</td>
 					<td>$format.formatDate($dataValue.timestamp)</td>
@@ -44,7 +44,6 @@
 				#end
 			#end
 		#end
-	
 	#else
 		<tr height='5em'>
 			<th>$i18n.getString('program_stage')</th>
@@ -70,8 +69,8 @@
 				#set( $mark = false )
 				#foreach( $dataValue in $dataValues )
 					<tr #alternate( $mark )>
-						<td>$dataValue.programStageInstance.programStage.name</td>
-						<td>$dataValue.dataElement.name</td>
+						<td>$encoder.htmlEncode($dataValue.programStageInstance.programStage.displayName)</td>
+						<td>$encoder.htmlEncode($dataValue.dataElement.name)</td>
 						<td>$dataValue.value</td>
 						<td>$format.formatDate($dataValue.timestamp)</td>
 					</tr>

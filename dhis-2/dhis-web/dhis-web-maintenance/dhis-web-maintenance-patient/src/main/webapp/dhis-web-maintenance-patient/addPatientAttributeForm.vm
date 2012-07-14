@@ -28,11 +28,11 @@
 		</td>		
 		<td></td>				
 	</tr>
-    
-    <tr>
-    	<td><label for="inheritable">$i18n.getString( "inheritable" )</label></td>
+	
+	<tr>
+		<td><label for="inherit">$i18n.getString( "inherit" )</label></td>
 		<td>
-			<input type='checkbox' id="inheritable" name="inheritable" value='true'>
+			<input type='checkbox' id="inherit" name="inherit" value='true'>
 		</td>		
 		<td></td>				
 	</tr>
@@ -46,36 +46,58 @@
                 <option value="YES/NO">$i18n.getString( "yes_no" )</option>
                 <option value="DATE">$i18n.getString( "date" )</option>
                 <option value="COMBO">$i18n.getString( "attribute_combo_type" )</option>
+				<option value="CALCULATED">$i18n.getString( "calculated" )</option>
             </select>
         </td>
         <td></td>
     </tr>  
 	<tr id="attributeComboRow"> 
 		<td><label>$i18n.getString( "attribute_options" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td ><table id="attrOptionContainer"></table><a href="#" style="text-decoration: none;margin-top: 0.5em" onclick="ATTRIBUTE_OPTION.addOption()">[ $i18n.getString( "add_more_option" ) ]</a>
+		<td><table id="attrOptionContainer"></table><a href="#" style="text-decoration: none;margin-top: 0.5em" onclick="ATTRIBUTE_OPTION.addOption()">[ $i18n.getString( "add_more_option" ) ]</a>
 		</td>
-		<td><span id="attrMessage"  name="attrMessage" style="color:red;"></span></td>
+		<td><span id="attrMessage" name="attrMessage" style="color:red;"></span></td>
+	</tr>
+
+	<tr id="calculatedAttrTR" class="hidden">
+		<td>$i18n.getString( "properties" )</td>
+		<td>
+			<select multiple id="availableAttribute" name="availableAttribute" ondblclick="insertTextCommon( 'expression', this.value);getConditionDescription();"></select>
+		</td>
 	</tr>
 	
-	<tr>
-		<td><label for="programId">$i18n.getString( "program" )</label></td>
+	<tr id="operatorTR" class="hidden">
+		<td></td>
 		<td>
-			<select type="text" name="programId" id="programId" value="$!patientIdentifierType.program" >
-				<option value=''>[$i18n.getString('all')]</option>
-				#foreach( $program in $programs)
-					<option value='$program.id' #if($patientIdentifierType.program.id==$program.id) selected #end>$program.name</option>
-				#end
-			</select>
-		</td>		
-		<td></td>				
-	</tr> 
+			<input type='button' class="small-button" alt="$i18n.getString( 'plus' )" onclick='insertOperator( "+" );' value="+" />
+			<input type='button' class="small-button" alt="$i18n.getString( 'plus' )" onclick='insertOperator( "-" );' value="-" />
+			<input type='button' class="small-button" alt="$i18n.getString( 'plus' )" onclick='insertOperator( "*" );' value="*" />
+			<input type='button' class="small-button" alt="$i18n.getString( 'plus' )" onclick='insertOperator( "/" );' value="/" />
+		</td>
+	</tr>
+	
+	<tr id="expressionTR" class="hidden">
+		<td>$i18n.getString( "expression" )</td>
+		<td>
+			<textarea id="expression" name="expression" style="width:320px;" onkeyup='getConditionDescription();'></textarea>
+		</td>
+	</tr>
+	<tr id="descriptionTR" class="hidden">
+		<td></td>
+		<td>
+			<fieldset>
+				<legend>$i18n.getString( "description" )</legend>
+				<div id='expDescription' style="width:320px;">$!description</div>
+			</fieldset>
+		</td>
+	</tr>
 	
     </tbody>
+
 	<tr>
 		<td></td>
 		<td>
 			<input type="submit" value="$i18n.getString( 'add' )" />
-    <input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientAttribute.action'" />
+			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientAttribute.action'" />
 		</td>
 	</tr>
 </table>
@@ -86,5 +108,9 @@
 <script type="text/javascript">
 	var i18n_remove_option = '$encoder.jsEscape( $i18n.getString( "remove_option" ) , "'") ';
 	var i18n_field_is_required = '$encoder.jsEscape( $i18n.getString( "field_is_required" ) , "'") ';
+	var i18n_current_date = '$encoder.jsEscape( $i18n.getString( "current_date" ) , "'") ';
+	var i18n_date_of_birth = '$encoder.jsEscape( $i18n.getString( "date_of_birth" ) , "'") ';
+	var i18n_incident_date = '$encoder.jsEscape( $i18n.getString( "incident_date" ) , "'") ';
+	var i18n_enrollment_date = '$encoder.jsEscape( $i18n.getString( "enrollment_date" ) , "'") ';
 	var isSubmit = true;
 </script>

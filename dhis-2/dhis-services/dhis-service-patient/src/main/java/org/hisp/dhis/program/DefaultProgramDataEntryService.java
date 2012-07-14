@@ -152,14 +152,14 @@ public class DefaultProgramDataEntryService
 
                 DataElement dataElement = null;
 
-                String programStageName = programStage.getName();
+                String programStageName = programStage.getDisplayName();
 
                 if ( programStageId != programStage.getId() )
                 {
                     dataElement = dataElementService.getDataElement( dataElementId );
 
                     ProgramStage otherProgramStage = programStageService.getProgramStage( programStageId );
-                    programStageName = otherProgramStage != null ? otherProgramStage.getName() : "N/A";
+                    programStageName = otherProgramStage != null ? otherProgramStage.getDisplayName() : "N/A";
                 }
                 else
                 {
@@ -242,7 +242,8 @@ public class DefaultProgramDataEntryService
                 tabindex++;
 
                 if ( DataElement.VALUE_TYPE_INT.equals( dataElement.getType() )
-                    || DataElement.VALUE_TYPE_STRING.equals( dataElement.getType() ) )
+                    || DataElement.VALUE_TYPE_STRING.equals( dataElement.getType() )
+                    || DataElement.VALUE_TYPE_USER_NAME.equals( dataElement.getType() ) )
                 {
                     inputHTML = populateCustomDataEntryForTextBox( dataElement, inputHTML, dataElementValue );
                 }
@@ -276,8 +277,8 @@ public class DefaultProgramDataEntryService
                     {
                         inputHTML += jQueryCalendar;
                     }
-                    
-                    if ( !programStageInstance.isCompleted() && allowProvidedElsewhere )
+
+                    if ( allowProvidedElsewhere )
                     {
                         // Add ProvidedByOtherFacility checkbox
                         inputHTML = addProvidedElsewherCheckbox( inputHTML, patientDataValue, programStage );
@@ -289,7 +290,189 @@ public class DefaultProgramDataEntryService
                 // -----------------------------------------------------------
 
                 inputHTML = inputHTML.replace( "$DATAELEMENTID", String.valueOf( dataElementId ) );
-                inputHTML = inputHTML.replace( "$VALUE",dataElementValue );
+                inputHTML = inputHTML.replace( "$VALUE", dataElementValue );
+                inputHTML = inputHTML.replace( "$PROGRAMSTAGEID", String.valueOf( programStageId ) );
+                inputHTML = inputHTML.replace( "$PROGRAMSTAGENAME", programStageName );
+                inputHTML = inputHTML.replace( "$DATAELEMENTNAME", dataElement.getName() );
+                inputHTML = inputHTML.replace( "$DATAELEMENTTYPE", dataElementType );
+                inputHTML = inputHTML.replace( "$DISABLED", disabled );
+                inputHTML = inputHTML.replace( "$COMPULSORY", compulsory );
+                inputHTML = inputHTML.replace( "$SAVEMODE", "false" );
+                inputHTML = inputHTML.replace( "$TABINDEX", tabindex + "" );
+                inputHTML = inputHTML.replaceAll( "\\$", "\\\\\\$" );
+
+                dataElementMatcher.appendReplacement( sb, inputHTML );
+            }
+        }
+
+        dataElementMatcher.appendTail( sb );
+
+        return populateI18nStrings( sb.toString(), i18n );
+    }
+
+    @Override
+    public String prepareDataEntryFormForAdd( String htmlCode, I18n i18n, ProgramStage programStage )
+    {
+        // ---------------------------------------------------------------------
+        // Inline Javascript to add to HTML before outputting
+        // ---------------------------------------------------------------------
+
+        final String jQueryCalendar = "<script>datePicker(\"$PROGRAMSTAGEID-$DATAELEMENTID-val\", false);</script>";
+
+        StringBuffer sb = new StringBuffer();
+
+        // ---------------------------------------------------------------------
+        // Pattern to match data elements in the HTML code
+        // ---------------------------------------------------------------------
+
+        Matcher dataElementMatcher = INPUT_PATTERN.matcher( htmlCode );
+        int tabindex = 0;
+
+        // ---------------------------------------------------------------------
+        // Iterate through all matching data element fields
+        // ---------------------------------------------------------------------
+
+        Map<Integer, DataElement> dataElementMap = getDataElementMap( programStage );
+
+        while ( dataElementMatcher.find() )
+        {
+            // -----------------------------------------------------------------
+            // Get HTML input field code
+            // -----------------------------------------------------------------
+
+            String compulsory = "null";
+            boolean allowProvidedElsewhere = false;
+            String inputHTML = dataElementMatcher.group( 1 );
+
+            Matcher identifierMatcher = IDENTIFIER_PATTERN_FIELD.matcher( inputHTML );
+
+            if ( identifierMatcher.find() && identifierMatcher.groupCount() > 0 )
+            {
+                // -------------------------------------------------------------
+                // Get data element ID of data element
+                // -------------------------------------------------------------
+
+                int programStageId = Integer.parseInt( identifierMatcher.group( 1 ) );
+
+                int dataElementId = Integer.parseInt( identifierMatcher.group( 2 ) );
+
+                DataElement dataElement = null;
+
+                String programStageName = programStage.getDisplayName();
+
+                if ( programStageId != programStage.getId() )
+                {
+                    dataElement = dataElementService.getDataElement( dataElementId );
+
+                    ProgramStage otherProgramStage = programStageService.getProgramStage( programStageId );
+                    programStageName = otherProgramStage != null ? otherProgramStage.getDisplayName() : "N/A";
+                }
+                else
+                {
+                    dataElement = dataElementMap.get( dataElementId );
+                    if ( dataElement == null )
+                    {
+                        return i18n.getString( "some_data_element_not_exist" );
+                    }
+
+                    ProgramStageDataElement psde = programStageDataElementService.get( programStage, dataElement );
+
+                    compulsory = BooleanUtils.toStringTrueFalse( psde.isCompulsory() );
+                    allowProvidedElsewhere = psde.getAllowProvidedElsewhere();
+                }
+
+                if ( dataElement == null )
+                {
+                    continue;
+                }
+
+                // -------------------------------------------------------------
+                // Find type of data element
+                // -------------------------------------------------------------
+
+                String dataElementType = dataElement.getDetailedNumberType();
+
+                // -------------------------------------------------------------
+                // Find existing value of data element in data set
+                // -------------------------------------------------------------
+
+                PatientDataValue patientDataValue = null;
+
+                String dataElementValue = EMPTY;
+
+                // -------------------------------------------------------------
+                // Insert title information - Data element id, name, type, min,
+                // max
+                // -------------------------------------------------------------
+
+                if ( inputHTML.contains( "title=\"\"" ) )
+                {
+                    inputHTML = inputHTML.replace( "title=\"\"",
+                        "title=\"" + dataElement.getId() + "." + dataElement.getName() + " (" + dataElementType
+                            + ")\" " );
+                }
+                else
+                {
+                    inputHTML += "title=\"" + dataElement.getId() + "." + dataElement.getName() + " ("
+                        + dataElementType + ")\" ";
+                }
+
+                // -------------------------------------------------------------
+                // Set field for dataElement
+                // -------------------------------------------------------------
+
+                tabindex++;
+
+                if ( DataElement.VALUE_TYPE_INT.equals( dataElement.getType() )
+                    || DataElement.VALUE_TYPE_STRING.equals( dataElement.getType() )
+                    || DataElement.VALUE_TYPE_USER_NAME.equals( dataElement.getType() ) )
+                {
+                    inputHTML = populateCustomDataEntryForTextBox( dataElement, inputHTML, dataElementValue );
+                }
+                else if ( DataElement.VALUE_TYPE_DATE.equals( dataElement.getType() ) )
+                {
+                    inputHTML = populateCustomDataEntryForDate( inputHTML, dataElementValue );
+                }
+                else if ( DataElement.VALUE_TYPE_TRUE_ONLY.equals( dataElement.getType() ) )
+                {
+                    inputHTML = populateCustomDataEntryForTrueOnly( dataElement, inputHTML, dataElementValue );
+                }
+                else if ( DataElement.VALUE_TYPE_BOOL.equals( dataElement.getType() ) )
+                {
+                    inputHTML = populateCustomDataEntryForBoolean( dataElement, inputHTML, dataElementValue, i18n );
+                }
+
+                // -----------------------------------------------------------
+                // Check if this dataElement is from another programStage then
+                // disable
+                // If programStagsInstance is completed then disabled it
+                // -----------------------------------------------------------
+
+                String disabled = "";
+                if ( programStageId != programStage.getId() )
+                {
+                    disabled = "disabled=\"\"";
+                }
+                else
+                {
+                    if ( DataElement.VALUE_TYPE_DATE.equals( dataElement.getType() ) )
+                    {
+                        inputHTML += jQueryCalendar;
+                    }
+
+                    if ( allowProvidedElsewhere )
+                    {
+                        // Add ProvidedByOtherFacility checkbox
+                        inputHTML = addProvidedElsewherCheckbox( inputHTML, patientDataValue, programStage );
+                    }
+                }
+
+                // -----------------------------------------------------------
+                //
+                // -----------------------------------------------------------
+
+                inputHTML = inputHTML.replace( "$DATAELEMENTID", String.valueOf( dataElementId ) );
+                inputHTML = inputHTML.replace( "$VALUE", dataElementValue );
                 inputHTML = inputHTML.replace( "$PROGRAMSTAGEID", String.valueOf( programStageId ) );
                 inputHTML = inputHTML.replace( "$PROGRAMSTAGENAME", programStageName );
                 inputHTML = inputHTML.replace( "$DATAELEMENTNAME", dataElement.getName() );
@@ -349,25 +532,7 @@ public class DefaultProgramDataEntryService
                 int dataElementId = Integer.parseInt( identifierMatcher.group( 2 ) );
                 DataElement dataElement = dataElementService.getDataElement( dataElementId );
 
-                if ( dataElement != null )
-                {
-                    if ( DataElement.VALUE_TYPE_DATE.equals( dataElement.getType() ) )
-                    {
-                        inputHTML = populateCustomDataEntryForDate( dataElement, inputHTML );
-                    }
-                    else if ( DataElement.VALUE_TYPE_BOOL.equals( dataElement.getType() ) )
-                    {
-                        inputHTML = populateCustomDataEntryForBoolean( dataElement, inputHTML );
-                    }
-                    else if ( !DataElement.VALUE_TYPE_TRUE_ONLY.equals( dataElement.getType() ) )
-                    {
-                        inputHTML = populateCustomDataEntryForTrueOnly( dataElement, inputHTML );
-                    }
-                    else
-                    {
-                        inputHTML = populateCustomDataEntryForTextBox( dataElement, inputHTML );
-                    }
-                }
+                inputHTML = populateCustomDataEntryForTextBox( dataElement, inputHTML );
 
                 inputHTML = inputHTML + ">";
 
@@ -387,59 +552,22 @@ public class DefaultProgramDataEntryService
 
     private String populateCustomDataEntryForTextBox( DataElement dataElement, String inputHTML )
     {
-        String displayValue = (dataElement == null) ? " value=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\" " : " value=\"[ "
-            + dataElement.getName() + " ]\"";
-        inputHTML = inputHTML.contains( EMPTY_VALUE_TAG ) ? inputHTML.replace( EMPTY_VALUE_TAG, displayValue )
-            : inputHTML + " " + displayValue;
+        if ( dataElement != null )
+        {
+            inputHTML = inputHTML.contains( EMPTY_VALUE_TAG ) ? inputHTML.replace( EMPTY_VALUE_TAG, " value=\"["
+                + dataElement.getDisplayName() + "]\"" ) : inputHTML + " value=\"[" + dataElement.getDisplayName()
+                + "]\" ";
 
-        String displayTitle = (dataElement == null) ? " title=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\" " : " title=\""
-            + dataElement.getId() + "." + dataElement.getName() + "-" + dataElement.getDetailedNumberType() + "\" ";
-        inputHTML = inputHTML.contains( EMPTY_TITLE_TAG ) ? inputHTML.replace( EMPTY_TITLE_TAG, displayTitle )
-            : inputHTML + " " + displayTitle;
-        return inputHTML;
-    }
-
-    private String populateCustomDataEntryForBoolean( DataElement dataElement, String inputHTML )
-    {
-        String displayValue = (dataElement == null) ? " value=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\" " : " value=\"[ "
-            + dataElement.getName() + " ]\" ";
-        inputHTML = inputHTML.contains( EMPTY_VALUE_TAG ) ? inputHTML.replace( EMPTY_VALUE_TAG, displayValue )
-            : inputHTML + " " + displayValue;
-
-        String displayTitle = (dataElement == null) ? " title=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\" " : " title=\""
-            + dataElement.getId() + "." + dataElement.getName() + "-" + dataElement.getDetailedNumberType() + "\" ";
-        inputHTML = inputHTML.contains( EMPTY_TITLE_TAG ) ? inputHTML.replace( EMPTY_TITLE_TAG, displayTitle )
-            : inputHTML + " " + displayTitle;
-
-        return inputHTML;
-    }
-
-    private String populateCustomDataEntryForTrueOnly( DataElement dataElement, String inputHTML )
-    {
-        String displayValue = (dataElement == null) ? " value=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\" " : " value=\"[ "
-            + dataElement.getName() + " ]\" ";
-        inputHTML = inputHTML.contains( EMPTY_VALUE_TAG ) ? inputHTML.replace( EMPTY_VALUE_TAG, displayValue )
-            : inputHTML + " " + displayValue;
-
-        String displayTitle = (dataElement == null) ? " title=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\" " : " title=\""
-            + dataElement.getId() + "." + dataElement.getName() + "-" + dataElement.getDetailedNumberType() + "\" ";
-        inputHTML = inputHTML.contains( EMPTY_TITLE_TAG ) ? inputHTML.replace( EMPTY_TITLE_TAG, displayTitle )
-            : inputHTML + " " + displayTitle;
-
-        return inputHTML;
-    }
-
-    private String populateCustomDataEntryForDate( DataElement dataElement, String inputHTML )
-    {
-        String displayValue = (dataElement == null) ? " value=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\"" : " value=\"[ "
-            + dataElement.getName() + " ]\"";
-        inputHTML = inputHTML.contains( EMPTY_VALUE_TAG ) ? inputHTML.replace( EMPTY_VALUE_TAG, displayValue )
-            : inputHTML + " " + displayValue;
-
-        String displayTitle = (dataElement == null) ? " title=\"" + DATA_ELEMENT_DOES_NOT_EXIST + "\"" : " title=\""
-            + dataElement.getId() + "." + dataElement.getName() + "-" + dataElement.getDetailedNumberType() + "\" ";
-        inputHTML = inputHTML.contains( EMPTY_TITLE_TAG ) ? inputHTML.replace( EMPTY_TITLE_TAG, displayTitle )
-            : inputHTML + " " + displayTitle;
+            String displayTitle = dataElement.getId() + " - " + dataElement.getName() + " - "
+                + dataElement.getDetailedNumberType() + " - ";
+            inputHTML = inputHTML.contains( EMPTY_TITLE_TAG ) ? inputHTML.replace( EMPTY_TITLE_TAG, " title=\""
+                + displayTitle + "\"" ) : inputHTML + " title=\"" + displayTitle + "\"";
+        }
+        else
+        {
+            inputHTML = inputHTML.contains( EMPTY_VALUE_TAG ) ? " value=\"[" + DATA_ELEMENT_DOES_NOT_EXIST + "]\" "
+                : " value=\"[ " + DATA_ELEMENT_DOES_NOT_EXIST + " ]\"";
+        }
 
         return inputHTML;
     }
@@ -447,7 +575,7 @@ public class DefaultProgramDataEntryService
     private String populateCustomDataEntryForBoolean( DataElement dataElement, String inputHTML,
         String patientDataValue, I18n i18n )
     {
-        final String jsCodeForBoolean = " name=\"entryselect\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME' }\" onchange=\"saveOpt( $DATAELEMENTID )\" style=\" text-align:center;\" ";
+        final String jsCodeForBoolean = " name=\"entryselect\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME' }\" onchange=\"saveOpt( $DATAELEMENTID )\" ";
 
         inputHTML = inputHTML.replaceFirst( "input", "select" );
         inputHTML = inputHTML.replace( "name=\"entryselect\"", jsCodeForBoolean );
@@ -483,7 +611,7 @@ public class DefaultProgramDataEntryService
     private String populateCustomDataEntryForTrueOnly( DataElement dataElement, String inputHTML,
         String dataElementValue )
     {
-        final String jsCodeForInputs = " name=\"entryfield\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME', deType:'$DATAELEMENTTYPE'}\" onchange=\"saveVal( $DATAELEMENTID )\" onkeypress=\"return keyPress(event, this)\" style=\" text-align:center;\"  ";
+        final String jsCodeForInputs = " name=\"entryfield\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME', deType:'$DATAELEMENTTYPE'}\" onchange=\"saveVal( $DATAELEMENTID )\" onkeypress=\"return keyPress(event, this)\" ";
 
         String checked = "";
         if ( !dataElementValue.equals( EMPTY ) && dataElementValue.equals( "true" ) )
@@ -508,7 +636,7 @@ public class DefaultProgramDataEntryService
 
     private String populateCustomDataEntryForTextBox( DataElement dataElement, String inputHTML, String dataElementValue )
     {
-        final String jsCodeForInputs = " name=\"entryfield\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME', deType:'$DATAELEMENTTYPE'}\" options='$OPTIONS' maxlength=255 style=\" text-align:center;\"  ";
+        final String jsCodeForInputs = " name=\"entryfield\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME', deType:'$DATAELEMENTTYPE'}\" options='$OPTIONS' maxlength=255 ";
         final String jsCodeForOnchange = " name=\"entryfield\" tabIndex=\"$TABINDEX\" onchange=\"saveVal( $DATAELEMENTID )\" onkeypress=\"return keyPress(event, this)\" maxlength=255 ";
 
         // -------------------------------------------------------------
@@ -533,15 +661,18 @@ public class DefaultProgramDataEntryService
             inputHTML += jsCodeForOnchange;
         }
 
-        if( DataElement.VALUE_TYPE_LONG_TEXT.equals( dataElement.getDetailedTextType() ))
-            inputHTML += " >$VALUE";
-        
+        if ( DataElement.VALUE_TYPE_LONG_TEXT.equals( dataElement.getDetailedTextType() ) )
+        {
+            inputHTML = inputHTML.replaceFirst( "input", "textarea" );
+            inputHTML += " >$VALUE</textarea>";
+        }
+
         return inputHTML;
     }
 
     private String populateCustomDataEntryForDate( String inputHTML, String dataElementValue )
     {
-        final String jsCodeForDate = " name=\"entryfield\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME'}\" onchange=\"saveVal( $DATAELEMENTID )\" style=\" text-align:center;\" ";
+        final String jsCodeForDate = " name=\"entryfield\" tabIndex=\"$TABINDEX\" $DISABLED data=\"{compulsory:$COMPULSORY, deName:'$DATAELEMENTNAME'}\" onchange=\"saveVal( $DATAELEMENTID )\" ";
 
         // -------------------------------------------------------------
         // Insert value of data element in output code
@@ -565,7 +696,7 @@ public class DefaultProgramDataEntryService
     private String addProvidedElsewherCheckbox( String appendCode, PatientDataValue patientDataValue,
         ProgramStage programStage )
     {
-        String id = "$PROGRAMSTAGEID_$DATAELEMENTID_facility";
+        String id = "$PROGRAMSTAGEID-$DATAELEMENTID-facility";
         appendCode += "<div id=\"span_"
             + id
             + "\" class=\"provided-elsewhere\"><input name=\"providedByAnotherFacility\" title=\"is provided by another Facility ?\"  id=\""

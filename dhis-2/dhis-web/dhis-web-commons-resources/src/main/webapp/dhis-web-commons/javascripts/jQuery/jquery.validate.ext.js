@@ -1,3 +1,71 @@
+
+jQuery.validator.addMethod("remoteWarning", function(value, element, param) {
+    if ( this.optional(element) )
+        return "dependency-mismatch";
+
+    var previous = this.previousValue(element);
+    if (!this.settings.messages[element.name] )
+        this.settings.messages[element.name] = {};
+    previous.originalMessage = this.settings.messages[element.name].remote;
+    this.settings.messages[element.name].remote = previous.message;
+
+    param = typeof param == "string" && {url:param} || param;
+
+    if ( this.pending[element.name] ) {
+        return "pending";
+    }
+    if ( previous.old === value ) {
+        return previous.valid;
+    }
+
+    previous.old = value;
+    var validator = this;
+    this.startRequest(element);
+    var data = {};
+    data[element.name] = value;
+    $.ajax($.extend(true, {
+        url: param,
+        mode: "abort",
+        port: "validate" + element.name,
+        dataType: "json",
+        data: data,
+        success: function(response) {
+            validator.settings.messages[element.name].remote = previous.originalMessage;
+            var valid = response.response === 'success';
+
+            if ( valid ) {
+                console.log("is valid")
+                var submitted = validator.formSubmitted;
+                validator.prepareElement(element);
+                validator.formSubmitted = submitted;
+                validator.successList.push(element);
+                validator.showErrors();
+            } else {
+                var message = (previous.message = response.message || validator.defaultMessage( element, "remote" ));
+                alert(message);
+
+                var submitted = validator.formSubmitted;
+                validator.prepareElement(element);
+                validator.formSubmitted = submitted;
+                validator.successList.push(element);
+                validator.showErrors();
+
+                /*
+                var errors = {};
+                var message = (previous.message = response.message || validator.defaultMessage( element, "remote" ));
+
+                errors[element.name] = previous.message = $.isFunction(message) ? message(value) : message;
+                validator.showErrors(errors);
+                */
+            }
+
+            previous.valid = true;
+            validator.stopRequest(element, true);
+        }
+    }, param));
+    return "pending";
+});
+
 methods_en_GB = function() {
     jQuery.validator.addMethod("dateI", function(value, element, params) {
         var check = false;
@@ -127,6 +195,7 @@ jQuery.validator.addMethod("submitRemote", function(value, element, param) {
 jQuery.validator.addMethod("letterswithbasicpunc", function(value, element) {
     return this.optional(element) || /^[a-z-.,()'\"\s]+$/i.test(value);
 }, "Letters or punctuation only please");
+
 
 jQuery.validator.addMethod("alphanumericwithbasicpuncspaces", function(value,
     element) {
@@ -289,8 +358,13 @@ jQuery.validator.addMethod("dateITA", function(value, element) {
 
 jQuery.validator.addMethod("time", function(value, element) {
     return this.optional(element)
-    || /^([01][0-9])|(2[0123]):([0-5])([0-9])$/.test(value);
+    || /^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(value);
 }, "Please enter a valid time, between 00:00 and 23:59");
+
+
+jQuery.validator.addMethod("phone", function(value, element) {
+    return this.optional(element) || (/^(\+)?\d+$/.test(value));
+}, "Please enter valid phone number");
 
 // TODO check if value starts with <, otherwise don't try stripping anything
 jQuery.validator.addMethod("strippedminlength",
@@ -560,22 +634,15 @@ function getInt(str,i,minlength,maxlength) {
     return null;
 }
 
-function validatorFormat( text )
+function validatorFormat( text ) // Custom code
 {
     return $.validator.format( text );
 }
 
-// --------------------------------------------------------------------------
-// Set Message for validatior
-// --------------------------------------------------------------------------
-jQuery(document).ready( function(){
-	if ( typeof validationMessage != "undefined" )
-	{
-		jQuery.validator.setMessages( validationMessage );
-	}
+jQuery( document ).ready( function() { // Custom code
 	
-	jQuery.validator.setDefaults({
-		debug: false,
-		success: "valid"
-	});
-});
+	if ( typeof( validationMessage ) !== "undefined"  ) // From messages.vm
+	{
+		$.validator.setMessages( validationMessage );
+	}
+} );

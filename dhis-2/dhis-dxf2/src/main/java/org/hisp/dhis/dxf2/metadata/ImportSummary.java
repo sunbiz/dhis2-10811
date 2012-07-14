@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.dxf2.importsummary.ImportCount;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "importSummary", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "importSummary", namespace = DxfNamespaces.DXF_2_0)
 public class ImportSummary
 {
     private ImportCount importCount = new ImportCount();
@@ -53,7 +53,7 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public ImportCount getImportCount()
     {
         return importCount;
@@ -65,8 +65,8 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "typeSummaries", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "typeSummary", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "typeSummaries", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "typeSummary", namespace = DxfNamespaces.DXF_2_0)
     public List<ImportTypeSummary> getImportTypeSummaries()
     {
         return importTypeSummaries;

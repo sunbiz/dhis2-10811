@@ -109,6 +109,18 @@ public class GetUserListAction
         this.months = months;
     }
 
+    private Boolean selfRegistered;
+
+    public Boolean getSelfRegistered()
+    {
+        return selfRegistered;
+    }
+
+    public void setSelfRegistered( Boolean selfRegistered )
+    {
+        this.selfRegistered = selfRegistered;
+    }
+
     // -------------------------------------------------------------------------
     // Action implemantation
     // -------------------------------------------------------------------------
@@ -131,6 +143,13 @@ public class GetUserListAction
 
             userCredentialsList = new ArrayList<UserCredentials>( userService.getInactiveUsers( months, paging
                 .getStartPos(), paging.getPageSize() ) );
+        }
+        else if ( Boolean.TRUE.equals( selfRegistered ) )
+        {
+            this.paging = createPaging( userService.getSelfRegisteredUserCredentialsCount() );
+            
+            userCredentialsList = new ArrayList<UserCredentials>( userService.getSelfRegisteredUserCredentials( paging.
+                getStartPos(), paging.getPageSize() ) );
         }
         else
         {

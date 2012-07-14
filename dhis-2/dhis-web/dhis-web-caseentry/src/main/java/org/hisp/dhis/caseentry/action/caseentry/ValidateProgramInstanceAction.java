@@ -27,36 +27,18 @@
 
 package org.hisp.dhis.caseentry.action.caseentry;
 
-import static org.hisp.dhis.program.ProgramValidation.AFTER_CURRENT_DATE;
-import static org.hisp.dhis.program.ProgramValidation.AFTER_DUE_DATE;
-import static org.hisp.dhis.program.ProgramValidation.AFTER_OR_EQUALS_TO_CURRENT_DATE;
-import static org.hisp.dhis.program.ProgramValidation.AFTER_OR_EQUALS_TO_DUE_DATE;
-import static org.hisp.dhis.program.ProgramValidation.BEFORE_CURRENT_DATE;
-import static org.hisp.dhis.program.ProgramValidation.BEFORE_DUE_DATE;
-import static org.hisp.dhis.program.ProgramValidation.BEFORE_DUE_DATE_PLUS_OR_MINUS_MAX_DAYS;
-import static org.hisp.dhis.program.ProgramValidation.BEFORE_OR_EQUALS_TO_CURRENT_DATE;
-import static org.hisp.dhis.program.ProgramValidation.BEFORE_OR_EQUALS_TO_DUE_DATE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
 import org.hisp.dhis.caseentry.state.SelectedStateManager;
-import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.i18n.I18nFormat;
-import org.hisp.dhis.patientdatavalue.PatientDataValue;
-import org.hisp.dhis.patientdatavalue.PatientDataValueService;
-import org.hisp.dhis.program.ProgramInstance;
-import org.hisp.dhis.program.ProgramStage;
-import org.hisp.dhis.program.ProgramStageDataElement;
+import org.hisp.dhis.program.ProgramExpressionService;
 import org.hisp.dhis.program.ProgramStageInstance;
-import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.program.ProgramValidation;
+import org.hisp.dhis.program.ProgramValidationResult;
 import org.hisp.dhis.program.ProgramValidationService;
 
 import com.opensymphony.xwork2.Action;
@@ -74,19 +56,13 @@ public class ValidateProgramInstanceAction
 
     private SelectedStateManager selectedStateManager;
 
-    private ProgramStageInstanceService programStageInstanceService;
-
-    private PatientDataValueService patientDataValueService;
-
     private ProgramValidationService programValidationService;
 
-    private CaseAggregationConditionService aggregationConditionService;
+    private ProgramExpressionService programExpressionService;
 
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
-
-    private I18n i18n;
 
     private I18nFormat format;
 
@@ -94,17 +70,20 @@ public class ValidateProgramInstanceAction
     // Output
     // -------------------------------------------------------------------------
 
-    private Map<DataElement, String> resultDEMultiStages;
+    private Collection<ProgramValidationResult> programValidationResults;
 
-    private List<ProgramValidation> programValidations;
+    private Map<Integer, String> leftsideFormulaMap = new HashMap<Integer, String>();
 
-    private Map<Integer, String> leftsideFormulaMap;
-
-    private Map<Integer, String> rightsideFormulaMap;
+    private Map<Integer, String> rightsideFormulaMap = new HashMap<Integer, String>();
 
     // -------------------------------------------------------------------------
     // Getters && Setters
     // -------------------------------------------------------------------------
+
+    public void setProgramExpressionService( ProgramExpressionService programExpressionService )
+    {
+        this.programExpressionService = programExpressionService;
+    }
 
     public void setSelectedStateManager( SelectedStateManager selectedStateManager )
     {
@@ -114,11 +93,6 @@ public class ValidateProgramInstanceAction
     public void setFormat( I18nFormat format )
     {
         this.format = format;
-    }
-
-    public void setAggregationConditionService( CaseAggregationConditionService aggregationConditionService )
-    {
-        this.aggregationConditionService = aggregationConditionService;
     }
 
     public Map<Integer, String> getLeftsideFormulaMap()
@@ -131,34 +105,14 @@ public class ValidateProgramInstanceAction
         return rightsideFormulaMap;
     }
 
-    public List<ProgramValidation> getProgramValidations()
+    public Collection<ProgramValidationResult> getProgramValidationResults()
     {
-        return programValidations;
+        return programValidationResults;
     }
 
     public void setProgramValidationService( ProgramValidationService programValidationService )
     {
         this.programValidationService = programValidationService;
-    }
-
-    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
-    {
-        this.programStageInstanceService = programStageInstanceService;
-    }
-
-    public void setPatientDataValueService( PatientDataValueService patientDataValueService )
-    {
-        this.patientDataValueService = patientDataValueService;
-    }
-
-    public Map<DataElement, String> getResultDEMultiStages()
-    {
-        return resultDEMultiStages;
-    }
-
-    public void setI18n( I18n i18n )
-    {
-        this.i18n = i18n;
     }
 
     // -------------------------------------------------------------------------
@@ -169,9 +123,7 @@ public class ValidateProgramInstanceAction
     public String execute()
         throws Exception
     {
-        resultDEMultiStages = new HashMap<DataElement, String>();
-
-        programValidations = new ArrayList<ProgramValidation>();
+        programValidationResults = new ArrayList<ProgramValidationResult>();
 
         // ---------------------------------------------------------------------
         // Get selected objects
@@ -179,28 +131,18 @@ public class ValidateProgramInstanceAction
 
         ProgramStageInstance programStageInstance = selectedStateManager.getSelectedProgramStageInstance();
 
-        ProgramStage programStage = programStageInstance.getProgramStage();
-
-        // ---------------------------------------------------------------------
-        // Get selected objects
-        // ---------------------------------------------------------------------
-
-        Set<ProgramStageDataElement> dataElements = programStage.getProgramStageDataElements();
-
-        for ( ProgramStageDataElement psDataElement : dataElements )
-        {
-            DataElement dataElement = psDataElement.getDataElement();
-
-            checkDataElementInMultiStage( programStageInstance, dataElement );
-        }
-
         // ---------------------------------------------------------------------
         // Check validations for dataelement into multi-stages
         // ---------------------------------------------------------------------
 
-        runProgramValidation( programValidationService.getProgramValidation( programStageInstance.getProgramStage() ),
-            programStageInstance );
+        // runProgramValidation( programValidationService.getProgramValidation(
+        // programStageInstance.getProgramStage() ),
+        // programStageInstance );
 
+        Collection<ProgramValidation> validation = programValidationService.getProgramValidation( programStageInstance
+            .getProgramStage() );
+        programValidationResults = programValidationService.validate( validation, programStageInstance );
+        
         return SUCCESS;
     }
 
@@ -208,136 +150,34 @@ public class ValidateProgramInstanceAction
     // Support method
     // -------------------------------------------------------------------------
 
-    /**
-     * ------------------------------------------------------------------------
-     * // Check value of the dataElment into previous. // If the value
-     * exists,allow users to enter data of // the dataElement into the
-     * programStageInstance // Else, disable Input-field of the dataElement
-     * ------------------------------------------------------------------------
-     **/
-
-    private void checkDataElementInMultiStage( ProgramStageInstance programStageInstance,
-        DataElement dataElement )
-    {
-        ProgramInstance programInstance = programStageInstance.getProgramInstance();
-        List<ProgramStage> stages = new ArrayList<ProgramStage>( programInstance.getProgram().getProgramStages() );
-
-        int index = programStageInstance.getStageInProgram();
-
-        if ( index > 0 )
-        {
-            ProgramStage prevStage = stages.get( index - 1 );
-            ProgramStageInstance prevStageInstance = programStageInstanceService.getProgramStageInstance(
-                programInstance, prevStage );
-            PatientDataValue prevValue = patientDataValueService.getPatientDataValue( prevStageInstance, dataElement );
-
-            if ( prevValue == null )
-            {
-                String message = i18n.getString( "selected" ) + " " + i18n.getString( "program_stage" ) + " "
-                    + i18n.getString( "should" ) + " " + i18n.getString( "data_value" ) + " "
-                    + i18n.getString( "is_null" );
-
-                resultDEMultiStages.put( dataElement, message );
-            }
-        }
-
-    }
-
     private void runProgramValidation( Collection<ProgramValidation> validations,
         ProgramStageInstance programStageInstance )
     {
-        if ( validations != null )
-        {
-            for ( ProgramValidation validation : validations )
-            {
-                boolean valid = programValidationService.runValidation( validation, programStageInstance, format );
-
-                if ( !valid )
-                {
-                    programValidations.add( validation );
-                }
-            }
-        }
-
-        if ( !programValidations.isEmpty() )
-        {
-            leftsideFormulaMap = new HashMap<Integer, String>( programValidations.size() );
-            rightsideFormulaMap = new HashMap<Integer, String>( programValidations.size() );
-
-            for ( ProgramValidation validation : programValidations )
-            {
-                leftsideFormulaMap.put( validation.getId(), aggregationConditionService
-                    .getConditionDescription( validation.getLeftSide() ) );
-
-                if ( validation.getDateType() )
-                {
-                    String rightSide = validation.getRightSide();
-                    int index = rightSide.indexOf( 'D' );
-                    if ( index < 0 )
-                    {
-                        int rightValidation = Integer.parseInt( rightSide );
-
-                        switch ( rightValidation )
-                        {
-                        case BEFORE_CURRENT_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n.getString( "before_current_date" ) );
-                            break;
-                        case BEFORE_OR_EQUALS_TO_CURRENT_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n
-                                .getString( "before_or_equals_to_current_date" ) );
-                            break;
-                        case AFTER_CURRENT_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n.getString( "after_current_date" ) );
-                            break;
-                        case AFTER_OR_EQUALS_TO_CURRENT_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n
-                                .getString( "after_or_equals_to_current_date" ) );
-                            break;
-                        case BEFORE_DUE_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n.getString( "before_due_date" ) );
-                            break;
-                        case BEFORE_OR_EQUALS_TO_DUE_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n
-                                .getString( "before_or_equals_to_due_date" ) );
-                            break;
-                        case AFTER_DUE_DATE:
-                            rightsideFormulaMap.put( validation.getId(), i18n.getString( "after_due_date" ) );
-                            break;
-                        case AFTER_OR_EQUALS_TO_DUE_DATE:
-                            rightsideFormulaMap
-                                .put( validation.getId(), i18n.getString( "after_or_equals_to_due_date" ) );
-                            break;
-                        default:
-                            rightsideFormulaMap.put( validation.getId(), "" );
-                            break;
-
-                        }
-                    }
-                    else
-                    {
-
-                        int rightValidation = Integer.parseInt( rightSide.substring( 0, index ) );
-
-                        int daysValue = Integer.parseInt( rightSide.substring( index + 1, rightSide.length() ) );
-
-                        if ( rightValidation == BEFORE_DUE_DATE_PLUS_OR_MINUS_MAX_DAYS )
-                        {
-                            rightsideFormulaMap.put( validation.getId(), i18n
-                                .getString( "in_range_due_date_plus_or_minus" )
-                                + " " + daysValue + i18n.getString( "days" ) );
-                        }
-                    }
-                }
-                else if ( validation.getRightSide().equals( "1==1" ) )
-                {
-                    rightsideFormulaMap.put( validation.getId(), "" );
-                }
-                else
-                {
-                    rightsideFormulaMap.put( validation.getId(), aggregationConditionService
-                        .getConditionDescription( validation.getRightSide() ) );
-                }
-            }
-        }
+        // if ( validations != null )
+        // {
+        // for ( ProgramValidation validation : validations )
+        // {
+        // ProgramValidationResult validationResult =
+        // programValidationService.validate( validation,
+        // programStageInstance, format );
+        //
+        // if ( validationResult != null )
+        // {
+        // programValidationResults.add( validationResult );
+        //
+        // leftsideFormulaMap.put(
+        // validationResult.getProgramValidation().getId(),
+        // programExpressionService.getExpressionDescription(
+        // validationResult.getProgramValidation()
+        // .getLeftSide().getExpression() ) );
+        //
+        // rightsideFormulaMap.put(
+        // validationResult.getProgramValidation().getId(),
+        // programExpressionService.getExpressionDescription(
+        // validationResult.getProgramValidation()
+        // .getRightSide().getExpression() ) );
+        // }
+        // }
+        // }
     }
 }

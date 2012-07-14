@@ -42,13 +42,13 @@ public interface LockExceptionStore
 {
     String ID = LockExceptionStore.class.getName();
 
-    Collection<LockException> getBetween( int first, int max );
+    Collection<LockException> getAllOrderedName( int first, int max );
 
     Collection<LockException> getCombinations();
 
     void deleteCombination( DataSet dataSet, Period period );
-    
+
     long getCount( DataElement dataElement, Period period, OrganisationUnit organisationUnit );
-    
+
     long getCount( DataSet dataSet, Period period, OrganisationUnit organisationUnit );
 }

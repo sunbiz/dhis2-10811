@@ -33,7 +33,7 @@
       <param name="page">/dhis-web-validationrule/addValidationRuleForm.vm</param>
       <param name="menu">/dhis-web-validationrule/menu.vm</param>
       <param name="javascripts">javascript/general.js,javascript/expression.js,
-        javascript/addValidationRuleForm.js</param>
+        javascript/expressionBuilder.js,javascript/addValidationRuleForm.js</param>
       <param name="requiredAuthorities">F_VALIDATIONRULE_ADD</param>
     </action>
 
@@ -63,7 +63,7 @@
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-validationrule/updateValidationRuleForm.vm</param>
       <param name="javascripts">javascript/general.js,javascript/expression.js,
-        javascript/updateValidationRuleForm.js</param>
+        javascript/expressionBuilder.js,javascript/updateValidationRuleForm.js</param>
       <param name="requiredAuthorities">F_VALIDATIONRULE_UPDATE</param>
     </action>
 
@@ -135,6 +135,7 @@
       <param name="page">/dhis-web-validationrule/runValidationForm.vm</param>
       <param name="menu">/dhis-web-validationrule/menu.vm</param>
       <param name="javascripts">../dhis-web-commons/oust/oust.js,../dhis-web-commons/ouwt/ouwt.js,javascript/general.js,javascript/runValidation.js</param>
+      <param name="requiredAuthorities">F_RUN_VALIDATION</param>
     </action>
 
     <action name="validateRunValidation" class="org.hisp.dhis.validationrule.action.ValidateRunValidationAction">
@@ -144,6 +145,7 @@
 
     <action name="runValidationAction" class="org.hisp.dhis.validationrule.action.RunValidationAction">
       <result name="success" type="velocity">/dhis-web-validationrule/viewValidationResultForm.vm</result>
+      <param name="requiredAuthorities">F_RUN_VALIDATION</param>
     </action>
 
     <action name="viewValidationResultDetails" class="org.hisp.dhis.validationrule.action.GetValidationResultDetailsAction">
@@ -170,6 +172,7 @@
         javascript/editDataValue.js
       </param>
       <interceptor-ref name="organisationUnitTreeStack" />
+      <param name="requiredAuthorities">F_RUN_VALIDATION</param>
     </action>
 
     <action name="viewFollowUpAnalysisForm" class="org.hisp.dhis.validationrule.action.NoAction">
@@ -177,10 +180,12 @@
       <param name="page">/dhis-web-validationrule/followUpAnalysisForm.vm</param>
       <param name="menu">/dhis-web-validationrule/menu.vm</param>
       <param name="javascripts"> javascript/dataAnalysis.js,javascript/editDataValue.js</param>
+      <param name="requiredAuthorities">F_RUN_VALIDATION</param>
     </action>
 
     <action name="getAnalysis" class="org.hisp.dhis.validationrule.action.dataanalysis.GetAnalysisAction">
       <result name="success" type="velocity">/dhis-web-validationrule/searchResult.vm</result>
+      <param name="requiredAuthorities">F_RUN_VALIDATION</param>
     </action>
 
     <action name="editDataValue" class="org.hisp.dhis.validationrule.action.dataanalysis.EditDataValueAction">

@@ -27,11 +27,12 @@ package org.hisp.dhis.oum.action.organisationunit;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.List;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -69,7 +70,7 @@ public class ValidateOrganisationUnitAction
     {
         this.name = name;
     }
-    
+
     private String code;
 
     public void setCode( String code )
@@ -105,18 +106,37 @@ public class ValidateOrganisationUnitAction
         // Validate values
         // ---------------------------------------------------------------------
 
-        if ( name != null )
+        if ( name != null && !name.trim().isEmpty() )
         {
-            OrganisationUnit match = organisationUnitService.getOrganisationUnitByName( name );
+            List<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitByName( name );
 
-            if ( match != null && (id == null || match.getId() != id) )
+            if ( !organisationUnits.isEmpty() && id == null )
             {
-                message = i18n.getString( "name_in_use" );
+                message = i18n.getString( "name_exists" );
 
                 return ERROR;
             }
+            else if ( !organisationUnits.isEmpty() )
+            {
+                boolean found = false;
+
+                for ( OrganisationUnit organisationUnit : organisationUnits )
+                {
+                    if ( organisationUnit.getId() == id )
+                    {
+                        found = true;
+                    }
+                }
+
+                if ( !found )
+                {
+                    message = i18n.getString( "name_exists" );
+
+                    return ERROR;
+                }
+            }
         }
-        
+
         if ( code != null && !code.trim().isEmpty() )
         {
             OrganisationUnit match = organisationUnitService.getOrganisationUnitByCode( code );
@@ -126,9 +146,9 @@ public class ValidateOrganisationUnitAction
                 message = i18n.getString( "code_in_use" );
 
                 return ERROR;
-            }            
+            }
         }
-        
+
         message = "OK";
 
         return SUCCESS;

@@ -1,9 +1,5 @@
 package org.hisp.dhis.system.util;
 
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /*
  * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
@@ -31,16 +27,35 @@ import java.util.regex.Pattern;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class TextUtils
 {
     public static final TextUtils INSTANCE = new TextUtils();
+    public static final String EMPTY = "";
     
-    private static final Pattern LINK_PATTERN = Pattern.compile( "((http://|https://|www\\.).+?)($| )" );
+    private static final Pattern LINK_PATTERN = Pattern.compile( "((http://|https://|www\\.).+?)($|\\n|\\r|\\r\\n| )" );
+    private static final String DELIMITER = ", ";
     
+    /**
+     * Performs the htmlNewline(String) and htmlLinks(String) methods against
+     * the given text.
+     * 
+     * @param text the text to substitute.
+     * @return the substituted text.
+     */
+    public static String htmlify( String text )
+    {
+        text = htmlLinks( text );
+        text = htmlNewline( text );
+        return text;
+    }
+        
     /**
      * Substitutes links in the given text with valid HTML mark-up. For instance, 
      * http://dhis2.org is replaced with <a href="http://dhis2.org">http://dhis2.org</a>,
@@ -74,7 +89,24 @@ public class TextUtils
         
         return matcher.appendTail( buffer ).toString();
     }
+
+    /**
+     * Replaces common newline characters like \n, \r, \r\n to the HTML line
+     * break tag <br>.
+     * 
+     * @param text the text to substitute.
+     * @return the substituted text.
+     */
+    public static String htmlNewline( String text )
+    {
+        if ( text == null || text.trim().isEmpty() )
+        {
+            return null;
+        }
         
+        return text.replaceAll( "(\n|\r|\r\n)", "<br>" );
+    }
+    
     /**
      * Gets the sub string of the given string. If the beginIndex is larger than
      * the length of the string, the empty string is returned. If the beginIndex +
@@ -92,7 +124,7 @@ public class TextUtils
         
         if ( beginIndex >= string.length()  )
         {
-            return "";
+            return EMPTY;
         }
         
         if ( endIndex > string.length() )
@@ -115,27 +147,98 @@ public class TextUtils
     {
         if ( value == null || length > value.length() )
         {
-            return "";
+            return EMPTY;
         }
         
         return value.substring( 0, value.length() - length );
     }
+    
+    /**
+     * Returns an empty string if the given argument is true, the string 
+     * otherwise. This is a convenience method.
+     * 
+     * @param string the string.
+     * @param emptyString whether to return an empty string.
+     * @return a string.
+     */
+    public static String getString( String string, boolean emptyString )
+    {
+        return emptyString ? EMPTY : string;
+    }
 
     /**
-     * Transforms a collection of Integers into a comma delimited String.
+     * Transforms a collection of Integers into a comma delimited String. If the
+     * given collection of elements are null or is empty, an empty String is
+     * returned.
      * 
      * @param elements the collection of Integers
      * @return a comma delimited String.
      */
-    public static String getCommaDelimitedString( Collection<Integer> elements )
+    public static String getCommaDelimitedString( Collection<?> elements )
+    {
+        final StringBuilder builder = new StringBuilder();
+        
+        if ( elements != null && !elements.isEmpty() )
+        {
+            for ( Object element : elements )
+            {
+                builder.append( element.toString() ).append( DELIMITER );
+            }
+            
+            return builder.substring( 0, builder.length() - DELIMITER.length() );
+        }
+        
+        return builder.toString();
+    }
+
+    /**
+     * Transforms a collection of Integers into a comma delimited String. If the
+     * given collection of elements are null or is empty, an empty String is
+     * returned.
+     * 
+     * @param delimitPrefix whether to prefix the string with a delimiter.
+     * @param delimitSuffix whether to suffix the string with a delimiter.
+     * @param elements the collection of Integers
+     * @return a comma delimited String.
+     */
+    public static String getCommaDelimitedString( Collection<?> elements, boolean delimitPrefix, boolean delimitSuffix )
+    {
+        final StringBuilder builder = new StringBuilder();
+        
+        if ( elements != null && !elements.isEmpty() )
+        {
+            if ( delimitPrefix )
+            {
+                builder.append( DELIMITER );
+            }
+            
+            builder.append( getCommaDelimitedString( elements ) );
+            
+            if ( delimitSuffix )
+            {
+                builder.append( DELIMITER );
+            }
+        }
+        
+        return builder.toString();
+    }
+
+    /**
+     * Transforms a collection of strings into a comma delimited string, where
+     * each component get single-quoted.
+     * 
+     * @param elements the collection of Integers
+     * @return a comma delimited String.
+     */
+    public static String getQuotedCommaDelimitedString( Collection<String> elements )
     {
         if ( elements != null && elements.size() > 0 )
         {
             final StringBuffer buffer = new StringBuffer();        
         
-            for ( Integer element : elements )
+            for ( String element : elements )
             {
-                buffer.append( element.toString() ).append( ", " );
+                buffer.append( "'" ).append( element.toString() ).append( "', " );
             }
             
             return buffer.substring( 0, buffer.length() - ", ".length() );
@@ -145,11 +248,11 @@ public class TextUtils
     }
     
     /**
-     * Returns null if the given string is not null and contains no charachters,
-     * the string itselft otherwise.
+     * Returns null if the given string is not null and contains no characters,
+     * the string itself otherwise.
      * 
      * @param string the string.
-     * @return null if the given string is not null and contains no charachters,
+     * @return null if the given string is not null and contains no characters,
      *         the string itself otherwise.
      */
     public static String nullIfEmpty( String string )
@@ -202,5 +305,30 @@ public class TextUtils
     public static String lower( String string )
     {
         return string != null ? string.toLowerCase() : null;
+    }
+    
+    /**
+     * Null-safe method for writing the items of a string array out as a string
+     * separated by the given char separator.
+     * 
+     * @param array the array.
+     * @param separator the separator of the array items.
+     * @return a string.
+     */
+    public static String toString( String[] array, String separator )
+    {
+        StringBuilder builder = new StringBuilder();
+        
+        if ( array != null && array.length > 0 )
+        {
+            for ( String string : array )
+            {
+                builder.append( string ).append( separator );
+            }
+            
+            builder.deleteCharAt( builder.length() - 1 );
+        }
+        
+        return builder.toString();
     }
 }

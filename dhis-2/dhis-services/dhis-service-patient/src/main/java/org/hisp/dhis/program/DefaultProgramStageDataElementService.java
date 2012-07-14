@@ -26,14 +26,13 @@
  */
 package org.hisp.dhis.program;
 
-import java.util.Collection;
-
 import org.hisp.dhis.dataelement.DataElement;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+
 /**
  * @author Viet Nguyen
- * 
  * @version $Id$
  */
 @Transactional
@@ -57,7 +56,7 @@ public class DefaultProgramStageDataElementService
 
     public void addProgramStageDataElement( ProgramStageDataElement programStageDataElement )
     {
-        programStageDataElementStore.saveOrUpdate( programStageDataElement );
+        programStageDataElementStore.save( programStageDataElement );
     }
 
     public void deleteProgramStageDataElement( ProgramStageDataElement programStageDataElement )

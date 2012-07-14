@@ -37,7 +37,7 @@ import org.hisp.dhis.importexport.util.ImportExportUtils;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * @author Lars Helge Overland
@@ -80,24 +80,24 @@ public class GML2DXFTest
         assertNotNull( organisationUnitService.getAllOrganisationUnits() );
         assertEquals( 13, organisationUnitService.getAllOrganisationUnits().size() );
         
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Bo" ).getCoordinatesAsList().size() );
-        assertEquals( 18, organisationUnitService.getOrganisationUnitByName( "Bonthe" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Moyamba" ).getCoordinatesAsList().size() );
-        assertEquals( 3, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Kailahun" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Kenema" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Kono" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Bombali" ).getCoordinatesAsList().size() );
-        assertEquals( 3, organisationUnitService.getOrganisationUnitByName( "Kambia" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Koinadugu" ).getCoordinatesAsList().size() );
-        assertEquals( 9, organisationUnitService.getOrganisationUnitByName( "Port Loko" ).getCoordinatesAsList().size() );
-        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Tonkolili" ).getCoordinatesAsList().size() );
-        assertEquals( 2, organisationUnitService.getOrganisationUnitByName( "Western Area" ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Bo" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 18, organisationUnitService.getOrganisationUnitByName( "Bonthe" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Moyamba" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 3, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Kailahun" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Kenema" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Kono" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Bombali" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 3, organisationUnitService.getOrganisationUnitByName( "Kambia" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Koinadugu" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 9, organisationUnitService.getOrganisationUnitByName( "Port Loko" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 1, organisationUnitService.getOrganisationUnitByName( "Tonkolili" ).get( 0 ).getCoordinatesAsList().size() );
+        assertEquals( 2, organisationUnitService.getOrganisationUnitByName( "Western Area" ).get( 0 ).getCoordinatesAsList().size() );
 
-        assertEquals( 76, organisationUnitService.getOrganisationUnitByName( "Bo" ).getCoordinatesAsList().get( 0 ).getNumberOfCoordinates() );
-        assertEquals( 7, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).getCoordinatesAsList().get( 0 ).getNumberOfCoordinates() );
-        assertEquals( 7, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).getCoordinatesAsList().get( 1 ).getNumberOfCoordinates() );
-        assertEquals( 159, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).getCoordinatesAsList().get( 2 ).getNumberOfCoordinates() );
-        assertEquals( 189, organisationUnitService.getOrganisationUnitByName( "Bonthe" ).getCoordinatesAsList().get( 1 ).getNumberOfCoordinates() );
+        assertEquals( 76, organisationUnitService.getOrganisationUnitByName( "Bo" ).get( 0 ).getCoordinatesAsList().get( 0 ).getNumberOfCoordinates() );
+        assertEquals( 7, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).get( 0 ).getCoordinatesAsList().get( 0 ).getNumberOfCoordinates() );
+        assertEquals( 7, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).get( 0 ).getCoordinatesAsList().get( 1 ).getNumberOfCoordinates() );
+        assertEquals( 159, organisationUnitService.getOrganisationUnitByName( "Pujehun" ).get( 0 ).getCoordinatesAsList().get( 2 ).getNumberOfCoordinates() );
+        assertEquals( 189, organisationUnitService.getOrganisationUnitByName( "Bonthe" ).get( 0 ).getCoordinatesAsList().get( 1 ).getNumberOfCoordinates() );
     }
 }

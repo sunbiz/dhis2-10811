@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,9 @@ import org.hisp.dhis.coldchain.catalog.CatalogDataValueService;
 import org.hisp.dhis.coldchain.catalog.CatalogService;
 import org.hisp.dhis.coldchain.catalog.CatalogType;
 import org.hisp.dhis.coldchain.catalog.CatalogTypeAttribute;
+import org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOption;
 import org.hisp.dhis.coldchain.catalog.CatalogTypeService;
+import org.hisp.dhis.coldchain.catalog.comparator.CatalogTypeAttributeOptionComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -133,6 +136,13 @@ implements Action
     public String getCataLogImage()
     {
         return cataLogImage;
+    }
+    
+    private Map<Integer, List<CatalogTypeAttributeOption>> catalogTypeAttributesOptionsMap = new HashMap<Integer, List<CatalogTypeAttributeOption>>();
+    
+    public Map<Integer, List<CatalogTypeAttributeOption>> getCatalogTypeAttributesOptionsMap()
+    {
+        return catalogTypeAttributesOptionsMap;
     }
     
     // -------------------------------------------------------------------------
@@ -273,9 +283,17 @@ implements Action
             
         }
         */
+        for( CatalogTypeAttribute catalogTypeAttribute : catalogTypeAttributes )
+        {
+            List<CatalogTypeAttributeOption> catalogTypeAttributesOptions = new ArrayList<CatalogTypeAttributeOption>();
+            if( CatalogTypeAttribute.TYPE_COMBO.equalsIgnoreCase( catalogTypeAttribute.getValueType() ) )
+            {
+                catalogTypeAttributesOptions = new ArrayList<CatalogTypeAttributeOption>( catalogTypeAttribute.getAttributeOptions() );
+                Collections.sort( catalogTypeAttributesOptions, new CatalogTypeAttributeOptionComparator() );
+                catalogTypeAttributesOptionsMap.put( catalogTypeAttribute.getId(), catalogTypeAttributesOptions );
+            }
+        }
         
-        
-
         return SUCCESS;
 
     }

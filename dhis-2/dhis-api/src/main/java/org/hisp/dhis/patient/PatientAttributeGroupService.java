@@ -27,8 +27,7 @@
 package org.hisp.dhis.patient;
 
 import java.util.Collection;
-
-import org.hisp.dhis.program.Program;
+import java.util.List;
 
 /**
  * @author Chau Thu Tran
@@ -50,8 +49,5 @@ public interface PatientAttributeGroupService
 
     Collection<PatientAttributeGroup> getAllPatientAttributeGroups();
     
-    Collection<PatientAttributeGroup> getPatientAttributeGroups( Program program );
-    
-    Collection<PatientAttributeGroup> getPatientAttributeGroupsWithoutProgram();
-    
+    List<PatientAttribute> getPatientAttributes( PatientAttributeGroup patientAttributeGroup );
 }

@@ -35,7 +35,7 @@ import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.period.PeriodStore;
+import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.ConversionUtils;
 
@@ -52,11 +52,11 @@ public class HibernateDataSetStore
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private PeriodStore periodStore;
+    private PeriodService periodService;
 
-    public void setPeriodStore( PeriodStore periodStore )
+    public void setPeriodService( PeriodService periodService )
     {
-        this.periodStore = periodStore;
+        this.periodService = periodService;
     }
 
     // -------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public class HibernateDataSetStore
     @Override
     public int save( DataSet dataSet )
     {
-        PeriodType periodType = periodStore.getPeriodType( dataSet.getPeriodType().getClass() );
+        PeriodType periodType = periodService.reloadPeriodType( dataSet.getPeriodType() );
 
         dataSet.setPeriodType( periodType );
 
@@ -76,17 +76,17 @@ public class HibernateDataSetStore
     @Override
     public void update( DataSet dataSet )
     {
-        PeriodType periodType = periodStore.getPeriodType( dataSet.getPeriodType().getClass() );
+        PeriodType periodType = periodService.reloadPeriodType( dataSet.getPeriodType() );
 
         dataSet.setPeriodType( periodType );
 
         super.update( dataSet );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<DataSet> getDataSetsByPeriodType( PeriodType periodType )
     {
-        periodType = periodStore.getPeriodType( periodType.getClass() );
+        periodType = periodService.reloadPeriodType( periodType );
 
         Session session = sessionFactory.getCurrentSession();
 
@@ -96,7 +96,7 @@ public class HibernateDataSetStore
         return criteria.list();
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<DataSet> getDataSetsBySources( Collection<OrganisationUnit> sources )
     {
         String hql = "select distinct d from DataSet d join d.sources s where s.id in (:ids)";
@@ -105,7 +105,7 @@ public class HibernateDataSetStore
             .setParameterList( "ids", ConversionUtils.getIdentifiers( OrganisationUnit.class, sources ) ).list();
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<DataSet> getDataSetsForMobile( OrganisationUnit source )
     {
         String hql = "from DataSet d where :source in elements(d.sources) and d.mobile = true";
@@ -115,7 +115,7 @@ public class HibernateDataSetStore
         return query.list();
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<DataSet> getDataSetsForMobile()
     {
         String hql = "from DataSet d where d.mobile = true";

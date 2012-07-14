@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.exportreport.action;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,8 +30,8 @@ package org.hisp.dhis.reportsheet.exportreport.action;
 import java.util.List;
 
 import org.hisp.dhis.reportsheet.ExportItem;
-import org.hisp.dhis.reportsheet.ExportReportService;
 import org.hisp.dhis.reportsheet.ExportReport;
+import org.hisp.dhis.reportsheet.ExportReportService;
 import org.hisp.dhis.reportsheet.action.ActionSupport;
 import org.hisp.dhis.reportsheet.state.SelectionManager;
 

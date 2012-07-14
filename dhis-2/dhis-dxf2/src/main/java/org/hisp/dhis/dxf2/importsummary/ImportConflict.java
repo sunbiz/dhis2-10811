@@ -30,8 +30,9 @@ package org.hisp.dhis.dxf2.importsummary;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import org.hisp.dhis.common.DxfNamespaces;
 
-@JacksonXmlRootElement( localName = "conflict" )
+@JacksonXmlRootElement( localName = "conflict", namespace = DxfNamespaces.DXF_2_0 )
 public class ImportConflict
 {
     private String object;

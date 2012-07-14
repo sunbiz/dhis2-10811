@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <!-- Services -->
 
@@ -15,6 +14,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="registrationService" ref="org.hisp.dhis.dataset.CompleteDataSetRegistrationService" />
     <property name="modelMapping" ref="org.hisp.dhis.mobile.service.ModelMapping" />
 	<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+	<property name="oUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService"></property>
   </bean>
 
   <bean id="org.hisp.dhis.mobile.api.ActivityReportingService" class="org.hisp.dhis.mobile.service.ActivityReportingServiceImpl">
@@ -23,8 +23,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
     <property name="dataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
     <property name="patientMobileSettingService" ref="org.hisp.dhis.mobile.service.PatientMobileSettingService" />
-    <property name="activityPlanService" ref="org.hisp.dhis.activityplan.ActivityPlanService" />
     <property name="patientIdentifierService" ref="org.hisp.dhis.patient.PatientIdentifierService" />
+    <property name="programStageSectionService" ref="org.hisp.dhis.program.ProgramStageSectionService"/>
+	<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
+	<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
+	<property name="relationshipService" ref="org.hisp.dhis.relationship.RelationshipService" />
+	<property name="modelMapping" ref="org.hisp.dhis.mobile.service.ModelMapping" />
+	
   </bean>
 
   <bean id="org.hisp.dhis.mobile.api.IProgramService" class="org.hisp.dhis.mobile.service.DefaultProgramService">

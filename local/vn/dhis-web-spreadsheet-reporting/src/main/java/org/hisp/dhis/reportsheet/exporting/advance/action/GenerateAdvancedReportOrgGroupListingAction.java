@@ -37,7 +37,6 @@ import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
-import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportOrganizationGroupListing;
@@ -79,7 +78,7 @@ public class GenerateAdvancedReportOrgGroupListingAction
     // -------------------------------------------------------------------------
 
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnitGroup organisationUnitGroup = organisationUnitGroupService
@@ -87,7 +86,7 @@ public class GenerateAdvancedReportOrgGroupListingAction
 
         ExportReportOrganizationGroupListing exportReportInstance = (ExportReportOrganizationGroupListing) exportReport;
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnitGroup );
+        this.installReadTemplateFile( exportReportInstance, organisationUnitGroup );
 
         for ( Integer sheetNo : exportReportService.getSheets( selectionManager.getSelectedReportId() ) )
         {
@@ -133,7 +132,7 @@ public class GenerateAdvancedReportOrgGroupListingAction
                 if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.ORGANISATION ) )
                 {
                     ExcelUtils.writeValueByPOI( rowBegin, exportItem.getColumn(), o.getName(), ExcelUtils.TEXT, sheet,
-                        this.csText10Bold );
+                        this.csText10Normal );
                 }
                 else if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL ) )
                 {
@@ -157,7 +156,7 @@ public class GenerateAdvancedReportOrgGroupListingAction
                 else if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.FORMULA_EXCEL ) )
                 {
                     ExcelUtils.writeFormulaByPOI( rowBegin, exportItem.getColumn(), ExcelUtils.generateExcelFormula(
-                        exportItem.getExpression(), iRow, iCol ), sheet, this.csFormula );
+                        exportItem.getExpression(), iRow, iCol ), sheet, this.csFormulaNormal, evaluatorFormula );
                 }
 
                 rowBegin++;
@@ -170,7 +169,8 @@ public class GenerateAdvancedReportOrgGroupListingAction
             {
                 String columnName = ExcelUtils.convertColumnNumberToName( exportItem.getColumn() );
                 String formula = "SUM(" + columnName + (beginChapter + 1) + ":" + columnName + (rowBegin - 1) + ")";
-                ExcelUtils.writeFormulaByPOI( beginChapter, exportItem.getColumn(), formula, sheet, this.csFormula );
+                ExcelUtils.writeFormulaByPOI( beginChapter, exportItem.getColumn(), formula, sheet, this.csFormulaBold,
+                    evaluatorFormula );
             }
         }
     }

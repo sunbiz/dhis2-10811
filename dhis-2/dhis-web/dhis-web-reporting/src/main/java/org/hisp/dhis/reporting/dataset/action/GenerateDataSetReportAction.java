@@ -29,12 +29,15 @@ package org.hisp.dhis.reporting.dataset.action;
 
 import static org.hisp.dhis.dataset.DataSet.TYPE_CUSTOM;
 import static org.hisp.dhis.dataset.DataSet.TYPE_SECTION;
-import static org.hisp.dhis.util.SessionUtils.KEY_DATASET_REPORT_GRID;
-import static org.hisp.dhis.util.SessionUtils.getSessionVar;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts2.ServletActionContext;
+import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.dataset.CompleteDataSetRegistration;
 import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
@@ -47,7 +50,8 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
-import org.hisp.dhis.util.SessionUtils;
+import org.hisp.dhis.period.PeriodType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
@@ -83,18 +87,18 @@ public class GenerateDataSetReportAction
         this.registrationService = registrationService;
     }
 
-    private PeriodService periodService;
-
-    public void setPeriodService( PeriodService periodService )
-    {
-        this.periodService = periodService;
-    }
-
     private OrganisationUnitService organisationUnitService;
     
     public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
         this.organisationUnitService = organisationUnitService;
+    }
+
+    private PeriodService periodService;
+    
+    public void setPeriodService( PeriodService periodService )
+    {
+        this.periodService = periodService;
     }
 
     private I18nFormat format;
@@ -110,30 +114,33 @@ public class GenerateDataSetReportAction
     {
         this.i18n = i18n;
     }
+    
+    @Autowired
+    private ContextUtils contextUtils;
 
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer dataSetId;
+    private String ds;
 
-    public void setDataSetId( Integer dataSetId )
+    public void setDs( String ds )
     {
-        this.dataSetId = dataSetId;
+        this.ds = ds;
     }
 
-    private String periodId;
+    private String pe;
 
-    public void setPeriodId( String periodId )
+    public void setPe( String pe )
     {
-        this.periodId = periodId;
+        this.pe = pe;
     }
 
-    private Integer orgUnitId;
+    private String ou;
     
-    public void setOrgUnitId( Integer orgUnitId )
+    public void setOu( String ou )
     {
-        this.orgUnitId = orgUnitId;
+        this.ou = ou;
     }
 
     private boolean selectedUnitOnly;
@@ -146,13 +153,6 @@ public class GenerateDataSetReportAction
     public void setSelectedUnitOnly( boolean selectedUnitOnly )
     {
         this.selectedUnitOnly = selectedUnitOnly;
-    }
-
-    private boolean useLast;
-
-    public void setUseLast( boolean useLast )
-    {
-        this.useLast = useLast;
     }
     
     private String type;
@@ -220,18 +220,30 @@ public class GenerateDataSetReportAction
     // -------------------------------------------------------------------------
 
     @Override
-    @SuppressWarnings( "unchecked" )
     public String execute()
         throws Exception
     {
-        selectedDataSet = dataSetService.getDataSet( dataSetId );
+        // ---------------------------------------------------------------------
+        // Configure response
+        // ---------------------------------------------------------------------
 
-        if ( periodId != null )
+        HttpServletResponse response = ServletActionContext.getResponse();
+        
+        contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_HTML, CacheStrategy.RESPECT_SYSTEM_SETTING, null, false );
+
+        // ---------------------------------------------------------------------
+        // Assemble report
+        // ---------------------------------------------------------------------
+
+        selectedDataSet = dataSetService.getDataSet( ds );
+
+        if ( pe != null )
         {
-            selectedPeriod = periodService.getPeriodByExternalId( periodId );
+            selectedPeriod = PeriodType.getPeriodFromIsoString( pe );
+            selectedPeriod = periodService.reloadPeriod( selectedPeriod );
         }
      
-        selectedOrgunit = organisationUnitService.getOrganisationUnit( orgUnitId );
+        selectedOrgunit = organisationUnitService.getOrganisationUnit( ou );
         
         String dataSetType = selectedDataSet.getDataSetType();
 
@@ -239,9 +251,9 @@ public class GenerateDataSetReportAction
         
         if ( TYPE_CUSTOM.equals( dataSetType ) )
         {
-            if ( useLast )
+            if ( type != null )
             {
-                grid = dataSetReportService.getDefaultDataSetReport( selectedDataSet, selectedPeriod, selectedOrgunit, selectedUnitOnly, format, i18n );
+                grids = dataSetReportService.getCustomDataSetReportAsGrid( selectedDataSet, selectedOrgunit, selectedPeriod, selectedUnitOnly, format );
             }
             else
             {
@@ -250,19 +262,13 @@ public class GenerateDataSetReportAction
         }
         else if ( TYPE_SECTION.equals( dataSetType ) )
         {
-            grids = useLast ? (List<Grid>) getSessionVar( KEY_DATASET_REPORT_GRID ) :
-                dataSetReportService.getSectionDataSetReport( selectedDataSet, selectedPeriod, selectedOrgunit, selectedUnitOnly, format, i18n );
-            
-            SessionUtils.setSessionVar( SessionUtils.KEY_DATASET_REPORT_GRID, grids );
+            grids = dataSetReportService.getSectionDataSetReport( selectedDataSet, selectedPeriod, selectedOrgunit, selectedUnitOnly, format, i18n );
         }
         else
         {
-            grid = useLast ? (Grid) getSessionVar( KEY_DATASET_REPORT_GRID ) :
-                dataSetReportService.getDefaultDataSetReport( selectedDataSet, selectedPeriod, selectedOrgunit, selectedUnitOnly, format, i18n );
-            
-            SessionUtils.setSessionVar( SessionUtils.KEY_DATASET_REPORT_GRID, grid );
+            grid = dataSetReportService.getDefaultDataSetReport( selectedDataSet, selectedPeriod, selectedOrgunit, selectedUnitOnly, format, i18n );
         }
         
-        return useLast ? type : dataSetType;
+        return type != null ? type : dataSetType;
     }
 }

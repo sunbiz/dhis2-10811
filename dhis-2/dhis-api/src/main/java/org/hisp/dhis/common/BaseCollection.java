@@ -34,7 +34,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "collection", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "collection", namespace = DxfNamespaces.DXF_2_0)
 public class BaseCollection
     implements LinkableObject
 {
@@ -52,7 +52,7 @@ public class BaseCollection
     //-------------------------------------------------------------------------------------
 
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Pager getPager()
     {
         return pager;
@@ -78,15 +78,15 @@ public class BaseCollection
     //-------------------------------------------------------------------------------------
 
     @JsonProperty
-    @JacksonXmlProperty( isAttribute = true, namespace = Dxf2Namespace.NAMESPACE )
-    public String getLink()
+    @JacksonXmlProperty( isAttribute = true, namespace = DxfNamespaces.DXF_2_0)
+    public String getHref()
     {
         if ( linkableObject == null )
         {
             return null;
         }
 
-        return linkableObject.getLink();
+        return linkableObject.getHref();
     }
 
     /**
@@ -94,11 +94,11 @@ public class BaseCollection
      *
      * @param link
      */
-    public void setLink( String link )
+    public void setHref( String link )
     {
         if ( linkableObject != null )
         {
-            linkableObject.setLink( link );
+            linkableObject.setHref( link );
         }
     }
 }

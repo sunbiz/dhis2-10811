@@ -1,13 +1,22 @@
 
 <h3>$i18n.getString( "messages" ) #openHelp( "dashboard_messages" )</h3>
 
-<div style="margin-bottom:15px">
-#if( $auth.hasAccess( "dhis-web-dashboard-integration", "sendMessage" ) )
-<input type="button" style="width:130px" value="$i18n.getString( 'write_message' )" onclick="window.location.href='showSendMessage.action'"><br>
-#end
-<input type="button" style="width:130px" value="$i18n.getString( 'write_feedback' )" onclick="window.location.href='showSendFeedback.action'"></div>
+<div class="horizontalMenu" style="padding: 8px 0 40px 0;">
+    <ul>
+    	#if( $auth.hasAccess( "dhis-web-dashboard-integration", "sendMessage" ) )
+        <li><a class="blueButtonLink" href="showSendMessage.action">$i18n.getString( 'write_message' )</a></li>
+        #end
+        <li><a class="blueButtonLink" href="showSendFeedback.action">$i18n.getString( "write_feedback" )</a></li>
+        <li><span style="padding-left:12px"></span></li>
+        <li><a class="greyButtonLink" href="message.action">$i18n.getString( "inbox" )</a></li>
+        <li><a class="greyButtonLink" href="message.action?followUp=true">$i18n.getString( "follow_up" )</a></li>
+        <li><a class="greyButtonLink" href="message.action?unread=true">$i18n.getString( "unread" )</a></li>
+    </ul>
+</div>
 
-<table style="width:90%" class="plainList">
+<div style="width:100%">
+<div style="padding-right:15px">
+<table class="plainList" style="width:100%">
 	<tr>
 		<th></th>
 		<th>$i18n.getString( "sender" )</th>
@@ -19,7 +28,9 @@
 	<tr id="tr${conversation.id}" #if( !$conversation.read )class="unread bold"#end>
 		<td style="width:40px;padding-left:5px;" onclick="toggleFollowUp( '${conversation.id}' )">
 			<img id="followUp${conversation.id}" #if( $conversation.followUp ) src="../images/marked.png"#else src="../images/unmarked.png"#end></td>		
-		<td style="width:200px" onclick="read( '${conversation.id}' )">$!encoder.htmlEncode( $conversation.lastSenderName )</td>
+		<td style="width:200px" onclick="read( '${conversation.id}' )">
+			$!encoder.htmlEncode( $conversation.lastSenderName )#if( $conversation.messageCount > 1 ) <span class="normal">(${conversation.messageCount})</span>#end
+		</td>
 		<td onclick="read( '${conversation.id}' )">$!encoder.htmlEncode( $conversation.subject )</td>
 		<td onclick="read( '${conversation.id}' )" style="width:80px">$!format.formatDate( $conversation.lastMessage )</td>
 		<td style="width:70px; text-align:center;">
@@ -29,8 +40,8 @@
 	</tr>
 	#end
 </table>
-<div style="margin-top:15px; width:90%">
 #parse( "/dhis-web-commons/paging/paging.vm" )
+</div>
 </div>
 
 <script type="text/javascript">

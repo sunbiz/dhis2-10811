@@ -81,6 +81,7 @@ public class SaveSmsConfigurationAction
         }
 
         smsConfig.setPollingInterval( pollingInterval );
+
         smsConfig.setLongNumber( serverPhoneNumber );
 
         smsConfigurationManager.updateSmsConfiguration( smsConfig );

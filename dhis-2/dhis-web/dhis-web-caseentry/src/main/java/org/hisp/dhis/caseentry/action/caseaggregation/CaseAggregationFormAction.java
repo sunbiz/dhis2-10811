@@ -27,14 +27,13 @@
 
 package org.hisp.dhis.caseentry.action.caseaggregation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
-import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
+import org.hisp.dhis.caseaggregation.CaseAggregationCondition;
+import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
+import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataset.DataSet;
-import org.hisp.dhis.dataset.DataSetService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -45,20 +44,20 @@ public class CaseAggregationFormAction
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private DataSetService dataSetService;
+    private CaseAggregationConditionService aggregationConditionService;
 
-    public void setDataSetService( DataSetService dataSetService )
+    public void setAggregationConditionService( CaseAggregationConditionService aggregationConditionService )
     {
-        this.dataSetService = dataSetService;
+        this.aggregationConditionService = aggregationConditionService;
     }
 
     // -------------------------------------------------------------------------
     // Input/Output
     // -------------------------------------------------------------------------
 
-    private List<DataSet> datasets;
+    private Collection<DataSet> datasets = new HashSet<DataSet>();
 
-    public List<DataSet> getDatasets()
+    public Collection<DataSet> getDatasets()
     {
         return datasets;
     }
@@ -70,20 +69,15 @@ public class CaseAggregationFormAction
     public String execute()
         throws Exception
     {
-        datasets = new ArrayList<DataSet>( dataSetService.getAllDataSets() );
+        Collection<CaseAggregationCondition> aggConditions = aggregationConditionService
+            .getAllCaseAggregationCondition();
 
-        Iterator<DataSet> dataSetListIterator = datasets.iterator();
-
-        while ( dataSetListIterator.hasNext() )
+        for ( CaseAggregationCondition aggCondition : aggConditions )
         {
-            DataSet d = (DataSet) dataSetListIterator.next();
+            DataElement dataElement = aggCondition.getAggregationDataElement();
 
-            if ( d.getSources().size() <= 0 )
-
-                dataSetListIterator.remove();
+            datasets.addAll( dataElement.getDataSets() );
         }
-
-        Collections.sort( datasets, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

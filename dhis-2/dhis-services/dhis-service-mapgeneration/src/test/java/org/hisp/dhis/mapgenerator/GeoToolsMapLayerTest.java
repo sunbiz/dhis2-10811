@@ -94,7 +94,7 @@ public class GeoToolsMapLayerTest
         period = createPeriod( periodType, getDate( 2000, 1, 1 ), getDate( 2000, 2, 1 ) );
         periodService.addPeriod( period );
 
-        mapLegendSet = createMapLegendSet( 'A', indicator );
+        mapLegendSet = createMapLegendSet( 'A' );
         mappingService.addMapLegendSet( mapLegendSet );
 
         internalMapLayer = new InternalMapLayer();

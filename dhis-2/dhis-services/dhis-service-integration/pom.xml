@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.hisp.dhis</groupId>
     <artifactId>dhis-services</artifactId>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.11-SNAPSHOT</version>
   </parent>
   
   <artifactId>dhis-service-integration</artifactId>
@@ -22,7 +22,6 @@
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
-      <version>2.2.5</version>
     </dependency>
     
     <!-- DHIS -->

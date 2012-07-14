@@ -81,7 +81,7 @@ public class SumBoolAggregator
         }
         
         final Collection<CrossTabDataValue> crossTabValues = crossTabService.getCrossTabDataValues( operands, 
-            aggregationCache.getIntersectingPeriods( period.getStartDate(), period.getEndDate() ), organisationUnits, key );
+            aggregationCache.getPeriodsBetweenDates( period.getStartDate(), period.getEndDate() ), organisationUnits, key );
 
         final Map<DataElementOperand, Double> values = new HashMap<DataElementOperand, Double>(); // <Operand, total value>
 

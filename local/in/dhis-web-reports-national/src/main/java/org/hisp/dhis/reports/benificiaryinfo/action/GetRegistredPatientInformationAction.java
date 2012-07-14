@@ -188,7 +188,7 @@ public class GetRegistredPatientInformationAction extends ActionPagingSupport<Pa
         this.isSelectedOrg = isSelectedOrg;
     }
     
-
+    private OrganisationUnit organisationUnit;
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -197,7 +197,7 @@ public class GetRegistredPatientInformationAction extends ActionPagingSupport<Pa
         throws Exception
     {
         //OrganisationUnit organisationUnit = selectedStateManager.getSelectedOrganisationUnit();
-        OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( ouIDTB );
+        organisationUnit = organisationUnitService.getOrganisationUnit( ouIDTB );
         // ---------------------------------------------------------------------
         // Get all of patients into the selected organisation unit
         // ---------------------------------------------------------------------
@@ -237,6 +237,7 @@ public class GetRegistredPatientInformationAction extends ActionPagingSupport<Pa
         else
         {
             searchPatientByAttributes( searchingAttributeId, searchText );
+            //searchPatientByNameAndOrgUnit( searchText , organisationUnit );
         }
         
         
@@ -301,11 +302,18 @@ public class GetRegistredPatientInformationAction extends ActionPagingSupport<Pa
     
     private void searchPatientByAttributes( List<Integer> searchingAttributeId, List<String> searchText )
     {
-        total = patientAttributeValueService.countSearchPatients( searchingAttributeId, searchText );
+        //total = patientAttributeValueService.countSearchPatients( searchingAttributeId, searchText );
+        
+        //OrganisationUnit orgUnit = null;
+        
+        organisationUnit = (isSelectedOrg) ? organisationUnit : null;
+        total = patientService.countSearchPatients( searchText, organisationUnit );
+        //Collection<Patient> getPatients( String searchText, Integer min, Integer max );
+        
         this.paging = createPaging( total );
         
-        patients = patientAttributeValueService.searchPatients( searchingAttributeId, searchText, paging.getStartPos(),
-            paging.getPageSize() );
+        //patients = patientAttributeValueService.searchPatients( searchingAttributeId, searchText, paging.getStartPos(),paging.getPageSize() );
+        patients = patientService.searchPatients( searchText, organisationUnit, paging.getStartPos(), paging.getPageSize() );
         
         /*
         if ( isSelectedOrg )
@@ -344,7 +352,8 @@ public class GetRegistredPatientInformationAction extends ActionPagingSupport<Pa
             //mapPatientPrograms.put( patient.getId(), getProgramsByPatient( patient ) );            
         }
     }
-
+    
+    
     private String getHierarchyOrgunit( OrganisationUnit orgunit )
     {
         String hierarchyOrgunit = orgunit.getName();
@@ -358,6 +367,7 @@ public class GetRegistredPatientInformationAction extends ActionPagingSupport<Pa
 
         return hierarchyOrgunit;
     }
+    
 /*    
     private List<Program> getProgramsByPatient( Patient patient )
     {

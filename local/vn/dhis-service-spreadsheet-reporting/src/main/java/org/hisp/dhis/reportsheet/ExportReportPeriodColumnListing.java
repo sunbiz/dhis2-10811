@@ -50,6 +50,16 @@ public class ExportReportPeriodColumnListing
         super();
     }
 
+    public ExportReportPeriodColumnListing( String name, String group, String excelTemplateFile )
+    {
+        super( name, group, excelTemplateFile );
+    }
+
+    public ExportReportPeriodColumnListing( String name, String group, String excelTemplateFile, String createdBy )
+    {
+        super( name, group, excelTemplateFile, createdBy );
+    }
+
     public void addPeriodColumn( PeriodColumn periodColumn )
     {
         periodColumns.add( periodColumn );

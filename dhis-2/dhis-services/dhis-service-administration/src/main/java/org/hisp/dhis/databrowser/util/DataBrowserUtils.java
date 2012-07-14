@@ -27,7 +27,6 @@ package org.hisp.dhis.databrowser.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,30 +34,28 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.amplecode.quick.StatementHolder;
-import org.amplecode.quick.StatementManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.common.GridHeader;
 import org.hisp.dhis.databrowser.MetaValue;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author Dang Duy Hieu
  * @version $Id$
  */
 public class DataBrowserUtils
-{   protected static final Log log = LogFactory.getLog( DataBrowserUtils.class );
-    public static void setMetaStructure( Grid grid, StringBuffer sqlsb, List<Integer> metaIds,
-        StatementManager statementManager )
-    {
-        final StatementHolder holder = statementManager.getHolder();
+{
+    protected static final Log log = LogFactory.getLog( DataBrowserUtils.class );
 
+    public static void setMetaStructure( Grid grid, StringBuffer sqlsb, List<Integer> metaIds, JdbcTemplate jdbcTemplate )
+    {
         try
         {
             Integer metaId = null;
             String metaName = null;
-            ResultSet resultSet = getScrollableResult( sqlsb.toString(), holder );
+            ResultSet resultSet = getScrollableResult( sqlsb.toString(), jdbcTemplate );
 
             while ( resultSet.next() )
             {
@@ -70,21 +67,17 @@ public class DataBrowserUtils
             }
         }
         catch ( SQLException e )
-        {   log.error( "Failed to add meta value\n" + sqlsb.toString());
-            throw new RuntimeException( "Failed to add meta value\n" , e );
+        {
+            log.error( "Failed to add meta value\n" + sqlsb.toString() );
+            throw new RuntimeException( "Failed to add meta value\n", e );
         }
         catch ( Exception e )
         {
             throw new RuntimeException( "Oops. Something else went wrong in setMetaStructure()", e );
         }
-        finally
-        {
-            holder.close();
-        }
     }
 
-    public static void setHeaderStructure( Grid grid, ResultSet resultSet, List<Integer> headerIds,
-        boolean isZeroAdded, StatementManager statementManager )
+    public static void setHeaderStructure( Grid grid, ResultSet resultSet, List<Integer> headerIds, boolean isZeroAdded )
     {
         try
         {
@@ -111,7 +104,7 @@ public class DataBrowserUtils
             }
         }
         catch ( SQLException e )
-        {   
+        {
             throw new RuntimeException( "Failed to add header\n", e );
         }
         catch ( Exception e )
@@ -120,16 +113,13 @@ public class DataBrowserUtils
         }
     }
 
-    public static int fillUpDataBasic( Grid grid, StringBuffer sqlsb, boolean isZeroAdded,
-        StatementManager statementManager )
+    public static int fillUpDataBasic( Grid grid, StringBuffer sqlsb, boolean isZeroAdded, JdbcTemplate jdbcTemplate )
     {
-        final StatementHolder holder = statementManager.getHolder();
-
         int countRows = 0;
 
         try
         {
-            ResultSet resultSet = getScrollableResult( sqlsb.toString(), holder );
+            ResultSet resultSet = getScrollableResult( sqlsb.toString(), jdbcTemplate );
 
             while ( resultSet.next() )
             {
@@ -140,26 +130,20 @@ public class DataBrowserUtils
         }
         catch ( SQLException e )
         {
-            log.error( "Error executing" + sqlsb.toString());
-            throw new RuntimeException( "Failed to get aggregated data value\n" , e );
+            log.error( "Error executing" + sqlsb.toString() );
+            throw new RuntimeException( "Failed to get aggregated data value\n", e );
         }
         catch ( Exception e )
         {
             throw new RuntimeException( "Oops. Something else went wrong", e );
-        }
-        finally
-        {
-            holder.close();
         }
 
         return countRows;
     }
 
     public static int fillUpDataAdvance( Grid grid, StringBuffer sqlsb, List<Integer> metaIds, boolean isZeroAdded,
-        StatementManager statementManager )
+        JdbcTemplate jdbcTemplate )
     {
-        final StatementHolder holder = statementManager.getHolder();
-
         int countRows = 0;
         int rowIndex = -1;
         int columnIndex = -1;
@@ -167,10 +151,10 @@ public class DataBrowserUtils
 
         try
         {
-            ResultSet rs = getScrollableResult( sqlsb.toString(), holder );
+            ResultSet rs = getScrollableResult( sqlsb.toString(), jdbcTemplate );
 
             List<Integer> headerIds = new ArrayList<Integer>();
-            setHeaderStructure( grid, rs, headerIds, isZeroAdded, statementManager );
+            setHeaderStructure( grid, rs, headerIds, isZeroAdded );
 
             if ( rs.first() != true )
             {
@@ -191,7 +175,7 @@ public class DataBrowserUtils
         }
         catch ( SQLException e )
         {
-            log.error( "Error executing" + sqlsb.toString());
+            log.error( "Error executing" + sqlsb.toString() );
             throw new RuntimeException( "Failed to get aggregated data value\n", e );
 
         }
@@ -199,15 +183,9 @@ public class DataBrowserUtils
         {
             throw new RuntimeException( "Oops. Somthing else went wrong", e );
         }
-        finally
-        {
-            holder.close();
-        }
 
         return countRows;
     }
-
-
 
     // -------------------------------------------------------------------------
     // Supportive methods
@@ -221,18 +199,20 @@ public class DataBrowserUtils
      * @param holder the StatementHolder object
      * @return null or the ResultSet
      */
-    private static ResultSet getScrollableResult( String sql, StatementHolder holder )
+    private static ResultSet getScrollableResult( String sql, JdbcTemplate jdbcTemplate )
         throws SQLException
     {
-        Connection con = holder.getConnection();
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         Statement stm = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
         stm.execute( sql );
         log.debug( sql );
+
         return stm.getResultSet();
     }
 
     private static String checkValue( String value, boolean isZeroAdded )
-    {   if  ( value == null )
+    {
+        if ( value == null )
         {
             return "null";
         }

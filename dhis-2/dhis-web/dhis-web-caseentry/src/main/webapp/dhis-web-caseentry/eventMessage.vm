@@ -1,0 +1,48 @@
+#set($programStageInstances = $programInstance.programStageInstances)
+<table class="mainPageTable">
+	<colgroup>
+		<col width="160px"/>
+		<col width="160px"/>
+		<col width="100px"/>
+		<col/>
+	</colgroup>
+	<thead>
+		<tr>
+			<th>$i18n.getString( "date" )</th>
+			<th>$i18n.getString( "program_stage" )</th>
+			<th>$i18n.getString( "sender" )</th>
+			<th>$i18n.getString( "message" )</th>
+		</tr>
+	</thead>
+	<tbody id='commentReportTB' name="commentTB">
+		#set( $mark = false )
+		#foreach($programStageInstance in $programStageInstances)
+			#foreach( $comment in $programStageInstance.patientComments )
+				<tr id="comment_$comment.id" #alternate( $mark )>
+					<td>$format.formatDateTime($comment.createdDate)</td>
+					<td>$programStageInstance.programStage.displayName</td>
+					<td>$comment.creator</td>
+					<td>$comment.commentText</td>
+				</tr>
+				#set( $mark = !$mark )
+			#end
+		#end
+		#foreach($programStageInstance in $programStageInstances)
+			#foreach( $sms in $programStageInstance.outboundSms )
+				<tr id="tr${sms.id}" #alternate( $mark )>
+					<td>$format.formatDateTime($!sms.date)</td>
+					<td>$programStageInstance.programStage.displayName</td>
+					<td>$sms.sender</td>
+					<td>$sms.message</td>
+				</tr>
+				#set( $mark = !$mark )
+			#end
+		#end
+	</tbody>
+</table>
+<br>
+<input type='button' id="showCommentBtn" name="showCommentBtn" value='$i18n.getString("show_hide_more")' onclick='commentDivToggle(false);'>
+<input type='button' id="hideCommentBtn" name="hideCommentBtn" value='$i18n.getString("show_hide_more")' onclick='commentDivToggle(true);'>
+<script>
+	commentDivToggle(true);
+</script>

@@ -40,6 +40,7 @@ import org.amplecode.quick.StatementHolder;
 import org.amplecode.quick.StatementManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.common.CodeGenerator;
 import org.hisp.dhis.system.startup.AbstractStartupRoutine;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +84,8 @@ public class TableAlteror
         executeSql( "ALTER TABLE patientdatavalue DROP COLUMN categoryoptioncomboid" );
         executeSql( "ALTER TABLE patientdatavaluearchive DROP COLUMN providedbyanotherfacility" );
         executeSql( "ALTER TABLE patientdatavaluearchive DROP COLUMN organisationunitid" );
-        executeSql( "ALTER TABLE patientdatavaluearchive DROP COLUMN storedby" );
+        executeSql( "ALTER TABLE patientdatavaluearchive ADD COLUMN storedby VARCHAR(31)" );
+        executeSql( "ALTER TABLE patientdatavaluearchive ADD COLUMN providedelsewhere BOOLEAN" );
         executeSql( "DROP TABLE patientchart" );
 
         executeSql( "ALTER TABLE program DROP COLUMN hidedateofincident" );
@@ -118,6 +120,54 @@ public class TableAlteror
         updateMultiOrgunitTabularReportTable();
         updateProgramStageTabularReportTable();
         moveStoredByFormStageInstanceToDataValue();
+
+        executeSql( "ALTER TABLE patientattribute DROP COLUMN inheritable" );
+        executeSql( "ALTER TABLE programstageinstance DROP COLUMN stageInProgram" );
+
+        updateRelationshipIdentifiers();
+        updateRelationshipAttributes();
+
+        executeSql( "UPDATE programstage SET reportDateDescription='Report date' WHERE reportDateDescription is null" );
+
+        executeSql( "CREATE INDEX programstageinstance_executiondate ON programstageinstance (executiondate)" );
+
+        executeSql( "UPDATE programstage SET autoGenerateEvent=true WHERE autoGenerateEvent is null" );
+
+        executeSql( "UPDATE program SET generatedByEnrollmentDate=false WHERE generatedByEnrollmentDate is null" );
+
+        executeSql( "ALTER TABLE programstage DROP COLUMN stageinprogram" );
+
+        executeSql( "CREATE INDEX index_patientdatavalue ON patientdatavalue( programstageinstanceid, dataelementid, value, timestamp )" );
+
+        executeSql( "CREATE INDEX index_programinstance ON programinstance( programinstanceid )" );
+        
+        executeSql( "ALTER TABLE program DROP COLUMN maxDaysAllowedInputData");
+                
+        executeSql( "ALTER TABLE period modify periodid int AUTO_INCREMENT");
+        executeSql( "CREATE SEQUENCE period_periodid_seq");
+        executeSql( "ALTER TABLE period ALTER COLUMN periodid SET DEFAULT NEXTVAL('period_periodid_seq')");
+        
+        executeSql( "UPDATE program SET programstage_dataelements=false WHERE displayInReports is null" );
+        
+        executeSql( "ALTER TABLE programvalidation DROP COLUMN leftside" );
+        executeSql( "ALTER TABLE programvalidation DROP COLUMN rightside" );
+        executeSql( "ALTER TABLE programvalidation DROP COLUMN dateType" );
+        
+        executeSql( "UPDATE programstage SET validCompleteOnly=false WHERE validCompleteOnly is null" );
+        executeSql( "UPDATE program SET ignoreOverdueEvents=false WHERE ignoreOverdueEvents is null" );
+        
+        executeSql( "UPDATE programstage SET displayGenerateEventBox=true WHERE displayGenerateEventBox is null" );
+        executeSql( "ALTER TABLE patientidentifier DROP COLUMN preferred");
+
+        executeSql( "UPDATE patientidentifiertype SET personDisplayName=false WHERE personDisplayName is null");
+
+        executeSql( "ALTER TABLE programvalidation RENAME description TO name" );
+        
+        executeSql( "UPDATE program SET blockEntryForm=false WHERE blockEntryForm is null" );
+        executeSql( "ALTER TABLE dataset DROP CONSTRAINT program_name_key" );
+        executeSql( "UPDATE userroleauthorities SET authority='F_PROGRAM_PUBLIC_ADD' WHERE authority='F_PROGRAM_ADD'" );
+        
+        updateUid();
     }
 
     // -------------------------------------------------------------------------
@@ -145,6 +195,8 @@ public class TableAlteror
             executeSql( "ALTER TABLE patientdatavalue DROP COLUMN organisationUnitid" );
             executeSql( "ALTER TABLE patientdatavalue DROP COLUMN providedByAnotherFacility" );
             executeSql( "ALTER TABLE patientdatavalue ADD PRIMARY KEY ( programstageinstanceid, dataelementid )" );
+            
+            executeSql( "update caseaggregationcondition set \"operator\"='times' where \"operator\"='SUM'" );
         }
         catch ( Exception ex )
         {
@@ -158,8 +210,8 @@ public class TableAlteror
 
     private void updateCaseAggregationCondition()
     {
-        String regExp = "\\[" + OBJECT_PROGRAM_STAGE_DATAELEMENT + SEPARATOR_OBJECT + "[0-9]+" + SEPARATOR_ID
-            + "[0-9]+" + "\\]";
+        String regExp = "\\[" + OBJECT_PROGRAM_STAGE_DATAELEMENT + SEPARATOR_OBJECT + "([0-9]+" + SEPARATOR_ID
+            + "[0-9]+" + "\\])";
 
         try
         {
@@ -179,8 +231,8 @@ public class TableAlteror
                 // ---------------------------------------------------------------------
 
                 Pattern pattern = Pattern.compile( regExp );
-
-                Matcher matcher = pattern.matcher( resultSet.getString( 2 ) );
+                String expression = resultSet.getString( 2 ).replaceAll( "'", "''" );
+                Matcher matcher = pattern.matcher( expression );
 
                 while ( matcher.find() )
                 {
@@ -199,19 +251,15 @@ public class TableAlteror
                     if ( rsProgramId.next() )
                     {
                         int programId = rsProgramId.getInt( 1 );
-
                         String aggregationExpression = "[" + OBJECT_PROGRAM_STAGE_DATAELEMENT + SEPARATOR_OBJECT
-                            + programId + "." + programStageId + "." + ids[1] + "]";
-
+                            + programId + SEPARATOR_ID + programStageId + SEPARATOR_ID + ids[1] + "]";
                         matcher.appendReplacement( formular, aggregationExpression );
                     }
                 }
 
                 matcher.appendTail( formular );
-
                 executeSql( "UPDATE caseaggregationcondition SET aggregationExpression='" + formular.toString()
                     + "'  WHERE caseaggregationconditionid=" + resultSet.getInt( 1 ) );
-
             }
         }
         catch ( Exception e )
@@ -269,7 +317,8 @@ public class TableAlteror
                     + resultSet.getInt( 4 ) + ")" );
             }
             executeSql( "ALTER TABLE patienttabularreport DROP COLUMN programstageid" );
-            executeSql( "DROP TABLE patienttabularreport_dataelements" );
+            executeSql( "UPDATE program SET displayIncidentDate=true WHERE displayIncidentDate is null and type!=3" );
+            executeSql( "UPDATE program SET displayIncidentDate=false WHERE displayIncidentDate is null and type==3" );
         }
         catch ( Exception e )
         {
@@ -300,6 +349,105 @@ public class TableAlteror
         }
     }
 
+    private void updateRelationshipIdentifiers()
+    {
+        StatementHolder holder = statementManager.getHolder();
+
+        try
+        {
+            Statement statement = holder.getStatement();
+
+            ResultSet resultSet = statement
+                .executeQuery( "SELECT distinct programid, patientidentifiertypeid FROM patientidentifiertype" );
+
+            while ( resultSet.next() )
+            {
+                executeSql( "INSERT into program_patientIdentifierTypes( programid, patientidentifiertypeid) values ("
+                    + resultSet.getString( 1 ) + "," + resultSet.getString( 2 ) + ")" );
+            }
+
+            executeSql( "ALTER TABLE patientidentifiertype DROP COLUMN programid" );
+        }
+        catch ( Exception ex )
+        {
+            log.debug( ex );
+        }
+        finally
+        {
+            holder.close();
+        }
+    }
+
+    private void updateRelationshipAttributes()
+    {
+        StatementHolder holder = statementManager.getHolder();
+
+        try
+        {
+            Statement statement = holder.getStatement();
+
+            ResultSet resultSet = statement
+                .executeQuery( "SELECT distinct programid, patientattributeid FROM program_patientAttributes" );
+
+            while ( resultSet.next() )
+            {
+                executeSql( "INSERT into program_patientAttributes( programid, patientattributeid) values ("
+                    + resultSet.getString( 1 ) + "," + resultSet.getString( 2 ) + ")" );
+            }
+
+            executeSql( "ALTER TABLE patientattribute DROP COLUMN programid" );
+        }
+        catch ( Exception ex )
+        {
+            log.debug( ex );
+        }
+        finally
+        {
+            holder.close();
+        }
+    }
+
+    private void updateUid()
+    {
+        updateUidColumn( "patientattribute" );
+        updateUidColumn( "patientattributegroup" );
+        updateUidColumn( "patientidentifiertype" );
+        updateUidColumn( "program" );
+        updateUidColumn( "patientattribute" );
+        updateUidColumn( "programstage" );
+        updateUidColumn( "programstagesection" );
+        updateUidColumn( "programvalidation" );
+    }
+    
+    private void updateUidColumn( String tableName )
+    {
+        StatementHolder holder = statementManager.getHolder();
+
+        try
+        {
+            Statement statement = holder.getStatement();
+
+            ResultSet resultSet = statement
+                .executeQuery( "SELECT " + tableName + "id FROM " + tableName + " where uid is null" );
+
+            while ( resultSet.next() )
+            {
+                String uid = CodeGenerator.generateCode();
+                
+                executeSql( "UPDATE " + tableName + " SET uid='" + uid
+                    + "'  WHERE " + tableName + "id=" + resultSet.getInt( 1 ) );
+            }
+        }
+        catch ( Exception ex )
+        {
+            log.debug( ex );
+        }
+        finally
+        {
+            holder.close();
+        }
+    }
+    
     private int executeSql( String sql )
     {
         try

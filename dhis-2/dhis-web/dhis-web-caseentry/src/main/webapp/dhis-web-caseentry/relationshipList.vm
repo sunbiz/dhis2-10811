@@ -1,4 +1,12 @@
-<h5>$i18n.getString( "relationship_management" )</h5>
+<h5>
+	<a name="mainPagelink" href="javascript:onClickBackBtn();">$i18n.getString( 'patient_management' )</a>
+	&#8226; <a href="javascript:showPatientDashboardForm($!patient.id);">$i18n.getString( 'patient_dashboard' )</a>
+	&#8226; $i18n.getString( "relationship_management" )
+</h5>
+<h3>	
+	&raquo; <a href="javascript:showAddRelationship('$patient.id')" >$i18n.getString( 'seach_available_patient' )</a>
+	&#8226; <a href="javascript:showAddRelationshipPatient( '$patient.id',false )" >$i18n.getString( 'add_new_patient' )</a>
+</h3>
 
 <input type="hidden" id="id" name="id" value="$patient.id">
 <table class="mainPageTable information">                           
@@ -46,12 +54,6 @@
 	</tr>
 	
 </table>
-
-<div class='button-list'>
-	<input type="button" style='width:170px;' value="$i18n.getString( 'seach_available_patient' )" onclick="javascript:showAddRelationship('$patient.id')" >
-	<input type="button" style='width:170px;' value="$i18n.getString( 'add_new_patient' )" onclick="javascript:showAddRelationshipPatient( '$patient.id',false )" >
-	<input type="button" style='width:170px;' value="$i18n.getString( 'back_to_registration' )" onclick="onClickBackBtn();" >
-</div>
 
 <table class="list-table listTable">
                
@@ -129,7 +131,12 @@
 </div>
 
 <script type="text/javascript">
-    var i18n_confirm_delete_relationship = '$encoder.jsEscape( $i18n.getString( "confirm_delete_relationship" ) , "'" )';
+	jQuery(document).ready(	function(){
+		hideById('mainLinkLbl');
+		jQuery('[name=mainPagelink]').html(i18n_main_form_link);
+	});
+	
+	var i18n_confirm_delete_relationship = '$encoder.jsEscape( $i18n.getString( "confirm_delete_relationship" ) , "'" )';
     var i18n_please_select_a_representative = '$encoder.jsEscape( $i18n.getString( "please_select_a_representative" ) , "'" )';
     var i18n_saving_representative_failed = '$encoder.jsEscape( $i18n.getString( "saving_representative_failed" ) , "'" )';
     var i18n_removing_representative_failed = '$encoder.jsEscape( $i18n.getString( "removing_representative_failed" ) , "'" )';

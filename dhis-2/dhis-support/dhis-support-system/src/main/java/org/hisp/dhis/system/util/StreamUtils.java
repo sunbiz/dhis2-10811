@@ -35,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -78,7 +79,7 @@ public class StreamUtils
         return classLoader.getResourceAsStream( name );
     }
 
-    public static void streamcopy(BufferedInputStream in, BufferedOutputStream out)
+    public static void streamcopy( BufferedInputStream in, BufferedOutputStream out )
     {
         int b = 0;
 
@@ -202,6 +203,24 @@ public class StreamUtils
             return new BufferedInputStream( new ByteArrayInputStream( string.getBytes( ENCODING_UTF ) ) );
         }
         catch ( UnsupportedEncodingException ex )
+        {
+            throw new RuntimeException( ex );
+        }
+    }
+    
+    /**
+     * Creates a FileWriter.
+     * 
+     * @param file the name of the file.
+     * @return a FileWriter.
+     */
+    public static Writer getFileWriter( String file )
+    {
+        try
+        {
+            return new BufferedWriter( new FileWriter( file ) );
+        }
+        catch ( IOException ex )
         {
             throw new RuntimeException( ex );
         }

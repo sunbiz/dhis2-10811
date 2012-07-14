@@ -28,12 +28,10 @@ package org.hisp.dhis.organisationunit;
  */
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.hierarchy.HierarchyViolationException;
+import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.organisationunit.comparator.OrganisationUnitLevelComparator;
-import org.hisp.dhis.system.util.AuditLogUtil;
 import org.hisp.dhis.system.util.ConversionUtils;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
@@ -42,7 +40,19 @@ import org.hisp.dhis.user.User;
 import org.hisp.dhis.version.VersionService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -54,8 +64,6 @@ public class DefaultOrganisationUnitService
     implements OrganisationUnitService
 {
     private static final String LEVEL_PREFIX = "Level ";
-
-    private static final Log log = LogFactory.getLog( DefaultOrganisationUnitService.class );
 
     // -------------------------------------------------------------------------
     // Dependencies
@@ -89,6 +97,13 @@ public class DefaultOrganisationUnitService
         this.versionService = versionService;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // OrganisationUnit
     // -------------------------------------------------------------------------
@@ -100,13 +115,10 @@ public class DefaultOrganisationUnitService
 
         if ( organisationUnit.getParent() == null && currentUserService.getCurrentUser() != null )
         {
-            // we are adding a new root node, add this node to the current user
-            // this makes sense in most cases, and makes sure that we don't have "zombie nodes"
+            // Adding a new root node, add this node to the current user
+
             currentUserService.getCurrentUser().getOrganisationUnits().add( organisationUnit );
         }
-
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(), AuditLogUtil.ACTION_ADD,
-            OrganisationUnit.class.getSimpleName(), organisationUnit.getName() ) );
 
         updateVersion();
 
@@ -116,9 +128,6 @@ public class DefaultOrganisationUnitService
     public void updateOrganisationUnit( OrganisationUnit organisationUnit )
     {
         organisationUnitStore.update( organisationUnit );
-
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(), AuditLogUtil.ACTION_EDIT,
-            OrganisationUnit.class.getSimpleName(), organisationUnit.getName() ) );
 
         updateVersion();
     }
@@ -132,7 +141,7 @@ public class DefaultOrganisationUnitService
         throws HierarchyViolationException
     {
         organisationUnit = getOrganisationUnit( organisationUnit.getId() );
-        
+
         if ( !organisationUnit.getChildren().isEmpty() )
         {
             throw new HierarchyViolationException( "Cannot delete an OrganisationUnit with children" );
@@ -147,9 +156,6 @@ public class DefaultOrganisationUnitService
             organisationUnitStore.update( parent );
         }
 
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(), AuditLogUtil.ACTION_DELETE,
-            OrganisationUnit.class.getSimpleName(), organisationUnit.getName() ) );
-
         organisationUnitStore.delete( organisationUnit );
 
         updateVersion();
@@ -163,6 +169,24 @@ public class DefaultOrganisationUnitService
     public Collection<OrganisationUnit> getAllOrganisationUnits()
     {
         return organisationUnitStore.getAll();
+    }
+
+    @Override
+    public Collection<OrganisationUnit> getAllOrganisationUnitsByStatus( boolean status )
+    {
+        return organisationUnitStore.getAllOrganisationUnitsByStatus( status );
+    }
+
+    @Override
+    public Collection<OrganisationUnit> getAllOrganisationUnitsByLastUpdated( Date lastUpdated )
+    {
+        return organisationUnitStore.getAllOrganisationUnitsByLastUpdated( lastUpdated );
+    }
+
+    @Override
+    public Collection<OrganisationUnit> getAllOrganisationUnitsByStatusLastUpdated( boolean status, Date lastUpdated )
+    {
+        return organisationUnitStore.getAllOrganisationUnitsByStatusLastUpdated( status, lastUpdated );
     }
 
     public void searchOrganisationUnitByName( List<OrganisationUnit> orgUnits, String key )
@@ -201,9 +225,14 @@ public class DefaultOrganisationUnitService
         return organisationUnitStore.getByUid( uid );
     }
 
-    public OrganisationUnit getOrganisationUnitByName( String name )
+    public OrganisationUnit getOrganisationUnitByUuid( String uuid )
     {
-        return organisationUnitStore.getByName( name );
+        return organisationUnitStore.getByUid( uuid );
+    }
+
+    public List<OrganisationUnit> getOrganisationUnitByName( String name )
+    {
+        return organisationUnitStore.getAllEqName( name );
     }
 
     public OrganisationUnit getOrganisationUnitByCode( String code )
@@ -211,9 +240,9 @@ public class DefaultOrganisationUnitService
         return organisationUnitStore.getByCode( code );
     }
 
-    public OrganisationUnit getOrganisationUnitByNameIgnoreCase( String name )
+    public Collection<OrganisationUnit> getOrganisationUnitByNameIgnoreCase( String name )
     {
-        return organisationUnitStore.getOrganisationUnitByNameIgnoreCase( name );
+        return organisationUnitStore.getAllEqNameIgnoreCase( name );
     }
 
     public Collection<OrganisationUnit> getRootOrganisationUnits()
@@ -224,6 +253,11 @@ public class DefaultOrganisationUnitService
     public int getLevelOfOrganisationUnit( int id )
     {
         return getOrganisationUnit( id ).getOrganisationUnitLevel();
+    }
+
+    public int getLevelOfOrganisationUnit( String uid )
+    {
+        return getOrganisationUnit( uid ).getOrganisationUnitLevel();
     }
 
     public Collection<OrganisationUnit> getLeafOrganisationUnits( int id )
@@ -430,13 +464,13 @@ public class DefaultOrganisationUnitService
         return organisationUnitStore.getOrganisationUnitsWithoutGroups();
     }
 
-    public Collection<OrganisationUnit> getOrganisationUnitsByNameAndGroups( String name,
+    public Collection<OrganisationUnit> getOrganisationUnitsByNameAndGroups( String query,
         Collection<OrganisationUnitGroup> groups, boolean limit )
     {
-        return organisationUnitStore.getOrganisationUnitsByNameAndGroups( name, groups, limit );
+        return organisationUnitStore.getOrganisationUnitsByNameAndGroups( query, groups, limit );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getOrganisationUnitsByNameAndGroups( String name,
         Collection<OrganisationUnitGroup> groups, OrganisationUnit parent, boolean limit )
     {
@@ -533,14 +567,33 @@ public class DefaultOrganisationUnitService
 
     public Collection<OrganisationUnit> getOrganisationUnitsBetween( int first, int max )
     {
-        return organisationUnitStore.getBetween( first, max );
+        return organisationUnitStore.getAllOrderedName( first, max );
     }
 
     public Collection<OrganisationUnit> getOrganisationUnitsBetweenByName( String name, int first, int max )
     {
-        return organisationUnitStore.getBetweenByName( name, first, max );
+        return organisationUnitStore.getAllLikeNameOrderedName( name, first, max );
     }
-    
+
+    @Override
+    public Collection<OrganisationUnit> getOrganisationUnitsBetweenByStatus( boolean status, int first, int max )
+    {
+        return organisationUnitStore.getBetweenByStatus( status, first, max );
+    }
+
+    @Override
+    public Collection<OrganisationUnit> getOrganisationUnitsBetweenByLastUpdated( Date lastUpdated, int first, int max )
+    {
+        return organisationUnitStore.getBetweenByLastUpdated( lastUpdated, first, max );
+    }
+
+    @Override
+    public Collection<OrganisationUnit> getOrganisationUnitsBetweenByStatusLastUpdated( boolean status,
+        Date lastUpdated, int first, int max )
+    {
+        return organisationUnitStore.getBetweenByStatusLastUpdated( status, lastUpdated, first, max );
+    }
+
     // -------------------------------------------------------------------------
     // OrganisationUnitHierarchy
     // -------------------------------------------------------------------------
@@ -631,22 +684,22 @@ public class DefaultOrganisationUnitService
 
     public List<OrganisationUnitLevel> getOrganisationUnitLevels()
     {
-        List<OrganisationUnitLevel> organisationUnitLevels = new ArrayList<OrganisationUnitLevel>(
-            organisationUnitLevelStore.getAll() );
+        List<OrganisationUnitLevel> organisationUnitLevels = new ArrayList<OrganisationUnitLevel>( i18n( i18nService,
+            organisationUnitLevelStore.getAll() ) );
 
-        Collections.sort( organisationUnitLevels, new OrganisationUnitLevelComparator() );
+        Collections.sort( organisationUnitLevels, OrganisationUnitLevelComparator.INSTANCE );
 
         return organisationUnitLevels;
     }
 
     public OrganisationUnitLevel getOrganisationUnitLevelByLevel( int level )
     {
-        return organisationUnitLevelStore.getByLevel( level );
+        return i18n( i18nService, organisationUnitLevelStore.getByLevel( level ) );
     }
 
-    public OrganisationUnitLevel getOrganisationUnitLevelByName( String name )
+    public List<OrganisationUnitLevel> getOrganisationUnitLevelByName( String name )
     {
-        return organisationUnitLevelStore.getByName( name );
+        return new ArrayList<OrganisationUnitLevel>( i18n( i18nService, organisationUnitLevelStore.getAllEqName( name ) ) );
     }
 
     public List<OrganisationUnitLevel> getFilledOrganisationUnitLevels()

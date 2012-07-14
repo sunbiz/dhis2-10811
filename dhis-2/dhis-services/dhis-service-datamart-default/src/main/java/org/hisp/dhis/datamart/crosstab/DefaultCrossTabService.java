@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.amplecode.quick.BatchHandler;
@@ -43,11 +42,10 @@ import org.amplecode.quick.StatementManager;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.datamart.CrossTabDataValue;
+import org.hisp.dhis.datamart.DataMartManager;
 import org.hisp.dhis.datamart.crosstab.jdbc.CrossTabStore;
-import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.jdbc.batchhandler.GenericBatchHandler;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
@@ -82,35 +80,23 @@ public class DefaultCrossTabService
         this.crossTabStore = crossTabTableManager;
     }
 
-    private AggregatedDataValueService aggregatedDataValueService;
+    private DataMartManager dataMartManager;
 
-    public void setAggregatedDataValueService( AggregatedDataValueService aggregatedDataValueService )
+    public void setDataMartManager( DataMartManager dataMartManager )
     {
-        this.aggregatedDataValueService = aggregatedDataValueService;
+        this.dataMartManager = dataMartManager;
     }
-    
-    private DataValueService dataValueService;
 
-    public void setDataValueService( DataValueService dataValueService )
-    {
-        this.dataValueService = dataValueService;
-    }
-    
     private StatementManager statementManager;
 
     public void setStatementManager( StatementManager statementManager )
     {
         this.statementManager = statementManager;
     }
-
+    
     // -------------------------------------------------------------------------
     // CrossTabService implementation
     // -------------------------------------------------------------------------
-
-    public Set<DataElementOperand> getOperandsWithData( Set<DataElementOperand> operands )
-    {
-        return dataValueService.getOperandsWithDataValues( operands );
-    }
     
     public String createCrossTabTable( List<DataElementOperand> operands )
     {
@@ -137,7 +123,7 @@ public class DefaultCrossTabService
         {
             for ( final Integer sourceId : organisationUnitIds )
             {
-                final Map<DataElementOperand, String> map = aggregatedDataValueService.getDataValueMap( periodId, sourceId );
+                final Map<DataElementOperand, String> map = dataMartManager.getDataValueMap( periodId, sourceId );
 
                 final List<String> valueList = new ArrayList<String>( operands.size() + 2 );
 
@@ -226,12 +212,6 @@ public class DefaultCrossTabService
         return crossTabStore.getCrossTabDataValues( operands, periodIds, sourceIds, key );
     }
 
-    public Collection<CrossTabDataValue> getCrossTabDataValues( Collection<DataElementOperand> operands,
-        Collection<Integer> periodIds, int sourceId, String key )
-    {
-        return crossTabStore.getCrossTabDataValues( operands, periodIds, sourceId, key );
-    }
-    
     public Map<DataElementOperand, Double> getAggregatedDataCacheValue( Collection<DataElementOperand> operands, 
         Period period, OrganisationUnit unit, OrganisationUnitGroup group, String key )
     {

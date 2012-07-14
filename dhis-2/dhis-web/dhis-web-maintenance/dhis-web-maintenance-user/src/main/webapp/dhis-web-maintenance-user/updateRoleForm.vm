@@ -31,29 +31,30 @@
 
 <h3>$i18n.getString( "edit_user_role" )</h3>
 
-<form id="updateRoleForm" name="updateRoleForm" action="updateRole.action" method="post">
+<form id="updateRoleForm" name="updateRoleForm" action="updateRole.action" method="post" class="inputForm">
 	<div>
 		<input type="hidden" id="id" name="id" value="$userAuthorityGroup.id"/>
   	</div>
 
   	<table>
 	  	<col style="width: 120px"/>
-	    <col style="width: 350px"/>
+	    <col style="width: 500px;"/>
 	    <col/>
-	    <col style="width: 350px"/>
+	    <col style="width: 500px;"/>
 
 		<tr>
-			<th colspan="4">$i18n.getString( "details" )</th>        
+			<th colspan="2">$i18n.getString( "details" )</th>    
+            <td colspan="2"></td>    
 		</tr>
 
 		<tr>
 			<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-			<td colspan="3"><input type="text" id="name" name="name" value="$!encoder.htmlEncode( $userAuthorityGroup.name )" style="width:20em"></td>
+			<td colspan="3"><input type="text" id="name" name="name" value="$!encoder.htmlEncode( $userAuthorityGroup.name )"></td>
 		</tr>
 
 		<tr>
 			<td><label for="description">$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-			<td colspan="3"><input type="text" id="description" name="description" value="$!encoder.htmlEncode( $userAuthorityGroup.description )" style="width:20em"/></td>
+			<td colspan="3"><input type="text" id="description" name="description" value="$!encoder.htmlEncode( $userAuthorityGroup.description )"></td>
 		</tr>
 
 		<tr>
@@ -107,7 +108,6 @@
             	#end
           		</select>
         	</td>
-
 		</tr>	
 
 		<tr>

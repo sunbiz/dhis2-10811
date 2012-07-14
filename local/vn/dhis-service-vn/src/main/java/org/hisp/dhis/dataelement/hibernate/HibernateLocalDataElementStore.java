@@ -27,12 +27,12 @@
 
 package org.hisp.dhis.dataelement.hibernate;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.amplecode.quick.StatementManager;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.attribute.Attribute;
@@ -41,6 +41,9 @@ import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataelement.LocalDataElementStore;
 import org.hisp.dhis.dataset.DataSet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author Chau Thu Tran
@@ -51,19 +54,11 @@ public class HibernateLocalDataElementStore
     extends HibernateIdentifiableObjectStore<DataElement>
     implements LocalDataElementStore
 {
-    private StatementManager statementManager;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
-
+    @Autowired
     private DataElementService dataElementService;
-
-    public void setDataElementService( DataElementService dataElementService )
-    {
-        this.dataElementService = dataElementService;
-    }
 
     @SuppressWarnings( "unchecked" )
     public Collection<DataElement> getByAttributeValue( Attribute attribute, String value )
@@ -87,32 +82,79 @@ public class HibernateLocalDataElementStore
     @Override
     public Collection<DataElement> get( DataSet dataSet, String value )
     {
-        Collection<DataElement> result = new HashSet<DataElement>();
+        List<DataElement> result = new ArrayList<DataElement>();
         try
         {
-            String sql = "select distinct(deav.dataelementid) from datasetmembers dsm "
-                + "inner join dataelementattributevalues deav on deav.dataelementid = dsm.dataelementid "
-                + "inner join attributevalue av on av.attributevalueid = deav.attributevalueid "
-                + "inner join attribute att on att.attributeid = av.attributeid " + "where dsm.datasetid = "
-                + dataSet.getId() + " and av.value='" + value + "'";
+            String sql = "select de.dataelementid, de.name, de.formname from dataelement de "
+                + "join datasetmembers dsm on de.dataelementid = dsm.dataelementid "
+                + "join dataelementattributevalues deav on deav.dataelementid = dsm.dataelementid "
+                + "join attributevalue av on av.attributevalueid = deav.attributevalueid "
+                + "where dsm.datasetid = " + dataSet.getId() + " and av.value='" + value + "'";
+            
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
 
-            ResultSet resultSet = statementManager.getHolder().getStatement().executeQuery( sql );
-
-            while ( resultSet.next() )
+            while ( rowSet.next() )
             {
-                result.add( dataElementService.getDataElement( resultSet.getInt( 1 ) ) );
+                result.add( dataElementService.getDataElement( rowSet.getInt( 1 ) ) );
             }
 
             return result;
         }
-        catch ( SQLException e )
+        catch ( Exception e )
         {
             e.printStackTrace();
-            return new HashSet<DataElement>();
+            return new ArrayList<DataElement>();
         }
-        finally
+    }
+    
+    @Override
+    public Map<String, List<Integer>> get(DataSet dataSet, List<String> values)
+    {
+        StringBuffer sql = new StringBuffer();
+
+        int i = 0;
+        for ( String value : values )
         {
-            statementManager.getHolder().close();
+            i++;
+
+            if ( value != null && !value.trim().isEmpty() )
+            {
+                sql.append( "select av.value, de.dataelementid, de.name, de.formname from dataelement de " );
+                sql.append( "join datasetmembers dsm on de.dataelementid = dsm.dataelementid " );
+                sql.append( "join dataelementattributevalues deav on deav.dataelementid = dsm.dataelementid " );
+                sql.append( "join attributevalue av on av.attributevalueid = deav.attributevalueid " );
+                sql.append( "where dsm.datasetid = " + dataSet.getId() + " and av.value='" + value + "'" );
+                sql.append( i == values.size() ? " ORDER BY name" : " UNION " );
+            }
         }
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql.toString() );
+
+        sql = null;
+        String key = null;
+
+        Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+
+        while ( rowSet.next() )
+        {
+            key = rowSet.getString( 1 );
+
+            if ( !map.containsKey( key ) )
+            {
+                List<Integer> ids = new ArrayList<Integer>();
+                ids.add( rowSet.getInt( 2 ) );
+
+                map.put( key, ids );
+            }
+            else
+            {
+                map.get( key ).add( rowSet.getInt( 2 ) );
+            }
+        }
+        
+        rowSet = null;
+        key = null;
+        
+        return map;
     }
 }

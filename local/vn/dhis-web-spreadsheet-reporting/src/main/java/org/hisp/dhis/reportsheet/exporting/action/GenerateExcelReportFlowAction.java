@@ -68,6 +68,30 @@ public class GenerateExcelReportFlowAction
         return organisationGroupId;
     }
 
+    private Boolean showSubItem;
+
+    public boolean isShowSubItem()
+    {
+        return (showSubItem == null) ? false : showSubItem;
+    }
+
+    public void setShowSubItem( boolean showSubItem )
+    {
+        this.showSubItem = showSubItem;
+    }
+
+    private Boolean generateByDataSet;
+
+    public boolean isGenerateByDataSet()
+    {
+        return (generateByDataSet == null) ? false : generateByDataSet;
+    }
+
+    public void setGenerateByDataSet( Boolean generateByDataSet )
+    {
+        this.generateByDataSet = generateByDataSet;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -76,15 +100,14 @@ public class GenerateExcelReportFlowAction
         throws Exception
     {
         Integer reportId = selectionManager.getSelectedReportId();
-        
+
         if ( reportId == null )
         {
             return "MULTI";
         }
-        
+
         ExportReport exportReport = exportReportService.getExportReport( reportId );
 
         return exportReport.getReportType();
     }
-
 }

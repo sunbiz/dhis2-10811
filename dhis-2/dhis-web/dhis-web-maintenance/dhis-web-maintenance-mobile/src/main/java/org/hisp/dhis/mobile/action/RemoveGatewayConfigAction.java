@@ -30,8 +30,14 @@ package org.hisp.dhis.mobile.action;
 import java.util.Iterator;
 
 import org.hisp.dhis.sms.SmsConfigurationManager;
+import org.hisp.dhis.sms.config.BulkSmsGatewayConfig;
+import org.hisp.dhis.sms.config.ClickatellGatewayConfig;
+import org.hisp.dhis.sms.config.GenericHttpGatewayConfig;
+import org.hisp.dhis.sms.config.ModemGatewayConfig;
+import org.hisp.dhis.sms.config.SMPPGatewayConfig;
 import org.hisp.dhis.sms.config.SmsConfiguration;
 import org.hisp.dhis.sms.config.SmsGatewayConfig;
+import org.hisp.dhis.sms.outbound.OutboundSmsTransportService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
@@ -44,12 +50,25 @@ import com.opensymphony.xwork2.Action;
 public class RemoveGatewayConfigAction
     implements Action
 {
+    private final String BULK_GATEWAY = "bulk_gw";
+
+    private final String CLICKATELL_GATEWAY = "clickatell_gw";
+
+    private final String HTTP_GATEWAY = "generic_http_gw";
+
+    private final String MODEM_GATEWAY = "modem_gw";
+
+    private final String SMPP_GATEWAY = "smpp_gw";
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
 
     @Autowired
     private SmsConfigurationManager smsConfigurationManager;
+    
+    @Autowired
+    private OutboundSmsTransportService transportService;
 
     // -------------------------------------------------------------------------
     // Input
@@ -72,19 +91,45 @@ public class RemoveGatewayConfigAction
         SmsConfiguration smsConfig = smsConfigurationManager.getSmsConfiguration();
 
         Iterator<SmsGatewayConfig> it = smsConfig.getGateways().iterator();
-        
-        while( it.hasNext() )
+
+        while ( it.hasNext() )
         {
             if ( smsConfig.getGateways().indexOf( it.next() ) == id )
             {
-                it.remove();
+                SmsGatewayConfig gatewayConfig = smsConfig.getGateways().get( id );
                 
+                it.remove();
+
                 smsConfigurationManager.updateSmsConfiguration( smsConfig );
+                
+                if ( gatewayConfig instanceof BulkSmsGatewayConfig )
+                {
+                    transportService.getGatewayMap().remove( BULK_GATEWAY);
+                }
+                
+                if ( gatewayConfig instanceof ClickatellGatewayConfig )
+                {
+                    transportService.getGatewayMap().remove( CLICKATELL_GATEWAY );
+                }
+                
+                if ( gatewayConfig instanceof ModemGatewayConfig )
+                {
+                    transportService.getGatewayMap().remove( MODEM_GATEWAY );
+                }
+                
+                if ( gatewayConfig instanceof GenericHttpGatewayConfig)
+                {
+                    transportService.getGatewayMap().remove( HTTP_GATEWAY );
+                }
+                
+                if ( gatewayConfig instanceof SMPPGatewayConfig )
+                {
+                    transportService.getGatewayMap().remove( SMPP_GATEWAY );
+                }
                 
                 break;
             }
         }
-
         return SUCCESS;
     }
 }

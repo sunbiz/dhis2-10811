@@ -36,6 +36,8 @@ function Selection()
     var unselectAllowed = false;
     var rootUnselectAllowed = false;
     var autoSelectRoot = true;
+    var realRoot = true;
+    var includeChildren = false;
 
     this.setListenerFunction = function ( listenerFunction_, skipInitialCall )
     {
@@ -70,6 +72,11 @@ function Selection()
         autoSelectRoot = autoSelect;
     };
 
+    this.setIncludeChildren = function( children )
+    {
+        includeChildren = children;
+    };
+
     this.load = function ()
     {
         function sync_and_reload()
@@ -97,9 +104,9 @@ function Selection()
 
             organisationUnits = JSON.parse( localStorage["organisationUnits"] );
 
-            if(sessionStorage["organisationUnits"] !== undefined)
+            if ( sessionStorage['organisationUnits'] !== undefined )
             {
-                $.extend(organisationUnits, JSON.parse( sessionStorage["organisationUnits"] ))
+                $.extend( organisationUnits, JSON.parse( sessionStorage["organisationUnits"] ) );
             }
 
             selection.sync();
@@ -118,7 +125,7 @@ function Selection()
                 return true;
             }
 
-            if(localRoots == null || localRoots.length == 0)
+            if ( localRoots == null || localRoots.length == 0 )
             {
                 return true;
             }
@@ -147,6 +154,7 @@ function Selection()
                 if ( data.indexOf( "<!DOCTYPE" ) != 0 )
                 {
                     data = JSON.parse( data );
+                    realRoot = data.realRoot;
                     should_update = update_required( data.version, data.roots );
                 }
             }, "text" ).complete(
@@ -281,6 +289,11 @@ function Selection()
         $.post( organisationUnitTreePath + "clearselected.action" ).complete( this.responseReceived );
     };
 
+    this.getSelected = function()
+    {
+        return JSON.parse( sessionStorage[getTagId( "Selected" )] );
+    };
+
     this.select = function ( unitId )
     {
         var $linkTag = $( "#" + getTagId( unitId ) ).find( "a" ).eq( 0 );
@@ -294,6 +307,11 @@ function Selection()
                 var roots = JSON.parse( localStorage[getTagId( "Roots" )] );
 
                 if ( $.inArray(selected, roots) == -1 )
+                {
+                    return;
+                }
+
+                if( !realRoot )
                 {
                     return;
                 }
@@ -391,6 +409,7 @@ function Selection()
         }
 
         var selected = [];
+        var children = [];
 
         if ( sessionStorage[getTagId( "Selected" )] != null )
         {
@@ -411,12 +430,23 @@ function Selection()
         }
         else
         {
+            // we only support includeChildren for single selects
+            if( includeChildren )
+            {
+                children = organisationUnits[selected].c;
+            }
+
+            if ( sessionStorage['organisationUnits'] !== undefined )
+            {
+                $.extend( organisationUnits, JSON.parse( sessionStorage["organisationUnits"] ) );
+            }
+
             var name = organisationUnits[selected].n;
             ids.push( +selected );
             names.push( name );
         }
 
-        listenerFunction( ids, names );
+        listenerFunction( ids, names, children );
     };
 
     function getTagId( unitId )
@@ -424,7 +454,7 @@ function Selection()
         return 'orgUnit' + unitId;
     }
 
-    this.findByCode = function ()
+    this.findByName = function()
     {
         var name = $( '#searchField' ).val();
 
@@ -644,9 +674,9 @@ function Subtree()
 
     function getAndCreateChildren(parentTag, parent)
     {
-        if(parent.c !== undefined)
+        if ( parent.c !== undefined )
         {
-            if(organisationUnits[parent.c[0]] !== undefined)
+            if ( organisationUnits[parent.c[0]] !== undefined )
             {
                 createChildren( parentTag, parent );
             }
@@ -656,10 +686,12 @@ function Subtree()
                 function ( data, textStatus, jqXHR )
                     {
                         // load additional organisationUnits into sessionStorage
-                        if(sessionStorage["organisationUnits"] === undefined)
+                        if ( sessionStorage["organisationUnits"] === undefined )
                         {
                             sessionStorage["organisationUnits"] = JSON.stringify( data.organisationUnits );
-                        } else {
+                        } 
+                        else 
+                        {
                             units = JSON.parse( sessionStorage["organisationUnits"] );
                             $.extend(units, data.organisationUnits);
                             sessionStorage["organisationUnits"] = JSON.stringify( units );
@@ -682,7 +714,7 @@ function Subtree()
         {
             var ou = organisationUnits[item];
 
-            if(ou !== undefined)
+            if ( ou !== undefined )
             {
                 $childrenTag.append( createTreeElementTag( ou ) );
             }

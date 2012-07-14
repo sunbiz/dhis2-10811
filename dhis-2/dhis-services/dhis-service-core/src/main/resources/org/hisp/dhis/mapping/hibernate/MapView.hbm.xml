@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+  [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+  >
+
+<hibernate-mapping>
+  <class name="org.hisp.dhis.mapping.MapView" table="mapview">
+
+    <id name="id" column="mapviewid">
+      <generator class="native" />
+    </id>
+
+    <property name="uid" column="uid" length="11" />
+
+    <property name="created" type="timestamp" />
+
+    <property name="lastUpdated" type="timestamp" />
+
+    <property name="layer" />
+
+    <property name="valueType" />
+
+    <many-to-one name="indicatorGroup" class="org.hisp.dhis.indicator.IndicatorGroup" column="indicatorgroupid"
+      foreign-key="fk_mapview_indicatorgroupid" />
+
+    <many-to-one name="indicator" class="org.hisp.dhis.indicator.Indicator" column="indicatorid"
+      foreign-key="fk_mapview_indicatorid" />
+
+    <many-to-one name="dataElementGroup" class="org.hisp.dhis.dataelement.DataElementGroup" column="dataelementgroupid"
+      foreign-key="fk_mapview_dataelementgroupid" />
+
+    <many-to-one name="dataElement" class="org.hisp.dhis.dataelement.DataElement" column="dataelementid"
+      foreign-key="fk_mapview_dataelementid" />
+
+    <many-to-one name="period" class="org.hisp.dhis.period.Period" column="periodid" foreign-key="fk_mapview_periodid" />
+
+    <many-to-one name="parentOrganisationUnit" class="org.hisp.dhis.organisationunit.OrganisationUnit"
+      column="parentorganisationunitid" foreign-key="fk_mapview_parentorganisationunitid" />
+
+    <many-to-one name="organisationUnitLevel" class="org.hisp.dhis.organisationunit.OrganisationUnitLevel"
+      column="organisationunitlevelid" foreign-key="fk_mapview_organisationunitlevelid" />
+
+    <property name="legendType" />
+
+    <property name="method" />
+
+    <property name="classes" />
+
+    <property name="colorLow" />
+
+    <property name="colorHigh" />
+
+    <many-to-one name="legendSet" class="org.hisp.dhis.mapping.MapLegendSet" column="legendsetid"
+      foreign-key="fk_mapview_maplegendsetid" />
+
+    <property name="radiusLow" />
+
+    <property name="radiusHigh" />
+
+    <property name="opacity" />
+
+    <many-to-one name="organisationUnitGroupSet" class="org.hisp.dhis.organisationunit.OrganisationUnitGroupSet"
+      column="orgunitgroupsetid" foreign-key="fk_mapview_orgunitgroupsetid" />
+
+    <property name="areaRadius" />
+
+  </class>
+</hibernate-mapping>

@@ -11,15 +11,19 @@
     <id name="id" column="messageid">
       <generator class="native" />
     </id>
-	
+
     <property name="uid" column="uid" length="11" />
-    <property name="lastUpdated" type="timestamp"/>
-	
-	<property name="text" column="messagetext"/>
-	<property name="metaData" column="metadata"/>
-	
-    <many-to-one name="sender" class="org.hisp.dhis.user.User" column="userid" 
-	  foreign-key="fk_message_userid" />
-	
+
+    <property name="created" type="timestamp" />
+
+    <property name="lastUpdated" type="timestamp" />
+
+    <property name="text" column="messagetext" />
+
+    <property name="metaData" column="metadata" />
+
+    <many-to-one name="sender" class="org.hisp.dhis.user.User" column="userid"
+      foreign-key="fk_message_userid" />
+
   </class>
 </hibernate-mapping>

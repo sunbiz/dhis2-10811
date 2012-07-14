@@ -15,7 +15,7 @@
 // Save
 // -----------------------------------------------------------------------------
 
-var FORMULA_PATTERN = /\[.+?\]/g;
+var FORMULA_PATTERN = /#\{.+?\}/g;
 var SEPARATOR = '.';
 
 function updateDataElementTotals()
@@ -89,23 +89,21 @@ function generateExpression( expression )
 
         // Remove brackets from expression to simplify extraction of identifiers
 
-        var operand = match.replace( /[\[\]]/g, '' );
+        var operand = match.replace( /[#\{\}]/g, '' );
 
         var dataElementId = operand.substring( 0, operand.indexOf( SEPARATOR ) );
         var categoryOptionComboId = operand.substring( operand.indexOf( SEPARATOR ) + 1, operand.length );
 
         var fieldId = '#' + dataElementId + '-' + categoryOptionComboId + '-val';
 
+        var value = '0';
+        
         if ( $( fieldId ).length )
         {
-            var value = $( fieldId ).val() ? $( fieldId ).val() : '0';
-
-            expression = expression.replace( match, value );
+            value = $( fieldId ).val() ? $( fieldId ).val() : '0';
         }
-        else // Return null if data element / category option combo not in form
-        {	
-            return null;
-        } 
+
+        expression = expression.replace( match, value );
         
         // TODO signed numbers
     }
@@ -113,16 +111,31 @@ function generateExpression( expression )
     return expression;
 }
 
-/**
- * /* Used by default and section forms.
- */
-function saveVal( dataElementId, optionComboId )
+function saveDynamicVal( code, optionComboId, fieldId )
 {
-	dataElementId = parseInt( dataElementId );
-	optionComboId = parseInt( optionComboId );
+    var dataElementId = $( '#' + code + '-dynselect option:selected' ).val();
+    
+    if ( !isDefined( dataElementId ) || dataElementId == -1 )
+    {
+    	log( 'There is no select list in form or no option selected for code: ' + code );
+    	return;
+    }
+    
+    saveVal( dataElementId, optionComboId, fieldId );
+}
+
+function saveVal( dataElementId, optionComboId, fieldId )
+{
+	var fieldIds = fieldId.split( "-" );
+	
+	if ( fieldIds.length > 3 )
+	{
+		currentOrganisationUnitId = fieldIds[0];
+	}
+
+    fieldId = '#' + fieldId;
 	
     var dataElementName = getDataElementName( dataElementId );
-    var fieldId = '#' + dataElementId + '-' + optionComboId + '-val';
     var value = $( fieldId ).val();
     var type = getDataElementType( dataElementId );
 
@@ -139,7 +152,7 @@ function saveVal( dataElementId, optionComboId )
     {
         if ( type == 'string' || type == 'int' || type == 'number' || type == 'positiveNumber' || type == 'negativeNumber' )
         {
-            if ( value.length > 254 )
+            if ( value.length > 255 )
             {
                 return alertField( fieldId, i18n_value_too_long + ': ' + dataElementName );
             }
@@ -182,7 +195,7 @@ function saveVal( dataElementId, optionComboId )
                 if ( valueNo < min )
                 {
                     var valueSaver = new ValueSaver( dataElementId, optionComboId, currentOrganisationUnitId, periodId,
-                            value, COLOR_ORANGE );
+                            value, fieldId, COLOR_ORANGE );
                     valueSaver.save();
 
                     window.alert( i18n_value_of_data_element_less + ': ' + min + '\n\n' + dataElementName );
@@ -192,7 +205,7 @@ function saveVal( dataElementId, optionComboId )
                 if ( valueNo > max )
                 {
                     var valueSaver = new ValueSaver( dataElementId, optionComboId, currentOrganisationUnitId, periodId,
-                            value, COLOR_ORANGE );
+                            value, fieldId, COLOR_ORANGE );
                     valueSaver.save();
 
                     window.alert( i18n_value_of_data_element_greater + ': ' + max + '\n\n' + dataElementName );
@@ -203,16 +216,17 @@ function saveVal( dataElementId, optionComboId )
     }
 
     var valueSaver = new ValueSaver( dataElementId, optionComboId, 
-    	currentOrganisationUnitId, periodId, value, COLOR_GREEN );
+    	currentOrganisationUnitId, periodId, value, fieldId, COLOR_GREEN );
     valueSaver.save();
 
     updateIndicators(); // Update indicators for custom form
     updateDataElementTotals(); // Update data element totals for custom forms
 }
 
-function saveBoolean( dataElementId, optionComboId )
+function saveBoolean( dataElementId, optionComboId, fieldId )
 {
-    var fieldId = '#' + dataElementId + '-' + optionComboId + '-val';
+    fieldId = '#' + fieldId;
+    
     var value = $( fieldId + ' option:selected' ).val();
 
     $( fieldId ).css( 'background-color', COLOR_YELLOW );
@@ -220,7 +234,7 @@ function saveBoolean( dataElementId, optionComboId )
     var periodId = $( '#selectedPeriodId' ).val();
 
     var valueSaver = new ValueSaver( dataElementId, optionComboId, 
-    	currentOrganisationUnitId, periodId, value, COLOR_GREEN );
+    	currentOrganisationUnitId, periodId, value, fieldId, COLOR_GREEN );
     valueSaver.save();
 }
 
@@ -241,17 +255,15 @@ function alertField( fieldId, alertMessage )
 // Saver objects
 // -----------------------------------------------------------------------------
 
-function ValueSaver( dataElementId_, optionComboId_, organisationUnitId_, periodId_, value_, resultColor_ )
+function ValueSaver( dataElementId, optionComboId, organisationUnitId, periodId, value, fieldId, resultColor )
 {
     var dataValue = {
-        'dataElementId' : dataElementId_,
-        'optionComboId' : optionComboId_,
-        'organisationUnitId' : organisationUnitId_,
-        'periodId' : periodId_,
-        'value' : value_,
+        'dataElementId' : dataElementId,
+        'optionComboId' : optionComboId,
+        'organisationUnitId' : organisationUnitId,
+        'periodId' : periodId,
+        'value' : value
     };
-
-    var resultColor = resultColor_;
 
     this.save = function()
     {
@@ -273,16 +285,16 @@ function ValueSaver( dataElementId_, optionComboId_, organisationUnitId_, period
         if ( code == 0 ) // Value successfully saved on server
         {
         	storageManager.clearDataValueJSON( dataValue );
-            markValue( resultColor );
+            markValue( fieldId, resultColor );
         }
-        else if(code == 2)
+        else if ( code == 2 )
         {
-            markValue( COLOR_RED );
+            markValue( fieldId, COLOR_RED );
             window.alert( i18n_saving_value_failed_dataset_is_locked );
         }
         else // Server error during save
         {
-            markValue( COLOR_RED );
+            markValue( fieldId, COLOR_RED );
             window.alert( i18n_saving_value_failed_status_code + '\n\n' + code );
         }
     }
@@ -290,11 +302,11 @@ function ValueSaver( dataElementId_, optionComboId_, organisationUnitId_, period
     function handleError( jqXHR, textStatus, errorThrown )
     {
         setHeaderMessage( i18n_offline_notification );
-        markValue( resultColor );
+        markValue( fieldId, resultColor );
     }
 
-    function markValue( color )
+    function markValue( fieldId, color )
     {
-        $( '#' + dataValue.dataElementId + '-' + dataValue.optionComboId + '-val' ).css( 'background-color', color );
+        $( fieldId ).css( 'background-color', color );
     }
 }

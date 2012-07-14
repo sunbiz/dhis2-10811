@@ -1,6 +1,16 @@
 // ----------------------------------------------------------------
 // Organisation Unit Selected
 // ----------------------------------------------------------------
+
+function exportReport( type )
+{
+    var url = "exportTable.action?type=" + type + "&useLast=true";
+
+    url += $( "#id" ).length ? ( "&id=" + $( "#id" ).val() ) : "";
+
+    window.location.href = url;
+}
+
 function organisationUnitSelected( orgUnits )
 {   
 	$.getJSON( 'getOrganisationUnit.action', {orgunitId:orgUnits[0]}
@@ -112,6 +122,19 @@ function formValidations()
 //----------------------------------------------------------------
 //Generate CCEM Report
 //----------------------------------------------------------------
+function generateJRXMLReport()
+{
+	if( formValidations() )
+	{		
+		$("#ccemReportForm").attr("action", "exportTable.action"); 
+        $("#ccemReportForm").attr("method", "post");      
+        $("#ccemReportForm").attr('target', '_blank');
+        $("#ccemReportForm").submit();
+		
+	}
+}
+
+
 function generateCCEMReport()
 {
 	if( formValidations() )

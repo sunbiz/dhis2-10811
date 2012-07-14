@@ -1,6 +1,6 @@
 <script>
 	
-	jQuery(document).ready(	function(){
+	jQuery("#singleEventForm").ready(	function(){
 
 		currentDiv = 'patientForm';
 		checkedDuplicate = false;
@@ -30,32 +30,30 @@
 			});
 		
 		datePickerValid( 'patientForm [id=registrationDate]' );
+		datePickerValid( 'patientForm [id=birthDate]' );
 		addEventForPatientForm( 'patientForm' );
 	});	
 	
 </script>
-
+	
 <form id='singleEventForm'>
-
-	<h3>$i18n.getString( "add_new_patient" )</h3>	
 	<input type="hidden" id="representativeId" name="representativeId"/> 
 	<input type="hidden" id="relationshipTypeId" name="relationshipTypeId"/>
-	<table id='patientForm'>
-		#parse( "/dhis-web-caseentry/patientForm.vm" )
-	</table>
-
-	<h3 id='entryName'></h3>
-	<div id='dataForm'>#parse( "/dhis-web-caseentry/dataEntryForm.vm" )</div>
+	<input type="hidden" id="programStageId" name="programStageId" value='$programStage.id'/>
+	
+	<div id='patientForm'>#parse( "/dhis-web-caseentry/patientForm.vm" )</div>
+	<div id="entryForm"> #parse( "/dhis-web-caseentry/singleDataEntryForm.vm" )</div>
 	<p>
-		<input type="submit" class="button" value="$i18n.getString( 'add' )" />
-		<input type="button" class="button" value="$i18n.getString( 'back' )" onclick="javascript:backAddNewBtn();"/>
+		<input type="submit" class="button" value="$i18n.getString( 'add' )" onclick='_continue=false;' style="width:80px;"/>
+		<input type="submit" class="button" value="$i18n.getString( 'add_and_register_new' )" style="width:160px;" onclick="_continue=true;"/>
+		<input type="button" class="button" value="$i18n.getString( 'back' )" onclick="javascript:backEventList();" style="width:80px;"/>
 	</p>
 </form>
 
 <script>
 	var i18n_error_connect_to_server = '$encoder.jsEscape( $i18n.getString( "error_connect_to_server" ) , "'" )';
 	var i18n_add_person_successfully = '$encoder.jsEscape( $i18n.getString( "add_person_successfully" ) , "'" )';
-	setInnerHTML('entryName', jQuery('#programIdAddPatient').text() );
+	setInnerHTML('entryName', jQuery('#programIdAddPatient option:selected').text() );
 	
 	jQuery(document).ready(	function(){
 
@@ -82,12 +80,5 @@
 					}
 				}
 			});
-		
-		jQuery("#dataForm :input").each(function()
-		{
-			$( this ).unbind( 'focus' );
-			$( this ).unbind( 'blur' );
-			$( this ).unbind( 'change' );
-		});
 	});
 </script>

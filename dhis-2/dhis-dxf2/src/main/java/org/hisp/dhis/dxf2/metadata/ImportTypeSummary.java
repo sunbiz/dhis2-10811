@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.dxf2.importsummary.ImportConflict;
 import org.hisp.dhis.dxf2.importsummary.ImportCount;
 import org.hisp.dhis.dxf2.importsummary.ImportSummary;
@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "typeSummary", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "typeSummary", namespace = DxfNamespaces.DXF_2_0)
 public class ImportTypeSummary
     extends ImportSummary
 {
@@ -58,7 +58,7 @@ public class ImportTypeSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty( isAttribute = true, namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( isAttribute = true )
     public String getType()
     {
         return type;
@@ -70,7 +70,7 @@ public class ImportTypeSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public ImportCount getImportCount()
     {
         return importCount;
@@ -82,8 +82,8 @@ public class ImportTypeSummary
     }
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "conflicts", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "conflict", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "conflicts", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "conflict", namespace = DxfNamespaces.DXF_2_0)
     public List<ImportConflict> getImportConflicts()
     {
         return importConflicts;

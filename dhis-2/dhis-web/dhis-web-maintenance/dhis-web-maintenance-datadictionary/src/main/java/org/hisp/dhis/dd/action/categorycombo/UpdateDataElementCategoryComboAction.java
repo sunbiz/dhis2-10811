@@ -74,6 +74,13 @@ public class UpdateDataElementCategoryComboAction
         this.name = name;
     }
 
+    private boolean skipTotal;
+    
+    public void setSkipTotal( boolean skipTotal )
+    {
+        this.skipTotal = skipTotal;
+    }
+
     private Collection<String> selectedList = new HashSet<String>();
 
     public void setSelectedList( Collection<String> selectedList )
@@ -91,6 +98,7 @@ public class UpdateDataElementCategoryComboAction
             .getDataElementCategoryCombo( id );
 
         dataElementCategoryCombo.setName( name );
+        dataElementCategoryCombo.setSkipTotal( skipTotal );
         
         List<DataElementCategory> updatedCategories = new ArrayList<DataElementCategory>();
 
@@ -106,8 +114,6 @@ public class UpdateDataElementCategoryComboAction
 
         dataElementCategoryService.updateDataElementCategoryCombo( dataElementCategoryCombo );       
 
-        dataElementCategoryService.generateOptionCombos( dataElementCategoryCombo );
-        
         return SUCCESS;
     }
 }

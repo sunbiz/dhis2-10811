@@ -7,6 +7,8 @@
     "email": "$!encoder.jsonEncode( ${user.email} )",
     "phoneNumber": "$!encoder.jsonEncode( ${user.phoneNumber} )",
     "lastLogin": "$!format.formatDate( ${user.userCredentials.lastLogin} )",	
+    "created": "$!format.formatDate( ${user.userCredentials.created} )",
+    "disabled": ${user.userCredentials.disabled},
     #set( $size = ${user.organisationUnits.size()} )
     "organisationUnits": [
     #foreach( $unit in $user.organisationUnits )

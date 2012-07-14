@@ -69,6 +69,13 @@ public class ValidateDataElementCategoryOptionAction
         this.name = name;
     }
 
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
     private Integer id;
 
     public void setId( Integer id )
@@ -100,6 +107,18 @@ public class ValidateDataElementCategoryOptionAction
             if ( match != null && (id == null || match.getId() != id) )
             {
                 message = i18n.getString( "name_in_use" );
+
+                return ERROR;
+            }
+        }
+
+        if ( code != null )
+        {
+            DataElementCategoryOption match = dataElementCategoryService.getDataElementCategoryOptionByCode( code );
+
+            if ( match != null && (id == null || match.getId() != id) )
+            {
+                message = i18n.getString( "code_in_use" );
 
                 return ERROR;
             }

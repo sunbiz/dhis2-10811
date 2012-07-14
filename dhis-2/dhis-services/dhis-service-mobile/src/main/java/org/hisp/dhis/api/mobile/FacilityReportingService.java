@@ -30,6 +30,7 @@ package org.hisp.dhis.api.mobile;
 import java.util.List;
 import java.util.Locale;
 
+import org.hisp.dhis.api.mobile.model.Contact;
 import org.hisp.dhis.api.mobile.model.DataSet;
 import org.hisp.dhis.api.mobile.model.DataSetList;
 import org.hisp.dhis.api.mobile.model.DataSetValue;
@@ -58,6 +59,8 @@ public interface FacilityReportingService
     public DataSetList getUpdatedDataSet(DataSetList dataSetList, OrganisationUnit unit, String locale);
     
     public DataSetList getDataSetsForLocale( OrganisationUnit unit, String locale );
+    
+    public Contact updateContactForMobile();
 
 
 }

@@ -4,11 +4,10 @@
 #if( $dataSet.alternativeName )
 	#set( $dataSetName = $dataSet.alternativeName )
 #else
-	#set( $dataSetName = $dataSet.name )
+	#set( $dataSetName = $dataSet.displayName )
 #end
 
 <h2>$encoder.htmlEncode( $dataSetName )</h2>
-
 #set( $validationViolationsSize = $validationViolations.size() )
 #set( $typeViolationsSize = $typeViolations.size() )
 
@@ -35,7 +34,6 @@
 #if( $sectionId)
 <input type="hidden" id="sectionId" name="sectionId" value="$sectionId" />
 #end
-
 <input type="hidden" id="validated" name="validated" value="#if($validated)true#{else}false#end" />
 
 #macro( createSection $sectionName $dataElements )

@@ -28,6 +28,7 @@ package org.hisp.dhis.completeness;
  */
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.hisp.dhis.dataset.DataSet;
@@ -58,7 +59,7 @@ public interface DataSetCompletenessService
      * @param organisationUnitId the identifier of the root OrganisationUnit.
      * @return a Collection of DataSetCompletenessResults.
      */
-    Collection<DataSetCompletenessResult> getDataSetCompleteness( int periodId, int organisationUnitId );
+    Collection<DataSetCompletenessResult> getDataSetCompleteness( int periodId, int organisationUnitId, Set<Integer> groupIds );
 
     /**
      * Returns a Collection of DataSetCompletenessResults. The
@@ -76,7 +77,7 @@ public interface DataSetCompletenessService
      * @return a Collection of DataSetCompletenessResults.
      */
     Collection<DataSetCompletenessResult> getDataSetCompleteness( int periodId,
-        Collection<Integer> organisationUnitIds, int dataSetId );
+        Collection<Integer> organisationUnitIds, int dataSetId, Set<Integer> groupIds );
 
     /**
      * Delete all data set completeness registrations.

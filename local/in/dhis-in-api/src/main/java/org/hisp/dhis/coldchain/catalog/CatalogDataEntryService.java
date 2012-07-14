@@ -14,7 +14,9 @@ public interface CatalogDataEntryService
 {
     final Pattern INPUT_PATTERN = Pattern.compile( "(<input.*?)[/]?>", Pattern.DOTALL );
     
-    final Pattern IDENTIFIER_PATTERN_FIELD = Pattern.compile( "id=\"(\\d+)-(\\d+)-val\"" );
+    //final Pattern IDENTIFIER_PATTERN_FIELD = Pattern.compile( "id=\"(\\d+)-(\\d+)-val\"" );
+    
+    final Pattern IDENTIFIER_PATTERN_FIELD = Pattern.compile( "id=\"attr(\\d+)\"" );
     
     //--------------------------------------------------------------------------
     // ProgramDataEntryService

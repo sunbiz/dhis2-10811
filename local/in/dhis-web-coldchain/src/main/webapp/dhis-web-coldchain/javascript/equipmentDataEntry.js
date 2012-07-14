@@ -18,7 +18,7 @@ function getPeriods()
     
     
     var dataSetId = $( '#selectedDataSetId' ).val();
-    
+    //alert( dataSetId  );
     //var dataSetPeriod = dataSetId.split(":");
 	
 	//var dataSetId = dataSetPeriod[0];

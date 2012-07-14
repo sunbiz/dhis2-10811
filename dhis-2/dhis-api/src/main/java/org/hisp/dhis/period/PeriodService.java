@@ -71,6 +71,14 @@ public interface PeriodService
     Period getPeriod( int id );
 
     /**
+     * Gets the Period with the given ISO period identifier.
+     * 
+     * @param isoPeriod the ISO period identifier.
+     * @return the Period with the given ISO period identifier.
+     */
+    Period getPeriod( String isoPeriod );
+    
+    /**
      * Returns a Period.
      * 
      * @param startDate the start date of the Period.
@@ -271,6 +279,14 @@ public interface PeriodService
      */
     Period reloadPeriod( Period period );
     
+    /**
+     * Returns a PeriodHierarchy instance.
+     * 
+     * @param periods the Periods to include in the PeriodHierarchy.
+     * @return a PeriodHierarchy instance.
+     */
+    PeriodHierarchy getPeriodHierarchy( Collection<Period> periods );
+    
     // -------------------------------------------------------------------------
     // PeriodType
     // -------------------------------------------------------------------------
@@ -315,4 +331,15 @@ public interface PeriodService
      * @return a Period.
      */
     PeriodType reloadPeriodType( PeriodType periodType );
+
+    // -------------------------------------------------------------------------
+    // RelativePeriods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Deletes a RelativePeriods instance.
+     * 
+     * @param relativePeriods the RelativePeriods instance.
+     */
+    void deleteRelativePeriods( RelativePeriods relativePeriods );
 }

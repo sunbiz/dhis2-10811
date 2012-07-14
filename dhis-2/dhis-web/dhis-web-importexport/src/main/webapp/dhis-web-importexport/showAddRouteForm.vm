@@ -17,7 +17,7 @@
 </table>
 <p>
 	<input type="submit" value="$i18n.getString( 'add' )" style="width:10em" />
-	<input type="button" id="cancel" value="$i18n.getString( 'cancel' )" style="width:10em" />
+	<input type="button" id="cancel" value="$i18n.getString( 'cancel' )" style="width:10em" onclick="window.location.href = 'displayRoutes.action'"/>
 </p>
 
 </form>

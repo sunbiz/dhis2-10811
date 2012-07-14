@@ -27,7 +27,7 @@
 
 <h3>$i18n.getString( "edit_org_unit_group_set" ) #openHelp( "ou_groupsets_edit" )</h3>
 
-<form id="updateOrganisationUnitGroupSetForm" action="updateOrganisationUnitGroupSet.action" method="post" >
+<form id="updateOrganisationUnitGroupSetForm" action="updateOrganisationUnitGroupSet.action" method="post" class="inputForm">
 
 <input type="hidden" id="id" name="id" value="$organisationUnitGroupSet.id"/>
 
@@ -38,18 +38,18 @@
 	
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $organisationUnitGroupSet.name )" style="width:250px"></td>
+		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $organisationUnitGroupSet.name )"></td>
 	</tr>
 	
 	<tr>
 		<td><label for="description">$i18n.getString( "description" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-		<td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $organisationUnitGroupSet.description )" style="width:250px"></td>
+		<td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $organisationUnitGroupSet.description )"></td>
 	</tr>
 	
 	<tr>
 		<td><label for="compulsory">$i18n.getString( "compulsory" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
 		<td>
-			<select id="compulsory" name="compulsory" style="width:254px" onchange="changeCompulsory( this.value )">
+			<select id="compulsory" name="compulsory" onchange="changeCompulsory( this.value )">
 				<option value="true" #if( $organisationUnitGroupSet.compulsory ) selected="selected" #end>$i18n.getString( "yes" )</option>
 				<option value="false" #if( !$organisationUnitGroupSet.compulsory ) selected="selected" #end>$i18n.getString( "no" )</option>
 			</select>
@@ -62,11 +62,11 @@
 </table>
 
 <table>
-	<colgroup>
-	    <col style="width: 450px"/>
-	    <col/>
-	    <col style="width: 450px"/>
-  	</colgroup>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 	
   	<tr>
   		<th>$i18n.getString( "available_groups" )</th>

@@ -27,27 +27,41 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.user.User;
+import org.hisp.dhis.user.UserGroupAccess;
+
 import java.util.Date;
+import java.util.Set;
 
 public interface IdentifiableObject
     extends ImportableObject, LinkableObject, Comparable<IdentifiableObject>, Mergeable<IdentifiableObject>
 {
     final String[] I18N_PROPERTIES = { "name" };
-    
+
     enum IdentifiableProperty
     {
-        ID, UID, NAME, CODE
+        ID, UID, UUID, NAME, CODE
     }
-    
+
     int getId();
 
     String getUid();
 
     String getName();
 
+    boolean haveUniqueNames();
+
     String getCode();
 
+    Date getCreated();
+
     Date getLastUpdated();
+
+    String getPublicAccess();
+
+    User getUser();
+
+    Set<UserGroupAccess> getUserGroupAccesses();
 
     String getDisplayName();
 }

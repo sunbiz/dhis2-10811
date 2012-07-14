@@ -39,14 +39,14 @@
 
 <h3>$i18n.getString( "edit_user" )</h3>
 
-<form id="updateUserForm" action="updateUser.action" method="post" >
+<form id="updateUserForm" action="updateUser.action" method="post" class="inputForm">
 	
   <div>
 	<input type="hidden" id="id" name="id" value="$userCredentials.id"/>
   </div>
 
 <table>
-    <col style="width: 200px"/>
+    <col style="width: 120px"/>
     <col style="width: 350px"/>
     <col/>
     <col style="width: 350px"/>
@@ -57,50 +57,48 @@
 
 	<tr>
 		<td><label for="username">$i18n.getString( "username" )</label></td>
-		<td colspan="3"><input type="text" id="username" name="username" value="$encoder.htmlEncode( $userCredentials.username )" style="width:20em" disabled="disabled" autocomplete="off"/></td>				
+		<td colspan="3"><input type="text" id="username" name="username" value="$encoder.htmlEncode( $userCredentials.username )" disabled="disabled" autocomplete="off"/></td>				
 	</tr>
 
 	<tr>
 		<td><label for="rawPassword">$i18n.getString( "password" )</label></td>
-		<td colspan="3"><input type="password" id="rawPassword" name="rawPassword" style="width:20em" autocomplete="off"></td>			
+		<td colspan="3"><input type="password" id="rawPassword" name="rawPassword" autocomplete="off"></td>			
 	</tr>
 
 	<tr>
 		<td><label for="retypePassword">$i18n.getString( "retype_password" ) </label></td>
-		<td colspan="3"><input type="password" id="retypePassword" name="retypePassword" style="width:20em" autocomplete="off"></td>	
+		<td colspan="3"><input type="password" id="retypePassword" name="retypePassword" autocomplete="off"></td>	
 	</tr>
 
 	<tr>
 		<td><label for="surname">$i18n.getString( "surname" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td colspan="3"><input type="text" id="surname" name="surname" value="$encoder.htmlEncode( $userCredentials.user.surname )" style="width:20em"></td>	
+		<td colspan="3"><input type="text" id="surname" name="surname" value="$encoder.htmlEncode( $userCredentials.user.surname )"></td>	
 	</tr>
 
 	<tr>
 		<td><label for="firstName">$i18n.getString( "firstName" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td colspan="3"><input type="text" id="firstName" name="firstName" value="$encoder.htmlEncode( $userCredentials.user.firstName )" style="width:20em"></td>		
+		<td colspan="3"><input type="text" id="firstName" name="firstName" value="$encoder.htmlEncode( $userCredentials.user.firstName )"></td>		
 	</tr>
 
 	<tr>
 		<td><label for="email">$i18n.getString( "email" )</label></td>
-		<td colspan="3"><input type="text" id="email" name="email" value="$!encoder.htmlEncode( $userCredentials.user.email )" style="width:20em"></td>
+		<td colspan="3"><input type="text" id="email" name="email" value="$!encoder.htmlEncode( $userCredentials.user.email )"></td>
 	</tr>
 
     <tr>
         <td><label for="phoneNumber">$i18n.getString( "phone_number" )</label></td>
-        <td colspan="3"><input type="text" id="phoneNumber" name="phoneNumber" value="$!encoder.htmlEncode( $userCredentials.user.phoneNumber )" style="width:20em"/></td> 
-    </tr>
-    <tr>
-    	<td><label for="jobTitle">$i18n.getString( "job_title" )</label></td>
-    	<td colspan="3"><input type="text" id="jobTitle" name="jobTitle" value="$!encoder.htmlEncode( $userCredentials.user.jobTitle )" style="width:20em"></td>
+        <td colspan="3"><input type="text" id="phoneNumber" name="phoneNumber" value="$!encoder.htmlEncode( $userCredentials.user.phoneNumber )"></td> 
     </tr>
 </table>
 
 #tblDynamicAttributes( { "attributes": $attributes, "attributeValues": $attributeValues } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<tr>
 		<th>$i18n.getString( "available" )</th>

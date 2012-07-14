@@ -34,11 +34,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
-import org.hisp.dhis.period.Period;
-import org.hisp.dhis.reportsheet.PeriodColumn;
-import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportItem;
+import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportPeriodColumnListing;
+import org.hisp.dhis.reportsheet.PeriodColumn;
 import org.hisp.dhis.reportsheet.exporting.AbstractGenerateExcelReportSupport;
 import org.hisp.dhis.reportsheet.utils.ExcelUtils;
 import org.hisp.dhis.reportsheet.utils.ExpressionUtils;
@@ -80,7 +79,7 @@ public class GenerateAdvancedReportPeriodColumnListingAction
     // -------------------------------------------------------------------------
 
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnitGroup organisationUnitGroup = organisationUnitGroupService
@@ -88,7 +87,7 @@ public class GenerateAdvancedReportPeriodColumnListingAction
 
         ExportReportPeriodColumnListing exportReportInstance = (ExportReportPeriodColumnListing) exportReport;
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnitGroup );
+        this.installReadTemplateFile( exportReportInstance, organisationUnitGroup );
 
         for ( Integer sheetNo : exportReportService.getSheets( selectionManager.getSelectedReportId() ) )
         {

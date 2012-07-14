@@ -36,6 +36,10 @@
       <result name="input" type="velocity">/dhis-web-dataentry-hospital/responseVoid.vm</result>
     </action>
 
+    <action name="loadICDForm" class="org.hisp.dhis.de.action.LoadICDFormAction">
+      <result name="default" type="velocity">/dhis-web-dataentry-hospital/defaultICDForm.vm</result>
+    </action>
+
     <action name="saveValue" class="org.hisp.dhis.de.action.SaveValueAction">
       <result name="success" type="velocity-json">/dhis-web-dataentry-hospital/status.vm</result>
       <param name="onExceptionReturn">plainTextError</param>

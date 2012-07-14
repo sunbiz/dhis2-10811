@@ -191,23 +191,25 @@ public class Report_inDesign implements Serializable
     // -------------------------------------------------------------------------
     
     // Constants for stype
-    public final String ST_DATAELEMENT = "dataelement";
-    public final String ST_DATAELEMENT_NO_REPEAT = "dataelementnorepeat";
-    public final String ST_LLDATAELEMENT = "lldataelement";
-    public final String ST_INDICATOR = "indicator";
-    public final String ST_LLDEATHDATAELEMENTAGE = "lldeathdataelementage";
-    public final String ST_LLMATERNALDEATHDATAELEMENTAGE = "llmaternaldeathdataelement";
+    public static final String ST_DATAELEMENT = "dataelement";
+    public static final String ST_DATAELEMENT_NO_REPEAT = "dataelementnorepeat";
+    public static final String ST_LLDATAELEMENT = "lldataelement";
+    public static final String ST_INDICATOR = "indicator";
+    public static final String ST_LLDEATHDATAELEMENTAGE = "lldeathdataelementage";
+    public static final String ST_LLMATERNALDEATHDATAELEMENTAGE = "llmaternaldeathdataelement";
+    public static final String ST_NON_NUMBER_DATAELEMENT = "nonnumberdataelement";
     
     // Constants for ptype
-    public final String PT_CMCY = "CMCY";
-    public final String PT_CMPY = "CMPY";
-    public final String PT_CCMCY = "CCMCY";
-    public final String PT_CCMPY = "CCMPY";
-    public final String PT_PMCY = "PMCY";
+    public static final String PT_CMCY = "CMCY";
+    public static final String PT_CMPY = "CMPY";
+    public static final String PT_CCMCY = "CCMCY";
+    public static final String PT_CCMPY = "CCMPY";
+    public static final String PT_PMCY = "PMCY";
     
     // Constants for LineListDataElementMapping
-    public final String E_FACILITY = "FACILITY";
-    public final String E_PERIOD_MONTH = "PERIOD-MONTH";
-    public final String E_PERIOD_YEAR = "PERIOD-YEAR";
+    public static final String E_FACILITY = "FACILITY";
+    public static final String E_PERIOD_MONTH = "PERIOD-MONTH";
+    public static final String E_PERIOD_YEAR = "PERIOD-YEAR";
+    
     
 }

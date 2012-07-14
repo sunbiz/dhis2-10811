@@ -38,6 +38,8 @@ import org.hisp.dhis.dataelement.DataElementCategoryCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.mapping.MapLegendSet;
+import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.option.OptionService;
 import org.hisp.dhis.option.OptionSet;
 import org.hisp.dhis.system.util.AttributeUtils;
@@ -81,6 +83,13 @@ public class AddDataElementAction
     public void setOptionService( OptionService optionService )
     {
         this.optionService = optionService;
+    }
+    
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
     }
 
     // -------------------------------------------------------------------------
@@ -212,6 +221,13 @@ public class AddDataElementAction
     {
         this.selectedOptionSetId = selectedOptionSetId;
     }
+    
+    private Integer selectedLegendSetId;
+
+    public void setSelectedLegendSetId( Integer selectedLegendSetId )
+    {
+        this.selectedLegendSetId = selectedLegendSetId;
+    }
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -248,9 +264,9 @@ public class AddDataElementAction
             .getDataElementCategoryCombo( selectedCategoryComboId );
 
         OptionSet optionSet = optionService.getOptionSet( selectedOptionSetId );
+        MapLegendSet legendSet = mappingService.getMapLegendSet( selectedLegendSetId );
 
         dataElement.setName( name );
-        dataElement.setAlternativeName( alternativeName );
         dataElement.setShortName( shortName );
         dataElement.setCode( code );
         dataElement.setDescription( description );
@@ -258,15 +274,23 @@ public class AddDataElementAction
         dataElement.setActive( true );
         dataElement.setDomainType( domainType );
         dataElement.setType( valueType );
-        dataElement.setNumberType( numberType );
-        dataElement.setTextType ( textType );
+        
+        if ( DataElement.VALUE_TYPE_STRING.equalsIgnoreCase( valueType ) )
+        {
+            dataElement.setTextType( textType );
+        }
+        else
+        {
+            dataElement.setNumberType( numberType );
+        }
+        
         dataElement.setAggregationOperator( aggregationOperator );
         dataElement.setUrl( url );
         dataElement.setZeroIsSignificant( zeroIsSignificant );
         dataElement.setCategoryCombo( categoryCombo );
-        dataElement.setAggregationLevels( new ArrayList<Integer>( ConversionUtils
-            .getIntegerCollection( aggregationLevels ) ) );
+        dataElement.setAggregationLevels( new ArrayList<Integer>( ConversionUtils.getIntegerCollection( aggregationLevels ) ) );
         dataElement.setOptionSet( optionSet );
+        dataElement.setLegendSet( legendSet );
 
         if ( jsonAttributeValues != null )
         {

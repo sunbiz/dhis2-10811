@@ -2,7 +2,7 @@
 #if( $dataSet.alternativeName )
     #set( $dataSetName = $dataSet.alternativeName )
 #else
-    #set( $dataSetName = $dataSet.name )
+    #set( $dataSetName = $dataSet.displayName )
 #end
 
 <div class="header-box" align="center">
@@ -29,7 +29,7 @@
     #if( $dataSet.sections.size() > 0 )
         #foreach( $section in $dataSet.sections )
             <li>
-                <a href="dataEntrySection.action?organisationUnitId=$organisationUnitId&dataSetId=$dataSetId&periodId=$periodId&sectionId=$section.id">$i18n.getString( $section.name )</a>
+                <a href="dataEntrySection.action?organisationUnitId=$organisationUnitId&dataSetId=$dataSetId&periodId=$periodId&sectionId=$section.id">$i18n.getString( $section.displayName )</a>
             </li>
         #end
     #else
@@ -38,8 +38,7 @@
     </ul>
 </p>
 
-<form method="GET" action="markComplete.action">
-
+<form method="GET" action=#if($completed == true) "inComplete.action" #else "markComplete.action" #end>
 <input type="hidden" id="organisationUnitId" name="organisationUnitId" value="$organisationUnitId" />
 <input type="hidden" id="dataSetId" name="dataSetId" value="$dataSetId" />
 <input type="hidden" id="periodId" name="periodId" value="$periodId" />
@@ -47,7 +46,7 @@
 <div class="header-box" align="center">
     <p>
         <input type="hidden" name="formComplete" value="true" />
-        <input type="submit" style="width: 100%;" value="$i18n.getString("form_complete")" />
+        <input type="submit" style="width: 100%;" value=#if($completed == true) $i18n.getString("form_in_complete") #else $i18n.getString("form_complete") #end />
     </p>
 </div>
 
@@ -60,17 +59,6 @@
         <li><a href="index.action">$i18n.getString("home")</a></li>
     </ul>
 </div>
-
-
-
-
-
-
-
-
-
-
-
 
 #* This might get reactivated later, as configurable setting? *#
 

@@ -45,13 +45,17 @@ public class SmsConfiguration
 {
     private static final long serialVersionUID = 7460688383539123303L;
 
+    private boolean enabled = false;
+
     private String longNumber;
 
     private Integer pollingInterval;
 
-    private boolean enabled = false;
-
     private List<SmsGatewayConfig> gateways;
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
 
     public SmsConfiguration()
     {
@@ -63,6 +67,10 @@ public class SmsConfiguration
         this.enabled = enabled;
         this.gateways = new ArrayList<SmsGatewayConfig>();
     }
+
+    // -------------------------------------------------------------------------
+    // Getter && Setter
+    // -------------------------------------------------------------------------
 
     public boolean isEnabled()
     {
@@ -108,5 +116,17 @@ public class SmsConfiguration
     {
         this.pollingInterval = pollingInterval;
     }
-
+    
+    public SmsGatewayConfig getDefaultGateway()
+    {
+        for ( SmsGatewayConfig gw : gateways )
+        {   
+            if ( gw.isDefault() )
+            {
+                return gw;
+            }
+        }
+        
+        return null;
+    }
 }

@@ -11,8 +11,8 @@
 	  <table>
 		<tr>
 			<td>Resource Data</td>
-			<td><a href="{@link}/data">pdf</a></td>
-			<td><a href="{@link}/data.xls">xls</a></td>
+			<td><a href="{@href}/data">pdf</a></td>
+			<td><a href="{@href}/data.xls">xls</a></td>
 		</tr>
 		<tr>
 			<td>ou</td>

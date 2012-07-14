@@ -27,10 +27,10 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,19 +96,12 @@ public class DataElementCategoryComboServiceTest
         categoryB = new DataElementCategory( "CategoryB" );
         categoryC = new DataElementCategory( "CategoryC" );
         
-        categoryA.getCategoryOptions().add( categoryOptionA );
-        categoryA.getCategoryOptions().add( categoryOptionB );
-        categoryB.getCategoryOptions().add( categoryOptionC );
-        categoryB.getCategoryOptions().add( categoryOptionD );
-        categoryC.getCategoryOptions().add( categoryOptionE );
-        categoryC.getCategoryOptions().add( categoryOptionF );
-        
-        categoryOptionA.setCategory( categoryA );
-        categoryOptionB.setCategory( categoryA );
-        categoryOptionC.setCategory( categoryB );
-        categoryOptionD.setCategory( categoryB );
-        categoryOptionE.setCategory( categoryC );
-        categoryOptionF.setCategory( categoryC );
+        categoryA.addDataElementCategoryOption( categoryOptionA );
+        categoryA.addDataElementCategoryOption( categoryOptionB );
+        categoryB.addDataElementCategoryOption( categoryOptionC );
+        categoryB.addDataElementCategoryOption( categoryOptionD );
+        categoryC.addDataElementCategoryOption( categoryOptionE );
+        categoryC.addDataElementCategoryOption( categoryOptionF );
         
         categoryService.addDataElementCategory( categoryA );
         categoryService.addDataElementCategory( categoryB );
@@ -217,8 +210,7 @@ public class DataElementCategoryComboServiceTest
         assertEquals( 8, categoryComboA.getOptionCombos().size() );
         assertOptionCombos( categoryComboA.getOptionCombos() );
         
-        categoryC.getCategoryOptions().add( categoryOptionG );
-        categoryOptionG.setCategory( categoryC );
+        categoryC.addDataElementCategoryOption( categoryOptionG );
         categoryService.updateDataElementCategory( categoryC );
         
         categoryService.updateOptionCombos( categoryComboA );
@@ -264,8 +256,7 @@ public class DataElementCategoryComboServiceTest
         assertEquals( 8, categoryComboA.getOptionCombos().size() );
         assertOptionCombos( categoryComboA.getOptionCombos() );
         
-        categoryC.getCategoryOptions().add( categoryOptionG );
-        categoryOptionG.setCategory( categoryC );
+        categoryC.addDataElementCategoryOption( categoryOptionG );
         categoryService.updateDataElementCategory( categoryC );
         
         categoryService.updateOptionCombos( categoryC );

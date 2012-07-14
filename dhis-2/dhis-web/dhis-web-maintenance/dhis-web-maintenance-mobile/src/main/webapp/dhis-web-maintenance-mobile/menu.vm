@@ -7,5 +7,6 @@
     <li><a href="showSMSForm.action">$i18n.getString( "show_send_sms_form" )</a></li>
 	<li><a href="showReceivingPage.action">$i18n.getString( "show_receive_sms_form" )</a></li>
 	<li><a href="SMSCommands.action">$i18n.getString( "sms_command_form" )</a></li>
+	<li><a href="showJ2meClientUpdatePage.action">$i18n.getString( "j2me_client_update" )</a></li>
 	
 </ul>

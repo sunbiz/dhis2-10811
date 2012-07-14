@@ -27,7 +27,7 @@ package org.hisp.dhis.datamart;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -140,9 +140,9 @@ public class DataMartServiceTimeDimensionTest
         
         dataMartEngine.export( dataElementIds, indicatorIds, periodIds, organisationUnitIds );
         
-        assertEquals( 100.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodA, unit ) );
-        assertEquals( 100.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodB, unit ) );
-        assertEquals( 100.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodC, unit ) );
+        assertEquals( 100.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodA, unit ), DELTA );
+        assertEquals( 100.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodB, unit ), DELTA );
+        assertEquals( 100.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodC, unit ), DELTA );
     }
 
     @Test
@@ -179,6 +179,6 @@ public class DataMartServiceTimeDimensionTest
 
         dataMartEngine.export( dataElementIds, indicatorIds, periodIds, organisationUnitIds );
         
-        assertEquals( 60.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodA, unit ) );
+        assertEquals( 60.0, aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, periodA, unit ), DELTA );
     }
 }

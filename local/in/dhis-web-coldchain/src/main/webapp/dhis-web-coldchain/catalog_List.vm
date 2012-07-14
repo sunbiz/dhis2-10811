@@ -84,4 +84,5 @@
     });
     var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_catalog" ) , "'" )';
 	var i18n_catalog_details = '$encoder.jsEscape( $i18n.getString( "catalog__details" ) , "'" )';
+	var i18n_upload_catalog_image = '$encoder.jsEscape( $i18n.getString( "upload_catalog_image" ) , "'" )';
 </script>

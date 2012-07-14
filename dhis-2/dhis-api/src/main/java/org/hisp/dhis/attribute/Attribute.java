@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
@@ -43,7 +43,7 @@ import java.util.Set;
 /**
  * @author mortenoh
  */
-@JacksonXmlRootElement( localName = "attributeType", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "attributeType", namespace = DxfNamespaces.DXF_2_0 )
 public class Attribute
     extends BaseIdentifiableObject
 {
@@ -136,7 +136,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getValueType()
     {
         return valueType;
@@ -149,7 +149,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isMandatory()
     {
         return mandatory;
@@ -162,7 +162,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isDataElementAttribute()
     {
         return dataElementAttribute;
@@ -175,7 +175,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isDataElementGroupAttribute()
     {
         return dataElementGroupAttribute == null ? false : dataElementGroupAttribute;
@@ -188,7 +188,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isIndicatorAttribute()
     {
         return indicatorAttribute;
@@ -201,7 +201,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isIndicatorGroupAttribute()
     {
         return indicatorGroupAttribute == null ? false : indicatorGroupAttribute;
@@ -214,7 +214,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isOrganisationUnitAttribute()
     {
         return organisationUnitAttribute;
@@ -227,7 +227,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isOrganisationUnitGroupAttribute()
     {
         return organisationUnitGroupAttribute == null ? false : organisationUnitGroupAttribute;
@@ -240,7 +240,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isUserAttribute()
     {
         return userAttribute;
@@ -253,7 +253,7 @@ public class Attribute
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public boolean isUserGroupAttribute()
     {
         return userGroupAttribute == null ? false : userGroupAttribute;

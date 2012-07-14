@@ -101,4 +101,13 @@ public class HibernateMinMaxDataElementStore
         
         getQuery( hql ).setEntity( "optionCombo", optionCombo ).executeUpdate();
     }
+    
+    public void delete( Collection<DataElement> dataElements, Collection<OrganisationUnit> organisationUnits )
+    {
+        String hql = "delete from MinMaxDataElement m where m.dataElement in (:dataElements) and m.source in (:organisationUnits)";
+        
+        getQuery( hql ).
+            setParameterList( "dataElements", dataElements ).
+            setParameterList( "organisationUnits", organisationUnits ).executeUpdate();
+    }
 }

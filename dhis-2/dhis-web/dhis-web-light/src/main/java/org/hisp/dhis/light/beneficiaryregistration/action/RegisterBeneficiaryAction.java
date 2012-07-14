@@ -28,10 +28,13 @@
 package org.hisp.dhis.light.beneficiaryregistration.action;
 
 import java.util.Collection;
+
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -44,11 +47,6 @@ public class RegisterBeneficiaryAction
 
     private PatientIdentifierTypeService patientIdentifierTypeService;
 
-    public PatientIdentifierTypeService getPatientIdentifierTypeService()
-    {
-        return patientIdentifierTypeService;
-    }
-
     public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
     {
         this.patientIdentifierTypeService = patientIdentifierTypeService;
@@ -56,14 +54,21 @@ public class RegisterBeneficiaryAction
 
     private PatientAttributeService patientAttributeService;
 
-    public PatientAttributeService getPatientAttributeService()
-    {
-        return patientAttributeService;
-    }
-
     public void setPatientAttributeService( PatientAttributeService patientAttributeService )
     {
         this.patientAttributeService = patientAttributeService;
+    }
+    
+    private ProgramService programService;
+
+    public ProgramService getProgramService()
+    {
+        return programService;
+    }
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
     }
 
     // -------------------------------------------------------------------------
@@ -105,6 +110,36 @@ public class RegisterBeneficiaryAction
     {
         this.patientAttributes = patientAttributes;
     }
+    
+    //Register person on-the-fly
+    
+    private Integer originalPatientId;
+    
+    public Integer getOriginalPatientId()
+    {
+        return originalPatientId;
+    }
+
+    public void setOriginalPatientId( Integer originalPatientId )
+    {
+        this.originalPatientId = originalPatientId;
+    }
+
+    private Integer relationshipTypeId;
+    
+    public Integer getRelationshipTypeId()
+    {
+        return relationshipTypeId;
+    }
+
+    public void setRelationshipTypeId( Integer relationshipTypeId )
+    {
+        this.relationshipTypeId = relationshipTypeId;
+    }
+
+    // -------------------------------------------------------------------------
+    // Action Implementation
+    // -------------------------------------------------------------------------
 
     @Override
     public String execute()
@@ -112,7 +147,13 @@ public class RegisterBeneficiaryAction
     {
         patientIdentifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
         patientAttributes = patientAttributeService.getAllPatientAttributes();
+        Collection<Program> programs = programService.getAllPrograms();
+
+        for ( Program program : programs )
+        {
+            patientIdentifierTypes.removeAll( program.getPatientIdentifierTypes() );
+            patientAttributes.removeAll( program.getPatientAttributes() );
+        }
         return SUCCESS;
     }
-
 }

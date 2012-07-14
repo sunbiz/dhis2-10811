@@ -26,9 +26,11 @@
  */
 package org.hisp.dhis.patient;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import java.util.Collection;
 
-import org.hisp.dhis.program.Program;
+import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -50,6 +52,13 @@ public class DefaultPatientAttributeService
         this.patientAttributeStore = patientAttributeStore;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation methods
     // -------------------------------------------------------------------------
@@ -61,12 +70,12 @@ public class DefaultPatientAttributeService
 
     public Collection<PatientAttribute> getAllPatientAttributes()
     {
-        return patientAttributeStore.getAll();
+        return i18n( i18nService, patientAttributeStore.getAll() );
     }
 
     public PatientAttribute getPatientAttribute( int id )
     {
-        return patientAttributeStore.get( id );
+        return i18n( i18nService, patientAttributeStore.get( id ) );
     }
 
     public int savePatientAttribute( PatientAttribute patientAttribute )
@@ -81,42 +90,32 @@ public class DefaultPatientAttributeService
 
     public Collection<PatientAttribute> getPatientAttributesByValueType( String valueType )
     {
-        return patientAttributeStore.getByValueType( valueType );
+        return i18n( i18nService, patientAttributeStore.getByValueType( valueType ) );
     }
 
     public PatientAttribute getPatientAttributeByName( String name )
     {
-        return patientAttributeStore.getByName( name );
+        return i18n( i18nService, patientAttributeStore.getByName( name ) );
     }
-    
+
     public PatientAttribute getPatientAttributeByGroupBy( boolean groupBy )
     {
-        return patientAttributeStore.getByGroupBy( groupBy );
+        return i18n( i18nService, patientAttributeStore.getByGroupBy( groupBy ) );
     }
 
     public Collection<PatientAttribute> getOptionalPatientAttributesWithoutGroup()
     {
-        return patientAttributeStore.getOptionalPatientAttributesWithoutGroup();
+        return i18n( i18nService, patientAttributeStore.getOptionalPatientAttributesWithoutGroup() );
     }
 
     public Collection<PatientAttribute> getPatientAttributesByMandatory( boolean mandatory )
     {
-        return patientAttributeStore.getByMandatory( mandatory );
+        return i18n( i18nService, patientAttributeStore.getByMandatory( mandatory ) );
     }
 
-    public Collection<PatientAttribute> getPatientAttributes( Program program, PatientAttributeGroup group )
-    {
-        return patientAttributeStore.get( program, group );
-    }
-    
     public Collection<PatientAttribute> getPatientAttributesWithoutGroup()
     {
-        return patientAttributeStore.getWithoutGroup();
-    }
-    
-    public Collection<PatientAttribute> getPatientAttributes( Program program )
-    {
-        return patientAttributeStore.get( program );
+        return i18n( i18nService, patientAttributeStore.getWithoutGroup() );
     }
 
 }

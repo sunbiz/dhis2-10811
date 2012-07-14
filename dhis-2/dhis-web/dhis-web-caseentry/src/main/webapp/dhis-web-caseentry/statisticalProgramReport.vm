@@ -1,0 +1,49 @@
+<h6>
+	<a href="javascript:showCriteriaForm();">$i18n.getString("start")</a>
+	&raquo; <a href="javascript:showStatisticalReport();">$!encoder.htmlEncode( $grid.title )</a>
+	<a href="javascript:detailsReport();"><span id="programStageTitleLbl"></span></a>
+	<span id="patientNameLbl"></span>
+</h6>
+<p id="totalLbl" class="hidden"></p>
+
+<div id="reportTbl" name="reportTbl">
+	<p id="totalLbl">$!encoder.htmlEncode( $grid.subtitle )</p>
+	<table class="listTable gridTable" width="150px;">
+		<thead>
+			<tr>
+				#foreach( $header in $grid.getVisibleHeaders() )
+					<th #if( !$header.meta )style="text-align:center"#end>$!encoder.htmlEncode( $header.name )</th>
+				#end
+			</tr>
+		</thead>
+		<tbody>
+			#foreach( $row in $grid.getRows() )
+			<tr>
+				#foreach( $col in $row )
+					#set( $index = ( $velocityCount - 1 ) )
+					#if($index==0)
+						#set( $programStageId = $col )
+					#elseif( $grid.getHeaders().get( $index ).meta )
+						<td>$!encoder.htmlEncode( $col )</td>
+					#else
+						#if($index==2 || $index==4 || $index==6 || $index==8)
+							#set($status = $index/2)
+							#if($col==0)
+								<td style="text-align:center">$!format.formatValue( $col )</td>
+							#else
+								<td style="text-align:center"><a href="javascript:statisticalProgramDetailsReport($programStageId,$status, $col)">$!format.formatValue( $col )</a></td>
+							#end
+						#else
+							<td style="text-align:center">$!format.formatValue( $col )</td>
+						#end
+					#end
+				#end
+			</tr>
+			#end
+		</tbody>
+	</table>
+</div>
+
+<div id='detailsDiv'></div>
+<div id="viewRecordsDiv"></div>
+

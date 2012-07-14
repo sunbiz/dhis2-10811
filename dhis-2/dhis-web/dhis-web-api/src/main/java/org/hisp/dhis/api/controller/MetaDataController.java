@@ -31,9 +31,13 @@ import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.dxf2.metadata.*;
+import org.hisp.dhis.dxf2.metadata.tasks.ImportMetaDataTask;
 import org.hisp.dhis.dxf2.utils.JacksonUtils;
+import org.hisp.dhis.scheduling.TaskCategory;
+import org.hisp.dhis.scheduling.TaskId;
+import org.hisp.dhis.system.scheduling.Scheduler;
+import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,6 +69,12 @@ public class MetaDataController
 
     @Autowired
     private ContextUtils contextUtils;
+
+    @Autowired
+    private Scheduler scheduler;
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     //--------------------------------------------------------------------------
     // Export
@@ -107,7 +117,7 @@ public class MetaDataController
         JacksonUtils.toXmlWithView( response.getOutputStream(), metaData, ExportView.class );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".zip" }, produces = "*/*" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".zip"}, produces = "*/*" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_EXPORT')" )
     public void exportZipped( @RequestParam Map<String, String> parameters, HttpServletResponse response, HttpServletRequest request ) throws IOException
     {
@@ -123,7 +133,7 @@ public class MetaDataController
         }
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".xml.zip" }, produces = "*/*" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".xml.zip"}, produces = "*/*" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_EXPORT')" )
     public void exportZippedXML( @RequestParam Map<String, String> parameters, HttpServletResponse response ) throws IOException
     {
@@ -139,7 +149,7 @@ public class MetaDataController
         JacksonUtils.toXmlWithView( zip, metaData, ExportView.class );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".json.zip" }, produces = "*/*" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".json.zip"}, produces = "*/*" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_EXPORT')" )
     public void exportZippedJSON( @RequestParam Map<String, String> parameters, HttpServletResponse response ) throws IOException
     {
@@ -155,7 +165,7 @@ public class MetaDataController
         JacksonUtils.toJsonWithView( zip, metaData, ExportView.class );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".gz" }, produces = "*/*" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".gz"}, produces = "*/*" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_EXPORT')" )
     public void exportGZipped( @RequestParam Map<String, String> parameters, HttpServletResponse response, HttpServletRequest request ) throws IOException
     {
@@ -171,7 +181,7 @@ public class MetaDataController
         }
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".xml.gz" }, produces = "*/*" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".xml.gz"}, produces = "*/*" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_EXPORT')" )
     public void exportGZippedXML( @RequestParam Map<String, String> parameters, HttpServletResponse response ) throws IOException
     {
@@ -185,7 +195,7 @@ public class MetaDataController
         JacksonUtils.toXmlWithView( gzip, metaData, ExportView.class );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".json.gz" }, produces = "*/*" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".json.gz"}, produces = "*/*" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_EXPORT')" )
     public void exportGZippedJSON( @RequestParam Map<String, String> parameters, HttpServletResponse response ) throws IOException
     {
@@ -203,16 +213,18 @@ public class MetaDataController
     // Import
     //--------------------------------------------------------------------------
 
-    @RequestMapping( value = MetaDataController.RESOURCE_PATH, method = RequestMethod.POST, consumes = { "application/xml", "text/*" } )
+    @RequestMapping( value = MetaDataController.RESOURCE_PATH, method = RequestMethod.POST, consumes = {"application/xml", "text/*"} )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_IMPORT')" )
     public void importXml( ImportOptions importOptions, HttpServletResponse response, HttpServletRequest request ) throws JAXBException, IOException
     {
         MetaData metaData = JacksonUtils.fromXml( request.getInputStream(), MetaData.class );
 
-        ImportSummary summary = importService.importMetaData( metaData, importOptions );
+        TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        response.setContentType( MediaType.APPLICATION_XML.toString() );
-        JacksonUtils.toXml( response.getOutputStream(), summary );
+        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions,taskId, metaData ) );
+
+        response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
+        response.setStatus( HttpServletResponse.SC_NO_CONTENT );
     }
 
     @RequestMapping( value = MetaDataController.RESOURCE_PATH, method = RequestMethod.POST, consumes = "application/json" )
@@ -221,13 +233,15 @@ public class MetaDataController
     {
         MetaData metaData = JacksonUtils.fromJson( request.getInputStream(), MetaData.class );
 
-        ImportSummary summary = importService.importMetaData( metaData, importOptions );
+        TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        response.setContentType( MediaType.APPLICATION_JSON.toString() );
-        JacksonUtils.toJson( response.getOutputStream(), summary );
+        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions,taskId, metaData ) );
+
+        response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
+        response.setStatus( HttpServletResponse.SC_NO_CONTENT );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".zip", MetaDataController.RESOURCE_PATH + ".xml.zip" }, method = RequestMethod.POST, consumes = { "application/xml", "text/*" } )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".zip", MetaDataController.RESOURCE_PATH + ".xml.zip"}, method = RequestMethod.POST, consumes = {"application/xml", "text/*"} )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_IMPORT')" )
     public void importZippedXml( ImportOptions importOptions, HttpServletResponse response, HttpServletRequest request ) throws JAXBException, IOException
     {
@@ -236,13 +250,15 @@ public class MetaDataController
 
         MetaData metaData = JacksonUtils.fromXml( zip, MetaData.class );
 
-        ImportSummary summary = importService.importMetaData( metaData, importOptions );
+        TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        response.setContentType( MediaType.APPLICATION_XML.toString() );
-        JacksonUtils.toXml( response.getOutputStream(), summary );
+        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions,taskId, metaData ) );
+
+        response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
+        response.setStatus( HttpServletResponse.SC_NO_CONTENT );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".zip", MetaDataController.RESOURCE_PATH + ".json.zip" }, method = RequestMethod.POST, consumes = "application/json" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".zip", MetaDataController.RESOURCE_PATH + ".json.zip"}, method = RequestMethod.POST, consumes = "application/json" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_IMPORT')" )
     public void importZippedJson( ImportOptions importOptions, HttpServletResponse response, HttpServletRequest request ) throws IOException
     {
@@ -251,37 +267,41 @@ public class MetaDataController
 
         MetaData metaData = JacksonUtils.fromJson( zip, MetaData.class );
 
-        ImportSummary summary = importService.importMetaData( metaData, importOptions );
+        TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        response.setContentType( MediaType.APPLICATION_JSON.toString() );
-        JacksonUtils.toJson( response.getOutputStream(), summary );
+        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions,taskId, metaData ) );
+
+        response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
+        response.setStatus( HttpServletResponse.SC_NO_CONTENT );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".gz", MetaDataController.RESOURCE_PATH + ".xml.gz" }, method = RequestMethod.POST, consumes = { "application/xml", "text/*" } )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".gz", MetaDataController.RESOURCE_PATH + ".xml.gz"}, method = RequestMethod.POST, consumes = {"application/xml", "text/*"} )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_IMPORT')" )
     public void importGZippedXml( ImportOptions importOptions, HttpServletResponse response, HttpServletRequest request ) throws JAXBException, IOException
     {
         GZIPInputStream gzip = new GZIPInputStream( request.getInputStream() );
-
         MetaData metaData = JacksonUtils.fromXml( gzip, MetaData.class );
 
-        ImportSummary summary = importService.importMetaData( metaData, importOptions );
+        TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        response.setContentType( MediaType.APPLICATION_XML.toString() );
-        JacksonUtils.toXml( response.getOutputStream(), summary );
+        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions,taskId, metaData ) );
+
+        response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
+        response.setStatus( HttpServletResponse.SC_NO_CONTENT );
     }
 
-    @RequestMapping( value = { MetaDataController.RESOURCE_PATH + ".gz", MetaDataController.RESOURCE_PATH + ".json.gz" }, method = RequestMethod.POST, consumes = "application/json" )
+    @RequestMapping( value = {MetaDataController.RESOURCE_PATH + ".gz", MetaDataController.RESOURCE_PATH + ".json.gz"}, method = RequestMethod.POST, consumes = "application/json" )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_METADATA_IMPORT')" )
     public void importGZippedJson( ImportOptions importOptions, HttpServletResponse response, HttpServletRequest request ) throws IOException
     {
         GZIPInputStream gzip = new GZIPInputStream( request.getInputStream() );
-
         MetaData metaData = JacksonUtils.fromJson( gzip, MetaData.class );
 
-        ImportSummary summary = importService.importMetaData( metaData, importOptions );
+        TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        response.setContentType( MediaType.APPLICATION_JSON.toString() );
-        JacksonUtils.toJson( response.getOutputStream(), summary );
+        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions,taskId, metaData ) );
+
+        response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
+        response.setStatus( HttpServletResponse.SC_NO_CONTENT );
     }
 }

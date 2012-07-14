@@ -24,7 +24,7 @@
     <many-to-one name="program" class="org.hisp.dhis.program.Program" column="programid" not-null="true"
       foreign-key="fk_programinstance_programid" />
 
-    <set name="programStageInstances" order-by="stageinprogram" >
+    <set name="programStageInstances" order-by="executionDate,duedate" >
       <key column="programinstanceid" />
       <one-to-many class="org.hisp.dhis.program.ProgramStageInstance" />
     </set>

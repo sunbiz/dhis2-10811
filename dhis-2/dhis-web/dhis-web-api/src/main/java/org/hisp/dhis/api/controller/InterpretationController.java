@@ -38,14 +38,20 @@ import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.common.Pager;
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.interpretation.Interpretation;
 import org.hisp.dhis.interpretation.InterpretationService;
-import org.hisp.dhis.mapping.MapView;
+import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,10 +80,16 @@ public class InterpretationController
     private ReportTableService reportTableService;
     
     @Autowired
+    private DataSetService dataSetService;
+    
+    @Autowired
     private OrganisationUnitService organisationUnitService;
     
     @Autowired
     private MappingService mappingService;
+    
+    @Autowired
+    private CurrentUserService currentUserService;
     
     @Override
     protected List<Interpretation> getEntityList( WebMetaData metaData, WebOptions options )
@@ -98,7 +110,6 @@ public class InterpretationController
             metaData.setPager( pager );
 
             entityList = new ArrayList<Interpretation>( interpretationService.getInterpretations( pager.getOffset(), pager.getPageSize() ) );
-
         }
         else
         {
@@ -121,38 +132,46 @@ public class InterpretationController
             return;
         }
         
-        Interpretation interpretation = new Interpretation( chart, text );
+        User user = currentUserService.getCurrentUser();
+
+        // ---------------------------------------------------------------------
+        // When chart has user org unit, store current user org unit with
+        // interpretation so chart will refer to the original org unit later
+        // ---------------------------------------------------------------------
+
+        OrganisationUnit unit = chart.hasUserOrgUnit() && user.hasOrganisationUnit() ? user.getOrganisationUnit() : null;
+        
+        Interpretation interpretation = new Interpretation( chart, unit, text );
         
         interpretationService.saveInterpretation( interpretation );
 
-        response.setStatus( HttpServletResponse.SC_CREATED );
-        response.setHeader( "Location", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
+        ContextUtils.createdResponse( response, "Interpretation created", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
     }
 
     @RequestMapping( value = "/map/{uid}", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
     public void shareMapInterpretation( 
-        @PathVariable( "uid" ) String mapViewUid, 
+        @PathVariable( "uid" ) String mapUid, 
         @RequestBody String text, HttpServletResponse response ) throws IOException
     {
-        MapView mapView = mappingService.getMapView( mapViewUid );
+        Map map = mappingService.getMap( mapUid );
         
-        if ( mapView == null )
+        if ( map == null )
         {
-            ContextUtils.conflictResponse( response, "Map view identifier not valid: " + mapViewUid );
+            ContextUtils.conflictResponse( response, "Map identifier not valid: " + mapUid );
             return;
         }
         
-        Interpretation interpretation = new Interpretation( mapView, text );
+        Interpretation interpretation = new Interpretation( map, text );
         
         interpretationService.saveInterpretation( interpretation );
 
-        response.setStatus( HttpServletResponse.SC_CREATED );
-        response.setHeader( "Location", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
+        ContextUtils.createdResponse( response, "Interpretation created", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
     }
 
     @RequestMapping( value = "/reportTable/{uid}", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
     public void shareReportTableInterpretation( 
         @PathVariable( "uid" ) String reportTableUid, 
+        @RequestParam( value = "pe", required = false ) String isoPeriod,
         @RequestParam( value = "ou", required = false ) String orgUnitUid, 
         @RequestBody String text, HttpServletResponse response ) throws IOException
     {
@@ -163,7 +182,9 @@ public class InterpretationController
             ContextUtils.conflictResponse( response, "Report table identifier not valid: " + reportTableUid );
             return;
         }
-        
+
+        Period period = PeriodType.getPeriodFromIsoString( isoPeriod );
+                
         OrganisationUnit orgUnit = null;
         
         if ( orgUnitUid != null )
@@ -177,14 +198,51 @@ public class InterpretationController
             }
         }
         
-        Interpretation interpretation = new Interpretation( reportTable, orgUnit, text );
+        Interpretation interpretation = new Interpretation( reportTable, period, orgUnit, text );
         
         interpretationService.saveInterpretation( interpretation );
 
-        response.setStatus( HttpServletResponse.SC_CREATED );
-        response.setHeader( "Location", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
+        ContextUtils.createdResponse( response, "Interpretation created", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
     }
-    
+
+    @RequestMapping( value = "/dataSetReport/{uid}", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
+    public void shareDataSetReportInterpretation( 
+        @PathVariable( "uid" ) String dataSetUid,
+        @RequestParam( "pe" ) String isoPeriod,
+        @RequestParam( "ou" ) String orgUnitUid,
+        @RequestBody String text, HttpServletResponse response ) throws IOException
+    {
+        DataSet dataSet = dataSetService.getDataSet( dataSetUid );
+        
+        if ( dataSet == null )
+        {
+            ContextUtils.conflictResponse( response, "Data set identifier not valid: " + dataSetUid );
+            return;
+        }
+        
+        Period period = PeriodType.getPeriodFromIsoString( isoPeriod );
+        
+        if ( period == null )
+        {
+            ContextUtils.conflictResponse( response, "Period identifier not valid: " + isoPeriod );
+            return;
+        }
+        
+        OrganisationUnit orgUnit = organisationUnitService.getOrganisationUnit( orgUnitUid );
+        
+        if ( orgUnit == null )
+        {
+            ContextUtils.conflictResponse( response, "Organisation unit identifier not valid: " + orgUnitUid );
+            return;
+        }
+        
+        Interpretation interpretation = new Interpretation( dataSet, period, orgUnit, text );
+        
+        interpretationService.saveInterpretation( interpretation );
+
+        ContextUtils.createdResponse( response, "Interpretation created", InterpretationController.RESOURCE_PATH + "/" + interpretation.getUid() );
+    }
+
     @RequestMapping( value = "/{uid}/comment", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
     public void postComment( 
         @PathVariable( "uid" ) String uid, 
@@ -192,7 +250,6 @@ public class InterpretationController
     {
         interpretationService.addInterpretationComment( uid, text );
 
-        response.setStatus( HttpServletResponse.SC_CREATED );
-        response.setHeader( "Location", InterpretationController.RESOURCE_PATH + "/" + uid );
+        ContextUtils.createdResponse( response, "Commented created", InterpretationController.RESOURCE_PATH + "/" + uid );
     }
 }

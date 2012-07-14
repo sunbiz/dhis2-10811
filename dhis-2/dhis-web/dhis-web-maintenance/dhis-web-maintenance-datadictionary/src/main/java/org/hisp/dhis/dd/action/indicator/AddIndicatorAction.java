@@ -36,6 +36,8 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorGroup;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.indicator.IndicatorType;
+import org.hisp.dhis.mapping.MapLegendSet;
+import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.system.util.AttributeUtils;
 
 import com.opensymphony.xwork2.Action;
@@ -64,6 +66,13 @@ public class AddIndicatorAction
         this.attributeService = attributeService;
     }
 
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
+    }
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -80,13 +89,6 @@ public class AddIndicatorAction
     public void setShortName( String shortName )
     {
         this.shortName = shortName;
-    }
-
-    private String alternativeName;
-
-    public void setAlternativeName( String alternativeName )
-    {
-        this.alternativeName = alternativeName;
     }
 
     private String code;
@@ -115,6 +117,13 @@ public class AddIndicatorAction
     public void setIndicatorTypeId( Integer indicatorTypeId )
     {
         this.indicatorTypeId = indicatorTypeId;
+    }
+
+    private Integer selectedLegendSetId;
+
+    public void setSelectedLegendSetId( Integer selectedLegendSetId )
+    {
+        this.selectedLegendSetId = selectedLegendSetId;
     }
 
     private String url;
@@ -174,11 +183,6 @@ public class AddIndicatorAction
     {
         IndicatorType indicatorType = indicatorService.getIndicatorType( indicatorTypeId );
 
-        if ( alternativeName != null && alternativeName.trim().length() == 0 )
-        {
-            alternativeName = null;
-        }
-
         if ( code != null && code.trim().length() == 0 )
         {
             code = null;
@@ -189,15 +193,17 @@ public class AddIndicatorAction
             description = null;
         }
 
+        MapLegendSet legendSet = mappingService.getMapLegendSet( selectedLegendSetId );
+        
         Indicator indicator = new Indicator();
 
         indicator.setName( name );
-        indicator.setAlternativeName( alternativeName );
         indicator.setShortName( shortName );
         indicator.setCode( code );
         indicator.setDescription( description );
         indicator.setAnnualized( annualized );
         indicator.setIndicatorType( indicatorType );
+        indicator.setLegendSet( legendSet );
         indicator.setUrl( url );
         indicator.setNumerator( numerator );
         indicator.setNumeratorDescription( numeratorDescription );

@@ -1,8 +1,0 @@
-
-<a href="index.action"><h2>$i18n.getString( "activity_planning" )&nbsp;</h2></a>
-<ul>
-    <li><a href="visitplan.action">$i18n.getString( "visit_plan" )&nbsp;</a></li>     
-</ul>
-
-<br>
-#parse( "/dhis-web-commons/ouwt/orgunittree.vm" )

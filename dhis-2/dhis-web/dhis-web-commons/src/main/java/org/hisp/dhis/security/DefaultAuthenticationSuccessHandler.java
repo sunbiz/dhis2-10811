@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import org.springframework.security.core.userdetails.User;
 
 /**
  * Since ActionContext is not available at this point, we set a mark in the
@@ -59,6 +60,7 @@ public class DefaultAuthenticationSuccessHandler
     {
         HttpSession session = request.getSession();
 
+        session.setAttribute( "userIs", ((User)authentication.getPrincipal()).getUsername());
         session.setAttribute( LoginInterceptor.JLI_SESSION_VARIABLE, Boolean.TRUE );
         session.setMaxInactiveInterval( DefaultAuthenticationSuccessHandler.DEFAULT_SESSION_TIMEOUT );
 

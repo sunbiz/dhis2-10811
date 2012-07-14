@@ -51,4 +51,6 @@ public interface ProgramStageService
     ProgramStage getProgramStageByName( String name );
     
     Collection<ProgramStage> getAllProgramStages();
+    
+    Collection<ProgramStage> getProgramStages( Program program );
 }

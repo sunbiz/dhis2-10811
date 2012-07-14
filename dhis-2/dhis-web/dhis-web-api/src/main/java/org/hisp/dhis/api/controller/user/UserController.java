@@ -34,12 +34,19 @@ import org.hisp.dhis.common.Pager;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -53,6 +60,21 @@ public class UserController
 
     @Autowired
     private UserService userService;
+
+    @Override
+    @PreAuthorize( "hasRole('ALL') or hasRole('F_USER_VIEW')" )
+    public String getObjectList( @RequestParam Map<String, String> parameters, Model model, HttpServletRequest request ) throws Exception
+    {
+        return super.getObjectList( parameters, model, request );
+    }
+
+    @Override
+    @PreAuthorize( "hasRole('ALL') or hasRole('F_USER_VIEW')" )
+    public String getObject( @PathVariable( "uid" ) String uid, @RequestParam Map<String, String> parameters, Model model,
+        HttpServletRequest request, HttpServletResponse response ) throws Exception
+    {
+        return super.getObject( uid, parameters, model, request, response );
+    }
 
     @Override
     protected List<User> getEntityList( WebMetaData metaData, WebOptions options )

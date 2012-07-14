@@ -147,6 +147,7 @@
 	#displayBoolProperty( "last_3_months" $importObject.object.last3Months )
 	#displayBoolProperty( "last_6_months" $importObject.object.last6Months )
 	#displayBoolProperty( "last_12_months" $importObject.object.last12Months )
+	#displayBoolProperty( "last_3_months" $importObject.object.last3Months )
 	#displayBoolProperty( "so_far_this_year" $importObject.object.soFarThisYear )
 	#displayBoolProperty( "last_3_to_6_months" $importObject.object.last3To6Months )
 	#displayBoolProperty( "last_6_to_9_months" $importObject.object.last3To6Months )

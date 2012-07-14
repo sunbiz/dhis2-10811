@@ -7,7 +7,8 @@
 
 	<package name="dhis-web-api-mobile" extends="dhis-web-commons"
 		namespace="/dhis-web-api-mobile">
-		<action name="updateClient" class="org.hisp.dhis.api.mobile.action.UpdateClientAction">
+		<action name="updateClient"
+			class="org.hisp.dhis.api.mobile.action.UpdateClientAction">
 			<result name="success" type="stream">
 				<param name="contentType">application/.jar</param>
 				<param name="inputName">inputStream</param>

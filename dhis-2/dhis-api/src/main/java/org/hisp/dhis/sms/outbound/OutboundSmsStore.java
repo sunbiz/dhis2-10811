@@ -32,9 +32,14 @@ import java.util.List;
 public interface OutboundSmsStore
 {
     int save( OutboundSms sms );
+    
+    void update( OutboundSms sms );
 
     List<OutboundSms> getAll();
 
     OutboundSms get( int id );
     
+    List<OutboundSms> get( OutboundSmsStatus status );
+    
+    void delete( OutboundSms sms );
 }

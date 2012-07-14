@@ -1,0 +1,111 @@
+<fieldset>
+	<legend>$i18n.getString("program")</legend>
+	<table>
+		<tr>
+			<td class='text-column'>$programInstance.program.dateOfEnrollmentDescription:</td>
+			<td><input name="enrollmentDate" id="enrollmentDate" readonly value="$!format.formatDate( $programInstance.enrollmentDate )" style="width:256px;"></td>
+		</tr>
+		<tr>
+			<td class='text-column'>$programInstance.program.dateOfIncidentDescription:</td>
+			<td><input name="dateOfIncident" id="dateOfIncident" readonly value="$!format.formatDate( $programInstance.dateOfIncident )" style="width:256px;"></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input type="button" class='button' value="$i18n.getString( 'update' )" onclick='updateEnrollment($programInstance.patient.id, $programInstance.program.id, $programInstance.id, "$programInstance.program.displayName")'/>
+				<input type="button" class='button' value="$i18n.getString( 'complete' )" onclick='unenrollmentForm($programInstance.id)'/>
+			</td>
+		</tr>
+	</table>
+</fieldset>
+<br>
+#set($programStageInstances = $programInstance.programStageInstances)
+#if( $programStageInstances.size() > 0 )
+	<table class='mainPageTable listTable' id='progarmStageListDiv' name='progarmStageListDiv' >
+		<colgroup>
+			<col width="10px">
+			<col width="200px">
+			<col width="150px">
+			<col width="100px">
+			<col>
+			<col width="60px">  
+			<col>  
+		</colgroup>
+		<tr>
+			<th>$i18n.getString( "nr" )</th>
+			<th>$i18n.getString( "program_stage" )</th>                   
+			<th>$i18n.getString( "due_date" )</th>       
+			<th>$i18n.getString( "status" )</th>
+			<th colspan='2'>$i18n.getString( "message" )</th>
+			#if( $auth.hasAccess( "dhis-web-caseentry", "removeCurrentEncounter" ) )
+			<th>$i18n.getString( "remove" )</th>
+			#end
+		</tr>
+		<tbody>
+	#set( $rowCount = 0 )
+	#set( $mark = false )
+	#foreach( $programStageInstance in $programStageInstances )
+		#set( $rowCount = $rowCount + 1 )   
+		<tr id="tr${programStageInstance.id}" #alternate( $mark ) >
+			##rowCount
+			<td>$rowCount</td>        
+			##stage name
+			<td>
+				$encoder.htmlEncode( $programStageInstance.programStage.displayName )						
+			</td>
+			#set( $duedateId = "value_" + $programStageInstance.id + "_date" )        
+			#set($status = $programStageInstance.getEventStatus())
+			<td>        
+				<input type="text" id="$duedateId" style='width:80%;' value="$!format.formatDate( $programStageInstance.dueDate )" onchange="saveDueDate( $programInstance.id, $programStageInstance.id, '$encoder.jsEncode( $programStageInstance.programStage.displayName )' )" />
+				<script type="text/javascript">
+					#if($status==1 || $status==2 || $status==5 )
+						disable('$duedateId');
+					#else
+						datePickerFuture( '$duedateId' );
+					#end
+				</script> 
+			</td> 
+			<td>
+				<select id="stat_$programStageInstance.id" name="status_$programStageInstance.id" onchange="setEventStatus(this, $programStageInstance.id)" style="width:100%">
+					#if($status==4)
+						<option value='4'>$i18n.getString("overdue")</option>
+						<option value='5'>$i18n.getString("skipped")</option>
+					#elseif($status==3 || $status==5 )
+						<option value='3'>$i18n.getString("scheduled_in_future")</option>
+						<option value='5'>$i18n.getString("skipped")</option>
+					#else
+						<option value='1'>$i18n.getString("completed")</option>
+						<option value='2'>$i18n.getString("incompleted")</option>
+					#end
+				</select>
+				<script>
+					setFieldValue("stat_$programStageInstance.id", $status);
+				</script>
+			</td>
+			<td>
+				<input type='text' id='message_$programStageInstance.id' name='message_$programStageInstance.id' class="{validate:{required:true,maxlength:160}}" style="width:100%">
+			</td>
+			<td>
+				<input type='button' value="+" class='tiny-button' title='$i18n.getString("post_comment")' onclick="addComment(byId('message_$programStageInstance.id'),'$programStageInstance.id')">
+				<input type="button" value="&raquo;" class='tiny-button' title="$i18n.getString( 'send_message' )" onclick="setFieldValue( 'programStageInstanceId',$programStageInstance.id);sendSmsOnePatient(byId('message_$programStageInstance.id'),'$programStageInstance.id');"/>
+			</td>
+			#if( $auth.hasAccess( "dhis-web-caseentry", "removeCurrentEncounter" ) )
+			<td>
+				<a href="javascript:removeEvent($programStageInstance.id, false)" title='$i18n.getString( "remove" )'><img src="../images/delete.png" id='del_$programStageInstance.id' name='del_$programStageInstance.id' alt='$i18n.getString( "remove" )' #if( $status==1 ) class='hidden' #end></a>
+			</td>
+			#end
+		</tr>
+		#set( $mark = !$mark  )
+	#end
+	</tbody>
+	</table>
+#end
+
+<script>
+	#if( $!programInstance )
+		showById('unenrollBtn');
+	#end
+	#if( $programInstance.completed=='false')
+		datePickerInRangeValid( 'dateOfIncident' , 'enrollmentDate' );
+	#end
+</script>

@@ -41,9 +41,14 @@ public class PathUtils
     //
     // -------------------------------------------------------------------------
 
-    public static String getClassPath( String packagE )
+    public static String getClassPath( Class<?> clazz )
     {
-        return packagE.replace( PACKAGE_SEPARATOR, FILE_SEPARATOR );
+        return clazz.getName().replace( PACKAGE_SEPARATOR, FILE_SEPARATOR );
+    }
+
+    public static String getClassPath( String clazzName )
+    {
+        return clazzName.replace( PACKAGE_SEPARATOR, FILE_SEPARATOR );
     }
 
     public static String getParent( String path )

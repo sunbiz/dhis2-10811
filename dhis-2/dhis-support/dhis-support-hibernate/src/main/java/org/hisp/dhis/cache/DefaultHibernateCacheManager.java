@@ -32,7 +32,6 @@ import org.hibernate.stat.Statistics;
 
 /**
  * @author Lars Helge Overland
- * @version $Id: CrossTabDataValue.java 5514 2008-08-04 10:48:07Z larshelg $
  */
 public class DefaultHibernateCacheManager
     implements HibernateCacheManager

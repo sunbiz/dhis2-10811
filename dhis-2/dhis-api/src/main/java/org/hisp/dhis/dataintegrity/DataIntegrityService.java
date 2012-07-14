@@ -153,12 +153,6 @@ public interface DataIntegrityService
     Collection<OrganisationUnit> getOrganisationUnitsWithoutGroups();
 
     /**
-     * Gets all organisation units which are not members of one or more groups
-     * which enter into a compulsory group set.
-     */
-    Collection<OrganisationUnit> getOrganisationUnitsViolatingCompulsoryGroupSets();
-
-    /**
      * Gets all organisation units which are members of more than one group
      * which enter into an exclusive group set.
      */

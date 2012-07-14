@@ -1,3 +1,37 @@
+<style type="text/css">
+	div#drillDownMenu
+	{
+	  position: absolute;
+	  display: none;
+	}
+	
+	th.formatLabel
+	{
+	  text-align: center;
+	}
+	
+	.menuDropDownBox li
+	{
+		cursor:pointer
+	}
+
+	.menuDropDownBox li:hover
+	{
+		text-decoration: none;
+		background-color: #4A89BA;
+	}
+</style>
+
+<script type="text/javascript">
+
+	jQuery( document ).ready( function()
+	{
+		setTableStyles();
+		loadListeners();
+	} );
+
+</script>
+
 #if ( $grid.getHeight() == 0 || $grid.getWidth() == 0 )
 <br/><br/>$i18n.getString( "no_data_found" )
 #else
@@ -45,8 +79,8 @@
 
 <div id="drillDownMenu" class="menuDropDownArea" onmouseover="cancelHideDropDownTimeout()" onmouseout="hideDropDownTimeout()">
   <ul class="menuDropDownBox">
-	<li class="menuDropDownItem" onclick="viewDrillDownData( 'descendant_level' )">$i18n.getString( "view_data_at_descendant_levels" )&nbsp;</li>
-	<li class="menuDropDownItem" onclick="viewDrillDownData( 'current_level' )">$i18n.getString( "view_data_at_this_level" )&nbsp;</li>
+	<li onclick="viewDrillDownData( 'descendant_level' )">$i18n.getString( "view_data_at_descendant_levels" )&nbsp;</li>
+	<li onclick="viewDrillDownData( 'current_level' )">$i18n.getString( "view_data_at_this_level" )&nbsp;</li>
   </ul>
 </div>
 

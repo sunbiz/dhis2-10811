@@ -31,7 +31,7 @@ import java.util.Collection;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.patient.PatientAttributeGroup;
 import org.hisp.dhis.patient.PatientAttributeGroupStore;
 import org.hisp.dhis.program.Program;
@@ -42,7 +42,7 @@ import org.hisp.dhis.program.Program;
  * @version $HibernatePatientAttributeGroupStore.java Mar 26, 2012 1:45:26 PM$
  */
 public class HibernatePatientAttributeGroupStore
-    extends HibernateGenericStore<PatientAttributeGroup>
+    extends HibernateIdentifiableObjectStore<PatientAttributeGroup>
     implements PatientAttributeGroupStore
 {
 

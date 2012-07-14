@@ -8,6 +8,7 @@ function getDataElementsByDataset()
 	var dataSets = document.getElementById( 'dataSets' );
 	var dataSetId = dataSets.options[ dataSets.selectedIndex ].value;
 	setFieldValue('aggregationDataElementId','');
+	setFieldValue('aggregationDataElementInput','');
 	
 	if( dataSetId == "" ){
 		disable( 'dataElementsButton' );
@@ -66,8 +67,21 @@ function autoCompletedField()
 			}
 		}).addClass( "ui-widget" );
 
+	input.data( "autocomplete" )._renderItem = function( ul, item ) {
+		return $( "<li></li>" )
+			.data( "item.autocomplete", item )
+			.append( "<a>" + item.label + "</a>" )
+			.appendTo( ul );
+	};
+	
+	var wrapper = this.wrapper = $( "<span style='width:200px'>" )
+			.addClass( "ui-combobox" )
+			.insertAfter( input );
+	
 	var button = $( "#dataElementsButton" )
+		.attr( "tabIndex", -1 )
 		.attr( "title", i18n_show_all_items )
+		.appendTo( wrapper )
 		.button({
 			icons: {
 				primary: "ui-icon-triangle-1-s"
@@ -80,10 +94,8 @@ function autoCompletedField()
 				input.autocomplete( "close" );
 				return;
 			}
-
 			// work around a bug (likely same cause as #5265)
 			$( this ).blur();
-
 			// pass empty string as value to search for, displaying all results
 			input.autocomplete( "search", "" );
 			input.focus();
@@ -101,8 +113,18 @@ function getParams()
 	clearListById('caseProperty');
 	var programId = getFieldValue( 'programId' );
 	if( programId == ''){
+		var caseProperty = jQuery( '#caseProperty' );
+		caseProperty.append( '<option suggested="" title="' + i18n_total_of_patient_registration + '" value="[PT:count]">'+ i18n_total_of_patient_registration +'</option>' );
+		caseProperty.append( '<option suggested="F, M" title="' + i18n_gender + '" value="[CP:gender]">'+ i18n_gender +'</option>' );
+		caseProperty.append( '<option suggested="" title="' + i18n_dob_type + '" value="[CP:dobType]">'+ i18n_dob_type +'</option>' );
+		caseProperty.append( '<option suggested="" title="' + i18n_age_days + '" value="[CP:age]">'+ i18n_age_days +'</option>' );
+		
 		disable('programProperty');
 		disable('programStageProperty');
+	}
+	
+	if(jQuery("#programStageId").attr("programType")==3){
+		jQuery("[name=multiProgram]").remove();
 	}
 	
 	jQuery.getJSON( 'getParamsByProgram.action',{ programId:programId }
@@ -137,7 +159,7 @@ function getParams()
 					var id = json.fixedAttributes[i].id;
 					var name = json.fixedAttributes[i].name;
 					
-					caseProperty.append( "<option value='" + id + "' title='" + name + "'>" + name + "</option>" );
+					caseProperty.append( "<option value='" + id + "' title='" + name + "' suggested='" + json.fixedAttributes[i].suggested + "'>" + name + "</option>" );
 				}
 				
 				for ( i in json.patientAttributes )
@@ -159,6 +181,7 @@ function getParams()
 function getPatientDataElements()
 {
 	clearListById( 'dataElements' );
+	clearListById( 'deSumId' );
 	var programStageId = getFieldValue('programStageId');
 	
 	jQuery.getJSON( 'getPatientDataElements.action',
@@ -175,10 +198,16 @@ function getPatientDataElements()
 				disable('programStageProperty');
 			}
 			var dataElements = jQuery('#dataElements');
+			var deSumId = jQuery('#deSumId');
 			for ( i in json.dataElements )
 			{ 
 				dataElements.append( "<option value='" + json.dataElements[i].id + "' title='" + json.dataElements[i].name + "' suggested='" + json.dataElements[i].optionset + "'>" + json.dataElements[i].name + "</option>" );
+				if( json.dataElements[i].type=='int')
+				{
+					deSumId.append( "<option value='" + json.dataElements[i].id + "' title='" + json.dataElements[i].name + "' suggested='" + json.dataElements[i].optionset + "'>" + json.dataElements[i].name + "</option>" );
+				}
 			}
+			
 		});
 }
 
@@ -242,7 +271,7 @@ function showCaseAggregationDetails( caseAggregationId )
 		setInnerHTML( 'aggregationDataElementField', json.caseAggregation.aggregationDataElement );
 		setInnerHTML( 'optionComboField', json.caseAggregation.optionCombo );	
 		setInnerHTML( 'aggregationExpressionField', json.caseAggregation.aggregationExpression );
-		
+		setInnerHTML( 'deSumField', json.caseAggregation.deSum );
 		showDetails();
 	});
 }
@@ -268,16 +297,24 @@ function getConditionDescription()
 
 function testCaseAggregationCondition()
 {
+	var operator = jQuery('[name=operator]:checked').val();
 	$.postUTF8( 'testCaseAggregationCondition.action', 
 		{ 
-			condition:getFieldValue('aggregationCondition') 
+			condition: getFieldValue('aggregationCondition'),
+			deSumId: getFieldValue('deSumId'),
+			operator: operator
 		},function (json)
 		{
 			var type = json.response;
 			
 			if ( type == "input" )
 			{
-				showWarningMessage( i18n_run_fail );
+				if( json.message == '' ){
+					showWarningMessage( i18n_run_fail );
+				}
+				else{
+					showWarningMessage( json.message );
+				}
 			}
 			else
 			{
@@ -320,6 +357,10 @@ function insertSingleValue( elementId )
 function insertMultiValues( elementId )
 {
 	var list = jQuery('select[id=' + elementId + '] option:selected')
+	if( list.length == 0 )
+	{
+		return;
+	}
 	if( list.length > 1 )
 	{
 		var selectedValues = "";
@@ -352,4 +393,15 @@ function getCaseAggConditionByDataset()
 function showAddCaseAggregationForm()
 {
 	window.location.href='showAddCaseAggregationForm.action?dataSetId=' + getFieldValue( 'dataSetId' );
+}
+
+function operatorOnchange(operator)
+{
+	if( operator=='sum' || operator=='avg' 
+		|| operator=='min' || operator=='max' ){
+		enable('deSumId');
+	}
+	else{
+		disable('deSumId');
+	}
 }

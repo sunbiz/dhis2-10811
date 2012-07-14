@@ -31,7 +31,7 @@ import java.util.Collection;
 
 import org.hisp.dhis.common.GenericStore;
 import org.hisp.dhis.document.Document;
-import org.hisp.dhis.mapping.MapView;
+import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.report.Report;
 import org.hisp.dhis.reporttable.ReportTable;
 
@@ -43,7 +43,7 @@ public interface DashboardContentStore
 {
     Collection<DashboardContent> getByDocument( Document document );
     
-    Collection<DashboardContent> getByMapView( MapView mapView );
+    Collection<DashboardContent> getByMap( Map map );
     
     Collection<DashboardContent> getByReport( Report report );
     

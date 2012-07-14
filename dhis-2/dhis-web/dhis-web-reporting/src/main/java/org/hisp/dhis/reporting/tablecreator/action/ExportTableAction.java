@@ -31,14 +31,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.constant.ConstantService;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
-import org.hisp.dhis.system.util.DateUtils;
-import org.hisp.dhis.util.SessionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
@@ -83,6 +90,9 @@ public class ExportTableAction
         this.format = format;
     }
 
+    @Autowired
+    private ContextUtils contextUtils;
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -101,6 +111,11 @@ public class ExportTableAction
 
     private String pe;
     
+    public String getPe()
+    {
+        return pe;
+    }
+
     public void setPe( String pe )
     {
         this.pe = pe;
@@ -125,13 +140,6 @@ public class ExportTableAction
         this.type = type;
     }
     
-    private Boolean useLast = false;
-
-    public void setUseLast( boolean useLast )
-    {
-        this.useLast = useLast;
-    }
-
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -158,6 +166,22 @@ public class ExportTableAction
     public String execute()
         throws Exception
     {
+        // ---------------------------------------------------------------------
+        // Configure response
+        // ---------------------------------------------------------------------
+
+        HttpServletResponse response = ServletActionContext.getResponse();
+        
+        contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_HTML, CacheStrategy.RESPECT_SYSTEM_SETTING, null, false );
+
+        uid = StringUtils.trimToNull( uid );
+        pe = StringUtils.trimToNull( pe );
+        ou = StringUtils.trimToNull( ou );
+        
+        // ---------------------------------------------------------------------
+        // Assemble report
+        // ---------------------------------------------------------------------
+
         ReportTable reportTable = reportTableService.getReportTable( uid );
         
         if ( TYPE_JRXML.equals( format ) )
@@ -166,21 +190,12 @@ public class ExportTableAction
             params.putAll( reportTable.getOrganisationUnitGroupMap( organisationUnitGroupService.getCompulsoryOrganisationUnitGroupSets() ) );
         }
         
-        //TODO stop putting in memory, too expensive
+        Period period = PeriodType.getPeriodFromIsoString( pe );
         
-        if ( useLast )
-        {
-            grid = (Grid) SessionUtils.getSessionVar( SessionUtils.KEY_REPORT_TABLE_GRID );
-        }
-        else
-        {
-            Date date = pe != null ? DateUtils.getMediumDate( pe ) : new Date();
-            
-            grid = reportTableService.getReportTableGrid( uid, format, date, ou );            
-        }
+        Date date = period != null ? period.getStartDate() : new Date();
+        
+        grid = reportTableService.getReportTableGrid( uid, format, date, ou );
 
-        SessionUtils.setSessionVar( SessionUtils.KEY_REPORT_TABLE_GRID, grid );
-        
         return type != null ? type : TYPE_DEFAULT;
     }
 }

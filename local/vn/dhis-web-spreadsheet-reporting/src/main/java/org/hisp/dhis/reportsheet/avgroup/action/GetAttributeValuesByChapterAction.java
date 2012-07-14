@@ -28,7 +28,8 @@
 package org.hisp.dhis.reportsheet.avgroup.action;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.hisp.dhis.reportsheet.AttributeValueGroupOrder;
 import org.hisp.dhis.reportsheet.AttributeValueGroupOrderService;
@@ -64,9 +65,9 @@ public class GetAttributeValuesByChapterAction
         this.chapterId = chapterId;
     }
 
-    private Collection<String> values = new ArrayList<String>();
+    private List<String> values = new ArrayList<String>();
 
-    public Collection<String> getValues()
+    public List<String> getValues()
     {
         return values;
     }
@@ -86,6 +87,8 @@ public class GetAttributeValuesByChapterAction
             values = group.getAttributeValues();
         }
 
+        Collections.sort( values );
+        
         return SUCCESS;
     }
 }

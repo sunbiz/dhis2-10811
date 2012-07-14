@@ -17,7 +17,7 @@
 			<tr>
 				<td>#filterDiv( "catalogType" )</td>
 				<!--<td>$i18n.getString( "filter_by_name" ): <input type="text" onkeyup="filterValues( this.value , 1)" style="width:250px"/></td>-->
-				<td colspan="9" style="text-align:right">
+				<td colspan="9" style="text-align:right"><br/>
 					<input type="button" value="$i18n.getString( 'add_new' )" onclick="window.location.href='addCatalogTypeForm.action'" style="width:80px"/></a>
 				</td>
 			</tr>
@@ -36,10 +36,10 @@
               <tr id="tr${catalogType.id}">
                 <td onclick="showCalatogTypeDetails( $catalogType.id )">$encoder.htmlEncode( $catalogType.name )</td>
                 <td style="text-align:right">
-                  <a href="showUploadCatalogTypeImageForm.action?id=$catalogType.id" title="$i18n.getString( 'upload_image' )"><img src="images/upload.png" alt="$i18n.getString( 'upload_image' )"></a>		
+                  <a href="showUploadCatalogTypeImageForm.action?id=$catalogType.id" title="$i18n.getString( 'upload_image_default' )"><img src="images/upload.png" alt="$i18n.getString( 'upload_image' )"></a>		
                   <a href="editCatalogTypeForm.action?id=$catalogType.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
                   <a href="javascript:removeItem( '$catalogType.id', '$encoder.jsEncode( $catalogType.name )', i18n_confirm_delete , 'removeCatalogType.action' )" title="$i18n.getString( "remove" )"><img src="../images/delete.png" alt="$i18n.getString( "remove" )"></a>
-				  <!--<a href="viewCatalogDataEntryForm.action?catalogTypeId=$catalogType.id" title="$i18n.getString( 'design_data_entry_form' )"><img src="../images/edit_layout.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>-->					
+				  <a href="viewCatalogDataEntryForm.action?catalogTypeId=$catalogType.id" title="$i18n.getString( 'design_data_entry_form' )"><img src="../images/edit_layout.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>					
                   <a href="javascript:showCalatogTypeDetails( $catalogType.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
                 </td>
               </tr>

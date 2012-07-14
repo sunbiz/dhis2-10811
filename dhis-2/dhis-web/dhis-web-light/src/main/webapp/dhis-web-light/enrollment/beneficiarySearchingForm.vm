@@ -31,6 +31,7 @@
 <div id="footer">
 <h2>$i18n.getString( "navigate_to" )</h2>
 <ul>
+	
 	<li><a href="trackingMenu.action"> $i18n.getString("tracking_menu")</a> </li>
 	<li><a href="index.action">$i18n.getString("home")</a></li>
 </ul>

@@ -7,7 +7,7 @@ import org.hisp.dhis.dataelement.DataElementService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 public class IdentifiableObjectManagerTest
     extends DhisSpringTest

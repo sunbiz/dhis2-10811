@@ -27,6 +27,7 @@ package org.hisp.dhis.reportsheet.importing.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.hisp.dhis.reportsheet.importitem.ImportItem;
@@ -52,7 +53,7 @@ public class ViewDataNormalAction
         try
         {
             xmlStructureResponse = new XMLStructureResponseImport( selectionManager.getUploadFilePath(),
-                importReportService.getAllSheet(), importItems, true ).getXml();
+                new HashSet<Integer>( importReportService.getAllSheet() ), importItems ).getXml();
         }
         catch ( Exception ex )
         {

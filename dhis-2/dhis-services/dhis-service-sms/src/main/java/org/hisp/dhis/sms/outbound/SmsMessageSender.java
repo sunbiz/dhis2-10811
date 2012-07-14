@@ -40,6 +40,7 @@ import org.hisp.dhis.sms.MessageSender;
 import org.hisp.dhis.sms.SmsServiceException;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserService;
+import org.springframework.scheduling.annotation.Async;
 
 public class SmsMessageSender
     implements MessageSender
@@ -68,6 +69,10 @@ public class SmsMessageSender
     // MessageSender implementation
     // -------------------------------------------------------------------------
 
+    /**
+     * Note this methods is invoked asynchronously.
+     */
+    @Async
     @SuppressWarnings( "unchecked" )
     public String sendMessage( String subject, String text, User sender, boolean isPhone, Set<?> recipients,
         String gatewayId )
@@ -89,16 +94,12 @@ public class SmsMessageSender
         }
         else
         {
-            phones = getRecipients( (Set<User>) recipients );
+            phones = getRecipientsWithoutNotification( (Set<User>) recipients );
         }
 
         if ( !phones.isEmpty() && phones.size() > 0 )
         {
             message = sendMessage( text, phones, gatewayId );
-        }
-        else if ( log.isDebugEnabled() )
-        {
-            log.debug( "Not sending message to any of the recipients" );
         }
         else
         {
@@ -123,11 +124,23 @@ public class SmsMessageSender
             if ( smsNotification && phoneNumber != null && !phoneNumber.trim().isEmpty() )
             {
                 recipients.add( phoneNumber );
+            }
+        }
 
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Adding user as sms recipient: " + user + " with phone number: " + phoneNumber );
-                }
+        return recipients;
+    }
+
+    private Set<String> getRecipientsWithoutNotification( Set<User> users )
+    {
+        Set<String> recipients = new HashSet<String>();
+
+        for ( User user : users )
+        {
+            String phoneNumber = user.getPhoneNumber();
+
+            if ( phoneNumber != null && !phoneNumber.trim().isEmpty() )
+            {
+                recipients.add( phoneNumber );
             }
         }
 
@@ -170,11 +183,6 @@ public class SmsMessageSender
         try
         {
             message = outboundSmsService.sendMessage( sms, id );
-
-            if ( log.isDebugEnabled() )
-            {
-                log.debug( "Sent message to " + recipients + ": " + text );
-            }
         }
         catch ( SmsServiceException e )
         {

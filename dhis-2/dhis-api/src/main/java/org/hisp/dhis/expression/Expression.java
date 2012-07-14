@@ -33,8 +33,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
+import org.apache.commons.lang.Validate;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
@@ -62,7 +64,7 @@ import java.util.Set;
  * @author Margrethe Store
  * @version $Id: Expression.java 5011 2008-04-24 20:41:28Z larshelg $
  */
-@JacksonXmlRootElement( localName = "expression", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "expression", namespace = DxfNamespaces.DXF_2_0)
 public class Expression
     implements Serializable
 {
@@ -72,8 +74,8 @@ public class Expression
     private static final long serialVersionUID = -4868682510629094282L;
 
     public static final String SEPARATOR = ".";
-    public static final String EXP_OPEN = "[";
-    public static final String EXP_CLOSE = "]";
+    public static final String EXP_OPEN = "#{";
+    public static final String EXP_CLOSE = "}";
     public static final String PAR_OPEN = "(";
     public static final String PAR_CLOSE = ")";
 
@@ -91,6 +93,12 @@ public class Expression
      * A description of the Expression.
      */
     private String description;
+    
+    /**
+     * Indicates whether the expression should evaluate to null if there are 
+     * missing data values in the expression.
+     */
+    private boolean nullIfBlank;
 
     /**
      * A reference to the DataElements in the Expression.
@@ -273,5 +281,31 @@ public class Expression
     public void setDescription( String description )
     {
         this.description = description;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty
+    public boolean isNullIfBlank()
+    {
+        return nullIfBlank;
+    }
+
+    public void setNullIfBlank( boolean nullIfBlank )
+    {
+        this.nullIfBlank = nullIfBlank;
+    }
+    
+    public void mergeWith( Expression other )
+    {
+        Validate.notNull( other );
+        
+        expression = other.getExpression() == null ? expression : other.getExpression();
+        description = other.getDescription() == null ? description : other.getDescription();
+        nullIfBlank = other.isNullIfBlank();
+        dataElementsInExpression = other.getDataElementsInExpression() == null ?
+            dataElementsInExpression : new HashSet<DataElement>( other.getDataElementsInExpression() );
+        optionCombosInExpression = other.getOptionCombosInExpression() == null ? 
+            optionCombosInExpression : new HashSet<DataElementCategoryOptionCombo>( other.getOptionCombosInExpression() );        
     }
 }

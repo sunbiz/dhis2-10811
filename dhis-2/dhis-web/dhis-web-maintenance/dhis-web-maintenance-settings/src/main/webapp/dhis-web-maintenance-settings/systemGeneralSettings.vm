@@ -6,15 +6,16 @@
 				infrastructuralDataElements: getFieldValue( 'infrastructuralDataElements' ),
 				infrastructuralPeriodType: getFieldValue( 'infrastructuralPeriodType' ),
 				feedbackRecipients: getFieldValue( 'feedbackRecipients' ),
-                completenessRecipients: getFieldValue( 'completenessRecipients' ),
                 offlineOrganisationUnitLevel: getFieldValue( 'offlineOrganisationUnitLevel' ),
 				omitIndicatorsZeroNumeratorDataMart: jQuery( '#omitIndicatorsZeroNumeratorDataMart' ).is( ':checked' ),
-				disableDataEntryWhenCompleted: jQuery( '#disableDataEntryWhenCompleted' ).is( ':checked' ),
 				factorDeviation: getFieldValue( 'factorDeviation' ),
-				completenessOffset: getFieldValue( 'completenessOffset' )
+				completenessOffset: getFieldValue( 'completenessOffset' ),
+				phoneNumberAreaCode: getFieldValue( 'phoneNumberAreaCode' ),
+                multiOrganisationUnitForms: getFieldValue( 'multiOrganisationUnitForms' )
 			}, function( json ) {
-				if ( json.response == "success" )
+				if ( json.response == "success" ) {
 					setHeaderDelayMessage( json.message );
+				}
 			});
 		});
 	});
@@ -22,68 +23,51 @@
 
 <h3>$i18n.getString( "general_settings" ) #openHelp( "systemGeneralSettings" )</h3>
 
-<!-- cache_strategy -->
-<h4>$i18n.getString( "cache_strategy" )</h4>
+<div class="settingLabel">$i18n.getString( "cache_strategy" )</div>
 
-<p>
-<select id="cacheStrategy" name="cacheStrategy" style="width:30em">
+<div class="setting">
+<select id="cacheStrategy" name="cacheStrategy">
 	<option value="NO_CACHE" #if( $keyCacheStrategy == "NO_CACHE" )selected="selected"#end>$i18n.getString( "no_cache" )</option>
 	<option value="CACHE_6AM_TOMORROW" #if( $keyCacheStrategy == "CACHE_6AM_TOMORROW" )selected="selected"#end>$i18n.getString( "cache_until_6am_tomorrow" )</option>
 	<option value="CACHE_TWO_WEEKS" #if( $keyCacheStrategy == "CACHE_TWO_WEEKS" )selected="selected"#end>$i18n.getString( "cache_for_two_weeks" )</option>
 </select>
-</p>
+</div>
 
-<!-- infrastructural_data_elements -->
-<h4>$i18n.getString( "infrastructural_data_elements" )</h4>
+<div class="settingLabel">$i18n.getString( "infrastructural_data_elements" )</div>
 
-<p>
-<select id="infrastructuralDataElements" name="infrastructuralDataElements" style="width:30em">
+<div class="setting">
+<select id="infrastructuralDataElements" name="infrastructuralDataElements">
     #foreach ( $group in $dataElementGroups )
     <option value="$group.id" #if( $group.id == $configuration.infrastructuralDataElements.id )selected="selected"#end>$group.name</option>
     #end
 </select>
-</p>
+</div>
 
-<!-- infrastructural_period_type -->
-<h4>$i18n.getString( "infrastructural_period_type" )</h4>
+<div class="settingLabel">$i18n.getString( "infrastructural_period_type" )</div>
 
-<p>
-<select id="infrastructuralPeriodType" name="infrastructuralPeriodType" style="width:30em">
+<div class="setting">
+<select id="infrastructuralPeriodType" name="infrastructuralPeriodType">
     #foreach ( $type in $periodTypes )
     <option value="$type.name" #if( $type.name == $configuration.infrastructuralPeriodTypeDefaultIfNull.name )selected="selected"#end>$type.name</option>
     #end
 </select>
-</p>
+</div>
 
-<!-- feedback_recipients -->
-<h4>$i18n.getString( "feedback_recipients" )</h4>
+<div class="settingLabel">$i18n.getString( "feedback_recipients" )</div>
 
-<p>
-<select id="feedbackRecipients" name="feedbackRecipients" style="width:30em">
+<div class="setting">
+<select id="feedbackRecipients" name="feedbackRecipients" style="width:25em">
 	<option value="-1">$i18n.getString( "no_feedback_recipients" )</option>
 	#foreach ( $group in $userGroups )
 	<option value="$group.id" #if( $group.id == $!feedbackRecipients.id )selected="selected"#end>$encoder.htmlEncode( $group.name )</option>
 	#end
 </select>
-</p>
+</div>
 
-<!-- completeness_recipients -->
-<h4>$i18n.getString( "completeness_recipients" )</h4>
+<div class="settingLabel">$i18n.getString( "max_levels_to_offline" )</div>
 
-<p>
-<select id="completenessRecipients" name="completenessRecipients" style="width:30em">
-	<option value="-1">$i18n.getString( "no_completeness_recipients" )</option>
-	#foreach ( $group in $userGroups )
-	<option value="$group.id" #if( $group.id == $!completenessRecipients.id )selected="selected"#end>$encoder.htmlEncode( $group.name )</option>
-	#end
-</select>
-</p>
-
-<!-- max_levels_to_offline -->
-<h4>$i18n.getString( "max_levels_to_offline" )</h4>
-
-<p>
-<select id="offlineOrganisationUnitLevel" name="offlineOrganisationUnitLevel" style="width:30em">
+<div class="setting">
+<select id="offlineOrganisationUnitLevel" name="offlineOrganisationUnitLevel">
     #set( $level = 1)
 
 	#foreach ( $organisationUnitLevel in $organisationUnitLevels )
@@ -91,34 +75,37 @@
     #set( $level = $level + 1)
 	#end
 </select>
-</p>
+</div>
 
-<!-- omit_indicators_zero_numerator_data_mart -->
-<h4>$i18n.getString( "omit_indicators_zero_numerator_data_mart" )</h4>
+<div class="settingLabel">$i18n.getString( "data_analysis_factor" )</div>
+<div class="setting">
+	<input type="text" id="factorDeviation" name="factorDeviation" value="$!factorDeviation"/>	
+</div>
 
-<p>
-	<input type="checkbox" id="omitIndicatorsZeroNumeratorDataMart" name="omitIndicatorsZeroNumeratorDataMart" #if( $omitIndicatorsZeroNumeratorDataMart )checked="checked"#end/>
-</p>
+<div class="settingLabel">$i18n.getString( "days_after_period_timeliness" )</div>
 
-<!-- disable_dataentry_when_dataset_completed -->
-<h4>$i18n.getString( "disable_dataentry_when_dataset_completed" )</h4>
+<div class="setting">
+    <input type="text" id="completenessOffset" name="completenessOffset" value="$!completenessOffset"/>
+</div>
 
-<p>
-	<input type="checkbox" id="disableDataEntryWhenCompleted" name="disableDataEntryWhenCompleted" #if( $dataEntryFormCompleted )checked="checked"#end/>
-</p>
+<div class="settingLabel">$i18n.getString( "phone_number_area_code" )</div>
 
-<!-- data_analysis_factor -->
-<h4>$i18n.getString( "data_analysis_factor" )</h4>
+<div class="setting">
+	<input type="text" id="phoneNumberAreaCode" name="phoneNumberAreaCode" value="$!phoneNumberAreaCode"/>
+</div>
 
-<p>
-	<input type="text" id="factorDeviation" name="factorDeviation" value="$!factorDeviation"/>
-</p>
+<div class="settingLabel">$i18n.getString( "multi_organisation_unit_forms" )</div>
 
-<!-- days_after_period_timeliness -->
-<h4>$i18n.getString( "days_after_period_timeliness" )</h4>
+<div class="setting">
+    <select id="multiOrganisationUnitForms" name="multiOrganisationUnitForms">
+        <option value="true" #if( $multiOrganisationUnitForms == true)selected="selected"#end>True</option>
+        <option value="false" #if( $multiOrganisationUnitForms == false)selected="selected"#end>False</option>
+    </select>
+</div>
 
-<p>
-	<input type="text" id="completenessOffset" name="completenessOffset" value="$!completenessOffset"/>
-</p>
+<div class="setting">
+    <input type="checkbox" id="omitIndicatorsZeroNumeratorDataMart" name="omitIndicatorsZeroNumeratorDataMart" #if( $omitIndicatorsZeroNumeratorDataMart )checked="checked"#end>
+    <label for="omitIndicatorsZeroNumeratorDataMart">$i18n.getString( "omit_indicators_zero_numerator_data_mart" )</label>
+</div>
 
-<p><input type="button" value="$i18n.getString( 'save' )" style="width:10em"/></p>
+<div class="setting"><input type="button" value="$i18n.getString( 'save' )" style="width:10em"/></div>

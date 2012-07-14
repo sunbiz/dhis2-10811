@@ -160,29 +160,7 @@ public class CaseAggregationResultDetailsAction
         CaseAggregationCondition aggCondition = aggregationConditionService
             .getCaseAggregationCondition( aggregationConditionId );
 
-        if ( aggCondition.getOperator().equals( CaseAggregationCondition.AGGRERATION_SUM ) )
-        {
-            mapEvents = new HashMap<ProgramStageInstance, Collection<PatientDataValue>>();
-
-            Collection<ProgramStageInstance> programStageInstances = aggregationConditionService
-                .getProgramStageInstances( aggCondition, orgunit, period );
-
-            for ( ProgramStageInstance programStageInstance : programStageInstances )
-            {
-                Collection<DataElement> dataElements = aggregationConditionService
-                    .getDataElementsInCondition( aggCondition.getAggregationExpression() );
-
-                Collection<PatientDataValue> dataValues = new HashSet<PatientDataValue>();
-
-                if ( dataElements.size() > 0 )
-                {
-                    dataValues = patientDataValueService.getPatientDataValues( programStageInstance, dataElements );
-                }
-
-                mapEvents.put( programStageInstance, dataValues );
-            }
-        }
-        else
+        if ( aggCondition.getOperator().equals( CaseAggregationCondition.AGGRERATION_COUNT ) )
         {
             mapPatients = new HashMap<Patient, Collection<PatientDataValue>>();
 
@@ -202,6 +180,28 @@ public class CaseAggregationResultDetailsAction
                 }
 
                 mapPatients.put( patient, dataValues );
+            }
+        }
+        else
+        {
+            mapEvents = new HashMap<ProgramStageInstance, Collection<PatientDataValue>>();
+
+            Collection<ProgramStageInstance> programStageInstances = aggregationConditionService
+                .getProgramStageInstances( aggCondition, orgunit, period );
+
+            for ( ProgramStageInstance programStageInstance : programStageInstances )
+            {
+                Collection<DataElement> dataElements = aggregationConditionService
+                    .getDataElementsInCondition( aggCondition.getAggregationExpression() );
+
+                Collection<PatientDataValue> dataValues = new HashSet<PatientDataValue>();
+
+                if ( dataElements.size() > 0 )
+                {
+                    dataValues = patientDataValueService.getPatientDataValues( programStageInstance, dataElements );
+                }
+
+                mapEvents.put( programStageInstance, dataValues );
             }
         }
 

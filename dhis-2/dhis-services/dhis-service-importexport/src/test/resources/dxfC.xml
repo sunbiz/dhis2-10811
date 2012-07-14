@@ -137,7 +137,6 @@
             <id>65</id>
             <uid>E3133935ECA</uid>
             <name>DataElementA</name>
-            <alternativeName>AlternativeNameA2</alternativeName>
             <shortName>ShortNameA</shortName>
             <code>CodeA</code>
             <description>DescriptionA</description>
@@ -150,7 +149,6 @@
             <id>66</id>
             <uid>E3133935ECB</uid>
             <name>DataElementB</name>
-            <alternativeName>AlternativeNameB</alternativeName>
             <shortName>ShortNameB2</shortName>
             <code>CodeB</code>
             <description>DescriptionB</description>
@@ -163,7 +161,6 @@
             <id>67</id>
             <uid>E3133935ECC</uid>
             <name>DataElementC</name>
-            <alternativeName>AlternativeNameC</alternativeName>
             <shortName>ShortNameC</shortName>
             <code>CodeC2</code>
             <description>DescriptionC</description>
@@ -176,7 +173,6 @@
             <id>68</id>
             <uid>E3133935ECD</uid>
             <name>DataElementD</name>
-            <alternativeName>AlternativeNameD</alternativeName>
             <shortName>ShortNameD</shortName>
             <code>CodeD</code>
             <description>DescriptionD</description>
@@ -189,7 +185,6 @@
             <id>69</id>
             <uid>E3133935ECE</uid>
             <name>DataElementE</name>
-            <alternativeName>AlternativeNameE</alternativeName>
             <shortName>ShortNameE</shortName>
             <code>CodeE</code>
             <description>DescriptionE</description>
@@ -360,7 +355,6 @@
             <id>65</id>
             <uid>E3133935ECA</uid>
             <name>IndicatorA</name>
-            <alternativeName>AlternativeNameA2</alternativeName>
             <shortName>ShortNameA</shortName>
             <code>CodeA</code>
             <description>DescriptionA</description>
@@ -375,7 +369,6 @@
             <id>66</id>
             <uid>E3133935ECB</uid>
             <name>IndicatorB</name>
-            <alternativeName>AlternativeNameB</alternativeName>
             <shortName>ShortNameB2</shortName>
             <code>CodeB</code>
             <description>DescriptionB</description>
@@ -390,7 +383,6 @@
             <id>67</id>
             <uid>E3133935ECC</uid>
             <name>IndicatorC</name>
-            <alternativeName>AlternativeNameC</alternativeName>
             <shortName>ShortNameC</shortName>
             <code>CodeC2</code>
             <description>DescriptionC</description>
@@ -405,7 +397,6 @@
             <id>68</id>
             <uid>E3133935ECD</uid>
             <name>IndicatorD</name>
-            <alternativeName>AlternativeNameD</alternativeName>
             <shortName>ShortNameD</shortName>
             <code>CodeD</code>
             <description>DescriptionD</description>
@@ -420,7 +411,6 @@
             <id>69</id>
             <uid>E3133935ECE</uid>
             <name>IndicatorE</name>
-            <alternativeName>AlternativeNameE</alternativeName>
             <shortName>ShortNameE</shortName>
             <code>CodeE</code>
             <description>DescriptionE</description>

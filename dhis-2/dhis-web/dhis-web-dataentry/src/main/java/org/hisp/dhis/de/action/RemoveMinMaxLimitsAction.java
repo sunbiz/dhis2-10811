@@ -86,16 +86,16 @@ public class RemoveMinMaxLimitsAction
         this.organisationUnitId = organisationUnitId;
     }
 
-    private Integer dataElementId;
+    private String dataElementId;
 
-    public void setDataElementId( Integer dataElementId )
+    public void setDataElementId( String dataElementId )
     {
         this.dataElementId = dataElementId;
     }
 
-    private Integer categoryOptionComboId;
+    private String categoryOptionComboId;
 
-    public void setCategoryOptionComboId( Integer categoryOptionComboId )
+    public void setCategoryOptionComboId( String categoryOptionComboId )
     {
         this.categoryOptionComboId = categoryOptionComboId;
     }

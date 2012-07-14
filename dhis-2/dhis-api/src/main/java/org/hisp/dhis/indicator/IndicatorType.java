@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
@@ -40,7 +40,7 @@ import org.hisp.dhis.common.view.ExportView;
 /**
  * @author Lars Helge Overland
  */
-@JacksonXmlRootElement( localName = "indicatorType", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "indicatorType", namespace = DxfNamespaces.DXF_2_0)
 public class IndicatorType
     extends BaseIdentifiableObject
 {
@@ -113,7 +113,7 @@ public class IndicatorType
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty(namespace = Dxf2Namespace.NAMESPACE)
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public int getFactor()
     {
         return factor;
@@ -126,7 +126,7 @@ public class IndicatorType
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty(namespace = Dxf2Namespace.NAMESPACE)
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public boolean isNumber()
     {
         return number;

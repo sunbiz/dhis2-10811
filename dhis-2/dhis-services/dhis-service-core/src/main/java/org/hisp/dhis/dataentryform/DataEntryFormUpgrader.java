@@ -104,8 +104,6 @@ public class DataEntryFormUpgrader
 
     private String upgradeProgramDataEntryFormForTextBox( String htmlCode )
     {
-        int i = 0;
-
         Matcher matcher = ID_PROGRAM_ENTRY_TEXTBOX.matcher( htmlCode );
 
         StringBuffer out = new StringBuffer();
@@ -116,8 +114,6 @@ public class DataEntryFormUpgrader
                 + "-val\"";
 
             matcher.appendReplacement( out, upgradedId );
-
-            i++;
         }
 
         matcher.appendTail( out );

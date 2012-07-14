@@ -27,23 +27,29 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.hisp.dhis.system.util.functional.Function1;
 import org.hisp.dhis.system.util.functional.Predicate;
 import org.springframework.util.StringUtils;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
 
 /**
  * @author Lars Helge Overland
  */
 public class ReflectionUtils
 {
-    private static final Log log = LogFactory.getLog( ReflectionUtils.class );
-
     /**
      * Invokes method getId() for this object and returns the return value. An
      * int return type is expected. If the operation fails -1 is returned.
@@ -239,7 +245,6 @@ public class ReflectionUtils
 
     }
 
-    @SuppressWarnings( "unchecked" )
     public static <T> T invokeGetterMethod( String fieldName, Object target )
     {
         Method method = findGetterMethod( fieldName, target );
@@ -277,7 +282,6 @@ public class ReflectionUtils
         return null;
     }
 
-    @SuppressWarnings( "unchecked" )
     public static <T> T invokeSetterMethod( String fieldName, Object target, Object... args )
     {
         Method method = findSetterMethod( fieldName, target );
@@ -387,10 +391,12 @@ public class ReflectionUtils
         try
         {
             return (T) method.invoke( target, args );
-        } catch ( InvocationTargetException e )
+        } 
+        catch ( InvocationTargetException e )
         {
             throw new RuntimeException( e );
-        } catch ( IllegalAccessException e )
+        } 
+        catch ( IllegalAccessException e )
         {
             throw new RuntimeException( e );
         }

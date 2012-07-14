@@ -29,8 +29,6 @@ package org.hisp.dhis.patient.action.patientidentifiertype;
 
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
-import org.hisp.dhis.program.Program;
-import org.hisp.dhis.program.ProgramService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -46,8 +44,6 @@ public class UpdatePatientIdentifierTypeAction
     // -------------------------------------------------------------------------
 
     private PatientIdentifierTypeService patientIdentifierTypeService;
-
-    private ProgramService programService;
 
     // -------------------------------------------------------------------------
     // Input/Output
@@ -66,8 +62,6 @@ public class UpdatePatientIdentifierTypeAction
     private Integer noChars;
 
     private String type;
-
-    private Integer programId;
 
     // -------------------------------------------------------------------------
     // Getters && Setters
@@ -93,11 +87,6 @@ public class UpdatePatientIdentifierTypeAction
         this.name = name;
     }
 
-    public void setProgramService( ProgramService programService )
-    {
-        this.programService = programService;
-    }
-
     public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
     {
         this.patientIdentifierTypeService = patientIdentifierTypeService;
@@ -117,12 +106,7 @@ public class UpdatePatientIdentifierTypeAction
     {
         this.related = related;
     }
-
-    public void setProgramId( Integer programId )
-    {
-        this.programId = programId;
-    }
-
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -144,9 +128,6 @@ public class UpdatePatientIdentifierTypeAction
             
             identifierType.setNoChars( noChars );
             identifierType.setType( type );
-
-            Program program = (programId != null) ? programService.getProgram( programId ) : null;
-            identifierType.setProgram( program );
 
             patientIdentifierTypeService.updatePatientIdentifierType( identifierType );
         }

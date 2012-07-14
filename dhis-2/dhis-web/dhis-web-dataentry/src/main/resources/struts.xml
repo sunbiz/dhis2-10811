@@ -15,11 +15,15 @@
       <param name="menu">/dhis-web-dataentry/menu.vm</param>
       <param name="javascripts">../dhis-web-commons/ouwt/ouwt.js,javascript/form.js,javascript/entry.js,javascript/history.js</param>
       <param name="stylesheets">style/dhis-web-dataentry.css</param>
-      <param name="offline">true</param>
+      <param name="manifest">../dhis-web-commons/cacheManifest.action</param>
     </action>
 
     <action name="getMetaData" class="org.hisp.dhis.de.action.GetMetaDataAction">
       <result name="success" type="velocity-json">/dhis-web-dataentry/responseMetaData.vm</result>
+    </action>
+
+    <action name="getMultiOrgUnitForms" class="org.hisp.dhis.de.action.GetMultiOrgSettingAction">
+      <result name="success" type="velocity-json">/dhis-web-dataentry/responseMultiOrgForms.vm</result>
     </action>
 
     <action name="getDataValues" class="org.hisp.dhis.de.action.GetDataValuesForDataSetAction">
@@ -29,6 +33,7 @@
     <action name="loadForm" class="org.hisp.dhis.de.action.LoadFormAction">
       <result name="custom" type="velocity">/dhis-web-dataentry/customForm.vm</result>
       <result name="section" type="velocity">/dhis-web-dataentry/sectionForm.vm</result>
+      <result name="multiorg_section" type="velocity">/dhis-web-dataentry/multiOrgSectionForm.vm</result>
       <result name="default" type="velocity">/dhis-web-dataentry/defaultForm.vm</result>
       <result name="input" type="velocity">/dhis-web-dataentry/responseVoid.vm</result>
     </action>
@@ -66,10 +71,12 @@
     <action name="registerCompleteDataSet" class="org.hisp.dhis.de.action.RegisterCompleteDataSetAction">
       <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
       <result name="input" type="velocity-json">../dhis-web-commons/ajax/jsonResponseInput.vm</result>
+      <param name="requiredAuthorities">F_DATAVALUE_ADD</param>
     </action>
 
     <action name="undoCompleteDataSet" class="org.hisp.dhis.de.action.UndoCompleteDataSetAction">
       <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+      <param name="requiredAuthorities">F_DATAVALUE_DELETE</param>
     </action>
 
     <action name="getValidationViolations" class="org.hisp.dhis.de.action.ValidationAction">
@@ -78,7 +85,7 @@
     </action>
 
     <action name="validate" class="org.hisp.dhis.de.action.ValidationAction">
-      <result name="success" type="velocity">/dhis-web-dataentry/validationResult.vm</result>
+      <result name="success" type="outputStreamResult"></result>
       <result name="input" type="velocity">/dhis-web-dataentry/validationResult.vm</result>
     </action>
 

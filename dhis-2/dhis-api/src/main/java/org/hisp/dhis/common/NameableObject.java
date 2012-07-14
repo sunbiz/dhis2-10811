@@ -34,10 +34,8 @@ public interface NameableObject
 
     enum NameableProperty
     {
-        SHORT_NAME, ALTERNATIVE_NAME
+        SHORT_NAME
     }
-
-    String getAlternativeName();
 
     String getShortName();
 

@@ -27,8 +27,15 @@ package org.hisp.dhis.de.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.opensymphony.xwork2.Action;
-import org.apache.commons.collections.CollectionUtils;
+import static org.hisp.dhis.system.util.ListUtils.getCollection;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dataanalysis.DataAnalysisService;
@@ -36,21 +43,16 @@ import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.expression.ExpressionService;
-import org.hisp.dhis.minmax.MinMaxDataElement;
-import org.hisp.dhis.minmax.MinMaxDataElementService;
-import org.hisp.dhis.minmax.validation.MinMaxValuesGenerationService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.setting.SystemSettingManager;
-import org.hisp.dhis.system.util.ListUtils;
 import org.hisp.dhis.validation.ValidationResult;
 import org.hisp.dhis.validation.ValidationRule;
 import org.hisp.dhis.validation.ValidationRuleService;
 
-import java.util.*;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Margrethe Store
@@ -86,39 +88,11 @@ public class ValidationAction
         this.periodService = periodService;
     }
 
-    private DataAnalysisService stdDevOutlierAnalysisService;
-
-    public void setStdDevOutlierAnalysisService( DataAnalysisService stdDevOutlierAnalysisService )
-    {
-        this.stdDevOutlierAnalysisService = stdDevOutlierAnalysisService;
-    }
-
     private DataAnalysisService minMaxOutlierAnalysisService;
 
     public void setMinMaxOutlierAnalysisService( DataAnalysisService minMaxOutlierAnalysisService )
     {
         this.minMaxOutlierAnalysisService = minMaxOutlierAnalysisService;
-    }
-
-    private SystemSettingManager systemSettingManager;
-
-    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
-    {
-        this.systemSettingManager = systemSettingManager;
-    }
-
-    private MinMaxValuesGenerationService minMaxValuesGenerationService;
-
-    public void setMinMaxValuesGenerationService( MinMaxValuesGenerationService minMaxValuesGenerationService )
-    {
-        this.minMaxValuesGenerationService = minMaxValuesGenerationService;
-    }
-
-    private MinMaxDataElementService minMaxDataElementService;
-
-    public void setMinMaxDataElementService( MinMaxDataElementService minMaxDataElementService )
-    {
-        this.minMaxDataElementService = minMaxDataElementService;
     }
 
     private DataSetService dataSetService;
@@ -196,7 +170,6 @@ public class ValidationAction
     // Action implementation
     // -------------------------------------------------------------------------
 
-    @SuppressWarnings( "unchecked" )
     public String execute()
         throws Exception
     {
@@ -215,28 +188,8 @@ public class ValidationAction
             // Min-max and outlier analysis
             // ---------------------------------------------------------------------
 
-            Collection<MinMaxDataElement> minmaxs = minMaxDataElementService.getMinMaxDataElements( orgUnit,
-                dataSet.getDataElements() );
-
-            if ( minmaxs == null )
-            {
-                Double factor = (Double) systemSettingManager.getSystemSetting(
-                    SystemSettingManager.KEY_FACTOR_OF_DEVIATION, 2.0 );
-
-                Collection<DeflatedDataValue> stdDevs = stdDevOutlierAnalysisService.analyse( orgUnit,
-                    dataSet.getDataElements(), ListUtils.getCollection( period ), factor );
-
-                Collection<DeflatedDataValue> minMaxs = minMaxOutlierAnalysisService.analyse( orgUnit,
-                    dataSet.getDataElements(), ListUtils.getCollection( period ), null );
-
-                dataValues = CollectionUtils.union( stdDevs, minMaxs );
-            }
-            else
-            {
-                dataValues = minMaxValuesGenerationService.findOutliers( orgUnit, ListUtils.getCollection( period ),
-                    minmaxs );
-            }
-
+            dataValues = minMaxOutlierAnalysisService.analyse( getCollection( orgUnit ), dataSet.getDataElements(), getCollection( period ), null );
+            
             log.debug( "Number of outlier values: " + dataValues.size() );
 
             // ---------------------------------------------------------------------

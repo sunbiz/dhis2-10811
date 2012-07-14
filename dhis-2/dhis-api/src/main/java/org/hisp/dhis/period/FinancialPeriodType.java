@@ -178,4 +178,16 @@ public abstract class FinancialPeriodType
         cal.set( Calendar.DAY_OF_MONTH, 31 );
         return createPeriod( cal );
     }
+    
+    @Override
+    public Date getRewindedDate( Date date, Integer rewindedPeriods )
+    {
+        date = date != null ? date : new Date();        
+        rewindedPeriods = rewindedPeriods != null ? rewindedPeriods : 1;
+
+        Calendar cal = createCalendarInstance( date );        
+        cal.add( Calendar.YEAR, (rewindedPeriods * -1) );
+
+        return cal.getTime();
+    }
 }

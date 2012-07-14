@@ -33,6 +33,7 @@ import static org.hisp.dhis.system.util.ConversionUtils.getList;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hisp.dhis.commons.action.AbstractRelativePeriodsAction;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
@@ -52,14 +53,11 @@ import org.hisp.dhis.reporttable.ReportParams;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
 
-import com.opensymphony.xwork2.Action;
-
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class SaveTableAction
-    implements Action
+    extends AbstractRelativePeriodsAction
 {
     // -------------------------------------------------------------------------
     // Dependencies
@@ -230,137 +228,11 @@ public class SaveTableAction
         this.selectedOrganisationUnitGroups = selectedOrganisationUnitGroups;
     }
 
-    private boolean reportingMonth;
-
-    public void setReportingMonth( boolean reportingMonth )
-    {
-        this.reportingMonth = reportingMonth;
-    }
-
-    private boolean reportingBimonth;
-    
-    public void setReportingBimonth( boolean reportingBimonth )
-    {
-        this.reportingBimonth = reportingBimonth;
-    }
-    
-    private boolean reportingQuarter;
-
-    public void setReportingQuarter( boolean reportingQuarter )
-    {
-        this.reportingQuarter = reportingQuarter;
-    }
-
-    private boolean lastSixMonth;
-
-    public void setLastSixMonth( boolean lastSixMonth )
-    {
-        this.lastSixMonth = lastSixMonth;
-    }
-
-    private boolean monthsThisYear;
-
-    public void setMonthsThisYear( boolean monthsThisYear )
-    {
-        this.monthsThisYear = monthsThisYear;
-    }
-
-    private boolean quartersThisYear;
-
-    public void setQuartersThisYear( boolean quartersThisYear )
-    {
-        this.quartersThisYear = quartersThisYear;
-    }
-
-    private boolean thisYear;
-
-    public void setThisYear( boolean thisYear )
-    {
-        this.thisYear = thisYear;
-    }
-
-    private boolean monthsLastYear;
-
-    public void setMonthsLastYear( boolean monthsLastYear )
-    {
-        this.monthsLastYear = monthsLastYear;
-    }
-
-    private boolean quartersLastYear;
-
-    public void setQuartersLastYear( boolean quartersLastYear )
-    {
-        this.quartersLastYear = quartersLastYear;
-    }
-
-    private boolean last5Years;
-    
-    public void setLast5Years( boolean last5Years )
-    {
-        this.last5Years = last5Years;
-    }
-
-    private boolean lastYear;
-    
-    public void setLastYear( boolean lastYear )
-    {
-        this.lastYear = lastYear;
-    }
-    
-    private boolean last12Months;
-
-    public void setLast12Months( boolean last12Months )
-    {
-        this.last12Months = last12Months;
-    }
-
-    private boolean last4Quarters;
-
-    public void setLast4Quarters( boolean last4Quarters )
-    {
-        this.last4Quarters = last4Quarters;
-    }
-    
-    private boolean last2SixMonths;
-
-    public void setLast2SixMonths( boolean last2SixMonths )
-    {
-        this.last2SixMonths = last2SixMonths;
-    }
-    
-    private boolean thisFinancialYear;
-
-    public void setThisFinancialYear( boolean thisFinancialYear )
-    {
-        this.thisFinancialYear = thisFinancialYear;
-    }
-
-    private boolean lastFinancialYear;
-
-    public void setLastFinancialYear( boolean lastFinancialYear )
-    {
-        this.lastFinancialYear = lastFinancialYear;
-    }
-
-    private boolean last5FinancialYears;
-
-    public void setLast5FinancialYears( boolean last5FinancialYears )
-    {
-        this.last5FinancialYears = last5FinancialYears;
-    }
-
     private boolean paramReportingMonth;
 
     public void setParamReportingMonth( boolean paramReportingMonth )
     {
         this.paramReportingMonth = paramReportingMonth;
-    }
-
-    private boolean paramLeafParentOrganisationUnit;
-    
-    public void setParamLeafParentOrganisationUnit( boolean paramLeafParentOrganisationUnit )
-    {
-        this.paramLeafParentOrganisationUnit = paramLeafParentOrganisationUnit;
     }
 
     private boolean paramGrandParentOrganisationUnit;
@@ -435,16 +307,11 @@ public class SaveTableAction
         
         DataElementCategoryCombo categoryCombo = categoryComboId != null ? categoryService.getDataElementCategoryCombo( categoryComboId ) : null;
         
-        RelativePeriods relatives = new RelativePeriods( reportingMonth, reportingBimonth, reportingQuarter, lastSixMonth,
-            monthsThisYear, quartersThisYear, thisYear, 
-            monthsLastYear, quartersLastYear, lastYear, 
-            last5Years, last12Months, false, last4Quarters, last2SixMonths,
-            thisFinancialYear, lastFinancialYear, last5FinancialYears, false );
+        RelativePeriods relatives = getRelativePeriods();
         
         ReportParams reportParams = new ReportParams();
         
         reportParams.setParamReportingMonth( paramReportingMonth );
-        reportParams.setParamLeafParentOrganisationUnit( paramLeafParentOrganisationUnit );
         reportParams.setParamGrandParentOrganisationUnit( paramGrandParentOrganisationUnit );
         reportParams.setParamParentOrganisationUnit( paramParentOrganisationUnit );
         reportParams.setParamOrganisationUnit( paramOrganisationUnit );

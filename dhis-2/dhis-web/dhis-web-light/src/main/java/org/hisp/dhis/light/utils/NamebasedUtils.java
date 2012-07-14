@@ -27,14 +27,19 @@
 
 package org.hisp.dhis.light.utils;
 
-import java.util.Collection;
-import java.util.Set;
-
-import org.hisp.dhis.api.mobile.IProgramService;
-import org.hisp.dhis.api.mobile.model.Program;
-import org.hisp.dhis.api.mobile.model.ProgramStage;
 import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.program.ProgramStage;
+import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.ProgramStageService;
+import org.springframework.beans.factory.annotation.Required;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class NamebasedUtils
 {
@@ -42,16 +47,33 @@ public class NamebasedUtils
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private IProgramService programService;
+    //private IProgramService IprgramService;   
+    private ProgramService programService;
 
-    public void setProgramService( IProgramService programService )
+    public void setProgramService( ProgramService programService )
     {
         this.programService = programService;
+    }
+    
+    private ProgramStageService programStageService;
+    
+    public void setProgramStageService( ProgramStageService programStageService )
+    {
+        this.programStageService = programStageService;
+    }
+    
+    private org.hisp.dhis.mobile.service.ModelMapping modelMapping;
+    
+    @Required
+    public void setModelMapping( org.hisp.dhis.mobile.service.ModelMapping modelMapping )
+    {
+        this.modelMapping = modelMapping;
     }
 
     public ProgramStage getProgramStage( int programId, int programStageId )
     {
-        Program program = programService.getProgram( programId, "" );
+        //Program program = programService.getProgram( programId, "" );
+        Program program = programService.getProgram( programId );
 
         Collection<ProgramStage> stages = program.getProgramStages();
 
@@ -64,7 +86,7 @@ public class NamebasedUtils
         }
         return null;
     }
-
+  
     public String getTypeViolation( DataElement dataElement, String value )
     {
         String type = dataElement.getType();
@@ -127,6 +149,38 @@ public class NamebasedUtils
                 return programStageInstance;
             }
         }
+
         return null;
+    }
+    
+    public List<org.hisp.dhis.api.mobile.model.DataElement> transformDataElementsToMobileModel( Integer programStageId )
+    {
+        ProgramStage programStage = programStageService.getProgramStage( programStageId );
+        
+        List<org.hisp.dhis.api.mobile.model.DataElement> des = new ArrayList<org.hisp.dhis.api.mobile.model.DataElement>();
+
+        List<ProgramStageDataElement> programStageDataElements =  new ArrayList<ProgramStageDataElement>(programStage.getProgramStageDataElements());
+
+        des = transformDataElementsToMobileModel( programStageDataElements );
+        
+        return des;
+    }
+    public List<org.hisp.dhis.api.mobile.model.DataElement> transformDataElementsToMobileModel( List<ProgramStageDataElement> programStageDataElements)
+    {
+        List<org.hisp.dhis.api.mobile.model.DataElement> des = new ArrayList<org.hisp.dhis.api.mobile.model.DataElement>();
+
+        for ( ProgramStageDataElement programStagedataElement : programStageDataElements )
+        {
+            //programStagedataElement = i18n( i18nService, locale, programStagedataElement );
+
+            DataElement dataElement = programStagedataElement.getDataElement();
+
+            org.hisp.dhis.api.mobile.model.DataElement de = modelMapping.getDataElement( dataElement );
+
+            de.setCompulsory( programStagedataElement.isCompulsory() );
+
+            des.add( de );
+        }
+        return des;
     }
 }

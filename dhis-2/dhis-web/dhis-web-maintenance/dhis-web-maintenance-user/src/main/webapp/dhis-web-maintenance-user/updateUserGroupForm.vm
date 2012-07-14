@@ -26,19 +26,19 @@
 		});
 
 		/* remote validation */
-		checkValueIsExist( "name", "validateUserGroup.action", {
+		/* checkValueIsExist( "name", "validateUserGroup.action", {
 			id : $group.id
-		} );
+		} ); */
 	});
 </script>
 
 <h3>$i18n.getString( "edit_user_group" )</h3>
 
-<form id="editUserGroupForm" name="editUserGroupForm" action="updateUserGroup.action" method="post">
+<form id="editUserGroupForm" name="editUserGroupForm" action="updateUserGroup.action" method="post" class="inputForm">
 	
 <input type="hidden" name="userGroupId" id="userGroupId" value="$group.id" />
 <table id="detailsList">
-    <col style="width: 200px"/>
+    <col style="width: 120px"/>
     <col style="width: 270px"/>
 
 	<tr>
@@ -47,7 +47,7 @@
 
 	<tr>
 		<td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" value ="$encoder.htmlEncode( $group.name )" style="width: 240px"></td>
+		<td><input type="text" id="name" name="name" value ="$encoder.htmlEncode( $group.name )"></td>
 	</tr>
 
 </table>
@@ -55,9 +55,11 @@
 #tblDynamicAttributes( { "attributes": $attributes, "attributeValues": $attributeValues } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
     <tr>
         <th>$i18n.getString( "available_users" )</th>

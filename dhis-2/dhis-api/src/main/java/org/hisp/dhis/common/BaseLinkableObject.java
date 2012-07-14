@@ -34,7 +34,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "linkableObject", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "linkableObject", namespace = DxfNamespaces.DXF_2_0)
 public class BaseLinkableObject
     implements LinkableObject
 {
@@ -42,17 +42,17 @@ public class BaseLinkableObject
      * As part of the serializing process, this field can be set to indicate a link to this
      * identifiable object (will be used on the web layer for navigating the REST API)
      */
-    private transient String link;
+    private transient String href;
 
     @JsonProperty
     @JacksonXmlProperty( isAttribute = true )
-    public String getLink()
+    public String getHref()
     {
-        return link;
+        return href;
     }
 
-    public void setLink( String link )
+    public void setHref( String href )
     {
-        this.link = link;
+        this.href = href;
     }
 }

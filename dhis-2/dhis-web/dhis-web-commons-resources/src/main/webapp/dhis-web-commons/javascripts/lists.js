@@ -74,8 +74,7 @@ function moveAllById( fromListId, targetListId ) {
  * @param listId the id of the list.
  */
 function clearListById( listId ) {
-    var list = document.getElementById( listId );
-    clearList( list );
+    $('#' + listId).children().remove();
 }
 
 /**
@@ -84,7 +83,7 @@ function clearListById( listId ) {
  * @param list the list.
  */
 function clearList( list ) {
-    list.options.length = 0;
+	list.options.length = 0;
 }
 
 /**

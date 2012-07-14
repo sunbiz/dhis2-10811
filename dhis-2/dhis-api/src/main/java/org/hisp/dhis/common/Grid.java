@@ -29,6 +29,7 @@ package org.hisp.dhis.common;
 
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataSource;
 
@@ -74,6 +75,21 @@ public interface Grid
     List<GridHeader> getHeaders();
     
     /**
+     * Returns map of meta-data.
+     */
+    Map<String, String> getMetaData();
+    
+    /**
+     * Sets map of meta-data.
+     */
+    void setMetaData( Map<String, String> metaData );
+    
+    /**
+     * Adds a key-value pair to meta-data.
+     */
+    void addMetaData( String key, String value );
+    
+    /**
      * Returns all visible headers, ie. headers which are not hidden.
      */
     List<GridHeader> getVisibleHeaders();
@@ -82,6 +98,13 @@ public interface Grid
      * Adds a header value.
      */
     Grid addHeader( GridHeader header );
+    
+    /**
+     * Adds a number of empty values to the Grid.
+     * 
+     * @param number the number of columns to add.
+     */
+    Grid addEmptyHeaders( int number );
         
     /**
      * Returns the current height / number of rows in the grid.
@@ -109,6 +132,21 @@ public interface Grid
      * @param value the value to add.
      */
     Grid addValue( Object value );
+    
+    /**
+     * Adds values in the given array to the end of the current row in the 
+     * specified order.
+     * 
+     * @param values the values to add.
+     */
+    Grid addValues( Object[] values );
+    
+    /**
+     * Adds a number of empty values to the Grid at the current row.
+     * 
+     * @param number the number of values to add.
+     */
+    Grid addEmptyValues( int number );
 
     /**
      * Returns the row with the given index.
@@ -218,5 +256,5 @@ public interface Grid
      * 
      * @param rs the result set.
      */
-    Grid addRow( ResultSet rs );
+    Grid addRows( ResultSet rs );
 }

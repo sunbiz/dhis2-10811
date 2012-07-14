@@ -45,6 +45,16 @@ public class ExportReportNormal
         super();
     }
 
+    public ExportReportNormal( String name, String group, String excelTemplateFile )
+    {
+        super( name, group, excelTemplateFile );
+    }
+
+    public ExportReportNormal( String name, String group, String excelTemplateFile, String createdBy )
+    {
+        super( name, group, excelTemplateFile, createdBy );
+    }
+
     @Override
     public String getReportType()
     {

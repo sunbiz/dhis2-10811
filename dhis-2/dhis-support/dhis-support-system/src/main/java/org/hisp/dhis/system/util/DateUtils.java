@@ -503,7 +503,10 @@ public class DateUtils
     {
         for ( Period period : periods )
         {
-            period.setName( format.formatPeriod( period ) );
+            if ( period != null )
+            {
+                period.setName( format.formatPeriod( period ) );
+            }
         }
 
         return periods;

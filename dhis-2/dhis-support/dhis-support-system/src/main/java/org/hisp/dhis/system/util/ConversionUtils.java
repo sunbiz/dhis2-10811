@@ -281,4 +281,24 @@ public class ConversionUtils
         set.add( object );
         return set;
     }
+    
+    /**
+     * Casts the elements in the given collection to the desired return type. It
+     * is the caller's responsibility that the types legally can be casted.
+     * 
+     * @param collection the collection.
+     * @return a collection.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> cast( Collection<? super T> collection )
+    {
+        Collection<T> list = new ArrayList<T>();
+        
+        for ( Object o : collection )
+        {
+            list.add( (T) o );
+        }
+        
+        return list;
+    }
 }

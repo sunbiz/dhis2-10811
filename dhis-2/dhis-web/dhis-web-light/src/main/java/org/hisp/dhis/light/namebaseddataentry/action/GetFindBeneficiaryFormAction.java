@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Set;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
+
 import com.opensymphony.xwork2.Action;
 
 public class GetFindBeneficiaryFormAction
@@ -59,6 +61,18 @@ public class GetFindBeneficiaryFormAction
     // Input & Output
     // -------------------------------------------------------------------------
 
+    private Integer orgUnitId;
+    
+    public Integer getOrgUnitId()
+    {
+        return orgUnitId;
+    }
+
+    public void setOrgUnitId( Integer orgUnitId )
+    {
+        this.orgUnitId = orgUnitId;
+    }
+
     private Set<OrganisationUnit> organisationUnits;
 
     public Set<OrganisationUnit> getOrganisationUnits()
@@ -70,11 +84,23 @@ public class GetFindBeneficiaryFormAction
     {
         this.organisationUnits = organisationUnits;
     }
-    
-    //use in find relation person
-    
+
+    private User user;
+
+    public User getUser()
+    {
+        return user;
+    }
+
+    public void setUser( User user )
+    {
+        this.user = user;
+    }
+
+    // use in find relation person
+
     private Integer originalPatientId;
-    
+
     public Integer getOriginalPatientId()
     {
         return originalPatientId;
@@ -84,9 +110,9 @@ public class GetFindBeneficiaryFormAction
     {
         this.originalPatientId = originalPatientId;
     }
-    
+
     private Integer relationshipTypeId;
-    
+
     public Integer getRelationshipTypeId()
     {
         return relationshipTypeId;
@@ -101,6 +127,7 @@ public class GetFindBeneficiaryFormAction
     public String execute()
         throws Exception
     {
+        user = currentUserService.getCurrentUser();
         Collection<OrganisationUnit> basicOrganisationUnits = currentUserService.getCurrentUser()
             .getOrganisationUnits();
         organisationUnits = new HashSet<OrganisationUnit>();
@@ -117,7 +144,7 @@ public class GetFindBeneficiaryFormAction
     {
         List<OrganisationUnit> parents = new ArrayList<OrganisationUnit>();
         parents.add( organisationUnit );
-        
+
         while ( organisationUnit.getParent() != null )
         {
             parents.add( organisationUnit.getParent() );

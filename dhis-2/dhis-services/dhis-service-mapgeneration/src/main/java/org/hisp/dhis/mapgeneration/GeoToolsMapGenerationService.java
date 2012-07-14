@@ -126,9 +126,9 @@ public class GeoToolsMapGenerationService
     private InternalMapLayer buildSingleInternalMapLayer( MapView mapView )
     {
         Assert.isTrue( mapView != null );
-        Assert.isTrue( mapView.getMapValueType() != null );
+        Assert.isTrue( mapView.getValueType() != null );
 
-        boolean isIndicator = MappingService.MAP_VALUE_TYPE_INDICATOR.equals( mapView.getMapValueType() );
+        boolean isIndicator = MapView.VALUE_TYPE_INDICATOR.equals( mapView.getValueType() );
 
         Collection<AggregatedMapValue> mapValues;
         

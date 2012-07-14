@@ -30,6 +30,7 @@ package org.hisp.dhis.dashboard.message.action;
 import org.hisp.dhis.message.MessageConversation;
 import org.hisp.dhis.message.MessageService;
 import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 
@@ -87,12 +88,16 @@ public class ReadMessageAction
     public String execute()
         throws Exception
     {
+        User user = currentUserService.getCurrentUser();
+        
         conversation = messageService.getMessageConversation( id );
                 
-        if ( conversation.markRead( currentUserService.getCurrentUser() ) )
+        if ( conversation.markRead( user ) )
         {        
             messageService.updateMessageConversation( conversation );
         }
+        
+        conversation.setFollowUp( conversation.isFollowUp( user ) );
         
         return SUCCESS;
     }

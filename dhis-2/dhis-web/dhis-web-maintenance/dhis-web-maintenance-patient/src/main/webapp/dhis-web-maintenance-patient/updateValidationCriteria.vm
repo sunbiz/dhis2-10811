@@ -37,6 +37,10 @@
 							</td>
 
 							<td>
+							
+							<!-- Displayed when no criteria is selected -->
+							<input type="text" style="width:16em" id='emptyCriteria'>
+				
 							<!-- gender -->
 							<div id="genderDiv" style="display:none">
 								<select id='genderValue' name='genderValue' onChange="fillValue(this.value);" style="width: 16em">

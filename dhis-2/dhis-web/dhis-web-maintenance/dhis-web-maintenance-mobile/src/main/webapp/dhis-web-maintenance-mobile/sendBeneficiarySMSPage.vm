@@ -32,10 +32,8 @@
 <form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action">
 	<input type="hidden" id="isShowPatientList" name="isShowPatientList" />
 	<table id="detailsList">
-	    <col width="300px"/>
-		<col width="80px"/>
 		<tbody>
-			<tr>
+			<!--tr>
 				<th colspan="2">$i18n.getString( "gateway_type" )</th>
 			</tr>
 			<tr>
@@ -48,15 +46,15 @@
 						#end
 					</select>
 				</td>
-			</tr>
+			</tr-->
 			
 			<tr>
-				<td>$i18n.getString( "send_sms_to_target" )</td>
-				<td>
-					<select id="sendTarget" name="sendTarget" onchange="javascript:toggleBasicSMSGUI();">
+				<td>$i18n.getString( "send_sms_to_target" ): 
+					<select id="sendTarget" name="sendTarget" onchange="javascript:toggleBasicSMSGUI( this.value );">
 						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
+						<option value="userGroup">$i18n.getString( "user_group" )</option>
 						<option value="user">$i18n.getString( "assigned_user_number" )</option>
-						<option value="unit">$i18n.getString( "selected_unit_number" )</option>
+						<option value="unit">$i18n.getString( "stakeholder_number" )</option>
 						<option value="patient" selected="true">$i18n.getString( "patient_number" )</option>
 					</select>
 				</td>
@@ -98,7 +96,7 @@
 					
 					$i18n.getString( 'search_by_selected_unit' )
 					<input type='checkbox' id='searchBySelectedOrgunit' name='searchBySelectedOrgunit' value='true' />
-					<input type="button" value='$i18n.getString( "search" )' onclick='searchAdvancedPatients();'/>
+					<input type="button" value='$i18n.getString( "search" )' onclick='validateAdvancedSearch();'/>
 				</td>
 				<td>
 				</td>
@@ -139,9 +137,9 @@
 
 	var isOrgunitSelected = false;
 
-	function toggleBasicSMSGUI()
+	function toggleBasicSMSGUI( _value )
 	{
-		window.location.href = "showSMSForm.action";
+		window.location.href = "showSMSForm.action?sendTo=" + _value;
 	}
 
 	function selectedOrganisationUnitSendSMS( unitIds )

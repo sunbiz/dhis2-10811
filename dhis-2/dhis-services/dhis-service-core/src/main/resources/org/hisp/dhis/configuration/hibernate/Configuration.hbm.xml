@@ -6,15 +6,14 @@
 <hibernate-mapping>
   <class name="org.hisp.dhis.configuration.Configuration" table="configuration">
 
+    <cache usage="read-write" />
+
     <id name="id" column="configurationid">
       <generator class="native" />
     </id>
 
     <many-to-one name="feedbackRecipients" class="org.hisp.dhis.user.UserGroup"
         column="feedbackrecipientsid" foreign-key="fk_configuration_feedback_recipients" />
-
-    <many-to-one name="completenessRecipients" class="org.hisp.dhis.user.UserGroup"
-        column="completenessrecipientsid" foreign-key="fk_configuration_completeness_recipients" />
 
     <many-to-one name="offlineOrganisationUnitLevel" class="org.hisp.dhis.organisationunit.OrganisationUnitLevel"
         column="offlineorgunitlevelid" foreign-key="fk_configuration_offline_orgunit_level" />
@@ -24,6 +23,12 @@
 
     <many-to-one name="infrastructuralPeriodType" class="org.hisp.dhis.period.PeriodType"
         column="infrastructuralperiodtypeid" foreign-key="fk_configuration_infrastructural_periodtype" />
+
+    <many-to-one name="selfRegistrationRole" class="org.hisp.dhis.user.UserAuthorityGroup"
+        column="selfregistrationrole" foreign-key="fk_configuration_selfregistrationrole" />
+
+    <many-to-one name="selfRegistrationOrgUnit" class="org.hisp.dhis.organisationunit.OrganisationUnit"
+        column="selfRegistrationOrgUnit" foreign-key="fk_configuration_selfregistrationorgunit" />
 
   </class>
 </hibernate-mapping>

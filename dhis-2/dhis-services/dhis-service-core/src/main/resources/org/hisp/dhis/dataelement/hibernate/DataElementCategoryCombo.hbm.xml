@@ -15,6 +15,8 @@
     </id>
     &identifiableProperties;
 
+    <property name="name" column="name" not-null="true" unique="true" length="230" />
+
     <list name="categories" table="categorycombos_categories">
       <cache usage="read-write" />
       <key column="categorycomboid" foreign-key="fk_categorycombos_categories_categorycomboid" />
@@ -29,6 +31,8 @@
       <many-to-many class="org.hisp.dhis.dataelement.DataElementCategoryOptionCombo" column="categoryoptioncomboid"
         foreign-key="fk_categorycombo_categoryoptioncomboid" unique="true" />
     </set>
+    
+    <property name="skipTotal" />
 
   </class>
 </hibernate-mapping>

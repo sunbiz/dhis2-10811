@@ -27,16 +27,18 @@ package org.hisp.dhis.datadictionary;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.i18n.I18nUtils.i18n;
-
-import java.util.Collection;
-
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 /**
  * @author Lars Helge Overland
@@ -96,19 +98,19 @@ public class DefaultDataDictionaryService
         dataDictionaryStore.delete( dataDictionary );
     }
 
-    public DataDictionary getDataDictionaryByName( String name )
+    public List<DataDictionary> getDataDictionaryByName( String name )
     {
-        return i18n( i18nService, dataDictionaryStore.getByName( name ) );
+        return new ArrayList<DataDictionary>( i18n( i18nService, dataDictionaryStore.getAllEqName( name ) ) );
     }
 
-    public Collection<DataDictionary> getAllDataDictionaries()
+    public List<DataDictionary> getAllDataDictionaries()
     {
-        return i18n( i18nService, dataDictionaryStore.getAll() );
+        return new ArrayList<DataDictionary>( i18n( i18nService, dataDictionaryStore.getAll() ) );
     }
 
-    public Collection<DataElement> getDataElementsByDictionaryId( int dictionaryId )
+    public List<DataElement> getDataElementsByDictionaryId( int dictionaryId )
     {
-        return i18n( i18nService, dataDictionaryStore.get( dictionaryId ).getDataElements() );
+        return new ArrayList<DataElement>( i18n( i18nService, dataDictionaryStore.get( dictionaryId ).getDataElements() ) );
     }
 
     public int getDataDictionaryCount()
@@ -118,16 +120,16 @@ public class DefaultDataDictionaryService
 
     public int getDataDictionaryCountByName( String name )
     {
-        return dataDictionaryStore.getCountByName( name );
+        return dataDictionaryStore.getCountLikeName( name );
     }
 
-    public Collection<DataDictionary> getDataDictionarysBetween( int first, int max )
+    public List<DataDictionary> getDataDictionarysBetween( int first, int max )
     {
-        return i18n( i18nService, dataDictionaryStore.getBetween( first, max ) );
+        return new ArrayList<DataDictionary>( i18n( i18nService, dataDictionaryStore.getAllOrderedName( first, max ) ) );
     }
 
-    public Collection<DataDictionary> getDataDictionarysBetweenByName( String name, int first, int max )
+    public List<DataDictionary> getDataDictionarysBetweenByName( String name, int first, int max )
     {
-        return i18n( i18nService, dataDictionaryStore.getBetweenByName( name, first, max ) );
+        return new ArrayList<DataDictionary>( i18n( i18nService, dataDictionaryStore.getAllLikeNameOrderedName( name, first, max ) ) );
     }
 }

@@ -15,7 +15,7 @@
 					<select id="dataSetId" name="dataSetId" style="min-width:20em" onchange="javascript:getSectionByDataSet(this.options[this.selectedIndex].value)">
 						<option value="-1">[ $i18n.getString( "all" ) ]</option>
 						#foreach ( $dataset in $datasets )
-						  <option value="$dataset.id" #if($dataSetId==$dataset.id) selected="selected" #end>$dataset.name</option>
+						  <option value="$dataset.id" #if($dataSetId==$dataset.id) selected="selected" #end>$dataset.displayName</option>
 						#end
 					</select>
 				</td>
@@ -24,7 +24,7 @@
 					<select id="categoryComboId" name="categoryComboId" style="min-width:20em">
 						<option value="-1">[ $i18n.getString( "all" ) ]</option>
 						#foreach ( $categoryCombo in $categoryCombos )
-							<option value="$categoryCombo.id" #if($categoryComboId==$categoryCombo.id) selected="selected" #end>$categoryCombo.name</option>
+							<option value="$categoryCombo.id" #if($categoryComboId==$categoryCombo.id) selected="selected" #end>$categoryCombo.displayName</option>
 						#end
 					</select>					
 				</td>
@@ -56,11 +56,11 @@
 			<tbody id="list">
 				#foreach( $section in $sections )
 				<tr id="tr${section.id}">
-					<td onclick="showSectionDetails( $section.id )">$encoder.htmlEncode( $section.dataSet.name )</td> 
-					<td onclick="showSectionDetails( $section.id )">$encoder.htmlEncode( $section.name )</td>		
+					<td onclick="showSectionDetails( $section.id )">$encoder.htmlEncode( $section.dataSet.displayName )</td>
+					<td onclick="showSectionDetails( $section.id )">$encoder.htmlEncode( $section.displayName )</td>
 					<td style="text-align:center"><a href="editSection.action?sectionId=$section.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a></td>
 					<td style="text-align:center"><a href="javascript:translate( '$section.getClass().getSimpleName()', '$section.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a></td>
-					<td style="text-align:center"><a href="javascript:removeSection( '$section.id', '$encoder.jsEncode( $section.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a></td>
+					<td style="text-align:center"><a href="javascript:removeSection( '$section.id', '$encoder.jsEncode( $section.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a></td>
 					<td style="text-align:center"><a href="greySection.action?sectionId=$section.id" title="$i18n.getString( 'section_grey_field_managment' )"><img src="../images/edit_layout.png" alt="$i18n.getString( 'section_grey_field_managment' )"/></a></td>
 					<td style="text-align:center"><a href="javascript:showSectionDetails( $section.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a></td>
 				</tr>

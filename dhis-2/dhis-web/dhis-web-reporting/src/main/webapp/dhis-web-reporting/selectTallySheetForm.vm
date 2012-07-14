@@ -24,7 +24,7 @@
 	      <select id="selectedDataSetId" name="selectedDataSetId" style="min-width:350px" #if( $dataSets.size() == 0 ) disabled="disabled" #end>
 			  <option value="null">[ $i18n.getString( "select" ) ]</option>
 		      #foreach( $dataSet in $dataSets )
-			  <option value="$dataSet.id">$encoder.htmlEncode( $dataSet.name )</option>
+			  <option value="$dataSet.id">$encoder.htmlEncode( $dataSet.displayName )</option>
 		      #end	      
 		  </select>
 	</td>

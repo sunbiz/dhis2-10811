@@ -36,6 +36,7 @@ import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.jdbc.StatementBuilder;
 import org.hisp.dhis.message.MessageConversation;
 import org.hisp.dhis.message.MessageConversationStore;
+import org.hisp.dhis.message.UserMessage;
 import org.hisp.dhis.system.util.SqlHelper;
 import org.hisp.dhis.user.User;
 import org.springframework.jdbc.core.RowMapper;
@@ -44,14 +45,15 @@ import org.springframework.jdbc.core.RowMapper;
  * @author Lars Helge Overland
  */
 public class HibernateMessageConversationStore
-    extends HibernateIdentifiableObjectStore<MessageConversation> implements MessageConversationStore
+    extends HibernateIdentifiableObjectStore<MessageConversation>
+    implements MessageConversationStore
 {
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
 
     private StatementBuilder statementBuilder;
-
+    
     public void setStatementBuilder( StatementBuilder statementBuilder )
     {
         this.statementBuilder = statementBuilder;
@@ -61,121 +63,138 @@ public class HibernateMessageConversationStore
     // Implementation methods
     // -------------------------------------------------------------------------
 
-    public List<MessageConversation> getMessageConversations( User user, boolean followUpOnly, boolean unreadOnly, Integer first, Integer max )
+    public List<MessageConversation> getMessageConversations( User user, boolean followUpOnly, boolean unreadOnly,
+        Integer first, Integer max )
     {
         SqlHelper sh = new SqlHelper();
-        
-        String sql = 
-            "select mc.messageconversationid, mc.uid, mc.subject, mc.lastmessage, ui.surname, ui.firstname, um.isread, um.isfollowup " +
-            "from messageconversation mc " +
-            "left join messageconversation_usermessages mu on mc.messageconversationid=mu.messageconversationid " +
-            "left join usermessage um on mu.usermessageid=um.usermessageid " +
-            "left join userinfo ui on mc.lastsenderid=ui.userinfoid ";
-        
+
+        String sql = "select mc.messageconversationid, mc.uid, mc.subject, mc.lastmessage, ui.surname, ui.firstname, um.isread, um.isfollowup, ("
+            + "select count(messageconversationid) from messageconversation_messages mcm where mcm.messageconversationid=mc.messageconversationid) as messagecount "
+            + "from messageconversation mc "
+            + "left join messageconversation_usermessages mu on mc.messageconversationid=mu.messageconversationid "
+            + "left join usermessage um on mu.usermessageid=um.usermessageid "
+            + "left join userinfo ui on mc.lastsenderid=ui.userinfoid ";
+
         if ( user != null )
         {
             sql += sh.whereAnd() + " um.userid=" + user.getId() + " ";
         }
-        
+
         if ( followUpOnly )
         {
             sql += sh.whereAnd() + " um.isfollowup=true ";
         }
-        
+
         if ( unreadOnly )
         {
             sql += sh.whereAnd() + " um.isread=false ";
         }
-        
+
         sql += "order by mc.lastmessage desc ";
-        
+
         if ( first != null && max != null )
         {
             sql += statementBuilder.limitRecord( first, max );
         }
-        
+
         final List<MessageConversation> conversations = jdbcTemplate.query( sql, new RowMapper<MessageConversation>()
         {
-            public MessageConversation mapRow( ResultSet resultSet, int count ) throws SQLException
+            public MessageConversation mapRow( ResultSet resultSet, int count )
+                throws SQLException
             {
                 MessageConversation conversation = new MessageConversation();
-                
+
                 conversation.setId( resultSet.getInt( 1 ) );
                 conversation.setUid( resultSet.getString( 2 ) );
                 conversation.setSubject( resultSet.getString( 3 ) );
                 conversation.setLastMessage( resultSet.getDate( 4 ) );
                 conversation.setLastSenderSurname( resultSet.getString( 5 ) );
-                conversation.setLastSenderFirstname( resultSet.getString( 6 ) );                
+                conversation.setLastSenderFirstname( resultSet.getString( 6 ) );
                 conversation.setRead( resultSet.getBoolean( 7 ) );
                 conversation.setFollowUp( resultSet.getBoolean( 8 ) );
-                
+                conversation.setMessageCount( resultSet.getInt( 9 ) );
+
                 return conversation;
-            }            
+            }
         } );
-        
+
         return conversations;
     }
 
     public int getMessageConversationCount( User user, boolean followUpOnly, boolean unreadOnly )
     {
-        String sql = 
-            "select count(*) from messageconversation mc " +
-            "left join messageconversation_usermessages mu on mc.messageconversationid=mu.messageconversationid " +
-            "left join usermessage um on mu.usermessageid=um.usermessageid " +
-            "where um.userid=" + user.getId() + " ";
+        String sql = "select count(*) from messageconversation mc "
+            + "left join messageconversation_usermessages mu on mc.messageconversationid=mu.messageconversationid "
+            + "left join usermessage um on mu.usermessageid=um.usermessageid " + "where um.userid=" + user.getId()
+            + " ";
 
         if ( followUpOnly )
         {
             sql += "and um.isfollowup=true ";
         }
-        
+
         if ( unreadOnly )
         {
             sql += "and um.isread=false ";
         }
-        
+
         return jdbcTemplate.queryForInt( sql );
     }
-    
+
     public long getUnreadUserMessageConversationCount( User user )
     {
-        String hql = "select count(*) from MessageConversation m join m.userMessages u where u.user = :user and u.read = false";
+        if ( user == null )
+        {
+            return -1;
+        }
         
+        String hql = "select count(*) from MessageConversation m join m.userMessages u where u.user = :user and u.read = false";
+
         Query query = getQuery( hql );
         query.setEntity( "user", user );
         query.setCacheable( true );
-        
+
         return (Long) query.uniqueResult();
     }
-    
+
     public int deleteMessages( User sender )
     {
-        String sql = "delete from messageconversation_messages where messageid in (" +
-            "select messageid from message where userid = " + sender.getId() + ")";
+        if ( sender == null )
+        {
+            return -1;
+        }
         
+        String sql = "delete from messageconversation_messages where messageid in ("
+            + "select messageid from message where userid = " + sender.getId() + ")";
+
         getSqlQuery( sql ).executeUpdate();
-        
+
         String hql = "delete Message m where m.sender = :sender";
 
         Query query = getQuery( hql );
         query.setEntity( "sender", sender );
         return query.executeUpdate();
     }
-    
+
     public int deleteUserMessages( User user )
     {
-        String sql = "delete from messageconversation_usermessages where usermessageid in (" +
-            "select usermessageid from usermessage where userid = " + user.getId() + ")";
+        if ( user == null )
+        {
+            return -1;
+        }
+        
+        String sql = "delete from messageconversation_usermessages where usermessageid in ("
+            + "select usermessageid from usermessage where userid = " + user.getId() + ")";
 
         getSqlQuery( sql ).executeUpdate();
-        
+
         String hql = "delete UserMessage u where u.user = :user";
 
         Query query = getQuery( hql );
         query.setEntity( "user", user );
         return query.executeUpdate();
     }
-    
+
     public int removeUserFromMessageConversations( User lastSender )
     {
         String hql = "update MessageConversation m set m.lastSender = null where m.lastSender = :lastSender";
@@ -183,5 +202,37 @@ public class HibernateMessageConversationStore
         Query query = getQuery( hql );
         query.setEntity( "lastSender", lastSender );
         return query.executeUpdate();
+    }
+
+    public List<UserMessage> getLastRecipients( User user, Integer first, Integer max )
+    {        
+        String sql = " select distinct userinfoid, surname, firstname from userinfo uf" 
+                      + " join usermessage um on (uf.userinfoid = um.userid)"
+                      + " join messageconversation_usermessages mu on (um.usermessageid = mu.usermessageid)"
+                      + " join messageconversation mc on (mu.messageconversationid = mc.messageconversationid)"
+                      + " where mc.lastsenderid = " + user.getId();
+  
+        sql += " order by userinfoid desc";
+        
+        if ( first != null && max != null )
+        {
+            sql += " " + statementBuilder.limitRecord( first, max );
+        }
+        
+        final List<UserMessage> recipients = jdbcTemplate.query( sql, new RowMapper<UserMessage>()
+        {
+            public UserMessage mapRow( ResultSet resultSet, int count ) throws SQLException
+            {
+                UserMessage recipient = new UserMessage();
+                
+                recipient.setId( resultSet.getInt( 1 ) );
+                recipient.setLastRecipientSurname( resultSet.getString( 2 ) );
+                recipient.setLastRecipientFirstname( resultSet.getString( 3 ) );
+            
+                return recipient;
+            }           
+        } );        
+        
+        return recipients;
     }
 }

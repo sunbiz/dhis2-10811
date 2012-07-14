@@ -99,8 +99,8 @@ public class SaveRepresentativeAction
         Patient representative = patientService.getPatient( representativeId );
 
         patient = patientService.getPatient( patientId );
-
         patient.setRepresentative( representative );
+        patient.setUnderAge( true );
 
         if ( copyAttribute )
         {

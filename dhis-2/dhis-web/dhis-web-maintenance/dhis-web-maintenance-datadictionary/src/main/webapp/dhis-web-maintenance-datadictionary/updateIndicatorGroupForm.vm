@@ -25,37 +25,38 @@
 			}
 		});
 
-		checkValueIsExist( "name", "validateIndicatorGroup.action", {id: $indicatorGroup.id});
+		// checkValueIsExist( "name", "validateIndicatorGroup.action", {id: $indicatorGroup.id});
 	});
 </script>
 
 <h3>$i18n.getString( "edit_indicator_group" )</h3>
 
-<form id="updateIndicatorGroupForm" action="updateIndicatorGroup.action" method="post" >
+<form id="updateIndicatorGroupForm" action="updateIndicatorGroup.action" method="post" class="inputForm">
 
 <div>
 	<input type="hidden" id="id" name="id" value="$indicatorGroup.id"/>
 </div>
 
 <table>
-    <col width="200px" />
-   	<col width="275px" />
+    <col width="120px" />
 
 	<tr>
 		<th colspan="2">$i18n.getString( "details" )</th>
 	</tr>
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $indicatorGroup.name )" style="width:240px;"/></td>
+		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $indicatorGroup.name )"></td>
 	</tr>
 </table>
 
 #tblDynamicAttributes( { "attributes": $attributes, "attributeValues": $attributeValues } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<tr>
 		<th>$i18n.getString( "available_indicators" )</th>

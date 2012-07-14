@@ -58,4 +58,6 @@ public interface MessageConversationStore
     int deleteUserMessages( User user );
     
     int removeUserFromMessageConversations( User lastSender );
+    
+    List<UserMessage> getLastRecipients( User user, Integer first, Integer max );
 }

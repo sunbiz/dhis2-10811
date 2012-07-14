@@ -27,21 +27,19 @@ package org.hisp.dhis.interceptor;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
 import ognl.NoSuchPropertyException;
 import ognl.Ognl;
-
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.i18n.I18nManager;
 import org.hisp.dhis.i18n.locale.LocaleManager;
 
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.Interceptor;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Nguyen Dang Quang
@@ -64,7 +62,7 @@ public class I18nInterceptor
     {
         i18nManager = manager;
     }
-    
+
     private LocaleManager localeManager;
 
     public void setLocaleManager( LocaleManager localeManager )
@@ -77,7 +75,7 @@ public class I18nInterceptor
     // -------------------------------------------------------------------------
 
     public void destroy()
-    {        
+    {
     }
 
     public void init()
@@ -114,7 +112,7 @@ public class I18nInterceptor
         {
             Ognl.setValue( KEY_I18N, contextMap, action, i18n );
         }
-        catch ( NoSuchPropertyException e )
+        catch ( NoSuchPropertyException ignored )
         {
         }
 
@@ -122,7 +120,7 @@ public class I18nInterceptor
         {
             Ognl.setValue( KEY_I18N_FORMAT, contextMap, action, i18nFormat );
         }
-        catch ( NoSuchPropertyException e )
+        catch ( NoSuchPropertyException ignored )
         {
         }
 
@@ -130,10 +128,10 @@ public class I18nInterceptor
         {
             Ognl.setValue( KEY_LOCALE, contextMap, action, locale );
         }
-        catch ( NoSuchPropertyException e )
+        catch ( NoSuchPropertyException ignored )
         {
         }
-        
+
         return invocation.invoke();
     }
 }

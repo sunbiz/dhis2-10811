@@ -63,8 +63,7 @@ public class ConfigurationDeletionHandler
     @Override
     public String allowDeleteUserGroup( UserGroup userGroup )
     {
-        String sql = "SELECT COUNT(*) FROM configuration where feedbackrecipientsid=" + userGroup.getId()
-            + " OR completenessrecipientsid=" + userGroup.getId();
+        String sql = "SELECT COUNT(*) FROM configuration where feedbackrecipientsid=" + userGroup.getId();
 
         return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
     }

@@ -1,7 +1,7 @@
 <script>
 
 	jQuery(document).ready(function(){
-		excelFormulaDialog = setUpDialog( 'excelformula', i18n_expression, 600, 350 );
+		excelFormulaDialog = setUpDialog( 'excelformula', i18n_expression, 630, 400 );
 	});
 	
 	var excelFormulaDialog = null;

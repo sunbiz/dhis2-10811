@@ -32,7 +32,9 @@ import org.hisp.dhis.common.NameableObject.NameableProperty;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Lars Helge Overland
@@ -54,17 +56,21 @@ public interface IdentifiableObjectManager
     <T extends IdentifiableObject> Collection<T> getAll( Class<T> clazz );
 
     <T extends IdentifiableObject> Collection<T> getAllSorted( Class<T> clazz );
-
+    
+    <T extends IdentifiableObject> Collection<T> getLikeName( Class<T> clazz, String name );
+    
     <T extends IdentifiableObject> Collection<T> getBetween( Class<T> clazz, int first, int max );
 
     <T extends IdentifiableObject> Collection<T> getBetweenByName( Class<T> clazz, String name, int first, int max );
-
+    
     <T extends IdentifiableObject> Collection<T> getByLastUpdated( Class<T> clazz, Date lastUpdated );
 
     <T extends IdentifiableObject> Collection<T> getByLastUpdatedSorted( Class<T> clazz, Date lastUpdated );
-
+    
     void delete( IdentifiableObject object );
 
+    <T extends IdentifiableObject> Set<Integer> convertToId( Class<T> clazz, Collection<String> uids );
+    
     <T extends IdentifiableObject> Map<String, T> getIdMap( Class<T> clazz, IdentifiableProperty property );
 
     <T extends NameableObject> Map<String, T> getIdMap( Class<T> clazz, NameableProperty property );
@@ -76,4 +82,14 @@ public interface IdentifiableObjectManager
     IdentifiableObject getObject( int id, String simpleClassName );
 
     <T extends IdentifiableObject> int getCount( Class<T> clazz );
+    
+    <T extends IdentifiableObject> List<T> getAllAccessible( Class<T> clazz );
+
+    <T extends IdentifiableObject> List<T> getAccessibleLikeName( Class<T> clazz, String name );
+
+    <T extends IdentifiableObject> List<T> getAccessibleBetween( Class<T> clazz, int first, int max );
+    
+    <T extends IdentifiableObject> List<T> getAccessibleBetweenLikeName( Class<T> clazz, String name, int first, int max );
+
+    <T extends IdentifiableObject> List<T> getAccessibleByLastUpdated( Class<T> clazz, Date lastUpdated );
 }

@@ -48,6 +48,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.period.comparator.AscendingPeriodEndDateComparator;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
@@ -64,6 +65,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -122,6 +124,7 @@ public class ChartPluginController
         @RequestParam( required = false ) boolean userOrganisationUnit,
         @RequestParam( required = false ) boolean userOrganisationUnitChildren,
         @RequestParam( required = false ) boolean periodIsFilter,
+        @RequestParam( required = false ) boolean rewind,
         RelativePeriods relativePeriods, Model model, HttpServletResponse response ) throws Exception
     {
         ChartPluginValue chartValue = new ChartPluginValue();
@@ -132,8 +135,9 @@ public class ChartPluginController
         // Periods
         // ---------------------------------------------------------------------
         
-        List<Period> periods = relativePeriods.getRelativePeriods();
-
+        List<Period> periods = rewind ? relativePeriods.getRewindedRelativePeriods() :
+            relativePeriods.getRelativePeriods();
+        
         if ( p != null && p.size() > 0 )
         {
             for ( String iso : p )
@@ -159,6 +163,8 @@ public class ChartPluginController
             ContextUtils.conflictResponse( response, "No valid periods specified" );
             return null;
         }
+        
+        Collections.sort( periods, new AscendingPeriodEndDateComparator() );
 
         for ( Period period : periods )
         {
@@ -253,7 +259,7 @@ public class ChartPluginController
 
             for ( Indicator indicator : indicators )
             {
-                chartValue.getData().add( indicator.getDisplayShortName() );
+                chartValue.getData().add( indicator.getName() );
             }
 
             Collection<AggregatedIndicatorValue> indicatorValues = useGroupSets ?
@@ -267,7 +273,7 @@ public class ChartPluginController
                 String[] record = new String[4];
 
                 record[0] = String.valueOf( value.getValue() );
-                record[1] = indicatorService.getIndicator( value.getIndicatorId() ).getDisplayShortName();
+                record[1] = indicatorService.getIndicator( value.getIndicatorId() ).getName();
                 record[2] = format.formatPeriod( periodService.getPeriod( value.getPeriodId() ) );
                 record[3] = useGroupSets ?
                     organisationUnitGroupService.getOrganisationUnitGroup( value.getOrganisationUnitGroupId() ).getName() :
@@ -293,21 +299,21 @@ public class ChartPluginController
 
             for ( DataElement element : dataElements )
             {
-                chartValue.getData().add( element.getDisplayShortName() );
+                chartValue.getData().add( element.getName() );
             }
 
             Collection<AggregatedDataValue> dataValues = useGroupSets ?
                 aggregatedOrgUnitDataValueService.getAggregatedDataValueTotals( getIdentifiers( DataElement.class, dataElements ), 
                     getIdentifiers( Period.class, periods ), firstOrgUnit.getId(), getIdentifiers( OrganisationUnitGroup.class, organisationUnitGroups ) ) :
                 aggregatedDataValueService.getAggregatedDataValueTotals( getIdentifiers( DataElement.class, dataElements ), 
-                    getIdentifiers( Period.class, periods ),  getIdentifiers( OrganisationUnit.class, organisationUnits ) );
+                    getIdentifiers( Period.class, periods ), getIdentifiers( OrganisationUnit.class, organisationUnits ) );
 
             for ( AggregatedDataValue value : dataValues )
             {
                 String[] record = new String[4];
 
                 record[0] = String.valueOf( value.getValue() );
-                record[1] = dataElementService.getDataElement( value.getDataElementId() ).getDisplayShortName();
+                record[1] = dataElementService.getDataElement( value.getDataElementId() ).getName();
                 record[2] = format.formatPeriod( periodService.getPeriod( value.getPeriodId() ) );
                 record[3] = useGroupSets ?
                     organisationUnitGroupService.getOrganisationUnitGroup( value.getOrganisationUnitGroupId() ).getName() :
@@ -338,7 +344,7 @@ public class ChartPluginController
             
             for ( DataSet dataSet : dataSets )
             {
-                chartValue.getData().add( dataSet.getDisplayShortName() );
+                chartValue.getData().add( dataSet.getName() );
             }
             
             Collection<DataSetCompletenessResult> dataSetValues = useGroupSets ?
@@ -351,7 +357,7 @@ public class ChartPluginController
                 String[] record = new String[4];
                 
                 record[0] = String.valueOf( value.getValue() );
-                record[1] = dataSetService.getDataSet( value.getDataSetId() ).getDisplayShortName();
+                record[1] = dataSetService.getDataSet( value.getDataSetId() ).getName();
                 record[2] = format.formatPeriod( periodService.getPeriod( value.getPeriodId() ) );
                 record[3] = organisationUnitService.getOrganisationUnit( value.getOrganisationUnitId() ).getName();
                 

@@ -49,7 +49,17 @@ public class GetProgramValidationListAction
 
     private ProgramValidationService programValidationService;
 
+    public void setProgramValidationService( ProgramValidationService programValidationService )
+    {
+        this.programValidationService = programValidationService;
+    }
+
     private ProgramService programService;
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
 
     // -------------------------------------------------------------------------
     // Input && Output
@@ -58,28 +68,18 @@ public class GetProgramValidationListAction
     private Integer programId;
 
     private Collection<ProgramValidation> validations;
-    
+
     private Program program;
-    
+
     // -------------------------------------------------------------------------
     // Getter && Setter
     // -------------------------------------------------------------------------
-
-    public void setProgramService( ProgramService programService )
-    {
-        this.programService = programService;
-    }
 
     public Collection<ProgramValidation> getValidations()
     {
         return validations;
     }
 
-    public void setProgramValidationService( ProgramValidationService programValidationService )
-    {
-        this.programValidationService = programValidationService;
-    }
-    
     public Program getProgram()
     {
         return program;
@@ -94,14 +94,13 @@ public class GetProgramValidationListAction
     // Implementation Action
     // -------------------------------------------------------------------------
 
-
     @Override
     public String execute()
         throws Exception
     {
         program = programService.getProgram( programId );
 
-        validations = programValidationService.getProgramValidation( program, false );
+        validations = programValidationService.getProgramValidation( program );
 
         return SUCCESS;
     }

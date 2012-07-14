@@ -16,6 +16,8 @@
 
     <property name="expression" type="text" />
 
+	<property name="nullIfBlank" />
+
     <set name="dataElementsInExpression" table="expressiondataelement">
       <cache usage="read-write" />      
       <key column="expressionid" foreign-key="fk_expressiondataelement_expressionid" />

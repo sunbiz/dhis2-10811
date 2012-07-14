@@ -35,9 +35,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
-import org.hisp.dhis.period.Period;
-import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportItem;
+import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportNormal;
 import org.hisp.dhis.reportsheet.exporting.AbstractGenerateExcelReportSupport;
 import org.hisp.dhis.reportsheet.utils.ExcelUtils;
@@ -76,7 +75,7 @@ public class GenerateAdvancedReportNormalAction
     // -------------------------------------------------------------------------
 
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnitGroup organisationUnitGroup = organisationUnitGroupService
@@ -88,7 +87,7 @@ public class GenerateAdvancedReportNormalAction
 
         Collection<ExportItem> exportItems = exportReportInstance.getExportItems();
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnitGroup );
+        this.installReadTemplateFile( exportReportInstance, organisationUnitGroup );
 
         for ( ExportItem exportItem : exportItems )
         {

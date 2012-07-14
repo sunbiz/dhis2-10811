@@ -38,8 +38,6 @@ import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
-import org.hisp.dhis.period.Period;
-import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.util.SessionUtils;
 import org.hisp.dhis.validation.ValidationResult;
 import org.hisp.dhis.validation.ValidationRuleGroup;
@@ -83,13 +81,6 @@ public class RunValidationAction
     public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
         this.organisationUnitService = organisationUnitService;
-    }
-
-    private PeriodService periodService;
-
-    public void setPeriodService( PeriodService periodService )
-    {
-        this.periodService = periodService;
     }
     
     // -------------------------------------------------------------------------
@@ -148,18 +139,6 @@ public class RunValidationAction
         return aggregateResults;
     }
 
-    private boolean aggregate;
-
-    public boolean isAggregate()
-    {
-        return aggregate;
-    }
-
-    public void setAggregate( boolean aggregate )
-    {
-        this.aggregate = aggregate;
-    }
-    
     private boolean maxExceeded;
 
     public boolean isMaxExceeded()
@@ -182,54 +161,23 @@ public class RunValidationAction
     {
         organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
         
-        if ( aggregate ) // Aggregate data source
+        Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitWithChildren( organisationUnit.getId() );
+
+        if ( validationRuleGroupId == -1 )
         {
-            List<OrganisationUnit> organisationUnits = new ArrayList<OrganisationUnit>( organisationUnit.getChildren() );
+            log.info( "Validating captured data for all rules" );
 
-            List<Period> periods = new ArrayList<Period>( periodService.namePeriods( 
-                periodService.getPeriodsBetweenDates( format.parseDate( startDate ), format.parseDate( endDate ) ), format ) );
-            
-            log.info( "Number of periods: " + periods.size() + ", number of organisation units: " + organisationUnits.size() );
-                        
-            if ( validationRuleGroupId == -1 )
-            {
-                log.info( "Validating aggregate data for all rules" );
-
-                validationResults = new ArrayList<ValidationResult>( validationRuleService.validateAggregate( format
-                    .parseDate( startDate ), format.parseDate( endDate ), organisationUnits ) );
-            }
-            else
-            {
-                ValidationRuleGroup group = validationRuleService.getValidationRuleGroup( validationRuleGroupId );
-
-                log.info( "Validating aggregate data for rules for group: '" + group.getName() + "'" );
-
-                validationResults = new ArrayList<ValidationResult>( validationRuleService.validateAggregate( format
-                    .parseDate( startDate ), format.parseDate( endDate ), organisationUnits, group ) );
-            }
-            
-            aggregateResults = validationRuleService.getAggregateValidationResult( validationResults, periods, organisationUnits );
+            validationResults = new ArrayList<ValidationResult>( validationRuleService.validate( format
+                .parseDate( startDate ), format.parseDate( endDate ), organisationUnits ) );
         }
-        else // Captured data source
+        else
         {
-            Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitWithChildren( organisationUnit.getId() );
+            ValidationRuleGroup group = validationRuleService.getValidationRuleGroup( validationRuleGroupId );
 
-            if ( validationRuleGroupId == -1 )
-            {
-                log.info( "Validating captured data for all rules" );
-    
-                validationResults = new ArrayList<ValidationResult>( validationRuleService.validate( format
-                    .parseDate( startDate ), format.parseDate( endDate ), organisationUnits ) );
-            }
-            else
-            {
-                ValidationRuleGroup group = validationRuleService.getValidationRuleGroup( validationRuleGroupId );
-    
-                log.info( "Validating captured data for rules for group: '" + group.getName() + "'" );
-    
-                validationResults = new ArrayList<ValidationResult>( validationRuleService.validate( format
-                    .parseDate( startDate ), format.parseDate( endDate ), organisationUnits, group ) );
-            }
+            log.info( "Validating captured data for rules for group: '" + group.getName() + "'" );
+
+            validationResults = new ArrayList<ValidationResult>( validationRuleService.validate( format
+                .parseDate( startDate ), format.parseDate( endDate ), organisationUnits, group ) );
         }
 
         maxExceeded = validationResults.size() > ValidationRuleService.MAX_VIOLATIONS;
@@ -238,6 +186,8 @@ public class RunValidationAction
 
         SessionUtils.setSessionVar( KEY_VALIDATIONRESULT, validationResults );
 
+        log.info( "Validation done" );
+        
         return SUCCESS;
     }
 }

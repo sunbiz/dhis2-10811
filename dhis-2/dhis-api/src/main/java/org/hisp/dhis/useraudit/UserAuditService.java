@@ -32,15 +32,9 @@ package org.hisp.dhis.useraudit;
  */
 public interface UserAuditService
 {
-    void registerLoginSuccess( String username );
+    void registerLoginSuccess( String username, String ip );
     
     void registerLogout( String username );
     
-    void registerLoginFailure( String username );
-
-    int getLoginFailures( String username );
-
-    int getMaxAttempts();
-
-    int getLockoutTimeframe();
+    void registerLoginFailure( String username, String ip );
 }

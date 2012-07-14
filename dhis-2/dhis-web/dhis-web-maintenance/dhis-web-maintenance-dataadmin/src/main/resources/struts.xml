@@ -103,6 +103,7 @@
       <param name="javascripts"> ../dhis-web-commons/oust/oust.js,
         javascript/dataBrowser.js,
         javascript/dataBrowserForm.js</param>
+      <param name="requiredAuthorities">F_VIEW_DATABROWSER</param>
     </action>
 
     <action name="searchResult" class="org.hisp.dhis.dataadmin.action.databrowser.DataBrowserAction">
@@ -112,12 +113,13 @@
         /dhis-web-maintenance-dataadmin/dataBrowserResult.vm</param>
       <param name="menu">/dhis-web-maintenance-dataadmin/menu.vm</param>
       <param name="javascripts">javascript/dataBrowser.js</param>
+      <param name="requiredAuthorities">F_VIEW_DATABROWSER</param>
     </action>
 
     <action name="searchResultByAjax" class="org.hisp.dhis.dataadmin.action.databrowser.DataBrowserAction">
       <result name="success" type="velocity">/content.vm</result>
       <result name="error" type="velocity">/content.vm</result>
-      <param name="page">/dhis-web-maintenance-dataadmin/dataBrowserResult.vm</param>
+      <param name="page">/dhis-web-maintenance-dataadmin/dataBrowserGrid.vm</param>
     </action>
 
     <action name="error" class="org.hisp.dhis.dataadmin.action.NoAction">
@@ -130,6 +132,7 @@
       <result name="csv" type="gridCsvResult" />
       <result name="xls" type="gridXlsResult" />
       <result name="pdf" type="gridPdfResult" />
+      <param name="requiredAuthorities">F_VIEW_DATABROWSER</param>
     </action>
 
     <!-- Organisation unit merge -->
@@ -219,22 +222,8 @@
     <!-- Min/Max validation -->
 
     <action name="generateMinMaxValue" class="org.hisp.dhis.dataadmin.action.minmaxvalidation.GenerateMinMaxValuesAction">
-      <result name="success" type="velocity-xml">
-        /dhis-web-maintenance-dataadmin/responseSuccess.vm
-      </result>
-      <result name="input" type="velocity-xml">
-        /dhis-web-maintenance-dataadmin/responseError.vm
-      </result>
-	  <param name="requiredAuthorities">F_GENERATE_MIN_MAX_VALUES</param>
-    </action>
-
-    <action name="removeMinMaxValue" class="org.hisp.dhis.dataadmin.action.minmaxvalidation.RemoveMinMaxValueAction">
-      <result name="success" type="velocity-xml">
-        /dhis-web-maintenance-dataadmin/responseSuccess.vm
-      </result>
-      <result name="input" type="velocity-xml">
-        /dhis-web-maintenance-dataadmin/responseError.vm
-      </result>
+      <result name="success" type="velocity-xml">/dhis-web-maintenance-dataadmin/responseSuccess.vm</result>
+      <result name="input" type="velocity-xml">/dhis-web-maintenance-dataadmin/responseError.vm</result>
 	  <param name="requiredAuthorities">F_GENERATE_MIN_MAX_VALUES</param>
     </action>
 
@@ -242,7 +231,7 @@
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-dataadmin/minMaxValidation.vm</param>
       <param name="menu">/dhis-web-maintenance-dataadmin/menu.vm</param>
-      <param name="javascripts">javascript/minMaxValidation.js, javascript/minMaxValidationForm.js </param>
+      <param name="javascripts">javascript/minMaxValidation.js</param>
 	  <param name="requiredAuthorities">F_GENERATE_MIN_MAX_VALUES</param>
     </action>
 
@@ -347,6 +336,17 @@
       <param name="requiredAuthorities">F_SQLVIEW_MANAGEMENT</param>
     </action>
 
+    <action name="showDataSqlViewByAjax" class="org.hisp.dhis.dataadmin.action.sqlview.ExportSqlViewResultAction">
+	  <result name="csv" type="gridCsvResult" />
+      <result name="xls" type="gridXlsResult" />
+      <result name="pdf" type="gridPdfResult" />
+      <result name="html" type="velocity">/content.vm</result>
+      <param name="page">
+        /dhis-web-maintenance-dataadmin/showDataSqlViewGrid.vm</param>
+      <param name="javascripts">javascript/sqlView.js</param>
+      <param name="requiredAuthorities">F_SQLVIEW_MANAGEMENT</param>
+    </action>
+
     <!-- Constant Name -->
 
     <action name="getConstant" class="org.hisp.dhis.dataadmin.action.constant.GetConstantAction">
@@ -418,13 +418,13 @@
       <result name="success" type="velocity">/main.vm</result>
       <param name="menu">/dhis-web-maintenance-dataadmin/menu.vm</param>
       <param name="page">/dhis-web-maintenance-dataadmin/addLockExceptionForm.vm</param>
-      <param name="requiredAuthorities">F_DATASET_ADD</param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="addLockException" class="org.hisp.dhis.dataadmin.action.lockexception.AddLockExceptionAction">
       <result name="success" type="redirect">lockException.action</result>
       <result name="error" type="redirect">index.action</result>
-      <param name="requiredAuthorities">F_DATASET_ADD</param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="getDataSets" class="org.hisp.dhis.dataadmin.action.lockexception.GetDataSetsAction">

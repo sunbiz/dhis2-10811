@@ -37,11 +37,10 @@ import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
-import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.DataElementGroupOrder;
+import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportCategory;
-import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.exporting.AbstractGenerateExcelReportSupport;
 import org.hisp.dhis.reportsheet.utils.ExcelUtils;
 
@@ -80,7 +79,7 @@ public class GenerateAdvancedReportCategoryAction
     // -------------------------------------------------------------------------
 
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnitGroup organisationUnitGroup = organisationUnitGroupService
@@ -88,7 +87,7 @@ public class GenerateAdvancedReportCategoryAction
 
         ExportReportCategory exportReportInstance = (ExportReportCategory) exportReport;
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnitGroup );
+        this.installReadTemplateFile( exportReportInstance, organisationUnitGroup );
 
         for ( Integer sheetNo : exportReportService.getSheets( selectionManager.getSelectedReportId() ) )
         {
@@ -125,12 +124,12 @@ public class GenerateAdvancedReportCategoryAction
                 if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_NAME ) )
                 {
                     ExcelUtils.writeValueByPOI( rowBegin, exportItem.getColumn(), String.valueOf( dataElementGroup
-                        .getName() ), ExcelUtils.TEXT, sheet, this.csText12BoldCenter );
+                        .getName() ), ExcelUtils.TEXT, sheet, this.csText12NormalCenter );
                 }
                 else if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_CODE ) )
                 {
                     ExcelUtils.writeValueByPOI( rowBegin, exportItem.getColumn(), String.valueOf( dataElementGroup
-                        .getCode() ), ExcelUtils.TEXT, sheet, this.csText12BoldCenter );
+                        .getCode() ), ExcelUtils.TEXT, sheet, this.csText12NormalCenter );
                 }
 
                 rowBegin++;
@@ -141,7 +140,7 @@ public class GenerateAdvancedReportCategoryAction
                     if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_NAME ) )
                     {
                         ExcelUtils.writeValueByPOI( rowBegin, exportItem.getColumn(), String.valueOf( dataElement
-                            .getName() ), ExcelUtils.TEXT, sheet, this.csText10Bold );
+                            .getName() ), ExcelUtils.TEXT, sheet, this.csText10Normal );
                     }
                     else if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_CODE ) )
                     {
@@ -156,7 +155,8 @@ public class GenerateAdvancedReportCategoryAction
                     else if ( exportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.FORMULA_EXCEL ) )
                     {
                         ExcelUtils.writeFormulaByPOI( rowBegin, exportItem.getColumn(), ExcelUtils
-                            .generateExcelFormula( exportItem.getExpression(), iRow, iCol ), sheet, this.csFormula );
+                            .generateExcelFormula( exportItem.getExpression(), iRow, iCol ), sheet, this.csFormulaNormal,
+                            evaluatorFormula );
                     }
                     else
                     {
@@ -189,7 +189,8 @@ public class GenerateAdvancedReportCategoryAction
                 {
                     String columnName = ExcelUtils.convertColumnNumberToName( exportItem.getColumn() );
                     String formula = "SUM(" + columnName + (beginChapter + 1) + ":" + columnName + (rowBegin - 1) + ")";
-                    ExcelUtils.writeFormulaByPOI( beginChapter, exportItem.getColumn(), formula, sheet, this.csFormula );
+                    ExcelUtils.writeFormulaByPOI( beginChapter, exportItem.getColumn(), formula, sheet, this.csFormulaBold,
+                        evaluatorFormula );
                 }
             }
         }

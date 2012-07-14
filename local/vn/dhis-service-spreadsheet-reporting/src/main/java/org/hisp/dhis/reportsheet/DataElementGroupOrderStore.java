@@ -1,7 +1,9 @@
 package org.hisp.dhis.reportsheet;
 
+import java.util.List;
+
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,5 +48,7 @@ public interface DataElementGroupOrderStore
     public void updateDataElementGroupOrder( DataElementGroupOrder dataElementGroupOrder );
 
     public void deleteDataElementGroupOrder( Integer id );
+
+    public List<DataElementGroupOrder> getDataElementGroupOrders( List<Integer> ids );
 
 }

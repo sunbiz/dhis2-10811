@@ -27,10 +27,10 @@ package org.hisp.dhis.interpretation;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -61,6 +61,7 @@ public class InterpretationServiceTest
     private InterpretationService interpretationService;
     
     private User userA;
+    private User userB;
     
     private Chart chartA;
     
@@ -72,16 +73,18 @@ public class InterpretationServiceTest
     public void beforeTest()
     {
         userA = createUser( 'A' );
+        userB = createUser( 'B' );
         userService.addUser( userA );
+        userService.addUser( userB );
         
         setDependency( interpretationService, "currentUserService", new MockCurrentUserService( userA ), CurrentUserService.class );
         
         chartA = new Chart( "ChartA" );
-        chartService.saveChart( chartA );
+        chartService.addChart( chartA );
         
-        interpretationA = new Interpretation( chartA, "Interpration of chart A" );
-        interpretationB = new Interpretation( chartA, "Interpration of chart B" );
-        interpretationC = new Interpretation( chartA, "Interpration of chart C" );
+        interpretationA = new Interpretation( chartA, null, "Interpration of chart A" );
+        interpretationB = new Interpretation( chartA, null, "Interpration of chart B" );
+        interpretationC = new Interpretation( chartA, null, "Interpration of chart C" );
     }
     
     @Test
@@ -139,6 +142,40 @@ public class InterpretationServiceTest
         assertTrue( interpretations.contains( interpretationA ) );
         assertTrue( interpretations.contains( interpretationB ) );
         assertTrue( interpretations.contains( interpretationC ) );
+    }
+
+    @Test
+    public void testGetLastByUserA()
+    {
+        interpretationService.saveInterpretation( interpretationA );
+        interpretationService.saveInterpretation( interpretationB );
+        interpretationService.saveInterpretation( interpretationC );
+        
+        List<Interpretation> interpretations = interpretationService.getInterpretations( userA, 0, 50 );
+        
+        assertEquals( 3, interpretations.size() );
+        
+        assertTrue( interpretations.contains( interpretationA ) );
+        assertTrue( interpretations.contains( interpretationB ) );
+        assertTrue( interpretations.contains( interpretationC ) );
+    }
+
+    @Test
+    public void testGetLastByUserB()
+    {
+        interpretationA.addComment( new InterpretationComment( "Comment", userB ) );
+        interpretationB.addComment( new InterpretationComment( "Comment", userB ) );
+        
+        interpretationService.saveInterpretation( interpretationA );
+        interpretationService.saveInterpretation( interpretationB );
+        interpretationService.saveInterpretation( interpretationC );
+        
+        List<Interpretation> interpretations = interpretationService.getInterpretations( userB, 0, 50 );
+        
+        assertEquals( 2, interpretations.size() );
+        
+        assertTrue( interpretations.contains( interpretationA ) );
+        assertTrue( interpretations.contains( interpretationB ) );
     }
     
     @Test

@@ -33,8 +33,9 @@ import org.hisp.dhis.dxf2.message.Message;
 import org.hisp.dhis.dxf2.utils.JacksonUtils;
 import org.hisp.dhis.message.MessageConversation;
 import org.hisp.dhis.message.MessageService;
-import org.hisp.dhis.user.User;
-import org.hisp.dhis.user.UserService;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -46,6 +47,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -61,7 +63,28 @@ public class MessageConversationController
     private MessageService messageService;
 
     @Autowired
+    private OrganisationUnitService organisationUnitService;
+
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserGroupService userGroupService;
+
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    @Override
+    public void postProcessEntity( MessageConversation entity, Map<String, String> parameters ) throws Exception
+    {
+        Boolean markRead = Boolean.parseBoolean( parameters.get( "markRead" ) );
+
+        if( markRead  )
+        {
+            entity.markRead( currentUserService.getCurrentUser() );
+            manager.update( entity );
+        }
+    }
 
     @Override
     protected List<MessageConversation> getEntityList( WebMetaData metaData, WebOptions options )
@@ -100,30 +123,74 @@ public class MessageConversationController
     public void postXmlObject( HttpServletResponse response, HttpServletRequest request, InputStream input ) throws Exception
     {
         Message message = JacksonUtils.fromXml( input, Message.class );
+        postObject( response, request, message );
+    }
 
+    @Override
+    @PreAuthorize( "hasRole('ALL') or hasRole('F_SEND_MESSAGE')" )
+    public void postJsonObject( HttpServletResponse response, HttpServletRequest request, InputStream input ) throws Exception
+    {
+        Message message = JacksonUtils.fromJson( input, Message.class );
+        postObject( response, request, message );
+    }
+
+    public void postObject( HttpServletResponse response, HttpServletRequest request, Message message )
+    {
         List<User> users = new ArrayList<User>( message.getUsers() );
         message.getUsers().clear();
 
+        for ( OrganisationUnit ou : message.getOrganisationUnits() )
+        {
+            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( ou.getUid() );
+
+            if ( organisationUnit == null )
+            {
+                ContextUtils.conflictResponse( response, "Organisation Unit does not exist: " + ou.getUid() );
+                return;
+            }
+
+            message.getUsers().addAll( organisationUnit.getUsers() );
+        }
+
         for ( User u : users )
         {
-            User user  = userService.getUser( u.getUid() );
-            
+            User user = userService.getUser( u.getUid() );
+
             if ( user == null )
             {
                 ContextUtils.conflictResponse( response, "User does not exist: " + u.getUid() );
                 return;
             }
-            
+
             message.getUsers().add( user );
+        }
+
+        for ( UserGroup ug : message.getUserGroups() )
+        {
+            UserGroup userGroup = userGroupService.getUserGroup( ug.getUid() );
+
+            if ( userGroup == null )
+            {
+                ContextUtils.conflictResponse( response, "User Group does not exist: " + ug.getUid() );
+                return;
+            }
+
+            message.getUsers().addAll( userGroup.getMembers() );
+        }
+
+        if ( message.getUsers().isEmpty() )
+        {
+            ContextUtils.conflictResponse( response, "No recipients selected." );
+            return;
         }
 
         String metaData = MessageService.META_USER_AGENT + request.getHeader( ContextUtils.HEADER_USER_AGENT );
 
         int id = messageService.sendMessage( message.getSubject(), message.getText(), metaData, message.getUsers() );
-        MessageConversation m = messageService.getMessageConversation( id );
+        
+        MessageConversation conversation = messageService.getMessageConversation( id );
 
-        response.setStatus( HttpServletResponse.SC_CREATED );
-        response.setHeader( "Location", MessageConversationController.RESOURCE_PATH + "/" + m.getUid() );
+        ContextUtils.createdResponse( response, "Message conversation created", MessageConversationController.RESOURCE_PATH + "/" + conversation.getUid() );
     }
 
     //--------------------------------------------------------------------------
@@ -132,21 +199,21 @@ public class MessageConversationController
 
     @RequestMapping( value = "/{uid}", method = RequestMethod.POST )
     public void postMessageConversationReply( @PathVariable( "uid" ) String uid, @RequestBody String body,
-        HttpServletRequest request, HttpServletResponse response ) throws Exception
+                                              HttpServletRequest request, HttpServletResponse response ) throws Exception
     {
         String metaData = MessageService.META_USER_AGENT + request.getHeader( ContextUtils.HEADER_USER_AGENT );
 
-        MessageConversation messageConversation = messageService.getMessageConversation( uid );
-        
-        if ( messageConversation == null )
+        MessageConversation conversation = messageService.getMessageConversation( uid );
+
+        if ( conversation == null )
         {
             ContextUtils.conflictResponse( response, "Message conversation does not exist: " + uid );
             return;
         }
 
-        messageService.sendReply( messageConversation, body, metaData );        
+        messageService.sendReply( conversation, body, metaData );
 
-        response.setStatus( HttpServletResponse.SC_CREATED );
+        ContextUtils.createdResponse( response, "Message conversation created", MessageConversationController.RESOURCE_PATH + "/" + conversation.getUid() );
     }
 
     //--------------------------------------------------------------------------
@@ -155,12 +222,12 @@ public class MessageConversationController
 
     @RequestMapping( value = "/feedback", method = RequestMethod.POST )
     public void postMessageConversationFeedback( @RequestParam( "subject" ) String subject, @RequestBody String body,
-        HttpServletRequest request, HttpServletResponse response ) throws Exception
+                                                 HttpServletRequest request, HttpServletResponse response ) throws Exception
     {
         String metaData = MessageService.META_USER_AGENT + request.getHeader( ContextUtils.HEADER_USER_AGENT );
 
         messageService.sendFeedback( subject, body, metaData );
-        
-        response.setStatus( HttpServletResponse.SC_CREATED );
+
+        ContextUtils.createdResponse( response, "Feedback created", null );
     }
 }

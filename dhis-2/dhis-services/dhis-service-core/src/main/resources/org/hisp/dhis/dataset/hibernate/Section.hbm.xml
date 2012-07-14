@@ -22,6 +22,8 @@
 
     <property name="code" column="code" not-null="false" unique="true" length="50" />
 
+    <property name="created" type="timestamp" />
+
     <property name="lastUpdated" type="timestamp" />
 
     <many-to-one name="dataSet" class="org.hisp.dhis.dataset.DataSet" column="datasetid"

@@ -27,11 +27,10 @@ package org.hisp.dhis.dd.action.datadictionary;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.datadictionary.DataDictionary;
 import org.hisp.dhis.datadictionary.DataDictionaryService;
 import org.hisp.dhis.i18n.I18n;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Lars Helge Overland
@@ -96,7 +95,7 @@ public class ValidateDataDictionaryAction
         if ( name != null )
         {
 
-            DataDictionary match = dataDictionaryService.getDataDictionaryByName( name );
+            DataDictionary match = dataDictionaryService.getDataDictionaryByName( name ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {

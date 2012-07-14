@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dashboard.DashboardContent;
 import org.hisp.dhis.dashboard.DashboardService;
-import org.hisp.dhis.mapping.MapView;
+import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
@@ -76,9 +76,9 @@ public class AddMapViewToDashboardAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer id;
+    private String id;
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
     }
@@ -95,13 +95,13 @@ public class AddMapViewToDashboardAction
         {        
             DashboardContent content = dashboardService.getDashboardContent( user );
             
-            MapView mapView = mappingService.getMapView( id );
+            Map map = mappingService.getMap( id );
             
-            content.addMapView( mapView );
+            content.addMap( map );
             
             dashboardService.saveDashboardContent( content );
             
-            log.info( "Added mapview '" + mapView.getName() + "' to dashboard for user '" + user.getName() + "'" );
+            log.info( "Added mapview '" + map.getName() + "' to dashboard for user '" + user.getName() + "'" );
         }
         else
         {

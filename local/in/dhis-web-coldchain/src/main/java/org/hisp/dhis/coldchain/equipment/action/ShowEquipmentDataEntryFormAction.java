@@ -114,8 +114,6 @@ public class ShowEquipmentDataEntryFormAction implements Action
     
     private Map<String, String> inventryTypeAttributeAndValueMap;
     
-    
-    
     public Map<String, String> getInventryTypeAttributeAndValueMap()
     {
         return inventryTypeAttributeAndValueMap;
@@ -141,9 +139,13 @@ public class ShowEquipmentDataEntryFormAction implements Action
     {
         return inventoryTypeAttributeValue;
     }
-
-
-
+    
+    private String catalogName;
+    
+    public String getCatalogName()
+    {
+        return catalogName;
+    }
 
     // -------------------------------------------------------------------------
     // Action Implementation
@@ -152,6 +154,19 @@ public class ShowEquipmentDataEntryFormAction implements Action
     {
         
         EquipmentInstance equipmentInstance = equipmentInstanceService.getEquipmentInstance( equipmentInstanceId );
+        
+        if( equipmentInstance.getCatalog()!= null )
+        {
+            catalogName = equipmentInstance.getCatalog().getName();
+            System.out.println( "Catalog Name is : -- " + equipmentInstance.getCatalog().getName() );
+        }
+        
+        else
+        {
+            catalogName = " ";
+        }
+        
+        //equipmentInstance.getCatalog().getName();
         //equipmentInstance.getInventoryType().getDataSets();
         organisationUnit = equipmentInstance.getOrganisationUnit();
         inventoryType =  equipmentInstance.getInventoryType();
@@ -164,7 +179,7 @@ public class ShowEquipmentDataEntryFormAction implements Action
             System.out.println( dataSet.getPeriodType().getId() +"--------" +dataSet.getPeriodType().getName());
         }
         */
-        
+      
         inventoryTypeAttributeList = new ArrayList<InventoryTypeAttribute>( inventoryTypeService.getAllInventoryTypeAttributesForDisplay( inventoryType ));
         
         if( inventoryTypeAttributeList == null || inventoryTypeAttributeList.size() == 0  )

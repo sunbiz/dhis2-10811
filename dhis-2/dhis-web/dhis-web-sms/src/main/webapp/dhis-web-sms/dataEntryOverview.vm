@@ -2,7 +2,7 @@
 #if( $dataSet.alternativeName )
     #set( $dataSetName = $dataSet.alternativeName )
 #else
-    #set( $dataSetName = $dataSet.name )
+    #set( $dataSetName = $dataSet.displayName )
 #end
 
 <div class="header-box" align="center">
@@ -29,7 +29,7 @@
     #if( $dataSet.sections.size() > 0 )
         #foreach( $section in $dataSet.sections )
             <li>
-                <a href="dataEntrySection.action?organisationUnitId=$organisationUnitId&dataSetId=$dataSetId&periodId=$periodId&sectionId=$section.id">$i18n.getString( $section.name )</a>
+                <a href="dataEntrySection.action?organisationUnitId=$organisationUnitId&dataSetId=$dataSetId&periodId=$periodId&sectionId=$section.id">$i18n.getString( $section.displayName )</a>
             </li>
         #end
     #else

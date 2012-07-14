@@ -27,25 +27,7 @@ package org.hisp.dhis.dxf2.datavalueset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.importexport.ImportStrategy.NEW;
-import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
-import static org.hisp.dhis.importexport.ImportStrategy.UPDATES;
-import static org.hisp.dhis.scheduling.TaskCategory.DATAVALUE_IMPORT;
-import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
-import static org.hisp.dhis.system.notification.NotificationLevel.ERROR;
-import static org.hisp.dhis.system.util.ConversionUtils.wrap;
-import static org.hisp.dhis.system.util.DateUtils.getDefaultDate;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import au.com.bytecode.opencsv.CSVReader;
 import org.amplecode.quick.BatchHandler;
 import org.amplecode.quick.BatchHandlerFactory;
 import org.amplecode.staxwax.factory.XMLFactory;
@@ -66,6 +48,7 @@ import org.hisp.dhis.dxf2.importsummary.ImportCount;
 import org.hisp.dhis.dxf2.importsummary.ImportStatus;
 import org.hisp.dhis.dxf2.importsummary.ImportSummary;
 import org.hisp.dhis.dxf2.metadata.ImportOptions;
+import org.hisp.dhis.dxf2.utils.JacksonUtils;
 import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.jdbc.batchhandler.DataValueBatchHandler;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -80,7 +63,22 @@ import org.hisp.dhis.system.util.DebugUtils;
 import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import au.com.bytecode.opencsv.CSVReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.hisp.dhis.importexport.ImportStrategy.*;
+import static org.hisp.dhis.scheduling.TaskCategory.DATAVALUE_IMPORT;
+import static org.hisp.dhis.system.notification.NotificationLevel.ERROR;
+import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
+import static org.hisp.dhis.system.util.ConversionUtils.wrap;
+import static org.hisp.dhis.system.util.DateUtils.getDefaultDate;
 
 /**
  * @author Lars Helge Overland
@@ -89,42 +87,42 @@ public class DefaultDataValueSetService
     implements DataValueSetService
 {
     private static final Log log = LogFactory.getLog( DefaultDataValueSetService.class );
-    
+
     private static final String ERROR_INVALID_DATA_SET = "Invalid data set: ";
     private static final String ERROR_INVALID_PERIOD = "Invalid period: ";
     private static final String ERROR_INVALID_ORG_UNIT = "Invalid org unit: ";
     private static final String ERROR_OBJECT_NEEDED_TO_COMPLETE = "Must be provided to complete data set";
-        
+
     @Autowired
     private IdentifiableObjectManager identifiableObjectManager;
-    
+
     @Autowired
     private DataElementCategoryService categoryService;
-    
+
     @Autowired
     private DataSetService dataSetService;
-    
+
     @Autowired
     private OrganisationUnitService organisationUnitService;
-    
+
     @Autowired
     private PeriodService periodService;
-    
+
     @Autowired
     private BatchHandlerFactory batchHandlerFactory;
-    
+
     @Autowired
     private CompleteDataSetRegistrationService registrationService;
-    
+
     @Autowired
     private CurrentUserService currentUserService;
 
     @Autowired
     private DataValueSetStore dataValueSetStore;
-    
+
     @Autowired
     private Notifier notifier;
-    
+
     //--------------------------------------------------------------------------
     // DataValueSet implementation
     //--------------------------------------------------------------------------
@@ -134,63 +132,88 @@ public class DefaultDataValueSetService
         DataSet dataSet_ = dataSetService.getDataSet( dataSet );
         Period period_ = PeriodType.getPeriodFromIsoString( period );
         OrganisationUnit orgUnit_ = organisationUnitService.getOrganisationUnit( orgUnit );
-        
+
         if ( dataSet_ == null )
         {
             throw new IllegalArgumentException( ERROR_INVALID_DATA_SET + dataSet );
         }
-        
+
         if ( period_ == null )
         {
             throw new IllegalArgumentException( ERROR_INVALID_PERIOD + period );
         }
-        
+
         if ( orgUnit_ == null )
         {
             throw new IllegalArgumentException( ERROR_INVALID_ORG_UNIT + orgUnit );
         }
-        
+
         CompleteDataSetRegistration registration = registrationService.getCompleteDataSetRegistration( dataSet_, period_, orgUnit_ );
-        
+
         Date completeDate = registration != null ? registration.getDate() : null;
-        
+
         period_ = periodService.reloadPeriod( period_ );
-        
+
         dataValueSetStore.writeDataValueSetXml( dataSet_, completeDate, period_, orgUnit_, dataSet_.getDataElements(), wrap( period_ ), wrap( orgUnit_ ), out );
     }
 
     public void writeDataValueSet( Set<String> dataSets, Date startDate, Date endDate, Set<String> orgUnits, OutputStream out )
     {
         Set<Period> periods = new HashSet<Period>( periodService.getPeriodsBetweenDates( startDate, endDate ) );
-        
+
         dataValueSetStore.writeDataValueSetXml( null, null, null, null, getDataElements( dataSets ), periods, getOrgUnits( orgUnits ), out );
     }
 
     public void writeDataValueSetCsv( Set<String> dataSets, Date startDate, Date endDate, Set<String> orgUnits, Writer writer )
     {
         Set<Period> periods = new HashSet<Period>( periodService.getPeriodsBetweenDates( startDate, endDate ) );
-        
+
         dataValueSetStore.writeDataValueSetCsv( getDataElements( dataSets ), periods, getOrgUnits( orgUnits ), writer );
     }
-    
+
     public ImportSummary saveDataValueSet( InputStream in )
     {
         return saveDataValueSet( in, ImportOptions.getDefaultImportOptions(), null );
+    }
+
+    public ImportSummary saveDataValueSetJson( InputStream in )
+    {
+        return saveDataValueSetJson( in, ImportOptions.getDefaultImportOptions(), null );
     }
 
     public ImportSummary saveDataValueSet( InputStream in, ImportOptions importOptions )
     {
         return saveDataValueSet( in, importOptions, null );
     }
-    
+
+    public ImportSummary saveDataValueSetJson( InputStream in, ImportOptions importOptions )
+    {
+        return saveDataValueSetJson( in, importOptions, null );
+    }
+
     public ImportSummary saveDataValueSet( InputStream in, ImportOptions importOptions, TaskId id )
     {
         try
         {
-            DataValueSet dataValueSet = new StreamingDataValueSet( XMLFactory.getXMLReader( in ) );        
+            DataValueSet dataValueSet = new StreamingDataValueSet( XMLFactory.getXMLReader( in ) );
             return saveDataValueSet( importOptions, id, dataValueSet );
         }
         catch ( RuntimeException ex )
+        {
+            log.error( DebugUtils.getStackTrace( ex ) );
+            notifier.notify( id, DATAVALUE_IMPORT, ERROR, "Unfortunately the process failed, check the logs", true );
+            return new ImportSummary( ImportStatus.ERROR, "The import process failed: " + ex.getMessage() );
+        }
+    }
+
+    public ImportSummary saveDataValueSetJson( InputStream in, ImportOptions importOptions, TaskId id )
+    {
+        try
+        {
+            DataValueSet dataValueSet = JacksonUtils.fromJson( in, DataValueSet.class );
+            return saveDataValueSet( importOptions, id, dataValueSet );
+        }
+        catch ( Exception ex )
         {
             log.error( DebugUtils.getStackTrace( ex ) );
             notifier.notify( id, DATAVALUE_IMPORT, ERROR, "Unfortunately the process failed, check the logs", true );
@@ -202,7 +225,7 @@ public class DefaultDataValueSetService
     {
         try
         {
-            DataValueSet dataValueSet = new StreamingCsvDataValueSet( new CSVReader( reader ) );        
+            DataValueSet dataValueSet = new StreamingCsvDataValueSet( new CSVReader( reader ) );
             return saveDataValueSet( importOptions, id, dataValueSet );
         }
         catch ( RuntimeException ex )
@@ -216,28 +239,38 @@ public class DefaultDataValueSetService
     private ImportSummary saveDataValueSet( ImportOptions importOptions, TaskId id, DataValueSet dataValueSet )
     {
         notifier.clear( id, DATAVALUE_IMPORT ).notify( id, DATAVALUE_IMPORT, "Process started" );
-        
+
         ImportSummary summary = new ImportSummary();
-        
+
         importOptions = importOptions != null ? importOptions : ImportOptions.getDefaultImportOptions();
-        
+
         IdentifiableProperty dataElementIdScheme = dataValueSet.getDataElementIdScheme() != null ? IdentifiableProperty.valueOf( dataValueSet.getDataElementIdScheme().toUpperCase() ) : importOptions.getDataElementIdScheme();
         IdentifiableProperty orgUnitIdScheme = dataValueSet.getOrgUnitIdScheme() != null ? IdentifiableProperty.valueOf( dataValueSet.getOrgUnitIdScheme().toUpperCase() ) : importOptions.getOrgUnitIdScheme();
         boolean dryRun = dataValueSet.getDryRun() != null ? dataValueSet.getDryRun() : importOptions.isDryRun();
         ImportStrategy strategy = dataValueSet.getStrategy() != null ? ImportStrategy.valueOf( dataValueSet.getStrategy() ) : importOptions.getImportStrategy();
         boolean skipExistingCheck = importOptions.isSkipExistingCheck();
-        
+
         Map<String, DataElement> dataElementMap = identifiableObjectManager.getIdMap( DataElement.class, dataElementIdScheme );
         Map<String, OrganisationUnit> orgUnitMap = identifiableObjectManager.getIdMap( OrganisationUnit.class, orgUnitIdScheme );
         Map<String, DataElementCategoryOptionCombo> categoryOptionComboMap = identifiableObjectManager.getIdMap( DataElementCategoryOptionCombo.class, IdentifiableProperty.UID );
         Map<String, Period> periodMap = new HashMap<String, Period>();
-        
+
         DataSet dataSet = dataValueSet.getDataSet() != null ? identifiableObjectManager.getObject( DataSet.class, IdentifiableProperty.UID, dataValueSet.getDataSet() ) : null;
         Date completeDate = getDefaultDate( dataValueSet.getCompleteDate() );
-        
+
         Period outerPeriod = PeriodType.getPeriodFromIsoString( dataValueSet.getPeriod() );
-        OrganisationUnit outerOrgUnit = dataValueSet.getOrgUnit() != null ? identifiableObjectManager.getObject( OrganisationUnit.class, orgUnitIdScheme, dataValueSet.getOrgUnit() ) : null;
-        
+
+        OrganisationUnit outerOrgUnit;
+
+        if ( orgUnitIdScheme.equals( IdentifiableProperty.UUID ) )
+        {
+            outerOrgUnit = dataValueSet.getOrgUnit() == null ? null : organisationUnitService.getOrganisationUnitByUuid( dataValueSet.getOrgUnit() );
+        }
+        else
+        {
+            outerOrgUnit = dataValueSet.getOrgUnit() != null ? identifiableObjectManager.getObject( OrganisationUnit.class, orgUnitIdScheme, dataValueSet.getOrgUnit() ) : null;
+        }
+
         if ( dataSet != null && completeDate != null )
         {
             notifier.notify( id, DATAVALUE_IMPORT, "Completing data set" );
@@ -247,7 +280,7 @@ public class DefaultDataValueSetService
         {
             summary.setDataSetComplete( Boolean.FALSE.toString() );
         }
-        
+
         DataElementCategoryOptionCombo fallbackCategoryOptionCombo = categoryService.getDefaultDataElementCategoryOptionCombo();
 
         BatchHandler<DataValue> batchHandler = batchHandlerFactory.createBatchHandler( DataValueBatchHandler.class ).init();
@@ -255,22 +288,23 @@ public class DefaultDataValueSetService
         int importCount = 0;
         int updateCount = 0;
         int totalCount = 0;
-        
+
         notifier.notify( id, DATAVALUE_IMPORT, "Importing data values" );
-        
+        log.info( "importing data values" );
+
         while ( dataValueSet.hasNextDataValue() )
         {
             org.hisp.dhis.dxf2.datavalue.DataValue dataValue = dataValueSet.getNextDataValue();
-            
+
             DataValue internalValue = new DataValue();
 
             totalCount++;
-            
+
             DataElement dataElement = dataElementMap.get( dataValue.getDataElement() );
             DataElementCategoryOptionCombo categoryOptionCombo = categoryOptionComboMap.get( dataValue.getCategoryOptionCombo() );
             Period period = outerPeriod != null ? outerPeriod : PeriodType.getPeriodFromIsoString( dataValue.getPeriod() );
             OrganisationUnit orgUnit = outerOrgUnit != null ? outerOrgUnit : orgUnitMap.get( dataValue.getOrgUnit() );
-            
+
             if ( dataElement == null )
             {
                 summary.getConflicts().add( new ImportConflict( DataElement.class.getSimpleName(), dataValue.getDataElement() ) );
@@ -282,7 +316,7 @@ public class DefaultDataValueSetService
                 summary.getConflicts().add( new ImportConflict( Period.class.getSimpleName(), dataValue.getPeriod() ) );
                 continue;
             }
-            
+
             if ( orgUnit == null )
             {
                 summary.getConflicts().add( new ImportConflict( OrganisationUnit.class.getSimpleName(), dataValue.getOrgUnit() ) );
@@ -293,12 +327,12 @@ public class DefaultDataValueSetService
             {
                 categoryOptionCombo = fallbackCategoryOptionCombo;
             }
-                        
+
             if ( dataValue.getValue() == null && dataValue.getComment() == null )
             {
                 continue;
             }
-            
+
             if ( periodMap.containsKey( dataValue.getPeriod() ) )
             {
                 period = periodMap.get( dataValue.getPeriod() );
@@ -308,17 +342,26 @@ public class DefaultDataValueSetService
                 period = periodService.reloadPeriod( period );
                 periodMap.put( dataValue.getPeriod(), period );
             }
-            
+
             internalValue.setDataElement( dataElement );
             internalValue.setPeriod( period );
             internalValue.setSource( orgUnit );
             internalValue.setOptionCombo( categoryOptionCombo );
             internalValue.setValue( dataValue.getValue() );
-            internalValue.setStoredBy( dataValue.getStoredBy() );
+
+            if ( dataValue.getStoredBy() == null || dataValue.getStoredBy().trim().isEmpty() )
+            {
+                internalValue.setStoredBy( currentUserService.getCurrentUsername() );
+            }
+            else
+            {
+                internalValue.setStoredBy( dataValue.getStoredBy() );
+            }
+
             internalValue.setTimestamp( getDefaultDate( dataValue.getTimestamp() ) );
             internalValue.setComment( dataValue.getComment() );
             internalValue.setFollowup( dataValue.getFollowup() );
-            
+
             if ( !skipExistingCheck && batchHandler.objectExists( internalValue ) )
             {
                 if ( NEW_AND_UPDATES.equals( strategy ) || UPDATES.equals( strategy ) )
@@ -329,7 +372,7 @@ public class DefaultDataValueSetService
                     }
 
                     updateCount++;
-                }                
+                }
             }
             else
             {
@@ -339,22 +382,22 @@ public class DefaultDataValueSetService
                     {
                         batchHandler.addObject( internalValue );
                     }
-                    
+
                     importCount++;
                 }
             }
         }
-        
+
         batchHandler.flush();
 
         int ignores = totalCount - importCount - updateCount;
-        
+
         summary.setDataValueCount( new ImportCount( importCount, updateCount, ignores ) );
         summary.setStatus( ImportStatus.SUCCESS );
         summary.setDescription( "Import process completed successfully" );
-        
+
         notifier.notify( id, DATAVALUE_IMPORT, INFO, "Import done", true ).addTaskSummary( id, DATAVALUE_IMPORT, summary );
-        
+
         return summary;
     }
 
@@ -363,77 +406,77 @@ public class DefaultDataValueSetService
     //--------------------------------------------------------------------------
 
     private void handleComplete( DataSet dataSet, Date completeDate, OrganisationUnit orgUnit, Period period, ImportSummary summary )
-    {        
+    {
         if ( orgUnit == null )
         {
             summary.getConflicts().add( new ImportConflict( OrganisationUnit.class.getSimpleName(), ERROR_OBJECT_NEEDED_TO_COMPLETE ) );
             return;
         }
-        
+
         if ( period == null )
         {
             summary.getConflicts().add( new ImportConflict( Period.class.getSimpleName(), ERROR_OBJECT_NEEDED_TO_COMPLETE ) );
             return;
         }
-        
+
         period = periodService.reloadPeriod( period );
-        
+
         CompleteDataSetRegistration completeAlready = registrationService.getCompleteDataSetRegistration( dataSet, period, orgUnit );
 
         String username = currentUserService.getCurrentUsername();
-        
+
         if ( completeAlready != null )
         {
             completeAlready.setStoredBy( username );
             completeAlready.setDate( completeDate );
-            
+
             registrationService.updateCompleteDataSetRegistration( completeAlready );
-        }        
+        }
         else
         {
             CompleteDataSetRegistration registration = new CompleteDataSetRegistration( dataSet, period, orgUnit, completeDate, username );
-            
+
             registrationService.saveCompleteDataSetRegistration( registration );
         }
-        
+
         summary.setDataSetComplete( DateUtils.getMediumDateString( completeDate ) );
     }
-    
+
     private Set<DataElement> getDataElements( Set<String> dataSets )
     {
         Set<DataElement> dataElements = new HashSet<DataElement>();
-        
+
         for ( String ds : dataSets )
         {
             DataSet dataSet = dataSetService.getDataSet( ds );
-            
+
             if ( dataSet == null )
             {
                 throw new IllegalArgumentException( ERROR_INVALID_DATA_SET + ds );
             }
-            
+
             dataElements.addAll( dataSet.getDataElements() );
         }
-        
+
         return dataElements;
     }
-    
+
     public Set<OrganisationUnit> getOrgUnits( Set<String> orgUnits )
     {
         Set<OrganisationUnit> organisationUnits = new HashSet<OrganisationUnit>();
-        
+
         for ( String ou : orgUnits )
         {
-            OrganisationUnit orgUnit = organisationUnitService.getOrganisationUnit( ou );            
+            OrganisationUnit orgUnit = organisationUnitService.getOrganisationUnit( ou );
 
             if ( orgUnit == null )
             {
                 throw new IllegalArgumentException( ERROR_INVALID_ORG_UNIT + ou );
             }
-            
+
             organisationUnits.add( orgUnit );
         }
-        
+
         return organisationUnits;
     }
 }

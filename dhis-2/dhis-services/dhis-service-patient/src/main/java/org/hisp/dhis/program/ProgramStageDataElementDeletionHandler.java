@@ -53,6 +53,13 @@ public class ProgramStageDataElementDeletionHandler
         this.programStageDEService = programStageDEService;
     }
 
+    private ProgramStageSectionService programStageSectionService;
+
+    public void setProgramStageSectionService( ProgramStageSectionService programStageSectionService )
+    {
+        this.programStageSectionService = programStageSectionService;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation methods
     // -------------------------------------------------------------------------
@@ -74,13 +81,13 @@ public class ProgramStageDataElementDeletionHandler
 
         for ( ProgramStage programStage : programStages )
         {
-            Collection<ProgramStageDataElement> dataElements = programStageDEService.get( programStage );
+            Collection<ProgramStageDataElement> psDataElements = programStageDEService.get( programStage );
 
-            if ( dataElements != null && dataElements.size() > 0 )
+            if ( psDataElements != null && psDataElements.size() > 0 )
             {
-                for ( ProgramStageDataElement dataElement : dataElements )
+                for ( ProgramStageDataElement psDataElement : psDataElements )
                 {
-                    programStageDEService.deleteProgramStageDataElement( dataElement );
+                    programStageDEService.deleteProgramStageDataElement( psDataElement );
                 }
 
             }
@@ -90,19 +97,18 @@ public class ProgramStageDataElementDeletionHandler
     @Override
     public void deleteProgramStage( ProgramStage programStage )
     {
-        // ---------------------------------------------------------------------
-        // Delete Program Stage data elements
-        // ---------------------------------------------------------------------
-
-        Collection<ProgramStageDataElement> dataElements = programStageDEService.get( programStage );
-       
-        if ( dataElements != null && dataElements.size() > 0 )
+        Collection<ProgramStageDataElement> psDataElements = programStage.getProgramStageDataElements();
+        for ( ProgramStageDataElement psDataElement : psDataElements )
         {
-            for ( ProgramStageDataElement dataElement : dataElements )
-            {
-                programStageDEService.deleteProgramStageDataElement( dataElement );
-            }
+            programStageDEService.deleteProgramStageDataElement( psDataElement );
         }
+    }
+
+    @Override
+    public void deleteProgramStageSection( ProgramStageSection programStageSection )
+    {
+        programStageSection.getProgramStageDataElements().clear();
+        programStageSectionService.updateProgramStageSection( programStageSection );
     }
 
     @Override
@@ -112,12 +118,13 @@ public class ProgramStageDataElementDeletionHandler
         {
             // TODO use a query which will be more efficient
 
-            Iterator<ProgramStageDataElement> iterator = programStageDEService.getAllProgramStageDataElements().iterator();
-            
+            Iterator<ProgramStageDataElement> iterator = programStageDEService.getAllProgramStageDataElements()
+                .iterator();
+
             while ( iterator.hasNext() )
             {
                 ProgramStageDataElement element = iterator.next();
-                
+
                 if ( element.getDataElement() != null && element.getDataElement().equals( dataElement ) )
                 {
                     programStageDEService.deleteProgramStageDataElement( element );

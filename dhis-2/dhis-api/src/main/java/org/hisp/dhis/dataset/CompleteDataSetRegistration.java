@@ -27,12 +27,13 @@ package org.hisp.dhis.dataset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.ImportableObject;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -44,7 +45,7 @@ import java.util.Date;
 /**
  * @author Lars Helge Overland
  */
-@JacksonXmlRootElement( localName = "completeDataSetRegistration", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "completeDataSetRegistration", namespace = DxfNamespaces.DXF_2_0)
 public class CompleteDataSetRegistration
     implements ImportableObject, Serializable
 {
@@ -63,6 +64,8 @@ public class CompleteDataSetRegistration
 
     private String storedBy;
 
+    private transient String periodName;
+    
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -235,5 +238,16 @@ public class CompleteDataSetRegistration
     public void setStoredBy( String storedBy )
     {
         this.storedBy = storedBy;
+    }
+
+    @JsonIgnore
+    public String getPeriodName()
+    {
+        return periodName;
+    }
+
+    public void setPeriodName( String periodName )
+    {
+        this.periodName = periodName;
     }
 }

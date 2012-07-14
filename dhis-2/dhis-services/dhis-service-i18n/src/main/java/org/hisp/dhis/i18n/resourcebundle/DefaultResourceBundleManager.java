@@ -27,6 +27,9 @@ package org.hisp.dhis.i18n.resourcebundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.i18n.locale.LocaleManager;
+import org.hisp.dhis.i18n.util.PathUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -44,9 +47,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.hisp.dhis.i18n.locale.LocaleManager;
-import org.hisp.dhis.i18n.util.PathUtils;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -82,11 +82,17 @@ public class DefaultResourceBundleManager
     // ResourceBundleManager implementation
     // -------------------------------------------------------------------------
 
+    @Override
     public ResourceBundle getSpecificResourceBundle( Class<?> clazz, Locale locale )
     {
-        String path = PathUtils.getClassPath( clazz.getName() );
+        return getSpecificResourceBundle( clazz.getName(), locale );
+    }
 
-        for ( String dir = PathUtils.getParent( path ); dir != null; dir = PathUtils.getParent( dir ) )
+    public ResourceBundle getSpecificResourceBundle( String clazzName, Locale locale )
+    {
+        String path = PathUtils.getClassPath( clazzName );
+
+        for ( String dir = path; dir != null; dir = PathUtils.getParent( dir ) )
         {
             String baseName = PathUtils.addChild( dir, specificResourceBundleName );
 
@@ -94,7 +100,7 @@ public class DefaultResourceBundleManager
             {
                 return ResourceBundle.getBundle( baseName, locale );
             }
-            catch ( MissingResourceException e )
+            catch ( MissingResourceException ignored )
             {
             }
         }

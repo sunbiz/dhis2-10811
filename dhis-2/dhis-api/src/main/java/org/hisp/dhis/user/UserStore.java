@@ -49,7 +49,8 @@ public interface UserStore
     Collection<User> getUsersWithoutOrganisationUnit();
 
     /**
-     * Returns a Collection of the Users which are associated with OrganisationUnits.
+     * Returns a Collection of the Users which are associated with
+     * OrganisationUnits.
      * 
      * @param orgunits a Collection of the organization units.
      * 
@@ -64,11 +65,14 @@ public interface UserStore
      * @return a Collection of Users.
      */
     Collection<User> getUsersByPhoneNumber( String phoneNumber );
-    
+
     /**
      * Removes all user settings associated with the given user.
      * 
      * @param user the user.
      */
     void removeUserSettings( User user );
+
+    Collection<User> getUsersByName( String name );
+
 }

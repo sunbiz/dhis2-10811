@@ -9,6 +9,8 @@ function validateRunAnalyseData()
 {
     if ( analyseDataInvalid() )
     {
+        $( '#startButton').attr( 'disabled', true );
+
         $.getJSON( "validateRunAnalysis.action", {
             fromDate : getFieldValue( 'fromDate' ),
             toDate : getFieldValue( 'toDate' )
@@ -22,6 +24,7 @@ function validateRunAnalyseData()
             else
             {
             	setMessage( json.message );
+                $( '#startButton').removeAttr( 'disabled' );
             }
         } );
     }
@@ -69,6 +72,8 @@ function analyseData()
         $( "div#analysisInput" ).hide();
         $( "div#analysisResult" ).show();
         $( "div#analysisResult" ).html( data );
+
+        $( '#startButton').removeAttr( 'disabled' );
     } );
 }
 

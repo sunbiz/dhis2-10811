@@ -26,7 +26,13 @@ function importData()
 			periodId: byId('period').value
 		}, function( json ) {
 			unLockScreen();
-			showSuccessMessage( json.message );
+			
+			if ( json.response == "success" )
+			{
+				showSuccessMessage( json.message + " " + importItemIds.length + " " + i18n_data_value, 5000 );
+			} else {
+				showErrorMessage( json.message, 5000 );
+			}
 		});
 	}
 	else showWarningMessage( i18n_choose_import_item );
@@ -99,6 +105,18 @@ function getPeriodsByImportReport( importReportId ) {
 	} );
 }
 
+function getImportingPeriod( url )
+{
+	var periodList = jQuery( '#period' );
+	periodList.empty();
+	
+	jQuery.get( url, {}, function ( json ) {
+		for ( var i = 0 ; i < json.periods.length ; i ++ ) {
+			periodList.append( '<option value="' + i + '">' + json.periods[i].name + '</option>' );
+		}
+	} );
+}
+
 function validateUploadExcelImportByJSON() {
 
 	jQuery( "#upload" ).upload( 'validateUploadExcelImport.action',
@@ -132,8 +150,8 @@ function validateUploadExcelImportByXML(){
 	);
 }
 	
-function uploadExcelImport(){
-	
+function uploadExcelImport()
+{	
 	jQuery( "#upload" ).upload( 'uploadExcelImport.action',
 		{ 'draft': true },
 		function( data, e ) {
@@ -145,4 +163,15 @@ function uploadExcelImport(){
 			}
 		}
 	);
+}
+
+function rollbackImporting()
+{
+	jQuery.get( "rollbackImporting.action", {}, function( json ) {
+		if ( json.response && json.response == "success" && json.message != "" ) {
+			showSuccessMessage( json.message, 3500 );
+		} else {
+			showWarningMessage( i18n_no_value_rollbacked );
+		}
+	} );
 }

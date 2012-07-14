@@ -35,11 +35,12 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
+import org.hisp.dhis.period.PeriodType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +48,7 @@ import java.util.Set;
 /**
  * @author Kristian Nordal
  */
-@JacksonXmlRootElement( localName = "dataElementGroup", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "dataElementGroup", namespace = DxfNamespaces.DXF_2_0)
 public class DataElementGroup
     extends BaseIdentifiableObject
 {
@@ -120,6 +121,33 @@ public class DataElementGroup
             addDataElement( dataElement );
         }
     }
+    
+    /**
+     * Returns the value type of the data elements in this group. Uses an arbitrary
+     * member to determine the value type.
+     */
+    public String getValueType()
+    {
+        return members != null && !members.isEmpty() ? members.iterator().next().getType() : null;
+    }
+    
+    /**
+     * Returns the aggregation operator of the data elements in this group. Uses
+     * an arbitrary member to determine the aggregation operator.
+     */
+    public String getAggregationOperator()
+    {
+        return members != null && !members.isEmpty() ? members.iterator().next().getAggregationOperator() : null;
+    }
+
+    /**
+     * Returns the period type of the data elements in this group. Uses an 
+     * arbitrary member to determine the period type.
+     */
+    public PeriodType getPeriodType()
+    {
+        return members != null && !members.isEmpty() ? members.iterator().next().getPeriodType() : null;
+    }
 
     // -------------------------------------------------------------------------
     // hashCode and equals
@@ -167,8 +195,8 @@ public class DataElementGroup
     @JsonProperty( value = "dataElements" )
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "dataElements", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "dataElement", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "dataElements", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "dataElement", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElement> getMembers()
     {
         return members;
@@ -182,7 +210,7 @@ public class DataElementGroup
     @JsonProperty( value = "dataElementGroupSet" )
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public DataElementGroupSet getGroupSet()
     {
         return groupSet;
@@ -195,8 +223,8 @@ public class DataElementGroup
 
     @JsonProperty( value = "attributes" )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "attributes", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "attribute", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0)
     public Set<AttributeValue> getAttributeValues()
     {
         return attributeValues;

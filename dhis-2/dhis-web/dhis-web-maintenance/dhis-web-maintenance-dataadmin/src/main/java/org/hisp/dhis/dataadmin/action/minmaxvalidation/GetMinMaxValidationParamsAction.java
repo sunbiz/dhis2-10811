@@ -27,8 +27,11 @@ package org.hisp.dhis.dataadmin.action.minmaxvalidation;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 
@@ -56,9 +59,9 @@ public class GetMinMaxValidationParamsAction
     // Output
     // -------------------------------------------------------------------------
 
-    private Collection<DataSet> dataSets;
+    private List<DataSet> dataSets;
 
-    public Collection<DataSet> getDataSets()
+    public List<DataSet> getDataSets()
     {
         return dataSets;
     }
@@ -70,7 +73,9 @@ public class GetMinMaxValidationParamsAction
     public String execute()
         throws Exception
     {
-        dataSets = dataSetService.getAllDataSets();
+        dataSets = new ArrayList<DataSet>( dataSetService.getAllDataSets() );
+        
+        Collections.sort( dataSets, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

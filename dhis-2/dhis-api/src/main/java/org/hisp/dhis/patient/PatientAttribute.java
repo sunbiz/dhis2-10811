@@ -29,20 +29,13 @@ package org.hisp.dhis.patient;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
-import org.hisp.dhis.program.Program;
 
 /**
  * @author Abyot Asalefew
  * @version $Id$
  */
-@XmlRootElement( name = "patientAttribute", namespace = Dxf2Namespace.NAMESPACE )
-@XmlAccessorType( value = XmlAccessType.NONE )
+
 public class PatientAttribute
     extends BaseIdentifiableObject
 {
@@ -61,13 +54,15 @@ public class PatientAttribute
 
     public static final String TYPE_COMBO = "COMBO";
 
+    public static final String TYPE_CALCULATED = "CALCULATED";
+
     private String description;
 
     private String valueType;
 
     private boolean mandatory;
 
-    private boolean inheritable;
+    private Boolean inherit;
 
     private Boolean groupBy;
 
@@ -75,7 +70,7 @@ public class PatientAttribute
 
     private Set<PatientAttributeOption> attributeOptions;
 
-    private Program program;
+    private String expression;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -145,9 +140,14 @@ public class PatientAttribute
         attributeOptions.add( option );
     }
 
-    public Boolean isGroupBy()
+    public void setInherit( Boolean inherit )
     {
-        return groupBy;
+        this.inherit = inherit;
+    }
+
+    public Boolean getInherit()
+    {
+        return inherit;
     }
 
     public void setGroupBy( Boolean groupBy )
@@ -190,16 +190,6 @@ public class PatientAttribute
         this.valueType = valueType;
     }
 
-    public Program getProgram()
-    {
-        return program;
-    }
-
-    public void setProgram( Program program )
-    {
-        this.program = program;
-    }
-
     public PatientAttributeGroup getPatientAttributeGroup()
     {
         return patientAttributeGroup;
@@ -210,14 +200,14 @@ public class PatientAttribute
         this.patientAttributeGroup = patientAttributeGroup;
     }
 
-    public boolean isInheritable()
+    public String getExpression()
     {
-        return inheritable;
+        return expression;
     }
 
-    public void setInheritable( boolean inheritable )
+    public void setExpression( String expression )
     {
-        this.inheritable = inheritable;
+        this.expression = expression;
     }
 
 }

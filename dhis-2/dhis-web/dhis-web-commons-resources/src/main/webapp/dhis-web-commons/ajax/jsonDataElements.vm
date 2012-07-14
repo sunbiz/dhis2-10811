@@ -4,7 +4,8 @@
 #set( $groups = $dataElement.groups )
 #set( $dataSets = $dataElement.dataSets )
   {
-	"id":  ${dataElement.id} ,
+	"id":  ${dataElement.id},
+	"uid": "${dataElement.uid}",
 	"name": "$!encoder.jsonEncode( ${dataElement.displayName} )",
 	"alternativeName": "$!encoder.jsonEncode( ${dataElement.alternativeNamee} )",
 	"shortName": "$!encoder.jsonEncode( ${dataElement.displayShortName} )",

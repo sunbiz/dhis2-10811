@@ -32,6 +32,7 @@ import org.hisp.dhis.i18n.I18nFormat;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Lars Helge Overland
@@ -87,7 +88,7 @@ public interface ReportTableService
      *
      * @return a Collection of ReportTables.
      */
-    Collection<ReportTable> getAllReportTables();
+    List<ReportTable> getAllReportTables();
 
     /**
      * Retrieves ReportTables with the given identifiers.
@@ -103,58 +104,40 @@ public interface ReportTableService
      * @param name the name of the ReportTable.
      * @return the ReportTable.
      */
-    ReportTable getReportTableByName( String name );
+    List<ReportTable> getReportTableByName( String name );
 
     /**
      * Instantiates and populates a Grid populated with data from the ReportTable
      * with the given identifier.
      *
-     * @param id the ReportTable identifier.
-     * @param format the I18nFormat.
-     * @param reportingPeriod the reporting date.
-     * @param organisationUnitId the organisation unit identifier.
-     * @return a Grid.
-     */
-    Grid getReportTableGrid( int id, I18nFormat format, Date reportingPeriod, Integer organisationUnitId );
-
-    /**
-     * Instantiates and populates a Grid populated with data from the ReportTable
-     * with the given identifier.
-     *
-     * @param uid the ReportTable unique identifier.
-     * @param format the I18nFormat.
-     * @param reportingPeriod the reporting date.
+     * @param uid                 the ReportTable unique identifier.
+     * @param format              the I18nFormat.
+     * @param reportingPeriod     the reporting date.
      * @param organisationUnitUid the organisation unit uid.
      * @return a Grid.
      */
     Grid getReportTableGrid( String uid, I18nFormat format, Date reportingPeriod, String organisationUnitUid );
 
+    Grid getReportTableGrid( int reportTableId, I18nFormat format, Date reportingPeriod, String organisationUnitUid );
+
     /**
-     * Instantiates and populates a Grid populated with data from the given 
+     * Instantiates and populates a Grid populated with data from the given
      * ReportTable.
-     * 
-     * @param reportTable the ReportTable.
-     * @param format the I18nFormat.
-     * @param reportingPeriod the reporting date.
+     *
+     * @param reportTable         the ReportTable.
+     * @param format              the I18nFormat.
+     * @param reportingPeriod     the reporting date.
      * @param organisationUnitUid the organisation unit uid.
-     * @param minimal indicates whether to include visible columns only in the Grid.
+     * @param minimal             indicates whether to include visible columns only in the Grid.
      * @return a Grid.
      */
     Grid getReportTableGrid( ReportTable reportTable, I18nFormat format, Date reportingPeriod, String organisationUnitUid, boolean minimal );
-    
-    /**
-     * If report table mode, this method will return the report table with the
-     * given identifier. If report mode, this method will return the report
-     * tables associated with the report.
-     *
-     * @param uid the uid.
-     * @param mode the mode.
-     */
+
     ReportTable getReportTable( String uid, String mode );
 
-    Collection<ReportTable> getReportTablesBetween( int first, int max );
+    List<ReportTable> getReportTablesBetween( int first, int max );
 
-    Collection<ReportTable> getReportTablesBetweenByName( String name, int first, int max );
+    List<ReportTable> getReportTablesBetweenByName( String name, int first, int max );
 
     int getReportTableCount();
 

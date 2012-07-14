@@ -53,6 +53,7 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorGroup;
 import org.hisp.dhis.indicator.IndicatorGroupSet;
 import org.hisp.dhis.indicator.IndicatorType;
+import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.mapping.MapLegend;
 import org.hisp.dhis.mapping.MapLegendSet;
 import org.hisp.dhis.mapping.MapView;
@@ -65,16 +66,19 @@ import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeGroup;
+import org.hisp.dhis.patient.PatientAudit;
 import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.ProgramStageSection;
 import org.hisp.dhis.program.ProgramValidation;
 import org.hisp.dhis.relationship.Relationship;
 import org.hisp.dhis.relationship.RelationshipType;
@@ -313,6 +317,15 @@ public abstract class DeletionHandler
         return null;
     }
 
+    public void deleteRelativePeriods( RelativePeriods relativePeriods )
+    {
+    }
+    
+    public String allowDeleteRelativePeriods( RelativePeriods relativePeriods )
+    {
+        return null;
+    }
+    
     public void deleteValidationRule( ValidationRule validationRule )
     {
     }
@@ -466,6 +479,15 @@ public abstract class DeletionHandler
         return null;
     }
 
+    public void deleteMap( Map map )
+    {
+    }
+    
+    public String allowDeleteMap( Map map )
+    {
+        return null;
+    }
+    
     public void deleteMapView( MapView mapView )
     {
     }
@@ -582,6 +604,15 @@ public abstract class DeletionHandler
     public void deleteProgramStage( ProgramStage programStage )
     {
     }
+    
+    public void deleteProgramStageSection( ProgramStageSection programStageSection )
+    {
+    }
+    
+    public String allowDeleteProgramStageSection( ProgramStageSection programStageSection )
+    {
+        return null;
+    }
 
     public String allowDeleteProgramStageInstance( ProgramStageInstance programStageInstance )
     {
@@ -663,4 +694,14 @@ public abstract class DeletionHandler
     public void deleteLockException( LockException lockException )
     {
     }
+    
+    public void deletePatientAudit( PatientAudit patientAudit )
+    {
+    }
+
+    public String allowDeletePatientAudit( PatientAudit patientAudit )
+    {
+        return null;
+    }
+
 }

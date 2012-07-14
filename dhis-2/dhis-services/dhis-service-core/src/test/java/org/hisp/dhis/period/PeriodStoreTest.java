@@ -27,11 +27,11 @@ package org.hisp.dhis.period;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,8 +82,6 @@ public class PeriodStoreTest
         dataValueStore = (DataValueStore) getBean( DataValueStore.ID );
 
         optionCombo = categoryService.getDefaultDataElementCategoryOptionCombo();
-        
-        // categoryService.addDataElementCategoryOptionCombo( optionCombo );
     }
 
     // -------------------------------------------------------------------------
@@ -118,21 +116,21 @@ public class PeriodStoreTest
             // Expected.
         }
 
-        periodA = periodStore.getPeriod( idA );
+        periodA = periodStore.get( idA );
         assertNotNull( periodA );
         assertEquals( idA, periodA.getId() );
         assertEquals( periodTypeA, periodA.getPeriodType() );
         assertEquals( getDay( 0 ), periodA.getStartDate() );
         assertEquals( getDay( 1 ), periodA.getEndDate() );
 
-        periodB = periodStore.getPeriod( idB );
+        periodB = periodStore.get( idB );
         assertNotNull( periodB );
         assertEquals( idB, periodB.getId() );
         assertEquals( periodTypeA, periodB.getPeriodType() );
         assertEquals( getDay( 1 ), periodB.getStartDate() );
         assertEquals( getDay( 2 ), periodB.getEndDate() );
 
-        periodC = periodStore.getPeriod( idC );
+        periodC = periodStore.get( idC );
         assertNotNull( periodC );
         assertEquals( idC, periodC.getId() );
         assertEquals( periodTypeB, periodC.getPeriodType() );
@@ -158,34 +156,34 @@ public class PeriodStoreTest
         int idC = periodStore.addPeriod( periodC );
         int idD = periodStore.addPeriod( periodD );
 
-        assertNotNull( periodStore.getPeriod( idA ) );
-        assertNotNull( periodStore.getPeriod( idB ) );
-        assertNotNull( periodStore.getPeriod( idC ) );
-        assertNotNull( periodStore.getPeriod( idD ) );
+        assertNotNull( periodStore.get( idA ) );
+        assertNotNull( periodStore.get( idB ) );
+        assertNotNull( periodStore.get( idC ) );
+        assertNotNull( periodStore.get( idD ) );
 
-        periodStore.deletePeriod( periodA );
-        assertNull( periodStore.getPeriod( idA ) );
-        assertNotNull( periodStore.getPeriod( idB ) );
-        assertNotNull( periodStore.getPeriod( idC ) );
-        assertNotNull( periodStore.getPeriod( idD ) );
+        periodStore.delete( periodA );
+        assertNull( periodStore.get( idA ) );
+        assertNotNull( periodStore.get( idB ) );
+        assertNotNull( periodStore.get( idC ) );
+        assertNotNull( periodStore.get( idD ) );
 
-        periodStore.deletePeriod( periodB );
-        assertNull( periodStore.getPeriod( idA ) );
-        assertNull( periodStore.getPeriod( idB ) );
-        assertNotNull( periodStore.getPeriod( idC ) );
-        assertNotNull( periodStore.getPeriod( idD ) );
+        periodStore.delete( periodB );
+        assertNull( periodStore.get( idA ) );
+        assertNull( periodStore.get( idB ) );
+        assertNotNull( periodStore.get( idC ) );
+        assertNotNull( periodStore.get( idD ) );
 
-        periodStore.deletePeriod( periodC );
-        assertNull( periodStore.getPeriod( idA ) );
-        assertNull( periodStore.getPeriod( idB ) );
-        assertNull( periodStore.getPeriod( idC ) );
-        assertNotNull( periodStore.getPeriod( idD ) );
+        periodStore.delete( periodC );
+        assertNull( periodStore.get( idA ) );
+        assertNull( periodStore.get( idB ) );
+        assertNull( periodStore.get( idC ) );
+        assertNotNull( periodStore.get( idD ) );
 
-        periodStore.deletePeriod( periodD );
-        assertNull( periodStore.getPeriod( idA ) );
-        assertNull( periodStore.getPeriod( idB ) );
-        assertNull( periodStore.getPeriod( idC ) );
-        assertNull( periodStore.getPeriod( idD ) );
+        periodStore.delete( periodD );
+        assertNull( periodStore.get( idA ) );
+        assertNull( periodStore.get( idB ) );
+        assertNull( periodStore.get( idC ) );
+        assertNull( periodStore.get( idD ) );
     }
 
     @Test
@@ -264,7 +262,7 @@ public class PeriodStoreTest
         periodStore.addPeriod( periodB );
         periodStore.addPeriod( periodC );
         
-        Collection<Period> periods = periodStore.getAllPeriods();
+        Collection<Period> periods = periodStore.getAll();
         
         assertNotNull( periods );
         assertEquals( 3, periods.size() );

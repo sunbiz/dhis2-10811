@@ -36,7 +36,7 @@ public class Program
     extends Model
 {
     private String clientVersion;
-    
+
     private int version;
 
     public int getVersion()
@@ -60,7 +60,7 @@ public class Program
     {
         this.programStages = programStages;
     }
-    
+
     public String getClientVersion()
     {
         return clientVersion;
@@ -75,17 +75,29 @@ public class Program
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-        dout.writeInt( this.getId() );
-        dout.writeUTF( this.getName() );
-        dout.writeInt( this.getVersion() );
-        dout.writeInt( programStages.size() );
-        for ( int i = 0; i < programStages.size(); i++ )
+        if ( this.clientVersion.equalsIgnoreCase( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            ProgramStage programStage = (ProgramStage) programStages.get( i );
-            programStage.serialize( dout );
+            this.serializeVerssion2_8( dout );
         }
+        else if ( this.clientVersion.equalsIgnoreCase( DataStreamSerializable.TWO_POINT_NINE ) )
+        {
+            this.serializeVerssion2_9( dout );
+        }
+        else if ( this.clientVersion.equalsIgnoreCase( DataStreamSerializable.TWO_POINT_TEN ) )
+        {
+            this.serializeVerssion2_10( dout );
+        }
+        // dout.writeInt( this.getId() );
+        // dout.writeUTF( this.getName() );
+        // dout.writeInt( this.getVersion() );
+        // dout.writeInt( programStages.size() );
+        // for ( int i = 0; i < programStages.size(); i++ )
+        // {
+        // ProgramStage programStage = (ProgramStage) programStages.get( i );
+        // programStage.serialize( dout );
+        // }
     }
-    
+
     @Override
     public void serializeVerssion2_8( DataOutputStream dout )
         throws IOException
@@ -97,10 +109,11 @@ public class Program
         for ( int i = 0; i < programStages.size(); i++ )
         {
             ProgramStage programStage = (ProgramStage) programStages.get( i );
-            programStage.serializeVerssion2_8( dout );
+            programStage.setClientVersion( TWO_POINT_EIGHT );
+            programStage.serialize( dout );
         }
     }
-    
+
     @Override
     public void serializeVerssion2_9( DataOutputStream dout )
         throws IOException
@@ -112,7 +125,24 @@ public class Program
         for ( int i = 0; i < programStages.size(); i++ )
         {
             ProgramStage programStage = (ProgramStage) programStages.get( i );
-            programStage.serializeVerssion2_9( dout );
+            programStage.setClientVersion( TWO_POINT_NINE );
+            programStage.serialize( dout );
+        }
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dout )
+        throws IOException
+    {
+        dout.writeInt( this.getId() );
+        dout.writeUTF( this.getName() );
+        dout.writeInt( this.getVersion() );
+        dout.writeInt( programStages.size() );
+        for ( int i = 0; i < programStages.size(); i++ )
+        {
+            ProgramStage programStage = (ProgramStage) programStages.get( i );
+            programStage.setClientVersion( TWO_POINT_TEN );
+            programStage.serialize( dout );
         }
     }
 

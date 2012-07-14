@@ -154,6 +154,7 @@
 	#compareBoolProperty( $importObject.object.last3Months $importObject.compareObject.last3Months "last_3_months" )
 	#compareBoolProperty( $importObject.object.last6Months $importObject.compareObject.last6Months "last_6_months" )
 	#compareBoolProperty( $importObject.object.last12Months $importObject.compareObject.last12Months "last_12_months" )
+	#compareBoolProperty( $importObject.object.last3Months $importObject.compareObject.last12Months "last_3_months" )
 	#compareBoolProperty( $importObject.object.soFarThisYear $importObject.compareObject.soFarThisYear "so_far_this_year" )
 	#compareBoolProperty( $importObject.object.last3To6Months $importObject.compareObject.last3To6Months "last_3_to_6_months" )
 	#compareBoolProperty( $importObject.object.last6To9Months $importObject.compareObject.last6To9Months "last_6_to_9_months" )

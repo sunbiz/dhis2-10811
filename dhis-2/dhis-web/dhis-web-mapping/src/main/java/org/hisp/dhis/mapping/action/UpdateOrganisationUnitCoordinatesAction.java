@@ -54,9 +54,9 @@ public class UpdateOrganisationUnitCoordinatesAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer id;
-    
-    public void setId( Integer id )
+    private String id;
+
+    public void setId( String id )
     {
         this.id = id;
     }

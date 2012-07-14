@@ -26,14 +26,20 @@ package org.hisp.dhis.reportsheet.exportreport.action;
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import org.hisp.dhis.reportsheet.ExportReportAttribute;
-import org.hisp.dhis.reportsheet.ExportReportService;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.reportsheet.ExportReport;
+import org.hisp.dhis.reportsheet.ExportReportAttribute;
 import org.hisp.dhis.reportsheet.ExportReportCategory;
 import org.hisp.dhis.reportsheet.ExportReportNormal;
 import org.hisp.dhis.reportsheet.ExportReportOrganizationGroupListing;
 import org.hisp.dhis.reportsheet.ExportReportPeriodColumnListing;
+import org.hisp.dhis.reportsheet.ExportReportService;
 import org.hisp.dhis.reportsheet.ExportReportVerticalCategory;
+import org.hisp.dhis.user.CurrentUserService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -54,6 +60,20 @@ public class AddExportReportAction
     public void setExportReportService( ExportReportService exportReportService )
     {
         this.exportReportService = exportReportService;
+    }
+
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
+    }
+
+    private DataSetService dataSetService;
+
+    public void setDataSetService( DataSetService dataSetService )
+    {
+        this.dataSetService = dataSetService;
     }
 
     // -------------------------------------------------------------------------
@@ -77,6 +97,8 @@ public class AddExportReportAction
     private ExportReport exportReport;
 
     private String group;
+
+    private Set<Integer> dataSetIds = new HashSet<Integer>();
 
     // -------------------------------------------------------------------------
     // Getter & Setter
@@ -127,6 +149,15 @@ public class AddExportReportAction
         this.organisationCol = organisationCol;
     }
 
+    public void setDataSetIds( Set<Integer> dataSetIds )
+    {
+        this.dataSetIds = dataSetIds;
+    }
+
+    // -------------------------------------------------------------------------
+    // Action implementation
+    // -------------------------------------------------------------------------
+
     public String execute()
         throws Exception
     {
@@ -163,6 +194,7 @@ public class AddExportReportAction
         exportReport.setName( name );
         exportReport.setExcelTemplateFile( excel );
         exportReport.setGroup( group );
+        exportReport.setCreatedBy( currentUserService.getCurrentUsername() );
 
         if ( periodCol != null && periodRow != null )
         {
@@ -174,6 +206,11 @@ public class AddExportReportAction
         {
             exportReport.setOrganisationColumn( this.organisationCol );
             exportReport.setOrganisationRow( this.organisationRow );
+        }
+
+        if ( dataSetIds != null && !dataSetIds.isEmpty() )
+        {
+            exportReport.setDataSets( new HashSet<DataSet>( dataSetService.getDataSets( dataSetIds ) ) );
         }
 
         exportReportService.addExportReport( exportReport );

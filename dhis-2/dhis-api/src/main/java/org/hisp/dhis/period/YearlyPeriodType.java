@@ -188,4 +188,16 @@ public class YearlyPeriodType
     {
         return ISO_FORMAT;
     }
+    
+    @Override
+    public Date getRewindedDate( Date date, Integer rewindedPeriods )
+    {
+        date = date != null ? date : new Date();        
+        rewindedPeriods = rewindedPeriods != null ? rewindedPeriods : 1;
+
+        Calendar cal = createCalendarInstance( date );        
+        cal.add( Calendar.YEAR, (rewindedPeriods * -1) );
+
+        return cal.getTime();
+    }
 }

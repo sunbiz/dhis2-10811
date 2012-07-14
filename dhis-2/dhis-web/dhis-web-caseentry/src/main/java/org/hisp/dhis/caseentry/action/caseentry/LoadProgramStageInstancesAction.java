@@ -28,7 +28,6 @@
 package org.hisp.dhis.caseentry.action.caseentry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,17 +38,13 @@ import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramService;
-import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
-import org.hisp.dhis.program.comparator.ProgramStageInstanceDueDateComparator;
 
 import com.opensymphony.xwork2.Action;
 
 /**
  * @author Chau Thu Tran
- * @version $ LoadProgramStageInstancesAction.java May 7, 2011 2:31:47 PM $
- * 
  */
 public class LoadProgramStageInstancesAction
     implements Action
@@ -103,6 +98,13 @@ public class LoadProgramStageInstancesAction
     {
         return statusMap;
     }
+    
+    private ProgramInstance programInstance;
+    
+    public ProgramInstance getProgramInstance()
+    {
+        return programInstance;
+    }
 
     private List<ProgramStageInstance> programStageInstances = new ArrayList<ProgramStageInstance>();
 
@@ -117,7 +119,7 @@ public class LoadProgramStageInstancesAction
     {
         return program;
     }
-
+    
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
@@ -130,7 +132,7 @@ public class LoadProgramStageInstancesAction
 
         Patient patient = selectedStateManager.getSelectedPatient();
 
-        Program program = programService.getProgram( programId );
+        program = programService.getProgram( programId );
 
         List<ProgramInstance> programInstances = new ArrayList<ProgramInstance>();
 
@@ -151,7 +153,7 @@ public class LoadProgramStageInstancesAction
 
         if ( programInstances != null && programInstances.size() > 0 )
         {
-            ProgramInstance programInstance = programInstances.iterator().next();
+            programInstance = programInstances.iterator().next();
 
             selectedStateManager.setSelectedProgramInstance( programInstance );
 
@@ -159,20 +161,7 @@ public class LoadProgramStageInstancesAction
             {
                 if ( program.isRegistration() )
                 {
-                    programStageInstances.addAll( programInstance.getProgramStageInstances() );
-                    Collections.sort( programStageInstances, new ProgramStageInstanceDueDateComparator() );
-                                        statusMap = programStageInstanceService.statusProgramStageInstances( programInstance
-                        .getProgramStageInstances() );
-                }
-                else
-                {
-                    ProgramStage programStage = program.getProgramStages().iterator().next();
-                    ProgramStageInstance programStageInstance = programStageInstanceService.getProgramStageInstance(
-                        programInstance, programStage );
-                    if( programStageInstance!= null )
-                    {
-                        programStageInstances.add( programStageInstance );
-                    }
+                    statusMap = programStageInstanceService.statusProgramStageInstances( programInstance.getProgramStageInstances() );
                 }
             }
         }

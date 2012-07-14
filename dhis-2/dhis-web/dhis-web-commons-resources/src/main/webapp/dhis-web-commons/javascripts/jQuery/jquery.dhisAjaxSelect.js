@@ -163,7 +163,7 @@ function dhisAjaxSelect_selectedList_dblclick(sourceId, targetId)
         button : "<button id='${id}' type='button' style='width: 70px; margin: 4px;'>${text}</button>",
         option : "<option>${text}</option>",
         option_selected : "<option selected='selected'>${text}</option>",
-        filter_input : "<input id='${id}' placeholder='Filter' type='text' style='width: 100%; height: 18px; border: 1px inset gray;' />",
+        filter_input : "<input id='${id}' placeholder='Filter' type='text' style='width: 96%; height: 18px; border: 1px inset gray;' />",
         filter_select : "<select id='${id}' style='width: 100%; margin-bottom: 4px; margin-top: 0;'></select>"
     };
 

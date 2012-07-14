@@ -34,7 +34,7 @@
 		<select id="orgUnitGroupSetAggLevel" name="orgUnitGroupSetAggLevel" class="scheduling" style="width:100%">
 		<option value="0"#if( $orgUnitGroupSetAggLevel && $orgUnitGroupSetAggLevel == 0 ) selected="selected"#end>[$i18n.getString( "no_aggregation" )]</option>
 		#foreach( $level in $levels )
-		<option value="$level.level"#if( $orgUnitGroupSetAggLevel && $orgUnitGroupSetAggLevel == $level.level ) selected="selected"#end>$encoder.htmlEncode( $level.name )</option>
+		<option value="$level.level"#if( $orgUnitGroupSetAggLevel && $orgUnitGroupSetAggLevel == $level.level ) selected="selected"#end>$encoder.htmlEncode( $level.displayName )</option>
 		#end
 		</select>
 	</td>

@@ -27,6 +27,7 @@ package org.hisp.dhis.reportsheet.exportitem.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,9 @@ import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportService;
+import org.hisp.dhis.reportsheet.ReportLocationManager;
+import org.hisp.dhis.reportsheet.state.SelectionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
@@ -72,6 +76,22 @@ public class SetupExportItemFormAction
     public void setExportReportService( ExportReportService exportReportService )
     {
         this.exportReportService = exportReportService;
+    }
+
+    @Autowired
+    private SelectionManager selectionManager;
+
+    public void setSelectionManager( SelectionManager selectionManager )
+    {
+        this.selectionManager = selectionManager;
+    }
+
+    @Autowired
+    private ReportLocationManager reportLocationManager;
+
+    public void setReportLocationManager( ReportLocationManager reportLocationManager )
+    {
+        this.reportLocationManager = reportLocationManager;
     }
 
     // -------------------------------------------------------------------------
@@ -139,6 +159,12 @@ public class SetupExportItemFormAction
     {
         exportReport = this.exportReportService.getExportReport( this.exportReportId );
 
+        if ( exportReport != null )
+        {
+            selectionManager.setDownloadFilePath( reportLocationManager.getExportReportTemplateDirectory().getPath()
+                + File.separator + exportReport.getExcelTemplateFile() );
+        }
+
         dataElementGroups = new ArrayList<DataElementGroup>( dataElementService.getAllDataElementGroups() );
 
         Collections.sort( dataElementGroups, new IdentifiableObjectNameComparator() );
@@ -154,5 +180,4 @@ public class SetupExportItemFormAction
 
         return SUCCESS;
     }
-
 }

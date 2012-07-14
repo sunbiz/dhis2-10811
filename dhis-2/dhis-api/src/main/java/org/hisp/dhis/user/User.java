@@ -36,7 +36,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.apache.commons.collections.CollectionUtils;
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectUtils;
 import org.hisp.dhis.common.annotation.Scanned;
@@ -52,7 +52,7 @@ import java.util.Set;
 /**
  * @author Nguyen Hong Duc
  */
-@JacksonXmlRootElement( localName = "user", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "user", namespace = DxfNamespaces.DXF_2_0)
 public class User
     extends BaseIdentifiableObject
 {
@@ -74,19 +74,34 @@ public class User
     private String email;
 
     private String phoneNumber;
-    
+
     private String jobTitle;
 
+    private String introduction;
+
+    private String gender;
+
+    private Date birthday;
+
+    private String nationality;
+
+    private String employer;
+
+    private String education;
+
+    private String interests;
+
+    private String languages;
+
     private Date lastCheckedInterpretations;
-    
+
     private UserCredentials userCredentials;
 
     private Set<UserGroup> groups = new HashSet<UserGroup>();
-    
+
     /**
-     * All OrgUnits where the user could belong
-     * <p/>
-     * TODO This should have been put in UserCredentials
+     * All OrgUnits where the user could belong <p/> TODO This should have been
+     * put in UserCredentials
      */
     @Scanned
     private Set<OrganisationUnit> organisationUnits = new HashSet<OrganisationUnit>();
@@ -97,99 +112,8 @@ public class User
     private Set<AttributeValue> attributeValues = new HashSet<AttributeValue>();
 
     // -------------------------------------------------------------------------
-    // hashCode and equals
-    // -------------------------------------------------------------------------
-
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-
-        int result = 1;
-
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-        result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-        result = prime * result + ((surname == null) ? 0 : surname.hashCode());
-
-        return result;
-    }
-
-    // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
-
-    // TODO fix, users might very well have the same name, should use credentials
-
-    @Override
-    public boolean equals( Object object )
-    {
-        if ( this == object )
-        {
-            return true;
-        }
-        if ( object == null )
-        {
-            return false;
-        }
-
-        if ( getClass() != object.getClass() )
-        {
-            return false;
-        }
-
-        User other = (User) object;
-
-        if ( firstName == null )
-        {
-            if ( other.firstName != null )
-            {
-                return false;
-            }
-        }
-        else if ( !firstName.equals( other.firstName ) )
-        {
-            return false;
-        }
-
-        if ( surname == null )
-        {
-            if ( other.surname != null )
-            {
-                return false;
-            }
-        }
-        else if ( !surname.equals( other.surname ) )
-        {
-            return false;
-        }
-
-        if ( email == null )
-        {
-            if ( other.email != null )
-            {
-                return false;
-            }
-        }
-        else if ( !email.equals( other.email ) )
-        {
-            return false;
-        }
-
-        if ( phoneNumber == null )
-        {
-            if ( other.phoneNumber != null )
-            {
-                return false;
-            }
-        }
-        else if ( !phoneNumber.equals( other.phoneNumber ) )
-        {
-            return false;
-        }
-
-        return true;
-    }
 
     public void addOrganisationUnit( OrganisationUnit unit )
     {
@@ -227,13 +151,32 @@ public class User
     {
         return firstName + " " + surname;
     }
+    
+    /**
+     * Checks whether the profile has been filled, which is defined as three
+     * not-null properties out of all optional properties.
+     */
+    public boolean isProfileFilled()
+    {
+        Object[] props = { jobTitle, introduction, gender, birthday, 
+            nationality, employer, education, interests, languages };
+        
+        int count = 0;
+        
+        for ( Object prop : props )
+        {
+            count = prop != null ? ( count + 1 ) : count;
+        }
+        
+        return count > 3;
+    }
 
     /**
      * Returns the first of the organisation units associated with the user.
      * Null is returned if the user has no organisation units. Which
      * organisation unit to return is undefined if the user has multiple
      * organisation units.
-     *
+     * 
      * @return an organisation unit associated with the user.
      */
     public OrganisationUnit getOrganisationUnit()
@@ -271,8 +214,8 @@ public class User
     // -------------------------------------------------------------------------
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getFirstName()
     {
         return firstName;
@@ -284,8 +227,8 @@ public class User
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getSurname()
     {
         return surname;
@@ -297,8 +240,8 @@ public class User
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getEmail()
     {
         return email;
@@ -310,8 +253,8 @@ public class User
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getJobTitle()
     {
         return jobTitle;
@@ -323,8 +266,8 @@ public class User
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getPhoneNumber()
     {
         return phoneNumber;
@@ -333,6 +276,110 @@ public class User
     public void setPhoneNumber( String phoneNumber )
     {
         this.phoneNumber = phoneNumber;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getIntroduction()
+    {
+        return introduction;
+    }
+
+    public void setIntroduction( String introduction )
+    {
+        this.introduction = introduction;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getGender()
+    {
+        return gender;
+    }
+
+    public void setGender( String gender )
+    {
+        this.gender = gender;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public Date getBirthday()
+    {
+        return birthday;
+    }
+
+    public void setBirthday( Date birthday )
+    {
+        this.birthday = birthday;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getNationality()
+    {
+        return nationality;
+    }
+
+    public void setNationality( String nationality )
+    {
+        this.nationality = nationality;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getEmployer()
+    {
+        return employer;
+    }
+
+    public void setEmployer( String employer )
+    {
+        this.employer = employer;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getEducation()
+    {
+        return education;
+    }
+
+    public void setEducation( String education )
+    {
+        this.education = education;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getInterests()
+    {
+        return interests;
+    }
+
+    public void setInterests( String interests )
+    {
+        this.interests = interests;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getLanguages()
+    {
+        return languages;
+    }
+
+    public void setLanguages( String languages )
+    {
+        this.languages = languages;
     }
 
     public Date getLastCheckedInterpretations()
@@ -346,8 +393,8 @@ public class User
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public UserCredentials getUserCredentials()
     {
         return userCredentials;
@@ -370,9 +417,9 @@ public class User
 
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "organisationUnit", namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0)
     public Collection<OrganisationUnit> getOrganisationUnits()
     {
         return organisationUnits;
@@ -384,9 +431,9 @@ public class User
     }
 
     @JsonProperty( value = "attributes" )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "attributes", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "attribute", namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0)
     public Set<AttributeValue> getAttributeValues()
     {
         return attributeValues;

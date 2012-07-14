@@ -95,21 +95,15 @@ public class WeeklyPeriodTypeTest
         cal.clear();
 
         cal.set( 2008, 11, 29 );
-
         Period period = weekly.createPeriod( "2009W1" );
-
         assertEquals( cal.getTime(), period.getStartDate() );
 
         cal.set( 2011, 0, 3 );
-
         period = weekly.createPeriod( "2011W1" );
-
         assertEquals( cal.getTime(), period.getStartDate() );
 
         period = weekly.createPeriod( "2011W11" );
-
         cal.set( 2011, 2, 14 );
-
         assertEquals( cal.getTime(), period.getStartDate() );
     }
 
@@ -120,7 +114,11 @@ public class WeeklyPeriodTypeTest
         cal.set( 2011, 0, 3 ); // Wednesday
         WeeklyPeriodType wpt = new WeeklyPeriodType();
         Period p = wpt.createPeriod( cal.getTime() );
-        assertEquals( p.getIsoDate(), "2011W1");
+        assertEquals( "2011W1", p.getIsoDate());
+
+        cal.set( 2012, 11, 31 ); // Monday
+        p = wpt.createPeriod( cal.getTime() );
+        assertEquals( "2013W1", p.getIsoDate());
     }
     
     @Test

@@ -1,7 +1,7 @@
 package org.hisp.dhis.dataset.action.editor;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -166,7 +166,7 @@ public class ShowedAssociationsEditorAction
 
         for ( DataSet dataSet : dataSets )
         {
-            grid.addHeader( new GridHeader( dataSet.getShortName(), dataSet.getId() + "", dataSet.getName(), false,
+            grid.addHeader( new GridHeader( dataSet.getDisplayShortName(), dataSet.getId() + "", dataSet.getDisplayName(), false,
                 false ) );
         }
 
@@ -174,7 +174,7 @@ public class ShowedAssociationsEditorAction
         {
             assignedDataSets = new HashSet<DataSet>( child.getDataSets() );
 
-            grid.addRow().addValue( new MetaValue( child.getId(), child.getName() ) );
+            grid.addRow().addValue( new MetaValue( child.getId(), child.getDisplayName() ) );
 
             for ( DataSet dataSet : dataSets )
             {

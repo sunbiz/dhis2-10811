@@ -54,6 +54,9 @@ public interface DataSetReportService
      */
     String getCustomDataSetReport( DataSet dataSet, OrganisationUnit unit, Period period, boolean selectedUnitOnly, I18nFormat format );
     
+    List<Grid> getCustomDataSetReportAsGrid( DataSet dataSet, OrganisationUnit unit, Period period,
+        boolean selectedUnitOnly, I18nFormat format );
+    
     /**
      * Generates a Grid representing a data set report with all data elements
      * in the data set. The data elements are grouped by their category combo.

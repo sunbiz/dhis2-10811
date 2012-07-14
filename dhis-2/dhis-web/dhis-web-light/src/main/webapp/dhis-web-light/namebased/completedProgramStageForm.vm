@@ -11,7 +11,7 @@
 </div>	
 #end
 
-<form action="saveProgramStageForm.action" method="POST">
+<form action="showProgramStageForm.action" method="POST">
 
 <input type="hidden" value=$programStageInstanceId name="programStageInstanceId"/>
 <input type="hidden" value=$programStageId name="programStageId"/>
@@ -22,17 +22,15 @@
 
 <div class="header-box" align="center">
 	<p style="text-align: left;">
-		#foreach( $dataElement in $dataElements)
-			#if( $dataElement.shortName )
-				#set( $dataElementName = $dataElement.shortName )
-			#else
-				#set( $dataElementName = $dataElement.name )
-			#end
+		#foreach( $programStageDataElement in $dataElements)
+			#set( $dataElement = $programStageDataElement.getDataElement())
+			#set( $key = "DE${dataElement.id}" )
+			#set( $dataElementName = $dataElement.getFormNameFallback() )
+			
 				#if (! $dataElement.getOptionSet())			
-					#set( $categoryOptionCombo = $dataElement.getCategoryOptionCombos().getModels().get( 0 ) )
 					#set( $key = "DE${dataElement.id}" )
 
-					<label>$encoder.htmlEncode( $dataElementName ) #if( $categoryOptionCombo.name!="(default)")$encoder.htmlEncode( $categoryOptionCombo.name )#end 
+					<label>$encoder.htmlEncode( $dataElementName ) 
 					#if($dataElement.type=="date") [yyyy-MM-dd] #end
 					</label>
 					
@@ -98,10 +96,24 @@
 					
 					</select>
 				#end
+
+				#if( $programStage.program.displayProvidedOtherFacility == 'true' && $programStageDataElement.allowProvidedElsewhere == 'true')
+				#set( $providedKey = "CB${dataElement.id}" )
+					<label>$i18n.getString( "allow_provided_elsewhere" ) $prevDataValues.get($providedKey)</label>
+					<input class='provided-elsewhere' name="CB$dataElement.id" value="true" type="checkbox" #if($prevDataValues.get($providedKey) == 'true') checked #end disabled />
+				#end
+				
+				
 		#end
+				
 	</p>
 </div>
 
+<div class="header-box" align="center">
+	<p>
+		<input type="submit" style="width: 100%;" value="Incomplete" /> 	
+	</p>
+</div>
 </form>
 
 <div id="footer">

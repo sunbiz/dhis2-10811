@@ -23,7 +23,10 @@
 
 package org.hisp.dhis.attribute;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import org.hisp.dhis.common.GenericStore;
+import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
@@ -54,6 +57,13 @@ public class DefaultAttributeService
         this.attributeValueStore = attributeValueStore;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // Attribute implementation
     // -------------------------------------------------------------------------
@@ -79,73 +89,73 @@ public class DefaultAttributeService
     @Override
     public Attribute getAttribute( int id )
     {
-        return attributeStore.get( id );
+        return i18n( i18nService, attributeStore.get( id ) );
     }
 
     @Override
     public Attribute getAttribute( String uid )
     {
-        return attributeStore.getByUid( uid );
+        return i18n( i18nService, attributeStore.getByUid( uid ) );
     }
 
     @Override
     public Attribute getAttributeByName( String name )
     {
-        return attributeStore.getByName( name );
+        return i18n( i18nService, attributeStore.getByName( name ) );
     }
 
     @Override
     public Set<Attribute> getAllAttributes()
     {
-        return new HashSet<Attribute>( attributeStore.getAll() );
+        return new HashSet<Attribute>( i18n( i18nService, attributeStore.getAll() ) );
     }
 
     @Override
     public Set<Attribute> getDataElementAttributes()
     {
-        return attributeStore.getDataElementAttributes();
+        return new HashSet<Attribute>( i18n( i18nService, attributeStore.getDataElementAttributes() ) );
     }
 
     @Override
     public Set<Attribute> getDataElementGroupAttributes()
     {
-        return attributeStore.getDataElementGroupAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getDataElementGroupAttributes()));
     }
 
     @Override
     public Set<Attribute> getIndicatorAttributes()
     {
-        return attributeStore.getIndicatorAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getIndicatorAttributes()));
     }
 
     @Override
     public Set<Attribute> getIndicatorGroupAttributes()
     {
-        return attributeStore.getIndicatorGroupAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getIndicatorGroupAttributes()));
     }
 
     @Override
     public Set<Attribute> getOrganisationUnitAttributes()
     {
-        return attributeStore.getOrganisationUnitAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getOrganisationUnitAttributes()));
     }
 
     @Override
     public Set<Attribute> getOrganisationUnitGroupAttributes()
     {
-        return attributeStore.getOrganisationUnitGroupAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getOrganisationUnitGroupAttributes()));
     }
 
     @Override
     public Set<Attribute> getUserAttributes()
     {
-        return attributeStore.getUserAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getUserAttributes()));
     }
 
     @Override
     public Set<Attribute> getUserGroupAttributes()
     {
-        return attributeStore.getUserGroupAttributes();
+        return new HashSet<Attribute>( i18n( i18nService,attributeStore.getUserGroupAttributes()));
     }
 
     @Override
@@ -157,19 +167,19 @@ public class DefaultAttributeService
     @Override
     public int getAttributeCountByName( String name )
     {
-        return attributeStore.getCountByName( name );
+        return attributeStore.getCountLikeName( name );
     }
 
     @Override
     public Set<Attribute> getAttributesBetween( int first, int max )
     {
-        return new HashSet<Attribute>( attributeStore.getBetween( first, max ) );
+        return new HashSet<Attribute>( i18n( i18nService, attributeStore.getAllOrderedName( first, max ) ));
     }
 
     @Override
     public Set<Attribute> getAttributesBetweenByName( String name, int first, int max )
     {
-        return new HashSet<Attribute>( attributeStore.getBetweenByName( name, first, max ) );
+        return new HashSet<Attribute>( i18n( i18nService, attributeStore.getAllLikeNameOrderedName( name, first, max ) ));
     }
 
     // -------------------------------------------------------------------------

@@ -1,7 +1,24 @@
 <script type="text/javascript">
 	jQuery(document).ready(	function() {
+	   jQuery("#availableList").dhisAjaxSelect({
+            source: "../dhis-web-commons-ajax-json/getDataElementCategoryOptions.action",
+            iterator: 'dataElementCategoryOptions',
+            sortSelected: false,
+            connectedTo: 'selectedList',
+            handler: function(item) {
+                var option = jQuery("<option />");
+                option.text( item.name );
+                option.attr( "value", item.id );
+
+                return option;
+            }
+        });
+	
 		validation2( 'addDataElementCategoryForm', function( form ){ form.submit() }, {
-			'beforeValidateHandler': function() { listValidator( 'memberValidator', 'categoryOptionNames' ); },
+			'beforeValidateHandler': function() { 
+			    jQuery("#selectedList option").each(function() { jQuery(this).attr("selected", "true"); });
+			    listValidator( 'memberValidator', 'categoryOptionNames' ); 
+			},
 			'rules': getValidationRules("dateElementCategory")
 		});
 
@@ -39,49 +56,53 @@
     <tr>
       <td colspan="4" style="height:15px"></td>
     </tr>
-  	<tr>
-  	  <th colspan="4">$i18n.getString( "category_options" )
-	  <select id="memberValidator" style="display:none"/></th>
-	</tr>
-	<tr>
-	  <td><label>$i18n.getString( "name" )</label></td>
-	  <td colspan="3"><input type="text" id="categoryOptionName" name="categoryOptionName" style="width:25em"/></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td colspan="3">
-      	<input type="button" value="$i18n.getString( 'add_category_option' )" onclick="addCategoryOption()" style="width:200px"/>
-      </td>
-    </tr>
-    <tr>
-      <td></td>
-      <td>
-	  <table>
-	  <tr>
-	  <td>
-        <select multiple size="10" id="categoryOptionNames" name="categoryOptionNames" style="width:300px">           
-        </select>
-	  </td>	
-      <td>	  
-		<a href="javascript:moveUpSelectedOption( 'categoryOptionNames' )"><img src="../images/move_up.png"/></a><br/><br/>
-      	<a href="javascript:moveDownSelectedOption( 'categoryOptionNames' )"><img src="../images/move_down.png"/></a><br/><br/>
-        <a href="javascript:removeSelectedOption( 'categoryOptionNames' )"><img src="../images/delete.png"/></a>
-      </td>
-	  </tr>
-	 </table>
-      </td>
-    
-      <td style="width:30px; text-align:center">&nbsp;</td>
-    </tr>
-    <tr>
-      <td colspan="4" style="height:15px"></td>
-    </tr>
-	<tr>
-	  <td></td>
-	  <td colspan="3">
-		<input type="submit"  value="$i18n.getString( 'add' )" style="width:100px">
-		<input type="button" onclick="window.location.href='category.action'" value="$i18n.getString( 'cancel' )" style="width:100px"/></p>
-      </td>
-	</tr>
+  </table>  
+  
+  <table id="dataElementCategoryOptionSelectionArea">
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+      <col/>
+    </colgroup>
+
+    <thead>
+      <tr>        
+        <th>$i18n.getString( "available_category_options" )</th>
+        <th></th>
+        <th>$i18n.getString( "selected_category_options" )</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+            <select id="availableList" name="availableList" multiple="multiple" style="height: 200px; width: 100%;"></select>
+        </td>
+
+        <td style="text-align:center">
+            <input type="button" value="&gt;" title="$i18n.getString( 'move_selected' )" style="width:50px" onclick="dhisAjaxSelect_moveAllSelected( 'availableList' );"/><br/>
+            <input type="button" value="&lt;" title="$i18n.getString( 'remove_selected' )" style="width:50px" onclick="dhisAjaxSelect_moveAllSelected( 'selectedList' );"/><br/>
+            <input type="button" value="&gt;&gt;" title="$i18n.getString('move_all')" style="width:50px" onclick="dhisAjaxSelect_moveAll( 'availableList' );"/><br/>
+            <input type="button" value="&lt;&lt;" title="$i18n.getString('remove_all')" style="width:50px" onclick="dhisAjaxSelect_moveAll( 'selectedList' );"/>
+        </td>
+
+        <td>
+            <select id="selectedList" name="selectedList" multiple="multiple" style="height: 200px; width: 100%; margin-top: 22px;"></select>
+        </td>
+
+        <td>
+          <a onclick="moveUpSelectedOption('selectedList')" title="$i18n.getString( 'move_up' )"><img src="../images/move_up.png" style="border:0;cursor:pointer" alt="$i18n.getString( 'move_up' )"/></a><br/><br/>
+          <a onclick="moveDownSelectedOption('selectedList')" title="$i18n.getString( 'move_down' )"><img src="../images/move_down.png" style="border:0;cursor:pointer" alt="$i18n.getString( 'move_down' )"/></a>
+        </td>
+      </tr>
+
+    </tbody>
   </table>
+  
+  <p>
+  	<input type="submit" value="$i18n.getString( 'add' )" style="width:100px">
+    <input type="button" onclick="window.location.href='category.action'" value="$i18n.getString( 'cancel' )" style="width:100px"/>
+  </p>
+  
 </form>

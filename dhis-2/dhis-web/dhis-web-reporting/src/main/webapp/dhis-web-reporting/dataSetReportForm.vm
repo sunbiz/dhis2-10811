@@ -1,36 +1,45 @@
 <script type="text/javascript">
-	jQuery(document).ready(function() {
-  		selectionTreeSelection.setMultipleSelectionAllowed( false );
-		selectionTree.clearSelectedOrganisationUnits();
-  		selectionTree.buildSelectionTree();
+    jQuery(document).ready(function() {        
+	    	  	
+	  	#if( $render == true )
+	    var dataSetReport = {
+	        dataSet: "${ds}",
+	  	    periodType: "${periodType.name}",
+	  	    period: "${pe}",
+	  	    offset: ${offset}
+	  	};
+	  	setDataSetReport( dataSetReport );	  	
+		#else
+		selectionTreeSelection.setMultipleSelectionAllowed( false );
+    	selectionTree.clearSelectedOrganisationUnits();
+    	selectionTree.buildSelectionTree();
+    	#end
 	});
 
     var i18n_select_data_set = '$encoder.jsEscape( $i18n.getString( "select_data_set" ), "'")';
     var i18n_select_period = '$encoder.jsEscape( $i18n.getString( "select_period" ), "'")';
     var i18n_select_organisation_unit = '$encoder.jsEscape( $i18n.getString( "select_organisation_unit" ), "'")';
     var i18n_generating_report = '$encoder.jsEscape( $i18n.getString( "generating_report" ), "'")';    
+    var i18n_share_your_interpretation = '$encoder.jsEscape( $i18n.getString( "share_your_interpretation" ), "'")';
+    var i18n_interpretation_was_shared = '$encoder.jsEscape( $i18n.getString( "interpretation_was_shared" ), "'")';
 </script>
 
 <style type="text/css" media="print">
-div#header {
-    display: none;
-}
-
-div#leftBar {
-    display: none;
-}
-
 div#control {
-    display: none;
+  display: none;
 }
 
 h3#dataset_report_header {
-    display: none;
+  display: none;
 }
 
 #download_buttons {
-    display: none;
+  display: none;
 }
+
+#shareForm {
+  display: none;
+}  
 
 .gridTable {
     width: 100%;
@@ -38,21 +47,22 @@ h3#dataset_report_header {
 </style>
 
 <style type="text/css">
-div#control
-{
+div#control {
   margin-bottom: 15px;
 }
 
-div.inputSection
-{
+div.inputSection {
   padding-top: 7px;
   padding-bottom: 5px;
 }
 </style>
+
 <h3 id="dataset_report_header">$i18n.getString( "dataset_report" ) #openHelp( "dataset_reports" )</h3>
 
 <div id="control">
 <input type="button" value='$i18n.getString( "data" )' style="width:120px" onclick="showCriteria()" />
+<input type="button" class="downloadButton" value="$i18n.getString( 'get_report_as_xls' )" onclick="exportDataSetReport( 'xls' )" style="width:140px; display:none;">
+<input type="button" class="downloadButton" value="$i18n.getString( 'get_report_as_pdf' )" onclick="exportDataSetReport( 'pdf' )" style="width:140px; display:none;">
 </div>
 
 <div id="criteria" class="inputCriteria" style="width:360px;height:450px;">
@@ -61,21 +71,21 @@ div.inputSection
 <select id="dataSetId" name="dataSetId" style="width:330px">
   <option value="">[ $i18n.getString( "select" ) ]</option>
   #foreach( $dataSet in $dataSets )
-  <option value="$dataSet.id">$encoder.htmlEncode( $dataSet.name )</option>
+  <option value="$dataSet.uid">$encoder.htmlEncode( $dataSet.displayName )</option>
   #end
 </select>
 </div>
 
 <div class="inputSection">
 <label>$i18n.getString( "report_period" )</label><br>
-<select id="periodType" name="periodType" style="min-width:170px" onchange="getPeriods( 'periodType', 'periodId', 'periodId', '0' )">
+<select id="periodType" name="periodType" style="width:174px" onchange="displayPeriods()">
   <option value="">[ $i18n.getString( "select_period_type" ) ]</option>
   #foreach ( $type in $periodTypes )
   <option value="$type.name">$i18n.getString( $type.name )</option>
   #end
 </select>
-<input type="button" style="width:75px" value="$i18n.getString( 'prev_year' )" onclick="getAvailablePeriods( 'periodType', 'periodId', 'periodId', '-1' )" />
-<input type="button" style="width:75px" value="$i18n.getString( 'next_year' )" onclick="getAvailablePeriods( 'periodType', 'periodId', 'periodId', '1' )" /><br>
+<input type="button" style="width:75px" value="$i18n.getString( 'prev_year' )" onclick="displayPreviousPeriods()" />
+<input type="button" style="width:75px" value="$i18n.getString( 'next_year' )" onclick="displayNextPeriods()" /><br>
 
 <select id="periodId" name="periodId" style="width:330px" disabled="disabled">
 </select>

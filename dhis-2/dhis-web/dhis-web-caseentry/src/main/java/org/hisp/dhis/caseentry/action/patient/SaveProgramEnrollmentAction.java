@@ -29,6 +29,7 @@ package org.hisp.dhis.caseentry.action.patient;
 import java.util.Collection;
 import java.util.Date;
 
+import org.hisp.dhis.caseentry.state.SelectedStateManager;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientService;
@@ -82,6 +83,13 @@ public class SaveProgramEnrollmentAction
         this.programStageInstanceService = programStageInstanceService;
     }
 
+    private SelectedStateManager selectedStateManager;
+
+    public void setSelectedStateManager( SelectedStateManager selectedStateManager )
+    {
+        this.selectedStateManager = selectedStateManager;
+    }
+
     private I18nFormat format;
 
     public void setFormat( I18nFormat format )
@@ -112,25 +120,6 @@ public class SaveProgramEnrollmentAction
         this.programId = programId;
     }
 
-    public Integer getProgramId()
-    {
-        return programId;
-    }
-
-    private Patient patient;
-
-    public Patient getPatient()
-    {
-        return patient;
-    }
-
-    private Program program;
-
-    public Program getProgram()
-    {
-        return program;
-    }
-
     private String enrollmentDate;
 
     public void setEnrollmentDate( String enrollmentDate )
@@ -145,6 +134,20 @@ public class SaveProgramEnrollmentAction
         this.dateOfIncident = dateOfIncident;
     }
 
+    private ProgramInstance programInstance;
+
+    public ProgramInstance getProgramInstance()
+    {
+        return programInstance;
+    }
+
+    private ProgramStageInstance activeProgramStageInstance;
+
+    public ProgramStageInstance getActiveProgramStageInstance()
+    {
+        return activeProgramStageInstance;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -152,19 +155,17 @@ public class SaveProgramEnrollmentAction
     public String execute()
         throws Exception
     {
-        patient = patientService.getPatient( patientId );
+        Patient patient = patientService.getPatient( patientId );
 
-        program = programService.getProgram( programId );
+        Program program = programService.getProgram( programId );
 
-        if ( dateOfIncident == null || dateOfIncident.isEmpty()  )
+        if ( dateOfIncident == null || dateOfIncident.isEmpty() )
         {
             dateOfIncident = enrollmentDate;
         }
 
         Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, program,
             false );
-
-        ProgramInstance programInstance = null;
 
         if ( programInstances.iterator().hasNext() )
         {
@@ -185,19 +186,43 @@ public class SaveProgramEnrollmentAction
             patient.getPrograms().add( program );
             patientService.updatePatient( patient );
 
+            Date dateCreatedEvent = format.parseDate( dateOfIncident );
+            if ( program.getGeneratedByEnrollmentDate() )
+            {
+                dateCreatedEvent = format.parseDate( enrollmentDate );
+            }
+
+            boolean isFirstStage = false;
+            Date currentDate = new Date();
             for ( ProgramStage programStage : program.getProgramStages() )
             {
-                ProgramStageInstance programStageInstance = new ProgramStageInstance();
-                programStageInstance.setProgramInstance( programInstance );
-                programStageInstance.setProgramStage( programStage );
-                programStageInstance.setStageInProgram( programStage.getStageInProgram() );
+                if ( programStage.getAutoGenerateEvent() )
+                {
+                    Date dueDate = DateUtils
+                        .getDateAfterAddition( dateCreatedEvent, programStage.getMinDaysFromStart() );
 
-                Date dueDate = DateUtils.getDateAfterAddition( format.parseDate( dateOfIncident ), programStage
-                    .getMinDaysFromStart() );
+                    if ( ! ( program.getIgnoreOverdueEvents() && dueDate.before( currentDate ) ))
+                    {
+                        ProgramStageInstance programStageInstance = new ProgramStageInstance();
+                        programStageInstance.setProgramInstance( programInstance );
+                        programStageInstance.setProgramStage( programStage );
+                        programStageInstance.setDueDate( dueDate );
 
-                programStageInstance.setDueDate( dueDate );
+                        if ( program.isSingleEvent() )
+                        {
+                            programStageInstance.setOrganisationUnit( selectedStateManager
+                                .getSelectedOrganisationUnit() );
+                            programStageInstance.setExecutionDate( dueDate );
+                        }
+                        programStageInstanceService.addProgramStageInstance( programStageInstance );
 
-                programStageInstanceService.addProgramStageInstance( programStageInstance );
+                        if ( !isFirstStage )
+                        {
+                            activeProgramStageInstance = programStageInstance;
+                            isFirstStage = true;
+                        }
+                    }
+                }
             }
         }
         else
@@ -209,12 +234,16 @@ public class SaveProgramEnrollmentAction
 
             for ( ProgramStageInstance programStageInstance : programInstance.getProgramStageInstances() )
             {
-                Date dueDate = DateUtils.getDateAfterAddition( format.parseDate( dateOfIncident ), programStageInstance
-                    .getProgramStage().getMinDaysFromStart() );
+                if ( !programStageInstance.isCompleted()
+                    || programStageInstance.getStatus() != ProgramStageInstance.SKIPPED_STATUS )
+                {
+                    Date dueDate = DateUtils.getDateAfterAddition( format.parseDate( dateOfIncident ),
+                        programStageInstance.getProgramStage().getMinDaysFromStart() );
 
-                programStageInstance.setDueDate( dueDate );
+                    programStageInstance.setDueDate( dueDate );
 
-                programStageInstanceService.updateProgramStageInstance( programStageInstance );
+                    programStageInstanceService.updateProgramStageInstance( programStageInstance );
+                }
             }
         }
 

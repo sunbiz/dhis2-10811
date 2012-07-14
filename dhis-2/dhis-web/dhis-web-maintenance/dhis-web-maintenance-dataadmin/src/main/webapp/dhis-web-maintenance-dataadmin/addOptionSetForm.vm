@@ -14,14 +14,20 @@
 
 <h3>$i18n.getString( "add_option_set" )</h3>
 
-<form id="addOptionSetForm" name="addOptionSetForm" action="addOptionSet.action" method="post">
+<form id="addOptionSetForm" name="addOptionSetForm" action="addOptionSet.action" method="post" class="inputForm">
   <table>
+      <colgroup>
+          <col width="50px" />
+          <col width="150px"/>
+          <col width="50px"/>
+      </colgroup>
+
     <tr>
       <th colspan="4">$i18n.getString( "details" )</th>      
     </tr>
     <tr>
       <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-      <td colspan="3"><input type="text" id="name" name="name" style="width:25em" class="{validate:{required:true,minlength:2}}" /></td>
+      <td colspan="3"><input type="text" id="name" name="name" class="{validate:{required:true,minlength:2}}"></td>
     </tr>      
     <tr>
       <td colspan="4" style="height:15px"></td>
@@ -32,7 +38,7 @@
 	</tr>
 	<tr>
 	  <td><label>$i18n.getString( "option" )</label></td>
-	  <td colspan="3"><input type="text" id="option" name="option" style="width:25em" /></td>
+	  <td colspan="3"><input type="text" id="option" name="option"></td>
     </tr>
     <tr>
       <td></td>
@@ -47,7 +53,7 @@
 	  <table>
 	  <tr>
 	  <td>
-        <select multiple size="10" id="options" name="options" style="width:330px" onchange="setFieldValue('option', this.value);"></select>
+        <select multiple size="10" id="options" name="options" onchange="setFieldValue('option', this.value);"></select>
 	  </td>	
       <td>	  
 		<a href="javascript:moveUpSelectedOption( 'options' )"><img src="../images/move_up.png" style='padding-left:5px;'/></a><br/><br/>
@@ -56,18 +62,12 @@
       </td>
 	  </tr>
 	 </table>
-      </td>
-    
-      <td style="width:30px; text-align:center">&nbsp;</td>
-    </tr>
-    <tr>
-      <td colspan="4" style="height:15px"></td>
-    </tr>
+
 	<tr>
 	  <td></td>
 	  <td colspan="3">
-		<input type="submit"  value="$i18n.getString( 'add' )" style="width:165px">
-		<input type="button" onclick="window.location.href='optionSet.action'" value="$i18n.getString( 'cancel' )" style="width:165px"/></p>
+		<input type="submit"  value="$i18n.getString( 'add' )" style="width:10em">
+		<input type="button" onclick="window.location.href='optionSet.action'" value="$i18n.getString( 'cancel' )" style="width:10em"/></p>
       </td>
 	</tr>
   </table>

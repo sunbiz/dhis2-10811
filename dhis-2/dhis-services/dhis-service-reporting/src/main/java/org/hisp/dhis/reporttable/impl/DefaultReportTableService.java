@@ -27,24 +27,6 @@ package org.hisp.dhis.reporttable.impl;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.reporttable.ReportTable.ORGANISATION_UNIT_IS_PARENT_COLUMN_NAME;
-import static org.hisp.dhis.reporttable.ReportTable.PARAM_ORGANISATIONUNIT_COLUMN_NAME;
-import static org.hisp.dhis.reporttable.ReportTable.PRETTY_COLUMNS;
-import static org.hisp.dhis.reporttable.ReportTable.REPORTING_MONTH_COLUMN_NAME;
-import static org.hisp.dhis.reporttable.ReportTable.SPACE;
-import static org.hisp.dhis.reporttable.ReportTable.TOTAL_COLUMN_NAME;
-import static org.hisp.dhis.reporttable.ReportTable.TOTAL_COLUMN_PRETTY_NAME;
-import static org.hisp.dhis.reporttable.ReportTable.columnEncode;
-import static org.hisp.dhis.reporttable.ReportTable.getColumnName;
-import static org.hisp.dhis.reporttable.ReportTable.getIdentifier;
-import static org.hisp.dhis.reporttable.ReportTable.getPrettyColumnName;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +48,14 @@ import org.hisp.dhis.system.grid.ListGrid;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.hisp.dhis.reporttable.ReportTable.*;
 
 /**
  * @author Lars Helge Overland
@@ -124,37 +114,31 @@ public class DefaultReportTableService
     // ReportTableService implementation
     // -------------------------------------------------------------------------
 
+    @Override
     public Grid getReportTableGrid( String uid, I18nFormat format, Date reportingPeriod, String organisationUnitUid )
     {
         ReportTable reportTable = getReportTable( uid );
-        
-        OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitUid );
 
-        Integer organisationUnitId = organisationUnit != null ? organisationUnit.getId() : null;
-        
-        return getReportTableGrid( reportTable.getId(), format, reportingPeriod, organisationUnitId );
+        return getReportTableGrid( reportTable, format, reportingPeriod, organisationUnitUid, false );
     }
 
-    public Grid getReportTableGrid( int id, I18nFormat format, Date reportingPeriod, Integer organisationUnitId )
+    @Override
+    public Grid getReportTableGrid( int reportTableId, I18nFormat format, Date reportingPeriod, String organisationUnitUid )
     {
-        ReportTable reportTable = getReportTable( id );
+        ReportTable reportTable = getReportTable( reportTableId );
 
-        reportTable = initDynamicMetaObjects( reportTable, reportingPeriod, organisationUnitId, format );
-
-        return getGrid( reportTable, false );
+        return getReportTableGrid( reportTable, format, reportingPeriod, organisationUnitUid, false );
     }
 
+    @Override
     public Grid getReportTableGrid( ReportTable reportTable, I18nFormat format, Date reportingPeriod, String organisationUnitUid, boolean minimal )
     {
-        OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitUid );
-
-        Integer organisationUnitId = organisationUnit != null ? organisationUnit.getId() : null;
-        
-        reportTable = initDynamicMetaObjects( reportTable, reportingPeriod, organisationUnitId, format );
+        reportTable = initDynamicMetaObjects( reportTable, reportingPeriod, organisationUnitUid, format );
 
         return getGrid( reportTable, minimal );
     }
-    
+
+    @Override
     public ReportTable getReportTable( String uid, String mode )
     {
         if ( mode.equals( MODE_REPORT_TABLE ) )
@@ -211,19 +195,19 @@ public class DefaultReportTableService
         } );
     }
 
-    public Collection<ReportTable> getAllReportTables()
+    public List<ReportTable> getAllReportTables()
     {
         return reportTableStore.getAll();
     }
 
-    public ReportTable getReportTableByName( String name )
+    public List<ReportTable> getReportTableByName( String name )
     {
-        return reportTableStore.getByName( name );
+        return reportTableStore.getAllEqName( name );
     }
 
-    public Collection<ReportTable> getReportTablesBetweenByName( String name, int first, int max )
+    public List<ReportTable> getReportTablesBetweenByName( String name, int first, int max )
     {
-        return reportTableStore.getBetweenByName( name, first, max );
+        return reportTableStore.getAllLikeNameOrderedName( name, first, max );
     }
 
     public int getReportTableCount()
@@ -233,12 +217,12 @@ public class DefaultReportTableService
 
     public int getReportTableCountByName( String name )
     {
-        return reportTableStore.getCountByName( name );
+        return reportTableStore.getCountLikeName( name );
     }
 
-    public Collection<ReportTable> getReportTablesBetween( int first, int max )
+    public List<ReportTable> getReportTablesBetween( int first, int max )
     {
-        return reportTableStore.getBetween( first, max );
+        return reportTableStore.getAllOrderedName( first, max );
     }
 
     // -------------------------------------------------------------------------
@@ -256,14 +240,14 @@ public class DefaultReportTableService
      * @return a report table.
      */
     private ReportTable initDynamicMetaObjects( ReportTable reportTable, Date reportingPeriod,
-                                                Integer organisationUnitId, I18nFormat format )
+        String organisationUnitUid, I18nFormat format )
     {
         // ---------------------------------------------------------------------
         // Reporting period report parameter / current reporting period
         // ---------------------------------------------------------------------
 
         log.info( "Running report table: " + reportTable.getName() );
-        
+
         if ( reportTable.getReportParams() != null && reportTable.getReportParams().isParamReportingMonth() )
         {
             reportTable.setRelativePeriods( periodService.reloadPeriods( reportTable.getRelatives().getRelativePeriods(
@@ -283,28 +267,13 @@ public class DefaultReportTableService
         }
 
         // ---------------------------------------------------------------------
-        // Leaf parent organisation unit report parameter
-        // ---------------------------------------------------------------------
-
-        if ( reportTable.getReportParams() != null &&
-            reportTable.getReportParams().isParamLeafParentOrganisationUnit() )
-        {
-            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
-            reportTable.getRelativeUnits().addAll(
-                new ArrayList<OrganisationUnit>( organisationUnitService.getLeafOrganisationUnits( organisationUnitId ) ) );
-            reportTable.setParentOrganisationUnit( organisationUnit );
-
-            log.info( "Leaf parent organisation unit: " + organisationUnit.getName() );
-        }
-
-        // ---------------------------------------------------------------------
         // Grand parent organisation unit report parameter
         // ---------------------------------------------------------------------
 
         if ( reportTable.getReportParams() != null &&
             reportTable.getReportParams().isParamGrandParentOrganisationUnit() )
         {
-            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
+            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitUid );
             organisationUnit.setCurrentParent( true );
             reportTable.getRelativeUnits().addAll(
                 new ArrayList<OrganisationUnit>( organisationUnit.getGrandChildren() ) );
@@ -318,10 +287,10 @@ public class DefaultReportTableService
         // Parent organisation unit report parameter
         // ---------------------------------------------------------------------
 
-        if ( reportTable.getReportParams() != null && 
+        if ( reportTable.getReportParams() != null &&
             reportTable.getReportParams().isParamParentOrganisationUnit() )
         {
-            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
+            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitUid );
             organisationUnit.setCurrentParent( true );
             reportTable.getRelativeUnits().addAll( new ArrayList<OrganisationUnit>( organisationUnit.getChildren() ) );
             reportTable.getRelativeUnits().add( organisationUnit );
@@ -334,10 +303,10 @@ public class DefaultReportTableService
         // Organisation unit report parameter
         // ---------------------------------------------------------------------
 
-        if ( reportTable.getReportParams() != null && 
+        if ( reportTable.getReportParams() != null &&
             reportTable.getReportParams().isParamOrganisationUnit() )
         {
-            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
+            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitUid );
             reportTable.getRelativeUnits().add( organisationUnit );
             reportTable.setParentOrganisationUnit( organisationUnit );
 
@@ -365,7 +334,7 @@ public class DefaultReportTableService
         final String subtitle = StringUtils.trimToEmpty( reportTable.getParentOrganisationUnitName() ) + SPACE
             + StringUtils.trimToEmpty( reportTable.getReportingPeriodName() );
 
-        final Grid grid = new ListGrid().setTitle( reportTable.getName() ).setSubtitle( subtitle );
+        final Grid grid = new ListGrid().setTitle( reportTable.getName() + " - " + subtitle );
 
         final Map<String, Double> map = reportTableManager.getAggregatedValueMap( reportTable );
 
@@ -379,7 +348,7 @@ public class DefaultReportTableService
             {
                 grid.addHeader( new GridHeader( PRETTY_COLUMNS.get( column ), column, Integer.class.getName(), true, true ) );
             }
-    
+
             for ( String column : reportTable.getIndexUidColumns() ) // Index uid columns
             {
                 grid.addHeader( new GridHeader( PRETTY_COLUMNS.get( column ), column, String.class.getName(), true, true ) );
@@ -397,12 +366,12 @@ public class DefaultReportTableService
             {
                 grid.addHeader( new GridHeader( PRETTY_COLUMNS.get( column ), column, String.class.getName(), true, true ) );
             }
-    
+
             for ( String column : reportTable.getIndexDescriptionColumns() ) // Index description columns
             {
                 grid.addHeader( new GridHeader( PRETTY_COLUMNS.get( column ), column, String.class.getName(), true, true ) );
             }
-    
+
             grid.addHeader( new GridHeader( PRETTY_COLUMNS.get( REPORTING_MONTH_COLUMN_NAME ), REPORTING_MONTH_COLUMN_NAME,
                 String.class.getName(), true, true ) );
             grid.addHeader( new GridHeader( PRETTY_COLUMNS.get( PARAM_ORGANISATIONUNIT_COLUMN_NAME ),
@@ -413,7 +382,7 @@ public class DefaultReportTableService
 
         final int startColumnIndex = grid.getHeaders().size();
         final int numberOfColumns = reportTable.getColumns().size();
-        
+
         for ( List<NameableObject> column : reportTable.getColumns() )
         {
             grid.addHeader( new GridHeader( getPrettyColumnName( column ), getColumnName( column ), Double.class
@@ -449,7 +418,7 @@ public class DefaultReportTableService
                 {
                     grid.addValue( object.getId() );
                 }
-    
+
                 for ( NameableObject object : row ) // Index uid columns
                 {
                     grid.addValue( object.getUid() );
@@ -467,17 +436,17 @@ public class DefaultReportTableService
                 {
                     grid.addValue( object.getCode() );
                 }
-    
+
                 for ( NameableObject object : row ) // Index description columns
                 {
                     grid.addValue( object.getDescription() );
                 }
-    
+
                 grid.addValue( reportTable.getReportingPeriodName() );
                 grid.addValue( reportTable.getParentOrganisationUnitName() );
                 grid.addValue( isCurrentParent( row ) ? YES : NO );
             }
-            
+
             for ( List<NameableObject> column : reportTable.getColumns() ) // Values
             {
                 grid.addValue( map.get( getIdentifier( row, column ) ) );
@@ -487,8 +456,7 @@ public class DefaultReportTableService
             {
                 for ( DataElementCategoryOption categoryOption : reportTable.getCategoryCombo().getCategoryOptions() )
                 {
-                    grid.addValue( map
-                        .get( getIdentifier( row, DataElementCategoryOption.class, categoryOption.getId() ) ) );
+                    grid.addValue( map.get( getIdentifier( row, DataElementCategoryOption.class, categoryOption.getId() ) ) );
                 }
             }
 
@@ -507,7 +475,7 @@ public class DefaultReportTableService
         {
             addRegressionToGrid( grid, startColumnIndex, numberOfColumns );
         }
-        
+
         if ( reportTable.isCumulative() )
         {
             addCumulativesToGrid( grid, startColumnIndex, numberOfColumns );
@@ -533,9 +501,9 @@ public class DefaultReportTableService
     /**
      * Adds columns with regression values to the given grid.
      *
-     * @param grid the grid.
+     * @param grid             the grid.
      * @param startColumnIndex the index of the first data column.
-     * @param numberOfColumns the number of data columns.
+     * @param numberOfColumns  the number of data columns.
      */
     private Grid addRegressionToGrid( Grid grid, int startColumnIndex, int numberOfColumns )
     {
@@ -548,23 +516,23 @@ public class DefaultReportTableService
 
         return grid;
     }
-    
+
     /**
      * Adds columns with cumulative values to the given grid.
-     * 
-     * @param grid the grid.
+     *
+     * @param grid             the grid.
      * @param startColumnIndex the index of the first data column.
-     * @param numberOfColumns the number of data columns.
+     * @param numberOfColumns  the number of data columns.
      */
     private Grid addCumulativesToGrid( Grid grid, int startColumnIndex, int numberOfColumns )
     {
         for ( int i = 0; i < numberOfColumns; i++ )
         {
             int columnIndex = i + startColumnIndex;
-            
+
             grid.addCumulativeColumn( columnIndex, true );
         }
-        
+
         return grid;
     }
 

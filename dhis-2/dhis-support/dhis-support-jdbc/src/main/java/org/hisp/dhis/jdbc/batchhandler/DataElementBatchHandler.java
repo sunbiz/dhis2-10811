@@ -77,7 +77,6 @@ public class DataElementBatchHandler
     protected void setUniqueColumns()
     {
         statementBuilder.setUniqueColumn( "name" );
-        statementBuilder.setUniqueColumn( "alternativename" );
         statementBuilder.setUniqueColumn( "shortname" );
         statementBuilder.setUniqueColumn( "code" );
     }
@@ -85,7 +84,6 @@ public class DataElementBatchHandler
     protected void setUniqueValues( DataElement dataElement )
     {
         statementBuilder.setUniqueValue( dataElement.getName() );
-        statementBuilder.setUniqueValue( dataElement.getAlternativeName() );
         statementBuilder.setUniqueValue( dataElement.getShortName() );
         statementBuilder.setUniqueValue( dataElement.getCode() );
     }
@@ -94,7 +92,6 @@ public class DataElementBatchHandler
     {
         statementBuilder.setColumn( "uid" );
         statementBuilder.setColumn( "name" );
-        statementBuilder.setColumn( "alternativename" );
         statementBuilder.setColumn( "shortname" );
         statementBuilder.setColumn( "code" );
         statementBuilder.setColumn( "description" );
@@ -112,7 +109,6 @@ public class DataElementBatchHandler
     {
         statementBuilder.setValue( dataElement.getUid() );
         statementBuilder.setValue( dataElement.getName() );
-        statementBuilder.setValue( dataElement.getAlternativeName() );
         statementBuilder.setValue( dataElement.getShortName() );
         statementBuilder.setValue( dataElement.getCode() );
         statementBuilder.setValue( dataElement.getDescription() );

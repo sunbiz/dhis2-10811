@@ -27,7 +27,7 @@ package org.hisp.dhis.dd.action.category;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.dataelement.DataElementCategory;
+import org.hisp.dhis.concept.ConceptService;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 
@@ -50,22 +50,36 @@ public class AddDataElementCategoryOptionAction
         this.dataElementCategoryService = dataElementCategoryService;
     }
 
+    private ConceptService conceptService;
+
+    public void setConceptService( ConceptService conceptService )
+    {
+        this.conceptService = conceptService;
+    }
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
-
-    private Integer categoryId;
-    
-    public void setCategoryId( Integer categoryId )
-    {
-        this.categoryId = categoryId;
-    }
 
     private String name;
 
     public void setName( String name )
     {
         this.name = name;
+    }
+
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
+    private Integer conceptId;
+
+    public void setConceptId( Integer conceptId )
+    {
+        this.conceptId = conceptId;
     }
 
     // -------------------------------------------------------------------------
@@ -85,16 +99,12 @@ public class AddDataElementCategoryOptionAction
 
     public String execute()
     {
-        DataElementCategory category = dataElementCategoryService.getDataElementCategory( categoryId );
-        
         dataElementCategoryOption = new DataElementCategoryOption( name );
-        dataElementCategoryOption.setCategory( category );
-        category.getCategoryOptions().add( dataElementCategoryOption );
+        dataElementCategoryOption.setCode( code );
+        dataElementCategoryOption.setConcept( conceptService.getConcept( conceptId ) );
         
         dataElementCategoryService.addDataElementCategoryOption( dataElementCategoryOption );
-        dataElementCategoryService.updateDataElementCategory( category );
-        dataElementCategoryService.updateOptionCombos( category );
-        
+
         return SUCCESS;
     }
 }

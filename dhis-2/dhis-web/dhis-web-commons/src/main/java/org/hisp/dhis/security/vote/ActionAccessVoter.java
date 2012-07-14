@@ -27,15 +27,16 @@ package org.hisp.dhis.security.vote;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
-
+import com.opensymphony.xwork2.config.entities.ActionConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.security.StrutsAuthorityUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.opensymphony.xwork2.config.entities.ActionConfig;
+import java.util.Collection;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -45,6 +46,26 @@ public class ActionAccessVoter
     extends AbstractPrefixedAccessDecisionVoter
 {
     private static final Log LOG = LogFactory.getLog( ActionAccessVoter.class );
+
+    // -------------------------------------------------------------------------
+    // AccessDecisionVoter Input
+    // -------------------------------------------------------------------------
+
+    private String requiredAuthoritiesKey;
+
+    @Required
+    public void setRequiredAuthoritiesKey( String requiredAuthoritiesKey )
+    {
+        this.requiredAuthoritiesKey = requiredAuthoritiesKey;
+    }
+
+    private String anyAuthoritiesKey;
+
+    @Required
+    public void setAnyAuthoritiesKey( String anyAuthoritiesKey )
+    {
+        this.anyAuthoritiesKey = anyAuthoritiesKey;
+    }
 
     // -------------------------------------------------------------------------
     // AccessDecisionVoter implementation
@@ -70,8 +91,36 @@ public class ActionAccessVoter
             return ACCESS_ABSTAIN;
         }
 
+        ActionConfig actionConfig = (ActionConfig) object;
+        Collection<ConfigAttribute> requiredAuthorities = StrutsAuthorityUtils.getConfigAttributes( actionConfig, requiredAuthoritiesKey );
+        Collection<ConfigAttribute> anyAuthorities = StrutsAuthorityUtils.getConfigAttributes( actionConfig, anyAuthoritiesKey );
+
+        int allStatus = allAuthorities( authentication, object, requiredAuthorities );
+
+        if ( allStatus == ACCESS_DENIED )
+        {
+            return ACCESS_DENIED;
+        }
+
+        int anyStatus = anyAuthority( authentication, object, anyAuthorities );
+
+        if ( anyStatus == ACCESS_DENIED )
+        {
+            return ACCESS_DENIED;
+        }
+
+        if ( allStatus == ACCESS_GRANTED || anyStatus == ACCESS_GRANTED )
+        {
+            return ACCESS_GRANTED;
+        }
+
+        return ACCESS_ABSTAIN;
+    }
+
+    private int allAuthorities( Authentication authentication, Object object, Collection<ConfigAttribute> attributes )
+    {
         int supported = 0;
-        
+
         for ( ConfigAttribute attribute : attributes )
         {
             if ( supports( attribute ) )
@@ -95,6 +144,48 @@ public class ActionAccessVoter
                     return ACCESS_DENIED;
                 }
             }
+        }
+
+        if ( supported > 0 )
+        {
+            LOG.debug( "ACCESS_GRANTED [" + object.toString() + "]" );
+
+            return ACCESS_GRANTED;
+        }
+
+        LOG.debug( "ACCESS_ABSTAIN [" + object.toString() + "]: No supported attributes." );
+
+        return ACCESS_ABSTAIN;
+    }
+
+    private int anyAuthority( Authentication authentication, Object object, Collection<ConfigAttribute> attributes )
+    {
+        int supported = 0;
+        boolean found = false;
+
+        for ( ConfigAttribute attribute : attributes )
+        {
+            if ( supports( attribute ) )
+            {
+                ++supported;
+
+                for ( GrantedAuthority authority : authentication.getAuthorities() )
+                {
+                    if ( authority.getAuthority().equals( attribute.getAttribute() ) )
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        if ( !found && supported > 0 )
+        {
+            LOG.debug( "ACCESS_DENIED [" + object.toString() + "]" );
+
+            return ACCESS_DENIED;
         }
 
         if ( supported > 0 )

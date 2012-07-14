@@ -29,8 +29,6 @@ package org.hisp.dhis.concept;
 
 import java.util.Collection;
 
-import org.hisp.dhis.concept.ConceptService;
-import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,18 +101,18 @@ public class DefaultConceptService
     @Override
     public int getConceptCountByName( String name )
     {
-        return conceptStore.getCountByName( name );
+        return conceptStore.getCountLikeName( name );
     }
 
     @Override
     public Collection<Concept> getConceptsBetween( int first, int max )
     {
-        return conceptStore.getBetween( first, max );
+        return conceptStore.getAllOrderedName( first, max );
     }
 
     @Override
     public Collection<Concept> getConceptsBetweenByName( String name, int first, int max )
     {
-        return conceptStore.getBetweenByName( name, first, max );
+        return conceptStore.getAllLikeNameOrderedName( name, first, max );
     }
 }

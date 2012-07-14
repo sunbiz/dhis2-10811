@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  * <gaurav>,Date: 6/25/12, Time: 12:42 PM
  */
@@ -80,6 +79,17 @@ public class DefaultGlobalConfigService implements GlobalConfigService {
         return raFile.listFiles();
     }
 
+    public static boolean isParsable2Int(String intString) {
+        if (intString.trim().isEmpty()) {
+            return false;
+        }
+        for (char c : intString.trim().toCharArray()) {
+            if (!Character.isDigit(c)) return false;
+        }
+
+        return true;
+    }
+
     //----------------------------------------------------------------------------------------------
     //      Implementation: Replace local De-Code Values with auto-generated Global Values
     //----------------------------------------------------------------------------------------------
@@ -105,13 +115,14 @@ public class DefaultGlobalConfigService implements GlobalConfigService {
                         Document doc = docBuilder.parse(file);
 
 
-                        NodeList listofDECodes = doc.getElementsByTagName("de-code");
+                        NodeList listOfDECodes = doc.getElementsByTagName("de-code");
 
-                        int totalCodes = listofDECodes.getLength();
+                        int totalCodes = listOfDECodes.getLength();
 
                         for (int i = 0; i < totalCodes; i++) {
-                            Element deCodeElemnt = (Element) listofDECodes.item(i);
-                            NodeList textCodeList = deCodeElemnt.getChildNodes();
+
+                            Element deCodeElement = (Element) listOfDECodes.item(i);
+                            NodeList textCodeList = deCodeElement.getChildNodes();
                             String expression = (textCodeList.item(0).getNodeValue().trim());
 
                             String res;
@@ -120,24 +131,30 @@ public class DefaultGlobalConfigService implements GlobalConfigService {
                             String gconfig;
 
                             while (matcher.find()) {
-                                res = matcher.group(1);
-                                if (!(globalValueMap.containsKey(res))) {
-                                    globalValueMap.put(res, globalID.toString());
 
-                                    globalID++;
+                                res = matcher.group(1);
+
+                                if (!(globalValueMap.containsKey(res)))
+                                {
+                                        globalValueMap.put(res, globalID.toString());
+
+                                        globalID++;
                                 }
 
-                                gconfig = globalValueMap.get(res);
-                                expression = expression.replace("[" + res + "]", "[" + gconfig + "]");
-                            }
+                                    gconfig = globalValueMap.get(res);
 
+                                    expression = expression.replace("[" + res + "]", "[" + gconfig + "]");
+
+                            }
 
                             res = expression;
 
                             textCodeList.item(0).setNodeValue(res);
 
                             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
                             Transformer transformer = null;
+
                             try {
 
                                 transformer = transformerFactory.newTransformer();
@@ -158,12 +175,14 @@ public class DefaultGlobalConfigService implements GlobalConfigService {
 
                             if (!newOutFile.exists()) {
                                 boolean isCreated = newOutFile.createNewFile();
+
                                 if (isCreated == false) {
                                     System.out.println("*ERROR: [FAILED TO CREATE UPDATED XML FILE: " + newOutFile.getName() + " ]");
                                 }
                             }
 
                             StreamResult result = new StreamResult(newOutFile);
+
                             try {
                                 transformer.transform(source, result);
                             } catch (TransformerException e) {
@@ -226,57 +245,66 @@ public class DefaultGlobalConfigService implements GlobalConfigService {
 
                 replaceString = replaceString.substring(0, replaceString.indexOf('.'));
 
-                int dataElementId = Integer.parseInt(replaceString);
-                int optionComboId = Integer.parseInt(optionComboIdStr);
+                int dataElementId;
+                int optionComboId;
 
-                if (dataElementService == null) {
-                    System.out.println("*ERROR:[Dataelement service is NULL]");
-                }
-                DataElement dataElement = dataElementService.getDataElement(dataElementId);
-                DataElementCategoryOptionCombo optionCombo = dataElementCategoryService.getDataElementCategoryOptionCombo(optionComboId);
+                if (isParsable2Int(replaceString) && isParsable2Int(optionComboIdStr)) {
+
+                    dataElementId = Integer.parseInt(replaceString);
+                    optionComboId = Integer.parseInt(optionComboIdStr);
 
 
-                if (dataElement != null && optionCombo != null) {
-
-                    if (optionComboId == 1) {
-                        Attr deNameAttr = doc.createAttribute("de-name");
-                        String deName = dataElement.getName().replace('\"', ' ').replace('\'', ' ');
-                        deNameAttr.setValue(deName);
-                        gConfig.setAttributeNode(deNameAttr);
-                    } else {
-                        Attr deNameAttr = doc.createAttribute("de-name");
-                        String optionName = optionCombo.getName().replace('(', ' ').replace(')', ' ');
-                        String deName = dataElement.getName().replace('\"', ' ').replace('\'', ' ');
-                        deNameAttr.setValue(deName + " [" + optionName + "]");
-                        gConfig.setAttributeNode(deNameAttr);
+                    if (dataElementService == null) {
+                        System.out.println("*ERROR:[Data-element service is NULL]");
                     }
 
-                } else {
+                    DataElement dataElement = dataElementService.getDataElement(dataElementId);
+                    DataElementCategoryOptionCombo optionCombo = dataElementCategoryService.getDataElementCategoryOptionCombo(optionComboId);
 
-                    System.out.println("\n* INFO [ DATAELEMENT OR OPTION_COMBO MISSING (" + dataElementId + ")]");
 
-                    Attr deNameAttr = doc.createAttribute("de-name");
-                    deNameAttr.setValue("NA" + "(NA)");
-                    gConfig.setAttributeNode(deNameAttr);
+                    if (dataElement != null && optionCombo != null) {
+
+                        if (optionComboId == 1) {
+                            Attr deNameAttr = doc.createAttribute("de-name");
+                            String deName = dataElement.getName().replace('\"', ' ').replace('\'', ' ');
+                            deNameAttr.setValue(deName);
+                            gConfig.setAttributeNode(deNameAttr);
+                        } else {
+                            Attr deNameAttr = doc.createAttribute("de-name");
+                            String optionName = optionCombo.getName().replace('(', ' ').replace(')', ' ');
+                            String deName = dataElement.getName().replace('\"', ' ').replace('\'', ' ');
+                            deNameAttr.setValue(deName + " [" + optionName + "]");
+                            gConfig.setAttributeNode(deNameAttr);
+                        }
+
+                    } else {
+
+                        System.out.println("\n* INFO [ DATA-ELEMENT OR OPTION_COMBO MISSING (" + dataElementId + ")]");
+
+                        Attr deNameAttr = doc.createAttribute("de-name");
+                        deNameAttr.setValue("NA" + "(NA)");
+                        gConfig.setAttributeNode(deNameAttr);
+
+                    }
 
                 }
 
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+                DOMSource source = new DOMSource(doc);
+
+                StreamResult result = new StreamResult(new File(OUTPUT_FOLDER + "/" + SETTINGS_XML));
+                transformer.transform(source, result);
             }
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
-            DOMSource source = new DOMSource(doc);
-
-            StreamResult result = new StreamResult(new File(OUTPUT_FOLDER + "/" + SETTINGS_XML));
-            transformer.transform(source, result);
 
         } catch (ParserConfigurationException pce) {
             pce.printStackTrace();
         } catch (TransformerException tfe) {
             tfe.printStackTrace();
         }
+
     }
 
 

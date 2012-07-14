@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
-       xmlns:camel="http://camel.apache.org/schema/spring"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd"
-       xmlns:d="http://dhis2.org/schema/dxf/2.0">
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:camel="http://camel.apache.org/schema/spring"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
   <bean id="importService" class="org.hisp.dhis.dxf2.metadata.DefaultImportService" />
-  
+
   <bean id="integrationService" class="org.hisp.dhis.integration.DefaultIntegrationService" />
-  
+
   <!-- Custom lifecycle strategy -->
-  
+
   <bean id="lifecyclestrategy" class="org.hisp.dhis.integration.management.DHIS2LifecycleStrategy" />
-  
+
   <camel:camelContext id="camel-builtin">
-    
+
     <!-- route scanner -->
     <camel:packageScan>
       <camel:package>org.hisp.dhis.integration.routes</camel:package>
@@ -23,8 +23,8 @@
     </camel:packageScan>
 
     <!--  producer templates -->
-    <camel:template id="web-api"/>
-    
+    <camel:template id="web-api" />
+
   </camel:camelContext>
 
 </beans>

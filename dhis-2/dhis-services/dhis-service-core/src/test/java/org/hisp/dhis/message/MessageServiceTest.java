@@ -27,9 +27,9 @@ package org.hisp.dhis.message;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,6 +49,7 @@ public class MessageServiceTest
     private User sender;
     private User userA;
     private User userB;
+   
 
     private Set<User> users;
     
@@ -65,10 +66,12 @@ public class MessageServiceTest
         sender = createUser( 'S' );
         userA = createUser( 'A' );
         userB = createUser( 'B' );
+       
 
         userService.addUser( sender );
         userService.addUser( userA );
         userService.addUser( userB );
+       
         
         users = new HashSet<User>();
         users.add( userA );
@@ -106,7 +109,7 @@ public class MessageServiceTest
         conversation.addUserMessage( userMessageB );
         
         Message contentA = new Message( "TextA", "MetaA", sender );
-        Message contentB = new Message( "TextB", "MetaB", sender );
+        Message contentB = new Message( "TextB", "MetaB", sender);
         
         conversation.addMessage( contentA );
         conversation.addMessage( contentB );
@@ -128,7 +131,7 @@ public class MessageServiceTest
     @Test
     public void testDeleteMessage()
     {
-        MessageConversation conversation = new MessageConversation( "Subject", sender );
+        MessageConversation conversation = new MessageConversation( "Subject", sender);
         
         UserMessage userMessageA = new UserMessage( userA );
         UserMessage userMessageB = new UserMessage( userB );
@@ -137,7 +140,7 @@ public class MessageServiceTest
         conversation.addUserMessage( userMessageB );
         
         Message contentA = new Message( "TextA", "MetaA", sender );
-        Message contentB = new Message( "TextB", "MetaB", sender );
+        Message contentB = new Message( "TextB", "MetaB", sender);
         
         conversation.addMessage( contentA );
         conversation.addMessage( contentB );
@@ -184,7 +187,7 @@ public class MessageServiceTest
     public void testSendReply()
     {
         MessageConversation message = new MessageConversation( "Subject", sender );
-        message.addMessage( new Message( "TextA", "MetaA", sender ) );
+        message.addMessage( new Message( "TextA", "MetaA", sender) );
         int id = messageService.saveMessageConversation( message );
         
         messageService.sendReply( message, "TextB", "MetaB" );

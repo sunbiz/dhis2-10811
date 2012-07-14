@@ -30,6 +30,9 @@ package org.hisp.dhis.mock;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class MockCurrentUserService
     implements CurrentUserService
 {

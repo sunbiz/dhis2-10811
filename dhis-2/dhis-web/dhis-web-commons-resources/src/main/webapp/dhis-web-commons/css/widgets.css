@@ -122,7 +122,8 @@ div.thingy
 
 #hideLeftBar
 {
-  float: right;
+  position: absolute;
+  right: 2px;
   font-family: LiberationSansBold, arial;
   font-size: 9pt;
   cursor: pointer;
@@ -296,13 +297,14 @@ span#info
 
 div#detailsArea 
 {
-  border: 1px solid #8f8ffd;
-  background-color: #dadaff;
+  border: 1px solid #a9c2dc;
+  background-color: #ebf0f6;
   position: fixed;
   width: 18em;
   max-height: 75%;
   padding: 0.5em;
   overflow: auto;
+  border-radius: 3px;
 }
 
 div#detailsArea label 
@@ -416,16 +418,7 @@ div.growlUI h2
 
 span.error 
 {
-	background: url('../../images/invalid.png') no-repeat;
-	padding-left: 16px;
-	margin-left: .3em;
-}
-
-span.valid 
-{
-	background: url('../../images/valid.png') no-repeat;	
-	padding-left: 16px;
-	margin-left: .3em;
+	color: red;
 }
 
 #cluetip-inner
@@ -483,6 +476,40 @@ div.inputCriteria
   border-radius: 3px;
 }
 
+.formInputField
+{
+  border: 1px solid #aaa;
+  padding: 4px 1px;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Settings                                                                   */
+/*----------------------------------------------------------------------------*/
+
+.settingLabel
+{
+  padding: 2px;
+  font-size: 10pt;
+}
+
+.setting
+{
+  padding: 2px;
+  font-size: 10pt;
+  margin-bottom: 15px;
+}
+
+.setting input[type=text],input[type=password],select
+{
+  width: 25em;
+}
+
+.setting textarea
+{
+  width: 25em;
+  height: 8em;
+}
+
 /*----------------------------------------------------------------------------*/
 /* Paging                                                                     */
 /*----------------------------------------------------------------------------*/
@@ -494,17 +521,24 @@ div.inputCriteria
 
 div.paging 
 {
-	width:300px;float:right; margin-right:5em; text-align: center; height:16px; 
+	width:300px;
+	float:right; 
+	margin-right:5em; 
+	text-align: center; 
+	height:16px; 
 }
 
 div.paging span, div.paging a 
 {
-	padding: 0 5px;font-weight: bold; font-size: 11px;
+	font-family: LiberationSansBold, arial;
+	padding: 0 5px;
+	font-size: 12px;
 }
 
 div.paging a
 {
-	text-decoration: none; color: #FF9900;
+	text-decoration: none; 
+	color: #FF9900;
 }
 
 div.paging a:hover
@@ -524,7 +558,11 @@ div.paging span.seperator
 
 ul.pageSizeSelection 
 {
-	list-style:none; float:left; width: 300px; margin: 0; padding: 0;
+	list-style:none; 
+	float:left; 
+	width: 300px; 
+	margin: 0; 
+	padding: 0;
 }
 
 ul.pageSizeSelection span 
@@ -573,6 +611,108 @@ ul.pageSizeSelection input
 {
 }
 
+.dashboardMenuFlag
+{
+  margin-top: 16px; 
+  margin-left: 16px; 
+  border: 1px solid #D0D0D0; 
+  border-radius: 2px; cursor: pointer;
+  max-width: 160px;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Forms                                                                      */
+/*----------------------------------------------------------------------------*/
+
+.inputForm input[type=text],select
+{
+  width: 25em;
+}
+
+.inputForm textarea
+{
+  width: 25em;
+  height: 8em;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Buttons                                                                    */
+/*----------------------------------------------------------------------------*/
+
+.greyButtonLink
+{
+  padding: 6px 12px;
+  height: 25px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-family: LiberationSansBold, arial;
+  font-size: 13px;
+  background-color: #f3f3f3;
+  color: #606060 !important;
+  text-decoration: none !important;
+}
+
+.greyButtonLink:hover
+{
+  text-decoration: none;
+  background-color: #f8f8f8;
+}
+
+.blueButtonLink
+{
+  padding: 6px 12px;
+  height: 25px;
+  border: 1px solid #3D77B3;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-family: LiberationSansBold, arial;
+  font-size: 13px;
+  background-color: #427DB8;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+.blueButtonLink:hover
+{
+  text-decoration: none;
+  background-color: #3674B3;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Placeholders                                                               */
+/*----------------------------------------------------------------------------*/
+
+::-webkit-input-placeholder
+{
+  color: #777;
+}
+
+input:-moz-placeholder
+{
+  color: #777;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Profile                                                                    */
+/*----------------------------------------------------------------------------*/
+
+#updateProfileHeader
+{
+  display: inline-block;
+  font-size: 14pt;
+  color: #606060;
+  padding: 0 0 19px 0;
+}
+
+#updateProfileLink
+{
+  position: relative; 
+  top: -2px; 
+  display: inline-block; 
+  margin-left: 200px;
+}
+
 /*----------------------------------------------------------------------------*/
 /* jQuery overrides                                                           */
 /*----------------------------------------------------------------------------*/
@@ -591,7 +731,7 @@ ul.pageSizeSelection input
   font-size: 9pt !important;
 }
 
-.ui-widget-header
+.ui-widget-header, .ui-widget-header a
 {
   font-family: LiberationSansBold, arial, sans-serif !important;
   font-weight: normal !important;
@@ -605,3 +745,7 @@ ul.pageSizeSelection input
   font-size: 9pt !important;
 }
 
+.ui-state-default
+{
+  font-weight: normal !important;
+}

@@ -75,13 +75,6 @@ public class ValidateDataElementAction
         this.name = name;
     }
 
-    private String alternativeName;
-
-    public void setAlternativeName( String alternativeName )
-    {
-        this.alternativeName = alternativeName;
-    }
-
     private String shortName;
 
     public void setShortName( String shortName )
@@ -136,18 +129,6 @@ public class ValidateDataElementAction
             if ( match != null && (id == null || match.getId() != id) )
             {
                 message = i18n.getString( "short_name_in_use" );
-
-                return ERROR;
-            }
-        }
-
-        if ( alternativeName != null && !alternativeName.trim().isEmpty() )
-        {
-            DataElement match = dataElementService.getDataElementByAlternativeName( alternativeName );
-
-            if ( match != null && (id == null || match.getId() != id) )
-            {
-                message = i18n.getString( "alternative_name_in_use" );
 
                 return ERROR;
             }

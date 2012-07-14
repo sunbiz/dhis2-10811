@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.api.mobile.FacilityReportingService;
 import org.hisp.dhis.api.mobile.NotAllowedException;
+import org.hisp.dhis.api.mobile.model.Contact;
 import org.hisp.dhis.api.mobile.model.DataElement;
 import org.hisp.dhis.api.mobile.model.DataSet;
 import org.hisp.dhis.api.mobile.model.DataSetList;
@@ -48,10 +49,12 @@ import org.hisp.dhis.api.mobile.model.DataSetValue;
 import org.hisp.dhis.api.mobile.model.DataValue;
 import org.hisp.dhis.api.mobile.model.Section;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
+import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.comparator.DataElementSortOrderComparator;
 import org.hisp.dhis.dataset.CompleteDataSetRegistration;
 import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.DailyPeriodType;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
@@ -91,6 +94,8 @@ public class FacilityReportingServiceImpl
     private CompleteDataSetRegistrationService registrationService;
 
     private CurrentUserService currentUserService;
+
+    private OrganisationUnitService oUnitService;
 
     // -------------------------------------------------------------------------
     // Service methods
@@ -247,7 +252,6 @@ public class FacilityReportingServiceImpl
             Section section = new Section();
             section.setId( 0 );
             section.setName( "" );
-
             section.setDataElements( getDataElements( locale, dataElements ) );
             sectionList.add( section );
         }
@@ -255,12 +259,26 @@ public class FacilityReportingServiceImpl
         {
             for ( org.hisp.dhis.dataset.Section s : sections )
             {
+
                 Section section = new Section();
                 section.setId( s.getId() );
                 section.setName( s.getName() );
-
+                
+                //Remove grey fields(in order to not display them on mobile)
                 List<DataElement> dataElementList = getDataElements( locale, s.getDataElements() );
-                section.setDataElements( dataElementList );
+
+                List<DataElement> dataElementListFinal = new ArrayList<DataElement>( dataElementList );
+
+                int tempI = 0;
+                for ( int i = 0; i < dataElementList.size(); i++ )
+                {
+                    if ( isGreyField( s, dataElementList.get( i ).getId() ) )
+                    {
+                        dataElementListFinal.remove( i - tempI );
+                        tempI++;
+                    }
+                }
+                section.setDataElements( dataElementListFinal );
                 sectionList.add( section );
             }
         }
@@ -427,6 +445,20 @@ public class FacilityReportingServiceImpl
         return persistedPeriod;
     }
 
+    private boolean isGreyField( org.hisp.dhis.dataset.Section section, int id )
+    {
+        boolean isGrayField = false;
+
+        for ( DataElementOperand operand : section.getGreyedFields() )
+        {
+            if ( id == operand.getDataElement().getId() )
+            {
+                isGrayField = true;
+            }
+        }
+        return isGrayField;
+    }
+
     // -------------------------------------------------------------------------
     // Dependency setters
     // -------------------------------------------------------------------------
@@ -472,12 +504,38 @@ public class FacilityReportingServiceImpl
     {
         this.registrationService = registrationService;
     }
-    
+
     @Required
     public void setCurrentUserService( CurrentUserService currentUserService )
     {
         this.currentUserService = currentUserService;
     }
-    
-    
+
+    @Required
+    public void setoUnitService( OrganisationUnitService oUnitService )
+    {
+        this.oUnitService = oUnitService;
+    }
+
+    @Override
+    public Contact updateContactForMobile()
+    {
+
+        Contact contact = new Contact();
+
+        List<String> listOfContacts = new ArrayList<String>();
+
+        List<OrganisationUnit> listOfOrgUnit = (List<OrganisationUnit>) oUnitService.getAllOrganisationUnits();
+
+        for ( OrganisationUnit each : listOfOrgUnit )
+        {
+            String contactDetail = each.getName() + "/" + each.getPhoneNumber();
+            listOfContacts.add( contactDetail );
+        }
+
+        contact.setListOfContacts( listOfContacts );
+
+        return contact;
+    }
+
 }

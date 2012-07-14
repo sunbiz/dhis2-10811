@@ -59,7 +59,7 @@ $.date = function ( datestring, formatstring ) {
 				var day = ( dow + calendar.firstDay ) % 7;
 				result.push( {
 					shortname: calendar.days.namesShort[ day ],
-					fullname: calendar.days.names[ day ],
+					fullname: calendar.days.names[ day ]
 				});
 			}
 			return result;

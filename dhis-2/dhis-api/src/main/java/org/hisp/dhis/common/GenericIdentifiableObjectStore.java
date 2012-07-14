@@ -27,11 +27,11 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.user.User;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.hisp.dhis.user.User;
 
 /**
  * @author Lars Helge Overland
@@ -57,54 +57,96 @@ public interface GenericIdentifiableObjectStore<T>
 
     /**
      * Retrieves the object with the given code.
-     * 
-     * @param name the code.
+     *
+     * @param code the code.
      * @return the object with the given code.
      */
     T getByCode( String code );
-    
+
     /**
-     * Retrieves the objects determined by the given first result and max result.
-     * 
-     * @param first the first result object to return.
-     * @param max the max number of result objects to return. 
-     * @return collection of objects.
+     * Retrieves a List of all objects (sorted on name).
+     *
+     * @return a List of all objects.
      */
-    Collection<T> getBetween( int first, int max );
+    List<T> getAllOrderedName();
 
     /**
      * Retrieves the objects determined by the given first result and max result.
-     * The returned list is ordered by the last updated property descending. 
-     * 
+     *
      * @param first the first result object to return.
-     * @param max the max number of result objects to return. 
-     * @return collection of objects.
+     * @param max   the max number of result objects to return.
+     * @return list of objects.
      */
-    List<T> getBetweenOrderderByLastUpdated( int first, int max );
-    
+    List<T> getAllOrderedName( int first, int max );
+
+    /**
+     * Retrieves a List of objects where the name is equal the given name.
+     *
+     * @param name the name.
+     * @return a List of objects.
+     */
+    List<T> getAllEqName( String name );
+
+    /**
+     * Retrieves a List of objects where the name is equal the given name (ignore case).
+     *
+     * @param name the name.
+     * @return a List of objects.
+     */
+    List<T> getAllEqNameIgnoreCase( String name );
+
+    /**
+     * Return the number of objects where the name is equal the given name.
+     * <p/>
+     * This count is _unfiltered_ (no ACL!), so this is not the same as
+     * getAllEqName().size().
+     *
+     * @param name the name.
+     * @return Count of objects.
+     */
+    int getCountEqNameNoAcl( String name );
+
+    /**
+     * Retrieves a List of objects where the name is like the given name.
+     *
+     * @param name the name.
+     * @return a List of objects.
+     */
+    List<T> getAllLikeName( String name );
+
+    /**
+     * Retrieves the objects determined by the given first result and max result.
+     * The returned list is ordered by the last updated property descending.
+     *
+     * @param first the first result object to return.
+     * @param max   the max number of result objects to return.
+     * @return List of objects.
+     */
+    List<T> getAllOrderedLastUpdated( int first, int max );
+
     /**
      * Retrieves the objects determined by the given first result and max result
      * which name is like the given name.
-     * 
-     * @param the name which result object names must be like.
+     *
+     * @param name  the name which result object names must be like.
      * @param first the first result object to return.
-     * @param max the max number of result objects to return. 
-     * @return collection of objects.
-     */    
-    Collection<T> getBetweenByName( String name, int first, int max );
-    
+     * @param max   the max number of result objects to return.
+     * @return List of objects.
+     */
+    List<T> getAllLikeNameOrderedName( String name, int first, int max );
+
     /**
      * Gets the count of objects which name is like the given name.
-     * 
+     *
      * @param name the name which result object names must be like.
      * @return the count of objects.
      */
-    int getCountByName( String name );
-    
+    int getCountLikeName( String name );
+
     /**
-     * Retrieves a list of objects referenced by the given collection of uids.
-     * 
-     * @param uids a collection of uids.
+     * Retrieves a list of objects referenced by the given List of uids.
+     *
+     * @param uids a List of uids.
      * @return a list of objects.
      */
     List<T> getByUid( Collection<String> uids );
@@ -112,19 +154,27 @@ public interface GenericIdentifiableObjectStore<T>
     /**
      * Returns all objects that are equal to or newer than given date.
      *
-     * @param lastUpdated Date to compare to.
+     * @param created Date to compare with.
      * @return All objects equal or newer than given date.
      */
-    List<T> getByLastUpdated( Date lastUpdated );
+    List<T> getAllGeCreated( Date created );
 
     /**
      * Returns all objects that are equal to or newer than given date.
-     * (sorted by name)
+     *
+     * @param lastUpdated Date to compare with.
+     * @return All objects equal or newer than given date.
+     */
+    List<T> getAllGeLastUpdated( Date lastUpdated );
+
+    /**
+     * Returns all objects that are equal to or newer than given date.
+     * (ordered by name)
      *
      * @param lastUpdated Date to compare to.
      * @return All objects equal or newer than given date.
      */
-    List<T> getByLastUpdatedSorted( Date lastUpdated );
+    List<T> getAllGeLastUpdatedOrderedName( Date lastUpdated );
 
     /**
      * Returns the number of objects that are equal to or newer than given date.
@@ -132,12 +182,69 @@ public interface GenericIdentifiableObjectStore<T>
      * @param lastUpdated Date to compare to.
      * @return the number of objects equal or newer than given date.
      */
-    long getCountByLastUpdated( Date lastUpdated );
-    
+    long getCountGeLastUpdated( Date lastUpdated );
+
     /**
      * Retrieves objects associated with the given user.
-     * 
+     *
      * @param user the user.
+     * @return list of objects.
      */
-    Collection<T> getByUser( User user );
+    List<T> getByUser( User user );
+
+    /**
+     * Retrieves objects which are accessible to the given user, which includes
+     * public objects and objects owned by this user.
+     *
+     * @param user the user.
+     * @return a list of objects.
+     */
+    List<T> getAccessibleByUser( User user );
+
+    /**
+     * Retrieves objects which are accessible to the given user, which includes
+     * public objects and objects owned by this user, that are equal to or newer
+     * than given date.
+     *
+     * @param user        the user.
+     * @param lastUpdated the Date to compare with.
+     * @return a list of objects.
+     */
+    List<T> getAccessibleByLastUpdated( User user, Date lastUpdated );
+
+    /**
+     * Retrieves objects which are accessible to the given user, which includes
+     * public objects and objects owned by this user, which name is like the
+     * given name.
+     *
+     * @param user the user.
+     * @param name the name.
+     * @return a list of objects.
+     */
+    List<T> getAccessibleLikeName( User user, String name );
+
+    /**
+     * Retrieves objects which are accessible to the given user, which includes
+     * public objects and objects owned by this user, limited by the given offset
+     * and max result.
+     *
+     * @param user  the user.
+     * @param first the first result object to return.
+     * @param max   the max number of result objects to return.
+     * @return a list of objects.
+     */
+    List<T> getAccessibleBetween( User user, int first, int max );
+
+    /**
+     * Retrieves objects which are accessible to the given user, which includes
+     * public objects and objects owned by this user, which name is like the
+     * given name, limited by the given offset and max result.
+     *
+     * @param user  the user.
+     * @param name  the name.
+     * @param first the first result object to return.
+     * @param max   the max number of result objects to return.
+     * @return a list of objects.
+     */
+    List<T> getAccessibleBetweenLikeName( User user, String name, int first, int max );
 }

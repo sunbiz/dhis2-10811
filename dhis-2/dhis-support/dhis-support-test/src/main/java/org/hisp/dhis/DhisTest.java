@@ -55,13 +55,13 @@ public abstract class DhisTest
 {
     @Autowired
     protected DbmsManager dbmsManager;
-    
+
     // -------------------------------------------------------------------------
     // ApplicationContextAware implementation
     // -------------------------------------------------------------------------
 
     private ApplicationContext context;
-    
+
     public void setApplicationContext( ApplicationContext context )
     {
         this.context = context;
@@ -72,9 +72,9 @@ public abstract class DhisTest
         throws Exception
     {
         bindSession();
-        
+
         executeStartupRoutines();
-        
+
         setUpTest();
     }
 
@@ -83,9 +83,9 @@ public abstract class DhisTest
         throws Exception
     {
         tearDownTest();
-        
+
         unbindSession();
-        
+
         if ( emptyDatabaseAfterTest() )
         {
             dbmsManager.emptyDatabase();
@@ -97,17 +97,17 @@ public abstract class DhisTest
      */
     protected void setUpTest()
         throws Exception
-    {   
+    {
     }
-    
+
     /**
      * Method to override.
      */
     protected void tearDownTest()
         throws Exception
-    {   
+    {
     }
-    
+
     /**
      * Method to override. Requires the DbmsManager bean to present in the
      * application context.
@@ -123,7 +123,7 @@ public abstract class DhisTest
 
     /**
      * Retrieves a bean from the application context.
-     * 
+     *
      * @param beanId the identifier of the bean.
      */
     protected final Object getBean( String beanId )
@@ -154,12 +154,11 @@ public abstract class DhisTest
      * Binds a Hibernate Session to the current thread.
      */
     private void bindSession()
-    {        
+    {
         SessionFactory sessionFactory = (SessionFactory) getBean( "sessionFactory" );
-        
-        Session session = SessionFactoryUtils.openSession( sessionFactory );
-        
-        TransactionSynchronizationManager.bindResource( sessionFactory, new SessionHolder( session ) );     
+        Session session = sessionFactory.openSession();
+
+        TransactionSynchronizationManager.bindResource( sessionFactory, new SessionHolder( session ) );
     }
 
     /**
@@ -168,9 +167,9 @@ public abstract class DhisTest
     private void unbindSession()
     {
         SessionFactory sessionFactory = (SessionFactory) getBean( "sessionFactory" );
-        
+
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.unbindResource( sessionFactory );
-        
+
         SessionFactoryUtils.closeSession( sessionHolder.getSession() );
     }
 }

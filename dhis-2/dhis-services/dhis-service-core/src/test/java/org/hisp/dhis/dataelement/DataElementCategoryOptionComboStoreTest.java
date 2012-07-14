@@ -27,13 +27,13 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.GenericStore;
@@ -119,7 +119,7 @@ public class DataElementCategoryOptionComboStoreTest
     {
         categoryOptionComboA = new DataElementCategoryOptionCombo();
         
-        List<DataElementCategoryOption> categoryOptions = new ArrayList<DataElementCategoryOption>();
+        Set<DataElementCategoryOption> categoryOptions = new HashSet<DataElementCategoryOption>();
         
         categoryOptions.add( categoryOptionA );
         categoryOptions.add( categoryOptionB );        
@@ -141,7 +141,7 @@ public class DataElementCategoryOptionComboStoreTest
     {
         categoryOptionComboA = new DataElementCategoryOptionCombo();
         
-        List<DataElementCategoryOption> categoryOptions = new ArrayList<DataElementCategoryOption>();
+        Set<DataElementCategoryOption> categoryOptions = new HashSet<DataElementCategoryOption>();
         
         categoryOptions.add( categoryOptionA );
         categoryOptions.add( categoryOptionB );        

@@ -27,8 +27,8 @@ package org.hisp.dhis.dxf2.metadata;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
+import org.hisp.dhis.importexport.ImportStrategy;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -36,14 +36,12 @@ import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
 public class ImportOptions
 {
     private IdentifiableProperty dataElementIdScheme;
-    
+
     private IdentifiableProperty orgUnitIdScheme;
-    
+
     private boolean dryRun = false;
 
     private ImportStrategy importStrategy;
-
-    private String strategy;
 
     private boolean skipExistingCheck;
 
@@ -57,7 +55,7 @@ public class ImportOptions
     public ImportOptions()
     {
     }
-    
+
     public ImportOptions( ImportStrategy importStrategy )
     {
         this.importStrategy = importStrategy;
@@ -138,7 +136,7 @@ public class ImportOptions
     @Override
     public String toString()
     {
-        return "[data element id scheme: " + dataElementIdScheme + ", org unit id scheme: " + 
+        return "[data element id scheme: " + dataElementIdScheme + ", org unit id scheme: " +
             orgUnitIdScheme + ", dry run: " + dryRun + ", strategy: " + importStrategy + ", skip check: " + skipExistingCheck + "]";
     }
 }

@@ -34,6 +34,9 @@ import java.util.List;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.RelativePeriods;
+import org.hisp.dhis.report.Report;
+import org.hisp.dhis.report.ReportService;
 import org.hisp.dhis.reporttable.ReportParams;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
@@ -42,9 +45,10 @@ import org.hisp.dhis.system.util.FilterUtils;
 
 import com.opensymphony.xwork2.Action;
 
+import static org.hisp.dhis.reporttable.ReportTableService.*;
+
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class GetReportParamsAction
     implements Action
@@ -58,6 +62,13 @@ public class GetReportParamsAction
     public void setReportTableService( ReportTableService reportTableService )
     {
         this.reportTableService = reportTableService;
+    }
+
+    protected ReportService reportService;
+
+    public void setReportService( ReportService reportService )
+    {
+        this.reportService = reportService;
     }
 
     private I18nFormat format;
@@ -94,7 +105,19 @@ public class GetReportParamsAction
     {
         this.mode = mode;
     }
-        
+    
+    private String type;
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -119,26 +142,49 @@ public class GetReportParamsAction
 
     public String execute()
     {
-        if ( mode != null && uid != null )
+        if ( mode == null || uid == null )
         {
-            ReportTable reportTable = reportTableService.getReportTable( uid, mode);
-            
+            return SUCCESS;
+        }
+                    
+        RelativePeriods relatives = null;
+        
+        if ( MODE_REPORT_TABLE.equals( mode ) )
+        {
+            ReportTable reportTable = reportTableService.getReportTable( uid );
+        
             if ( reportTable != null )
             {
-                reportParams = reportTable.getReportParams();
-                                
-                if ( reportParams.isParamReportingMonth() && reportTable.getRelatives() != null )
-                {
-                    CalendarPeriodType periodType = (CalendarPeriodType) reportTable.getRelatives().getPeriodType();
-                    periods = periodType.generateLast5Years( new Date() );
-                    Collections.reverse( periods );
-                    FilterUtils.filter( periods, new PastAndCurrentPeriodFilter() );
-                    
-                    for ( Period period : periods )
-                    {
-                        period.setName( format.formatPeriod( period ) );
-                    }
-                }
+                reportParams = reportTable.getReportParams();                                
+                relatives = reportTable.getRelatives();
+            }
+        }
+        else if ( MODE_REPORT.equals( mode ) )
+        {
+            Report report = reportService.getReport( uid );
+            
+            if ( report != null && report.isTypeReportTable() )
+            {
+                reportParams = report.getReportTable().getReportParams();                
+                relatives = report.getReportTable().getRelatives();
+            }
+            else if ( report != null && ( report.isTypeJdbc() || report.isTypeHtml() ) )
+            {
+                reportParams = report.getReportParams();                
+                relatives = report.getRelatives();
+            }
+        }
+        
+        if ( reportParams.isParamReportingMonth() && relatives != null )
+        {
+            CalendarPeriodType periodType = (CalendarPeriodType) relatives.getPeriodType();
+            periods = periodType.generateLast5Years( new Date() );
+            Collections.reverse( periods );
+            FilterUtils.filter( periods, new PastAndCurrentPeriodFilter() );
+            
+            for ( Period period : periods )
+            {
+                period.setName( format.formatPeriod( period ) );
             }
         }
         

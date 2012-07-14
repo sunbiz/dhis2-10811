@@ -27,8 +27,7 @@
 
 package org.hisp.dhis.caseentry.action.caseentry;
 
-import java.util.Date;
-
+import com.opensymphony.xwork2.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dataelement.DataElement;
@@ -39,7 +38,7 @@ import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.user.CurrentUserService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.Date;
 
 /**
  * @author Abyot Asalefew Gizaw
@@ -149,7 +148,7 @@ public class SaveValueAction
         // ---------------------------------------------------------------------
         // Save value
         // ---------------------------------------------------------------------
-        
+
         if ( programStageInstance.getExecutionDate() == null )
         {
             programStageInstance.setExecutionDate( new Date() );
@@ -158,6 +157,7 @@ public class SaveValueAction
 
         providedElsewhere = (providedElsewhere == null) ? false : providedElsewhere;
         String storedBy = currentUserService.getCurrentUsername();
+
         if ( patientDataValue == null && value != null )
         {
             LOG.debug( "Adding PatientDataValue, value added" );
@@ -168,11 +168,12 @@ public class SaveValueAction
 
             patientDataValueService.savePatientDataValue( patientDataValue );
         }
-        if( patientDataValue != null && value == null )
+
+        if ( patientDataValue != null && value == null )
         {
             patientDataValueService.deletePatientDataValue( patientDataValue );
         }
-        else if( patientDataValue != null && value != null )
+        else if ( patientDataValue != null && value != null )
         {
             LOG.debug( "Updating PatientDataValue, value added/changed" );
 
@@ -180,7 +181,7 @@ public class SaveValueAction
             patientDataValue.setTimestamp( new Date() );
             patientDataValue.setProvidedElsewhere( providedElsewhere );
             patientDataValue.setStoredBy( storedBy );
-            
+
             patientDataValueService.updatePatientDataValue( patientDataValue );
         }
 

@@ -49,6 +49,24 @@ function PeriodType()
 
         return array;
     };
+    
+    this.filterFuturePeriodsExceptCurrent = function( periods )
+    {
+        var array = [];
+        var i = 0;
+
+        var now = new Date().getTime();
+
+        for ( var j = 0; j < periods.length; j++ )
+        {
+            if ( $.date( periods[j]['startDate'], dateFormat ).date().getTime() <= now )
+            {
+                array[i++] = periods[j];
+            }
+        }
+
+        return array;
+    };
 }
 
 function DailyPeriodType( dateFormat )
@@ -257,7 +275,7 @@ function YearlyPeriodType( dateFormat )
             period['endDate'] = endDate.format( dateFormat );
             period['name'] = startDate.date().getFullYear();
             period['id'] = 'Yearly_' + period['startDate'];
-            period['iso'] = year;
+            period['iso'] = startDate.date().getFullYear();
             periods[i] = period;
 
             startDate.adjust( 'Y', +1 );
@@ -284,6 +302,7 @@ function FinancialOctoberPeriodType( dateFormat )
             period['endDate'] = endDate.format( dateFormat );
             period['name'] =  monthNames[9] + ' ' +  startDate.date().getFullYear() + '-' + monthNames[8] + ' ' + (startDate.date().getFullYear() +1 );
             period['id'] = 'FinancialOct_' + period['startDate'];
+            period['iso'] = startDate.date().getFullYear() + 'Oct';
             periods[i] = period;
 
             startDate.adjust( 'Y', +1 );
@@ -310,6 +329,7 @@ function FinancialJulyPeriodType( dateFormat )
             period['endDate'] = endDate.format( dateFormat );
             period['name'] =  monthNames[6] + ' ' +  startDate.date().getFullYear() + '-' + monthNames[5] + ' ' + (startDate.date().getFullYear() +1 );
             period['id'] = 'FinancialJuly_' + period['startDate'];
+            period['iso'] = startDate.date().getFullYear() + 'July';
             periods[i] = period;
 
             startDate.adjust( 'Y', +1 );
@@ -336,6 +356,7 @@ function FinancialAprilPeriodType( dateFormat )
             period['endDate'] = endDate.format( dateFormat );
             period['name'] =  monthNames[3] + ' ' +  startDate.date().getFullYear() + '-' + monthNames[2] + ' ' + (startDate.date().getFullYear() +1 );
             period['id'] = 'FinancialApril_' + period['startDate'];
+            period['iso'] = startDate.date().getFullYear() + 'April';
             periods[i] = period;
 
             startDate.adjust( 'Y', +1 );

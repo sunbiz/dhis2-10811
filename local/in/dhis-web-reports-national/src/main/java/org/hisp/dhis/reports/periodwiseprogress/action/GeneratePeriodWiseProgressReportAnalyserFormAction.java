@@ -56,7 +56,7 @@ implements Action
         while ( periodTypeIterator.hasNext() )
         {
             PeriodType type = periodTypeIterator.next();
-            if (type.getName().equalsIgnoreCase("Monthly") || type.getName().equalsIgnoreCase("quarterly") || type.getName().equalsIgnoreCase("yearly"))
+            if ( type.getName().equalsIgnoreCase("Daily") || type.getName().equalsIgnoreCase("Monthly") || type.getName().equalsIgnoreCase("quarterly") || type.getName().equalsIgnoreCase("yearly"))
             {
             }
             else

@@ -29,7 +29,7 @@
 
 <h3>$i18n.getString( "create_new_data_element_group" )</h3>
 
-<form id="addDataElementGroupForm" action="addDataElementGroup.action" method="post" >
+<form id="addDataElementGroupForm" action="addDataElementGroup.action" method="post" class="inputForm">
 
 <table>
 	<tr>
@@ -37,17 +37,19 @@
 	</tr>
 
 	<tr>
-		<td style="width: 200px;"><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td style="min-width: 240px;"><input type="text" id="name" name="name" style="width:240px" /></td>
+		<td style="width: 120px;"><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+        <td><input type="text" id="name" name="name" /></td>
     </tr>
 </table>
 
 #tblDynamicAttributes( { "attributes": $attributes } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<tr>
 		<th>$i18n.getString( "available_data_elements" )</th>

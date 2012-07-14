@@ -18,6 +18,9 @@
 <div id="analysisInput">
 
 <table>
+	<tr>
+		<th colspan="2">$i18n.getString( 'select_parameters' )</th>
+	</tr>
     <tr>
     	<td>
         	<label for="startDate">$i18n.getString( 'start_date' )</label>
@@ -48,27 +51,19 @@
     	</td>
     </tr>
     <tr>
-    	<td>
-    		<label for="aggregate">$i18n.getString( "data_source" )</label>
-	    </td>
-	    <td>
-	    	<select id="aggregate" name="aggregate" style="width:20em" onchange="aggregateChanged()">
-	    		<option value="false" selected="selected">$i18n.getString( "use_captured_data" )</option>
-	    		<option value="true">$i18n.getString( "use_aggregated_data" )</option>
-	    	</select>
-    	</td>
+    	<td colspan="2" style="height:20px"></td>
     </tr>
     <tr>
-    	<td colspan="2"><span id="info">$i18n.getString( "captured_data_info" )</span></td>
+        <th colspan="2">$i18n.getString( "select_parent_organisation_unit" )</th>
     </tr>
     <tr>
         <td colspan="2">
-    		<div id="selectionTree" style="width:35em;height:350px;overflow:auto;border:1px solid #cccccc"></div>
+    		<div id="selectionTree" style="width:400px;height:260px;overflow:auto;border:1px solid #cccccc"></div>
     	</td>
     </tr>
     <tr>
     	<td>
-    		<input type="button" value="$i18n.getString( 'validate' )" style="width:10em" onclick="validateRunValidation()">
+    		<input id="validateButton" type="button" value="$i18n.getString( 'validate' )" style="width:10em" onclick="validateRunValidation()">
     	</td>
     	<td></td>
     </tr>

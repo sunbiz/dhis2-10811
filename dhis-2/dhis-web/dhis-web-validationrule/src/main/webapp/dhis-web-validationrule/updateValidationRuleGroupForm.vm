@@ -17,7 +17,7 @@
 
 <h3>$i18n.getString( "edit_validation_rule_group" )</h3>
 
-<form id="updateValidationRuleGroupForm" action="updateValidationRuleGroup.action" method="post" >
+<form id="updateValidationRuleGroupForm" action="updateValidationRuleGroup.action" method="post" class="inputForm">
 
 <div>
     <input type="hidden" id="id" name="id" value="$validationRuleGroup.id">
@@ -30,20 +30,22 @@
 
     <tr>
         <td><label for="name">$i18n.getString( "name" )</label></td>
-        <td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $validationRuleGroup.name )" style="width:20em"></td>
+        <td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $validationRuleGroup.name )"></td>
     </tr>
 
     <tr>
         <td><label for="description">$i18n.getString( "description" )<em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-        <td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $validationRuleGroup.description )" style="width:20em"></td>
+        <td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $validationRuleGroup.description )"></td>
     </tr>
 
 </table>
 
 <table style="margin-top: 15px;">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
     <tr>
         <th>$i18n.getString( "available_validation_rules" )</th>

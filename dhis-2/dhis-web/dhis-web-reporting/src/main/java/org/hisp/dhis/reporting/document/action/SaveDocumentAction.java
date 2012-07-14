@@ -27,15 +27,16 @@ package org.hisp.dhis.reporting.document.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
-
+import com.opensymphony.xwork2.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.document.Document;
 import org.hisp.dhis.document.DocumentService;
 import org.hisp.dhis.external.location.LocationManager;
+import org.hisp.dhis.user.CurrentUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.opensymphony.xwork2.Action;
+import java.io.File;
 
 /**
  * @author Lars Helge Overland
@@ -67,6 +68,9 @@ public class SaveDocumentAction
     {
         this.documentService = documentService;
     }
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     // -------------------------------------------------------------------------
     // Input
@@ -134,7 +138,7 @@ public class SaveDocumentAction
         {
             document = documentService.getDocument( id );
         }
-        
+
         if ( !external && file != null )
         {
             log.info( "Uploading file: '" + fileName + "', content-type: '" + contentType + "'" );

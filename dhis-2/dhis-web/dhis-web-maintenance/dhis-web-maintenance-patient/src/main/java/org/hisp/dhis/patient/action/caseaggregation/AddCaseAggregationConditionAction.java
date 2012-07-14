@@ -66,6 +66,8 @@ public class AddCaseAggregationConditionAction
 
     private String aggregationDataElementId;
 
+    private Integer deSumId;
+
     // -------------------------------------------------------------------------
     // Getters && Setters
     // -------------------------------------------------------------------------
@@ -100,6 +102,11 @@ public class AddCaseAggregationConditionAction
         this.aggregationCondition = aggregationCondition;
     }
 
+    public void setDeSumId( Integer deSumId )
+    {
+        this.deSumId = deSumId;
+    }
+
     public void setName( String name )
     {
         this.name = name;
@@ -123,6 +130,11 @@ public class AddCaseAggregationConditionAction
         CaseAggregationCondition condition = new CaseAggregationCondition( name, operator, aggregationCondition,
             aggregationDataElement, optionCombo );
 
+        if ( deSumId != null )
+        {
+            DataElement deSum = dataElementService.getDataElement( deSumId );
+            condition.setDeSum( deSum );
+        }
         aggregationConditionService.addCaseAggregationCondition( condition );
 
         return SUCCESS;

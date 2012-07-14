@@ -35,6 +35,8 @@ import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id: AbstractGroupSetConverter.java 4646 2008-02-26 14:54:29Z larshelg $
@@ -47,18 +49,18 @@ public class GroupSetImporter
     public GroupSetImporter()
     {
     }
-    
+
     public GroupSetImporter( BatchHandler<OrganisationUnitGroupSet> batchHandler, OrganisationUnitGroupService organisationUnitGroupService )
     {
         this.batchHandler = batchHandler;
         this.organisationUnitGroupService = organisationUnitGroupService;
     }
-    
+
     @Override
     public void importObject( OrganisationUnitGroupSet object, ImportParams params )
     {
         NameMappingUtil.addGroupSetMapping( object.getId(), object.getName() );
-        
+
         read( object, GroupMemberType.NONE, params );
     }
 
@@ -74,14 +76,16 @@ public class GroupSetImporter
         match.setName( object.getName() );
         match.setDescription( object.getDescription() );
         match.setCompulsory( object.isCompulsory() );
-        
+
         organisationUnitGroupService.updateOrganisationUnitGroupSet( match );
     }
 
     @Override
     protected OrganisationUnitGroupSet getMatching( OrganisationUnitGroupSet object )
     {
-        return organisationUnitGroupService.getOrganisationUnitGroupSetByName( object.getName() );
+        List<OrganisationUnitGroupSet> organisationUnitGroupSetByName = organisationUnitGroupService.getOrganisationUnitGroupSetByName( object.getName() );
+
+        return organisationUnitGroupSetByName.isEmpty() ? null : organisationUnitGroupSetByName.get( 0 );
     }
 
     @Override
@@ -99,7 +103,7 @@ public class GroupSetImporter
         {
             return false;
         }
-        
+
         return true;
     }
 }

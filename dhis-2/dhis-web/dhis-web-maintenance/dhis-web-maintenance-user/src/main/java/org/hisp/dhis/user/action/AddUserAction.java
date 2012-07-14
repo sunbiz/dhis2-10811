@@ -144,13 +144,6 @@ public class AddUserAction
         this.phoneNumber = phoneNumber;
     }
 
-    private String jobTitle;
-    
-    public void setJobTitle( String jobTitle )
-    {
-        this.jobTitle = jobTitle;
-    }
-
     private String passwordUnMatched;
 
     public String getPasswordUnMatched()
@@ -209,7 +202,6 @@ public class AddUserAction
         user.setFirstName( firstName );
         user.setEmail( email );
         user.setPhoneNumber( phoneNumber );
-        user.setJobTitle( jobTitle );
         user.updateOrganisationUnits( new HashSet<OrganisationUnit>( orgUnits ) );
 
         UserCredentials userCredentials = new UserCredentials();

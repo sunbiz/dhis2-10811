@@ -12,13 +12,14 @@
     <xsl:apply-templates select="d:*[local-name()!='pager']"/>
   </xsl:template>
 
-  <xsl:template match="d:resources|d:maps|d:charts|d:categoryCombos|d:categories|
+  <xsl:template match="d:resources|d:maps|d:mapViews|d:charts|d:categoryCombos|d:categories|
       d:categoryOptions|d:categoryOptionCombos|d:dataElements|d:indicators|
       d:organisationUnits|d:dataElementGroups|d:dataElementGroupSets|d:dataSets|
       d:documents|d:indicatorGroups|d:indicatorGroupSets|d:organisationUnitGroups|
       d:organisationUnitGroupSets|d:indicatorTypes|d:attributeTypes|d:reports|d:constants|
       d:sqlViews|d:validationRules|d:validationRuleGroups|d:users|d:userGroups|d:userAuthorityGroups|
-      d:reportTables|d:mapLegends|d:mapLegendSets|d:mapLayers|d:optionSets">
+      d:reportTables|d:mapLegends|d:mapLegendSets|d:mapLayers|d:optionSets|d:interpretations|
+      d:sections|d:userRoles|d:organisationUnitLevels">
 
     <h3>
       <xsl:value-of select="local-name()" />

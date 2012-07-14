@@ -34,9 +34,11 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.user.User;
+import org.hisp.dhis.user.UserGroup;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,14 +46,18 @@ import java.util.Set;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "message", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "message", namespace = DxfNamespaces.DXF_2_0 )
 public class Message
 {
     private String subject;
 
     private String text;
 
+    private Set<OrganisationUnit> organisationUnits = new HashSet<OrganisationUnit>();
+
     private Set<User> users = new HashSet<User>();
+
+    private Set<UserGroup> userGroups = new HashSet<UserGroup>();
 
     public Message()
     {
@@ -65,7 +71,7 @@ public class Message
 
     @JsonProperty
     @JsonView( {DetailedView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getSubject()
     {
         return subject;
@@ -78,7 +84,7 @@ public class Message
 
     @JsonProperty
     @JsonView( {DetailedView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getText()
     {
         return text;
@@ -91,9 +97,22 @@ public class Message
 
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class} )
-    @JacksonXmlElementWrapper( localName = "users", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "user", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0 )
+    public Set<OrganisationUnit> getOrganisationUnits()
+    {
+        return organisationUnits;
+    }
+
+    public void setOrganisationUnits( Set<OrganisationUnit> organisationUnits )
+    {
+        this.organisationUnits = organisationUnits;
+    }
+
+    @JsonProperty
+    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
+    @JacksonXmlElementWrapper( localName = "users", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "user", namespace = DxfNamespaces.DXF_2_0 )
     public Set<User> getUsers()
     {
         return users;
@@ -102,5 +121,31 @@ public class Message
     public void setUsers( Set<User> users )
     {
         this.users = users;
+    }
+
+    @JsonProperty
+    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
+    @JacksonXmlElementWrapper( localName = "userGroups", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "userGroup", namespace = DxfNamespaces.DXF_2_0 )
+    public Set<UserGroup> getUserGroups()
+    {
+        return userGroups;
+    }
+
+    public void setUserGroups( Set<UserGroup> userGroups )
+    {
+        this.userGroups = userGroups;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Message{" +
+            "subject='" + subject + '\'' +
+            ", text='" + text + '\'' +
+            ", organisationUnits=" + organisationUnits +
+            ", users=" + users +
+            ", userGroups=" + userGroups +
+            '}';
     }
 }

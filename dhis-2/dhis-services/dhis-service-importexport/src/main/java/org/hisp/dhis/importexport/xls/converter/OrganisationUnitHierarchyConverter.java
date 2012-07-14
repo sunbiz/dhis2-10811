@@ -30,13 +30,6 @@ package org.hisp.dhis.importexport.xls.converter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import jxl.format.Alignment;
-import jxl.format.Border;
-import jxl.format.BorderLineStyle;
-import jxl.format.Colour;
-import jxl.format.UnderlineStyle;
-import jxl.write.WritableCellFormat;
-import jxl.write.WritableFont;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
@@ -81,22 +74,9 @@ public class OrganisationUnitHierarchyConverter
 
         WritableSheet sheet = workbook.createSheet( i18n.getString( "organisation_unit_hierarchy" ), sheetIndex );
 
-        WritableCellFormat FORMAT_LABEL_MERGED = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 14,
-            WritableFont.BOLD, false, UnderlineStyle.NO_UNDERLINE, Colour.WHITE ) );
-
-        WritableCellFormat FORMAT_LABEL = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 13,
-            WritableFont.NO_BOLD, true, UnderlineStyle.NO_UNDERLINE, Colour.WHITE ) );
-
-        WritableCellFormat FORMAT_TEXT = new WritableCellFormat( new WritableFont( WritableFont.ARIAL, 11,
-            WritableFont.NO_BOLD, false ) );
-
         try
         {
-            setUpFormat( FORMAT_LABEL_MERGED, Alignment.CENTRE, Border.ALL, BorderLineStyle.THIN, Colour.BROWN );
-            setUpFormat( FORMAT_LABEL, Alignment.CENTRE, Border.ALL, BorderLineStyle.THIN, Colour.TAN );
-            setUpFormat( FORMAT_TEXT, Alignment.GENERAL, Border.ALL, BorderLineStyle.DOTTED, Colour.BLACK );
-            
-            printOrganisationUnitHierarchyHeaders( sheet, FORMAT_LABEL_MERGED, FORMAT_LABEL, i18n,
+            printOrganisationUnitHierarchyHeaders( sheet, i18n,
                 rowNumber++, columnIndex, organisationUnitService.getNumberOfOrganisationalLevels() );
 
             rowNumber++;
@@ -105,7 +85,7 @@ public class OrganisationUnitHierarchyConverter
 
             for ( OrganisationUnit unit : hierarchy )
             {
-                addOrganisationUnitHierarchyCellToSheet( sheet, FORMAT_TEXT, unit, i18n, rowNumber++, unit.getLevel()-1 );
+                addOrganisationUnitHierarchyCellToSheet( sheet, unit, i18n, rowNumber++, unit.getLevel()-1 );
             }
         }
         catch ( RowsExceededException e )

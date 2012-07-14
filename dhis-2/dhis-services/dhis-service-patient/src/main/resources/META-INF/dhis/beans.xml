@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
-	<!-- Store definitions -->
+  <!-- Store definitions -->
 
 	<bean id="org.hisp.dhis.caseaggregation.CaseAggregationConditionStore"
 		class="org.hisp.dhis.caseaggregation.jdbc.JdbcCaseAggregationConditionStore">
-		<property name="statementManager" ref="statementManager" />
 		<property name="clazz"
 			value="org.hisp.dhis.caseaggregation.CaseAggregationCondition" />
 		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-
-	<bean id="org.hisp.dhis.activityplan.jdbc.JdbcActivityPlanStore"
-		class="org.hisp.dhis.activityplan.jdbc.JdbcActivityPlanStore">
-		<property name="statementManager" ref="statementManager" />
-		<property name="statementBuilder" ref="statementBuilder" />
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="org.hisp.dhis.relationship.RelationshipStore"
@@ -39,6 +32,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 		<property name="statementBuilder" ref="statementBuilder" />
+		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
+		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramInstanceStore"
@@ -47,14 +42,23 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<bean id="org.hisp.dhis.program.ProgramStageStore" class="org.hisp.dhis.hibernate.HibernateGenericStore">
+	<bean id="org.hisp.dhis.program.ProgramStageStore" 
+		class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
 		<property name="clazz" value="org.hisp.dhis.program.ProgramStage" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="org.hisp.dhis.program.ProgramStageSectionStore" 
+		class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
+		<property name="clazz" value="org.hisp.dhis.program.ProgramStageSection" />
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStore" class="org.hisp.dhis.program.hibernate.HibernateProgramStore">
 		<property name="clazz" value="org.hisp.dhis.program.Program" />
 		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="userService" ref="org.hisp.dhis.user.UserService" />
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramValidationStore"
@@ -62,11 +66,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="clazz" value="org.hisp.dhis.program.ProgramValidation" />
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	
+	<bean id="org.hisp.dhis.program.ProgramExpressionStore" class="org.hisp.dhis.hibernate.HibernateGenericStore">
+		<property name="clazz" value="org.hisp.dhis.program.ProgramExpression" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
 
 	<bean id="org.hisp.dhis.patient.PatientStore" class="org.hisp.dhis.patient.hibernate.HibernatePatientStore">
 		<property name="clazz" value="org.hisp.dhis.patient.Patient" />
 		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="statementManager" ref="statementManager" />
 		<property name="statementBuilder" ref="statementBuilder" />
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
@@ -118,8 +126,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="org.hisp.dhis.program.ProgramStageDataElementStore"
 		class="org.hisp.dhis.program.hibernate.HibernateProgramStageDataElementStore">
-		<property name="clazz"
-			value="org.hisp.dhis.program.ProgramStageDataElement" />
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
@@ -127,6 +133,20 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		class="org.hisp.dhis.patientreport.hibernate.HibernatePatientTabularReportStore">
 		<property name="clazz"
 			value="org.hisp.dhis.patientreport.PatientTabularReport" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="org.hisp.dhis.patientreport.PatientAggregateReportStore"
+		class="org.hisp.dhis.patientreport.hibernate.HibernatePatientAggregateReportStore">
+		<property name="clazz"
+			value="org.hisp.dhis.patientreport.PatientAggregateReport" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+
+	<bean id="org.hisp.dhis.patient.PatientAuditStore"
+		class="org.hisp.dhis.patient.hibernate.HibernatePatientAuditStore">
+		<property name="clazz" value="org.hisp.dhis.patient.PatientAudit" />
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
@@ -147,17 +167,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			ref="org.hisp.dhis.program.ProgramStageDataElementService" />
 	</bean>
 
-	<bean id="org.hisp.dhis.activityplan.ActivityPlanService" class="org.hisp.dhis.activityplan.DefaultActivityPlanService">
-		<property name="patientDataValueService"
-			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
-		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
-		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
-		<property name="activityPlanStore"
-			ref="org.hisp.dhis.activityplan.jdbc.JdbcActivityPlanStore" />
-	</bean>
-
 	<bean id="org.hisp.dhis.caseaggregation.CaseAggregationConditionService"
 		class="org.hisp.dhis.caseaggregation.DefaultCaseAggregationConditionService">
 		<property name="aggregationConditionStore"
@@ -172,14 +181,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
 		<property name="programStageInstanceService"
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
-	</bean>
-
-	<bean id="org.hisp.dhis.program.nextvisit.NextVisitGenerator"
-		class="org.hisp.dhis.program.nextvisit.DefaultNextVisitGenerator">
-		<property name="patientDataValueService"
-			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+		<property name="statementBuilder" ref="statementBuilder" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.relationship.RelationshipService" class="org.hisp.dhis.relationship.DefaultRelationshipService">
@@ -190,12 +193,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		class="org.hisp.dhis.relationship.DefaultRelationshipTypeService">
 		<property name="relationshipTypeStore"
 			ref="org.hisp.dhis.relationship.RelationshipTypeStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageInstanceService"
 		class="org.hisp.dhis.program.DefaultProgramStageInstanceService">
 		<property name="programStageInstanceStore"
 			ref="org.hisp.dhis.program.ProgramStageInstanceStore" />
+		<property name="programInstanceService"
+			ref="org.hisp.dhis.program.ProgramInstanceService" />
 		<property name="patientDataValueService"
 			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
 		<property name="organisationUnitService"
@@ -206,24 +212,38 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="programInstanceStore" ref="org.hisp.dhis.program.ProgramInstanceStore" />
 		<property name="patientAttributeValueService"
 			ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueService" />
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+		<property name="patientDataValueService"
+			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageService" class="org.hisp.dhis.program.DefaultProgramStageService">
 		<property name="programStageStore" ref="org.hisp.dhis.program.ProgramStageStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.program.ProgramStageSectionService" class="org.hisp.dhis.program.DefaultProgramStageSectionService">
+		<property name="programStageSectionStore"
+			ref="org.hisp.dhis.program.ProgramStageSectionStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramService" class="org.hisp.dhis.program.DefaultProgramService">
 		<property name="programStore" ref="org.hisp.dhis.program.ProgramStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramValidationService" class="org.hisp.dhis.program.DefaultProgramValidationService">
 		<property name="validationStore" ref="org.hisp.dhis.program.ProgramValidationStore" />
 		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
-		<property name="valueService"
-			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
+		<property name="expressionService" ref="org.hisp.dhis.program.ProgramExpressionService" />
+		<property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
+	</bean>
+	
+	<bean id="org.hisp.dhis.program.ProgramExpressionService" class="org.hisp.dhis.program.DefaultProgramExpressionService">
+		<property name="programExpressionStore" ref="org.hisp.dhis.program.ProgramExpressionStore" />
+		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
+		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.PatientService" class="org.hisp.dhis.patient.DefaultPatientService">
@@ -250,10 +270,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		class="org.hisp.dhis.patient.DefaultPatientIdentifierTypeService">
 		<property name="patientIdentifierTypeStore"
 			ref="org.hisp.dhis.patient.PatientIdentifierTypeStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.PatientAttributeService" class="org.hisp.dhis.patient.DefaultPatientAttributeService">
 		<property name="patientAttributeStore" ref="org.hisp.dhis.patient.PatientAttributeStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean
@@ -261,6 +283,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		class="org.hisp.dhis.patientattributevalue.DefaultPatientAttributeValueService">
 		<property name="patientAttributeValueStore"
 			ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueStore" />
+		<property name="patientAttributeService"
+			ref="org.hisp.dhis.patient.PatientAttributeService" />
+		<property name="programService"
+			ref="org.hisp.dhis.program.ProgramService" />
+		<property name="programInstanceService"
+			ref="org.hisp.dhis.program.ProgramInstanceService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.PatientAttributeOptionService"
@@ -279,6 +307,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		class="org.hisp.dhis.patient.DefaultPatientAttributeGroupService">
 		<property name="patientAttributeGroupStore"
 			ref="org.hisp.dhis.patient.PatientAttributeGroupStore" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageDataElementService"
@@ -292,15 +321,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="tabularReportStore"
 			ref="org.hisp.dhis.patientreport.PatientTabularReportStore" />
 	</bean>
+	
+	<bean id="org.hisp.dhis.patientreport.PatientAggregateReportService"
+		class="org.hisp.dhis.patientreport.DefaultPatientAggregateReportService">
+		<property name="patientAggregateReportStore"
+			ref="org.hisp.dhis.patientreport.PatientAggregateReportStore" />
+	</bean>
 
-	<!-- Aggregation engine -->
-
-	<bean
-		id="org.hisp.dhis.patientdatavalue.aggregation.PatientDataValueAggregationEngine"
-		class="org.hisp.dhis.patientdatavalue.aggregation.DefaultPatientDataValueAggregationEngine">
-		<property name="statementManager" ref="statementManager" />
-		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
-		<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+	<bean id="org.hisp.dhis.patient.PatientAuditService" class="org.hisp.dhis.patient.DefaultPatientAuditService">
+		<property name="patientAuditStore" ref="org.hisp.dhis.patient.PatientAuditStore" />
 	</bean>
 
 	<!-- DeletionHandlers -->
@@ -340,12 +369,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="org.hisp.dhis.patient.PatientDeletionHandler" class="org.hisp.dhis.patient.PatientDeletionHandler">
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageDataElementDeletionHandler"
 		class="org.hisp.dhis.program.ProgramStageDataElementDeletionHandler">
 		<property name="programStageDEService"
 			ref="org.hisp.dhis.program.ProgramStageDataElementService" />
+		<property name="programStageSectionService"
+			ref="org.hisp.dhis.program.ProgramStageSectionService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patientdatavalue.PatientDataValueDeletionHandler"
@@ -378,6 +410,109 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
 
+	<bean id="org.hisp.dhis.program.ProgramStageSectionDeletionHandler"
+		class="org.hisp.dhis.program.ProgramStageSectionDeletionHandler">
+		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
+	</bean>
+	
+	<bean id="org.hisp.dhis.patient.PatientAuditDeletionHandler" class="org.hisp.dhis.patient.PatientAuditDeletionHandler">
+		<property name="patientAuditService" ref="org.hisp.dhis.patient.PatientAuditService" />
+	</bean>
+
+	<!-- PatientComment -->
+
+	<bean id="org.hisp.dhis.patientcomment.PatientCommentService"
+		class="org.hisp.dhis.patientcomment.DefaultPatientCommentService">
+		<property name="patientCommentStore"
+			ref="org.hisp.dhis.patientcomment.PatientCommentStore" />
+	</bean>
+
+	<bean id="org.hisp.dhis.patientcomment.PatientCommentStore" class="org.hisp.dhis.hibernate.HibernateGenericStore">
+		<property name="clazz" value="org.hisp.dhis.patientcomment.PatientComment" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- Scheduling -->
+
+	<bean id="org.hisp.dhis.patient.scheduling.ProgramSchedulingManager"
+		class="org.hisp.dhis.patient.scheduling.DefaultProgramSchedulingManager"
+		init-method="scheduleTasks">
+		<property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
+		<property name="scheduler" ref="scheduler" />
+		<property name="tasks">
+			<map>
+				<entry key="scheduleMessage" value-ref="scheduleMessage" />
+				<entry key="sendMessageScheduled" value-ref="sendMessageScheduled" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="abstractScheduledMessageTask"
+		class="org.hisp.dhis.patient.scheduling.SendScheduledMessageTask">
+		<constructor-arg ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+		<constructor-arg ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />
+		<constructor-arg ref="jdbcTemplate" />
+	</bean>
+
+	<bean id="sendMessageScheduled"
+		class="org.hisp.dhis.patient.scheduling.SendScheduledMessageTask"
+		parent="abstractScheduledMessageTask">
+		<property name="sendingMessage" value="true" />
+	</bean>
+
+	<bean id="scheduleMessage"
+		class="org.hisp.dhis.patient.scheduling.SendScheduledMessageTask"
+		parent="abstractScheduledMessageTask">
+		<property name="sendingMessage" value="false" />
+	</bean>
+
+	<bean id="org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager"
+		class="org.hisp.dhis.patient.scheduling.DefaultCaseAggregateConditionSchedulingManager"
+		init-method="scheduleTasks">
+		<property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
+		<property name="scheduler" ref="scheduler" />
+		<property name="tasks">
+			<map>
+				<entry key="aggregateQueryBuilder" value-ref="aggregateQueryBuilder" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="abstractRunCaseAggregateConditionTask"
+		class="org.hisp.dhis.patient.scheduling.CaseAggregateConditionTask">
+		<constructor-arg ref="org.hisp.dhis.caseaggregation.CaseAggregationConditionService" />
+		<constructor-arg ref="org.hisp.dhis.datavalue.DataValueService" />
+		<constructor-arg ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+		<constructor-arg ref="jdbcTemplate" />
+		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementService" />
+		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
+	</bean>
+
+	<bean id="aggregateQueryBuilder" class="org.hisp.dhis.patient.scheduling.CaseAggregateConditionTask"
+		parent="abstractRunCaseAggregateConditionTask">
+	</bean>
+
+	<!-- PatientRegistrationForm -->
+
+	<bean id="org.hisp.dhis.patient.PatientRegistrationFormService"
+		class="org.hisp.dhis.patient.DefaultPatientRegistrationFormService">
+		<property name="formStore"
+			ref="org.hisp.dhis.patient.PatientRegistrationFormStore" />
+		<property name="identifierTypeService"
+			ref="org.hisp.dhis.patient.PatientIdentifierTypeService" />
+		<property name="identifierService"
+			ref="org.hisp.dhis.patient.PatientIdentifierService" />
+		<property name="attributeService"
+			ref="org.hisp.dhis.patient.PatientAttributeService" />
+		<property name="attributeValueService"
+			ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueService" />
+	</bean>
+
+	<bean id="org.hisp.dhis.patient.PatientRegistrationFormStore" class="org.hisp.dhis.patient.hibernate.HibernatePatientRegistrationFormStore">
+		<property name="clazz" value="org.hisp.dhis.patient.PatientRegistrationForm" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
 	<!-- Startup -->
 
 	<bean id="org.hisp.dhis.patient.startup.TableAlteror" class="org.hisp.dhis.patient.startup.TableAlteror">
@@ -415,10 +550,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 						local="org.hisp.dhis.patientattributevalue.PatientAttributeValueDeletionHandler" />
 					<ref local="org.hisp.dhis.patient.PatientIdentifierDeletionHandler" />
 					<ref local="org.hisp.dhis.relationship.RelationshipDeletionHandler" />
+					<ref local="org.hisp.dhis.patient.PatientAuditDeletionHandler" />
 					<ref
 						local="org.hisp.dhis.patientdatavalue.PatientDataValueDeletionHandler" />
-
+					
 					<ref local="org.hisp.dhis.program.ProgramDeletionHandler" />
+					<ref local="org.hisp.dhis.program.ProgramStageSectionDeletionHandler" />
 					<ref local="org.hisp.dhis.program.ProgramInstanceDeletionHandler" />
 					<ref local="org.hisp.dhis.program.ProgramStageInstanceDeletionHandler" />
 					<ref local="org.hisp.dhis.program.ProgramStageDataElementDeletionHandler" />
@@ -459,9 +596,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			<aop:before
 				pointcut="execution( * org.hisp.dhis.relationship.RelationshipTypeService.delete*(..) )"
 				method="intercept" />
+			<aop:before
+				pointcut="execution( * org.hisp.dhis.patient.PatientAuditService.delete*(..) )"
+				method="intercept" />
 
 			<aop:before
 				pointcut="execution( * org.hisp.dhis.program.ProgramService.delete*(..) )"
+				method="intercept" />
+			<aop:before
+				pointcut="execution( * org.hisp.dhis.program.ProgramStageSectionService.delete*(..) )"
 				method="intercept" />
 			<aop:before
 				pointcut="execution( * org.hisp.dhis.program.ProgramInstanceService.delete*(..) )"

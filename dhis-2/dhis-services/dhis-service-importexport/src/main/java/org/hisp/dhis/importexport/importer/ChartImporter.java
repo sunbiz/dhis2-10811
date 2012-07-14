@@ -59,7 +59,7 @@ public class ChartImporter
     @Override
     protected void importUnique( Chart object )
     {
-        chartService.saveChart( object );
+        chartService.addChart( object );
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ChartImporter
         match.getRelatives().setQuartersLastYear( object.getRelatives().isQuartersLastYear() );
         match.getRelatives().setLastYear( object.getRelatives().isLastYear() );
         
-        chartService.saveChart( match );
+        chartService.addChart( match );
     }
 
     @Override

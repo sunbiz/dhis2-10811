@@ -33,7 +33,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<bean id="org.hisp.dhis.reportsheet.importitem.ImportReportStore"
 		class="org.hisp.dhis.reportsheet.importitem.hibernate.HibernateImportReportStore">
 		<property name="sessionFactory" ref="sessionFactory"/>
-		<property name="periodStore" ref="org.hisp.dhis.period.PeriodStore" />
+		<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
 	</bean>
 	
 	<bean id="org.hisp.dhis.reportsheet.importitem.ImportReportService"

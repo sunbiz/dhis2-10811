@@ -77,7 +77,6 @@ public class IndicatorBatchHandler
     protected void setUniqueColumns()
     {
         statementBuilder.setUniqueColumn( "name" );
-        statementBuilder.setUniqueColumn( "alternativename" );
         statementBuilder.setUniqueColumn( "shortname" );
         statementBuilder.setUniqueColumn( "code" );
     }
@@ -85,7 +84,6 @@ public class IndicatorBatchHandler
     protected void setUniqueValues( Indicator indicator )
     {        
         statementBuilder.setUniqueValue( indicator.getName() );
-        statementBuilder.setUniqueValue( indicator.getAlternativeName() );
         statementBuilder.setUniqueValue( indicator.getShortName() );
         statementBuilder.setUniqueValue( indicator.getCode() );
     }
@@ -94,7 +92,6 @@ public class IndicatorBatchHandler
     {
         statementBuilder.setColumn( "uid" );
         statementBuilder.setColumn( "name" );
-        statementBuilder.setColumn( "alternativename" );
         statementBuilder.setColumn( "shortname" );
         statementBuilder.setColumn( "code" );
         statementBuilder.setColumn( "description" );
@@ -112,7 +109,6 @@ public class IndicatorBatchHandler
     {
         statementBuilder.setValue( indicator.getUid() );
         statementBuilder.setValue( indicator.getName() );
-        statementBuilder.setValue( indicator.getAlternativeName() );
         statementBuilder.setValue( indicator.getShortName() );
         statementBuilder.setValue( indicator.getCode() );
         statementBuilder.setValue( indicator.getDescription() );

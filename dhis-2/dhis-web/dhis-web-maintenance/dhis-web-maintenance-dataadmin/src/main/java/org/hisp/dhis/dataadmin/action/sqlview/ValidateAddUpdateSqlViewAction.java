@@ -125,21 +125,21 @@ public class ValidateAddUpdateSqlViewAction
     {
         message = "";
 
-        if ( (name == null) || (name.trim() == "") )
+        if ( name == null || name.trim().isEmpty() )
         {
             message = i18n.getString( "name_is_null" );
 
             return INPUT;
         }
 
-        if ( mode.equals( ADD ) && (sqlViewService.getSqlView( name ) != null) )
+        if ( mode.equals( ADD ) && sqlViewService.getSqlView( name ) != null )
         {
             message = i18n.getString( "name_in_used" );
 
             return INPUT;
         }
 
-        if ( (sqlquery == null) || (sqlquery.trim() == "") )
+        if ( sqlquery == null || sqlquery.trim().isEmpty() )
         {
             message = i18n.getString( "sqlquery_is_empty" );
 

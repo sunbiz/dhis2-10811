@@ -7,10 +7,9 @@ import java.util.List;
  */
 public class ObjectHandlerUtils
 {
-    @SuppressWarnings( "unchecked" )
-    public static <T> void preObjectHandlers( T object, List<ObjectHandler> objectHandlers )
+    public static <T> void preObjectHandlers( T object, List<ObjectHandler<T>> objectHandlers )
     {
-        for ( ObjectHandler objectHandler : objectHandlers )
+        for ( ObjectHandler<T> objectHandler : objectHandlers )
         {
             if ( objectHandler.canHandle( object.getClass() ) )
             {
@@ -19,10 +18,9 @@ public class ObjectHandlerUtils
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    public static <T> void postObjectHandlers( T object, List<ObjectHandler> objectHandlers )
+    public static <T> void postObjectHandlers( T object, List<ObjectHandler<T>> objectHandlers )
     {
-        for ( ObjectHandler objectHandler : objectHandlers )
+        for ( ObjectHandler<T> objectHandler : objectHandlers )
         {
             if ( objectHandler.canHandle( object.getClass() ) )
             {
@@ -31,12 +29,11 @@ public class ObjectHandlerUtils
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    public static <T> void preObjectsHandlers( List<T> objects, List<ObjectHandler> objectHandlers )
+    public static <T> void preObjectsHandlers( List<T> objects, List<ObjectHandler<T>> objectHandlers )
     {
         if ( objects.size() > 0 )
         {
-            for ( ObjectHandler objectHandler : objectHandlers )
+            for ( ObjectHandler<T> objectHandler : objectHandlers )
             {
                 if ( objectHandler.canHandle( objects.get( 0 ).getClass() ) )
                 {
@@ -46,12 +43,11 @@ public class ObjectHandlerUtils
         }
     }
 
-    @SuppressWarnings( "unchecked" )
-    public static <T> void postObjectsHandlers( List<T> objects, List<ObjectHandler> objectHandlers )
+    public static <T> void postObjectsHandlers( List<T> objects, List<ObjectHandler<T>> objectHandlers )
     {
         if ( objects.size() > 0 )
         {
-            for ( ObjectHandler objectHandler : objectHandlers )
+            for ( ObjectHandler<T> objectHandler : objectHandlers )
             {
                 if ( objectHandler.canHandle( objects.get( 0 ).getClass() ) )
                 {

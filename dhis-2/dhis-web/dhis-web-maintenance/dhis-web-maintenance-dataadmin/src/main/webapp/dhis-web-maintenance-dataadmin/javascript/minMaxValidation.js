@@ -1,51 +1,54 @@
-function generateMinMaxValue(){
-	
+
+function modifyMinMaxValues( remove )
+{
 	var datasetIds = "";
 	var datasetField = byId( 'dataSetIds' ); 
-	for (var i = 0; i < datasetField.options.length; i++)
+	
+	if ( $( "#dataSetIds :selected" ).length == 0 )
 	{
-		if (datasetField.options[ i ].selected)
+		setHeaderDelayMessage( i18n_not_choose_dataset );
+		return;
+	}
+	
+	for ( var i = 0; i < datasetField.options.length; i++ )
+	{
+		if ( datasetField.options[ i ].selected )
 		{
-		  datasetIds+= "dataSets=" + datasetField.options[ i ].value + "&";
+			datasetIds+= "dataSets=" + datasetField.options[ i ].value + "&";
 		}
 	}
+	
+	if ( remove )
+	{
+		setHeaderWaitMessage( i18n_removing_min_max_values );
+	}
+	else
+	{
+		setHeaderWaitMessage( i18n_generating_min_max_values );
+	}
+	
+	disableButtons();
 	
 	$.ajax({
 		   type: "POST",
 		   url: "generateMinMaxValue.action",
 		   data: datasetIds,
 		   dataType: "xml",
-		   success: function(xmlObject){
+		   success: function(xmlObject)
+		   {
+		   		enableButtons();
 				xmlObject = xmlObject.getElementsByTagName( 'message' )[0];
-				showSuccessMessage (xmlObject.firstChild.nodeValue);
+				setHeaderDelayMessage(xmlObject.firstChild.nodeValue);
 		   }
 		});
 }
 
-//-----------------------------------------------------------------------------------
-// Organisation Tree
-//-----------------------------------------------------------------------------------
+function disableButtons()
+{
+	$( ":button" ).attr( "disabled", "disabled" );
+}
 
-function removeMinMaxValue(){
-
-	var datasetIds = "";
-	var datasetField = byId( 'dataSetIds' ); 
-	for (var i = 0; i < datasetField.options.length; i++)
-	{
-		if (datasetField.options[ i ].selected)
-		{
-		  datasetIds+= "dataSets=" + datasetField.options[ i ].value + "&";
-		}
-	}
-	
-	$.ajax({
-		   type: "POST",
-		   url: "removeMinMaxValue.action",
-		   data: datasetIds,
-		   dataType: "xml",
-		   success: function(xmlObject){
-				xmlObject = xmlObject.getElementsByTagName( 'message' )[0];
-				showSuccessMessage (xmlObject.firstChild.nodeValue);
-		   }
-		});
+function enableButtons()
+{
+	$( ":button" ).removeAttr( "disabled" );
 }

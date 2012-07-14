@@ -1,8 +1,6 @@
 package org.hisp.dhis.mapping.action;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
@@ -58,16 +56,12 @@ public class AssignDataElementsToMapLegendSetAction
     {
         MapLegendSet mapLegendSet = mappingService.getMapLegendSet( id );
         
-        Set<DataElement> dataElementSet = new HashSet<DataElement>();
-
         for ( String dataElement : dataElements )
         {
-            dataElementSet.add( dataElementService.getDataElement( Integer.parseInt( dataElement ) ) );
+            DataElement element = dataElementService.getDataElement( Integer.parseInt( dataElement ) );
+            element.setLegendSet( mapLegendSet );
+            dataElementService.updateDataElement( element );
         }
-        
-        mapLegendSet.setDataElements( dataElementSet );
-        
-        mappingService.updateMapLegendSet( mapLegendSet );
         
         return SUCCESS;
     }

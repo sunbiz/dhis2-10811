@@ -156,6 +156,7 @@ public class MarkComplete
             registration.setStoredBy( currentUserService.getCurrentUsername() );
 
             registrationService.saveCompleteDataSetRegistration( registration );
+            
         }
 
         return SUCCESS;

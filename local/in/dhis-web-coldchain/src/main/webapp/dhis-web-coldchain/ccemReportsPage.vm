@@ -1,25 +1,26 @@
 <script src="javascript/highcharts.js"></script>
 <script src="javascript/exporting.js"></script>
-
+<!--
 <script>
     leftBar.hideAnimated();
 </script>
-
+-->
 <h3>$i18n.getString( "ccem_reports_page" )</h3>
 
-<form id="ccemReportForm" name="ccemReportForm" action="#" method="post" >
+<form id="ccemReportForm" name="ccemReportForm" action="#" method="post">
 	#foreach( $ccemReport in $reportList )
 		<input type="hidden" id="$ccemReport.reportId" value="$ccemReport.periodRequire" />
     #end
 	<table boarder="1">
 		<tr>
-			<td>
+			<td>&nbsp;</td>
+			<!-- <td>
 				<table style="border-collapse: collapse;border-style: solid;border-width: 1px;">
 					<tr style="background-color: #C0C0C0;"><td><strong>$i18n.getString( "orgunit_tree" )</strong></td></tr>
-					<tr><td><div style="height:450px;width:200px;overflow:auto;">#parse( "/dhis-web-commons/ouwt/orgunittree.vm" )</div></td></tr>
+					<tr><td><div style="height:450px;width:200px;overflow:auto;">#parse( "/dhis-web-commons/ouwt/orgunittreesearch.vm" )</div></td></tr>
 				</table>
-			</td>			
-			<td>				
+			</td>-->			
+			<td>			
 				<table style="border-collapse: collapse;border-style: solid;border-width: 1px;">
                     <tr style="background-color: #C0C0C0;"><td><strong>$i18n.getString( "ccem_reports_list" )</strong></td></tr>
 					<tr>
@@ -37,10 +38,10 @@
                     <tr style="background-color: #C0C0C0;"><td><strong>$i18n.getString( "ccem_reports_period_list" ):</strong></td></tr>
 					<tr>			
                         <td>
-							<input type="radio" id="periodRadio" name="periodRadio" value="LAST_3_MONTHS" disabled />$i18n.getString( "last_3months" )
-							<input type="radio" id="periodRadio" name="periodRadio" value="CURRENT_YEAR" disabled />$i18n.getString( "current_year" )<br/>
-							<input type="radio" id="periodRadio" name="periodRadio" value="LAST_6_MONTHS" disabled />$i18n.getString( "last_6months" )							
-                            <input type="radio" id="periodRadio" name="periodRadio" value="LAST_YEAR" disabled />$i18n.getString( "last_year" )
+							<strong><input type="radio" id="periodRadio" name="periodRadio" value="LAST_3_MONTHS" disabled /></strong>$i18n.getString( "last_3months" )
+							<strong><input type="radio" id="periodRadio" name="periodRadio" value="CURRENT_YEAR" disabled /></strong>$i18n.getString( "current_year" )<br/>
+							<strong><input type="radio" id="periodRadio" name="periodRadio" value="LAST_6_MONTHS" disabled /></strong>$i18n.getString( "last_6months" )							
+                            <strong><input type="radio" id="periodRadio" name="periodRadio" value="LAST_YEAR" disabled /></strong>$i18n.getString( "last_year" )
                         </td>
                     </tr>
                     <tr>
@@ -76,13 +77,17 @@
                 </table>
 			</td>
 			<td>
-				<table style="border-collapse: collapse;border-style: solid;border-width: 1px;">
+				<!--<table style="border-collapse: collapse;border-style: solid;border-width: 1px;">
 					<tr><td><div>#parse( "/dhis-web-commons/loader/loader.vm" )</div>
 						<div id="resultContent"> </div></td>
 					</tr>
-				</table>
+				</table>-->
+				<table>
+					<tr><td><div>#parse( "/dhis-web-commons/loader/loader.vm" )</div>
+						<div id="resultContent"> </div></td>
+					</tr>
+				</table>			
 			</td>
 		</tr>
 	</table>	
 </form>
-

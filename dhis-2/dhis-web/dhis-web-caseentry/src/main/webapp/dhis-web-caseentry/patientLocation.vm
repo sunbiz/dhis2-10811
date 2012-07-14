@@ -1,4 +1,13 @@
-<h4>$i18n.getString( "migration_patient" )</h4>
+<script>
+	hideById('mainLinkLbl');
+	jQuery('[name=mainPagelink]').html(i18n_main_form_link);
+</script>
+
+<h3>
+	<a name="mainPagelink" href="javascript:onClickBackBtn();">$i18n.getString( 'patient_management' )</a>
+	&#8226; <a href="javascript:showPatientDashboardForm($patientId);">$i18n.getString( 'patient_dashboard' )</a>
+	&#8226; $i18n.getString( "change_location" )
+</h3>
 
 <form method='post'>
 	<table>
@@ -10,7 +19,7 @@
 		<tr>
 			<td>
 				<input type="button" class='button' value="$i18n.getString('save')" onclick='registerPatientLocation( "$patientId" )'>
-				<input type="button" class='button' value="$i18n.getString( 'back_to_registration' )" onclick="loadPatientList();" >
+				<input type='button' class="button" value="$i18n.getString( 'cancel' )" onclick="backPreviousPage( $patientId )" />
 			</td>
 			<td></td>
 			<td></td>

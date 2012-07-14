@@ -27,18 +27,20 @@ package org.hisp.dhis.dataentryform;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
+import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
@@ -63,9 +65,9 @@ public class DataEntryFormServiceTest
     
     private I18n i18n;
     
-    private int dataElementId;
+    private String dataElementUid;
     
-    private int categoryOptionComboId;
+    private String categoryOptionComboUid;
 
     // -------------------------------------------------------------------------
     // Fixture
@@ -87,11 +89,12 @@ public class DataEntryFormServiceTest
         
         dataElement = createDataElement( 'A' );
         
-        dataElementId = dataElementService.addDataElement( dataElement );
+        dataElementService.addDataElement( dataElement );
         
         categoryOptionCombo = categoryService.getDefaultDataElementCategoryOptionCombo();
         
-        categoryOptionComboId = categoryOptionCombo.getId();
+        dataElementUid = dataElement.getUid();
+        categoryOptionComboUid = categoryOptionCombo.getUid();
         
         i18n = new MockI18n();
     }
@@ -243,12 +246,28 @@ public class DataEntryFormServiceTest
 
         assertEquals( dataSets.size(), 2 );
     }
+
+    @Test
+    public void testGetOperands()
+    {
+        String html = "<table><tr><td><input id=\"abc-def-val\" style=\"width:4em;text-align:center\" /></td></tr></table>";
+        DataEntryForm dataEntryForm = new DataEntryForm( "FormA", html );
+        DataSet dataSet = createDataSet( 'A', new MonthlyPeriodType() );
+        dataSet.setDataEntryForm( dataEntryForm );
+        
+        Set<DataElementOperand> operands = dataEntryFormService.getOperandsInDataEntryForm( dataSet );
+        
+        DataElementOperand operand = new DataElementOperand( "abc", "def" );
+        
+        assertEquals( 1, operands.size() );
+        assertTrue( operands.contains( operand ) );
+    }
     
     @Test
     public void testPrepareForSave()
     {
-        String html = "<table><tr><td><input id=\"value[1434].value:value[11].value\" style=\"width:4em;text-align:center\" title=\"[ 1434 - Expected Births - 11 - (default) - int ]\" value=\"[ Expected Births - (default) ]\" /></td></tr></table>";
-        String expected = "<table><tr><td><input id=\"value[1434].value:value[11].value\" style=\"width:4em;text-align:center\" title=\"\" value=\"\" /></td></tr></table>";
+        String html = "<table><tr><td><input id=\"1434-11-val\" style=\"width:4em;text-align:center\" title=\"[ 1434 - Expected Births - 11 - (default) - int ]\" value=\"[ Expected Births - (default) ]\" /></td></tr></table>";
+        String expected = "<table><tr><td><input id=\"1434-11-val\" style=\"width:4em;text-align:center\" title=\"\" value=\"\" /></td></tr></table>";
         String actual = dataEntryFormService.prepareDataEntryFormForSave( html );
         
         assertEquals( expected, actual );
@@ -256,13 +275,13 @@ public class DataEntryFormServiceTest
     
     @Test
     public void testPrepareForEdit()
-    {
-        String html = "<table><tr><td><input id=\"" + dataElementId + "-" + categoryOptionComboId + "-val\" style=\"width:4em;text-align:center\" title=\"\" value=\"\" /></td></tr></table>";
-        String title = "" + dataElementId + " - " + dataElement.getName() + " - " + categoryOptionComboId + " - " + categoryOptionCombo.getName() + " - " + dataElement.getType();
+    {        
+        String html = "<table><tr><td><input id=\"" + dataElementUid + "-" + categoryOptionComboUid + "-val\" style=\"width:4em;text-align:center\" title=\"\" value=\"\" /></td></tr></table>";
+        String title = "" + dataElementUid + " - " + dataElement.getName() + " - " + categoryOptionComboUid + " - " + categoryOptionCombo.getName() + " - " + dataElement.getType();
         String value = "[ " + dataElement.getName() + " " + categoryOptionCombo.getName() + " ]";
-        String expected = "<table><tr><td><input id=\"" + dataElementId + "-" + categoryOptionComboId + "-val\" style=\"width:4em;text-align:center\" title=\"" + title + "\" value=\"" + value + "\" /></td></tr></table>";
+        String expected = "<table><tr><td><input id=\"" + dataElementUid + "-" + categoryOptionComboUid + "-val\" style=\"width:4em;text-align:center\" title=\"" + title + "\" value=\"" + value + "\" /></td></tr></table>";
         String actual = dataEntryFormService.prepareDataEntryFormForEdit( html, i18n );
-        
+
         assertEquals( expected.length(), actual.length() );
     }
 }

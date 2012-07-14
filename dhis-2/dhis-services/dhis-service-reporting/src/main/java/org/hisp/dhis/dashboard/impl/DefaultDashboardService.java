@@ -27,16 +27,25 @@ package org.hisp.dhis.dashboard.impl;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.hisp.dhis.chart.ChartService;
+import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dashboard.DashboardContent;
 import org.hisp.dhis.dashboard.DashboardContentStore;
 import org.hisp.dhis.dashboard.DashboardService;
 import org.hisp.dhis.document.Document;
-import org.hisp.dhis.mapping.MapView;
+import org.hisp.dhis.document.DocumentService;
+import org.hisp.dhis.mapping.Map;
+import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.report.Report;
+import org.hisp.dhis.report.ReportService;
 import org.hisp.dhis.reporttable.ReportTable;
+import org.hisp.dhis.reporttable.ReportTableService;
 import org.hisp.dhis.user.User;
+import org.hisp.dhis.user.UserService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -48,6 +57,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultDashboardService
     implements DashboardService
 {
+    private static final int MAX_PER_OBJECT = 5;
+    private static final int MAX_OBJECTS = 15;
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -58,11 +70,87 @@ public class DefaultDashboardService
     {
         this.dashboardContentStore = dashboardContentStore;
     }
+    
+    private UserService userService;
+    
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
+    }
+
+    private ChartService chartService;
+
+    public void setChartService( ChartService chartService )
+    {
+        this.chartService = chartService;
+    }
+
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
+    }
+
+    private ReportService reportService;
+
+    public void setReportService( ReportService reportService )
+    {
+        this.reportService = reportService;
+    }
+    
+    private ReportTableService reportTableService;
+
+    public void setReportTableService( ReportTableService reportTableService )
+    {
+        this.reportTableService = reportTableService;
+    }
+    
+    private DocumentService documentService;
+
+    public void setDocumentService( DocumentService documentService )
+    {
+        this.documentService = documentService;
+    }
 
     // -------------------------------------------------------------------------
     // DashboardService implementation
     // -------------------------------------------------------------------------
 
+    public List<IdentifiableObject> search( String query )
+    {
+        List<IdentifiableObject> objects = new ArrayList<IdentifiableObject>();
+        
+        int remaining = 0;
+        
+        objects.addAll( userService.getAllUsersBetweenByName( query, 0, MAX_PER_OBJECT ) );
+        objects.addAll( chartService.getChartsBetweenByName( query, 0, MAX_PER_OBJECT ) );
+        objects.addAll( mappingService.getAccessibleMapsBetweenLikeName( query, 0, MAX_PER_OBJECT ) );        
+
+        remaining = MAX_OBJECTS - objects.size();
+        
+        if ( remaining > 0 )
+        {
+            objects.addAll( reportService.getReportsBetweenByName( query, 0, MAX_PER_OBJECT ) );
+        }
+        
+        remaining = MAX_OBJECTS - objects.size();
+        
+        if ( remaining > 0 )
+        {
+            objects.addAll( reportTableService.getReportTablesBetweenByName( query, 0, Math.min( remaining, MAX_PER_OBJECT ) ) );
+        }
+
+        remaining = MAX_OBJECTS - objects.size();
+        
+        if ( remaining > 0 )
+        {
+            objects.addAll( documentService.getDocumentsBetweenByName( query, 0, Math.min( remaining, MAX_PER_OBJECT ) ) );
+        }
+        
+        return objects;
+    }
+    
     public void saveDashboardContent( DashboardContent dashboardContent )
     {
         dashboardContentStore.save( dashboardContent );
@@ -100,9 +188,9 @@ public class DefaultDashboardService
         return dashboardContentStore.getByDocument( document );
     }
     
-    public Collection<DashboardContent> getByMapView( MapView mapView )
+    public Collection<DashboardContent> getByMap( Map map )
     {
-        return dashboardContentStore.getByMapView( mapView );
+        return dashboardContentStore.getByMap( map );
     }
     
     public Collection<DashboardContent> getByReport( Report report )

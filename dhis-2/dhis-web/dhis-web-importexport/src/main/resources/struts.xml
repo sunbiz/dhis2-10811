@@ -21,16 +21,19 @@
       <param name="page">/dhis-web-importexport/importDataValue.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/importDataValue.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="importDataValue" class="org.hisp.dhis.importexport.action.datavalue.ImportDataValueAction">
       <result name="success" type="redirect">displayImportDataValueForm.action?running=true&amp;importFormat=${importFormat}</result>
       <interceptor-ref name="fileUploadStack" />
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="getDataValueImportSummary" class="org.hisp.dhis.importexport.action.GetImportSummaryAction">
       <result name="success" type="velocity">/dhis-web-importexport/importSummary.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <!-- Data value export -->
@@ -40,10 +43,12 @@
       <param name="page">/dhis-web-importexport/exportDataValueForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">../dhis-web-commons/oust/oust.js,javascript/export.js</param>
+      <param name="requiredAuthorities">F_EXPORT_DATA</param>
     </action>
 
     <action name="exportDataValue" class="org.hisp.dhis.importexport.action.datavalue.ExportDataValueAction">
       <result name="success" type="outputStreamResult" />
+      <param name="requiredAuthorities">F_EXPORT_DATA</param>
     </action>
 
     <!-- Menu -->
@@ -52,12 +57,14 @@
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-importexport/externalImportMenu.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="displayExternalExportMenu" class="org.hisp.dhis.importexport.action.NoAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-importexport/externalExportMenu.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
+      <param name="requiredAuthorities">F_EXPORT_DATA</param>
     </action>
 
     <!-- Import -->
@@ -73,6 +80,7 @@
       <param name="page">/dhis-web-importexport/importForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js,javascript/process.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="import" class="org.hisp.dhis.importexport.action.imp.ImportAction">
@@ -82,17 +90,20 @@
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js,javascript/process.js</param>
       <interceptor-ref name="fileUploadStack" />
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="getImportStatus" class="org.hisp.dhis.importexport.action.imp.GetImportStatusAction">
       <result name="success" type="velocity-xml">/dhis-web-importexport/responseImportStatus.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="getImportAnalysis" class="org.hisp.dhis.importexport.action.imp.GetImportAnalysisAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-importexport/importAnalysisForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <!-- Object Ajax -->
@@ -101,12 +112,14 @@
       <result name="success" type="velocity-xml">/dhis-web-importexport/responseSuccess.vm</result>
       <result name="error" type="velocity-xml">/dhis-web-importexport/responseError.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="discardObjectsOfTypeAjax" class="org.hisp.dhis.importexport.action.object.DiscardObjectsOfTypeAction">
       <result name="success" type="velocity-xml">/dhis-web-importexport/responseSuccess.vm</result>
       <result name="error" type="velocity-xml">/dhis-web-importexport/responseError.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <!-- Preview -->
@@ -116,6 +129,7 @@
       <param name="page">/dhis-web-importexport/previewForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="displayMatchForm" class="org.hisp.dhis.importexport.action.imp.GetMatchOptionsAction">
@@ -123,6 +137,7 @@
       <param name="page">/dhis-web-importexport/matchToExistingForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="displayCompareForm" class="org.hisp.dhis.importexport.action.imp.GetCompareOptionsAction">
@@ -130,14 +145,17 @@
       <param name="page">/dhis-web-importexport/compareToExistingForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="importAllObjects" class="org.hisp.dhis.importexport.action.object.ImportAllObjectsAction">
       <result name="success" type="redirect">displayImportForm.action</result>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="discardAllObjects" class="org.hisp.dhis.importexport.action.object.DiscardAllObjectsAction">
       <result name="success" type="redirect">displayImportForm.action</result>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="matchObject" class="org.hisp.dhis.importexport.action.object.MatchObjectAction">
@@ -145,6 +163,7 @@
       <param name="page">/dhis-web-importexport/previewForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="discardObject" class="org.hisp.dhis.importexport.action.object.DiscardObjectAction">
@@ -152,6 +171,7 @@
       <param name="page">/dhis-web-importexport/previewForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/import.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <!-- Export -->
@@ -161,6 +181,7 @@
       <param name="page">/dhis-web-importexport/exportMetaDataForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/export.js</param>
+      <param name="requiredAuthorities">F_EXPORT_DATA</param>
     </action>
 
     <action name="displayDetailedMetaDataExportForm"
@@ -169,6 +190,7 @@
       <param name="page">/dhis-web-importexport/exportDetailedMetaDataForm.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/detailedExport.js</param>
+      <param name="requiredAuthorities">F_EXPORT_DATA</param>
     </action>
 
     <action name="exportMetaData" class="org.hisp.dhis.importexport.action.exp.MetaDataExportAction">
@@ -177,6 +199,7 @@
         <param name="inputName">inputStream</param>
         <param name="contentDisposition">filename="${fileName}"</param>
         <param name="bufferSize">10240</param>
+        <param name="requiredAuthorities">F_EXPORT_DATA</param>
       </result>
     </action>
 
@@ -186,6 +209,7 @@
         <param name="inputName">inputStream</param>
         <param name="contentDisposition">filename="${fileName}"</param>
         <param name="bufferSize">10240</param>
+        <param name="requiredAuthorities">F_EXPORT_DATA</param>
       </result>
     </action>
 
@@ -204,6 +228,7 @@
       <result name="success" type="velocity-xml">/dhis-web-importexport/responseSuccess.vm</result>
       <result name="error" type="velocity-xml">/dhis-web-importexport/responseError.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_EXPORT_DATA</param>
     </action>
 
     <!-- Dhis 1.4 Configuration -->
@@ -214,6 +239,7 @@
       <param name="page">/dhis-web-importexport/configDhis14Form.vm</param>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="javascripts">javascript/config.js</param>
+      <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
 
     <action name="configDhis14" class="org.hisp.dhis.importexport.action.dhis14.SetDhis14ConfigurationAction">
@@ -224,27 +250,6 @@
         class="org.hisp.dhis.importexport.action.dhis14.ValidateDhis14ConfigurationAction">
       <result name="success" type="velocity-xml">/dhis-web-importexport/responseSuccess.vm</result>
       <result name="input" type="velocity-xml">/dhis-web-importexport/responseInput.vm</result>
-    </action>
-
-    <action name="displayRoutes" class="org.hisp.dhis.importexport.action.integration.DisplayRoutesAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-importexport/displayRoutes.vm</param>
-      <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
-      <param name="javascripts" />
-    </action>
-
-    <action name="showAddRouteForm" class="org.hisp.dhis.importexport.action.integration.ShowAddRouteFormAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-importexport/showAddRouteForm.vm</param>
-      <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
-      <param name="javascripts" />
-    </action>
-
-    <action name="addRoute" class="org.hisp.dhis.importexport.action.integration.AddRouteAction">
-      <result name="success" type="redirect">displayRoutes.action</result>
-      <result name="error" type="redirect">showAddRouteForm.action</result>
-      <interceptor-ref name="fileUploadStack" />
-      <param name="javascripts" />
     </action>
 
     <!-- DXF2 MetaData import/export -->
@@ -273,6 +278,33 @@
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
+    <!-- Camel configuration -->
+
+    <action name="showAddRouteForm" class="org.hisp.dhis.importexport.action.integration.ShowAddRouteFormAction">
+      <result name="success" type="velocity">/main.vm</result>
+      <param name="page">/dhis-web-importexport/showAddRouteForm.vm</param>
+      <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
+      <param name="requiredAuthorities">F_MANAGE_INTEGRATION_ROUTES</param>
+    </action>
+
+    <action name="addRoute" class="org.hisp.dhis.importexport.action.integration.AddRouteAction">
+      <result name="success" type="redirect">displayRoutes.action</result>
+      <result name="error" type="redirect">showAddRouteForm.action</result>
+      <interceptor-ref name="fileUploadStack" />
+      <param name="requiredAuthorities">F_MANAGE_INTEGRATION_ROUTES</param>
+    </action>
+
+    <action name="displayRoutes" class="org.hisp.dhis.importexport.action.integration.DisplayRoutesAction">
+      <result name="success" type="velocity">/main.vm</result>
+      <param name="page">/dhis-web-importexport/displayRoutes.vm</param>
+      <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
+      <param name="requiredAuthorities">F_MANAGE_INTEGRATION_ROUTES</param>
+    </action>
+
+    <action name="routeOperation" class="org.hisp.dhis.importexport.action.integration.RouteOperationAction">
+      <result name="success" type="redirect">displayRoutes.action</result>
+      <param name="requiredAuthorities">F_MANAGE_INTEGRATION_ROUTES</param>
+    </action>
   </package>
 
 </struts>

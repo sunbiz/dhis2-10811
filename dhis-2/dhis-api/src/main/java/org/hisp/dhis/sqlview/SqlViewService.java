@@ -28,6 +28,7 @@ package org.hisp.dhis.sqlview;
  */
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.hisp.dhis.common.Grid;
 
@@ -65,8 +66,6 @@ public interface SqlViewService
 
     String makeUpForQueryStatement( String query );
 
-    String setUpViewTableName( String input );
-
     // -------------------------------------------------------------------------
     // SqlView Expanded
     // -------------------------------------------------------------------------
@@ -83,7 +82,7 @@ public interface SqlViewService
 
     void dropAllSqlViewTables();
 
-    Grid getDataSqlViewGrid( String viewTableName );
-
+    Grid getSqlViewGrid( SqlView sqlView, Map<String, String> criteria );
+    
     String testSqlGrammar( String sql );
 }

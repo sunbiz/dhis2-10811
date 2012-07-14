@@ -27,12 +27,12 @@ package org.hisp.dhis.mapping;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 import org.hisp.dhis.aggregation.AggregatedMapValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.user.User;
-
-import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author Jan Henrik Overland
@@ -44,14 +44,8 @@ public interface MappingService
 
     final String GEOJSON_DIR = "geojson";
 
-    final String MAP_VALUE_TYPE_INDICATOR = "indicator";
-    final String MAP_VALUE_TYPE_DATAELEMENT = "dataelement";
-
     final String MAP_LEGEND_SYMBOLIZER_COLOR = "color";
     final String MAP_LEGEND_SYMBOLIZER_IMAGE = "image";
-
-    final String MAPLEGENDSET_TYPE_AUTOMATIC = "automatic";
-    final String MAPLEGENDSET_TYPE_PREDEFINED = "predefined";
 
     final String KEY_MAP_DATE_TYPE = "dateType";
 
@@ -63,7 +57,7 @@ public interface MappingService
 
     final String MAP_LAYER_TYPE_BASELAYER = "baselayer";
     final String MAP_LAYER_TYPE_OVERLAY = "overlay";
-
+    
     // -------------------------------------------------------------------------
     // IndicatorMapValue
     // -------------------------------------------------------------------------
@@ -90,6 +84,8 @@ public interface MappingService
 
     void addOrUpdateMapLegend( String name, Double startValue, Double endValue, String color, String image );
 
+    int addMapLegend( MapLegend mapLegend );
+    
     void deleteMapLegend( MapLegend legend );
 
     MapLegend getMapLegend( int id );
@@ -118,27 +114,31 @@ public interface MappingService
 
     MapLegendSet getMapLegendSetByName( String name );
 
-    Collection<MapLegendSet> getMapLegendSetsByType( String type );
-
-    MapLegendSet getMapLegendSetByIndicator( int indicatorId );
-
-    MapLegendSet getMapLegendSetByDataElement( int dataElementId );
-
     Collection<MapLegendSet> getAllMapLegendSets();
 
-    boolean indicatorHasMapLegendSet( int indicatorId );
+    // -------------------------------------------------------------------------
+    // Map
+    // -------------------------------------------------------------------------
 
+    int addMap( Map map );
+    
+    void updateMap( Map map );
+    
+    Map getMap( int id );
+    
+    Map getMap( String uid );
+    
+    void deleteMap( Map map );
+    
+    Collection<Map> getSystemAndUserMaps();
+    
+    List<Map> getAccessibleMapsBetweenLikeName( String name, int first, int max );
+    
     // -------------------------------------------------------------------------
     // MapView
     // -------------------------------------------------------------------------
 
     int addMapView( MapView mapView );
-
-    void addMapView( String name, boolean system, String mapValueType, Integer indicatorGroupId, Integer indicatorId,
-                     Integer dataElementGroupId, Integer dataElementId, String periodTypeName, Integer periodId,
-                     Integer parentOrganisationUnitId, Integer organisationUnitLevel, String mapLegendType, Integer method,
-                     Integer classes, String bounds, String colorLow, String colorHigh, Integer mapLegendSetId, Integer radiusLow,
-                     Integer radiusHigh, String longitude, String latitude, int zoom );
 
     void updateMapView( MapView mapView );
 
@@ -154,11 +154,7 @@ public interface MappingService
 
     Collection<MapView> getAllMapViews();
     
-    Collection<MapView> getSystemAndUserMapViews();
-
-    Collection<MapView> getMapViewsByFeatureType( String featureType );
-    
-    Collection<MapView> getMapViewsByUser( User user );
+    Collection<MapView> getMapViewsBetweenByName( String name, int first, int max );
 
     // -------------------------------------------------------------------------
     // MapLayer

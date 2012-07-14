@@ -27,58 +27,27 @@ package org.hisp.dhis.useraudit;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.setting.SystemSettingManager;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_MAX_NUMBER_OF_ATTEMPTS;
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_TIMEFRAME_MINUTES;
 
 /**
  * @author Saptarshi Purkayastha
  * @author Lars Helge Overland
  */
-public class DefaultUserAuditService    
+public class DefaultUserAuditService
     implements UserAuditService
 {
     private static final Log log = LogFactory.getLog( DefaultUserAuditService.class );
-
-    private static final int DEFAULT_MAX_NUMBER_OF_ATTEMPTS = 5;
-    private static final int DEFAULT_TIMEFRAME_MINUTES = 10;
-    
-    // -------------------------------------------------------------------------
-    // Dependencies
-    // -------------------------------------------------------------------------
-
-    private SystemSettingManager systemSettingManager;
-
-    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
-    {
-        this.systemSettingManager = systemSettingManager;
-    }
-
-    private UserAuditStore userAuditStore;
-
-    public void setUserAuditStore( UserAuditStore userAuditStore )
-    {
-        this.userAuditStore = userAuditStore;
-    }
 
     // -------------------------------------------------------------------------
     // UserAuditService implementation
     // -------------------------------------------------------------------------
 
     @Override
-    @Transactional
-    public void registerLoginSuccess( String username )
+    public void registerLoginSuccess( String username, String ip )
     {
-        log.info( "User login success: '" + username + "'" );
-
-        userAuditStore.resetLoginFailures( username, getDate() );
+        log.info( "Login success for user: '" + username + "', ip: '" + ip + "'" );
     }
 
     @Override
@@ -89,52 +58,8 @@ public class DefaultUserAuditService
 
     @Override
     @Transactional
-    public void registerLoginFailure( String username )
+    public void registerLoginFailure( String username, String ip )
     {
-        log.info( "User login failure: '" + username + "'" );
-
-        userAuditStore.saveLoginFailure( new LoginFailure( username, new Date() ) );
-
-        int no = userAuditStore.getLoginFailures( username, getDate() );
-
-        int max = (Integer) systemSettingManager.getSystemSetting( KEY_MAX_NUMBER_OF_ATTEMPTS, DEFAULT_MAX_NUMBER_OF_ATTEMPTS );
-        
-        if ( no >= max )
-        {
-            log.info( "Max number of login attempts exceeded: '" + username + "'" );
-        }
-    }
-
-    @Override
-    @Transactional
-    public int getLoginFailures( String username )
-    {
-        return userAuditStore.getLoginFailures( username, getDate() );
-    }
-
-    @Override
-    public int getMaxAttempts()
-    {
-        return (Integer) systemSettingManager.getSystemSetting( KEY_MAX_NUMBER_OF_ATTEMPTS, DEFAULT_MAX_NUMBER_OF_ATTEMPTS );
-    }
-
-    @Override
-    public int getLockoutTimeframe()
-    {
-        return (Integer) systemSettingManager.getSystemSetting( KEY_TIMEFRAME_MINUTES, DEFAULT_TIMEFRAME_MINUTES );
-    }
-
-    // -------------------------------------------------------------------------
-    // Supportive methods
-    // -------------------------------------------------------------------------
-
-    private Date getDate()
-    {
-        int timeframe = (Integer) systemSettingManager.getSystemSetting( KEY_TIMEFRAME_MINUTES, DEFAULT_TIMEFRAME_MINUTES );
-
-        Calendar cal = Calendar.getInstance();
-        cal.add( Calendar.MINUTE, timeframe * -1 );
-        
-        return cal.getTime();
+        log.info( "Login failure for user: '" + username + "', ip: '" + ip + "'" );
     }
 }

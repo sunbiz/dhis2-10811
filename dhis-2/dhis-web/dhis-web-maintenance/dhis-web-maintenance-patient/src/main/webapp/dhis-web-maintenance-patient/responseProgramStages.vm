@@ -4,7 +4,7 @@
 	#foreach( $programStage in $programStages )							
 		<programstage>							
   			<id>$programStage.id</id>
-  			<name>$encoder.xmlEncode( $programStage.name )</name>
+  			<name>$encoder.xmlEncode( $programStage.displayName )</name>
 		</programstage>		
 	#end
 

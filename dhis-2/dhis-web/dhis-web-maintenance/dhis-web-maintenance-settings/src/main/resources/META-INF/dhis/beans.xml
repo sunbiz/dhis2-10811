@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <!-- System settings -->
 
@@ -53,56 +52,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
   </bean>
 
-  <!-- User settings -->
+  <bean id="org.hisp.dhis.settings.action.system.GetAccessSettingsAction"
+      class="org.hisp.dhis.settings.action.system.GetAccessSettingsAction"
+      scope="prototype"/>
 
-  <bean id="org.hisp.dhis.settings.action.user.GetGeneralSettingsAction"
-      class="org.hisp.dhis.settings.action.user.GetGeneralSettingsAction"
-      scope="prototype">
-    <property name="resourceBundleManager">
-      <ref bean="org.hisp.dhis.i18n.resourcebundle.ResourceBundleManager" />
-    </property>
-    <property name="i18nService">
-      <ref bean="org.hisp.dhis.i18n.I18nService" />
-    </property>
-    <property name="localeManager">
-      <ref bean="org.hisp.dhis.i18n.locale.LocaleManager" />
-    </property>
-    <property name="userSettingService">
-      <ref bean="org.hisp.dhis.user.UserSettingService" />
-    </property>
-    <property name="styleManager">
-      <ref bean="org.hisp.dhis.setting.StyleManager" />
-    </property>
-  </bean>
-
-  <bean id="org.hisp.dhis.settings.action.user.SetGeneralSettingsAction"
-      class="org.hisp.dhis.settings.action.user.SetGeneralSettingsAction"
-      scope="prototype">
-    <property name="localeManager">
-      <ref bean="org.hisp.dhis.i18n.locale.LocaleManager" />
-    </property>
-    <property name="userSettingService">
-      <ref bean="org.hisp.dhis.user.UserSettingService" />
-    </property>
-    <property name="styleManager">
-      <ref bean="org.hisp.dhis.setting.StyleManager" />
-    </property>
-  </bean>
-
-  <bean id="org.hisp.dhis.settings.action.user.GetMessageSettingsAction"
-      class="org.hisp.dhis.settings.action.user.GetMessageSettingsAction"
-      scope="prototype">
-    <property name="userSettingService">
-      <ref bean="org.hisp.dhis.user.UserSettingService" />
-    </property>
-  </bean>
-
-  <bean id="org.hisp.dhis.settings.action.user.SetMessageSettingsAction"
-      class="org.hisp.dhis.settings.action.user.SetMessageSettingsAction"
-      scope="prototype">
-    <property name="userSettingService">
-      <ref bean="org.hisp.dhis.user.UserSettingService" />
-    </property>
-  </bean>
+  <bean id="org.hisp.dhis.settings.action.system.SetAccessSettingsAction"
+      class="org.hisp.dhis.settings.action.system.SetAccessSettingsAction"
+      scope="prototype"/>
 
 </beans>

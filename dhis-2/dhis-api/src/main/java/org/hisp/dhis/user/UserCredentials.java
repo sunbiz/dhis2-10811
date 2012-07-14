@@ -27,28 +27,30 @@ package org.hisp.dhis.user;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
-import org.hisp.dhis.common.view.DetailedView;
-import org.hisp.dhis.common.view.ExportView;
-import org.hisp.dhis.dataset.DataSet;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DxfNamespaces;
+import org.hisp.dhis.common.IdentifiableObjectUtils;
+import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.common.view.ExportView;
+import org.hisp.dhis.dataset.DataSet;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 /**
  * @author Nguyen Hong Duc
  */
-@JacksonXmlRootElement( localName = "userCredentials", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "userCredentials", namespace = DxfNamespaces.DXF_2_0)
 public class UserCredentials
     implements Serializable
 {
@@ -70,18 +72,74 @@ public class UserCredentials
     private String username;
 
     /**
-     * Required.
+     * Required. Will be stored as a hash.
      */
     private String password;
 
+    /**
+     * Set of user roles.
+     */
     private Set<UserAuthorityGroup> userAuthorityGroups = new HashSet<UserAuthorityGroup>();
 
+    /**
+     * Date of the user's last login.
+     */
     private Date lastLogin;
+    
+    /**
+     * The token used for a user account restore. Will be stored as a hash.
+     */
+    private String restoreToken;
 
+    /**
+     * The code used for a user account restore. Will be stored as a hash.
+     */
+    private String restoreCode;
+    
+    /**
+     * The timestamp representing when the restore window expires.
+     */
+    private Date restoreExpiry;
+    
+    /**
+     * Indicates whether this user was originally self registered.
+     */
+    private boolean selfRegistered;
+    
+    /**
+     * Indicates whether this is user is disabled, which means the user cannot
+     * be authenticated.
+     */
+    private boolean disabled;
+    
+    /**
+     * The date this credentials was created.
+     */
+    private Date created;
+
+    // -------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------
+
+    public UserCredentials()
+    {
+        this.lastLogin = new Date();
+        this.created = new Date();
+    }
+    
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
 
+    /**
+     * Returns a concatenated String of the display names of all user authority
+     * groups for this user credentials.
+     */
+    public String getUserAuthorityGroupsName()
+    {
+        return IdentifiableObjectUtils.join( userAuthorityGroups );
+    }
+    
     /**
      * Returns a set of the aggregated authorities for all user authority groups
      * of this user credentials.
@@ -96,6 +154,19 @@ public class UserCredentials
         }
 
         return authorities;
+    }
+    
+    /**
+     * Tests whether this user credentials has any of the authorities in the
+     * given set.
+     * 
+     * @param auths the authorities to compare with.
+     * @return true or false.
+     */
+    public boolean hasAnyAuthority( Collection<String> auths )
+    {
+        Set<String> all = new HashSet<String>( getAllAuthorities() );
+        return all.removeAll( auths );
     }
 
     /**
@@ -158,6 +229,30 @@ public class UserCredentials
 
         return !userAuthorityGroups.contains( group ) && authorities.containsAll( group.getAuthorities() );
     }
+    
+    /**
+     * Indicates whether this user credentials can modify the given user 
+     * credentials. This user credentials must have the ALL authority or possess
+     * all user authorities of the other user credentials to do so.
+     * 
+     * @param other the user credentials to modify.
+     */
+    public boolean canModify( UserCredentials other )
+    {
+        if ( other == null )
+        {
+            return false;
+        }
+        
+        final Set<String> authorities = getAllAuthorities();
+
+        if ( authorities.contains( UserAuthorityGroup.AUTHORITY_ALL ) )
+        {
+            return true;
+        }      
+        
+        return authorities.containsAll( other.getAllAuthorities() );
+    }
 
     /**
      * Indicates whether this user credentials can issue all of the user authority
@@ -190,6 +285,39 @@ public class UserCredentials
         return user != null ? user.getName() : username;
     }
 
+    /**
+     * Tests whether the given input arguments can perform a valid restore of the
+     * user account for these credentials. Returns false if any of the input arguments
+     * are null, or any of the properties on the credentials are null. Returns false
+     * if the expiry date arguement is after the expiry date of the credentials.
+     * Returns false if any of the given token or code arguments are not equal to
+     * the respective properties the the credentials. Returns true otherwise.
+     * 
+     * @param token the restore token.
+     * @param code the restore code.
+     * @param expiry the expiry date.
+     * @return true or false.
+     */
+    public boolean canRestore( String token, String code, Date date )
+    {
+        if ( this.restoreToken == null || this.restoreCode == null || this.restoreExpiry == null )
+        {
+            return false;
+        }
+        
+        if ( token == null || code == null || date == null )
+        {
+            return false;
+        }
+        
+        if ( date.after( this.restoreExpiry ) )
+        {
+            return false;
+        }
+        
+        return token.equals( this.restoreToken ) && code.equals( this.restoreCode );
+    }
+    
     // -------------------------------------------------------------------------
     // hashCode and equals
     // -------------------------------------------------------------------------
@@ -266,8 +394,8 @@ public class UserCredentials
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "userAuthorityGroups", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "userAuthorityGroup", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "userAuthorityGroups", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "userAuthorityGroup", namespace = DxfNamespaces.DXF_2_0)
     public Set<UserAuthorityGroup> getUserAuthorityGroups()
     {
         return userAuthorityGroups;
@@ -280,7 +408,7 @@ public class UserCredentials
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getUsername()
     {
         return username;
@@ -302,5 +430,65 @@ public class UserCredentials
     public void setLastLogin( Date lastLogin )
     {
         this.lastLogin = lastLogin;
+    }
+
+    public String getRestoreToken()
+    {
+        return restoreToken;
+    }
+
+    public void setRestoreToken( String restoreToken )
+    {
+        this.restoreToken = restoreToken;
+    }
+
+    public String getRestoreCode()
+    {
+        return restoreCode;
+    }
+
+    public void setRestoreCode( String restoreCode )
+    {
+        this.restoreCode = restoreCode;
+    }
+
+    public Date getRestoreExpiry()
+    {
+        return restoreExpiry;
+    }
+
+    public void setRestoreExpiry( Date restoreExpiry )
+    {
+        this.restoreExpiry = restoreExpiry;
+    }
+
+    public boolean isSelfRegistered()
+    {
+        return selfRegistered;
+    }
+
+    public void setSelfRegistered( boolean selfRegistered )
+    {
+        this.selfRegistered = selfRegistered;
+    }
+
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
+
+    public void setDisabled( boolean disabled )
+    {
+        this.disabled = disabled;
+    }
+
+    public Date getCreated()
+    {
+        return created;
+    }
+
+    public void setCreated( Date created )
+    {
+        this.created = created;
     }
 }

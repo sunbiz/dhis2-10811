@@ -26,6 +26,8 @@ package org.hisp.dhis.reportsheet.hibernate;
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+import java.util.List;
+
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -97,5 +99,13 @@ public class HibernateDataElementGroupOrderStore
     {
         Session session = sessionFactory.getCurrentSession();
         session.delete( this.getDataElementGroupOrder( id ) );
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DataElementGroupOrder> getDataElementGroupOrders( List<Integer> ids )
+    {
+        String hql = "select distinct deo from ExportReport e join e.dataElementOrders deo where deo.id in (:ids) order by deo.name";
+
+        return sessionFactory.getCurrentSession().createQuery( hql ).setParameterList( "ids", ids ).list();
     }
 }

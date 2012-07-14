@@ -31,11 +31,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import org.hisp.dhis.common.DxfNamespaces;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@JacksonXmlRootElement( localName = "importSummary" )
+@JacksonXmlRootElement( localName = "importSummary", namespace = DxfNamespaces.DXF_2_0 )
 public class ImportSummary
 {
     private ImportStatus status;
@@ -59,7 +60,7 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public ImportStatus getStatus()
     {
         return status;
@@ -71,7 +72,7 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getDescription()
     {
         return description;
@@ -83,7 +84,7 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public ImportCount getDataValueCount()
     {
         return dataValueCount;
@@ -95,8 +96,8 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "conflicts" )
-    @JacksonXmlProperty( localName = "conflict" )
+    @JacksonXmlElementWrapper( localName = "conflicts", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "conflict", namespace = DxfNamespaces.DXF_2_0 )
     public List<ImportConflict> getConflicts()
     {
         return conflicts;
@@ -108,7 +109,7 @@ public class ImportSummary
     }
 
     @JsonProperty
-    @JacksonXmlProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getDataSetComplete()
     {
         return dataSetComplete;

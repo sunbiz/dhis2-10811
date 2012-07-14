@@ -28,15 +28,13 @@
 package org.hisp.dhis.patient.hibernate;
 
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.amplecode.quick.StatementHolder;
-import org.amplecode.quick.StatementManager;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -44,13 +42,18 @@ import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.hibernate.HibernateGenericStore;
 import org.hisp.dhis.jdbc.StatementBuilder;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientStore;
 import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.system.grid.GridUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -71,13 +74,6 @@ public class HibernatePatientStore
     public void setStatementBuilder( StatementBuilder statementBuilder )
     {
         this.statementBuilder = statementBuilder;
-    }
-
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
     }
 
     private JdbcTemplate jdbcTemplate;
@@ -108,38 +104,31 @@ public class HibernatePatientStore
     @Override
     public Collection<Patient> getByNames( String fullName, Integer min, Integer max )
     {
+        List<Patient> patients = new ArrayList<Patient>();
+
         fullName = fullName.toLowerCase();
         String sql = "SELECT patientid FROM patient " + "where lower( " + statementBuilder.getPatientFullName() + ") "
-            + "like '%" + fullName + "%' ";
+            + "like '%" + fullName + "%'";
 
         if ( min != null && max != null )
         {
             sql += statementBuilder.limitRecord( min, max );
         }
 
-        StatementHolder holder = statementManager.getHolder();
-
-        Set<Patient> patients = new HashSet<Patient>();
-
         try
         {
-            Statement statement = holder.getStatement();
-
-            ResultSet resultSet = statement.executeQuery( sql );
-
-            while ( resultSet.next() )
+            patients = jdbcTemplate.query( sql, new RowMapper<Patient>()
             {
-                Patient p = get( resultSet.getInt( 1 ) );
-                patients.add( p );
-            }
+                public Patient mapRow( ResultSet rs, int rowNum )
+                    throws SQLException
+                {
+                    return get( rs.getInt( 1 ) );
+                }
+            } );
         }
         catch ( Exception ex )
         {
             ex.printStackTrace();
-        }
-        finally
-        {
-            holder.close();
         }
 
         return patients;
@@ -148,6 +137,7 @@ public class HibernatePatientStore
     @SuppressWarnings( "unchecked" )
     @Override
     public Collection<Patient> get( String firstName, String middleName, String lastName, Date birthdate, String gender )
+
     {
         Criteria crit = getCriteria();
         Conjunction con = Restrictions.conjunction();
@@ -163,7 +153,6 @@ public class HibernatePatientStore
 
         con.add( Restrictions.eq( "gender", gender ) );
         con.add( Restrictions.eq( "birthDate", birthdate ) );
-
         crit.add( con );
 
         crit.addOrder( Order.asc( "firstName" ) );
@@ -258,38 +247,96 @@ public class HibernatePatientStore
     {
         String sql = searchPatientSql( false, searchKeys, orgunit, min, max );
         Collection<Patient> patients = new HashSet<Patient>();
-        StatementHolder holder = statementManager.getHolder();
         try
         {
-            Statement statement = holder.getStatement();
-
-            ResultSet resultSet = statement.executeQuery( sql );
-
-            while ( resultSet.next() )
+            patients = jdbcTemplate.query( sql, new RowMapper<Patient>()
             {
-                int patientId = resultSet.getInt( 1 );
-                patients.add( get( patientId ) );
-            }
+                public Patient mapRow( ResultSet rs, int rowNum )
+                    throws SQLException
+                {
+                    return get( rs.getInt( 1 ) );
+                }
+            });
         }
         catch ( Exception ex )
         {
             ex.printStackTrace();
         }
-        finally
+        return patients;
+    }
+
+    @Override
+    public Collection<String> getPatientPhoneNumbers( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+        Integer max )
+    {
+        String sql = searchPatientSql( false, searchKeys, orgunit, min, max );
+        Collection<String> phoneNumbers = new HashSet<String>();
+        try
         {
-            holder.close();
+            phoneNumbers = jdbcTemplate.query( sql, new RowMapper<String>()
+            {
+                public String mapRow( ResultSet rs, int rowNum )
+                    throws SQLException
+                {
+                    String phoneNumber = rs.getString( "phonenumber" );
+                    return (phoneNumber == null || phoneNumber.isEmpty()) ? "0" : phoneNumber;
+                }
+            });
+        }
+        catch ( Exception ex )
+        {
+            ex.printStackTrace();
+        }
+        return phoneNumbers;
+    }
+
+    @Override
+    public Collection<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit,
+        Integer min, Integer max )
+    {
+        String sql = searchPatientSql( false, searchKeys, orgunit, min, max );
+        Collection<Integer> programStageInstanceIds = new HashSet<Integer>();
+        try
+        {
+            programStageInstanceIds = jdbcTemplate.query( sql, new RowMapper<Integer>()
+            {
+                public Integer mapRow( ResultSet rs, int rowNum )
+                    throws SQLException
+                {
+                    return rs.getInt( "programstageinstanceid" );
+                }
+            });
+        }
+        catch ( Exception ex )
+        {
+            ex.printStackTrace();
         }
 
-        return patients;
+        return programStageInstanceIds;
     }
 
     public int countSearch( List<String> searchKeys, OrganisationUnit orgunit )
     {
         String sql = searchPatientSql( true, searchKeys, orgunit, null, null );
-
         return jdbcTemplate.queryForInt( sql );
     }
 
+    @Override
+    public Grid getPatientEventReport( Grid grid, List<String> searchKeys, OrganisationUnit orgunit )
+    {
+        // ---------------------------------------------------------------------
+        // Get SQL and build grid
+        // ---------------------------------------------------------------------
+
+        String sql = searchPatientSql( false, searchKeys, orgunit, null, null );
+
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
+
+        GridUtils.addRows( grid, rowSet );
+
+        return grid;
+    }
+    
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
@@ -299,21 +346,24 @@ public class HibernatePatientStore
     {
         String selector = count ? "count(*) " : "* ";
 
-        String sql = "select "
-            + selector
-            + " from ( select distinct p.patientid, p.firstname, p.middlename, p.lastname, p.gender, p.phonenumber, p.birthdate, p.deathdate,";
+        String sql = "select " + selector
+            + " from ( select distinct p.patientid, p.firstname, p.middlename, p.lastname, p.gender, p.phonenumber,";
         String patientWhere = "";
         String patientOperator = " where ";
+        String patientGroupBy = " GROUP BY  p.patientid, p.firstname, p.middlename, p.lastname, p.gender, p.phonenumber ";
         String otherWhere = "";
         String operator = " where ";
+        String orderBy = "";
         boolean hasIdentifier = false;
+        boolean isSearchEvent = false;
+        boolean isPriorityEvent = false;
 
         for ( String searchKey : searchKeys )
         {
             String[] keys = searchKey.split( "_" );
             String id = keys[1];
             String value = "";
-            if ( keys.length == 3 )
+            if ( keys.length >= 3 )
             {
                 value = keys[2];
             }
@@ -337,8 +387,17 @@ public class HibernatePatientStore
             }
             else if ( keys[0].equals( Patient.PREFIX_IDENTIFIER_TYPE ) )
             {
-                patientWhere = operator + "( ( lower( " + statementBuilder.getPatientFullName() + " ) like '%" + id
-                    + "%' ) or lower(pi.identifier)='" + id + "') ";
+                patientWhere += patientOperator + "( ( lower( " + statementBuilder.getPatientFullName() + " ) like '%"
+                    + id + "%' ) or lower(pi.identifier)='" + id + "' ";
+
+                String[] keyValues = id.split( " " );
+                if ( keyValues.length == 2 )
+                {
+                    String otherId = keyValues[0] + "  " + keyValues[1];
+                    patientWhere += " or lower( " + statementBuilder.getPatientFullName() + " ) like '%" + otherId
+                        + "%'  ";
+                }
+                patientWhere += ")";
                 patientOperator = " and ";
                 hasIdentifier = true;
             }
@@ -346,32 +405,143 @@ public class HibernatePatientStore
             {
                 sql += "(select value from patientattributevalue where patientid=p.patientid and patientattributeid="
                     + id + " ) as " + Patient.PREFIX_PATIENT_ATTRIBUTE + "_" + id + ",";
-                otherWhere = operator + "lower(" + Patient.PREFIX_PATIENT_ATTRIBUTE + "_" + id + ")='" + value + "'";
+                otherWhere += operator + "lower(" + Patient.PREFIX_PATIENT_ATTRIBUTE + "_" + id + ")='" + value + "'";
                 operator = " and ";
             }
             else if ( keys[0].equals( Patient.PREFIX_PROGRAM ) )
             {
-                sql += "(select programid from patient_programs where patientid=p.patientid and programid=" + keys[1]
+                sql += "(select programid from patient_programs where patientid=p.patientid and programid=" + id
                     + " ) as " + Patient.PREFIX_PROGRAM + "_" + id + ",";
-                otherWhere = operator + Patient.PREFIX_PROGRAM + "_" + id + "=" + id;
+                otherWhere += operator + Patient.PREFIX_PROGRAM + "_" + id + "=" + id;
                 operator = " and ";
             }
-        }
+            else if ( keys[0].equals( Patient.PREFIX_PROGRAM_EVENT_BY_STATUS ) )
+            {
+                isSearchEvent = true;
+                isPriorityEvent = Boolean.parseBoolean( keys[5] );
+                patientWhere += patientOperator + "pgi.patientid=p.patientid and ";
+                patientWhere += "pgi.programid=" + id + " and ";
+                patientWhere += "psi.duedate>='" + keys[2] + "' and psi.duedate<='" + keys[3] + "' and ";
+                patientWhere += "pgi.completed = false ";
 
-        sql = sql.substring( 0, sql.length() - 1 ) + " "; // Removing last comma
+                String operatorStatus = "";
+                String condition = " and ( ";
 
-        sql += " from patient p ";
-        if ( hasIdentifier )
-        {
-            sql += " left join patientidentifier pi on p.patientid=pi.patientid ";
+                for ( int index = 6; index < keys.length; index++ )
+                {
+                    int statusEvent = Integer.parseInt( keys[index] );
+                    switch ( statusEvent )
+                    {
+                    case ProgramStageInstance.COMPLETED_STATUS:
+                        patientWhere += condition + operatorStatus + "("
+                            + " psi.completed=true and psi.organisationunitid=" + keys[4] + ")";
+                        condition = "";
+                        operatorStatus = " OR ";
+                        continue;
+                    case ProgramStageInstance.VISITED_STATUS:
+                        patientWhere += condition + operatorStatus + "("
+                            + " psi.executiondate is not null and psi.completed=false and psi.organisationunitid="
+                            + keys[4] + ")";
+                        operatorStatus = " OR ";
+                        condition = "";
+                        continue;
+                    case ProgramStageInstance.FUTURE_VISIT_STATUS:
+                        patientWhere += condition
+                            + operatorStatus
+                            + "("
+                            + " psi.status is null and psi.executiondate is null and (DATE(now()) - DATE(psi.duedate) <= 0) and p.organisationunitid="
+                            + keys[4] + ")";
+                        operatorStatus = " OR ";
+                        condition = "";
+                        continue;
+                    case ProgramStageInstance.LATE_VISIT_STATUS:
+                        patientWhere += condition
+                            + operatorStatus
+                            + "("
+                            + " psi.status is null and psi.executiondate is null and (DATE(now()) - DATE(psi.duedate) > 0) and p.organisationunitid="
+                            + keys[4] + ")";
+                        operatorStatus = " OR ";
+                        condition = "";
+                        continue;
+                    default:
+                        continue;
+                    }
+                }
+                if ( condition.isEmpty() )
+                {
+                    patientWhere += ")";
+                }
+                patientWhere += " and pgi.completed=false ";
+                patientOperator = " and ";
+
+            }
+            else if ( keys[0].equals( Patient.PREFIX_PROGRAM_STAGE ) )
+            {
+                isSearchEvent = true;
+                patientWhere += patientOperator + "pgi.patientid=p.patientid and psi.programstageid=" + id + " and ";
+                patientWhere += "psi.duedate>='" + keys[3] + "' and psi.duedate<='" + keys[4] + "' and ";
+                patientWhere += "psi.organisationunitid = " + keys[5] + " and ";
+
+                int statusEvent = Integer.parseInt( keys[2] );
+                switch ( statusEvent )
+                {
+                case ProgramStageInstance.COMPLETED_STATUS:
+                    patientWhere += "psi.completed=true";
+                    break;
+                case ProgramStageInstance.VISITED_STATUS:
+                    patientWhere += "psi.executiondate is not null and psi.completed=false";
+                    break;
+                case ProgramStageInstance.FUTURE_VISIT_STATUS:
+                    patientWhere += "psi.executiondate is null and psi.duedate >= now()";
+                    break;
+                case ProgramStageInstance.LATE_VISIT_STATUS:
+                    patientWhere += "psi.executiondate is null and psi.duedate < now()";
+                    break;
+                default:
+                    break;
+                }
+
+                patientWhere += " and pgi.completed=false ";
+                patientOperator = " and ";
+            }
         }
 
         if ( orgunit != null )
         {
-            patientWhere += " and p.organisationunitid = " + orgunit.getId();
+            sql += "(select organisationunitid from patient where patientid=p.patientid and organisationunitid = "
+                + orgunit.getId() + " ) as orgunitid,";
+            otherWhere += operator + "orgunitid=" + orgunit.getId();
         }
 
-        sql += patientWhere + " order by p.patientid desc ";
+        sql = sql.substring( 0, sql.length() - 1 ) + " "; // Removing last comma
+
+        String from = " from patient p ";
+        if ( isSearchEvent )
+        {
+            String subSQL = " ,MIN( psi.programstageinstanceid ) as programstageinstanceid, min(pgs.name) as programstagename, min(psi.duedate) as duedate ";
+            sql = sql + subSQL + from + " inner join programinstance pgi on " + " (pgi.patientid=p.patientid) "
+                + " inner join programstageinstance psi on " + " (psi.programinstanceid=pgi.programinstanceid) "
+                + " inner join programstage pgs on (pgs.programstageid=psi.programstageid) ";
+            if ( isPriorityEvent )
+            {
+                sql += " inner join patientattributevalue pav on p.patientid=pav.patientid ";
+            }
+            orderBy = " ORDER BY duedate DESC ";
+            from = " ";
+        }
+
+        if ( hasIdentifier )
+        {
+            sql += from + " left join patientidentifier pi on p.patientid=pi.patientid ";
+            from = " ";
+        }
+
+        sql += from + patientWhere;
+        if ( isSearchEvent )
+        {
+            sql += patientGroupBy;
+        }
+        sql += orderBy;
         sql += " ) as searchresult";
         sql += otherWhere;
 
@@ -379,8 +549,51 @@ public class HibernatePatientStore
         {
             sql += statementBuilder.limitRecord( min, max );
         }
-System.out.println("\n\n === \n SQL : " + sql );
+
         return sql;
     }
 
+    @SuppressWarnings( "unchecked" )
+    @Override
+    public Collection<Patient> getByPhoneNumber( String phoneNumber, Integer min, Integer max )
+    {
+        String hql = "select p from Patient p where p.phoneNumber like '%" + phoneNumber + "%'";
+        Query query = getQuery( hql );
+        
+        if ( min != null && max != null )
+        {
+            query.setFirstResult( min ).setMaxResults( max );
+        }
+
+        return query.list();
+    }
+
+    @Override
+    public Collection<Patient> getByFullName( String fullName )
+    {
+        List<Patient> patients = new ArrayList<Patient>();
+
+        fullName = fullName.toLowerCase();
+        String sql = "SELECT patientid FROM patient " + "where lower( " + statementBuilder.getPatientFullName() + ") "
+            + "='" + fullName + "'";
+
+        try
+        {
+            patients = jdbcTemplate.query( sql, new RowMapper<Patient>()
+            {
+                public Patient mapRow( ResultSet rs, int rowNum )
+                    throws SQLException
+                {
+                    return get( rs.getInt( 1 ) );
+                }
+            } );
+        }
+        catch ( Exception ex )
+        {
+            ex.printStackTrace();
+        }
+
+        return patients;
+    }
+    
 }

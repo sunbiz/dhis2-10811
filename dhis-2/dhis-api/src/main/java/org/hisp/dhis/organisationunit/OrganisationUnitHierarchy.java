@@ -151,7 +151,7 @@ public class OrganisationUnitHierarchy
         
         if ( preparedChildren != null )
         {
-            return preparedChildren;
+            return new HashSet<Integer>( preparedChildren );
         }
         
         List<Integer> children = new ArrayList<Integer>();
@@ -204,7 +204,7 @@ public class OrganisationUnitHierarchy
         
         if ( children != null )
         {
-            return children;
+            return new HashSet<Integer>( children );
         }
         
         children = getChildren( parentId );

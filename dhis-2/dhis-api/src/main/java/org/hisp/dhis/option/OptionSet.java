@@ -33,7 +33,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 /**
  * @author Lars Helge Overland
  */
-@JacksonXmlRootElement( localName = "optionSet", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "optionSet", namespace = DxfNamespaces.DXF_2_0)
 public class OptionSet
     extends BaseIdentifiableObject
 {
@@ -100,8 +100,8 @@ public class OptionSet
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "options", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "option", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "options", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "option", namespace = DxfNamespaces.DXF_2_0)
     public List<String> getOptions()
     {
         return options;

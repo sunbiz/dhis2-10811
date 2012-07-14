@@ -228,7 +228,13 @@ public class WeeklyPeriodType
         cal.setFirstDayOfWeek(Calendar.MONDAY);
         int year = cal.get( Calendar.YEAR);
         int week = cal.get( Calendar.WEEK_OF_YEAR);
+        int month = cal.get( Calendar.MONTH);
 
+        if ( week == 1 && month == Calendar.DECEMBER )
+        {
+            ++year; 
+        }
+        
         String periodString = year + "W" + week;
         return periodString;
     }
@@ -257,5 +263,17 @@ public class WeeklyPeriodType
     public String getIsoFormat()
     {
         return ISO_FORMAT;
+    }
+    
+    @Override
+    public Date getRewindedDate( Date date, Integer rewindedPeriods )
+    {
+        date = date != null ? date : new Date();        
+        rewindedPeriods = rewindedPeriods != null ? rewindedPeriods : 1;
+
+        Calendar cal = createCalendarInstance( date );        
+        cal.add( Calendar.DAY_OF_YEAR, (rewindedPeriods * -7) );
+
+        return cal.getTime();
     }
 }

@@ -39,6 +39,7 @@ import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.user.UserGroupService;
 import org.hisp.dhis.user.UserService;
 
 import com.opensymphony.xwork2.Action;
@@ -68,6 +69,13 @@ public class AddDataSetAction
         this.dataElementService = dataElementService;
     }
 
+    private IndicatorService indicatorService;
+
+    public void setIndicatorService( IndicatorService indicatorService )
+    {
+        this.indicatorService = indicatorService;
+    }
+
     private UserService userService;
 
     public void setUserService( UserService userService )
@@ -75,11 +83,11 @@ public class AddDataSetAction
         this.userService = userService;
     }
 
-    private IndicatorService indicatorService;
+    private UserGroupService userGroupService;
 
-    public void setIndicatorService( IndicatorService indicatorService )
+    public void setUserGroupService( UserGroupService userGroupService )
     {
-        this.indicatorService = indicatorService;
+        this.userGroupService = userGroupService;
     }
 
     // -------------------------------------------------------------------------
@@ -114,13 +122,6 @@ public class AddDataSetAction
         this.description = description;
     }
 
-    private boolean allowFuturePeriods;
-
-    public void setAllowFuturePeriods( boolean allowFuturePeriods )
-    {
-        this.allowFuturePeriods = allowFuturePeriods;
-    }
-
     private int expiryDays;
 
     public void setExpiryDays( int expiryDays )
@@ -128,6 +129,20 @@ public class AddDataSetAction
         this.expiryDays = expiryDays;
     }
     
+    private int notificationRecipients;
+    
+    public void setNotificationRecipients( int notificationRecipients )
+    {
+        this.notificationRecipients = notificationRecipients;
+    }
+    
+    private boolean notifyCompletingUser;
+
+    public void setNotifyCompletingUser( boolean notifyCompletingUser )
+    {
+        this.notifyCompletingUser = notifyCompletingUser;
+    }
+
     private boolean skipAggregation;
 
     public void setSkipAggregation( boolean skipAggregation )
@@ -142,6 +157,34 @@ public class AddDataSetAction
         this.frequencySelect = frequencySelect;
     }
 
+    private boolean allowFuturePeriods;
+
+    public void setAllowFuturePeriods( boolean allowFuturePeriods )
+    {
+        this.allowFuturePeriods = allowFuturePeriods;
+    }
+
+    private boolean fieldCombinationRequired;
+    
+    public void setFieldCombinationRequired( boolean fieldCombinationRequired )
+    {
+        this.fieldCombinationRequired = fieldCombinationRequired;
+    }
+    
+    private boolean validCompleteOnly;
+
+    public void setValidCompleteOnly( boolean validCompleteOnly )
+    {
+        this.validCompleteOnly = validCompleteOnly;
+    }
+
+    private boolean skipOffline;
+
+    public void setSkipOffline( boolean skipOffline )
+    {
+        this.skipOffline = skipOffline;
+    }
+
     private Collection<String> dataElementsSelectedList = new HashSet<String>();
 
     public void setDataElementsSelectedList( Collection<String> dataElementsSelectedList )
@@ -154,13 +197,6 @@ public class AddDataSetAction
     public void setIndicatorsSelectedList( Collection<String> indicatorsSelectedList )
     {
         this.indicatorsSelectedList = indicatorsSelectedList;
-    }
-
-    private boolean mobile;
-
-    public void setMobile( boolean mobile )
-    {
-        this.mobile = mobile;
     }
 
     // -------------------------------------------------------------------------
@@ -196,13 +232,18 @@ public class AddDataSetAction
         {
             indicators.add( indicatorService.getIndicator( Integer.parseInt( id ) ) );
         }
-
+        
         dataSet.setDescription( description );
-        dataSet.setAllowFuturePeriods( allowFuturePeriods );
         dataSet.setVersion( 1 );
-        dataSet.setMobile( mobile );
+        dataSet.setMobile( false );
         dataSet.setIndicators( indicators );
-
+        dataSet.setNotificationRecipients( userGroupService.getUserGroup( notificationRecipients ) );
+        dataSet.setAllowFuturePeriods( allowFuturePeriods );
+        dataSet.setFieldCombinationRequired( fieldCombinationRequired );
+        dataSet.setValidCompleteOnly( validCompleteOnly );
+        dataSet.setNotifyCompletingUser( notifyCompletingUser );
+        dataSet.setSkipOffline( skipOffline );
+        
         dataSetService.addDataSet( dataSet );
 
         userService.assignDataSetToUserRole( dataSet );

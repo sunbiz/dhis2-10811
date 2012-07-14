@@ -29,11 +29,10 @@ package org.hisp.dhis.interpretation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.user.User;
@@ -43,15 +42,11 @@ import java.util.Date;
 /**
  * @author Lars Helge Overland
  */
-@JacksonXmlRootElement( localName = "interpretationComment", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement(localName = "interpretationComment", namespace = DxfNamespaces.DXF_2_0 )
 public class InterpretationComment
     extends BaseIdentifiableObject
 {
     private String text;
-
-    private User user;
-
-    private Date created;
 
     public InterpretationComment()
     {
@@ -64,9 +59,16 @@ public class InterpretationComment
         this.created = new Date();
     }
 
+    public InterpretationComment( String text, User user )
+    {
+        this.text = text;
+        this.user = user;
+        this.created = new Date();
+    }
+
     @JsonProperty
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0 )
     public String getText()
     {
         return text;
@@ -75,32 +77,5 @@ public class InterpretationComment
     public void setText( String text )
     {
         this.text = text;
-    }
-
-    @JsonProperty
-    @JsonSerialize( as = BaseIdentifiableObject.class )
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
-    public User getUser()
-    {
-        return user;
-    }
-
-    public void setUser( User user )
-    {
-        this.user = user;
-    }
-
-    @JsonProperty
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
-    public Date getCreated()
-    {
-        return created;
-    }
-
-    public void setCreated( Date created )
-    {
-        this.created = created;
     }
 }

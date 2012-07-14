@@ -74,26 +74,11 @@ public class DefaultAggregatedOrgUnitDataValueService
         aggregatedDataValueStore.deleteAggregatedDataValues( dataElementIds, periodIds, organisationUnitIds );
     }
     
-    public void deleteAggregatedDataValues( Collection<Integer> periodIds )
-    {
-        aggregatedDataValueStore.deleteAggregatedDataValues( periodIds );
-    }
-
     public void deleteAggregatedDataValues()
     {
         aggregatedDataValueStore.deleteAggregatedDataValues();
     }
     
-    public void createIndex( boolean dataElement, boolean indicator )
-    {
-        aggregatedDataValueStore.createIndex( dataElement, indicator );
-    }
-    
-    public void dropIndex( boolean dataElement, boolean indicator )
-    {
-        aggregatedDataValueStore.dropIndex( dataElement, indicator );
-    }
-
     // -------------------------------------------------------------------------
     // AggregatedIndicatorValue
     // -------------------------------------------------------------------------
@@ -113,12 +98,7 @@ public class DefaultAggregatedOrgUnitDataValueService
     {
         aggregatedDataValueStore.deleteAggregatedIndicatorValues( indicatorIds, periodIds, organisationUnitIds );
     }
-    
-    public void deleteAggregatedIndicatorValues( Collection<Integer> periodIds )
-    {
-        aggregatedDataValueStore.deleteAggregatedIndicatorValues( periodIds );
-    }
-    
+        
     public void deleteAggregatedIndicatorValues()
     {
         aggregatedDataValueStore.deleteAggregatedIndicatorValues();

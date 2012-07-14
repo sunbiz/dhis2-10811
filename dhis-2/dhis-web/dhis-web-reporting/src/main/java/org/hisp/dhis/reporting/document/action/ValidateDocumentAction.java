@@ -27,11 +27,10 @@ package org.hisp.dhis.reporting.document.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.document.Document;
 import org.hisp.dhis.document.DocumentService;
 import org.hisp.dhis.i18n.I18n;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Lars Helge Overland
@@ -110,7 +109,8 @@ public class ValidateDocumentAction
                 return INPUT;
             }
 
-            Document match = documentService.getDocumentByName( name );
+            // TODO compile fix, this should be removed
+            Document match = documentService.getDocumentByName( name ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {

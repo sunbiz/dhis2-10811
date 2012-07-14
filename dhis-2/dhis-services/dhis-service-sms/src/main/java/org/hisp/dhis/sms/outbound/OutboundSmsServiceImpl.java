@@ -53,7 +53,6 @@ public class OutboundSmsServiceImpl
     // Dependencies
     // -------------------------------------------------------------------------
 
-    @Autowired
     private OutboundSmsStore outboundSmsStore;
 
     public void setOutboundSmsStore( OutboundSmsStore outboundSmsStore )
@@ -101,9 +100,7 @@ public class OutboundSmsServiceImpl
         {
             throw new SmsServiceNotEnabledException();
         }
-
-        outboundSmsStore.save( sms );
-
+        
         if ( transportService != null )
         {
             return sendMessageInternal( sms, gatewayId );
@@ -111,13 +108,36 @@ public class OutboundSmsServiceImpl
 
         return "outboundsms_saved";
     }
-    
+
     @Override
     public List<OutboundSms> getAllOutboundSms()
     {
         return outboundSmsStore.getAll();
     }
 
+    @Override
+    public List<OutboundSms> getOutboundSms( OutboundSmsStatus status )
+    {
+        return outboundSmsStore.get( status );
+    }
+
+    @Override
+    public void updateOutboundSms( OutboundSms sms)
+    {
+        outboundSmsStore.update( sms );
+    }
+    
+    @Override
+    public int saveOutboundSms(OutboundSms sms) {
+        return outboundSmsStore.save( sms );
+    }
+
+    @Override
+    public void deleteById( Integer outboundSmsId )
+    {
+        OutboundSms sms = outboundSmsStore.get( outboundSmsId );
+        outboundSmsStore.delete( sms );
+    }
     // -------------------------------------------------------------------------
     // Support methods
     // -------------------------------------------------------------------------
@@ -126,16 +146,16 @@ public class OutboundSmsServiceImpl
     {
         try
         {
-            sms.setStatus( OutboundSmsStatus.SENT );
             return transportService.sendMessage( sms, id );
         }
         catch ( SmsServiceException e )
         {
             log.debug( "Exception sending message " + sms, e );
             sms.setStatus( OutboundSmsStatus.ERROR );
-            
+            this.saveOutboundSms( sms );
             return "Exception sending message " + sms + e.getMessage();
         }
     }
+
 
 }

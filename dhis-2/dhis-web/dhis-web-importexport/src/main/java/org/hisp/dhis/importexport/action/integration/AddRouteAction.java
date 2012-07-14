@@ -27,15 +27,16 @@ package org.hisp.dhis.importexport.action.integration;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import java.io.File;
 import java.io.FileInputStream;
-
 import org.apache.camel.CamelContext;
+import org.apache.camel.model.ModelCamelContext;
+import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.opensymphony.xwork2.Action;
+import org.hisp.dhis.system.util.StreamUtils;
 
 /**
  * @author Bob Jolliffe
@@ -50,11 +51,11 @@ public class AddRouteAction
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private CamelContext builtinCamelContext;
+    private ModelCamelContext builtinCamelContext;
 
     public void setBuiltinCamelContext( CamelContext camelContext )
     {
-        this.builtinCamelContext = camelContext;
+        this.builtinCamelContext = (ModelCamelContext) camelContext;
     }
 
     private File file;
@@ -75,6 +76,7 @@ public class AddRouteAction
     // Action implementation
     // -------------------------------------------------------------------------
 
+    @Override
     public String execute()
         throws Exception
     {
@@ -87,12 +89,26 @@ public class AddRouteAction
             try
             {
                 RoutesDefinition routes = builtinCamelContext.loadRoutesDefinition( is );
-                builtinCamelContext.addRouteDefinitions( routes.getRoutes() );
+                for (RouteDefinition route : routes.getRoutes() ) 
+                {
+                    // remove any existing route with this id before adding ...
+                    RouteDefinition existingRoute = builtinCamelContext.getRouteDefinition( route.getId() );
+                    if (existingRoute != null) 
+                    {
+                        builtinCamelContext.stopRoute( route.getId());
+                        builtinCamelContext.removeRouteDefinition( route );
+                    }
+                    builtinCamelContext.addRouteDefinitions( routes.getRoutes() );
+                }
             }
             catch ( Exception e )
             {
                 log.info( "Unable to load route: " + e.getMessage() );
                 return ERROR;
+            }
+            finally
+            {
+                StreamUtils.closeInputStream( is );
             }
         }
         

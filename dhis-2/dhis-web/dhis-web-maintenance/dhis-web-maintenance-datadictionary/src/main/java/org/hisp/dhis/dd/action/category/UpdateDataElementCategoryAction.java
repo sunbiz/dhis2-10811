@@ -87,11 +87,11 @@ public class UpdateDataElementCategoryAction
         this.conceptId = conceptId;
     }
 
-    private List<String> categoryOptions = new ArrayList<String>();
+    private List<String> selectedList = new ArrayList<String>();
 
-    public void setCategoryOptions( List<String> categoryOptions )
+    public void setSelectedList( List<String> selectedList )
     {
-        this.categoryOptions = categoryOptions;
+        this.selectedList = selectedList;
     }
 
     // -------------------------------------------------------------------------
@@ -104,13 +104,9 @@ public class UpdateDataElementCategoryAction
         dataElementCategory.setName( name );
         dataElementCategory.setConcept( conceptService.getConcept( conceptId ) );
 
-        // ---------------------------------------------------------------------
-        // CategoryOptions can only be sorted on update
-        // ---------------------------------------------------------------------
-
         List<DataElementCategoryOption> options = new ArrayList<DataElementCategoryOption>();
         
-        for ( String id : categoryOptions )
+        for ( String id : selectedList )
         {
             options.add( dataElementCategoryService.getDataElementCategoryOption( Integer.parseInt( id ) ) );
         }

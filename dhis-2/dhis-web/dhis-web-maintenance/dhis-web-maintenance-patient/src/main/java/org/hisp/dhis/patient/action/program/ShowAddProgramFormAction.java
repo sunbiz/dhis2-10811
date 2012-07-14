@@ -27,11 +27,14 @@
 
 package org.hisp.dhis.patient.action.program;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-import org.hisp.dhis.program.ProgramStage;
-import org.hisp.dhis.program.ProgramStageService;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientIdentifierTypeService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -46,22 +49,43 @@ public class ShowAddProgramFormAction
     // Dependency
     // -------------------------------------------------------------------------
 
-    private ProgramStageService programStageService;
+    private ProgramService programService;
 
-    public void setProgramStageService( ProgramStageService programStageService )
+    public void setProgramService( ProgramService programService )
     {
-        this.programStageService = programStageService;
+        this.programService = programService;
+    }
+
+    private PatientIdentifierTypeService patientIdentifierTypeService;
+
+    public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
+    {
+        this.patientIdentifierTypeService = patientIdentifierTypeService;
+    }
+
+    private PatientAttributeService patientAttributeService;
+
+    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    {
+        this.patientAttributeService = patientAttributeService;
     }
 
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
 
-    private Collection<ProgramStage> programStages;
+    private Collection<PatientIdentifierType> availableIdentifierTypes;
 
-    public Collection<ProgramStage> getProgramStages()
+    public Collection<PatientIdentifierType> getAvailableIdentifierTypes()
     {
-        return programStages;
+        return availableIdentifierTypes;
+    }
+
+    private Collection<PatientAttribute> availableAttributes;
+
+    public Collection<PatientAttribute> getAvailableAttributes()
+    {
+        return availableAttributes;
     }
 
     // -------------------------------------------------------------------------
@@ -70,8 +94,18 @@ public class ShowAddProgramFormAction
 
     public String execute()
     {
-        programStages = new ArrayList<ProgramStage>( programStageService.getAllProgramStages() );
+        availableIdentifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
 
+        availableAttributes = patientAttributeService.getAllPatientAttributes();
+
+        Collection<Program> programs = programService.getAllPrograms();
+        
+        for ( Program program : programs )
+        {
+            availableIdentifierTypes.removeAll( program.getPatientIdentifierTypes() );
+            availableAttributes.removeAll( program.getPatientAttributes() );
+        }
+        
         return SUCCESS;
     }
 }

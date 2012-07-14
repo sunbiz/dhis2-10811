@@ -38,8 +38,10 @@ selection.setListenerFunction( organisationUnitSelected );
 // ----------------------------------------------------------------
 // On InventoryType Change - Loading InventoryTypeAttributes
 // ----------------------------------------------------------------
-function inventoryTypeChange( inventoryTypeId )
+//function inventoryTypeChange( inventoryTypeId )
+function inventoryTypeChange()
 {
+	var inventoryTypeId = $( '#inventoryType' ).val();
 	if( inventoryTypeId == "0" )
 		return;
 	
@@ -106,6 +108,7 @@ function loadAllEquipments()
     hideById('editEquipmentDiv');
 	hideById('resultSearchDiv');
 	hideById('editEquipmentStatusDiv');
+	hideById('equipmentDataEntryDiv');
 	
 	showById('selectDiv');
 	showById('searchEquipmentDiv');
@@ -150,8 +153,10 @@ function loadEquipmentsByFilter( )
 	hideById('editEquipmentDiv');
 	hideById('resultSearchDiv');
 	hideById('editEquipmentStatusDiv');
+	hideById('equipmentDataEntryDiv');
 	showById('selectDiv');
 	showById('searchEquipmentDiv');
+	
 
 	jQuery('#loaderDiv').show();
 	contentDiv = 'listEquipmentDiv';
@@ -178,18 +183,18 @@ function loadEquipmentsByFilter( )
 function showEquipmentStatusHistoryForm( equipmentInstanceId )
 {
 	//hideById('listEquipmentDiv');
-	hideById('editEquipmentStatusDiv');
+	//hideById('editEquipmentStatusDiv');
 	//hideById('selectDiv');
 	//hideById('searchEquipmentDiv');
 	
-	setInnerHTML('editEquipmentDiv', '');
+	setInnerHTML('equipmentStatusHistoryDiv', '');
 	
 	//jQuery('#loaderDiv').show();
 	
 	jQuery('#equipmentStatusHistoryDiv').dialog('destroy').remove();
 	jQuery('<div id="equipmentStatusHistoryDiv">' ).load( 'showEquipmentStatusHistoryForm.action?equipmentInstanceId='+equipmentInstanceId ).dialog({
 		title: i18n_equipment_status_history,
-		maximize: true, 
+		maximize: true,
 		closable: true,
 		modal:true,
 		overlay:{background:'#000000', opacity:0.1},
@@ -198,7 +203,6 @@ function showEquipmentStatusHistoryForm( equipmentInstanceId )
 	});
 	
 }
-
 
 //----------------------------------------------------------------
 //Show Equipment Tracking Form
@@ -210,8 +214,10 @@ function showEquipmentStatusForm( equipmentInstanceId )
 	hideById('editEquipmentStatusDiv');
 	hideById('selectDiv');
 	hideById('searchEquipmentDiv');
+	hideById('equipmentDataEntryDiv');
+	hideById('editEquipmentDiv');
 	
-	setInnerHTML('editEquipmentDiv', '');
+	setInnerHTML('editEquipmentStatusDiv', '');
 	
 	jQuery('#loaderDiv').show();
 	jQuery('#editEquipmentStatusDiv').load('showEquipmentStatusForm.action',
@@ -260,6 +266,9 @@ function showAddEquipmentForm()
 	hideById('selectDiv');
 	hideById('searchEquipmentDiv');
 	hideById('editEquipmentStatusDiv');
+	hideById('equipmentDataEntryDiv');
+	setInnerHTML('editEquipmentDiv', '');
+	
 	
 	jQuery('#loaderDiv').show();
 	jQuery('#editEquipmentDiv').load('showAddEquipmentForm.action',{
@@ -298,6 +307,7 @@ function showUpdateEquipmentForm( equipmentInstanceId )
 	hideById('selectDiv');
 	hideById('searchEquipmentDiv');
 	hideById('editEquipmentStatusDiv');
+	hideById('equipmentDataEntryDiv');
 	
 	setInnerHTML('editEquipmentDiv', '');
 	
@@ -321,6 +331,46 @@ function updateEquipment()
       type: "POST",
       url: 'updateEquipment.action',
       data: getParamsForDiv('editEquipmentDiv'),
+      success: function( json ) {
+		loadAllEquipments();
+      }
+     });
+}
+
+function showEquipmentDataEntryForm( equipmentInstanceId )
+{
+	hideById('listEquipmentDiv');
+	hideById('selectDiv');
+	hideById('searchEquipmentDiv');
+	hideById('editEquipmentStatusDiv');
+	hideById('editEquipmentDiv');
+	hideById('equipmentDataEntryDiv');
+	
+	setInnerHTML('equipmentDataEntryDiv', '');
+	
+	//jQuery('#loaderDiv').show();
+	jQuery('#equipmentDataEntryDiv').load('showEquipmentDataEntryForm.action',
+		{
+			equipmentInstanceId:equipmentInstanceId
+		}, function()
+		{
+			showById('equipmentDataEntryDiv');
+			jQuery('#searchEquipmentDiv').dialog('close');
+			//jQuery('#loaderDiv').hide();
+		});
+		
+	jQuery('#resultSearchDiv').dialog('close');
+	
+	//window.location.href = "showEquipmentDataEntryForm.action?equipmentInstanceId=" + equipmentInstanceId;
+	
+}
+
+function editEquipmentDataEntryForm()
+{
+	$.ajax({
+      type: "POST",
+      url: 'saveDataEntryForm.action',
+      data: getParamsForDiv('equipmentDataEntryDiv'),
       success: function( json ) {
 		loadAllEquipments();
       }
@@ -441,7 +491,7 @@ function catalogDetails( catalogId )
 //------------------------------------------------------------------------------
 //Update Equipment Data
 //------------------------------------------------------------------------------
-
+/*
 function showEquipmentDataEntryForm( equipmentInstanceId )
 {
 	
@@ -463,9 +513,9 @@ function showEquipmentDataEntryForm( equipmentInstanceId )
 		});
 		
 	jQuery('#resultSearchDiv').dialog('close');
-	*/
+	
 }
-
+*/
 function updateEquipmentDataEntry()
 {
 	$.ajax({

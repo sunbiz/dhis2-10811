@@ -1,3 +1,6 @@
+
+#sharingDialog()
+
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 		tableSorter( 'listTable' );
@@ -22,7 +25,7 @@
 			<table>
 			<table class="listTable" id="listTable">
                 <col/>
-                <col width="120px"/>               
+                <col width="145px"/>
                 <thead>
 				<tr>
 					<th>$i18n.getString( "name" )</th>
@@ -34,10 +37,33 @@
 					<tr id="tr${indicatorGroupSet.id}">
 						<td onclick="showIndicatorGroupSetDetails( $indicatorGroupSet.id )">$encoder.htmlEncode( $indicatorGroupSet.displayName )</td>
 						<td style="text-align:right">
-							<a href="openUpdateIndicatorGroupSet.action?id=$indicatorGroupSet.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
-							<a href="javascript:translate( 'IndicatorGroupSet', '$indicatorGroupSet.id' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
-							<a href="javascript:deleteIndicatorGroupSet( $indicatorGroupSet.id, '$encoder.jsEncode( $indicatorGroupSet.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+
+                            #if ( $security.canManage( $indicatorGroupSet ) )
+                            <a href="javascript:showSharingDialog('indicatorGroupSet', '$indicatorGroupSet.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
+                            #else
+                            <img src="../images/relationship-denied.png">
+                            #end
+
+                            #if( $security.canUpdate( $indicatorGroupSet ) )
+                            <a href="openUpdateIndicatorGroupSet.action?id=$indicatorGroupSet.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
+                            #else
+                            <img src="../images/edit-denied.png">
+                            #end
+
+                            #if( $security.canUpdate( $indicatorGroupSet ) )
+                            <a href="javascript:translate( 'IndicatorGroupSet', '$indicatorGroupSet.id' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+                            #else
+                            <img src="../images/i18n-denied.png">
+                            #end
+
+                            #if( $security.canDelete( $indicatorGroupSet ) )
+                            <a href="javascript:deleteIndicatorGroupSet( $indicatorGroupSet.id, '$encoder.jsEncode( $indicatorGroupSet.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+                            #else
+                            <img src="../images/delete-denied.png">
+                            #end
+
 							<a href="javascript:showIndicatorGroupSetDetails( $indicatorGroupSet.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
+
 						</td>
 					</tr>
 					#end
@@ -51,7 +77,7 @@
 
 			<div id="detailsArea" style="display:none">
 				<div style="float:right">
-					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_details' )"/></a>
+					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"/></a>
 				</div>
 				<p><label>$i18n.getString( "name" ):</label><br/><span id="nameField"></span></p>
 				<p><label>$i18n.getString( "number_of_members" ):</label><br/><span id="memberCountField"></span></p>
@@ -59,7 +85,7 @@
 
 			<div id="warningArea" style="position:fixed;right:10px;top:200px;display:none">
                 <div style="float:right">
-                    <a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_warning' )"/></a>
+                    <a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_warning' )"/></a>
                 </div>
                 <p><span id="warningField"></span></p>
             </div>

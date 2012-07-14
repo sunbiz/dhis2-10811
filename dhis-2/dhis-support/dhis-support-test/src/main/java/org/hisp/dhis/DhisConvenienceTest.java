@@ -107,11 +107,13 @@ import org.springframework.aop.support.AopUtils;
  */
 public abstract class DhisConvenienceTest
 {
-    private static final String BASE_UID = "123456789a";
+    protected static final String BASE_UID = "123456789a";
 
     private static final String EXT_TEST_DIR = System.getProperty( "user.home" ) + File.separator + "dhis2_test_dir";
 
     private static Date date;
+    
+    protected static final double DELTA = 0.01;
 
     // -------------------------------------------------------------------------
     // Service references
@@ -365,7 +367,6 @@ public abstract class DhisConvenienceTest
 
         dataElement.setUid( BASE_UID + uniqueCharacter );
         dataElement.setName( "DataElement" + uniqueCharacter );
-        dataElement.setAlternativeName( "DataElementAlternative" + uniqueCharacter );
         dataElement.setShortName( "DataElementShort" + uniqueCharacter );
         dataElement.setCode( "DataElementCode" + uniqueCharacter );
         dataElement.setDescription( "DataElementDescription" + uniqueCharacter );
@@ -530,7 +531,6 @@ public abstract class DhisConvenienceTest
 
         indicator.setUid( BASE_UID + uniqueCharacter );
         indicator.setName( "Indicator" + uniqueCharacter );
-        indicator.setAlternativeName( "IndicatorAlternative" + uniqueCharacter );
         indicator.setShortName( "IndicatorShort" + uniqueCharacter );
         indicator.setCode( "IndicatorCode" + uniqueCharacter );
         indicator.setDescription( "IndicatorDescription" + uniqueCharacter );
@@ -661,6 +661,14 @@ public abstract class DhisConvenienceTest
         period.setEndDate( endDate );
 
         return period;
+    }
+    
+    /**
+     * @param isoPeriod the ISO period string.
+     */
+    public static Period createPeriod( String isoPeriod )
+    {
+        return PeriodType.getPeriodFromIsoString( isoPeriod );
     }
 
     /**
@@ -821,16 +829,11 @@ public abstract class DhisConvenienceTest
         return legend;
     }
 
-    public static MapLegendSet createMapLegendSet( char uniqueCharacter, Indicator... indicators )
+    public static MapLegendSet createMapLegendSet( char uniqueCharacter )
     {
         MapLegendSet legendSet = new MapLegendSet();
 
         legendSet.setName( "MapLegendSet" + uniqueCharacter );
-
-        for ( Indicator indicator : indicators )
-        {
-            legendSet.getIndicators().add( indicator );
-        }
 
         return legendSet;
     }
@@ -890,13 +893,12 @@ public abstract class DhisConvenienceTest
         return program;
     }
 
-    public static ProgramStage createProgramStage( char uniqueCharacter, int stage, int minDays )
+    public static ProgramStage createProgramStage( char uniqueCharacter, int minDays )
     {
         ProgramStage programStage = new ProgramStage();
 
         programStage.setName( "name" + uniqueCharacter );
         programStage.setDescription( "description" + uniqueCharacter );
-        programStage.setStageInProgram( stage );
         programStage.setMinDaysFromStart( minDays );
 
         return programStage;

@@ -27,9 +27,15 @@ package org.hisp.dhis.mobile.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.sms.outbound.OutboundSmsTransportService;
+import org.hisp.dhis.user.UserGroup;
+import org.hisp.dhis.user.UserGroupService;
+import org.hisp.dhis.user.comparator.UserGroupComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
@@ -49,13 +55,35 @@ public class ShowSendSMSFormAction
     @Autowired
     private OutboundSmsTransportService transportService;
 
+    @Autowired
+    private UserGroupService userGroupService;
+
     // -------------------------------------------------------------------------
-    // Output
+    // Input && Output
     // -------------------------------------------------------------------------
+
+    private String sendTo;
+
+    public void setSendTo( String sendTo )
+    {
+        this.sendTo = sendTo;
+    }
+
+    public String getSendTo()
+    {
+        return sendTo == null || sendTo.trim().isEmpty() ? "phone" : sendTo;
+    }
 
     public Map<String, String> getGatewayMap()
     {
         return transportService.getGatewayMap();
+    }
+
+    private List<UserGroup> userGroups;
+
+    public List<UserGroup> getUserGroups()
+    {
+        return userGroups;
     }
 
     // -------------------------------------------------------------------------
@@ -65,6 +93,10 @@ public class ShowSendSMSFormAction
     public String execute()
         throws Exception
     {
+        userGroups = new ArrayList<UserGroup>( userGroupService.getAllUserGroups() );
+
+        Collections.sort( userGroups, new UserGroupComparator() );
+
         return SUCCESS;
     }
 }

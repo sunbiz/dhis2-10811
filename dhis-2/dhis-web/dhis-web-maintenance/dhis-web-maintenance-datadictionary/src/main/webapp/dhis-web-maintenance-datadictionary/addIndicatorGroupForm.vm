@@ -12,7 +12,7 @@
             'rules' : getValidationRules( "indicatorGroup" )
         } );
 
-        checkValueIsExist( "name", "validateIndicatorGroup.action" );
+        // checkValueIsExist( "name", "validateIndicatorGroup.action" );
 
         var nameField = document.getElementById( 'name' );
         nameField.select();
@@ -35,11 +35,10 @@
 
 <h3>$i18n.getString( "create_new_indicator_group" )</h3>
 
-<form id="addIndicatorGroupForm" action="addIndicatorGroup.action" method="post" >
+<form id="addIndicatorGroupForm" action="addIndicatorGroup.action" method="post" class="inputForm">
 
 <table>
-    <col width="200px" />
-   	<col width="240px" />
+    <col width="120px" />
 
     <tr>
    		<th colspan="2">$i18n.getString( "details" )</th>
@@ -47,16 +46,18 @@
 
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:240px;"/></td>
+		<td><input type="text" id="name" name="name" /></td>
 	</tr>
 </table>
 
 #tblDynamicAttributes( { "attributes": $attributes } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<tr>
 		<th>$i18n.getString( "available_indicators" )</th>

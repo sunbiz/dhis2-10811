@@ -27,13 +27,12 @@ package org.hisp.dhis.help;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.ByteArrayOutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.DhisSpringTest;
-import org.hisp.dhis.help.HelpManager;
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * @author Lars Helge Overland
@@ -42,9 +41,9 @@ public class HelpManagerTest
     extends DhisSpringTest
 {
     private static final Log log = LogFactory.getLog( HelpManagerTest.class );
-    
+
     private HelpManager helpManager;
-    
+
     @Override
     public void setUpTest()
     {
@@ -55,19 +54,19 @@ public class HelpManagerTest
     public void testGetEmbeddedHelpContent()
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-                
+
         helpManager.getHelpContent( out, "overview" );
-        
-        log.debug( out.toString() );        
+
+        log.debug( out.toString() );
     }
-    
+
     @Test
     public void testGetHelpCenterContent()
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
+
         helpManager.getHelpItems( out );
-        
-        log.debug( out.toString() );        
+
+        log.debug( out.toString() );
     }
 }

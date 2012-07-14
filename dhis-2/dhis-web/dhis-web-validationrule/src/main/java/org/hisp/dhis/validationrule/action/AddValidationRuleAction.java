@@ -111,6 +111,13 @@ public class AddValidationRuleAction
         this.leftSideDescription = leftSideDescription;
     }
 
+    private boolean leftSideNullIfBlank;
+    
+    public void setLeftSideNullIfBlank( boolean leftSideNullIfBlank )
+    {
+        this.leftSideNullIfBlank = leftSideNullIfBlank;
+    }
+
     private String rightSideExpression;
 
     public void setRightSideExpression( String rightSideExpression )
@@ -123,6 +130,13 @@ public class AddValidationRuleAction
     public void setRightSideDescription( String rightSideDescription )
     {
         this.rightSideDescription = rightSideDescription;
+    }
+    
+    private boolean rightSideNullIfBlank;
+
+    public void setRightSideNullIfBlank( boolean rightSideNullIfBlank )
+    {
+        this.rightSideNullIfBlank = rightSideNullIfBlank;
     }
 
     private String periodTypeName;
@@ -142,6 +156,7 @@ public class AddValidationRuleAction
         
         leftSide.setExpression( leftSideExpression );
         leftSide.setDescription( leftSideDescription );
+        leftSide.setNullIfBlank( leftSideNullIfBlank );
         leftSide.setDataElementsInExpression( expressionService.getDataElementsInExpression( leftSideExpression ) );
         leftSide.setOptionCombosInExpression( expressionService.getOptionCombosInExpression( leftSideExpression ) );
         
@@ -149,6 +164,7 @@ public class AddValidationRuleAction
         
         rightSide.setExpression( rightSideExpression );
         rightSide.setDescription( rightSideDescription );
+        rightSide.setNullIfBlank( rightSideNullIfBlank );
         rightSide.setDataElementsInExpression( expressionService.getDataElementsInExpression( rightSideExpression ) );
         rightSide.setOptionCombosInExpression( expressionService.getOptionCombosInExpression( rightSideExpression ) );
         

@@ -24,9 +24,9 @@
 
   #set( $count = 0 )               
   #set( $dataElements = $orderedDataElements.get( $categoryCombo )  )
-  #set( $optionCombos = $orderdCategoryOptionCombos.get( $categoryCombo.id )  )
+  #set( $optionCombos = $orderedCategoryOptionCombos.get( $categoryCombo.id )  )
   #set( $mark = 0 )
-  #foreach( $optionCombo in $optionCombos )<span id="${optionCombo.id}-optioncombo" class="hidden">${encoder.htmlEncode( $optionCombo.name )}</span>
+  #foreach( $optionCombo in $optionCombos )<span id="${optionCombo.uid}-optioncombo" class="hidden">${encoder.htmlEncode( $optionCombo.name )}</span>
   #end
   #foreach( $dataElement in $dataElements )
   #if( $mark == 1 )
@@ -36,18 +36,19 @@
   #end
   #set( $count = $count + 1 )
   <tr>
-  <td id="${dataElement.id}-cell" #if( $mark == 1 )class="alt"#else class="reg"#end><span id="${dataElement.id}-dataelement">${encoder.htmlEncode( $dataElement.getFormNameFallback() )}</span></td>
+  <td id="${dataElement.uid}-cell" #if( $mark == 1 )class="alt"#else class="reg"#end><span id="${dataElement.uid}-dataelement">${encoder.htmlEncode( $dataElement.getFormNameFallback() )}</span></td>
   #foreach( $optionCombo in $optionCombos )
-  #set( $dataEntryId = "${dataElement.id}-${optionCombo.id}-val" )	    
-  <td>
+  #set( $dataEntryId = "${dataElement.uid}-${optionCombo.uid}-val" )
+  #set( $commentId = "${dataElement.uid}-${optionCombo.uid}-comment" )
   #if( $dataElement.type == "bool" )
-  <select name="entryselect" id="$dataEntryId"#if( !$hasAccess ) disabled="disabled"#end tabindex="$tabIndex">
+  <td><select name="entryselect" id="${dataEntryId}"#if( !$hasAccess ) disabled="disabled"#end tabindex="${tabIndex}">
     <option value="">[$i18n.getString( "no_value" )]</option>
     <option value="true">$i18n.getString( "yes" )</option>
     <option value="false">$i18n.getString( "no" )</option>
   </select>
+  <img name="commentlink" id="${commentId}"></td>
   #else
-  <input name="entryfield" id="$dataEntryId" type="text"#if( !$hasAccess ) disabled="disabled"#end tabindex="$tabIndex">
+  <td><input name="entryfield" id="${dataEntryId}" maxlength="255" type="text"#if( !$hasAccess ) disabled="disabled"#end tabindex="$tabIndex"></td>
   #end
   </td>
   #set( $tabIndex = $tabIndex + 1 )

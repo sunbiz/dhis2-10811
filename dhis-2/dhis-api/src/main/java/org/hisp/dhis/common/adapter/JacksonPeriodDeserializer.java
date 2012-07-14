@@ -36,6 +36,37 @@ import org.hisp.dhis.period.PeriodType;
 
 import java.io.IOException;
 
+class LocalPeriod
+{
+    private String id;
+
+    private String name;
+
+    LocalPeriod()
+    {
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+}
+
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
@@ -43,10 +74,11 @@ public class JacksonPeriodDeserializer
     extends JsonDeserializer<Period>
 {
     @Override
-    public Period deserialize( JsonParser jp, DeserializationContext ctxt ) throws IOException, JsonProcessingException
+    public Period deserialize( JsonParser jp, DeserializationContext ctxt )
+        throws IOException, JsonProcessingException
     {
-        String periodString = jp.readValueAs( String.class );
+        LocalPeriod p = jp.readValueAs( LocalPeriod.class );
 
-        return PeriodType.getPeriodFromIsoString( periodString );
+        return p.getId() == null ? null : PeriodType.getPeriodFromIsoString( p.getId() );
     }
 }

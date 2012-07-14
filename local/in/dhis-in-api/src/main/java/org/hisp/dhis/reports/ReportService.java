@@ -105,6 +105,8 @@ public interface ReportService
     
     List<Report_inDesign> getReportDesign( String fileName );
     
+    List<Report_inDesign> getDistrictFeedbackReportDesign( String fileName );
+    
     String getResultDataValue( String formula, Date startDate, Date endDate, OrganisationUnit organisationUnit , String reportModelTB );
     
     String getIndividualResultDataValue( String formula, Date startDate, Date endDate, OrganisationUnit organisationUnit, String reportModelTB );
@@ -165,4 +167,18 @@ public interface ReportService
     Map<String, String> getAggDataFromDataValueTableForOrgUnitWise( String orgUnitIdsByComma, String dataElmentIdsByComma, String periodIdsByComma );
     
     Map<String, String> getAggDataFromAggDataValueTableForOrgUnitWise( String orgUnitIdsByComma, String dataElmentIdsByComma, String periodIdsByComma );
+    
+    Map<String, String> getResultDataValueFromDataValueTable( String orgUnitIdsByComma, String dataElmentIdsByComma, String periodIdsByComma );
+    
+    Map<String, String> getAggDataFromAggDataValueTable( String orgUnitIdsByComma, String dataElmentIdsByComma, String periodIdsByComma );
+    
+    Integer getOrgunitCountByOrgunitGroup( String orgunitGroupIdsByComma, Integer orgUnitId );
+    
+    Integer getReportingOrgunitCountByDataset( Integer dataSetId, Integer orgUnitId, Integer periodId );
+    
+    Integer getReportingOrgunitCountByDataset( Integer dataSetId, Integer orgUnitId );
+    
+    String getDataelementIdsByStype( List<Report_inDesign> reportDesignList, String sType );
+    
+    Map<String, String> getAggNonNumberDataFromDataValueTable( String orgUnitIdsByComma, String dataElmentIdsByComma, String periodIdsByComma );
 }

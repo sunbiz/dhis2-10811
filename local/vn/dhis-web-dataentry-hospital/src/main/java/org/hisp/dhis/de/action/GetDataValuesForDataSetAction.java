@@ -27,7 +27,10 @@ package org.hisp.dhis.de.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.opensymphony.xwork2.Action;
+import java.util.Collection;
+import java.util.Date;
+
+import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataset.CompleteDataSetRegistration;
 import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
 import org.hisp.dhis.dataset.DataSet;
@@ -40,9 +43,9 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.util.SessionUtils;
 
-import java.util.Collection;
-import java.util.Date;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Lars Helge Overland
@@ -50,6 +53,8 @@ import java.util.Date;
 public class GetDataValuesForDataSetAction
     implements Action
 {
+    protected static final String KEY_ICD_FORM_RESULT = "icdFormResults";
+
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -114,6 +119,13 @@ public class GetDataValuesForDataSetAction
         this.organisationUnitId = organisationUnitId;
     }
 
+    private Integer chapterId;
+
+    public void setChapterId( Integer chapterId )
+    {
+        this.chapterId = chapterId;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -164,6 +176,7 @@ public class GetDataValuesForDataSetAction
     // Action implementation
     // -------------------------------------------------------------------------
 
+    @SuppressWarnings( "unchecked" )
     public String execute()
     {
         OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
@@ -174,13 +187,24 @@ public class GetDataValuesForDataSetAction
         // Data values
         // ---------------------------------------------------------------------
 
-        dataValues = dataValueService.getDataValues( organisationUnit, period, dataSet.getDataElements() );
+        Collection<DataElement> dataElements = null;
+
+        if ( chapterId != null && chapterId != -1 )
+        {
+            dataElements = (Collection<DataElement>) SessionUtils.getSessionVar( KEY_ICD_FORM_RESULT );
+        }
+        else
+        {
+            dataElements = dataSet.getDataElements();
+        }
+
+        dataValues = dataValueService.getDataValues( organisationUnit, period, dataElements );
 
         // ---------------------------------------------------------------------
         // Min-max data elements
         // ---------------------------------------------------------------------
 
-        minMaxDataElements = minMaxDataElementService.getMinMaxDataElements( organisationUnit, dataSet.getDataElements() );
+        minMaxDataElements = minMaxDataElementService.getMinMaxDataElements( organisationUnit, dataElements );
 
         // ---------------------------------------------------------------------
         // Data set completeness info
@@ -188,17 +212,20 @@ public class GetDataValuesForDataSetAction
 
         if ( dataSet != null && period != null && organisationUnit != null )
         {
-            CompleteDataSetRegistration registration = registrationService.getCompleteDataSetRegistration( dataSet, period, organisationUnit );
+            CompleteDataSetRegistration registration = registrationService.getCompleteDataSetRegistration( dataSet,
+                period, organisationUnit );
 
             if ( registration != null )
             {
                 complete = true;
                 date = registration.getDate();
                 storedBy = registration.getStoredBy();
-            }            
+            }
 
             locked = dataSetService.isLocked( dataSet, period, organisationUnit, null );
         }
+        
+        dataElements = null;
 
         return SUCCESS;
     }

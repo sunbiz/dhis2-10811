@@ -18,7 +18,7 @@
 
 <h3>$i18n.getString( "edit_constant" )</h3>
 
-<form id="updateConstantForm" action="updateConstant.action" method="post" >
+<form id="updateConstantForm" action="updateConstant.action" method="post" class="inputForm">
 <input type="hidden" id="id" name="id" value="$!constant.id"/>
 
 <table>
@@ -27,11 +27,11 @@
 	</tr>
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $!constant.name )" style="width:20em"/></td>
+		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $!constant.name )"></td>
 	</tr>
 	<tr>
 		<td><label for="name">$i18n.getString( "value" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="value" name="value" value="$!constant.value" style="width:20em"/></td>
+		<td><input type="text" id="value" name="value" value="$!constant.value"></td>
 	</tr>
 	<tr>
 		<td></td>

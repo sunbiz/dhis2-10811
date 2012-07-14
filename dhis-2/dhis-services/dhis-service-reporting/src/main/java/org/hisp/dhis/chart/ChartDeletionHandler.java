@@ -31,6 +31,7 @@ import java.util.Iterator;
 
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.period.Period;
 import org.hisp.dhis.system.deletion.DeletionHandler;
 import org.hisp.dhis.user.User;
 
@@ -63,13 +64,27 @@ public class ChartDeletionHandler
     }
 
     @Override
+    public String allowDeletePeriod( Period period )
+    {
+        for ( Chart chart : chartService.getAllCharts() )
+        {
+            if ( chart.getPeriods().contains( period ) )
+            {
+                return chart.getName();
+            }
+        }
+        
+        return null;
+    }
+
+    @Override
     public void deleteIndicator( Indicator indicator )
     {
         for ( Chart chart : chartService.getAllCharts() )
         {
             if ( chart.getIndicators().remove( indicator ) )
             {
-                chartService.saveChart( chart );
+                chartService.addChart( chart );
             }
         }
     }
@@ -81,7 +96,7 @@ public class ChartDeletionHandler
         {
             if ( chart.getOrganisationUnits().remove( unit ) )
             {
-                chartService.saveChart( chart );
+                chartService.addChart( chart );
             }
         }
     }

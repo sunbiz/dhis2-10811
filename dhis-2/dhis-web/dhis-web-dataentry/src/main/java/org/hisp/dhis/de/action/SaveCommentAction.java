@@ -105,16 +105,18 @@ public class SaveCommentAction
         this.commentValue = commentValue;
     }
 
-    private int dataElementId;
+    private String dataElementId;
 
-    public void setDataElementId( int dataElementId )
+    public void setDataElementId( String dataElementId )
     {
         this.dataElementId = dataElementId;
     }
 
-    public int getDataElementId()
+    private String optionComboId;
+
+    public void setOptionComboId( String optionComboId )
     {
-        return dataElementId;
+        this.optionComboId = optionComboId;
     }
 
     private int organisationUnitId;
@@ -122,13 +124,6 @@ public class SaveCommentAction
     public void setOrganisationUnitId( int organisationUnitId )
     {
         this.organisationUnitId = organisationUnitId;
-    }
-
-    private Integer optionComboId;
-
-    public void setOptionComboId( Integer optionComboId )
-    {
-        this.optionComboId = optionComboId;
     }
 
     private int statusCode;

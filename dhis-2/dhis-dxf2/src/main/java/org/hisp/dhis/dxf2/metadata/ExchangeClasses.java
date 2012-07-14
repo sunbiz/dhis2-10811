@@ -33,7 +33,13 @@ import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.constant.Constant;
 import org.hisp.dhis.datadictionary.DataDictionary;
-import org.hisp.dhis.dataelement.*;
+import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataelement.DataElementCategory;
+import org.hisp.dhis.dataelement.DataElementCategoryCombo;
+import org.hisp.dhis.dataelement.DataElementCategoryOption;
+import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
+import org.hisp.dhis.dataelement.DataElementGroup;
+import org.hisp.dhis.dataelement.DataElementGroupSet;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.Section;
 import org.hisp.dhis.document.Document;
@@ -52,6 +58,8 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.report.Report;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.sqlview.SqlView;
@@ -61,7 +69,11 @@ import org.hisp.dhis.user.UserGroup;
 import org.hisp.dhis.validation.ValidationRule;
 import org.hisp.dhis.validation.ValidationRuleGroup;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -114,7 +126,8 @@ final public class ExchangeClasses
         exportClasses.put( ValidationRule.class, "validationRules" );
         exportClasses.put( ValidationRuleGroup.class, "validationRuleGroups" );
 
-        exportClasses.put( MapView.class, "maps" );
+        exportClasses.put( org.hisp.dhis.mapping.Map.class, "maps" );
+        exportClasses.put( MapView.class, "mapViews" );
         exportClasses.put( MapLegend.class, "mapLegends" );
         exportClasses.put( MapLegendSet.class, "mapLegendSets" );
         exportClasses.put( MapLayer.class, "mapLayers" );
@@ -126,6 +139,9 @@ final public class ExchangeClasses
         exportClasses.put( MessageConversation.class, "messageConversations" );
         exportClasses.put( Interpretation.class, "interpretations" );
 
+        exportClasses.put( Program.class, "programs" );
+        exportClasses.put( ProgramStage.class, "programStages" );
+
         importClasses = new LinkedHashMap<Class<? extends IdentifiableObject>, String>( exportClasses );
 
         importClasses.remove( User.class );
@@ -134,6 +150,9 @@ final public class ExchangeClasses
 
         importClasses.remove( MessageConversation.class );
         importClasses.remove( Interpretation.class );
+
+        importClasses.remove( Program.class );
+        importClasses.remove( ProgramStage.class );
     }
 
     public static Map<Class<? extends IdentifiableObject>, String> getExportMap()

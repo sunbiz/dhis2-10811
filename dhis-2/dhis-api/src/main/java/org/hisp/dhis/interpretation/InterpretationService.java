@@ -29,6 +29,8 @@ package org.hisp.dhis.interpretation;
 
 import java.util.List;
 
+import org.hisp.dhis.user.User;
+
 /**
  * @author Lars Helge Overland
  */
@@ -45,6 +47,8 @@ public interface InterpretationService
     void deleteInterpretation( Interpretation interpretation );
     
     List<Interpretation> getInterpretations( int first, int max );
+
+    List<Interpretation> getInterpretations( User user, int first, int max );
     
     void addInterpretationComment( String uid, String text );
     

@@ -27,11 +27,10 @@ package org.hisp.dhis.dd.action.indicatorgroupset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.indicator.IndicatorGroupSet;
 import org.hisp.dhis.indicator.IndicatorService;
-
-import com.opensymphony.xwork2.Action;
 
 /**
  * @author Tran Thanh Tri
@@ -90,11 +89,10 @@ public class ValidateIndicatorGroupSetAction
 
     public String execute()
     {
-
         if ( name != null )
         {
-
-            IndicatorGroupSet match = indicatorService.getIndicatorGroupSetByName( name );
+            // TODO compile fix, this should be removed
+            IndicatorGroupSet match = indicatorService.getIndicatorGroupSetByName( name ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {

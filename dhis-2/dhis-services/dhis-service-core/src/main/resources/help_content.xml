@@ -5481,977 +5481,1116 @@ elements. The &apos;Sort&apos; button can be used to sort the data elements into
 </section>
 </chapter>
 <chapter>
-<title>Name-Based Information Tracking Module</title>
-<section>
-<title>Introduction</title>
-<section>
-<title>Quick Background</title>
-<para>The DHIS Community Module ( also known as DHIS patient module or NBITS) is an integrated module in DHIS2, built to support community health systems and facilitate a smooth integration between the community health data and aggregated data management ( e.g. HMIS ).</para>
-<para>The module deals with person-level data as opposed to aggregated data which is the main focus of the core DHIS2 modules. The module supports management of community health programs such as: child immunization, maternal health and e.g. allows for tracking of individuals enrolled in various programs and activity planning for community health workers.</para>
-<para>The following are the major things:</para>
-<orderedlist>
-<listitem>
-<para>Administrating a person - registering a new person, setting relationships, enrolling a person into a program.</para>
-</listitem>
-<listitem>
-<para>Administrating meta data, includes person attributes, person attribute groups, identifier type; program, program attribute, program stage, validations.</para>
-</listitem>
-<listitem>
-<para>Linking data between name-based information tracking system – NBITS and aggregate management system.</para>
-</listitem>
-<listitem>
-<para>Data Entry for inputting data for treatment stages of an person.</para>
-</listitem>
-<listitem>
-<para>Activity plans.</para>
-</listitem>
-</orderedlist>
-</section>
-<section>
-<title>Context and Concept</title>
-<para>Conventionally, Public Health Systems have been recording and reporting aggregated data of the services provided across various health programmes. Though this is crucial in monitoring &quot;<emphasis role="italic">reach</emphasis>&quot; and &quot;<emphasis role="italic">availability</emphasis>&quot; of public health services, but it lacks tracing the persons being provided these services and quality of service. </para>
-<para>For example, the aggregate report will show that 300 pregnant women registered for ANC and 120 women given IFA tablets or 90 women given TT injection. In an aggregate system, it is not possible to ascertain that if a particular pregnant woman registered for ANC, has also been given IFA and TT, as data only shows aggregate numbers. To understand the quality of services given to each pregnant woman registered for ANC, immunization cycle of each child or treatment of each leprosy person, etc. it is important that treatment information of each person is maintained as an individual case.</para>
-</section>
-<section>
-<title>Objectives of Name Based Information Tracking</title>
-<para><emphasis role="bold">Objectives of Name Based Information Tracking:</emphasis></para>
-<orderedlist>
-<listitem>
-<para>Track (follow-up) a person through the entire treatment period.</para>
-</listitem>
-<listitem>
-<para>Facilitate the service provider (health worker or doctor) in person&apos;s treatment follow-up; by recording all treatment related information in one place (makes it comprehensive for the service-provider).</para>
-</listitem>
-<listitem>
-<para>Help the person in recording treatment history in one place, which could be used later in case of referral.</para>
-</listitem>
-</orderedlist>
-<para><emphasis role="bold">Advantages of Name Based Information Tracking :</emphasis></para>
-<orderedlist>
-<listitem>
-<para>Facilitate in recording entire treatment information of each person.</para>
-</listitem>
-<listitem>
-<para>Facilitate health-workers in organizing out-reach.</para>
-</listitem>
-<listitem>
-<para>Facilitate service-provider in treatment follow-up.</para>
-</listitem>
-<listitem>
-<para>Facilitate in effective monitoring of different health services and drill down to individual person information.</para>
-</listitem>
-<listitem>
-<para>Help strengthen the quality and fidelity of data.</para>
-</listitem>
-</orderedlist>
-<para>Though at sub-center level, the data in primary registers is recorded and maintained by individuals (name based), but is sent up-wards as aggregate reports. Now with HMIS reforms implemented and district on-wards data available on-line, the thrust has been on ensuring data quality implemented completeness. To-wards this one important initiative has been starting name based reporting - from sub-center to national level.</para>
-</section>
-<section>
-<title>Working of Name Based Information Tracking</title>
-<para>NBITS registers cases and tracks these cases over time through different forms that are filled for the treatment of a person.</para>
-<orderedlist>
-<listitem>
-<para>Registration and Identification for a person</para>
-</listitem>
-<listitem>
-<para>Programme enrolment</para>
-</listitem>
-<listitem>
-<para>Treatment plan</para>
-</listitem>
-<listitem>
-<para>Case encounters</para>
-</listitem>
-</orderedlist>
-<section>
-<title>Registration and Identification for a person</title>
-<para>The system has a function to manage facilities which allow to registry new persons or not. To start creating a patient, we need to select a facility which allows to registry a new person.</para>
-<para>The process of creating a new person in the system is through the registration process. The person is first registered in the system (or checked if person already exists in system). Searching a person can be done through identifiers, name, location or person&apos;s attributes (address, phone number, e.g.). If the person already exists in the system, the encounter details can be opened and filled and the programme process can continue. If the person does not exist in the system, then new registration takes place. </para>
-<para>When a person is registered in the system, multiple identifiers can be associated with the registration, such as Passport number, PAN, driving license, health identifier, UID. Internally, a location unique identifier is used to track the person.</para>
-<para>The process of identification is location independent, this implies that irrespective of location where person registered for service the service/medical record can be searched and pulled-up in any other facility provided the same is in the database. For facilities, which are not in the database, for e.g. a private facility, it will just be noted that &quot;<emphasis role="italic">Service is provided at other facility</emphasis>&quot;. In such case, the person should be encouraged, to provide these details of services taken from other facility to the ANM. The health worker is first identified through any of the identifiers or username in the system and the person is identified through identifiers for receiving a health service. After identification, the person&apos;s case history can be viewed or case can be updated with the new care that they have received.</para>
-</section>
-<section>
-<title>Programme Enrollment and Treatment Plan</title>
-<para>When a person is enrolled into any health programme, a record of treatment is created for the person. Various services provided to the person through the treatment are recorded for the person. This recording results in creation of a treatment plan for the person.</para>
-</section>
-<section>
-<title>Case Encounters</title>
-<para>Each interaction with the person related to the case is considered to be an encounter and these encounters are recorded into the person case. Person case is updated with the identification of both the health worker and the person who is receiving the service.</para>
-</section>
-</section>
-</section>
-<section>
-<title>NBITS Application User Guide</title>
-<section>
-<title>Starting the application</title>
-<para>To use the online NBITS application, in client computer which is connected to Internet, launch web browser ( use of <emphasis role="italic">Mozilla Firefox</emphasis> browser is recommended ).</para>
-<para><graphic fileref="resources/images/patients_programs/Firefox-icon.png" align="center"/></para>
-<para>Once you have started NBITS online, the displayed screen will prompt you to enter your registered &quot;<emphasis role="italic">Username</emphasis>&quot; and &quot;<emphasis role="italic">Password</emphasis>&quot;. After entering the required information, click <emphasis role="italic">Login</emphasis> button to log into the application.</para>
-<screenshot>
-<screeninfo>Figure 2.1.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.1.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>After clicking the <emphasis role="italic">Login</emphasis> button, you will be directed to the <emphasis role="italic">Welcome</emphasis> screen of the NBITS:</para>
-<screenshot>
-<screeninfo>Figure 2.1.2</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.1.2.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</section>
-<section>
-<title>Modules in NBITS</title>
-<para>The NBITS application is an online application and developed as open source application. The application is platform independent and can be easily linked with other open source application. The application is developed on the similar DHIS framework and it has three basic modules as follows - </para>
-<orderedlist>
-<listitem>
-<para>Maintenance module</para>
-</listitem>
-<listitem>
-<para>Services module</para>
-</listitem>
-<listitem>
-<para>Help module</para>
-</listitem>
-</orderedlist>
-<para>There are some additions in the NBITS in both maintenance and services module. <emphasis role="italic">Maintenance</emphasis> module has one additional sub module for the person registration and <emphasis role="italic">Services</emphasis> module has one additional sub-module for name-based data entry and recording.</para>
-<para>The modules provide three main functionalities -</para>
-<orderedlist>
-<listitem>
-<para>Processes of case tracking in NBITS.</para>
-</listitem>
-<listitem>
-<para>Reports.</para>
-</listitem>
-<listitem>
-<para>Person Aggregation Query Builder.</para>
-</listitem>
-</orderedlist>
-</section>
-<section>
-<title>Processes of case tracking in NBITS</title>
-<para>The NBITS application is developed with the objective of tracking cases of any disease or condition by using this application. The process of tracking starts with the registration of cases in the application. Application can provide information for only those cases which are available in the database, so the first process is the registration of person in the NBITS application. Once the person is registered, she/he can be enrolled in the program for which registered. The application will guide the health provider for the services required by the person through activity plan and the services received by the person from time to time can be updated into his/her profile. The working process of the application can be understood in steps depicted in picture below - </para>
-<para><screenshot>
-<screeninfo>Figure 2.3.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot></para>
-<section id="patient">
-<title>Person registration</title>
-<para>The First step in the tracking is the registration of person/case in the NBITS application. In the registration process, the details - which are related to the personal information, identification, contact and location details &amp; health provider details, are entered in the application. In the registration itself, person is provided with the unique identification number. This number will be unique and will not match with the identification number of any person in the state jurisdiction. The issue of identification number will be the responsibility of facility where the person is registered first time.</para>
-<warning>
-<para>Any case irrespective of the program will be registered first and then will be enrolled in any of the program. E.g. every pregnant women and the child need to be registered first as a person, than the persons will be enrolled in Mother Care program or Child Health program.</para>
-</warning>
-<para><emphasis role="bold">
-<emphasis role="underline">
-<emphasis role="italic">Description</emphasis>
-</emphasis>
-</emphasis><emphasis role="italic">
-<emphasis role="bold">
-<emphasis role="underline"> of Person registration Process in application</emphasis>
-</emphasis>
-</emphasis> - </para>
-<para>For the registration process, the details - which are related to the personal information, identification, contact and location details, and health provider details, are entered.</para>
-<orderedlist>
-<listitem>
-<para>To register a person in the application, go to the <emphasis role="italic">Maintenance</emphasis> menu, select option <emphasis role="italic">Persons and Programs</emphasis>.</para>
-<screenshot>
-<screeninfo>Figure 2.3.2</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="100%" fileref="resources/images/patients_programs/Fig. 2.3.2.png" format="CGM-CLEAR"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.3.3</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="100%" fileref="resources/images/patients_programs/Fig. 2.3.3.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Now click the <emphasis role="italic">Person</emphasis> option to go to <emphasis role="italic">Person Registration</emphasis> window.</para>
-<screenshot>
-<screeninfo>Figure 2.3.4</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="100%" fileref="resources/images/patients_programs/Fig. 2.3.4.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Click the concerned facility from the facilities hierarchy displayed on the left side of the data entry screen. Then click the <emphasis role="italic">Add new</emphasis> button on the right side.</para>
-<screenshot>
-<screeninfo>Figure 2.3.5</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.5.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Start process of registration by providing name, location details, identification details, contact details and health provider details. The click the <emphasis role="italic">Add</emphasis> button (arrow in RED color, fig. 2.3.6, given at the end of person registration ) to complete to process of registration.</para>
-<screenshot>
-<screeninfo>Figure 2.3.6</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.6.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>To check the duplicates or to avoid double registration, after providing name and demographic details, click the <emphasis role="italic">Check duplicate</emphasis> button ( arrow in BLUE color, fig. 2.3.6 ). Checking process bases on full name, gender and birthday of the registering person to look for the available persons with the similar information in the database. If the system finds out the same persons , the result list will be displayed. Now user can cancel the registration process and update the existing person or continue the process of registration.</para>
-</listitem>
-</orderedlist>
-<para></para>
-<para><emphasis role="bold">Person Enrolment</emphasis></para>
-<para>After the person registration, person needs to be enrolled in any available program in the application and for which she/he has been registered. To enrol -</para>
-<orderedlist>
-<listitem>
-<para>Click the <emphasis role="italic">Manage Program Enrollment </emphasis>icon, the first icon under Operations, corresponding to the person you would like to modify.</para>
-<screenshot>
-<screeninfo>Figure 2.3.7</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.7.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Select a program from the list ( i.e., Mother Care Program, Child Health Program... )</para>
-<screenshot>
-<screeninfo>Figure 2.3.8</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.8.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<warning>
-<para>This task can be executed after register successfully, a form like Fig. 2.3.8. is showed up for enrolment.
+  <title>DHIS TRACKER</title>
+  <section>
+    <title>Introduction</title>
+    <section>
+      <title>Quick Background</title>
+      <para>Conventionally, Public Health Systems have been recording and reporting aggregated data of the services provided across various health programmes. Though this is crucial in monitoring &quot;<emphasis role="italic">reach</emphasis>&quot; and &quot;<emphasis role="italic">availability</emphasis>&quot; of public health services, but it lacks tracing the persons being provided these services and quality of these ones. </para>
+      <para>For example, the aggregate report will show that 300 pregnant women registered  for ANC and 120 women given IFA tablets or 90 women given TT injection. In an aggregate system, it is not possible to ascertain that if a particular pregnant woman registered for ANC, has also been given IFA and TT, as data only shows aggregate numbers. To understand the quality of services given to each pregnant woman registered for ANC, immunization cycle of each child or treatment of each leprosy person, etc. it is important that treatment information of each person is maintained as an individual case.</para>
+      <para>The DHIS tracker module ( also known as  DHIS Community Module  ) is an integrated module in DHIS2, built to support community health systems and facilitate a smooth integration between the community health data and aggregated data management.</para>
+      <para>The module supports management of community health programs, such as child immunization, maternal health and e.g. allows tracking of individuals enrolled in various programs and activity planning for community health workers.</para>
+      <para>The following are the major things:</para>
+      <orderedlist>
+        <listitem>
+          <para>Administrating meta data -  includes person attributes, person attribute groups, identifier types; relationship types, health programs,  program stages corresponding to the program, validations and formulas  for aggregating data value from individual cases.</para>
+        </listitem>
+        <listitem>
+          <para>Administrating person registration - registering a new person, setting relationships,  enrolling a person into a program and management of person location</para>
+        </listitem>
+        <listitem>
+          <para>Data entry for inputting individual data for treatment  of each person.</para>
+        </listitem>
+        <listitem>
+          <para>Reports for individual cases.</para>
+        </listitem>
+        <listitem>
+          <para>Linking data between tracker system and aggregate management system.</para>
+        </listitem>
+        <listitem>
+          <para>Provides a list of upcoming visits to better plan for daily/weekly activities at a facility or in an area. </para>
+        </listitem>
+        <listitem>
+          <para>Support the work practices around tracking persons within a health program.</para>
+        </listitem>
+      </orderedlist>
+      <para><emphasis role="bold">Advantages of tracker module -</emphasis></para>
+      <orderedlist>
+        <listitem>
+          <para>Facilitate the health service provider  in person&apos;s treatment follow-up by recording all treatment related information in one place and in effective monitoring of different health services and drill down to individual person information.</para>
+        </listitem>
+        <listitem>
+          <para>Facilitate the health service provider at a facility or in an area a list of upcoming visits to better plan for daily/weekly activities. </para>
+        </listitem>
+        <listitem>
+          <para>Help the person in recording treatment history in one place, which could be used later in case of referral.</para>
+        </listitem>
+        <listitem>
+          <para>Facilitate in recording entire treatment information of each person.</para>
+        </listitem>
+        <listitem>
+          <para>Help strengthen the quality and fidelity of data.</para>
+        </listitem>
+      </orderedlist>
+      <para>The data in primary registers at sub-center level is recorded and maintained by individual data or treatment cases, and sent up-wards as aggregate reports.</para>
+    </section>
+    <section>
+      <title>Getting started with DHIS Tracker</title>
+      <para>The module supports health providers for registering treatment cases and tracks these cases over time through different forms that are filled for the treatment of each person.</para>
+      <para>The process  starts with the person registration. Then she/he can be enrolled in the program for which registered. The application will guide the health provider  the services required for her/him through activity plan and the services  from time to time can be updated into his/her profile.  The working process is described in steps depicted in picture below - </para>
+      <screenshot>
+        <mediaobject>
+          <imageobject>
+            <imagedata width="70%" fileref="resources/images/patients_programs/name_based_information_tracking_process.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </screenshot>
+      <note>
+        <para>For programs without registration (e.g. In-Patient Morbidity and Mortality program), users only need to input treatment case and then export reports.</para>
+      </note>
+      <section>
+        <title>Person registration</title>
+        <para>The process of  creating a new person in the system is through the registration process. The person is first registered in the system (or checked if the person already exists in system). Searching a person can be done through name, identifiers,  location or user-defined person&apos;s attributes (address, child contact name, e.g.). If the person already exists in the system, the program enrollment process can continue. If the person is not available,  new registration takes place. </para>
+        <para>The system supports for creating identifier type for the registration, such as Passport number, PAN, driving license, health identifier, UID. However, a system unique identifier is created automatically after registration and used to track the person.</para>
+        <para>For identification a person, the health worker is first identified through any of the identifiers or name of patient  in the system and the person is identified through identifiers for receiving a health service. After identification, the individual case history can be viewed or a treatment case can be updated for  the new visit that they have received.</para>
+      </section>
+      <section>
+        <title>Program enrollment</title>
+        <para>When a person is enrolled into any health programme, he/she is be provided identifier number (e.g PARA, parish, ... ) and declare some attributes which belong to the program. After, the person is  provided various services through the treatment are recorded. Based on the services of the program by the time, the system creates an activity plan for person.</para>
+      </section>
+      <section>
+        <title>Treatment case</title>
+        <para>Each interaction with the person related to the case is considered to be an treatment case and these cases are recorded into the individual case. Individual case is updated with the identification of both the health worker and the person who is receiving the service.</para>
+      </section>
+      <section>
+        <title>Reports</title>
+        <para>The module provides two functions for viewing the  reports to get an overview of the services provided for a program or a program stage.</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>User guide</title>
+    <para>There are two additions in the module in both maintenance and services module - </para>
+    <orderedlist>
+      <listitem>
+        <para><emphasis role="italic">Persons and Programs maintenance module </emphasis>- Definition  meta data, include person attributes, person attribute groups, identifier types, relationships, program and program-stages, validation for program and formula to generate aggregate data value.</para>
+        <para>When the ‘<emphasis role="italic">Persons and Programs</emphasis>’ options is chosen from the main <emphasis role="italic">Maintenance</emphasis> menu, the following screen appears -</para>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata width="70%" fileref="resources/images/patients_programs/persons_and_programs_main_page.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+      </listitem>
+      <listitem>
+        <para><emphasis role="italic">Individual records module</emphasis> - Support main functions for person registration, tracking information and individual reports.</para>
+        <para>When the ‘<emphasis role="italic">Individual Records</emphasis>’ options is chosen from the main <emphasis role="italic">Services</emphasis> menu, the following screen appears -</para>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata width="70%" fileref="resources/images/patients_programs/individual_records_main_page.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+      </listitem>
+    </orderedlist>
+    <section>
+      <title>Persons and Programs maintenance</title>
+      <para>The content in this part is for the expert users or administrative users who are capable and responsible for development and change.</para>
+      <para>Each of the options for the maintenance will be described in the following section. The options for the maintenance will be described in the following section - </para>
+      <itemizedlist>
+        <listitem>
+          <para>Person Attribute</para>
+          <para>Create, modify and view Person attributes. An attribute can be used to register extra information for a Person.</para>
+        </listitem>
+        <listitem>
+          <para>Person Attribute Group</para>
+          <para>Create, modify and view Person attribute groups. Groups makes it more convenient to add attributes to a Person.</para>
+        </listitem>
+        <listitem>
+          <para>Person Identifier Type</para>
+          <para>Create, modify and view Person identifier types. Any type and multiple identifiers can be registered.</para>
+        </listitem>
+        <listitem>
+          <para>Relationship Type</para>
+          <para>Create, modify and view relationship types. A relationship is typically wife and husband or mother and child.</para>
+        </listitem>
+        <listitem>
+          <para>Program</para>
+          <para>Create, modify and view programs. A program has program stages and defines which actions should be taken at each stage.</para>
+        </listitem>
+        <listitem>
+          <para>Person Aggregation Query Builder</para>
+          <para>Define formulas, expressions, rules for aggregation data from tracker to aggregation module</para>
+        </listitem>
+        <listitem>
+          <para>Validation Criteria</para>
+          <para>Create, modify and view validation criteria. A criteria is used for validation of Person data. </para>
+        </listitem>
+        <listitem>
+          <para>Schedule Message </para>
+          <para>Configure message reminders to be automatically sent to enrolled persons XX days before scheduled appointments and/or XX days after a missed visit.</para>
+        </listitem>
+        <listitem>
+          <para>Schedule Automated Aggregation</para>
+          <para>Schedule an automated person aggregation process, e.g. to run all pre-defined aggregation queries every midnight. </para>
+        </listitem>
+      </itemizedlist>
+      <section id="patient_attribute">
+        <title>Person attribute</title>
+        <para>Create, modify and view person attributes. An attribute can be used to register extra private information for a person or information when that person enrolled into a certain program.</para>
+        <para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Person Attribute</emphasis> option to create a new attribute for persons. </para>
+        <para>After, click on <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Person Attribute Management</emphasis> window to go to <emphasis role="italic">Add New Person Attribute Management</emphasis> window.</para>
+        <para>Basic information</para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="italic">Name</emphasis> - Name of person attribute.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Description</emphasis> - Description of person attribute.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Mandatory</emphasis> - Entering value for this attribute is required or not.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Inherit</emphasis> - When to registry a new person for relationship with an available person, all inherit person attribute values of the person will be pre-filled in the registration form.
+ </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Value Type</emphasis> - Data type of value inputed. In addition to supporting basic data such as <emphasis role="italic">Number</emphasis>, <emphasis role="italic">Text</emphasis>, <emphasis role="italic">Yes/No</emphasis>, <emphasis role="italic">Date</emphasis>, the system support a value type as <emphasis role="italic">Predefined value</emphasis> for defining attribute values. Users only can select on value in the defined list for each person registered. E.g code values which record the information on access to HIV prevention services can be pre-defined, include <emphasis role="italic">T</emphasis>, <emphasis role="italic">TR</emphasis>, <emphasis role="italic">TRR</emphasis>, <emphasis role="italic">TRRD</emphasis>, <emphasis role="italic">TRRDm</emphasis>, <emphasis role="italic">TRRDmDb</emphasis> as <emphasis role="italic">PMTCT Code</emphasis> attribute.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section id="patient_attribute_group">
+        <title>Person attribute group</title>
+        <para>To access the person attribute group maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Person Attribute Group</emphasis> option to create a new an attribute group.</para>
+        <para>To create a new attribute group, click the <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Person Attribute Group</emphasis> window to go to <emphasis role="italic">Add New Person Attribute Group</emphasis> window , click the <emphasis role="italic">Add new</emphasis> button. Fill in the <emphasis role="italic">Name</emphasis> and <emphasis role="italic">Description</emphasis> fields and then select attributes that should belong to the group from the left panel. </para>
+        <para>Click the <emphasis role="italic">Move selected items</emphasis> button to add the selected attributes to the attribute group. Click the <emphasis role="italic">Remove selected items</emphasis> button to remove attributes from the group that have been selected in the right panel. </para>
+        <para>Finally, click the <emphasis role="italic">Add</emphasis> button to save changes, or the <emphasis role="italic">Cancel</emphasis> button to discard any changes.The created attribute members will be displayed by the attribute groups into person registration form.</para>
+        <para>To sort order of attribute groups for displaying  in person registration form, click <emphasis role="italic">Move up</emphasis> and <emphasis role="italic">Move down </emphasis>button next to <emphasis role="italic">Selected attributes</emphasis> section.</para>
+      </section>
+      <section id="patient_identifier_type">
+        <title>Person identifier type</title>
+        <para>To access the person identifier type maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Person Identifier Type</emphasis> option to create a new identifier type.</para>
+        <para>To creating a new identifier type, click the <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Person Identifier Type Management </emphasis>window to go to <emphasis role="italic">Add New Person Identifier Type</emphasis> window.</para>
+        <para>Basic information -</para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="italic">Name</emphasis> - Name of identifier type.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Description</emphasis> - Description of identifier type.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Mandatory</emphasis> - Entering value for the identifier is required or not.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Related</emphasis> - Representative re-uses the  identifier of  person.</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Number of characters</emphasis> -  Maximum number of characters for value inputed. </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Type</emphasis> - Data type of value inputted, includes <emphasis role="italic">Text</emphasis>, <emphasis role="italic">Number</emphasis> and <emphasis role="italic">Letter Only</emphasis>.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section id="relationship_type">
+        <title>Relationship type</title>
+        <para>Relationship type section provides a mechanism for defining  relationship types and link persons through these relationship types by creating specific relationships.</para>
+        <para>To access the relationship type maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Relationship Type</emphasis> option to create a new relationship type.</para>
+        <para>To define a new relationship type, click <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Relationship Type Management </emphasis>window to go to <emphasis role="italic">Add new Relationship Type</emphasis> window.</para>
+      </section>
+      <section id="program">
+        <title>Program and Program stage</title>
+        <para>The section provides a mechanism for defining health programmes and action for each stage  of the programme. </para>
+        <section>
+          <title>Program</title>
+          <para>To access the program maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Program</emphasis> option.</para>
+          <para>To define a new program, click the <emphasis role="italic">Add new</emphasis> button on the main page. Fill all fields with read asterisk, and then click the <emphasis role="italic">Add</emphasis> button.</para>
+          <para>Basic information -</para>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="italic">Name</emphasis> - The name of the program</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Description</emphasis> - Descriptions, meanings, explanation, etc. of/about the program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Type</emphasis> - There are three types of program: multi events with registration, single event with registration and single event without registration.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Events generated by enrollment date</emphasis> - Check on it for auto-generating due dates of events from program-stages of this program    based on the enrollment date. If it is not checked, the due dates are generated based on incident date.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Show provided elsewhere</emphasis> - Set show/hide provided elsewhere column in data entry form.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Show incident date</emphasis> - Set show/hide incident date field when a person enroll in this program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Description of incident date</emphasis> - The date when the person got the disease or he/she has just been committed to an equivalent program for being followed-up. E.g. In the Immunization program for child under 1yr old, the incident date is the birthday; in the maternal program, the incident date is the date of last menstrual period (LMP).</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Description of enrollment date</emphasis> - The date in which a person is registered to the system.
+For example: the date in which a person enrolls to the system.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Identifiers / attributes <emphasis role="italic">section</emphasis></emphasis> - Select identifier-types and person attributes which belong to the program. Check  <emphasis role="italic">Displayed in list</emphasis> checkboxes of identifier types to display its value in person list instead of person&apos;s full-name.</para>
+            </listitem>
+          </itemizedlist>
+          <para>To assign a program for organisation units, click<emphasis role="italic"> Assign program to organisation units</emphasis> icon, the first icon under Operations, corresponding to the program you would like and select organisation units where provide the program.</para>
+          <para>To create validation rules for programs, click <emphasis role="italic">Program validation rule management</emphasis> icon, the second icon under Operations, corresponding to the program you would like. There are two types of  validation rules -  </para>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="italic">Single validation rule</emphasis> is used for defining validation for only one condition. E.g Weight must be greater then zero, or the date of admission is before the date of  discharge. To define a validation, click <emphasis role="italic">Add single rule</emphasis> button and enter values for the fields in form.</para>
+              <orderedlist>
+                <listitem>
+                  <para>Enter <emphasis role="italic">description</emphasis> of program validation rule. </para>
+                </listitem>
+                <listitem>
+                  <para><emphasis role="italic"><emphasis role="italic">In</emphasis> Validation</emphasis> section, select an program stage in list to load data elements belong to the selected stage the field below. </para>
+                </listitem>
+                <listitem>
+                  <para>Double-click on a data element in list, a formula text of the selected data element is  created and displayed into the condition area. </para>
+                </listitem>
+                <listitem>
+                  <para>Click the comparing operations  (+, &lt;, &lt;=, &gt;, &gt;=, =, !=, !=NULL ) below to set operation for the formula.</para>
+                </listitem>
+                <listitem>
+                  <para>Click <emphasis role="italic">Add</emphasis> button to add the new validation rule.</para>
+                </listitem>
+              </orderedlist>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="50%" fileref="resources/images/patients_programs/single_program_validation.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Multiple validation rule </emphasis>is used for defining validation for two conditions. E.g in PMTCT program, if the blood test result of a pregnant is HIV positive, the pregnant must test WHO Stage/CD4. To define a validation, click <emphasis role="italic">Add multi rule</emphasis> button. The form is have two part - left side and right side. Fill values for the fields in each part is the same <emphasis role="italic">Single validation rule</emphasis> function.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="70%" fileref="resources/images/patients_programs/multi_program_validation.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+          </itemizedlist>
+          <note>
+            <para>Validation rules for DATE date elements are created for a program automatically. It&apos;s used for defining formulas related the DATE data elements of each program stage. To define this validation rule, click <emphasis role="italic">Edit</emphasis> icon of <emphasis role="italic">Validation for date date elements</emphasis>. Select a program stage, the DATE data elements will be shown with corresponding conditions as follows -</para>
+            <itemizedlist>
+              <listitem>
+                <para>Before current date</para>
+              </listitem>
+              <listitem>
+                <para>After current date</para>
+              </listitem>
+              <listitem>
+                <para>Before or equals to current date</para>
+              </listitem>
+              <listitem>
+                <para>After or equals to current date</para>
+              </listitem>
+              <listitem>
+                <para>Before due-date</para>
+              </listitem>
+              <listitem>
+                <para>After due-date</para>
+              </listitem>
+              <listitem>
+                <para>Before or equals to due-date</para>
+              </listitem>
+              <listitem>
+                <para>After or equals to due-date</para>
+              </listitem>
+              <listitem>
+                <para>In range due date</para>
+              </listitem>
+            </itemizedlist>
+          </note>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/program_validation_for_date.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </section>
+        <section>
+          <title>Program stage</title>
+          <para>To define a program stage, click the <emphasis role="italic">Program Stage Management</emphasis> icon, the forth icon under Operations, corresponding to the program you would like  and then <emphasis role="italic">Add new</emphasis> button. Fill in the <emphasis role="italic">Name</emphasis> and <emphasis role="italic">Description</emphasis> fields and then select the data elements that should belong to the group from the left panel. Click the <emphasis role="italic">Move</emphasis> selected button to add the selected data elements to the right panel. Click the Remove selected button to remove data elements that have been selected in the right panel. Finally, click the <emphasis role="italic">Add</emphasis> button to save changes, or the <emphasis role="italic">Cancel</emphasis> button to discard any changes.</para>
+          <para>Basic information -</para>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="italic">Name</emphasis> - Name of the program stage</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Description</emphasis> - The description of the program stage</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Description of report date</emphasis> - The description for report date which is displayed in case entry form.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Auto-generate event</emphasis> - Un-check this to prevent for creating an event of this program stage  automatically when a person enroll into the program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Scheduled days from start</emphasis> - The minimum number of days to wait for starting the program stage.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Repeatable</emphasis> - specify the program stage as repeatable or not.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Standard interval days</emphasis> - Specify the number of days to repeat the repeatable program stage.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Data elements <emphasis role="italic">section</emphasis></emphasis> - Select person data elements which belong to the program stage</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Template reminder message<emphasis role="italic"> section</emphasis></emphasis> - Define  template reminder messages which are used for sending messages for person automatically. There are two params -</para>
+              <para><emphasis role="italic">1) Days before/after due date</emphasis> -  Enter a positive number of days if  sending process happens after due-date of events which are generated from this program stage. Enter a negative number of days if  sending process happens before due-date of events.</para>
+              <para><emphasis role="italic">2) Parameters</emphasis> - Provide parameters  which are used for generating a message for each person. The parameters include person&apos;s first name, program&apos;s name, program stage&apos;s name, due date of event, interval between current date and due date and organisation unit&apos;s name. </para>
+              <para>Double-click on an option to insert it into template message field below.</para>
+              <para><emphasis role="italic">3) Message</emphasis> - Content of template message. E.g Dear {patient-name}, please come to your appointment at {due-date}.</para>
+              <note>
+                <para>Click <emphasis role="italic">Add more... </emphasis>button to add more template reminder messages.</para>
+              </note>
+            </listitem>
+          </itemizedlist>
+          <para>A program stage has  three types of  data entry form - </para>
+          <orderedlist>
+            <listitem>
+              <para><emphasis role="italic">Custom data entry form</emphasis> - Define a data entry form as HTML page. Click<emphasis role="italic"> Design data entry form <emphasis role="italic">icon, the fifth icon</emphasis></emphasis> under <emphasis role="italic">Operations</emphasis>, corresponding to the program stage you would like to define custom data entry form. The system supports to define a custom entry form with multi stages. So this form can be re-used in other stages of the same program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Section data entry form</emphasis> - Group some data elements which belong to the program stage as sections and display data elements by each section. Click <emphasis role="italic">Section management</emphasis> icon, the <emphasis role="italic">
+                  <emphasis role="italic">forth icon</emphasis>
+                </emphasis> under <emphasis role="italic">Operations</emphasis>, corresponding to the program stage you would like to define section data entry form.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Default data entry form</emphasis> - List all data elements which belong to the program stage.</para>
+            </listitem>
+          </orderedlist>
+          <para>To search program stages by scheduled days, click <emphasis role="italic">Sort by scheduled</emphasis> days button.</para>
+        </section>
+      </section>
+      <section id="patient_aggregation_query_builder">
+        <title>Aggregation query builder</title>
+        <para>This is the core functionality for linking data between tracker module and aggregate management module by defining the linking/aggregating rules. The purpose  is to produce aggregated data / statistics based on the low-level case based data. It is based around flexible aggregation query definitions which maps the data elements used for case based data management to data elements used for aggregate data.</para>
+        <para>This provides two functions - </para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="italic">Aggregation query builder management</emphasis> is a tool for defining formulas, expressions, rules for aggregation data from tracker to aggregation module. </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic">Manual person aggregation</emphasis> is used for generating routine data values from individual data by period and organization unit. Please refer the <emphasis role="italic">Service</emphasis> module to see this part.</para>
+          </listitem>
+        </itemizedlist>
+        <section>
+          <title>Person Aggregation Query Builder Management</title>
+          <para>To access <emphasis role="italic">Aggregation Query Builder</emphasis> module, from the <emphasis role="italic">Maintenance</emphasis> menu, go to the <emphasis role="italic">Persons and Programs</emphasis> option. Select <emphasis role="italic">Aggregation Query Builder</emphasis> option on left menu to proceed.</para>
+          <para>To define a formula, click the <emphasis role="italic">Add new</emphasis> button.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/example_query.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>Basic information -</para>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="italic">Name</emphasis> - Provide name of query,  this name is usually same with the name of aggregate data element. For example Number of mothers got VAT, Number of children got BCG vaccine,...</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Dataset</emphasis> - Select dataset contains data elements which will be used to link with individual data.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Data element</emphasis> - Select aggregate data element which will be used to link with individual data.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Operator</emphasis> - Select <emphasis role="italic">Number of persons</emphasis> if aggregate based on persons, or <emphasis role="italic">Number of visits</emphasis> if aggregate data based on  times that persons received services.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Program</emphasis> - Select program   needed for aggregation.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Program Stage</emphasis> - Select program stage from the selected program above.</para>
+            </listitem>
+          </itemizedlist>
+          <para>Next section included 3 tabs: <emphasis role="italic">Data elements</emphasis>, <emphasis role="italic">Person attributes</emphasis> and <emphasis role="italic">Program</emphasis>. Depend on the requirement of data aggregation, data element, person attributes, and number of programs are selected. </para>
+          <para><emphasis role="bold">
+              <emphasis role="underline"><emphasis role="italic">Data elements tab</emphasis>:</emphasis>
+            </emphasis> List all available data elements  from selected program stage. To create a formula related to each data element, double click on the   data element. The formula of the data element is filled on the condition field,  like [DE:1.2.3], in with: </para>
+          <itemizedlist>
+            <listitem>
+              <para>1 - id of  the selected program.</para>
+            </listitem>
+            <listitem>
+              <para>2 - id of the selected program stage.</para>
+            </listitem>
+            <listitem>
+              <para>3 - id of the selected data element.</para>
+            </listitem>
+          </itemizedlist>
+          <note>
+            <para>The formula can be created without any program stage, like [DE:1.*.3]</para>
+          </note>
+          <para><emphasis role="bold">
+              <emphasis role="underline">
+                <emphasis role="italic">Person attribute tab</emphasis>
+              </emphasis>
+            </emphasis>- List all available fixed attributes, such as gender, DOB type, Age (days), .. and user-defined attributes. Besides, provide a formula for calculating number of persons who registered in system. However, if a program without registration is selected,  person attributes aren&apos;t displayed.</para>
+          <para><emphasis role="bold">
+              <emphasis role="underline">
+                <emphasis role="italic">Program tab</emphasis>
+              </emphasis>
+            </emphasis> - Provide formulas for calculating data value related to the selected program and program stage - </para>
+          <itemizedlist>
+            <listitem>
+              <para>The number of persons who enrolled the selected program.</para>
+            </listitem>
+            <listitem>
+              <para>The number of persons / times that ( Date of enrollment - Date of incident ) is greater then a certain number.</para>
+            </listitem>
+            <listitem>
+              <para>The number of persons who visited the selected program stage OR the number of visits what are registered in the system.</para>
+            </listitem>
+            <listitem>
+              <para>The number of persons  by age at the report-time.</para>
+            </listitem>
+          </itemizedlist>
+          <para><emphasis role="bold">
+              <emphasis role="italic">
+                <emphasis role="italic">
+                  <emphasis role="underline">Condition section </emphasis>
+                </emphasis>
+              </emphasis>
+            </emphasis>- This section contains comparing operations (&lt;, &lt;=, &gt;, &gt;=, =, != ), calculation operation (+), priority operation ( ( ) ), boolean values (Yes, No), status operations (=NULL, != NULL), relation operations (AND, OR). These operations are used for supporting in setting condition for query. </para>
+          <para><emphasis role="italic">
+              <emphasis role="bold">
+                <emphasis role="underline">Description section</emphasis>
+              </emphasis>
+            </emphasis> - Show description for the condition above. </para>
+          <para>E.g To get number of <emphasis role="italic">girls</emphasis> who got <emphasis role="italic">Vitamin A dose 6</emphasis> enrolled <emphasis role="italic">Child Health program</emphasis> on <emphasis role="italic">January 2012</emphasis>. Then query is created as in the figure below. Note that January 2012 is period parameter which user will select when generate report. It is not set in the query.</para>
+        </section>
+        <section>
+          <title>Sample of person aggregation</title>
+          <para>E.g.  Find the number of the children vaccinated BCG by defining a linking rule between the data elements of aggregate dataset named <emphasis role="italic">Number of children - BCG</emphasis>  and the data element of a program stage named <emphasis role="italic">BCG dose given</emphasis>.</para>
+          <orderedlist>
+            <listitem>
+              <para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Data Element and Indicators</emphasis> option and click on it. Select <emphasis role="italic">Data Element</emphasis> option to define two new data elements -</para>
+              <para>1) Define a new data element named <emphasis role="italic">Number of children - BCG</emphasis> with  <emphasis role="italic">Aggregate</emphasis> option for Domain Type.</para>
+              <para>2) Define a new data element named <emphasis role="italic">BCG dose give date</emphasis> with  <emphasis role="italic">Patient</emphasis> option for Domain Type.</para>
+            </listitem>
+            <listitem>
+              <para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Datasets</emphasis> option and click on it. Select <emphasis role="italic">Dataset</emphasis> option to create a new dataset named <emphasis role="italic">BCG Report</emphasis> and add <emphasis role="italic">Number of children - BCG</emphasis> data element into the dataset.</para>
+            </listitem>
+            <listitem>
+              <para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option   and click on it. Select <emphasis role="italic">Program</emphasis> option to create a program named <emphasis role="italic">Child Health Program</emphasis> with a stage named <emphasis role="italic">Birth Details</emphasis> and add the <emphasis role="italic">BCG dose given</emphasis> data element into this stage.</para>
+            </listitem>
+            <listitem>
+              <para>Create a new aggregation query builder named <emphasis role="italic">Number of children - BCG Builder </emphasis>to linking between the data elements.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="70%" fileref="resources/images/patients_programs/example_agg_query_builder.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+            <listitem>
+              <para>From <emphasis role="italic">Services</emphasis> menu, go to <emphasis role="italic">Individual Records </emphasis>option and click on it. Select <emphasis role="italic">Person</emphasis> option below <emphasis role="italic">Registration</emphasis> header in the left menu to register three persons named <emphasis role="italic">Micheal</emphasis>, <emphasis role="italic">Alice</emphasis> and <emphasis role="italic">Tom</emphasis> in <emphasis role="italic">Ngelehun CHC</emphasis> and enroll them into <emphasis role="italic">Child Health Program</emphasis>.</para>
+              <para>1) For  <emphasis role="italic">Micheal</emphasis>, open the <emphasis role="italic">Birth Details</emphasis> stage into <emphasis role="italic">Child Health Program</emphasis>. Enter value for <emphasis role="italic">BCG dose give date</emphasis> data element as &quot;<emphasis role="italic">2012-01-18</emphasis>&quot;.</para>
+              <para>2) For  <emphasis role="italic">Alice</emphasis>, open the <emphasis role="italic">Birth Details</emphasis> stage into Child Health Program. Enter Enter value for <emphasis role="italic">BCG dose give date</emphasis> data element as &quot;<emphasis role="italic">2012-01-18</emphasis>&quot;.</para>
+              <para>3) For    <emphasis role="italic">Tom</emphasis>,  no enter any data value for <emphasis role="italic">Birth Details</emphasis> stage.</para>
+              <warning>
+                <para>Before entering data value for the stage, choose <emphasis role="italic">Report Date</emphasis> as &quot;<emphasis role="italic">2012-01-18</emphasis>&quot;.</para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para>From <emphasis role="italic">Services</emphasis> menu, go to <emphasis role="italic">Individual Records</emphasis> option and click on it. Select <emphasis role="italic">Manual person aggregation</emphasis> option to run<emphasis role="italic"> Number of children - BCG Builder</emphasis> to get data value  and save it into database.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="70%" fileref="resources/images/patients_programs/person_aggregation_form.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+              <screenshot>
+                <screeninfo>- Result after running the query builder</screeninfo>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="70%" fileref="resources/images/patients_programs/example_person_aggregation_result.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+          </orderedlist>
+        </section>
+      </section>
+      <section id="validation_criteria">
+        <title>Validation criteria</title>
+        <para>Validation criteria section provides a mechanism for defining criteria for persons when enrolling a program.</para>
+        <para>To access the validation criteria maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Validation Criteria</emphasis> option to create a new program.</para>
+        <para>To create a new validation criterion, click the <emphasis role="italic">Add new</emphasis> button. Fill all fields with read asterisk, and click <emphasis role="italic">Add</emphasis> button.</para>
+        <para>You can assign facilities to a validation criterion in the <emphasis role="italic">Validation Criteria Management </emphasis>(list of available validation criteria are shown) by clicking the blue folder icon, the first icon under Operations, corresponding to the validation criterion you would like to assign. Click the <emphasis role="italic">Move selected</emphasis> button to add the selected programs to the validation criterion. Click the <emphasis role="italic">Remove selected</emphasis> button to remove programs from the group that have been selected in the right panel. Finally, click the <emphasis role="italic">Save</emphasis> button to save changes, or the <emphasis role="italic">Cancel</emphasis> button to discard any change.</para>
+      </section>
+      <section id="schedule_sending_message">
+        <title>Schedule automated message reminder</title>
+        <para>This function is used for scheduling message reminders to be automatically sent to enrolled persons XX days before scheduled appointments and/or XX days after a missed visit. When the schedule is started, messages for each person are generated based on templates defined in each stage at midnight. On the time, the scheduled messages are sent.</para>
+        <para>Click <emphasis role="italic">Execute</emphasis> button to generate and send each message for each  person at the time the button clicked.</para>
+        <para>Message reminders  can be automatically scheduled to run on regular intervals. Click <emphasis role="italic">Start</emphasis> button will enable the scheduled job to run the task. Messages are generated based on templates defined in each stages at mid-night and sent at a pre-determined time  or can be run immediately by pressing <emphasis role="italic">Execute</emphasis> button.</para>
+      </section>
+      <section id="scheduling_aggregation_query_builder">
+        <title>Schedule Automated Aggregation</title>
+        <para>The aggregation query builder jobs can be automatically scheduled to run on regular intervals. Simply select  organisation unit group set aggregation level, and strategy to configure how the scheduled job should run. Click <emphasis role="italic">Start</emphasis> button will enable the scheduled job to run at mid-night or can be run immediately by pressing <emphasis role="italic">Execute</emphasis> button.<screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/scheduling_aggregation_query_builder.png"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot></para>
+      </section>
+    </section>
+    <section>
+      <title>Individual records module</title>
+      <para>Each of the options for the services will be described in the following section -</para>
+      <itemizedlist>
+        <listitem>
+          <para>Find/Add Person</para>
+          <para>Create, modify and search for persons. Any type of data can be registered for a person by including attributes.
+    </para>
+        </listitem>
+        <listitem>
+          <para>Visit Schedule</para>
+          <para>Visit Schedule provides for the user at a facility or in an area a list of upcoming visits to better plan for daily/weekly activities.</para>
+        </listitem>
+        <listitem>
+          <para>Program Tracking</para>
+          <para>Support the work practices around tracking persons within a health program that have not shown up for a scheduled visit (stage), e.g. that are lost to follow-up. </para>
+        </listitem>
+        <listitem>
+          <para>Multiple Individual records</para>
+          <para>Enter data for multiple program stages and persons for a program. The entry screen gives an overview of the stage status.
+    </para>
+        </listitem>
+        <listitem>
+          <para>Single event with registration </para>
+          <para>The data to register is defined by a single event with registration program.</para>
+        </listitem>
+        <listitem>
+          <para>Single event without registration</para>
+          <para>Register Single events without registration. The data to register is defined by a single event without registration program.</para>
+        </listitem>
+        <listitem>
+          <para>Program summary</para>
+          <para>View the summary report to get an overview of the services provided for a program.
+    </para>
+        </listitem>
+        <listitem>
+          <para>Tabular report</para>
+          <para>Use an interactive reporting tool for tracker-data using tabular presentation with dynamic filters for each person attribute/data element.
+    </para>
+        </listitem>
+        <listitem>
+          <para>Person aggregation</para>
+          <para>Generate routine data values from patient data by month (or other intervals if desired) and organisation unit.
 </para>
-</warning>
-</listitem>
-<listitem>
-<para>After the selection of program, you need to provide two dates -</para>
-<para>1) Date of Enrolment: The date of registration of the person with a facility.</para>
-<para>2) Date of Incidence: The date when the person got the disease or he/she has just been committed to an equivalent program for being followed-up.</para>
-<screenshot>
-<screeninfo>Figure 2.3.9</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.9.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<warning>
-<para>The date of incidence and date of enrollment are very important to generate the activity plan for each person. Health provider needs to ensure recording and reporting date of incidence with each case.</para>
-</warning>
-</listitem>
-<listitem>
-<para>Click the <emphasis role="italic">Enroll</emphasis> button to complete the enrollment process.</para>
-<screenshot>
-<screeninfo>Figure 2.3.10</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.10.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>The application will automatically calculate due-date for each the program stage and will show same below enrollment. In the health programs, an person registered and enrolled into the system, needs to be checked from time to time by service providers.
-The case update in the application is designed in the same manner so that services which are received by the persons can be updated from time to time when they visit the facility or whenever they are visits by the health providers. </para>
-<screenshot>
-<screeninfo>Figure 2.3.11</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.11.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-</orderedlist>
-</section>
-<section>
-<title>STEP 3 – Inputting data in treatment stages for each person</title>
-<para>We have two functionalities which support to input data in treatment stages for each person.</para>
-<orderedlist>
-<listitem>
-<para>Name-based data entry.</para>
-</listitem>
-<listitem>
-<para>Multiple data entry.</para>
-</listitem>
-</orderedlist>
-<section id='name_based_data_entry'>
-<title>Name-based Data Entry</title>
-<orderedlist>
-<listitem>
-<para>From the <emphasis role="italic">Services</emphasis> option, go to the <emphasis role="italic">Name Based Data Records</emphasis> option and click it. Select <emphasis role="italic">Name-based</emphasis> option on left menu to proceed.</para>
-<screenshot>
-<screeninfo>Figure 2.3.12</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.12.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 3.3.14</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.13.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Selection of a person and individual case</para>
-<para>In order to enter data, you first have to select the facility for which persons belong to in order to enter data. Simply clicking the concerned facility from the facilities hierarchy displayed on the left side of the data entry screen.</para>
-<para>The next step is searching persons. Select a program in <emphasis role="italic">program</emphasis> list. The person list by the selected facility is shown. Each person in the list is shown with each corresponded stages.</para>
-<screenshot>
-<screeninfo>Figure 2.3.14</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.14.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Entering data for treatment case</para>
-<para>To open treatment form, click the <emphasis role="italic">Data Entry</emphasis> icon, the first icon under Operations, corresponding to the person you would like to enter data.</para>
-<screenshot>
-<screeninfo>Figure 2.3.15`</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.15.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>Selection of the Program and Program Stage</para>
-<para><emphasis role="italic">What is program stage ?</emphasis> - This is to handle specific stages of a health program because of having multiple encounters for a given health program. E.g. once a pregnant woman enrolls to the &quot;ANC Program&quot;, she will get examination and treatments for the first trimester, the second trimester and/or the third trimester. These encounters in most cases are mandatory, and there will be dropouts in some cases, in which a pregnant woman should go through after she enrolled in the &quot;ANC Program&quot;. So the specific stages of the health program are defined when a health program is created/specified.</para>
-<para>Select the program and the program stage which you want to enter data for the selected person, then provide the <emphasis role="italic">Report Date</emphasis> to open the data entry form.</para>
-<screenshot>
-<screeninfo>Figure 2.3.16</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.16.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>After filling data into the data entry form, click on the <emphasis role="italic">Complete data entry</emphasis> button to complete the data filling process for this stage.</para>
-<warning>
-<para>During each stage, the section related to that particular stage will be enabled for data entry form, rest of the sections will remain disabled in that particular stage. E.g. if data entry form of ANC registration stage is selected, then only data elements of ANC registration stage will be enabled and the rest of the data elements of other stages will remain disabled.</para>
-</warning>
-</listitem>
-</orderedlist>
-</section>
-<section id='multi_name_based_data_entry'>
-<title>Multiple Name-based Data Entry</title>
-<para>This is an advanced functionality for data entry. On the same interface on above, many persons are listed for entering data by stages. </para>
-<para>To access the multiple person data entry module, from the <emphasis role="italic">Services</emphasis> menu, go to the <emphasis role="italic">Name Based Data Records</emphasis> option and click on it. Select <emphasis role="italic">Multiple Name-based</emphasis> option on left menu to proceed.</para>
-<screenshot>
-<screeninfo>Figure 2.5.3.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.3.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para><emphasis role="bold">Step 1 - Show person list</emphasis>. You will first have to select the facility for which persons belong to in order to enter data. Simply clicking on the concerned facility from the facilities hierarchy displayed on the left side of the data entry screen. The next step is listing all persons by the certain program as follows -</para>
-<para>1) Select a program in <emphasis role="italic">program</emphasis> list. The person list by the selected facility and program is shown. Each person in the list is shown with each corresponded stages.</para>
-<para>2) Select an option from <emphasis role="italic">Sort by</emphasis> box to sort by person&apos;s attributes.</para>
-<para><emphasis role="bold">Step 2 - Open treatment form</emphasis>. </para>
-<para>See the below figure illustrates for person named <emphasis role="italic">Nguyen Van Nam</emphasis> and the second stage with name <emphasis role="italic">At 6 weeks after birth</emphasis>.</para>
-<screenshot>
-<screeninfo>Figure 2.5.3.3</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.3.3.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para><screenshot>
-<screeninfo>Figure 2.5.3.2</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.3.2.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot></para>
-<para><emphasis role="bold">Step 3 - Enter data</emphasis> ( arrow <emphasis role="italic">labelled 1</emphasis> in Fig. 2.5.3.3 ). After finishing the entering, close the pop-up ( arrow <emphasis role="italic">labelled 2</emphasis> in Fig. 2.5.3.3 )</para>
-<para>The benefits of this advanced function is to optimize the time-transition consuming when entering data for a long list persons by not switching the main window/interface.</para>
-</section>
-<section id='single_event_without_registration'>
-<title>Single event without registration</title>
-<para>The data to register is defined by a single event without registration program.</para>
-<para>In order to register an event, from the <emphasis role="italic">Services</emphasis> option, go to the <emphasis role="italic">Name Based Data Records</emphasis> option and click it. Select <emphasis role="italic">Single event without registration</emphasis> option on left menu to proceed.</para>
-<para>In order to list all events in the selected facility, click <emphasis role="italic">List All Events</emphasis> button.</para>
-<para>In order to remove empty events of the selected program, click <emphasis role="italic">Remove empty events</emphasis> button.</para>
-<para>In order to add new event, click <emphasis role="italic">Add new</emphasis> button.</para>
-<para>To update an event:</para>
-<orderedlist>
-<listitem>
-<para>Click <emphasis role="italic">Advanced search</emphasis> button. Then enter criterion for searching events. The list events are displayed below.</para>
-</listitem>
-<listitem>
-<para>Click on the first icon to update value for the event.</para>
-</listitem>
-</orderedlist>
-</section>
-<section id='single_event_with_registration'>
-<title>Single event with registration</title>
-<para>The data to register is defined by a single event with registration program. The functionality supports health providers to register person information and input data values for a program into one form.</para>
-<para>In order to register an event, from the <emphasis role="italic">Services</emphasis> option, go to the <emphasis role="italic">Name Based Data Records</emphasis> option and click it. Select <emphasis role="italic">Single event with registration</emphasis> option on left menu to proceed.</para>
-<para>In order to list all persons in the selected facility, click <emphasis role="italic">List All Persons</emphasis> button.</para>
-<para>In order to add new event, select a program in the combo box. And then click <emphasis role="italic">Add new</emphasis> button.</para>
-<para>To update event of a registered person:</para>
-<orderedlist>
-<listitem>
-<para>Click <emphasis role="italic">Advanced search</emphasis> button. Then enter criterion for searching available persons. The seach result is displayed below.</para>
-</listitem>
-<listitem>
-<para>Click on the first icon to update value for the event.</para>
-</listitem>
-</orderedlist>
-</section>
-</section>
-</section>
-<section id='program_summary_report'>
-<title>Program Summary Report</title>
-<para>This module provides two main functions, include NBITS Activity Plan report and NBITS Summary report.</para>
-<orderedlist>
-<listitem>
-<para>NBITS Activity Plan report - This report is a feedback report to the facilities to help them in planning activities. This is also called as activity plan or visit plan. Basically, view the visit plan to get an overview of outstanding, pending, and completed visits. </para>
-<para>See the illustration for Immunization program for Children under 1yr old.</para>
-<screenshot>
-<screeninfo>Figure 2.3.17</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.17.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>Each card ( see above Fig. 2.3.17 ) present a coming stage information for a person of a program.</para>
-</listitem>
-<listitem>
-<para>NBITS Summary report - View the summary report to get an overview of the services provided for a program.</para>
-<para>See an example -</para>
-<screenshot>
-<screeninfo>Figure 2.3.18: Each row is a summary of stages of the Immunization program for Children under 1yr old</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.3.18.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>The color highlight the status of the stages:</para>
-<itemizedlist>
-<listitem>
-<para>PURPLE: Data entered and uncompleted stages.</para>
-</listitem>
-<listitem>
-<para>RED: Stages open but no data entered while the date estimated for closing/completing is over.</para>
-</listitem>
-<listitem>
-<para>YELLOW: Coming stages.</para>
-</listitem>
-<listitem>
-<para>GREEN: Compete stages.</para>
-</listitem>
-</itemizedlist>
-</listitem>
-</orderedlist>
-</section>
-<section>
-<title>Person Aggregation Query Builder</title>
-<para>This is the core functionality for linking data between name-based information tracking system – NBITS ( persons, programs, etc ) and aggregate management system ( dataset, report, charts, etc.) by defining the linking/aggregating rules.</para>
-<para>This provides two functions - </para>
-<itemizedlist>
-<listitem>
-<para><emphasis role="italic">Person Aggregation Query Builder</emphasis> is a tool for defining formula, expression, rules for aggregation data from name-based to aggregation system.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Person Aggregation</emphasis> to used for generating routine data values from patient-data by month (or other interval if desired) and organization unit.</para>
-</listitem>
-</itemizedlist>
-<section id='patient_aggregation_query_builder'>
-<title>Person Aggregation Query Builder</title>
-<para>To access <emphasis role="italic">Persons Aggregation Query Builder</emphasis> module, from the <emphasis role="italic">Maintenance</emphasis> menu, go to the <emphasis role="italic">Persons and Programs</emphasis> option. Select <emphasis role="italic">Person Aggregation Query Builder</emphasis> option on left menu to proceed.</para>
-<screenshot>
-<screeninfo>Figure 2.5.4.2</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.4.2.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>After click the <emphasis role="italic">Add new</emphasis> button, the following will appear:</para>
-<screenshot>
-<screeninfo>Figure 2.5.4.3</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.4.3.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para><emphasis role="bold">
-<emphasis role="underline">Area labelled 1:</emphasis>
-</emphasis> Provide the basic information for a query: description, aggregation data element from data element group.</para>
-<para>See the example (Fig. 2.5.4.3): description as <emphasis role="italic">Number of children - BCG</emphasis>, and the result with be stored with data element as <emphasis role="italic">Number of Children - BCG</emphasis> in data element group <emphasis role="italic">BCG Program</emphasis>.</para>
-<para><emphasis role="bold">
-<emphasis role="underline">
-<emphasis role="underline">Area labelled 2:</emphasis>
-</emphasis>
-</emphasis> </para>
-<para>Select the equivalent data element for the persons to link to the data element selected above. The information include: program, program stage and data element by the selected program stage.</para>
-<para>Double click on the data element the equivalent code of it will be showed in the condition box (labelled 4). An example of Fig. 2.5.4.3, if double click on the data element named <emphasis role="italic">BCG dose given date ((default))</emphasis> the code appear as <emphasis role="italic">[DE:8.75.1]</emphasis>.</para>
-<para>To make the condition valid, as default click on button “<emphasis role="italic">!=NULL</emphasis>”. Then there will be the text “<emphasis role="italic">[DE:8.75.1] is not null</emphasis>” in the Condition box.</para>
-<para><emphasis role="bold">
-<emphasis role="underline">Area labelled 3:</emphasis>
-</emphasis></para>
-<para>For adding and advanced condition for the query. So, it is required more knowledge about the health services of the programs specifically.</para>
-<para>All properties and options listed in this area are flexible and depend on the health program. And users can modify them.</para>
-<para><emphasis role="bold">
-<emphasis role="underline">
-<emphasis role="underline">Area labelled 4:</emphasis>
-</emphasis>
-</emphasis></para>
-<para>Includes the buttons of operands and a text box showing the conditions for the query.</para>
-<para>After finishing the area above (1, 2, 3 and 4), click on the <emphasis role="italic">Add</emphasis> button.</para>
-</section>
-<section id='run_case_aggregation'>
-<title>Person Aggregation</title>
-<para>To access <emphasis role="italic">Persons Aggregation</emphasis> module, from the <emphasis role="italic">Services</emphasis> menu, go to the <emphasis role="italic">Name-Based Data Records</emphasis> option. Select <emphasis role="italic">Person Aggregation</emphasis> option on left menu to proceed. Here are the main screen shots:</para>
-<screenshot>
-<screeninfo>Figure 2.5.4.4</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.4.4.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.5.4.5</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.4.5.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para><itemizedlist>
-<listitem>
-<para>Area in the ORANGE frame: the facility hierarchy tree. </para>
-</listitem>
-<listitem>
-<para>Area in the BLUE frame: for choosing the data set, the start and end date of the aggregated period.</para>
-</listitem>
-</itemizedlist></para>
-<para>Click on the 
-<emphasis role="italic">Aggregate</emphasis> button to execute aggregate function.
+        </listitem>
+      </itemizedlist>
+      <section id="patient">
+        <title>Person registration</title>
+        <para>The first step in the tracking is the registration of person/case in the application. In the registration process, the details - which are related to the personal information, identification, contract and location details &amp; health provider details, are entered in the application. In the registration itself, person is provided with the unique identification number. This number will be unique and will not match with the identification number of any person in the state jurisdiction. The issue of identification number will be the responsibility of facility where person is registered first time.</para>
+        <warning>
+          <para>No matter what program persons need  to enroll, they must register into the system first. Then health providers will enroll the persons into relevant  programs. E.g. every pregnant women and the child need to be registered first as a person, then they will be enrolled in Mother Care program or Child Health program.</para>
+        </warning>
+        <para><emphasis role="underline">
+            <emphasis role="italic">
+              <emphasis role="bold">Person registration process</emphasis>
+            </emphasis>
+          </emphasis></para>
+        <para>For the registration process, the details - which are related to the personal information, identification, contact and location details, and health provider details, are entered.</para>
+        <orderedlist inheritnum="inherit" continuation="restarts" arch="">
+          <listitem>
+            <para>To register a person, go to the <emphasis role="italic">Services</emphasis> menu, select option <emphasis role="italic">Individual Records</emphasis>.</para>
+          </listitem>
+          <listitem>
+            <para>Click the <emphasis role="italic">
+                <emphasis>
+                  <emphasis role="italic">Find/Add person</emphasis>
+                </emphasis>
+              </emphasis> option below <emphasis role="italic">Person</emphasis> header to go to <emphasis>Person management</emphasis> window.</para>
+          </listitem>
+          <listitem>
+            <para>Select  a  facility from the facilities hierarchy displayed on the left side of the screen. Then click the <emphasis role="italic">Add new</emphasis> button on the right side.</para>
+          </listitem>
+          <listitem>
+            <para>Start process of registration by providing name, location details, identification details, contact details and other details like <emphasis role="italic">child contact name</emphasis> and <emphasis role="italic">child contact type</emphasis>.  The  click the <emphasis role="italic">Add</emphasis> button  to complete to process of registration or click the <emphasis role="italic">Person management</emphasis>  to navigate to previous page.</para>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata width="70%" fileref="resources/images/patients_programs/register_person_page.PNG" format="PNG"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+            <para>To check the duplicated person or to avoid double registration, after providing name and demographic details, click the <emphasis role="italic">Check duplicate</emphasis> button. Checking process bases on full name, gender and birthday of the registering person to look for the available persons with the similar information in the database. The result list will be displayed if the system finds out the same persons. Now health providers can cancel the registration process and update the existing person or continue the process of registration.</para>
+            <para>To register representative for the registering person, check on the <emphasis role="italic">Has guardian/caretaker</emphasis> checkbox in <emphasis role="italic">Register new person</emphasis> form. The sub-function has two tab -</para>
+            <itemizedlist>
+              <listitem>
+                <para><emphasis role="italic">Search existing person</emphasis> tab is used for searching  available persons and users can select one person in the result list to set relationship. The criteria to search is based on  identifier, attribute and name of persons.</para>
+              </listitem>
+              <listitem>
+                <para><emphasis role="italic">Add new person</emphasis> tab is used for  registering a new person for relationship. When adding a person in this form, you need to select one user-defined relationship type in the list. Finally, click <emphasis role="italic">Add</emphasis> button.</para>
+              </listitem>
+            </itemizedlist>
+            <screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata width="70%" fileref="resources/images/patients_programs/representative.png" format="PNG"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot>
+          </listitem>
+        </orderedlist>
+        <section>
+          <title>Person dashboard</title>
+          <para>The function is intended to provide quick access to individual data of person. Dashboards consist of several sections, some of which provide links to activity programs or relationships of the person . Other sections of the dashboard allow users to enter data values for data entry form, reschedule and set status for each events of activity plan; show messages and report of the program.</para>
+          <para>The dashboard of the person is opened after register successfully or click the <emphasis role="italic">first icon</emphasis> under <emphasis role="italic">Operations</emphasis>, corresponding to the person who you would like.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="80%" fileref="resources/images/patients_programs/person_dashboard.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>The <emphasis role="italic">Demographics</emphasis> section provides links for editing profile  and changing other location of the person. Click on <emphasis role="italic">Edit profile</emphasis> link to update individual information of person. Click on <emphasis role="italic">Change location</emphasis> link to change other location for the person</para>
+          <para>The <emphasis role="italic">Active programs</emphasis> section provides links for  activity program and the next visit of person for this program. </para>
+          <para>Click on <emphasis role="italic">Enroll into program </emphasis>link to open the Enrollment form.</para>
+          <para>Click on a program link to open the data entry form for the next visit of the selected program. A form is open below with five tab - </para>
+          <orderedlist>
+            <listitem>
+              <para><emphasis role="italic">Data entry screen </emphasis>tab - Where data is manually registered for each person. Click on a event box in  tab. Then   fill  a report date to open data entry form of the selected event. </para>
+              <para>After entering data values into the data entry form, user should click on <emphasis role="italic">Run validation </emphasis> button before clicking on <emphasis role="italic">Complete</emphasis> button to check reality of data. The event is  only  completed successfully if all validation is valid.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Identifier / Attribute</emphasis> tab - Load identifier-types and person-attributes which belong to the selected program for users to enter values for this program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Reschedule and set status</emphasis> tab - Provides function for re-scheduling, setting status and sending messages/comments or deleting for each events.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="80%" fileref="resources/images/patients_programs/program_management.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+              <para>After entering a  message in the field, click on (+) button in <emphasis role="italic">Message</emphasis> column to add a comment for the event. For sending a reminder message, click on (&gt;&gt;) button.</para>
+              <note>
+                <para>Only allow to edit due dates of events with status as overdue or scheduled in future.</para>
+              </note>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Comments and messages</emphasis> tab - Displays a comment/message list of the program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Program report </emphasis>tab - Summary report for the program.</para>
+            </listitem>
+          </orderedlist>
+          <para>The <emphasis role="italic">Active programs</emphasis> section consists of active programs of the person. Click on a program to show detail information below. Besides, there are two link in this tab - </para>
+          <orderedlist>
+            <listitem>
+              <para>To display completed program list of the person, click   <emphasis role="italic">Completed programs</emphasis> link. Select a program to show detail information below.</para>
+            </listitem>
+            <listitem>
+              <para>To enroll the person into a program, click <emphasis role="italic">Enroll</emphasis> link.</para>
+            </listitem>
+          </orderedlist>
+          <para>The <emphasis role="italic">Relationship</emphasis> section consists of relationships of the person. Click on a person in list to open his/her dashboard. Besides, there are two link in this tab - </para>
+          <orderedlist>
+            <listitem>
+              <para>To open Relationship management section, click <emphasis role="italic">Management</emphasis> link.</para>
+            </listitem>
+            <listitem>
+              <para>To register new person for relationship, click <emphasis role="italic">Register new person</emphasis> link.</para>
+            </listitem>
+          </orderedlist>
+          <para>Besides, the system audits user&apos;s information who accessed on the dashboard. Click on the <emphasis role="italic">History</emphasis> link in the header to  display this information.</para>
+        </section>
+        <section>
+          <title>Person enrollment</title>
+          <para>After the  registration, the person needs to be enrolled in any available program. To enroll :</para>
+          <orderedlist>
+            <listitem>
+              <para>Click on <emphasis role="italic">Enroll</emphasis> link from Dashboard of the person to open the Enrollment form.</para>
+            </listitem>
+            <listitem>
+              <para>Select a program from the list.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="70%" fileref="resources/images/patients_programs/select_program_for_person.PNG" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+            <listitem>
+              <para>After the selection of program, you need to provide two dates:</para>
+              <para>1) <emphasis role="italic">Date of enrollment ( the second field )</emphasis> - The date when person enrolls into the selected program.</para>
+              <para>2) <emphasis role="italic">Date of incident ( the third field )</emphasis> - The date when the person got the disease or he/she has just been committed to an equivalent program for being followed-up.</para>
+              <warning>
+                <para>If the selected program has any identifier-types and person-attributes, they are displayed below. Users can enter  values for them at this time.</para>
+                <para>The <emphasis role="italic">date of incident</emphasis> are  important to generate the activity plan for  each person. Health provider  needs to ensure  recording and reporting date of incidence with each case of multi events with registration. However, when to define a program, if it can be set <emphasis role="italic">Generated by enrollment date</emphasis> property as true, the activity plan is generated based on the enrollment date, not incident date. </para>
+                <para>However,  the <emphasis role="italic">date if incident </emphasis>is ignored with single event programs. </para>
+              </warning>
+            </listitem>
+            <listitem>
+              <para>Click  the <emphasis role="italic">Enroll</emphasis> button to complete the enrollment process.</para>
+              <para>The system will automatically calculate  due-date for each event of program and will show it in the <emphasis role="italic">Re-schedule and set status</emphasis> tab. In  health programme, a person  registered and enrolled, needs to be checked from time to time by health providers.
+The case update  is designed in the same manner so that services which are received by the persons can be updated from time to time  when they visit the facility  or  whenever the health providers need to <emphasis role="italic">track</emphasis>.</para>
+              <para>The system will automatically calculate  due-date for each the program stage  and will show same the below enrollment. In  health program, a person  registered and enrolled, needs to be checked from time to time by health providers.
+The case update  is designed in the same manner so that services which are received by the persons can be updated from time to time  when they visit the facility  or  whenever the health providers need to track.</para>
+            </listitem>
+          </orderedlist>
+        </section>
+        <section>
+          <title>Editing person profile</title>
+          <para>After enrolling a person to a certain program, you can edit profile for that person.</para>
+          <orderedlist>
+            <listitem>
+              <para>Click the second icon under <emphasis>Operations</emphasis>, corresponding to the person you would like to edit. Or click the <emphasis>Edit profile</emphasis> link in Dashboard of person.</para>
+            </listitem>
+            <listitem>
+              <para>Then a dialog box may appear to require you verify the date of birth if it is not verified. You just simply click <emphasis>OK</emphasis> to go to the edit page.</para>
+            </listitem>
+            <listitem>
+              <para>Click <emphasis role="italic">Update</emphasis> button to update data and go to his/her dashboard.</para>
+            </listitem>
+          </orderedlist>
+        </section>
+        <section>
+          <title>Adding relationship</title>
+          <para>Now you can add relationships for person. To do that, you have to click on the <emphasis>Relationship management</emphasis> icon under <emphasis>Operations</emphasis> or click on the <emphasis role="italic">Management</emphasis> link on <emphasis role="italic">Relationships</emphasis> section in Dashboard. Then, the management page appears...</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70" fileref="resources/images/patients_programs/management_page.PNG" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>To add relationship for a person, you have to click on <emphasis>Search available person</emphasis> link to navigate to <emphasis>search page.</emphasis></para>
+          <para>To register a new person and create relationship with the selected person, click <emphasis role="italic">Register new person</emphasis> link.</para>
+        </section>
+        <section>
+          <title>Change person location and View person details and history</title>
+          <para>You can change person location by clicking the <emphasis>Change person location</emphasis> icon under <emphasis>Operations</emphasis> or click on <emphasis role="italic">Change location</emphasis> link on <emphasis role="italic">Demographics</emphasis> section in Dashboard. </para>
+          <para>In addition, you can view all person details and history by click on <emphasis>Person details and history</emphasis>  icon under <emphasis>Operations</emphasis>.</para>
+          <para>Furthermore, you can download all person details and history in the format of <emphasis role="italic"> XLS</emphasis> or <emphasis role="italic">PDF</emphasis> by clicking <emphasis>Download as Excel</emphasis> or <emphasis>Download as PDF </emphasis>button.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70" fileref="resources/images/patients_programs/change_person_location_and_view_details.PNG" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </section>
+        <section>
+          <title>Search persons</title>
+          <para>The <emphasis>Search</emphasis> function is used for searching persons based on  full-name, identifiers and person attributes.</para>
+          <para>To access <emphasis role="italic">Search</emphasis> function, from the <emphasis>Services</emphasis> menu, go the the <emphasis>Individual Records </emphasis>option and click on it. Select <emphasis>Find/Add Person</emphasis> option on the left menu to proceed. Then, after selecting organisation unit,  click on the <emphasis>Search</emphasis> button on the right side.</para>
+          <para> A search form is appeared after clicking. User  has to select  criteria and input values into the function.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70" fileref="resources/images/patients_programs/search_guide.PNG" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>After selecting search type, entering keyword and clicking on <emphasis role="italic">Search</emphasis> button, the search result will display on the screen, and then user can interact with these persons.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70" fileref="resources/images/patients_programs/search_result.PNG" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </section>
+      </section>
+      <section>
+        <title>Tracking</title>
+        <para>This function supports the work practices around tracking persons within a health program that have not shown up for a scheduled visit (stage), e.g. that are lost to follow-up. </para>
+        <section id="visit_schedule">
+          <title>Visit Schedule</title>
+          <para>This will be used to provide the user at a facility or in an area with a list of upcoming visits to better plan for daily/weekly activities. This can also be used as quick navigation to the data entry screen when using the system as a live/real-time data entry system.
 </para>
-<screenshot>
-<screeninfo>Figure 2.5.4.6 - Shows the result from the example</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.4.6.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para></para>
-<para><emphasis role="bold">A Sample for Person Aggregation</emphasis></para>
-<para>E.g. Find the number of the children vaccinated BCG by defining a linking rule between the data elements of aggregate dataset named <emphasis role="italic">Number of children - BCG</emphasis> and the data element of a program stage named <emphasis role="italic">BCG dose given date</emphasis>.<orderedlist>
-<listitem>
-<para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Data Element and Indicators</emphasis> option and click on it. Select <emphasis role="italic">Data Element</emphasis> option to define two new data elements -</para>
-<para><itemizedlist>
-<listitem>
-<para>Define a new data element named <emphasis role="italic">Number of children - BCG</emphasis> with <emphasis role="italic">Aggregate</emphasis> option for Domain Type.</para>
-</listitem>
-<listitem>
-<para>Define a new data element named <emphasis role="italic">BCG dose give date</emphasis> with <emphasis role="italic">Patient</emphasis> option for Domain Type.</para>
-</listitem>
-</itemizedlist></para>
-<screenshot>
-<screeninfo>Figure 2.5.2.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.2.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.5.2.2 - Define a data element with <emphasis role="italic">Patient</emphasis> option for <emphasis role="italic">Domain Type</emphasis>.</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.2.2.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.5.2.3 - <emphasis role="italic">Add Data Element </emphasis>form</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata fileref="resources/images/patients_programs/Fig. 2.5.2.3.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Datasets</emphasis> option and click on it. Select <emphasis role="italic">Dataset</emphasis> option to create a new dataset named <emphasis role="italic">BCG Report</emphasis> and add <emphasis role="italic">Number of children - BCG</emphasis> data element into the dataset.</para>
-</listitem>
-<listitem>
-<para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Benificaries and Programs</emphasis> option and click on it. Select <emphasis role="italic">Program</emphasis> option to create a program named <emphasis role="italic">Child Health Program</emphasis> with a stage named <emphasis role="italic">Birth Details</emphasis> and add the <emphasis role="italic">BCG dose give date</emphasis> data element into this stage.</para>
-</listitem>
-<listitem>
-<para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Program </emphasis>option and click on it. Select <emphasis role="italic">Person</emphasis> option to create three benificiaries named <emphasis role="italic">Micheal</emphasis>, <emphasis role="italic">Alice</emphasis> and <emphasis role="italic">Tom</emphasis> and enrol them into <emphasis role="italic">Child Health Program</emphasis>.</para>
-</listitem>
-<listitem>
-<para>Create a new Person Aggregation QueryBuilder named <emphasis role="italic">Number of children - BCG Builder </emphasis>to linking between the data elements.</para>
-<screenshot>
-<screeninfo>Figure 2.5.3.4</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.3.4.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-<listitem>
-<para>From <emphasis role="italic">Services</emphasis> menu, go to <emphasis role="italic">Name-Based Data Records</emphasis> option and click on it. Select <emphasis role="italic">Data Entry</emphasis> option.</para>
-<itemizedlist>
-<listitem>
-<para>Choose benificiary <emphasis role="italic">Micheal</emphasis> and open the <emphasis role="italic">Birth Details</emphasis> stage into <emphasis role="italic">Child Health Program</emphasis>. Enter value for <emphasis role="italic">BCG dose give date</emphasis> data element as &quot;<emphasis role="italic">2011-02-18</emphasis>&quot;</para>
-</listitem>
-<listitem>
-<para>Choose benificiary <emphasis role="italic">Alice</emphasis> and open the <emphasis role="italic">Birth Details</emphasis> stage into Child Health Program. Enter Enter value for <emphasis role="italic">BCG dose give date</emphasis> data element as &quot;<emphasis role="italic">2011-02-18</emphasis>&quot;</para>
-</listitem>
-<listitem>
-<para>Choose benificiary <emphasis role="italic">Tom</emphasis> and no enter data value for <emphasis role="italic">Birth Details</emphasis> stage.</para>
-<warning>
-<para>Before entering data value for the stage, choose <emphasis role="italic">Report Date</emphasis> as &quot;<emphasis role="italic">2011-02-28</emphasis>&quot;</para>
-</warning>
-</listitem>
-</itemizedlist>
-</listitem>
-<listitem>
-<para>From <emphasis role="italic">Services</emphasis> menu, go to Name-Based Data Records option and click on it. Select <emphasis role="italic">Case Aggregation</emphasis> option to run<emphasis role="italic"> Number of children - BCG Builder</emphasis> to get data value and save it into database.</para>
-<screenshot>
-<screeninfo>Figure 2.5.3.5</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.3.5.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.5.4.6 - Result after running the query builder</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.4.6.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</listitem>
-</orderedlist></para>
-</section>
-</section>
-<section>
-<title>Advanced functions</title>
-<para>The content in this part is for the expert users or administrative users who are capable and responsible for development and change</para>
-<section>
-<title>Person attribute and Person attribute group</title>
-<section id='patient_attribute'>
-<title>Person attribute</title>
-<para>Create, modify and view Person attributes. An attribute can be used to register extra information for a Person.</para>
-<para>From <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Person Attribute</emphasis> option to create a new attribute for persons. </para>
-<screenshot>
-<screeninfo>Fig. 2.7.1.1.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.1.1.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>After, click on <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Person Attribute Management</emphasis> window to go to <emphasis role="italic">Add New Person Attribute Management</emphasis> window.<screenshot>
-<screeninfo>Fig. 2.7.1.1.2</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.1.1.2.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot><screenshot>
-<screeninfo>Fig. 2.7.1.1.3</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.1.1.3.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot></para>
-<para>Basic information</para>
-<itemizedlist>
-<listitem>
-<para><emphasis role="italic">Name</emphasis>: Name of person attribute.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Description</emphasis>: Description of person attribute.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Mandatory</emphasis>: Entering value for this attribute is required or not.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Inheritable</emphasis>: </para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Number of characters</emphasis>: Maximum number of characters for value inputed.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Value Type</emphasis>: Data type of value inputed.</para>
-</listitem>
-</itemizedlist>
-</section>
-<section id='patient_attribute_group'>
-<title>Person attribute group</title>
-<para>To access the person attribute group maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Person Attribute Group</emphasis> option to create a new an attribute group.</para>
-<screenshot>
-<screeninfo>Fig. 2.7.1.2.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.1.2.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>To create a new attribute group, click the <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Person Attribute Group</emphasis> window to go to <emphasis role="italic">Add New Person Attribute Group</emphasis> window , click the <emphasis role="italic">Add new</emphasis> button. Fill in the <emphasis role="italic">Name</emphasis> and <emphasis role="italic">Description</emphasis> fields and then select attributes that should belong to the group from the left panel. </para>
-<para>Click the <emphasis role="italic">Move selected items</emphasis> button to add the selected attributes to the attribute group. Click the <emphasis role="italic">Remove selected items</emphasis> button to remove attributes from the group that have been selected in the right panel. </para>
-<para>Finally, click the <emphasis role="italic">Add</emphasis> button to save changes, or the <emphasis role="italic">Cancel</emphasis> button to discard any changes..</para>
-<screenshot>
-<screeninfo>Fig. 2.7.1.2.2</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.1.2.2.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</section>
-</section>
-<section id='patient_identifier_type'>
-<title>Person identifier type</title>
-<para>To access the person identifier type maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Person Identifier Type</emphasis> option to create a new identifier type.</para>
-<screenshot>
-<screeninfo>Fig. 2.7.2a</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.2a.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>To creating a new identifier type, click the <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Person Identifier Type Management </emphasis>window to go to <emphasis role="italic">Add New Person Identifier Type</emphasis> window.</para>
-<screenshot>
-<screeninfo>Fig. 2.7.2b</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.7.2b.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>Basic information -</para>
-<itemizedlist>
-<listitem>
-<para><emphasis role="italic">Name</emphasis>: Name of identifier type.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Description</emphasis>: Description of identifier type.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Mandatory</emphasis>: Entering value for the identifier is required or not.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Related</emphasis>: </para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Number of characters</emphasis>: Maximum number of characters for value inputed. </para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Type</emphasis>: Data type of value inputted.</para>
-</listitem>
-</itemizedlist>
-</section>
-<section id='relationship_type'>
-<title>Relationship type</title>
-<para>Relationship type section provides a mechanism for defining any relationship types and link persons through these relationship types by creating specific relationships.</para>
-<para>To access the relationship type maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Relationship Type</emphasis> option to create a new relationship type.</para>
-<screenshot>
-<screeninfo>Fig. 2.7.3a</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="80%" fileref="resources/images/patients_programs/Fig. 2.7.3a.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>To define a new relationship type, click <emphasis role="italic">Add</emphasis> button into <emphasis role="italic">Relationship Type Management </emphasis>window to go to <emphasis role="italic">Add new Relationship Type</emphasis> window.</para>
-<screenshot>
-<screeninfo>Fig 2.7.3b</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="80%" fileref="resources/images/patients_programs/Fig. 2.7.3b.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-</section>
-<section id='program'>
-<section>
-<title>Program and Program stage</title>
-<para>Program section provides a mechanism for defining a health program. All name based case entry is organised through the use of programs.</para>
-<para>To access the program maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Program</emphasis> option to create a new program.</para>
-<para>To create a new program, click the <emphasis role="italic">Add new</emphasis> button. Fill all fields with read asterisk, and then click the &quot;Add&quot; button.</para>
-<para><screenshot>
-<screeninfo>Figure 2.5.1.1</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.1.1.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot></para>
-<para>Basic information :</para>
-<para><itemizedlist>
-<listitem>
-<para><emphasis role="italic">Name</emphasis>: The name of the program</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Description</emphasis>: Descriptions, meanings, explanation, etc. of/about the program</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Date of Enrolment Description</emphasis>: The date in which a person is registered to the system.
-For example: the date in which a person enrols to the system.</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Date of Incidence Description</emphasis>: The date when the person got the disease or he/she has just been committed to an equivalent program for being followed-up. E.g. In the Immunization program for child under 1yr old, the incident date is the birthday; in the maternal program, the incident date is the date of last menstrual period (LMP).</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Number of max days allowed to input data</emphasis>.</para>
-</listitem>
-</itemizedlist></para>
-</section>
-<section>
-<title>Program stage</title>
-<para>To define a program stage, click the <emphasis role="italic">Program Stage Management</emphasis> icon (Fig. 2.5.1.2a) and then <emphasis role="italic">Add new</emphasis> button (Fig. 2.5.1.2b). Fill in the <emphasis role="italic">Name</emphasis> and <emphasis role="italic">Description</emphasis> fields and then select the data elements that should belong to the group from the left panel. Click the <emphasis role="italic">Move selected</emphasis> button to add the selected data elements to the right panel. Click the <emphasis role="italic">Remove selected</emphasis> button to remove data elements that have been selected in the right panel. Finally, click the <emphasis role="italic">Add</emphasis> button to save changes, or the <emphasis role="italic">Cancel</emphasis> button to discard any changes.</para>
-<screenshot>
-<screeninfo>Figure 2.5.1.2a</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.1.2a.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.5.1.2b</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.1.2b.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<screenshot>
-<screeninfo>Figure 2.5.1.2c</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.1.2c.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>Fig. 2.5.1.2c illustrates for stage named “<emphasis role="italic">Birth Details</emphasis>” of “<emphasis role="italic">Child Health</emphasis>” program.
-More explanation for the figure:</para>
-<para><emphasis role="bold">
-<emphasis role="italic">
-<emphasis role="italic">
-<emphasis role="underline">Area with blue frame labelled 1:</emphasis>
-</emphasis>
-</emphasis>
-</emphasis></para>
-<itemizedlist>
-<listitem>
-<para><emphasis role="italic">Name</emphasis>: Name of the stage</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Description</emphasis>: The description of the stage</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Min no of days to wait from start of Program</emphasis>: The minimum number of days to wait for starting the program</para>
-</listitem>
-<listitem>
-<para><emphasis role="italic">Program</emphasis>: The name of the program which is already defined before.</para>
-</listitem>
-</itemizedlist>
-<para><emphasis role="italic">
-<emphasis role="bold">
-<emphasis role="italic">
-<emphasis role="underline">Area with blue arrow and labelled 2:</emphasis>
-</emphasis>
-</emphasis>
-</emphasis></para>
-<para>Choose the data elements from the list on the left to the right one. These chosen elements are highlighted with BLUE color.</para>
-<para><emphasis role="italic">
-<emphasis role="bold">
-<emphasis role="italic">
-<emphasis role="underline">Area with blue arrow and labelled 3:</emphasis>
-</emphasis>
-</emphasis>
-</emphasis></para>
-<para>Function area with button labeled “<emphasis role="italic">Add</emphasis>”, see the arrow labelled 3 and in BLUE to execute the function.</para>
-<para>If successfully, the new stages will showed in the list of stages:</para>
-<screenshot>
-<screeninfo>Figure 2.5.1.2d</screeninfo>
-<mediaobject>
-<imageobject>
-<imagedata width="70%" fileref="resources/images/patients_programs/Fig. 2.5.1.2d.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>Your program will then be ready to be used to enroll persons (which are modified/created under <emphasis role="italic">Maintenance-&gt;Persons and Programs-&gt;Persons</emphasis>) and enter data under the data-entry function <emphasis role="italic">Services-&gt;Name Based Data Records-&gt;Data Entry</emphasis> or <emphasis role="italic">Multiple Data. Entry</emphasis> for the facilities that you have assigned.</para>
-</section>
-<section>
-<title>Other functionalities</title>
-<para>You can assign the facilities to a program in the Program Management ( in which a list of available programs are shown) by clicking on the blue folder icon, which is the first icon under Operations, corresponding to the program you would like to modify.
+          <para>Clicking on an event to open the data entry screen, and plan is updated when closing data entry form.
 
-</para>
-<para>The function <emphasis role="italic">Define Program Validation</emphasis> is designed for defining validations of a program in which you would like to modify after entering patient data values for program stages.
-
-For instance, Parity, Previous live birth male, Previous live birth female, Previous still birth are patient data elements. They belong to many stages. And if data value of Parity is 0, then ( Previous live birth female + Previous still birth ) = 0. Besides, if a patient data element exists into many program stages, the system will check whether the values of the patient data element are in all program stages of the program or not.
-
-For instance, TT1 is a patient data element. It exists into program stages as follows Checkup 1, Checkup 2, Checkup 3. If the data value of this data element into Checkup 1 is null, the data values into Checkup 2, Checkup 3 should be null.</para>
-</section>
-</section>
-<section id='validation_criteria'>
-<title>Validation criteria</title>
-<para>Validation criteria section provide a mechanism for defining criteria for persons when enrolling a program.</para>
-<para>To access the validation criteria maintenance module, from <emphasis role="italic">Maintenance</emphasis> menu, go to <emphasis role="italic">Persons and Programs</emphasis> option and click on it. Select <emphasis role="italic">Validation Criteria</emphasis> option to create a new program</para>
-<para>To create a new validation criterion, click the <emphasis role="italic">Add new</emphasis> button. Fill all fields with read asterisk, and click <emphasis role="italic">Add</emphasis> button.</para>
-<screenshot>
-<screeninfo/>
-<mediaobject>
-<imageobject>
-<imagedata width="80%" fileref="resources/images/patients_programs/Fig. 2.6.6.png" format="PNG"/>
-</imageobject>
-</mediaobject>
-</screenshot>
-<para>You can assign facilities to a validation criterion in the <emphasis role="italic">Validation Criteria Management </emphasis>(list of available validation criteria are shown) by clicking the blue folder icon, the first icon under Operations, corresponding to the validation criterion you would like to assign. Click the <emphasis role="italic">Move selected</emphasis> button to add the selected programs to the validation criterion. Click the <emphasis role="italic">Remove selected</emphasis> button to remove programs from the group that have been selected in the right panel. Finally, click the <emphasis role="italic">Save</emphasis> button to save changes, or the <emphasis role="italic">Cancel</emphasis> button to discard any changes.</para>
-</section>
-</section>
-</section>
+The plan (expected visits for the upcoming period) will typically be a mix of recently overdue stages and stages that are non-completed and scheduled for the coming days/week.</para>
+          <para>After selecting organisation unit on the left panel, select a program in list. Then status which you would like. Select show events since ( if any) and Show events up to ( if any ). Finally, click Show Event List button to get events which are satisfied with searching criteria.</para>
+          <para>Click <emphasis role="italic">Export XLS</emphasis> button to export the result to excel file.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/visit_schedule.PNG" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </section>
+        <section id="program_tracking">
+          <title>Program Tracking</title>
+          <para>This function supports the work practices around tracking persons within a health program that have not shown up for a scheduled visit (stage), e.g. that are lost to follow-up.</para>
+          <para>After selecting organisation unit on the left panel,  select a program in list. And click on List All Person button to load all over-due events of persons.</para>
+          <para>Click on <emphasis role="italic">person&apos;s name</emphasis> to open his/her dashboard.</para>
+          <para>Click on an <emphasis role="italic">event box</emphasis> to re-schedule and set status for the selected event or see all tracking history for this event.<screenshot>
+              <mediaobject>
+                <imageobject>
+                  <imagedata width="70%" depth="" fileref="resources/images/patients_programs/tracking_program.png" format="PNG"/>
+                </imageobject>
+              </mediaobject>
+            </screenshot></para>
+          <para>To search events by status and  some criteria such as name, identifiers or attributes, click on <emphasis role="italic">Search</emphasis> button next to <emphasis role="italic">List All Persons</emphasis>. A advanced search criteria is shown. After to fill search key values, click on <emphasis role="italic">Search</emphasis> button on this form to display result or click on <emphasis role="italic">Send message</emphasis> button to send a reminder message for person in result.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/program_tracking_search_function.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </section>
+      </section>
+      <section>
+        <title>Data entry</title>
+        <section id="multiple_individual_records">
+          <title>Multiple individual records</title>
+          <para>The multiple individual records function is where individual data is manually registered in the DHIS database. A list events for each person who enrolled into the selected program after clicking a multi events with registration.</para>
+          <para>To access the multiple individual records function, from the <emphasis role="italic">Services</emphasis> menu, go to the <emphasis role="italic">Individual Records</emphasis> option and click on it. Select <emphasis role="italic">Multiple individual records</emphasis> option on left menu to proceed.</para>
+          <para>To start enter data, the first step is to open a list events of person who enrolled a certain program by selecting a program in the list on the main page. Follow these steps:</para>
+          <orderedlist>
+            <listitem>
+              <para>Locate the organisation unit you want to register data for in the tree menu to the left. Expand and close branches by clicking on the +/- symbols. A quick way to find an organisation unit is to use the search box just above the tree (the green symbol), but you need to write in the full name to get a match.</para>
+              <para>The system loads multi events with registration which belong to the selected organisation unit.</para>
+            </listitem>
+            <listitem>
+              <para>Select a program in the list and click on <emphasis role="italic">List All Person </emphasis> button. An event list  of persons who enrolled into the selected program is shown.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="70" fileref="resources/images/patients_programs/multi_individual_records_list.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+            <listitem>
+              <para>Click an event to open data entry form.</para>
+              <para>After filling and selecting data for a form. You have to click on <emphasis>Run validation</emphasis> button to check whether your inputs are valid. Then, click on <emphasis>Complete</emphasis> button to finish the entry.</para>
+            </listitem>
+          </orderedlist>
+        </section>
+        <section id="single_event_with_registration">
+          <title>Single event with registration</title>
+          <para>The data to register is defined by a single event with registration program. The functionality supports health providers to register person information and input data values for a program into one form.</para>
+          <para>In order to register an event, from the <emphasis role="italic">Services</emphasis> option, go to the <emphasis role="italic">Individual Records</emphasis> option and click it. Then select <emphasis role="italic">Single event with registration</emphasis> option on left menu to proceed.</para>
+          <para>To list all persons in the selected facility, click <emphasis role="italic">List All Persons</emphasis> button.</para>
+          <para>To add new event, select a program in the combo box. And then click <emphasis role="italic">Add new</emphasis> button.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70" fileref="resources/images/patients_programs/create_new_person_single_event_with_registration.PNG" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>To update event of a registered person:</para>
+          <orderedlist>
+            <listitem>
+              <para>Click <emphasis role="italic">Advanced search</emphasis> button. Then enter criterion for searching available persons. The search result is displayed below. User can read the user guide for <emphasis>Advanced search</emphasis> function in <emphasis>Person registration</emphasis> section.</para>
+            </listitem>
+            <listitem>
+              <para>Click on <emphasis role="italic">Data entry</emphasis> icon - the first icon  under <emphasis>Operations</emphasis>, corresponding to the person you would like to edit, to update data values for the event.</para>
+            </listitem>
+          </orderedlist>
+        </section>
+        <section id="single_event_without_registration">
+          <title>Single event without registration</title>
+          <para>The data to register is defined by a single event without registration program.</para>
+          <para>To register an event, from the <emphasis role="italic">Services</emphasis> option, go to the <emphasis role="italic">Individual Records</emphasis> option and click it. Then select <emphasis role="italic">Single event without registration</emphasis> option on left menu to proceed.</para>
+          <para>To list all events in the selected facility, click <emphasis role="italic">List All Events</emphasis> button.</para>
+          <para>To remove empty events of the selected program, click <emphasis role="italic">Remove empty events</emphasis> button.</para>
+          <para>To add new event, click <emphasis role="italic">Add new</emphasis> button.</para>
+          <para>To update an event -</para>
+          <orderedlist>
+            <listitem>
+              <para>Click <emphasis role="italic">Search</emphasis> button. Then enter criterion for searching person. The person list are displayed below.</para>
+            </listitem>
+            <listitem>
+              <para>Click on <emphasis role="italic">Data entry</emphasis> icon - the first icon, to update value for the event.</para>
+            </listitem>
+          </orderedlist>
+        </section>
+      </section>
+      <section>
+        <title>Reports</title>
+        <para>The sub module provides two functions for individual reports -<itemizedlist>
+            <listitem>
+              <para><emphasis role="italic">Program summary</emphasis> - View the summary report to get an overview of the services provided for a program.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Tabular report</emphasis>  - An interactive reporting tool for tracker-data using tabular presentation with dynamic filters for each person attribute and data element. </para>
+            </listitem>
+          </itemizedlist></para>
+        <section id="program_summary_report">
+          <title>Program summary</title>
+          <para>The function provides a tool for   generating summary list of individual information with  color shown on program stages to identify status of receiving services in each stage.</para>
+          <para>To access the program summary report, choose  <emphasis role="italic">Services</emphasis> -&gt; <emphasis role="italic">Individual Records</emphasis> &gt;  <emphasis role="italic">Program summary</emphasis>.</para>
+          <para>Select a <emphasis role="italic">organisation unit</emphasis>  which provides services on the left menu. Then on the main page, select <emphasis role="italic">Program</emphasis>, <emphasis role="italic">Start date</emphasis>, <emphasis role="italic">End date </emphasis>to get period. After, select Use data from level(s). There are three levels <emphasis role="italic">Selected</emphasis>, <emphasis role="italic">Children Only</emphasis> and <emphasis role="italic">All</emphasis>. Finally, click <emphasis role="italic">Generate</emphasis> button. </para>
+          <para>The result is get based on the date of enrollment of each person who registered the selected organisation unit and enrolled in the selected program in the interval from start-date and end-date what health provider entered.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/program_summary_report.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>Click on an event box to display records for this event.</para>
+          <para>Click on the person box to display the  details and history of the selected person.</para>
+          <para>The color highlight the status of the stages -</para>
+          <itemizedlist>
+            <listitem>
+              <para>PURPLE: Data entered and uncompleted stages.</para>
+            </listitem>
+            <listitem>
+              <para>RED: Stages open but no data entered while the date estimated for closing/completing is over.</para>
+            </listitem>
+            <listitem>
+              <para>YELLOW: Coming stages.</para>
+            </listitem>
+            <listitem>
+              <para>GREEN: Compete stages.</para>
+            </listitem>
+            <listitem>
+              <para>GREY: Skipped stages.</para>
+            </listitem>
+          </itemizedlist>
+        </section>
+        <section>
+          <title>Tabular report</title>
+          <para>This is  an interactive reporting tool for tracker-data using tabular presentation with dynamic filters for each person attribute/data element.</para>
+          <para>To access the tabular report function, from the <emphasis role="italic">Services</emphasis> menu, go to the <emphasis role="italic">Individual Records</emphasis> option and click on it. Select <emphasis role="italic">Tabular report</emphasis> option below Reports header on left menu to proceed. </para>
+          <para>To start, the first step is to select a program in the list. Follow these steps:</para>
+          <orderedlist>
+            <listitem>
+              <para>Select a program from list in the left panel. The system will be load person attributes and identifiers which belongs to the selected program and not belong to any program.</para>
+            </listitem>
+            <listitem>
+              <para>Choose start-date and end-date. The event list is loaded with report-date between the two dates.</para>
+            </listitem>
+            <listitem>
+              <para>Select one or many <emphasis role="italic">organisation units</emphasis>.</para>
+            </listitem>
+            <listitem>
+              <para>In <emphasis role="italic">Identifiers and Attribute</emphasis>s tab, select options  to show it into the result.</para>
+            </listitem>
+            <listitem>
+              <para>In <emphasis role="italic">Data element </emphasis>tab, Select a <emphasis role="italic">program stage</emphasis>. Double-click data elements which you need to show into the result to move it from <emphasis role="italic">Available</emphasis>field to the <emphasis role="italic">Selected</emphasis> field</para>
+              <note>
+                <para>If the selected program has only one stage, this field is hidden and data element list of the stage is shown in the <emphasis role="italic">Available</emphasis> field.</para>
+              </note>
+            </listitem>
+            <listitem>
+              <para>In the Options tab, there are two options - </para>
+            </listitem>
+          </orderedlist>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="italic">Use data from level(s)</emphasis>: Specify the level which you need to get events -</para>
+              <para>1)<emphasis role="italic"> Children only</emphasis>: Individual data from the children of the selected organisation unit will be aggregated.</para>
+              <para>2) <emphasis role="italic">Selected</emphasis>: Individual data from the selected organisation unit will be aggregated. </para>
+              <para>3) <emphasis role="italic">All</emphasis>: Individual data from both selected organisation unit and its children will be aggregated.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="italic">Show hierarchy from level:</emphasis> The level of  organisation units which you want to show. E.g. If an event  belongs to an organisation unit  in district level and this option is selected as province level, the result is shown with the name of province.</para>
+            </listitem>
+          </itemizedlist>
+          <orderedlist continuation="continues">
+            <listitem>
+              <para>Click <emphasis role="italic">Update</emphasis> button on toolbar. The result is shown on the main page.</para>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata width="60%" fileref="resources/images/patients_programs/tabular_report_result.png" format="PNG"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </listitem>
+          </orderedlist>
+          <para>To filter data by person attributes, identifiers or data elements, click on the DOWN button on the column corresponding to field which you want to filter. Click <emphasis role="italic">Filter</emphasis> button and enter value in the field shown.</para>
+          <screenshot>
+            <mediaobject>
+              <imageobject>
+                <imagedata width="70%" fileref="resources/images/patients_programs/tabular_report_filter.png" format="PNG"/>
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+          <para>To clear filter values, click <emphasis role="italic">Clear filter</emphasis> button on toolbar.</para>
+          <para>To save parameters on the left panel, click <emphasis role="italic">Favorites</emphasis> button on toolbar. The select <emphasis role="italic">Manage favorites</emphasis> option. A form is shown to enter name for favorite and click <emphasis role="italic">Save</emphasis> button.</para>
+          <para>To export the result to excel file, click <emphasis role="italic">Download</emphasis> button, select  XLS option.</para>
+        </section>
+      </section>
+      <section id="run_case_aggregation">
+        <title>Manual person aggregation</title>
+        <para>The <emphasis role="italic">Manual person Aggregation</emphasis> module is used for aggregating individual data and import into aggregated data element. To open <emphasis>Manual person aggregation</emphasis> module, from the <emphasis role="italic">Services</emphasis> menu, go to the <emphasis role="italic">Individual Records</emphasis> option. Select <emphasis role="italic">Manual Person Aggregation</emphasis> option on left menu.  <emphasis>Manual person aggregation form</emphasis> is opened as below -</para>
+        <screenshot>
+          <mediaobject>
+            <imageobject>
+              <imagedata width="70%" fileref="resources/images/patients_programs/person_aggregation_form.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+        <para>In the <emphasis>Person aggregation form</emphasis> above</para>
+        <orderedlist>
+          <listitem>
+            <para>Select <emphasis role="italic">dataset</emphasis> from Dataset List to get aggregate values. Note that only datasets which were assigned to at least one organisation unit will be shown in this list.</para>
+          </listitem>
+          <listitem>
+            <para>Select a date range  from <emphasis role="italic">From</emphasis> and <emphasis role="italic">To</emphasis> fields.</para>
+          </listitem>
+          <listitem>
+            <para>Select <emphasis role="italic">organisation unit level</emphasis> where person data will be select to aggregate. There are 3 options - </para>
+            <para>- <emphasis role="italic">All</emphasis>: Individual data from both selected organisation unit and its children will be aggregated.</para>
+            <para>- <emphasis role="italic">Children only</emphasis>: Individual data from the children of  the selected organisation unit will be aggregated.</para>
+            <para>- <emphasis role="italic"> Selected</emphasis>: Individual  data from the selected organisation unit will be aggregated. </para>
+          </listitem>
+          <listitem>
+            <para>Click on the 
+<emphasis role="italic">Aggregate</emphasis> button to execute aggregate function. The <emphasis>Person aggregation result</emphasis>page is shown after running successfully.</para>
+          </listitem>
+        </orderedlist>
+        <screenshot>
+          <screeninfo>Figure - Person aggregation result</screeninfo>
+          <mediaobject>
+            <imageobject>
+              <imagedata width="70%" fileref="resources/images/patients_programs/example_person_aggregation_result.png" format="PNG"/>
+            </imageobject>
+          </mediaobject>
+        </screenshot>
+        <para>In <emphasis>Manual person aggregation result</emphasis> page -</para>
+        <itemizedlist>
+          <listitem>
+            <para>Click <emphasis role="italic">Save all values</emphasis> button to save all aggregated data values .</para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="italic"><emphasis role="italic">Click</emphasis> Orange arrow</emphasis> icon next to period name for showing list of aggregated data values at this period. Select only necessary data values and click <emphasis role="italic">Save</emphasis> selected values to save them</para>
+          </listitem>
+          <listitem>
+            <para><emphasis><emphasis role="italic">Click </emphasis>Show details</emphasis> icon  to view detail  information which aggregated.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </section>
 </chapter>
 <chapter>
 <title>Setting up report functionality</title>

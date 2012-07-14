@@ -27,20 +27,18 @@ package org.hisp.dhis.security.authority;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.config.entities.ActionConfig;
+import org.hisp.dhis.security.StrutsAuthorityUtils;
+import org.hisp.dhis.security.intercept.SingleSecurityMetadataSource;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityMetadataSource;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.hisp.dhis.security.intercept.SingleSecurityMetadataSource;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.access.SecurityMetadataSource;
-
-import com.opensymphony.xwork2.config.entities.ActionConfig;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -55,9 +53,18 @@ public class DefaultRequiredAuthoritiesProvider
 
     private String requiredAuthoritiesKey;
 
+    @Required
     public void setRequiredAuthoritiesKey( String requiredAuthoritiesKey )
     {
         this.requiredAuthoritiesKey = requiredAuthoritiesKey;
+    }
+
+    private String anyAuthoritiesKey;
+
+    @Required
+    public void setAnyAuthoritiesKey( String anyAuthoritiesKey )
+    {
+        this.anyAuthoritiesKey = anyAuthoritiesKey;
     }
 
     private Set<String> globalAttributes = Collections.emptySet();
@@ -75,45 +82,32 @@ public class DefaultRequiredAuthoritiesProvider
     {
         return createSecurityMetadataSource( actionConfig, actionConfig );
     }
+
     public SecurityMetadataSource createSecurityMetadataSource( ActionConfig actionConfig, Object object )
     {
-        Collection<String> requiredAuthorities = getRequiredAuthorities( actionConfig );
-
         Collection<ConfigAttribute> attributes = new ArrayList<ConfigAttribute>();
-        
-        for ( String requiredAuthority : requiredAuthorities )
-        {
-            attributes.add( new SecurityConfig( requiredAuthority ) );
-        }
-
-        for ( String globalAttribute : globalAttributes )
-        {
-            attributes.add( new SecurityConfig( globalAttribute ) );
-        }
+        attributes.addAll( StrutsAuthorityUtils.getConfigAttributes( getRequiredAuthorities( actionConfig ) ) );
+        attributes.addAll( StrutsAuthorityUtils.getConfigAttributes( globalAttributes ) );
 
         return new SingleSecurityMetadataSource( object, attributes );
     }
-    
+
+    public Collection<String> getAllAuthorities( ActionConfig actionConfig )
+    {
+        Collection<String> authorities = new HashSet<String>();
+        authorities.addAll( getRequiredAuthorities( actionConfig ) );
+        authorities.addAll( getAnyAuthorities( actionConfig ) );
+
+        return authorities;
+    }
+
     public Collection<String> getRequiredAuthorities( ActionConfig actionConfig )
     {
-        final Map<String, String> staticParams = actionConfig.getParams();
+        return StrutsAuthorityUtils.getAuthorities( actionConfig, requiredAuthoritiesKey );
+    }
 
-        if ( staticParams == null || !staticParams.containsKey( requiredAuthoritiesKey ) )
-        {
-            return Collections.emptySet();
-        }
-
-        final String param = staticParams.get( requiredAuthoritiesKey );
-
-        HashSet<String> requiredAuthorities = new HashSet<String>();
-
-        StringTokenizer t = new StringTokenizer( param, "\t\n\r ," );
-
-        while ( t.hasMoreTokens() )
-        {
-            requiredAuthorities.add( t.nextToken() );
-        }
-
-        return requiredAuthorities;
+    public Collection<String> getAnyAuthorities( ActionConfig actionConfig )
+    {
+        return StrutsAuthorityUtils.getAuthorities( actionConfig, anyAuthoritiesKey );
     }
 }

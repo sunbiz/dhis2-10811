@@ -60,7 +60,7 @@ public class GetPatientLocationAction
     }
 
     // -------------------------------------------------------------------------
-    // Action implementation
+    // Getter && Setter
     // -------------------------------------------------------------------------
 
     private Integer patientId;

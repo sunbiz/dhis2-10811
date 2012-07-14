@@ -27,7 +27,9 @@
 
 package org.hisp.dhis.de.action;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.hisp.dhis.attribute.LocalAttributeValueService;
 import org.hisp.dhis.dataset.DataSet;
@@ -49,7 +51,17 @@ public class LoadAttributeValuesAction
 
     private LocalAttributeValueService localAttributeValueService;
 
+    public void setLocalAttributeValueService( LocalAttributeValueService localAttributeValueService )
+    {
+        this.localAttributeValueService = localAttributeValueService;
+    }
+
     private DataSetService dataSetService;
+
+    public void setDataSetService( DataSetService dataSetService )
+    {
+        this.dataSetService = dataSetService;
+    }
 
     // -------------------------------------------------------------------------
     // Input && Output
@@ -57,21 +69,11 @@ public class LoadAttributeValuesAction
 
     private Integer dataSetId;
 
-    private Collection<String> values;
+    private List<String> values;
 
-    public Collection<String> getValues()
+    public List<String> getValues()
     {
         return values;
-    }
-
-    public void setDataSetService( DataSetService dataSetService )
-    {
-        this.dataSetService = dataSetService;
-    }
-
-    public void setLocalAttributeValueService( LocalAttributeValueService localAttributeValueService )
-    {
-        this.localAttributeValueService = localAttributeValueService;
     }
 
     public void setDataSetId( Integer dataSetId )
@@ -88,9 +90,11 @@ public class LoadAttributeValuesAction
         throws Exception
     {
         DataSet dataset = dataSetService.getDataSet( dataSetId );
-        
-        values = localAttributeValueService.getValuesByDataSet( dataset );
-            
+
+        values = new ArrayList<String>( localAttributeValueService.getValuesByDataSet( dataset ) );
+
+        Collections.sort( values );
+
         return SUCCESS;
     }
 }

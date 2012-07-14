@@ -28,7 +28,6 @@ package org.hisp.dhis.api.mobile.model;
  */
 
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -62,6 +61,10 @@ public class MobileOrgUnitLinks
     public static double currentVersion = 2.9;
 
     private String updateNewVersionUrl;
+    
+    private String updateContactUrl;
+    
+    private String findPatientUrl;
 
     @XmlAttribute
     public int getId()
@@ -174,6 +177,26 @@ public class MobileOrgUnitLinks
     {
         this.updateNewVersionUrl = updateNewVersionUrl;
     }
+    
+    public String getUpdateContactUrl()
+    {
+        return updateContactUrl;
+    }
+
+    public void setUpdateContactUrl( String updateContactUrl )
+    {
+        this.updateContactUrl = updateContactUrl;
+    }
+
+    public String getFindPatientUrl()
+    {
+        return findPatientUrl;
+    }
+
+    public void setFindPatientUrl( String findPatientUrl )
+    {
+        this.findPatientUrl = findPatientUrl;
+    }
 
     public void serialize( DataOutputStream dataOutputStream )
 
@@ -189,7 +212,8 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.changeUpdateDataSetLangUrl );
         dataOutputStream.writeUTF( this.searchUrl );
         dataOutputStream.writeUTF( this.updateNewVersionUrl );
-
+        dataOutputStream.writeUTF( this.updateContactUrl );
+        dataOutputStream.writeUTF( this.findPatientUrl );
     }
 
     public void deSerialize( DataInputStream dataInputStream )
@@ -205,6 +229,8 @@ public class MobileOrgUnitLinks
         this.changeUpdateDataSetLangUrl = dataInputStream.readUTF();
         this.searchUrl = dataInputStream.readUTF();
         this.updateNewVersionUrl = dataInputStream.readUTF();
+        this.updateContactUrl = dataInputStream.readUTF();
+        this.findPatientUrl = dataInputStream.readUTF();
     }
 
     @Override
@@ -235,6 +261,17 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.updateDataSetUrl );
         dataOutputStream.writeUTF( this.changeUpdateDataSetLangUrl );
         dataOutputStream.writeUTF( this.searchUrl );
+        dataOutputStream.writeUTF( this.updateNewVersionUrl );
+        dataOutputStream.writeUTF( this.updateContactUrl );
+        dataOutputStream.writeUTF( this.findPatientUrl );
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // TODO Auto-generated method stub
+        
     }
 
 }

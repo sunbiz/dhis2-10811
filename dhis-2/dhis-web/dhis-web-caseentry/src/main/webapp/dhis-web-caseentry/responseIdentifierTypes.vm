@@ -4,7 +4,7 @@
 	#foreach( $identifierType in $identifierTypes )
 	  {
 		"id":  ${identifierType.id} ,
-		"name": "$!encoder.jsonEncode( ${identifierType.name} )"
+		"name": "$!encoder.jsonEncode( ${identifierType.displayName} )"
 	  }#if( $velocityCount < $size ),#end
 	#end],
 	
@@ -13,7 +13,7 @@
 	#foreach( $attribute in $attributes )
 	  {
 		"id":  ${attribute.id} ,
-		"name": "$!encoder.jsonEncode( ${attribute.name} )"
+		"name": "$!encoder.jsonEncode( ${attribute.displayName} )"
 	  }#if( $velocityCount < $size ),#end
 	#end],
 	
@@ -22,7 +22,7 @@
 	#foreach( $programStage in $programStages )
 	  {
 		"id":  ${programStage.id} ,
-		"name": "$!encoder.jsonEncode( ${programStage.name} )",
+		"name": "$!encoder.jsonEncode( ${programStage.displayName} )",
 		"irregular":${programStage.irregular}
 	  }#if( $velocityCount < $size ),#end
 	#end]

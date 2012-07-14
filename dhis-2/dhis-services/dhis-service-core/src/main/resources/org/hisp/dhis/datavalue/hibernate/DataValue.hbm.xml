@@ -15,7 +15,7 @@
 
     <property name="value" />
 
-    <property name="storedBy" column="storedby" length="31" />
+    <property name="storedBy" column="storedby" length="100" />
 
     <property name="timestamp" column="lastupdated" type="date" />
 

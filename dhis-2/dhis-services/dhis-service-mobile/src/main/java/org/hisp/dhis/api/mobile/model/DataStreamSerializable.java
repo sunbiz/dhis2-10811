@@ -42,6 +42,8 @@ public interface DataStreamSerializable
     public static final String TWO_POINT_EIGHT = "2.8";
 
     public static final String TWO_POINT_NINE = "2.9";
+    
+    public static final String TWO_POINT_TEN = "2.10";
 
     public void serialize( DataOutputStream dataOutputStream )
         throws IOException;
@@ -54,5 +56,8 @@ public interface DataStreamSerializable
 
     public void serializeVerssion2_9( DataOutputStream dataOutputStream )
         throws IOException;
+    
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    throws IOException;
 
 }

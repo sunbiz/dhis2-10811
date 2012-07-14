@@ -99,11 +99,6 @@ public class CompleteDataEntryAction
         ProgramStageInstance programStageInstance = programStageInstanceService
             .getProgramStageInstance( programStageInstanceId );
 
-        if ( programStageInstance == null )
-        {
-            return SUCCESS;
-        }
-
         programStageInstance.setCompleted( true );
 
         programStageInstanceService.updateProgramStageInstance( programStageInstance );
@@ -113,7 +108,8 @@ public class CompleteDataEntryAction
         // ProgramInstance
         // ----------------------------------------------------------------------
 
-        if ( !programStageInstance.getProgramInstance().getProgram().getType().equals( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) )
+        if ( !programStageInstance.getProgramInstance().getProgram().getType()
+            .equals( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) )
         {
             ProgramInstance programInstance = programStageInstance.getProgramInstance();
 
@@ -121,7 +117,7 @@ public class CompleteDataEntryAction
 
             for ( ProgramStageInstance stageInstance : stageInstances )
             {
-                if ( !stageInstance.isCompleted() || stageInstance.getProgramStage().getIrregular()  )
+                if ( !stageInstance.isCompleted() || stageInstance.getProgramStage().getIrregular() )
                 {
                     return SUCCESS;
                 }
@@ -132,7 +128,7 @@ public class CompleteDataEntryAction
 
             programInstanceService.updateProgramInstance( programInstance );
         }
-        
-        return SUCCESS;
+
+        return "programcompleted";
     }
 }

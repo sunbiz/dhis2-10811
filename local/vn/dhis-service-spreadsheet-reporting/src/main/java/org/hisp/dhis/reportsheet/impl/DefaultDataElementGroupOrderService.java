@@ -27,6 +27,8 @@ package org.hisp.dhis.reportsheet.impl;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.List;
+
 import org.hisp.dhis.reportsheet.DataElementGroupOrder;
 import org.hisp.dhis.reportsheet.DataElementGroupOrderService;
 import org.hisp.dhis.reportsheet.DataElementGroupOrderStore;
@@ -73,5 +75,10 @@ public class DefaultDataElementGroupOrderService
     public DataElementGroupOrder getDataElementGroupOrder( String name, String clazzName, Integer reportId )
     {
         return dataElementGroupOrderStore.getDataElementGroupOrder( name, clazzName, reportId );
+    }
+
+    public List<DataElementGroupOrder> getDataElementGroupOrders( List<Integer> ids )
+    {
+        return dataElementGroupOrderStore.getDataElementGroupOrders( ids );
     }
 }

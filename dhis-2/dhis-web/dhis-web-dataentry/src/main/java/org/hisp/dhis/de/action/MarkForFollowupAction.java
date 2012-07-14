@@ -85,11 +85,18 @@ public class MarkForFollowupAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer dataElementId;
+    private String dataElementId;
 
-    public void setDataElementId( Integer dataElementId )
+    public void setDataElementId( String dataElementId )
     {
         this.dataElementId = dataElementId;
+    }
+
+    private String categoryOptionComboId;
+
+    public void setCategoryOptionComboId( String categoryOptionComboId )
+    {
+        this.categoryOptionComboId = categoryOptionComboId;
     }
 
     private String periodId;
@@ -104,13 +111,6 @@ public class MarkForFollowupAction
     public void setOrganisationUnitId( int organisationUnitId )
     {
         this.organisationUnitId = organisationUnitId;
-    }
-
-    private Integer categoryOptionComboId;
-
-    public void setCategoryOptionComboId( Integer categoryOptionComboId )
-    {
-        this.categoryOptionComboId = categoryOptionComboId;
     }
 
     // -------------------------------------------------------------------------
@@ -131,9 +131,9 @@ public class MarkForFollowupAction
     public String execute()
     {
         DataElement dataElement = dataElementService.getDataElement( dataElementId );
+        DataElementCategoryOptionCombo categoryOptionCombo = categoryService.getDataElementCategoryOptionCombo( categoryOptionComboId );
         Period period = PeriodType.createPeriodExternalId( periodId );
         OrganisationUnit source = organisationUnitService.getOrganisationUnit( organisationUnitId );
-        DataElementCategoryOptionCombo categoryOptionCombo = categoryService.getDataElementCategoryOptionCombo( categoryOptionComboId );
 
         DataValue dataValue = dataValueService.getDataValue( source, dataElement, period, categoryOptionCombo );
 

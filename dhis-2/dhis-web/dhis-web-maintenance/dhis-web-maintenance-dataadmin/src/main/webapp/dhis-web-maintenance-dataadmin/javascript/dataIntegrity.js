@@ -12,7 +12,6 @@ function populateIntegrityItems( json )
 	
     displayViolationList( json.dataElementsWithoutDataSet, "dataElementsWithoutDataSet" );
     displayViolationList( json.dataElementsWithoutGroups, "dataElementsWithoutGroups" );
-	displayViolationList( json.dataElementsViolatingCompulsoryGroupSets, "dataElementsViolatingCompulsoryGroupSets" );
 	displayViolationList( json.dataElementsViolatingExclusiveGroupSets, "dataElementsViolatingExclusiveGroupSets" );
 	displayViolationList( json.dataElementsInDataSetNotInForm, "dataElementsInDataSetNotInForm" );
     displayViolationList( json.dataElementsAssignedToDataSetsWithDifferentPeriodTypes, "dataElementsAssignedToDataSetsWithDifferentPeriodTypes" );
@@ -22,12 +21,10 @@ function populateIntegrityItems( json )
     displayViolationList( json.indicatorsWithoutGroups, "indicatorsWithoutGroups" );
     displayViolationList( json.invalidIndicatorNumerators, "invalidIndicatorNumerators" );
     displayViolationList( json.invalidIndicatorDenominators, "invalidIndicatorDenominators" );
-	displayViolationList( json.indicatorsViolatingCompulsoryGroupSets, "indicatorsViolatingCompulsoryGroupSets" );
 	displayViolationList( json.indicatorsViolatingExclusiveGroupSets, "indicatorsViolatingExclusiveGroupSets" );
     displayViolationList( json.organisationUnitsWithCyclicReferences, "organisationUnitsWithCyclicReferences" );
     displayViolationList( json.orphanedOrganisationUnits, "orphanedOrganisationUnits" );
     displayViolationList( json.organisationUnitsWithoutGroups, "organisationUnitsWithoutGroups" );
-    displayViolationList( json.organisationUnitsViolatingCompulsoryGroupSets, "organisationUnitsViolatingCompulsoryGroupSets" );
     displayViolationList( json.organisationUnitsViolatingExclusiveGroupSets, "organisationUnitsViolatingExclusiveGroupSets" );
     displayViolationList( json.organisationUnitGroupsWithoutGroupSets, "organisationUnitGroupsWithoutGroupSets" );
     displayViolationList( json.validationRulesWithoutGroups, "validationRulesWithoutGroups" );

@@ -29,27 +29,21 @@ package org.hisp.dhis.caseentry.action.caseentry;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.caseentry.state.SelectedStateManager;
+import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.paging.ActionPagingSupport;
 import org.hisp.dhis.patient.Patient;
-import org.hisp.dhis.patient.PatientAttribute;
-import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientService;
-import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
-import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramService;
-import org.hisp.dhis.program.ProgramStageInstance;
-import org.hisp.dhis.program.ProgramStageInstanceService;
-import org.hisp.dhis.program.comparator.ProgramStageInstanceComparator;
 
 public class GetDataRecordsAction
     extends ActionPagingSupport<Patient>
@@ -86,42 +80,16 @@ public class GetDataRecordsAction
         this.programInstanceService = programInstanceService;
     }
 
-    private ProgramStageInstanceService programStageInstanceService;
+    private I18n i18n;
 
-    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
+    public void setI18n( I18n i18n )
     {
-        this.programStageInstanceService = programStageInstanceService;
-    }
-
-    private PatientAttributeService patientAttributeService;
-
-    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
-    {
-        this.patientAttributeService = patientAttributeService;
-    }
-
-    private PatientAttributeValueService patientAttributeValueService;
-
-    public void setPatientAttributeValueService( PatientAttributeValueService patientAttributeValueService )
-    {
-        this.patientAttributeValueService = patientAttributeValueService;
+        this.i18n = i18n;
     }
 
     // -------------------------------------------------------------------------
     // Input/output
     // -------------------------------------------------------------------------
-
-    private Integer sortPatientAttributeId;
-
-    public void setSortPatientAttributeId( Integer sortPatientAttributeId )
-    {
-        this.sortPatientAttributeId = sortPatientAttributeId;
-    }
-
-    public Integer getSortPatientAttributeId()
-    {
-        return sortPatientAttributeId;
-    }
 
     private Integer programId;
 
@@ -130,9 +98,32 @@ public class GetDataRecordsAction
         this.programId = programId;
     }
 
-    public Integer getProgramId()
+    private boolean listAll;
+
+    public void setListAll( boolean listAll )
     {
-        return programId;
+        this.listAll = listAll;
+    }
+
+    private Boolean searchBySelectedOrgunit;
+
+    public void setSearchBySelectedOrgunit( Boolean searchBySelectedOrgunit )
+    {
+        this.searchBySelectedOrgunit = searchBySelectedOrgunit;
+    }
+
+    private List<String> searchTexts = new ArrayList<String>();
+
+    public void setSearchTexts( List<String> searchTexts )
+    {
+        this.searchTexts = searchTexts;
+    }
+
+    private String type;
+
+    public void setType( String type )
+    {
+        this.type = type;
     }
 
     private Integer total;
@@ -142,27 +133,6 @@ public class GetDataRecordsAction
         return total;
     }
 
-    private Collection<ProgramInstance> programInstances = new ArrayList<ProgramInstance>();
-
-    public Collection<ProgramInstance> getProgramInstances()
-    {
-        return programInstances;
-    }
-
-    private Map<ProgramInstance, List<ProgramStageInstance>> programStageInstanceMap = new HashMap<ProgramInstance, List<ProgramStageInstance>>();
-
-    public Map<ProgramInstance, List<ProgramStageInstance>> getProgramStageInstanceMap()
-    {
-        return programStageInstanceMap;
-    }
-
-    private Map<Integer, Integer> statusMap = new HashMap<Integer, Integer>();
-
-    public Map<Integer, Integer> getStatusMap()
-    {
-        return statusMap;
-    }
-
     private Map<Patient, ProgramInstance> programInstanceMap = new HashMap<Patient, ProgramInstance>();
 
     public Map<Patient, ProgramInstance> getProgramInstanceMap()
@@ -170,25 +140,11 @@ public class GetDataRecordsAction
         return programInstanceMap;
     }
 
-    private Map<Integer, PatientAttributeValue> patientAttributeValueMap = new HashMap<Integer, PatientAttributeValue>();
+    private Collection<Patient> patients;
 
-    public Map<Integer, PatientAttributeValue> getPatientAttributeValueMap()
+    public Collection<Patient> getPatients()
     {
-        return patientAttributeValueMap;
-    }
-
-    Collection<Patient> patientListByOrgUnit;
-
-    public Collection<Patient> getPatientListByOrgUnit()
-    {
-        return patientListByOrgUnit;
-    }
-
-    private PatientAttribute sortPatientAttribute;
-
-    public PatientAttribute getSortPatientAttribute()
-    {
-        return sortPatientAttribute;
+        return patients;
     }
 
     private Program program;
@@ -198,6 +154,13 @@ public class GetDataRecordsAction
         return program;
     }
 
+    private Grid grid;
+
+    public Grid getGrid()
+    {
+        return grid;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
@@ -205,60 +168,59 @@ public class GetDataRecordsAction
     public String execute()
         throws Exception
     {
-        OrganisationUnit organisationUnit = selectedStateManager.getSelectedOrganisationUnit();
+        OrganisationUnit orgunit = selectedStateManager.getSelectedOrganisationUnit();
 
         program = programService.getProgram( programId );
-
-        sortPatientAttribute = patientAttributeService.getPatientAttribute( sortPatientAttributeId );
 
         // ---------------------------------------------------------------------
         // Program instances for the selected program
         // ---------------------------------------------------------------------
-
-        total = patientService.countGetPatientsByOrgUnitProgram( organisationUnit, program );
-
-        this.paging = createPaging( total );
-
-        patientListByOrgUnit = new ArrayList<Patient>( patientService.getPatients( organisationUnit, program, paging
-            .getStartPos(), paging.getPageSize() ) );
-
-        if ( sortPatientAttribute != null )
+        if ( type == null ) // Tabular report
         {
-            patientAttributeValueMap = patientAttributeValueService.getPatientAttributeValueMapForPatients(
-                patientListByOrgUnit, sortPatientAttribute );
-        }
-        
-        Collection<ProgramStageInstance> programStageInstances = new ArrayList<ProgramStageInstance>();
-
-        for ( Patient patient : patientListByOrgUnit )
-        {
-            Collection<ProgramInstance> _programInstances = programInstanceService.getProgramInstances( patient,
-                program, false );
-
-            if ( _programInstances == null || _programInstances.size() == 0 )
+            // List all patients
+            if ( listAll )
             {
-                programInstanceMap.put( patient, null );
+                total = (program == null) ? patientService.countGetPatientsByOrgUnit( orgunit ) : patientService
+                    .countGetPatientsByOrgUnitProgram( orgunit, program );
+
+                this.paging = createPaging( total );
+
+                patients = new ArrayList<Patient>( patientService.getPatients( orgunit, program, paging.getStartPos(),
+                    paging.getPageSize() ) );
+
             }
-            else
+            // search patients
+            else if ( searchTexts.size() > 0 )
             {
-                for ( ProgramInstance programInstance : _programInstances )
+                orgunit = (searchBySelectedOrgunit) ? orgunit : null;
+
+                total = patientService.countSearchPatients( searchTexts, orgunit );
+                this.paging = createPaging( total );
+                patients = patientService.searchPatients( searchTexts, orgunit, paging.getStartPos(),
+                    paging.getPageSize() );
+            }
+
+            for ( Patient patient : patients )
+            {
+                Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient,
+                    program, false );
+
+                if ( programInstances == null || programInstances.size() == 0 )
                 {
-                    programInstanceMap.put( patient, programInstance );
-
-                    programInstances.add( programInstance );
-
-                    List<ProgramStageInstance> programStageInstanceList = new ArrayList<ProgramStageInstance>(
-                        programInstance.getProgramStageInstances() );
-                    Collections.sort( programStageInstanceList, new ProgramStageInstanceComparator() );
-
-                    programStageInstanceMap.put( programInstance, programStageInstanceList );
-                    programStageInstances.addAll( programStageInstanceList );
+                    programInstanceMap.put( patient, null );
+                }
+                else
+                {
+                    programInstanceMap.put( patient, programInstances.iterator().next() );
                 }
             }
         }
-
-        statusMap = programStageInstanceService.statusProgramStageInstances( programStageInstances );
-
-        return SUCCESS;
+        else
+        // Download as Excel
+        {
+            grid = patientService.getScheduledEventsReport( searchTexts, orgunit, i18n );
+        }
+        
+        return type == null ? SUCCESS : type;
     }
 }

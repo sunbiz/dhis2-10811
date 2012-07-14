@@ -27,11 +27,9 @@ package org.hisp.dhis.importexport.analysis;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.hisp.dhis.importexport.analysis.IndicatorFormulaIdentifier.DENOMINATOR;
-import static org.hisp.dhis.importexport.analysis.IndicatorFormulaIdentifier.NUMERATOR;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -98,62 +96,18 @@ public class ImportAnalyserTest
         List<EntityPropertyValue> violations = analysis.getUniqueConstraintViolations();
         
         assertNotNull( violations );
-        assertEquals( 11, violations.size() );
+        assertEquals( 9, violations.size() );
         
         assertTrue( violations.contains( new EntityPropertyValue( DataElement.class, "name", "DataElementA" ) ) );
-        assertTrue( violations.contains( new EntityPropertyValue( DataElement.class, "alternativename", "DataElementAlternativeA" ) ) );
         assertTrue( violations.contains( new EntityPropertyValue( DataElement.class, "shortname", "DataElementShortA" ) ) );
         assertTrue( violations.contains( new EntityPropertyValue( DataElement.class, "code", "DataElementCodeA" ) ) );
         
         assertTrue( violations.contains( new EntityPropertyValue( Indicator.class, "name", "IndicatorA" ) ) );
-        assertTrue( violations.contains( new EntityPropertyValue( Indicator.class, "alternativename", "IndicatorAlternativeA" ) ) );
         assertTrue( violations.contains( new EntityPropertyValue( Indicator.class, "shortname", "IndicatorShortA" ) ) );
         assertTrue( violations.contains( new EntityPropertyValue( Indicator.class, "code", "IndicatorCodeA" ) ) );
         
         assertTrue( violations.contains( new EntityPropertyValue( OrganisationUnit.class, "name", "OrganisationUnitA" ) ) );
         assertTrue( violations.contains( new EntityPropertyValue( OrganisationUnit.class, "shortname", "OrganisationUnitShortA" ) ) );
         assertTrue( violations.contains( new EntityPropertyValue( OrganisationUnit.class, "code", "OrganisationUnitCodeA" ) ) );
-    }
-
-    @Test
-    public void testNonExistingDataElementIdentifiers()
-    {
-        DataElement dataElementA = new DataElement();
-        dataElementA.setId( 1 );
-        
-        DataElement dataElementB = new DataElement();
-        dataElementB.setId( 2 );
-        
-        Indicator indicatorA = new Indicator();
-        indicatorA.setName( "IndicatorA" );
-        indicatorA.setNumerator( "[1.4]+[2.4]" );
-        indicatorA.setDenominator( "[1.4]" );
-
-        Indicator indicatorB = new Indicator();
-        indicatorB.setName( "IndicatorB" );
-        indicatorB.setNumerator( "[1.4]+[2.4]" );
-        indicatorB.setDenominator( "[3.4]" );
-
-        Indicator indicatorC = new Indicator();
-        indicatorC.setName( "IndicatorC" );
-        indicatorC.setNumerator( "[3.4]+[4.4]" );
-        indicatorC.setDenominator( "[5.4]" );
-        
-        analyser.addObject( dataElementA );
-        analyser.addObject( dataElementB );
-        analyser.addObject( indicatorA );
-        analyser.addObject( indicatorB );
-        analyser.addObject( indicatorC );
-        
-        ImportAnalysis analysis = analyser.getImportAnalysis();
-        List<IndicatorFormulaIdentifier> identifiers = analysis.getNonExistingDataElementIdentifiers();
-
-        assertNotNull( identifiers );
-        assertEquals( 4, identifiers.size() );
-        
-        assertTrue( identifiers.contains( new IndicatorFormulaIdentifier( "IndicatorB", DENOMINATOR, 3 ) ) );
-        assertTrue( identifiers.contains( new IndicatorFormulaIdentifier( "IndicatorC", NUMERATOR, 3 ) ) );
-        assertTrue( identifiers.contains( new IndicatorFormulaIdentifier( "IndicatorC", NUMERATOR, 4 ) ) );
-        assertTrue( identifiers.contains( new IndicatorFormulaIdentifier( "IndicatorC", DENOMINATOR, 5 ) ) );
     }
 }

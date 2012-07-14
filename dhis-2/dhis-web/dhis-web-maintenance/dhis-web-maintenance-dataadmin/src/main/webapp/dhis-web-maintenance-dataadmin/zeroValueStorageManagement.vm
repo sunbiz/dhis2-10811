@@ -27,9 +27,11 @@
 <br/>
 <form id="ZeroDataValueManagement" method="POST" action="updateZeroIsSignificantForDataElements.action" onsubmit="selectAllById( 'zeroDataValueElements' )">
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<thead>
 		<tr>

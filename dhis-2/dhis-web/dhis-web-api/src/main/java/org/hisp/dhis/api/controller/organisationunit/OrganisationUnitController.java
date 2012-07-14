@@ -28,17 +28,157 @@ package org.hisp.dhis.api.controller.organisationunit;
  */
 
 import org.hisp.dhis.api.controller.AbstractCrudController;
+import org.hisp.dhis.api.controller.WebMetaData;
+import org.hisp.dhis.api.controller.WebOptions;
+import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.WebUtils;
+import org.hisp.dhis.common.Pager;
+import org.hisp.dhis.dxf2.metadata.MetaData;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.organisationunit.comparator.OrganisationUnitByLevelComparator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Controller
-@RequestMapping( value = OrganisationUnitController.RESOURCE_PATH )
+@RequestMapping(value = OrganisationUnitController.RESOURCE_PATH)
 public class OrganisationUnitController
     extends AbstractCrudController<OrganisationUnit>
 {
     public static final String RESOURCE_PATH = "/organisationUnits";
+
+    @Autowired
+    private OrganisationUnitService organisationUnitService;
+
+    @Override
+    protected List<OrganisationUnit> getEntityList( WebMetaData metaData, WebOptions options )
+    {
+        List<OrganisationUnit> entityList;
+
+        Date lastUpdated = options.getLastUpdated();
+
+        boolean levelSorted = options.getOptions().containsKey( "levelSorted" ) && Boolean.parseBoolean( options.getOptions().get( "levelSorted" ) );
+
+        if ( lastUpdated != null )
+        {
+            entityList = new ArrayList<OrganisationUnit>( manager.getByLastUpdatedSorted( getEntityClass(), lastUpdated ) );
+
+            if ( levelSorted )
+            {
+                Collections.sort( entityList, OrganisationUnitByLevelComparator.INSTANCE );
+            }
+        }
+        else if ( levelSorted )
+        {
+            entityList = new ArrayList<OrganisationUnit>( manager.getAll( getEntityClass() ) );
+            Collections.sort( entityList, OrganisationUnitByLevelComparator.INSTANCE );
+        }
+        else if ( options.hasPaging() )
+        {
+            int count = manager.getCount( getEntityClass() );
+
+            Pager pager = new Pager( options.getPage(), count, options.getPageSize() );
+            metaData.setPager( pager );
+
+            entityList = new ArrayList<OrganisationUnit>( manager.getBetween( getEntityClass(), pager.getOffset(), pager.getPageSize() ) );
+        }
+        else
+        {
+            entityList = new ArrayList<OrganisationUnit>( manager.getAllSorted( getEntityClass() ) );
+        }
+
+        return entityList;
+    }
+
+    @Override
+    @RequestMapping(value = "/{uid}", method = RequestMethod.GET)
+    public String getObject( @PathVariable("uid") String uid, @RequestParam Map<String, String> parameters,
+        Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception
+    {
+        WebOptions options = new WebOptions( parameters );
+        OrganisationUnit entity = getEntity( uid );
+
+        if ( entity == null )
+        {
+            ContextUtils.notFoundResponse( response, "Object not found for uid: " + uid );
+            return null;
+        }
+
+        if ( options.getOptions().containsKey( "level" ) )
+        {
+            int level = -1;
+
+            try
+            {
+                level = Integer.parseInt( options.getOptions().get( "level" ) );
+            }
+            catch ( Exception e )
+            {
+                level = entity.getOrganisationUnitLevel();
+            }
+
+            if ( level < 1 || level > organisationUnitService.getNumberOfOrganisationalLevels() )
+            {
+                level = entity.getOrganisationUnitLevel();
+            }
+
+            if ( level == entity.getOrganisationUnitLevel() )
+            {
+                model.addAttribute( "model", entity );
+            }
+            else if ( level < entity.getOrganisationUnitLevel() )
+            {
+                while ( level < entity.getOrganisationUnitLevel() )
+                {
+                    entity = entity.getParent();
+                }
+
+                model.addAttribute( "model", entity );
+            }
+            else
+            {
+                List<OrganisationUnit> entities = new ArrayList<OrganisationUnit>(
+                    organisationUnitService.getOrganisationUnitsAtLevel( level, entity ) );
+
+                MetaData metaData = new MetaData();
+                metaData.setOrganisationUnits( entities );
+
+                model.addAttribute( "model", metaData );
+            }
+        }
+        else
+        {
+            model.addAttribute( "model", entity );
+        }
+
+        if ( options.hasLinks() )
+        {
+            WebUtils.generateLinks( entity );
+        }
+
+        postProcessEntity( entity );
+        postProcessEntity( entity, parameters );
+
+        model.addAttribute( "viewClass", options.getViewClass( "detailed" ) );
+
+        return StringUtils.uncapitalize( getEntitySimpleName() );
+    }
+
 }

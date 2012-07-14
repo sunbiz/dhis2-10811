@@ -27,7 +27,12 @@ package org.hisp.dhis.commons.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.opensymphony.xwork2.Action;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.configuration.ConfigurationService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -40,7 +45,7 @@ import org.hisp.dhis.user.User;
 import org.hisp.dhis.version.Version;
 import org.hisp.dhis.version.VersionService;
 
-import java.util.*;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author mortenoh
@@ -105,7 +110,7 @@ public class GetOrganisationUnitTreeAction
         return version;
     }
 
-    private Boolean versionOnly = false;
+    private boolean versionOnly;
 
     public void setVersionOnly( Boolean versionOnly )
     {
@@ -122,6 +127,13 @@ public class GetOrganisationUnitTreeAction
     public void setParentId( Integer parentId )
     {
         this.parentId = parentId;
+    }
+
+    private boolean realRoot;
+
+    public boolean isRealRoot()
+    {
+        return realRoot;
     }
 
     // -------------------------------------------------------------------------
@@ -166,41 +178,53 @@ public class GetOrganisationUnitTreeAction
             }
         }
 
-        if ( !versionOnly )
+        if ( !versionOnly && !rootOrganisationUnits.isEmpty() )
         {
             for ( OrganisationUnit unit : userOrganisationUnits )
             {
                 organisationUnits.addAll( organisationUnitService.getOrganisationUnitWithChildren( unit.getId() ) );
             }
 
-            OrganisationUnitLevel offlineOrganisationUnitLevel = configurationService.getConfiguration().getOfflineOrganisationUnitLevel();
-
-            int size = organisationUnitService.getOrganisationUnitLevels().size();
-
-            if ( offlineOrganisationUnitLevel == null )
+            // only try OU-level filtering if there are any levels available
+            if ( !organisationUnitService.getOrganisationUnitLevels().isEmpty() )
             {
-                offlineOrganisationUnitLevel = organisationUnitService.getOrganisationUnitLevelByLevel( size );
-            }
+                OrganisationUnitLevel offlineOrganisationUnitLevel = configurationService.getConfiguration().getOfflineOrganisationUnitLevel();
 
-            int minLevel = rootOrganisationUnits.get( 0 ).getLevel();
-            int maxLevel = organisationUnitService.getOrganisationUnitLevelByLevel( size ).getLevel();
-            int total = minLevel + offlineOrganisationUnitLevel.getLevel() - 1;
+                int size = organisationUnitService.getOrganisationUnitLevels().size();
 
-            if ( total > offlineOrganisationUnitLevel.getLevel() )
-            {
-                total = maxLevel;
-            }
-
-            final int finalTotal = total;
-
-            CollectionUtils.filter( organisationUnits, new Predicate<OrganisationUnit>()
-            {
-                @Override
-                public boolean evaluate( OrganisationUnit organisationUnit )
+                if ( offlineOrganisationUnitLevel == null )
                 {
-                    return organisationUnit.getLevel() <= finalTotal;
+                    offlineOrganisationUnitLevel = organisationUnitService.getOrganisationUnitLevelByLevel( size );
                 }
-            } );
+
+                int minLevel = rootOrganisationUnits.get( 0 ).getLevel();
+                int maxLevel = organisationUnitService.getOrganisationUnitLevelByLevel( size ).getLevel();
+                int total = minLevel + offlineOrganisationUnitLevel.getLevel() - 1;
+
+                if ( total > offlineOrganisationUnitLevel.getLevel() )
+                {
+                    total = maxLevel;
+                }
+
+                final int finalTotal = total;
+
+                CollectionUtils.filter( organisationUnits, new Predicate<OrganisationUnit>()
+                {
+                    @Override
+                    public boolean evaluate( OrganisationUnit organisationUnit )
+                    {
+                        return organisationUnit.getLevel() <= finalTotal;
+                    }
+                } );
+            }
+        }
+
+        Collection<?> intersection = org.apache.commons.collections.CollectionUtils.intersection(
+            organisationUnitService.getRootOrganisationUnits(), rootOrganisationUnits );
+
+        if ( intersection.size() > 0 )
+        {
+            realRoot = true;
         }
 
         Collections.sort( rootOrganisationUnits, IdentifiableObjectNameComparator.INSTANCE );

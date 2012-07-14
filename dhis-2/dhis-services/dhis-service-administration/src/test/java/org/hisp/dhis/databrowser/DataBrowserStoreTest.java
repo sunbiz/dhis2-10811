@@ -35,7 +35,7 @@ import org.hisp.dhis.system.grid.ListGrid;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * @author joakibj, briane, eivinhb
@@ -75,7 +75,7 @@ public class DataBrowserStoreTest
         betweenPeriodIds.add( periodC.getId() );
         betweenPeriodIds.add( periodD.getId() );
 
-        Grid grid = dataBrowserStore.getDataSetsBetweenPeriods( betweenPeriodIds, isZeroAdded );
+        Grid grid = dataBrowserStore.getDataSetsBetweenPeriods( betweenPeriodIds, periodA.getPeriodType(), isZeroAdded );
 
         assertNotNull( "Grid not supposed to be null", grid );
 
@@ -84,17 +84,23 @@ public class DataBrowserStoreTest
         assertEquals( "counts_of_aggregated_values", grid.getVisibleHeaders().get( 1 ).getName() );
 
         // Sorted by count
-        assertEquals( "No.Row entries", 3, grid.getRows().size() );
-        assertEquals( dataSetB.getName(), ((MetaValue) grid.getRow( 0 ).get( 0 )).getName() );
-        assertEquals( dataSetB.getId(), ((MetaValue) grid.getRow( 0 ).get( 0 )).getId().intValue() );
-        assertEquals( dataSetA.getName(), ((MetaValue) grid.getRow( 1 ).get( 0 )).getName() );
-        assertEquals( dataSetA.getId(), ((MetaValue) grid.getRow( 1 ).get( 0 )).getId().intValue() );
-        assertEquals( dataSetC.getName(), ((MetaValue) grid.getRow( 2 ).get( 0 )).getName() );
-        assertEquals( dataSetC.getId(), ((MetaValue) grid.getRow( 2 ).get( 0 )).getId().intValue() );
+        assertEquals( "No.Row entries", 1, grid.getRows().size() );
+        // assertEquals( dataSetB.getName(), ((MetaValue) grid.getRow( 0 ).get(
+        // 0 )).getName() );
+        // assertEquals( dataSetB.getId(), ((MetaValue) grid.getRow( 0 ).get( 0
+        // )).getId().intValue() );
+        assertEquals( dataSetA.getName(), ((MetaValue) grid.getRow( 0 ).get( 0 )).getName() );
+        assertEquals( dataSetA.getId(), ((MetaValue) grid.getRow( 0 ).get( 0 )).getId().intValue() );
+        // assertEquals( dataSetC.getName(), ((MetaValue) grid.getRow( 2 ).get(
+        // 0 )).getName() );
+        // assertEquals( dataSetC.getId(), ((MetaValue) grid.getRow( 2 ).get( 0
+        // )).getId().intValue() );
 
-        assertEquals( "DataValues in dataSetB", "24", grid.getRow( 0 ).get( 1 ).toString() );
-        assertEquals( "DataValues in dataSetA", "18", grid.getRow( 1 ).get( 1 ).toString() );
-        assertEquals( "DataValues in dataSetC", "12", grid.getRow( 2 ).get( 1 ).toString() );
+        // assertEquals( "DataValues in dataSetB", "24", grid.getRow( 0 ).get( 1
+        // ).toString() );
+        assertEquals( "DataValues in dataSetA", "18", grid.getRow( 0 ).get( 1 ).toString() );
+        // assertEquals( "DataValues in dataSetC", "12", grid.getRow( 2 ).get( 1
+        // ).toString() );
     }
 
     /**
@@ -400,8 +406,8 @@ public class DataBrowserStoreTest
         dataBrowserStore.setDataElementStructureForDataSet( grid, dataSetA.getId(), metaIds );
 
         // Retrieve actual count for dataElements in periodA for dataSetA
-        int results = dataBrowserStore.setCountDataElementsForDataSetBetweenPeriods( grid, dataSetA.getId(), pList,
-            metaIds, isZeroAdded );
+        int results = dataBrowserStore.setCountDataElementsForDataSetBetweenPeriods( grid, dataSetA.getId(), periodA
+            .getPeriodType(), pList, metaIds, isZeroAdded );
         assertEquals( "DataValue results", 1, results );
 
         assertNotNull( "Grid not supposed to be null", grid );

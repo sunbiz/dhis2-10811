@@ -144,6 +144,9 @@ public class HibernateDbmsManager
         emptyTable( "categorycombo" );
         emptyTable( "dataelementcategory" );
         emptyTable( "dataelementcategoryoption" );
+        
+        emptyTable( "optionsetmembers" );
+        emptyTable( "optionset" );
 
         dropTable( "aggregateddatavalue" );
         dropTable( "aggregatedindicatorvalue" );

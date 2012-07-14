@@ -27,13 +27,15 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.hisp.dhis.system.util.ValidationUtils.coordinateIsValid;
 import static org.hisp.dhis.system.util.ValidationUtils.getLatitude;
 import static org.hisp.dhis.system.util.ValidationUtils.getLongitude;
+import static org.hisp.dhis.system.util.ValidationUtils.passwordIsValid;
+import static org.hisp.dhis.system.util.ValidationUtils.emailIsValid;
 
 import org.junit.Test;
 
@@ -85,5 +87,21 @@ public class ValidationUtilsTest
         assertEquals( "28.94221", getLatitude( "[37.99034,28.94221]" ) );
         assertNull( getLatitude( "23.34343,56.3232" ) );
         assertNull( getLatitude( null ) );
+    }
+    
+    @Test
+    public void testPasswordIsValid()
+    {
+        assertFalse( passwordIsValid( "Johnd1" ) );
+        assertFalse( passwordIsValid( "johndoe1" ) );
+        assertFalse( passwordIsValid( "Johndoedoe" ) );
+        assertTrue( passwordIsValid( "Johndoe1" ) );
+    }
+    
+    @Test
+    public void testEmailIsValid()
+    {
+        assertFalse( emailIsValid( "john@doe" ) );
+        assertTrue( emailIsValid( "john@doe.com" ) );
     }
 }

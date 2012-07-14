@@ -17,7 +17,6 @@
 	<resultMap class="indicator" id="indicatorResultMap">
 		<result property="id" column="IndicatorID"/>
 		<result property="name" column="IndicatorName"/>
-		<result property="alternativeName" column="IndicatorNameAlt1"/>
 		<result property="shortName" column="IndicatorShort"/>
 		<result property="description" column="IndicatorDescription"/>
         <result property="annualized" column="Annualised" typeHandler="booleanTypeHandler"/>

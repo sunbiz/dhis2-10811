@@ -6,10 +6,35 @@
 </head>
 
 <body>
-    <script type="text/javascript">TR = {};</script>
-    <script type="text/javascript" src="i18n.action"></script>
-    <script type="text/javascript" src="../../dhis-web-commons/javascripts/ext/ext-all.js"></script>
+	<form id="exportForm" name='exportForm' method="post">
+        <input type="hidden" id="programStageId" name='programStageId' >
+		<input type="hidden" id="aggregateType" name='aggregateType' >
+		<select multiple id="deFilters" name="deFilters" class="hidden"></select>
+		<select multiple id="endDates" name="endDates" class="hidden"></select>
+		<select multiple id="fixedPeriods" name="fixedPeriods" class="hidden"></select>
+		<select multiple id="relativePeriods" name="relativePeriods" class="hidden"></select>
+		<select multiple id="orgunitIds" name="orgunitIds" class="hidden" ></select>
+		<input type="hidden" id="userOrganisationUnit" name="userOrganisationUnit" >
+		<input type="hidden" id="userOrganisationUnitChildren" name="userOrganisationUnitChildren">
+		<input type="hidden" id="limitRecords" name="limitRecords">
+		<input type="hidden" id="deGroupBy" name="deGroupBy" >
+		<input type="hidden" id="facilityLB" name="facilityLB" >
+		<input type="hidden" id="position" name="position" >
+		<input type="hidden" id="useCompletedEvents" name="useCompletedEvents" >
+		<input type="hidden" id="deSum" name="deSum" >
+		<select multiple id="startDates" name="startDates" class="hidden"></select>
+		<input type="hidden" id="startDate" name="startDate" >
+		<input type="hidden" id="endDate" name="endDate" >
+		<input type="hidden" id="level" name="level" >
+		<input type="hidden" id="orderByOrgunitAsc" name="orderByOrgunitAsc" >
+		<input type="hidden" id="orderByExecutionDateByAsc" name="orderByExecutionDateByAsc" >
+		<select multiple id="searchingValues" name="searchingValues" class="hidden"></select>
+    </form>
 	
+    <script type="text/javascript">TR = {};</script>
+	<script type="text/javascript" src="i18n.action"></script>
+    <script type="text/javascript" src="../../dhis-web-commons/javascripts/ext/ext-all.js"></script>
+	<script type="text/javascript" src="../../dhis-web-commons/javascripts/periodTypeNoDep.js"></script>
     <script type="text/javascript" src="app.js"></script>
 	
 </body>

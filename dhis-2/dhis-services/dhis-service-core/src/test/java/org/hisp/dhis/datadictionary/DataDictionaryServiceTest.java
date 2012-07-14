@@ -27,13 +27,6 @@ package org.hisp.dhis.datadictionary;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
-import java.util.Collection;
-
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
@@ -41,6 +34,11 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.indicator.IndicatorType;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Lars Helge Overland
@@ -50,18 +48,18 @@ public class DataDictionaryServiceTest
     extends DhisSpringTest
 {
     private DataDictionaryService dataDictionaryService;
-    
+
     private DataDictionary dataDictionaryA;
     private DataDictionary dataDictionaryB;
-    
+
     private DataElement dataElementA;
     private DataElement dataElementB;
 
     private IndicatorType indicatorType;
-    
+
     private Indicator indicatorA;
     private Indicator indicatorB;
-    
+
     // -------------------------------------------------------------------------
     // Fixture
     // -------------------------------------------------------------------------
@@ -71,23 +69,23 @@ public class DataDictionaryServiceTest
         throws Exception
     {
         dataDictionaryService = (DataDictionaryService) getBean( DataDictionaryService.ID );
-        
+
         dataElementService = (DataElementService) getBean( DataElementService.ID );
 
         indicatorService = (IndicatorService) getBean( IndicatorService.ID );
-        
+
         dataDictionaryA = createDataDictionary( 'A' );
         dataDictionaryB = createDataDictionary( 'B' );
-        
+
         dataElementA = createDataElement( 'A' );
         dataElementB = createDataElement( 'B' );
 
         indicatorType = createIndicatorType( 'A' );
-        
+
         indicatorService.addIndicatorType( indicatorType );
-        
+
         indicatorA = createIndicator( 'A', indicatorType );
-        indicatorB = createIndicator( 'B', indicatorType );                
+        indicatorB = createIndicator( 'B', indicatorType );
     }
 
     // -------------------------------------------------------------------------
@@ -99,39 +97,39 @@ public class DataDictionaryServiceTest
     {
         dataElementService.addDataElement( dataElementA );
         dataElementService.addDataElement( dataElementB );
-        
+
         indicatorService.addIndicator( indicatorA );
         indicatorService.addIndicator( indicatorB );
-                
+
         dataDictionaryA.getDataElements().add( dataElementA );
         dataDictionaryA.getDataElements().add( dataElementB );
-        
+
         dataDictionaryA.getIndicators().add( indicatorA );
         dataDictionaryA.getIndicators().add( indicatorB );
-                
+
         int id = dataDictionaryService.saveDataDictionary( dataDictionaryA );
-        
+
         dataDictionaryA = dataDictionaryService.getDataDictionary( id );
-        
+
         assertEquals( dataDictionaryA.getName(), "DataDictionaryA" );
         assertEquals( dataDictionaryA.getDescription(), "DescriptionA" );
         assertEquals( dataDictionaryA.getRegion(), "RegionA" );
         assertEquals( dataDictionaryA.getDataElements().size(), 2 );
-        
+
         assertTrue( dataDictionaryA.getDataElements().contains( dataElementA ) );
         assertTrue( dataDictionaryA.getDataElements().contains( dataElementB ) );
-        
+
         assertTrue( dataDictionaryA.getIndicators().contains( indicatorA ) );
         assertTrue( dataDictionaryA.getIndicators().contains( indicatorB ) );
-                
+
         dataDictionaryA.setName( "DataDictionaryB" );
         dataDictionaryA.setDescription( "DescriptionB" );
         dataDictionaryA.setRegion( "RegionB" );
-        
+
         dataDictionaryService.saveDataDictionary( dataDictionaryA );
-        
+
         dataDictionaryA = dataDictionaryService.getDataDictionary( id );
-        
+
         assertEquals( dataDictionaryA.getName(), "DataDictionaryB" );
         assertEquals( dataDictionaryA.getDescription(), "DescriptionB" );
         assertEquals( dataDictionaryA.getRegion(), "RegionB" );
@@ -142,12 +140,13 @@ public class DataDictionaryServiceTest
     {
         dataDictionaryService.saveDataDictionary( dataDictionaryA );
         dataDictionaryService.saveDataDictionary( dataDictionaryB );
-        
-        dataDictionaryA = dataDictionaryService.getDataDictionaryByName( "DataDictionaryA" );
-        
-        assertNotNull( dataDictionaryA );        
-        assertEquals( dataDictionaryA.getName(), "DataDictionaryA" );
-        assertEquals( dataDictionaryA.getDescription(), "DescriptionA" );
+
+        List<DataDictionary> dictionaryByName = dataDictionaryService.getDataDictionaryByName( "DataDictionaryA" );
+
+        assertFalse( dictionaryByName.isEmpty() );
+
+        assertEquals( dictionaryByName.get( 0 ).getName(), "DataDictionaryA" );
+        assertEquals( dictionaryByName.get( 0 ).getDescription(), "DescriptionA" );
     }
 
     @Test
@@ -155,10 +154,10 @@ public class DataDictionaryServiceTest
     {
         int idA = dataDictionaryService.saveDataDictionary( dataDictionaryA );
         int idB = dataDictionaryService.saveDataDictionary( dataDictionaryB );
-        
+
         assertNotNull( dataDictionaryService.getDataDictionary( idA ) );
         assertNotNull( dataDictionaryService.getDataDictionary( idB ) );
-        
+
         dataDictionaryService.deleteDataDictionary( dataDictionaryA );
 
         assertNull( dataDictionaryService.getDataDictionary( idA ) );
@@ -175,11 +174,11 @@ public class DataDictionaryServiceTest
     {
         dataDictionaryService.saveDataDictionary( dataDictionaryA );
         dataDictionaryService.saveDataDictionary( dataDictionaryB );
-        
+
         Collection<DataDictionary> dictionaries = dataDictionaryService.getAllDataDictionaries();
-        
+
         assertTrue( dictionaries.size() == 2 );
         assertTrue( dictionaries.contains( dataDictionaryA ) );
-        assertTrue( dictionaries.contains( dataDictionaryB ) );        
+        assertTrue( dictionaries.contains( dataDictionaryB ) );
     }
 }

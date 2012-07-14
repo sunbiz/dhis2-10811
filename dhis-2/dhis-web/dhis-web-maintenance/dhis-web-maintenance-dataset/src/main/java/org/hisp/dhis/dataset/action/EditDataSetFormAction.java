@@ -38,6 +38,8 @@ import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.user.UserGroup;
+import org.hisp.dhis.user.UserGroupService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -64,6 +66,13 @@ public class EditDataSetFormAction
     {
         this.dataSetService = dataSetService;
     }
+    
+    private UserGroupService userGroupService;
+
+    public void setUserGroupService( UserGroupService userGroupService )
+    {
+        this.userGroupService = userGroupService;
+    }
 
     // -------------------------------------------------------------------------
     // Input & output
@@ -76,16 +85,18 @@ public class EditDataSetFormAction
         this.dataSetId = dataSetId;
     }
 
-    private List<PeriodType> periodTypes;
+    private List<PeriodType> periodTypes = new ArrayList<PeriodType>();
 
     public List<PeriodType> getPeriodTypes()
     {
         return periodTypes;
     }
 
-    public void setPeriodTypes( List<PeriodType> periodTypes )
+    private List<UserGroup> userGroups = new ArrayList<UserGroup>();
+
+    public List<UserGroup> getUserGroups()
     {
-        this.periodTypes = periodTypes;
+        return userGroups;
     }
 
     private DataSet dataSet;
@@ -95,14 +106,14 @@ public class EditDataSetFormAction
         return dataSet;
     }
 
-    private List<DataElement> dataElements;
+    private List<DataElement> dataElements = new ArrayList<DataElement>();
 
     public List<DataElement> getDataElements()
     {
         return dataElements;
     }
 
-    private List<Indicator> indicators;
+    private List<Indicator> indicators = new ArrayList<Indicator>();
 
     public List<Indicator> getIndicators()
     {
@@ -117,6 +128,7 @@ public class EditDataSetFormAction
         throws Exception
     {
         periodTypes = periodService.getAllPeriodTypes();
+        userGroups = new ArrayList<UserGroup>( userGroupService.getAllUserGroups() );
 
         if ( dataSetId != null )
         {
@@ -125,8 +137,9 @@ public class EditDataSetFormAction
             indicators = new ArrayList<Indicator>( dataSet.getIndicators() );
         }
 
-        Collections.sort( dataElements, new IdentifiableObjectNameComparator() );
-        Collections.sort( indicators, new IdentifiableObjectNameComparator() );
+        Collections.sort( userGroups, IdentifiableObjectNameComparator.INSTANCE );
+        Collections.sort( dataElements, IdentifiableObjectNameComparator.INSTANCE );
+        Collections.sort( indicators, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

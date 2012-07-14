@@ -30,7 +30,7 @@ package org.hisp.dhis.caseaggregation;
 import java.util.Collection;
 import java.util.List;
 
-import org.hisp.dhis.common.GenericStore;
+import org.hisp.dhis.common.GenericNameableObjectStore;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 
@@ -40,7 +40,7 @@ import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
  * @version PatientAggregationExpressionStore.java Nov 18, 2010 9:27:59 AM
  */
 public interface CaseAggregationConditionStore
-    extends GenericStore<CaseAggregationCondition>
+    extends GenericNameableObjectStore<CaseAggregationCondition>
 {
     String ID = CaseAggregationConditionStore.class.getName();
    

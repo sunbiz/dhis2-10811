@@ -58,9 +58,9 @@ public class GetOrganisationUnitChildrenAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer node;
+    private String node;
     
-    public void setNode( Integer node )
+    public void setNode( String node )
     {
         this.node = node;
     }

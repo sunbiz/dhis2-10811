@@ -45,7 +45,7 @@ import org.hisp.dhis.period.WeeklyPeriodType;
  */
 public class I18nFormat
 {
-    private static final DecimalFormat FORMAT_VALUE = new DecimalFormat( "#.#;#.#" ); // Fixed for now
+    private static final DecimalFormat FORMAT_VALUE = new DecimalFormat( "#.#" ); // Fixed for now
     private static final String EMPTY = "";
     private static final String NAN = "NaN";
     private static final String INVALID_DATE="Invalid date format";

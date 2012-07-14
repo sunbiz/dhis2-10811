@@ -47,7 +47,7 @@ public class GetPatientHistoryAction
     implements Action
 {
     // -------------------------------------------------------------------------
-    // Implementation Action
+    // Dependencies
     // -------------------------------------------------------------------------
 
     private PatientService patientService;

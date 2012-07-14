@@ -10,22 +10,26 @@ function generateResourceTable()
     var categoryStructure = document.getElementById( "categoryStructure" ).checked;
     var categoryOptionComboName = document.getElementById( "categoryOptionComboName" ).checked;
     var dataElementStructure = document.getElementById( "dataElementStructure" ).checked;
+    var periodStructure = document.getElementById( "periodStructure" ).checked;
     
-    if ( organisationUnit || dataElementGroupSetStructure || indicatorGroupSetStructure || 
-        organisationUnitGroupSetStructure || categoryStructure || categoryOptionComboName || dataElementStructure )
+    if ( organisationUnit || dataElementGroupSetStructure || indicatorGroupSetStructure || organisationUnitGroupSetStructure || 
+    		categoryStructure || categoryOptionComboName || dataElementStructure || periodStructure )
     {
         setWaitMessage( i18n_generating_resource_tables );
             
-        var params = "organisationUnit=" + organisationUnit + 
-            "&dataElementGroupSetStructure=" + dataElementGroupSetStructure +
-            "&indicatorGroupSetStructure=" + indicatorGroupSetStructure +
-            "&organisationUnitGroupSetStructure=" + organisationUnitGroupSetStructure +
-            "&categoryStructure=" + categoryStructure +
-            "&categoryOptionComboName=" + categoryOptionComboName +
-            "&dataElementStructure=" + dataElementStructure;
+        var params = {
+        	organisationUnit: organisationUnit,
+            dataElementGroupSetStructure: dataElementGroupSetStructure,
+            indicatorGroupSetStructure: indicatorGroupSetStructure,
+            organisationUnitGroupSetStructure: organisationUnitGroupSetStructure,
+            categoryStructure: categoryStructure,
+            categoryOptionComboName: categoryOptionComboName,
+            dataElementStructure: dataElementStructure,
+            periodStructure: periodStructure
+        };
             
 		$.ajax({
-			   type: "POST",
+			   type: "post",
 			   url: "generateResourceTable.action",
 			   data: params,
 			   dataType: "xml",
@@ -51,4 +55,5 @@ function toggleAll()
 	document.getElementById( "categoryStructure" ).checked = selected;
 	document.getElementById( "categoryOptionComboName" ).checked = selected;
 	document.getElementById( "dataElementStructure" ).checked = selected;	
+	document.getElementById( "periodStructure" ).checked = selected;	
 }

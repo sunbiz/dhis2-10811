@@ -27,10 +27,6 @@ package org.hisp.dhis.importexport.dxf;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-
 import org.hisp.dhis.DhisTest;
 import org.hisp.dhis.external.location.LocationManagerException;
 import org.hisp.dhis.importexport.ImportParams;
@@ -41,7 +37,12 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Lars Helge Overland
@@ -50,19 +51,19 @@ public class DXFOrganisationUnitsTest
     extends DhisTest
 {
     private InputStream inputStream;
-    
+
     private ImportService importService;
-        
+
     @Override
     public void setUpTest() throws LocationManagerException, IOException
     {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
         inputStream = classLoader.getResourceAsStream( "dxfOrganisationUnits.xml" );
-        
+
         organisationUnitService = (OrganisationUnitService) getBean( OrganisationUnitService.ID );
     }
-    
+
     @Override
     public void tearDownTest()
         throws Exception
@@ -79,15 +80,15 @@ public class DXFOrganisationUnitsTest
     @Test
     public void testImportOrganisationUnits() throws Exception
     {
-        importService = (ImportService) getBean( "org.hisp.dhis.importexport.ImportService" );        
+        importService = (ImportService) getBean( "org.hisp.dhis.importexport.ImportService" );
 
         ImportParams params = ImportExportUtils.getImportParams( ImportStrategy.NEW_AND_UPDATES, false, false, false );
-        
+
         importService.importData( params, inputStream );
-        
+
         Collection<OrganisationUnit> units = organisationUnitService.getAllOrganisationUnits();
         OrganisationUnit unit = units.iterator().next();
-        
+
         assertNotNull( units );
         assertEquals( 3, units.size() );
         assertEquals( "GeoCode", unit.getGeoCode() );

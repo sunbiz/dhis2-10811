@@ -27,14 +27,13 @@ package org.hisp.dhis.security.authority;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
-import java.util.HashSet;
-
-import org.apache.struts2.dispatcher.Dispatcher;
-
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
 import com.opensymphony.xwork2.config.entities.PackageConfig;
+import org.apache.struts2.dispatcher.Dispatcher;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -68,7 +67,7 @@ public class DetectingSystemAuthoritiesProvider
         {
             for ( ActionConfig actionConfig : packageConfig.getActionConfigs().values() )
             {
-                authorities.addAll( requiredAuthoritiesProvider.getRequiredAuthorities( actionConfig ) );
+                authorities.addAll( requiredAuthoritiesProvider.getAllAuthorities( actionConfig ) );
             }
         }
 

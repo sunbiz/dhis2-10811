@@ -32,10 +32,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 
 @XmlRootElement
 public class OrgUnits
@@ -79,13 +77,20 @@ public class OrgUnits
     public void serialize( DataOutputStream dataOutputStream )
         throws IOException
     {
-        //send the current version to client for updating or not
-        dataOutputStream.writeDouble( MobileOrgUnitLinks.currentVersion );
-        
-        dataOutputStream.writeInt( orgUnits.size() );
-        for ( MobileOrgUnitLinks unit : orgUnits )
+        // send the current version to client for updating or not
+        // dataOutputStream.writeDouble( MobileOrgUnitLinks.currentVersion );
+        // dataOutputStream.writeInt( orgUnits.size() );
+        // for ( MobileOrgUnitLinks unit : orgUnits )
+        // {
+        // unit.serialize( dataOutputStream );
+        // }
+        if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            unit.serialize( dataOutputStream );
+            this.serializeVerssion2_8( dataOutputStream );
+        }
+        else
+        {
+            this.serializeVerssion2_9( dataOutputStream );
         }
     }
 
@@ -94,7 +99,7 @@ public class OrgUnits
         throws IOException
     {
         orgUnits = new ArrayList<MobileOrgUnitLinks>();
-        double version = dataInputStream.readDouble();
+        dataInputStream.readDouble(); // TODO fix
         int size = dataInputStream.readInt();
 
         for ( int i = 0; i < size; i++ )
@@ -112,7 +117,7 @@ public class OrgUnits
         dataOutputStream.writeInt( orgUnits.size() );
         for ( MobileOrgUnitLinks unit : orgUnits )
         {
-            unit.serialize( dataOutputStream );
+            unit.serializeVerssion2_8( dataOutputStream );
         }
     }
 
@@ -120,12 +125,22 @@ public class OrgUnits
     public void serializeVerssion2_9( DataOutputStream dataOutputStream )
         throws IOException
     {
+        // send the current version to client for updating or not
+        dataOutputStream.writeDouble( MobileOrgUnitLinks.currentVersion );
         dataOutputStream.writeInt( orgUnits.size() );
         for ( MobileOrgUnitLinks unit : orgUnits )
         {
             unit.serializeVerssion2_9( dataOutputStream );
         }
 
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // TODO Auto-generated method stub
+        
     }
 
 }

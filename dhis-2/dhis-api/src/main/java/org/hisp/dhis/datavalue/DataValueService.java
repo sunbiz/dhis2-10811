@@ -28,7 +28,7 @@ package org.hisp.dhis.datavalue;
  */
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
 
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
@@ -108,17 +108,6 @@ public interface DataValueService
      */
     DataValue getDataValue( OrganisationUnit source, DataElement dataElement, Period period, DataElementCategoryOptionCombo optionCombo );
 
-    /**
-     * Returns a DataValue.
-     * 
-     * @param dataElementId the DataElement identifier.
-     * @param periodId the Period identifier.
-     * @param sourceId the Source identifier.
-     * @param categoryOptionComboId the DataElementCategoryOptionCombo identifier.
-     * @return the DataValue.
-     */
-    String getValue( int dataElementId, int periodId, int sourceId, int categoryOptionComboId );
-    
     // -------------------------------------------------------------------------
     // Collections of DataValues
     // -------------------------------------------------------------------------
@@ -255,19 +244,12 @@ public interface DataValueService
     DataValue getLatestDataValues( DataElement dataElement, PeriodType periodType, OrganisationUnit organisationUnit );
     
     /**
-     * Filters and returns the data element operands which have registered data values
-     * out of the given collection.
-     * 
-     * @param operands the data element operands to filter.
-     * @return the data element operands with registered data values.
-     */
-    Set<DataElementOperand> getOperandsWithDataValues( Set<DataElementOperand> operands );
-
-    /**
      * Gets the number of DataValues persisted since the given number of days.
      * 
      * @param days the number of days since now to include in the count.
      * @return the number of DataValues.
      */
     int getDataValueCount( int days );
+    
+    Map<DataElementOperand, Double> getDataValueMap( Collection<DataElement> dataElements, Period period, OrganisationUnit unit );
 }

@@ -86,9 +86,9 @@ public class AverageBoolAggregator
             aggregationCache.getIntersectingPeriods( period.getStartDate(), period.getEndDate() ), organisationUnits, key );
         
         final Map<DataElementOperand, double[]> entries = getAggregate( crossTabValues, period.getStartDate(), 
-            period.getEndDate(), period.getStartDate(), period.getEndDate(), unitLevel ); // <Operand, [total value, total relevant days]>
+            period.getEndDate(), period.getStartDate(), period.getEndDate(), unitLevel ); // <Operand, [total value, total days]>
 
-        final Map<DataElementOperand, Double> values = new HashMap<DataElementOperand, Double>(); // <Operand, total value>
+        final Map<DataElementOperand, Double> values = new HashMap<DataElementOperand, Double>(); // <Operand, average value>
 
         double average = 0.0;
         
@@ -108,8 +108,8 @@ public class AverageBoolAggregator
     private Map<DataElementOperand, double[]> getAggregate( final Collection<CrossTabDataValue> crossTabValues, 
         final Date startDate, final Date endDate, final Date aggregationStartDate, final Date aggregationEndDate, int unitLevel )
     {
-        final Map<DataElementOperand, double[]> totalSums = new HashMap<DataElementOperand, double[]>(); // <Operand, [total value, total relevant days]>
-        
+        final Map<DataElementOperand, double[]> totalSums = new HashMap<DataElementOperand, double[]>(); // <Operand, [total value, total days]>
+
         for ( final CrossTabDataValue crossTabValue : crossTabValues )
         {
             final Period period = aggregationCache.getPeriod( crossTabValue.getPeriodId() );
@@ -156,9 +156,9 @@ public class AverageBoolAggregator
 
                         final double[] totalSum = totalSums.get( entry.getKey() );
                         value += totalSum != null ? totalSum[0] : 0;
-                        relevantDays += totalSum != null ? totalSum[1] : 0;
+                        final double days = totalSum != null ? totalSum[1] + duration : duration;
                         
-                        final double[] values = { value, relevantDays };
+                        final double[] values = { value, days };
                         
                         totalSums.put( entry.getKey(), values );
                     }

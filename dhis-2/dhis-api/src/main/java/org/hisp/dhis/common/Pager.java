@@ -34,7 +34,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "pager", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "pager", namespace = DxfNamespaces.DXF_2_0)
 public class Pager
 {
     public static final int DEFAULT_PAGE_SIZE = 50;
@@ -87,15 +87,25 @@ public class Pager
         }
     }
 
+    public String toString()
+    {
+        return "[Page: " + page + " total: " + total + " size: " + pageSize + " offset: " + getOffset() + "]";
+    }
+    
+    public boolean pageSizeIsDefault()
+    {
+        return pageSize == Pager.DEFAULT_PAGE_SIZE;
+    }
+    
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public int getPage()
     {
         return page;
     }
 
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public int getTotal()
     {
         return total;
@@ -107,7 +117,7 @@ public class Pager
      * @return Number of items per page.
      */
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public int getPageSize()
     {
         return pageSize;
@@ -119,7 +129,7 @@ public class Pager
      * @return Total number of pages
      */
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public int getPageCount()
     {
         int pageCount = 1;
@@ -145,7 +155,7 @@ public class Pager
     }
 
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getNextPage()
     {
         return nextPage;
@@ -157,7 +167,7 @@ public class Pager
     }
 
     @JsonProperty
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getPrevPage()
     {
         return prevPage;

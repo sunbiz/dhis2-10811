@@ -27,35 +27,23 @@
 
 package org.hisp.dhis.light.beneficiaryregistration.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.light.utils.FormUtils;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
-import org.hisp.dhis.patient.Patient;
-import org.hisp.dhis.patient.PatientAttribute;
-import org.hisp.dhis.patient.PatientAttributeOption;
-import org.hisp.dhis.patient.PatientAttributeOptionService;
-import org.hisp.dhis.patient.PatientAttributeService;
-import org.hisp.dhis.patient.PatientIdentifier;
-import org.hisp.dhis.patient.PatientIdentifierType;
-import org.hisp.dhis.patient.PatientIdentifierTypeService;
-import org.hisp.dhis.patient.PatientService;
+import org.hisp.dhis.patient.*;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.util.ContextUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 public class SaveBeneficiaryAction
     implements Action
@@ -100,6 +88,18 @@ public class SaveBeneficiaryAction
         this.patientIdentifierTypeService = patientIdentifierTypeService;
     }
 
+    private PatientIdentifierService patientIdentifierService;
+
+    public PatientIdentifierService getPatientIdentifierService()
+    {
+        return patientIdentifierService;
+    }
+
+    public void setPatientIdentifierService( PatientIdentifierService patientIdentifierService )
+    {
+        this.patientIdentifierService = patientIdentifierService;
+    }
+
     private PatientAttributeService patientAttributeService;
 
     public PatientAttributeService getPatientAttributeService()
@@ -122,6 +122,18 @@ public class SaveBeneficiaryAction
     public void setPatientAttributeOptionService( PatientAttributeOptionService patientAttributeOptionService )
     {
         this.patientAttributeOptionService = patientAttributeOptionService;
+    }
+
+    private ProgramService programService;
+
+    public ProgramService getProgramService()
+    {
+        return programService;
+    }
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
     }
 
     // -------------------------------------------------------------------------
@@ -260,6 +272,44 @@ public class SaveBeneficiaryAction
         this.patientAttributes = patientAttributes;
     }
 
+    private String phoneNumber;
+
+    public String getPhoneNumber()
+    {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber( String phoneNumber )
+    {
+        this.phoneNumber = phoneNumber;
+    }
+
+    // Register patient on-the-fly
+
+    private Integer originalPatientId;
+
+    public Integer getOriginalPatientId()
+    {
+        return originalPatientId;
+    }
+
+    public void setOriginalPatientId( Integer originalPatientId )
+    {
+        this.originalPatientId = originalPatientId;
+    }
+
+    private Integer relationshipTypeId;
+
+    public Integer getRelationshipTypeId()
+    {
+        return relationshipTypeId;
+    }
+
+    public void setRelationshipTypeId( Integer relationshipTypeId )
+    {
+        this.relationshipTypeId = relationshipTypeId;
+    }
+
     @Override
     public String execute()
         throws Exception
@@ -271,11 +321,19 @@ public class SaveBeneficiaryAction
 
         patientIdentifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
         patientAttributes = patientAttributeService.getAllPatientAttributes();
+        Collection<Program> programs = programService.getAllPrograms();
+        
+        for ( Program program : programs )
+        {
+            patientIdentifierTypes.removeAll( program.getPatientIdentifierTypes() );
+            patientAttributes.removeAll( program.getPatientAttributes() );
+        }
+        
         patient.setOrganisationUnit( organisationUnitService.getOrganisationUnit( orgUnitId ) );
 
-        if ( this.patientFullName.trim().length() < 2 )
+        if ( this.patientFullName.trim().length() < 7 )
         {
-            validationMap.put( "fullName", "is_invalid_name" );
+            validationMap.put( "fullName", "is_invalid_name_length" );
         }
         else
         {
@@ -337,58 +395,93 @@ public class SaveBeneficiaryAction
             }
         }
 
+        if ( phoneNumber.matches( "^(\\+)?\\d+$" ) )
+        {
+            patient.setPhoneNumber( phoneNumber );
+        }
+        else
+        {
+            validationMap.put( "phoneNumber", "invalid_phone_number" );
+        }
+
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
             ServletActionContext.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
-         
-        for ( PatientIdentifierType patientIdentifierType : patientIdentifierTypeService.getAllPatientIdentifierTypes() )
+
+        // Add Identifier and Attributes
+        Collection<PatientIdentifierType> patientIdentifierTypes = patientIdentifierTypeService
+            .getAllPatientIdentifierTypes();
+        Collection<PatientAttribute> patientAttributes = patientAttributeService.getAllPatientAttributes();
+        
+
+        for ( Program program : programs )
         {
-            if ( patientIdentifierType.getProgram() == null )
+            patientIdentifierTypes.removeAll( program.getPatientIdentifierTypes() );
+            patientAttributes.removeAll( program.getPatientAttributes() );
+        }
+
+        for ( PatientIdentifierType patientIdentifierType : patientIdentifierTypes )
+        {
             {
                 String key = "IDT" + patientIdentifierType.getId();
                 String value = parameterMap.get( key );
+
+                PatientIdentifier duplicateId = null;
+
+                if ( !value.isEmpty() )
+                {
+                    duplicateId = patientIdentifierService.get( patientIdentifierType, value );
+                }
+
                 if ( value != null )
                 {
                     if ( patientIdentifierType.isMandatory() && value.trim().equals( "" ) )
                     {
-                        this.validationMap.put( key, "is_empty" );
+                        this.validationMap.put( key, "is_mandatory" );
                     }
                     else if ( patientIdentifierType.getType().equals( "number" ) && !FormUtils.isNumber( value ) )
                     {
                         this.validationMap.put( key, "is_invalid_number" );
+                    }
+                    else if ( duplicateId != null )
+                    {
+                        this.validationMap.put( key, "is_duplicate" );
                     }
                     else
                     {
                         PatientIdentifier patientIdentifier = new PatientIdentifier();
                         patientIdentifier.setIdentifierType( patientIdentifierType );
                         patientIdentifier.setPatient( patient );
-                        patientIdentifierSet.add( patientIdentifier );
                         patientIdentifier.setIdentifier( value.trim() );
+                        patientIdentifierSet.add( patientIdentifier );
                     }
+
                     this.previousValues.put( key, value );
                 }
             }
         }
 
-        for ( PatientAttribute patientAttribute : patientAttributeService.getAllPatientAttributes() )
+        for ( PatientAttribute patientAttribute : patientAttributes )
         {
             patientAttributeSet.add( patientAttribute );
-            if ( patientAttribute.getProgram() == null )
             {
                 String key = "AT" + patientAttribute.getId();
-                String value = parameterMap.get( key );
+                String value = parameterMap.get( key ).trim();
+
                 if ( value != null )
                 {
                     if ( patientAttribute.isMandatory() && value.trim().equals( "" ) )
                     {
-                        this.validationMap.put( key, "is_empty" );
+                        this.validationMap.put( key, "is_mandatory" );
                     }
-                    else if ( patientAttribute.getValueType().equals( PatientAttribute.TYPE_INT )
+                    else if ( value.trim().length() > 0
+                        && patientAttribute.getValueType().equals( PatientAttribute.TYPE_INT )
                         && !FormUtils.isInteger( value ) )
                     {
                         this.validationMap.put( key, "is_invalid_number" );
                     }
-                    else if ( patientAttribute.getValueType().equals( PatientAttribute.TYPE_DATE )
+                    else if ( value.trim().length() > 0
+                        && patientAttribute.getValueType().equals( PatientAttribute.TYPE_DATE )
                         && !FormUtils.isDate( value ) )
                     {
                         this.validationMap.put( key, "is_invalid_date" );
@@ -396,20 +489,24 @@ public class SaveBeneficiaryAction
                     else
                     {
                         PatientAttributeValue patientAttributeValue = new PatientAttributeValue();
+
                         if ( PatientAttribute.TYPE_COMBO.equalsIgnoreCase( patientAttribute.getValueType() ) )
                         {
                             PatientAttributeOption option = patientAttributeOptionService.get( NumberUtils.toInt(
                                 value, 0 ) );
+
                             if ( option != null )
                             {
                                 patientAttributeValue.setPatientAttributeOption( option );
                             }
                         }
+
                         patientAttributeValue.setPatient( patient );
                         patientAttributeValue.setPatientAttribute( patientAttribute );
                         patientAttributeValue.setValue( value.trim() );
                         patientAttributeValues.add( patientAttributeValue );
                     }
+
                     this.previousValues.put( key, value );
                 }
             }
@@ -422,13 +519,19 @@ public class SaveBeneficiaryAction
             this.previousValues.put( "gender", this.gender );
             this.previousValues.put( "dob", this.dateOfBirth );
             this.previousValues.put( "dobType", this.dobType );
+            this.previousValues.put( "phoneNumber", this.phoneNumber );
             return ERROR;
         }
+
         patient.setIdentifiers( patientIdentifierSet );
         patient.setAttributes( patientAttributeSet );
         patientId = patientService.createPatient( patient, null, null, patientAttributeValues );
         validated = true;
 
+        if ( this.originalPatientId != null )
+        {
+            return "redirect";
+        }
         return SUCCESS;
     }
 }

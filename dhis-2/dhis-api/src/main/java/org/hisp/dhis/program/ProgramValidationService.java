@@ -29,8 +29,6 @@ package org.hisp.dhis.program;
 
 import java.util.Collection;
 
-import org.hisp.dhis.i18n.I18nFormat;
-
 /**
  * @author Chau Thu Tran
  * @version $ ProgramValidationService.java Apr 28, 2011 10:32:20 AM $
@@ -51,12 +49,10 @@ public interface ProgramValidationService
 
     Collection<ProgramValidation> getProgramValidation( Program program );
 
-    Collection<ProgramValidation> getProgramValidation( Program program, Boolean dateType );
-    
     Collection<ProgramValidation> getProgramValidation( ProgramStage programStage );
 
     Collection<ProgramValidation> getProgramValidation( ProgramStageDataElement psdataElement );
 
-    boolean runValidation( ProgramValidation validation, ProgramStageInstance programStageInstance,
-        I18nFormat format );
+    Collection<ProgramValidationResult> validate( Collection<ProgramValidation> validation,
+        ProgramStageInstance programStageInstance );
 }

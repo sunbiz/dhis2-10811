@@ -56,7 +56,6 @@ public class DefaultImportAnalyser
     private static final Log log = LogFactory.getLog( DefaultImportAnalyser.class );
     
     private static final String PROP_NAME = "name";
-    private static final String PROP_ALT_NAME = "alternativename";
     private static final String PROP_SHORT_NAME = "shortname";
     private static final String PROP_CODE = "code";
     private static final String PROP_PRIMARY_KEY = "primaryKey";
@@ -99,7 +98,6 @@ public class DefaultImportAnalyser
         else if ( object instanceof DataElement )
         {
             values.add( new EntityPropertyValue( DataElement.class, PROP_NAME, ((DataElement)object).getName() ) );
-            values.add( new EntityPropertyValue( DataElement.class, PROP_ALT_NAME, ((DataElement)object).getAlternativeName() ) );
             values.add( new EntityPropertyValue( DataElement.class, PROP_SHORT_NAME, ((DataElement)object).getShortName() ) );
             values.add( new EntityPropertyValue( DataElement.class, PROP_CODE, ((DataElement)object).getCode() ) );
             
@@ -108,7 +106,6 @@ public class DefaultImportAnalyser
         else if ( object instanceof Indicator )
         {
             values.add( new EntityPropertyValue( Indicator.class, PROP_NAME, ((Indicator)object).getName() ) );
-            values.add( new EntityPropertyValue( Indicator.class, PROP_ALT_NAME, ((Indicator)object).getAlternativeName() ) );
             values.add( new EntityPropertyValue( Indicator.class, PROP_SHORT_NAME, ((Indicator)object).getShortName() ) );
             values.add( new EntityPropertyValue( Indicator.class, PROP_CODE, ((Indicator)object).getCode() ) );
             

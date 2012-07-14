@@ -28,6 +28,16 @@ sed -i 's/<\/span>//g' $1
 sed -i 's/<strong[^>]*>//g' $1
 sed -i 's/<\/strong>//g' $1
 
+# Remove small open/end tags
+
+sed -i 's/<small[^>]*>//g' $1
+sed -i 's/<\/small>//g' $1
+
+# Remove font open/end tags
+
+sed -i 's/<font[^>]*>//g' $1
+sed -i 's/<\/font>//g' $1
+
 # Remove all style, width, nowrap, valign, view attributes
 
 sed -i 's/style="[^"]*"//g' $1
@@ -35,6 +45,7 @@ sed -i 's/width="[^"]*"//g' $1
 sed -i 's/nowrap="[^"]*"//g' $1
 sed -i 's/valign="[^"]*"//g' $1
 sed -i 's/view="[^"]*"//g' $1
+sed -i 's/bgcolor="[^"]*"//g' $1
 
 # Remove weird stuff
 

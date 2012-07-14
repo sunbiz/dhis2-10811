@@ -202,70 +202,65 @@ function DataDictionary()
         this.params = params;
         this.jQuerySelectionString = jQuerySelectionString;
 
-        jQuery
-                .postJSON(
-                        '../dhis-web-commons-ajax-json/getOperands.action',
-                        this.params,
-                        function( json )
+        jQuery.postJSON(
+            '../dhis-web-commons-ajax-json/getOperands.action',
+            this.params,
+            function( json )
+            {
+                jQuery.each( json.operands, function( i, item )
+                {
+                    target.append( '<option value="#{' + item.operandId + '}">' + item.operandName
+                            + '</option>' );
+                } );
+
+                if ( params.usePaging )
+                {
+                    var numberOfPages = json.paging.numberOfPages;
+                    var currentPage = json.paging.currentPage;
+                    var pageSize = json.paging.pageSize;
+                    var startPage = json.paging.startPage;
+
+                    var html = '<div id="operandPaging_div">';
+
+                    if ( numberOfPages > 1 )
+                    {
+                        html += 'Page: <select onchange="dataDictionary.reloadOperands( this.value )" style="width:60px">';
+
+                        for ( var i = 1; i <= numberOfPages; i++ )
                         {
-                            if ( json.operands.length == 0 )
-                            {
-                                setInnerHTML( 'formulaText', "<i style='color:red'>No dataelements to select</i>" );
-                                return;
-                            }
+                            html += '<option value="' + i + '"' + (currentPage == i ? 'selected=true' : '')
+                                    + '>' + i + '</option>';
+                        }
 
-                            jQuery.each( json.operands, function( i, item )
-                            {
-                                target.append( '<option value="[' + item.operandId + ']">' + item.operandName
-                                        + '</option>' );
-                            } );
+                        html += '</select>';
 
-                            if ( params.usePaging )
-                            {
-                                var numberOfPages = json.paging.numberOfPages;
-                                var currentPage = json.paging.currentPage;
-                                var pageSize = json.paging.pageSize;
-                                var startPage = json.paging.startPage;
+                        if ( currentPage == startPage )
+                        {
+                            html += '<button type="button" disabled="disabled">Previous page</button>';
+                            html += '<button type="button" onclick="dataDictionary.reloadOperands( '
+                                    + (parseInt( currentPage ) + 1) + ' )">Next page</button>';
+                        } 
+                        else if ( currentPage == numberOfPages )
+                        {
+                            html += '<button type="button" onclick="dataDictionary.reloadOperands( '
+                                    + (parseInt( currentPage ) - 1) + ' )">Previous page</button>';
+                            html += '<button type="button" disabled="disabled">Next page</button>';
+                        } 
+                        else
+                        {
+                            html += '<button type="button" onclick="dataDictionary.reloadOperands( '
+                                    + (parseInt( currentPage ) - 1) + ')">Previous page</button>';
+                            html += '<button type="button" onclick="dataDictionary.reloadOperands( '
+                                    + (parseInt( currentPage ) + 1) + ')">Next page</button>';
+                        }
+                    }
 
-                                var html = '<div id="operandPaging_div">';
-
-                                if ( numberOfPages > 1 )
-                                {
-                                    html += 'Page: <select onchange="dataDictionary.reloadOperands( this.value )">';
-
-                                    for ( var i = 1; i <= numberOfPages; i++ )
-                                    {
-                                        html += '<option value="' + i + '"' + (currentPage == i ? 'selected=true' : '')
-                                                + '>' + i + '</option>';
-                                    }
-
-                                    html += '</select>';
-
-                                    if ( currentPage == startPage )
-                                    {
-                                        html += '<button type="button" disabled="disabled">Previous page</button>';
-                                        html += '<button type="button" onclick="dataDictionary.reloadOperands( '
-                                                + (parseInt( currentPage ) + 1) + ' )">Next page</button>';
-                                    } else if ( currentPage == numberOfPages )
-                                    {
-                                        html += '<button type="button" onclick="dataDictionary.reloadOperands( '
-                                                + (parseInt( currentPage ) - 1) + ' )">Previous page</button>';
-                                        html += '<button type="button" disabled="disabled">Next page</button>';
-                                    } else
-                                    {
-                                        html += '<button type="button" onclick="dataDictionary.reloadOperands( '
-                                                + (parseInt( currentPage ) - 1) + ')">Previous page</button>';
-                                        html += '<button type="button" onclick="dataDictionary.reloadOperands( '
-                                                + (parseInt( currentPage ) + 1) + ')">Next page</button>';
-                                    }
-                                }
-
-                                html += 'Size: <input type="text" style="width:50px" onchange="dataDictionary.changeOperandsPageSize( this.value )" value="'
-                                        + pageSize + '"/></div>';
-                                jQuery( '#operandPaging_div' ).remove();
-                                jQuery( html ).insertAfter( target );
-                            }
-                        } );
+                    html += 'Size: <input type="text" style="width:50px" onchange="dataDictionary.changeOperandsPageSize( this.value )" value="'
+                            + pageSize + '"/></div>';
+                    jQuery( '#operandPaging_div' ).remove();
+                    jQuery( html ).insertAfter( target );
+                }
+            } );
     };
 }
 

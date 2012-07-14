@@ -33,6 +33,8 @@ import org.hisp.dhis.importexport.Importer;
 import org.hisp.dhis.report.Report;
 import org.hisp.dhis.report.ReportService;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  */
@@ -40,16 +42,16 @@ public class ReportImporter
     extends AbstractImporter<Report> implements Importer<Report>
 {
     protected ReportService reportService;
-    
+
     public ReportImporter()
     {
     }
-    
+
     public ReportImporter( ReportService reportService )
     {
         this.reportService = reportService;
     }
-    
+
     @Override
     public void importObject( Report object, ImportParams params )
     {
@@ -67,14 +69,15 @@ public class ReportImporter
     {
         match.setName( match.getName() );
         match.setDesignContent( object.getDesignContent() );
-        
+
         reportService.saveReport( match );
     }
 
     @Override
     protected Report getMatching( Report object )
     {
-        return reportService.getReportByName( object.getName() );
+        List<Report> reportByName = reportService.getReportByName( object.getName() );
+        return reportByName.isEmpty() ? null : reportByName.get( 0 );
     }
 
     @Override
@@ -84,11 +87,11 @@ public class ReportImporter
         {
             return false;
         }
-        if ( !isSimiliar( object.getDesignContent(), existing.getDesignContent() ) || ( isNotNull( object.getDesignContent(), existing.getDesignContent() ) && !object.getDesignContent().equals( existing.getDesignContent() ) ) )
+        if ( !isSimiliar( object.getDesignContent(), existing.getDesignContent() ) || (isNotNull( object.getDesignContent(), existing.getDesignContent() ) && !object.getDesignContent().equals( existing.getDesignContent() )) )
         {
             return false;
         }
-        
+
         return true;
     }
 }

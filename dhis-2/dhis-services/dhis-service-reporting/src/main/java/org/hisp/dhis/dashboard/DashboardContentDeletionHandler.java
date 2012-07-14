@@ -30,7 +30,7 @@ package org.hisp.dhis.dashboard;
 import java.util.Collection;
 
 import org.hisp.dhis.document.Document;
-import org.hisp.dhis.mapping.MapView;
+import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.report.Report;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.system.deletion.DeletionHandler;
@@ -97,13 +97,13 @@ public class DashboardContentDeletionHandler
     }
     
     @Override
-    public void deleteMapView( MapView mapView )
+    public void deleteMap( Map map )
     {
-        Collection<DashboardContent> contents = dashboardService.getByMapView( mapView );
+        Collection<DashboardContent> contents = dashboardService.getByMap( map );
         
         for ( DashboardContent content : contents )
         {
-            content.getMapViews().remove( mapView );
+            content.getMaps().remove( map );
             dashboardService.updateDashboardContent( content );
         }
     }

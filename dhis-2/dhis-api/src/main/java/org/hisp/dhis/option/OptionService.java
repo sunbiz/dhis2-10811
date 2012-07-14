@@ -51,5 +51,5 @@ public interface OptionService
 
     Collection<OptionSet> getAllOptionSets();
     
-    List<String> getOptions( OptionSet optionSet, String key, Integer max  );
+    List<String> getOptions( int optionSetId, String key, Integer max  );
 }

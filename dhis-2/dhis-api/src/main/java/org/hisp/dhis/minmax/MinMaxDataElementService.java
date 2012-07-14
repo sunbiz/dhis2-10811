@@ -62,4 +62,6 @@ public interface MinMaxDataElementService
     void removeMinMaxDataElements( DataElement dataElement );
     
     void removeMinMaxDataElements( DataElementCategoryOptionCombo optionCombo );
+    
+    void removeMinMaxDataElements( Collection<DataElement> dataElements, Collection<OrganisationUnit> organisationUnits );
 }

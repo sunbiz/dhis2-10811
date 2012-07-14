@@ -27,6 +27,7 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.utils.WebUtils;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -81,6 +82,32 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
             WebUtils.generateLinks( metaData );
         }
 
+        postProcessEntities( entityList );
+        postProcessEntities( entityList, parameters );
+
+        model.addAttribute( "model", metaData );
+        model.addAttribute( "viewClass", options.getViewClass( "basic" ) );
+
+        return StringUtils.uncapitalize( getEntitySimpleName() ) + "List";
+    }
+
+    @RequestMapping( value = "/query/{query}", method = RequestMethod.GET )
+    public String query( @PathVariable String query, @RequestParam Map<String, String> parameters, Model model, HttpServletRequest request ) throws Exception
+    {
+        WebOptions options = new WebOptions( parameters );
+        WebMetaData metaData = new WebMetaData();
+        List<T> entityList = queryForEntityList( metaData, options, query );
+
+        ReflectionUtils.invokeSetterMethod( ExchangeClasses.getExportMap().get( getEntityClass() ), metaData, entityList );
+
+        if ( options.hasLinks() )
+        {
+            WebUtils.generateLinks( metaData );
+        }
+
+        postProcessEntities( entityList );
+        postProcessEntities( entityList, parameters );
+
         model.addAttribute( "model", metaData );
         model.addAttribute( "viewClass", options.getViewClass( "basic" ) );
 
@@ -88,15 +115,25 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
     }
 
     @RequestMapping( value = "/{uid}", method = RequestMethod.GET )
-    public String getObject( @PathVariable( "uid" ) String uid, @RequestParam Map<String, String> parameters, Model model, HttpServletRequest request ) throws Exception
+    public String getObject( @PathVariable( "uid" ) String uid, @RequestParam Map<String, String> parameters,
+        Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception
     {
         WebOptions options = new WebOptions( parameters );
         T entity = getEntity( uid );
+
+        if ( entity == null )
+        {
+            ContextUtils.notFoundResponse( response, "Object not found for uid: " + uid );
+            return null;
+        }
 
         if ( options.hasLinks() )
         {
             WebUtils.generateLinks( entity );
         }
+
+        postProcessEntity( entity );
+        postProcessEntity( entity, parameters );
 
         model.addAttribute( "model", entity );
         model.addAttribute( "viewClass", options.getViewClass( "detailed" ) );
@@ -104,17 +141,26 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         return StringUtils.uncapitalize( getEntitySimpleName() );
     }
 
-    // FIXME proper error handling?
     @RequestMapping( value = "/search/{query}", method = RequestMethod.GET )
-    public String search( @PathVariable String query, @RequestParam Map<String, String> parameters, Model model, HttpServletRequest request ) throws Exception
+    public String search( @PathVariable String query, @RequestParam Map<String, String> parameters,
+        Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception
     {
         WebOptions options = new WebOptions( parameters );
         T entity = manager.search( getEntityClass(), query );
+
+        if ( entity == null )
+        {
+            ContextUtils.notFoundResponse( response, "Object not found for query: " + query );
+            return null;
+        }
 
         if ( options.hasLinks() )
         {
             WebUtils.generateLinks( entity );
         }
+
+        postProcessEntity( entity );
+        postProcessEntity( entity, parameters );
 
         model.addAttribute( "model", entity );
         model.addAttribute( "viewClass", "detailed" );
@@ -135,7 +181,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
 
     @RequestMapping( method = RequestMethod.POST, consumes = "application/json" )
     @PreAuthorize( "hasRole('ALL')" )
-    public void postJsonObject( HttpServletResponse response, InputStream input ) throws Exception
+    public void postJsonObject( HttpServletResponse response, HttpServletRequest request, InputStream input ) throws Exception
     {
         throw new HttpRequestMethodNotSupportedException( RequestMethod.POST.toString() );
     }
@@ -147,7 +193,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
     @RequestMapping( value = "/{uid}", method = RequestMethod.PUT, consumes = { "application/xml", "text/xml" } )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     @PreAuthorize( "hasRole('ALL')" )
-    public void putXmlObject( @PathVariable( "uid" ) String uid, InputStream input ) throws Exception
+    public void putXmlObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid, InputStream input ) throws Exception
     {
         throw new HttpRequestMethodNotSupportedException( RequestMethod.PUT.toString() );
     }
@@ -155,7 +201,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
     @RequestMapping( value = "/{uid}", method = RequestMethod.PUT, consumes = "application/json" )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     @PreAuthorize( "hasRole('ALL')" )
-    public void putJsonObject( @PathVariable( "uid" ) String uid, InputStream input ) throws Exception
+    public void putJsonObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid, InputStream input ) throws Exception
     {
         throw new HttpRequestMethodNotSupportedException( RequestMethod.PUT.toString() );
     }
@@ -167,9 +213,48 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
     @RequestMapping( value = "/{uid}", method = RequestMethod.DELETE )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     @PreAuthorize( "hasRole('ALL')" )
-    public void deleteObject( @PathVariable( "uid" ) String uid ) throws Exception
+    public void deleteObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid ) throws Exception
     {
         throw new HttpRequestMethodNotSupportedException( RequestMethod.DELETE.toString() );
+    }
+
+    //--------------------------------------------------------------------------
+    // Hooks
+    //--------------------------------------------------------------------------
+
+
+    /**
+     * Override to process entities after it has been retrieved from
+     * storage and before it is returned to the view. Entities is null-safe.
+     */
+    protected void postProcessEntities( List<T> entityList, Map<String, String> parameters )
+    {
+
+    }
+
+    /**
+     * Override to process entities after it has been retrieved from
+     * storage and before it is returned to the view. Entities is null-safe.
+     */
+    protected void postProcessEntities( List<T> entityList )
+    {
+
+    }
+
+    /**
+     * Override to process a single entity after it has been retrieved from
+     * storage and before it is returned to the view. Entity is null-safe.
+     */
+    protected void postProcessEntity( T entity ) throws Exception
+    {
+    }
+
+    /**
+     * Override to process a single entity after it has been retrieved from
+     * storage and before it is returned to the view. Entity is null-safe.
+     */
+    protected void postProcessEntity( T entity, Map<String, String> parameters ) throws Exception
+    {
     }
 
     //--------------------------------------------------------------------------
@@ -190,7 +275,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         {
             int count = manager.getCount( getEntityClass() );
 
-            Pager pager = new Pager( options.getPage(), count );
+            Pager pager = new Pager( options.getPage(), count, options.getPageSize() );
             metaData.setPager( pager );
 
             entityList = new ArrayList<T>( manager.getBetween( getEntityClass(), pager.getOffset(), pager.getPageSize() ) );
@@ -198,6 +283,27 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         else
         {
             entityList = new ArrayList<T>( manager.getAllSorted( getEntityClass() ) );
+        }
+
+        return entityList;
+    }
+
+    protected List<T> queryForEntityList( WebMetaData metaData, WebOptions options, String query )
+    {
+        List<T> entityList;
+
+        if ( options.hasPaging() )
+        {
+            int count = manager.getCount( getEntityClass() );
+
+            Pager pager = new Pager( options.getPage(), count, options.getPageSize() );
+            metaData.setPager( pager );
+
+            entityList = new ArrayList<T>( manager.getBetweenByName( getEntityClass(), query, pager.getOffset(), pager.getPageSize() ) );
+        }
+        else
+        {
+            entityList = new ArrayList<T>( manager.getLikeName( getEntityClass(), query ) );
         }
 
         return entityList;
@@ -256,15 +362,18 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         try
         {
             return (T) Class.forName( getEntityName() ).newInstance();
-        } catch ( InstantiationException e )
+        }
+        catch ( InstantiationException ex )
         {
-            throw new RuntimeException( e );
-        } catch ( IllegalAccessException e )
+            throw new RuntimeException( ex );
+        }
+        catch ( IllegalAccessException ex )
         {
-            throw new RuntimeException( e );
-        } catch ( ClassNotFoundException e )
+            throw new RuntimeException( ex );
+        }
+        catch ( ClassNotFoundException ex )
         {
-            throw new RuntimeException( e );
+            throw new RuntimeException( ex );
         }
     }
 }

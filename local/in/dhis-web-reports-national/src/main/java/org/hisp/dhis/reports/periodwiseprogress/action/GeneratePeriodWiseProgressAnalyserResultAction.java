@@ -271,14 +271,26 @@ public class GeneratePeriodWiseProgressAnalyserResultAction
         
         List<Report_inDesign> reportDesignList = reportService.getReportDesign( deCodesXMLFileName );
 
-        String dataElmentIdsByComma = reportService.getDataelementIds( reportDesignList );
-
+        //String dataElmentIdsByComma = reportService.getDataelementIds( reportDesignList );
+        String dataElmentIdsByComma = reportService.getDataelementIdsByStype( reportDesignList, Report_inDesign.ST_DATAELEMENT );
+        String nonNumberDataElementIdsByComma = reportService.getDataelementIdsByStype( reportDesignList, Report_inDesign.ST_NON_NUMBER_DATAELEMENT );
+        
+        //Collection<Integer> periodIds1 = new ArrayList<Integer>( getIdentifiers(Period.class, periodList ) );
+        String periodsByComma = "";
+        //getCommaDelimitedString( periodIds1 );
+                
         int colCount = 0;
         for( Period period : periodList )
-        {
-
-            Collection<Integer> periodIds = new ArrayList<Integer>( getIdentifiers(Period.class, periodService.getIntersectingPeriods( period.getStartDate(), period.getEndDate() ) ) );
-            String periodsByComma = getCommaDelimitedString( periodIds );
+        {               
+            if( periodTypeId.equalsIgnoreCase( "daily" ) )
+            {
+                periodsByComma = ""+period.getId();
+            }
+            else
+            {
+                Collection<Integer> periodIds = new ArrayList<Integer>( getIdentifiers(Period.class, periodService.getIntersectingPeriods( period.getStartDate(), period.getEndDate() ) ) );
+                periodsByComma = getCommaDelimitedString( periodIds );
+            }
 
             Map<String, String> aggDeMap = new HashMap<String, String>();
             if( aggData.equalsIgnoreCase( USEEXISTINGAGGDATA ) )
@@ -288,12 +300,16 @@ public class GeneratePeriodWiseProgressAnalyserResultAction
             else if( aggData.equalsIgnoreCase( GENERATEAGGDATA ) )
             {
                 aggDeMap.putAll( reportService.getAggDataFromDataValueTable( childOrgUnitsByComma, dataElmentIdsByComma, periodsByComma ) );
+                aggDeMap.putAll( reportService.getAggNonNumberDataFromDataValueTable(childOrgUnitsByComma, nonNumberDataElementIdsByComma, periodsByComma ) );
+                System.out.println(childOrgUnitsByComma +" \n " + dataElmentIdsByComma + " \n " + periodsByComma );
             }
             else if( aggData.equalsIgnoreCase( USECAPTUREDDATA ) )
             {
                 aggDeMap.putAll( reportService.getAggDataFromDataValueTable( ""+currentOrgUnit.getId(), dataElmentIdsByComma, periodsByComma ) );
+                aggDeMap.putAll( reportService.getAggNonNumberDataFromDataValueTable(""+currentOrgUnit.getId(), nonNumberDataElementIdsByComma, periodsByComma ) );
             }
-            
+            System.out.println( "aggDeMap size : " + aggDeMap.size() );
+
             Iterator<Report_inDesign> reportDesignIterator = reportDesignList.iterator();
             while (  reportDesignIterator.hasNext() )
             {
@@ -341,7 +357,15 @@ public class GeneratePeriodWiseProgressAnalyserResultAction
                         {
                             tempStr = getAggVal( deCodeString, aggDeMap );
                         }
-                    } 
+                    }
+                    else if( sType.equalsIgnoreCase( Report_inDesign.ST_DATAELEMENT_NO_REPEAT ) )
+                    {
+                        deCodeString = deCodeString.replaceAll( ":", "\\." );
+                        deCodeString = deCodeString.replaceAll( "[", "" );
+                        deCodeString = deCodeString.replaceAll( "]", "" );
+                        System.out.println( "deCodeString : "+ deCodeString );
+                        tempStr = aggDeMap.get( deCodeString );
+                    }
                 }
                 
                 if( tempStr == null || tempStr.equals( " " ) )
@@ -471,6 +495,7 @@ public class GeneratePeriodWiseProgressAnalyserResultAction
 
                 replaceString = replaceString.replaceAll( "[\\[\\]]", "" );
 
+                                System.out.println( replaceString + " : " + aggDeMap.get( replaceString ) );
                 replaceString = aggDeMap.get( replaceString );
                 
                 if( replaceString == null )

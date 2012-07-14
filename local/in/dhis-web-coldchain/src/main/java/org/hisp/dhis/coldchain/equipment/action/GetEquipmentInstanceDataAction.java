@@ -1,6 +1,7 @@
 package org.hisp.dhis.coldchain.equipment.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,9 @@ import org.hisp.dhis.coldchain.inventory.EquipmentService;
 import org.hisp.dhis.coldchain.inventory.EquipmentInstance;
 import org.hisp.dhis.coldchain.inventory.EquipmentInstanceService;
 import org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute;
+import org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOption;
 import org.hisp.dhis.coldchain.inventory.InventoryType_Attribute;
+import org.hisp.dhis.coldchain.inventory.comparator.InventoryTypeAttributeOptionComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -91,10 +94,12 @@ public class GetEquipmentInstanceDataAction implements Action
         return equipmentInstanceCatalogId;
     }
 
-
-
-
-
+    private Map<Integer, List<InventoryTypeAttributeOption>> inventoryTypeAttributeOptionsMap = new HashMap<Integer, List<InventoryTypeAttributeOption>>();
+    
+    public Map<Integer, List<InventoryTypeAttributeOption>> getInventoryTypeAttributeOptionsMap()
+    {
+        return inventoryTypeAttributeOptionsMap;
+    }
 
     // -------------------------------------------------------------------------
     // Action Implementation
@@ -134,6 +139,21 @@ public class GetEquipmentInstanceDataAction implements Action
                 equipmentValueMap.put( equipmentDetails.getInventoryTypeAttribute().getId(), equipmentDetails.getValue() );
             }
         }
+        
+        for( InventoryTypeAttribute inventoryTypeAttribute : inventoryTypeAttributes )
+        {
+            List<InventoryTypeAttributeOption> inventoryTypeAttributeOptions = new ArrayList<InventoryTypeAttributeOption>();
+            if( InventoryTypeAttribute.TYPE_COMBO.equalsIgnoreCase( inventoryTypeAttribute.getValueType() ) )
+            {
+                System.out.println(" inside inventoryTypeAttribute.TYPE_COMBO ");
+                inventoryTypeAttributeOptions = new ArrayList<InventoryTypeAttributeOption>( inventoryTypeAttribute.getAttributeOptions() );
+                Collections.sort( inventoryTypeAttributeOptions, new InventoryTypeAttributeOptionComparator() );
+                inventoryTypeAttributeOptionsMap.put( inventoryTypeAttribute.getId(), inventoryTypeAttributeOptions );
+            }
+
+        }
+        
+        
         
         CatalogType catalogType = equipmentInstance.getInventoryType().getCatalogType();
         

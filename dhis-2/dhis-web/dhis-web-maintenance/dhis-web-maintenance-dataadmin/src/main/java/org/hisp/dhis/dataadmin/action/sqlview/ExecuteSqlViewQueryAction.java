@@ -96,7 +96,8 @@ public class ExecuteSqlViewQueryAction
         }
 
         SqlView sqlViewInstance = sqlViewService.getSqlView( id );
-        String viewName = sqlViewService.setUpViewTableName( sqlViewInstance.getName() );
+        
+        String viewName = sqlViewInstance.getViewName();
 
         message = sqlViewService.createViewTable( sqlViewInstance );
 

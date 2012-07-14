@@ -38,5 +38,7 @@ public interface I18nManager
 
     I18n getI18n( Class<?> clazz ) throws I18nManagerException;
 
+    I18n getI18n( String clazzName ) throws I18nManagerException;
+
     I18nFormat getI18nFormat() throws I18nManagerException;
 }

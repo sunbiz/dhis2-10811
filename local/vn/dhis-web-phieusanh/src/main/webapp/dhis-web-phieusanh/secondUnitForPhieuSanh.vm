@@ -49,40 +49,12 @@
 		} );
 	}
 	
-	function addPatient( newUnitId )
-	{
-		if ( newUnitId && newUnitId != -1 )
-		{
-			jQuery.postUTF8( '../dhis-web-caseentry/addPatient.action',
-			{
-				fullName: getFieldValue( 'fullName' ),
-				age: getFieldValue( 'age' )
-			}, function( json )
-			{
-				if ( json.response == "success" )
-				{
-					jQuery.get( '../dhis-web-phieusanh/registerPatientLocation.action',
-					{
-						patientId: json.message.split( "_" ),
-						newUnitId: newUnitId
-					}, function( json )
-					{
-						if ( json.response == "success" ) {
-							showSuccessMessage( i18n_register_patient_successfully );
-						}
-					} );
-				}
-			} );
-		} else {
-			showErrorMessage( i18n_please_select_unit );
-		}
-	}
-	
 	var i18n_label = '$encoder.jsEscape( $i18n.getString( "select_orgunit" ) , "'" )';
 	var i18n_please_select_unit = '$encoder.jsEscape( $i18n.getString( "please_select_unit" ) , "'" )';
 	var i18n_register_patient_successfully = '$encoder.jsEscape( $i18n.getString( "register_patient_successfully" ) , "'" )';
+	var i18n_please_select_address = '$encoder.jsEscape( $i18n.getString( "please_select_address" ) , "'" )';
 </script>
 
-<select id="provinceLevel" name="provinceLevel" onchange="loadPureChildrens( this.value, 'districtLevel' )"></select>
-<select id="districtLevel" name="districtLevel" onchange="loadPureChildrens( this.value, 'wardLevel' )"></select>
-<select id="wardLevel" name="wardLevel" onchange="addPatient( this.value )"></select>
+<select id="provinceLevel" name="provinceLevel" onchange="loadPureChildrens( this.value, 'districtLevel' )"></select><br/>
+<select id="districtLevel" name="districtLevel" onchange="loadPureChildrens( this.value, 'wardLevel' )"></select><br/>
+<select id="wardLevel" name="wardLevel"></select>

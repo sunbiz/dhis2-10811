@@ -105,6 +105,7 @@
     <action name="openAddOrganisationUnitGroup" class="org.hisp.dhis.oum.action.organisationunitgroup.ShowAddOrganisationUnitGroupFormAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-organisationunit/addOrganisationUnitGroupForm.vm</param>
+      <param name="javascripts">javascript/organisationUnitGroup.js</param>
       <param name="requiredAuthorities">F_ORGUNITGROUP_ADD</param>
     </action>
 
@@ -117,6 +118,7 @@
     <action name="openUpdateOrganisationUnitGroup" class="org.hisp.dhis.oum.action.organisationunitgroup.GetOrganisationUnitGroupAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-organisationunit/updateOrganisationUnitGroupForm.vm</param>
+      <param name="javascripts">javascript/organisationUnitGroup.js</param>
       <param name="requiredAuthorities">F_ORGUNITGROUP_UPDATE</param>
     </action>
 

@@ -48,7 +48,7 @@
 		</tr>
 		
 		<tr>
-			<td><label for="type">$i18n.getString( "type" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td><label for="type">$i18n.getString( "type" )</label></td>
 			<td>
 				<select style="width: 336px;" id="type" name="type" class="{validate:{required:true}}">
 					<option value="text" selected="selected">$i18n.getString( "text" )</option>
@@ -59,28 +59,14 @@
 			<td></td>
 		</tr>
 		
-		<tr>
-			<td><label for="programId">$i18n.getString( "program" )</label></td>
-			<td>
-				<select style="width: 336px;" type="text" name="programId" id="programId" value="$!patientIdentifierType.program" >
-					<option value=''>[$i18n.getString('all')]</option>
-					#foreach( $program in $programs)
-						<option value='$program.id'>$program.name</option>
-					#end
-				</select>
-			</td>		
-			<td></td>				
-		</tr> 
-		
-		<tbody>
-		<tr>
-			<td></td>
-			<td>
-				<input type="submit" value="$i18n.getString( 'add' )" />
-				<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientIdentifierType.action'" />
-			</td>
-		</tr>
 	</tbody>
+	<tr>
+		<td></td>
+		<td>
+			<input type="submit" value="$i18n.getString( 'add' )" />
+			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientIdentifierType.action'" />
+		</td>
+	</tr>
 </table>
 
 </form>

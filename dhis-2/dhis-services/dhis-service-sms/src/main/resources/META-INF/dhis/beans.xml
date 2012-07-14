@@ -1,39 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <bean id="org.hisp.dhis.sms.outbound.SmsConfigurationManager" class="org.hisp.dhis.sms.SmsConfigurationManagerImpl" />
-  
-  <!-- Outbound SMS service -->
+
+  <bean id="incomingSmsQueue" class="org.hisp.dhis.sms.queue.DatabaseSupportedInternalMemoryMessageQueue">
+    <property name="smsStore" ref="org.hisp.dhis.sms.incoming.IncomingSmsStore" />
+  </bean>
+
+  <bean id="smsConsumer" class="org.hisp.dhis.sms.parse.SMSConsumer">
+    <property name="parserManager" ref="org.hisp.dhis.sms.parse.DefaultParserManager" />  
+    <property name="messageQueue" ref="incomingSmsQueue" />
+  </bean>
 
   <bean id="outboundSmsStore" class="org.hisp.dhis.sms.outbound.HibernateOutboundSmsStore">
     <property name="sessionFactory" ref="sessionFactory" />
+    <property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
-  
-  <bean id="org.hisp.dhis.sms.outbound.OutboundSmsService" class="org.hisp.dhis.sms.outbound.OutboundSmsServiceImpl" />
-  
-  <!--  Only for testing! OutboundSmsService stub just logging invocations, replacing the default one or use as the OutboundSmsTransportService..  -->
-  <!--  <bean id="TestOutboundSmsService" class="org.hisp.dhis.sms.outbound.TestOutboundSmsService" /> -->
 
-  <bean id="smsLibService" class="org.hisp.dhis.sms.smslib.SmsLibService" />
+  <bean id="org.hisp.dhis.sms.outbound.OutboundSmsService" class="org.hisp.dhis.sms.outbound.OutboundSmsServiceImpl">
+    <property name="outboundSmsStore" ref="outboundSmsStore" />
+  </bean>
 
-  <!--  SMS Message sender -->
+  <!-- Only for testing! OutboundSmsService stub just logging invocations, replacing the default one or use as the OutboundSmsTransportService.. -->
+  <!-- <bean id="TestOutboundSmsService" class="org.hisp.dhis.sms.outbound.TestOutboundSmsService" /> -->
+
+  <bean id="smsLibService" class="org.hisp.dhis.sms.smslib.SmsLibService">
+    <property name="smppInboundMessageNotification" ref="org.hisp.dhis.sms.incoming.SMPPInboundNotification" />
+    <property name="outboundSmsStore" ref="outboundSmsStore" />
+    <property name="smsConsumer" ref="smsConsumer" />
+  </bean>
+
+  <bean id="org.hisp.dhis.sms.incoming.SMPPInboundNotification" class="org.hisp.dhis.sms.incoming.SMPPInboundNotification">
+    <property name="incomingSmsService" ref="org.hisp.dhis.sms.incoming.IncomingSmsService" />
+  </bean>
+  <!-- SMS Message sender -->
 
   <bean id="org.hisp.dhis.sms.outbound.SmsMessageSender" class="org.hisp.dhis.sms.outbound.SmsMessageSender">
     <property name="outboundSmsService" ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />
     <property name="userService" ref="org.hisp.dhis.user.UserService" />
   </bean>
-  
+
   <!-- Inbound SMS service -->
-  
+
   <bean id="org.hisp.dhis.sms.incoming.IncomingSmsStore" class="org.hisp.dhis.sms.inbound.HibernateIncomingSmsStore">
-  	<property name="sessionFactory" ref="sessionFactory" />
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  
+
   <bean id="org.hisp.dhis.sms.incoming.IncomingSmsService" class="org.hisp.dhis.sms.inbound.DefaultInboundSmsService">
-  	<property name="incomingSmsStore" ref="org.hisp.dhis.sms.incoming.IncomingSmsStore"/>
+    <property name="incomingSmsStore" ref="org.hisp.dhis.sms.incoming.IncomingSmsStore" />
+    <property name="incomingSmsQueue" ref="incomingSmsQueue" />
   </bean>
-  
+
+  <bean id="org.hisp.dhis.sms.parse.DefaultParserManager" class="org.hisp.dhis.sms.parse.DefaultParserManager"
+    depends-on="org.hisp.dhis.user.UserService">
+    <property name="userService" ref="org.hisp.dhis.user.UserService" />
+    <property name="smsCommandService" ref="smsCommandService" />
+    <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+    <property name="dataValueService" ref="org.hisp.dhis.datavalue.DataValueService" />
+    <property name="outboundSmsService" ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />  
+    <property name="registrationService" ref="org.hisp.dhis.dataset.CompleteDataSetRegistrationService" />
+  </bean>
+
 </beans>

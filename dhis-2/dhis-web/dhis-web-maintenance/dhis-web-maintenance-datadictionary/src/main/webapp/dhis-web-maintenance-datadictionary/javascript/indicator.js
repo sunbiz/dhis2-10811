@@ -10,15 +10,18 @@ function indicatorTypeChanged()
 {
     var type = byId( 'indicatorTypeId' ).options[byId( 'indicatorTypeId' ).selectedIndex].getAttribute( 'number' );
     byId( 'denominatorButton' ).disabled = eval( type );
+    
     if ( eval( type ) )
     {
         setFieldValue( 'denominator', '1' );
-    } else
+    } 
+    else
     {
         if ( getFieldValue( 'denominatorFormula' ) == undefined )
         {
             setFieldValue( 'denominator', '' );
-        } else
+        } 
+        else
         {
             setFieldValue( 'denominator', getFieldValue( 'denominatorFormula' ) );
         }
@@ -50,9 +53,6 @@ function showIndicatorDetails( indicatorId )
 		setInnerHTML( 'nameField', json.indicator.name );
 
 		setInnerHTML( 'shortNameField', json.indicator.shortName );
-
-		var alternativeName = json.indicator.alternativeName;
-		setInnerHTML( 'alternativeNameField', alternativeName ? alternativeName : '[' + i18n_none + ']' );
 
 		var description = json.indicator.description;
 		setInnerHTML( 'descriptionField', description ? description : '[' + i18n_none + ']' );

@@ -32,7 +32,6 @@ import java.util.Locale;
 
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.common.IdentifiableObject;
-import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.system.paging.Paging;
 
 /**
@@ -68,7 +67,7 @@ public class I18nUtils
         I18nService i18nService, GenericIdentifiableObjectStore<T> store, String name )
     {
         return i18nService.currentLocaleIsBase() ?
-            store.getCountByName( name ) :
+            store.getCountLikeName( name ) :
             Paging.getCountByName( i18n( i18nService, store.getAll() ), name );
     }
     
@@ -76,7 +75,7 @@ public class I18nUtils
         I18nService i18nService, GenericIdentifiableObjectStore<T> store, int first, int max )
     {
         return i18nService.currentLocaleIsBase() ?
-            i18n( i18nService, store.getBetween( first, max ) ) :
+            i18n( i18nService, store.getAllOrderedName( first, max ) ) :
             Paging.getObjectsBetween( i18n( i18nService, store.getAll() ), first, max );
     }
     
@@ -84,7 +83,7 @@ public class I18nUtils
         I18nService i18nService, GenericIdentifiableObjectStore<T> store, String name, int first, int max )
     {
         return i18nService.currentLocaleIsBase() ?
-            i18n( i18nService, store.getBetweenByName( name, first, max ) ) :
+            i18n( i18nService, store.getAllLikeNameOrderedName( name, first, max ) ) :
             Paging.getObjectsBetweenByName( i18n( i18nService, store.getAll() ), name, first, max );
     }
     
@@ -92,7 +91,7 @@ public class I18nUtils
         I18nService i18nService, GenericIdentifiableObjectStore<T> store, String name )
     {
         return i18nService.currentLocaleIsBase() ?
-            i18n( i18nService, store.getLikeName( name ) ) :
+            i18n( i18nService, store.getAllLikeName( name ) ) :
             Paging.getObjectsByName( i18n( i18nService, store.getAll() ), name );
     }
 }

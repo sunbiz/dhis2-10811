@@ -111,11 +111,17 @@ public class LoadPatientPropertiesAction
     {
         Program program = programService.getProgram( programId );
 
-        identifierTypes = identifierTypeService.getPatientIdentifierTypesWithoutProgram();
-        identifierTypes.addAll( identifierTypeService.getPatientIdentifierTypes( program ) );
+        identifierTypes = identifierTypeService.getAllPatientIdentifierTypes();
+        patientAttributes = attributeService.getAllPatientAttributes();
 
-        patientAttributes.addAll( attributeService.getPatientAttributes( null, null ) );
-        patientAttributes.addAll( attributeService.getPatientAttributes( program ) );
+        Collection<Program> programs = programService.getAllPrograms();
+        programs.remove( program );
+        
+        for ( Program _program : programs )
+        {
+            identifierTypes.removeAll( _program.getPatientIdentifierTypes() );
+            patientAttributes.removeAll( _program.getPatientAttributes() );
+        }
 
         return SUCCESS;
     }

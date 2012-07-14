@@ -1,15 +1,21 @@
 package org.hisp.dhis.coldchain.equipment.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hisp.dhis.coldchain.catalog.Catalog;
 import org.hisp.dhis.coldchain.catalog.CatalogService;
 import org.hisp.dhis.coldchain.catalog.CatalogType;
+import org.hisp.dhis.coldchain.catalog.CatalogTypeAttributeOption;
 import org.hisp.dhis.coldchain.inventory.InventoryType;
 import org.hisp.dhis.coldchain.inventory.InventoryTypeAttribute;
+import org.hisp.dhis.coldchain.inventory.InventoryTypeAttributeOption;
 import org.hisp.dhis.coldchain.inventory.InventoryTypeService;
 import org.hisp.dhis.coldchain.inventory.InventoryType_Attribute;
+import org.hisp.dhis.coldchain.inventory.comparator.InventoryTypeAttributeOptionComparator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 
@@ -86,6 +92,13 @@ public class ShowAddEquipmentFormAction implements Action
     {
         return catalogs;
     }
+    
+    private Map<Integer, List<InventoryTypeAttributeOption>> inventoryTypeAttributeOptionsMap = new HashMap<Integer, List<InventoryTypeAttributeOption>>();
+    
+    public Map<Integer, List<InventoryTypeAttributeOption>> getInventoryTypeAttributeOptionsMap()
+    {
+        return inventoryTypeAttributeOptionsMap;
+    }
 
     // -------------------------------------------------------------------------
     // Action Implementation
@@ -103,7 +116,26 @@ public class ShowAddEquipmentFormAction implements Action
         {
             inventoryTypeAttributes.add( inventoryType_Attribute.getInventoryTypeAttribute() );
         }
-              
+        
+        for( InventoryTypeAttribute inventoryTypeAttribute : inventoryTypeAttributes )
+        {
+            List<InventoryTypeAttributeOption> inventoryTypeAttributeOptions = new ArrayList<InventoryTypeAttributeOption>();
+            if( InventoryTypeAttribute.TYPE_COMBO.equalsIgnoreCase( inventoryTypeAttribute.getValueType() ) )
+            {
+                System.out.println(" inside inventoryTypeAttribute.TYPE_COMBO ");
+                inventoryTypeAttributeOptions = new ArrayList<InventoryTypeAttributeOption>( inventoryTypeAttribute.getAttributeOptions() );
+                Collections.sort( inventoryTypeAttributeOptions, new InventoryTypeAttributeOptionComparator() );
+                inventoryTypeAttributeOptionsMap.put( inventoryTypeAttribute.getId(), inventoryTypeAttributeOptions );
+            }
+
+            /*
+            System.out.println( "Name :" + catalogTypeAttribute.getName() );
+            System.out.println( "valueType :" + catalogTypeAttribute.getValueType() );
+            System.out.println( "Is mandatory :" + catalogTypeAttribute.isMandatory() );
+            */
+        }
+        
+        
         CatalogType catalogType = inventoryType.getCatalogType();
         
         if( catalogType != null )

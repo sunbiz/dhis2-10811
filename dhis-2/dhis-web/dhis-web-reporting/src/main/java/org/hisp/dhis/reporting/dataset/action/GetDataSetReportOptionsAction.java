@@ -27,6 +27,9 @@ package org.hisp.dhis.reporting.dataset.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.period.PeriodType.getAvailablePeriodTypes;
+import static org.hisp.dhis.period.PeriodType.getPeriodFromIsoString;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +37,10 @@ import java.util.List;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.oust.manager.SelectionTreeManager;
+import org.hisp.dhis.period.Cal;
+import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 
 import com.opensymphony.xwork2.Action;
@@ -44,6 +51,10 @@ import com.opensymphony.xwork2.Action;
 public class GetDataSetReportOptionsAction
     implements Action
 {
+    // -------------------------------------------------------------------------
+    // Dependencies
+    // -------------------------------------------------------------------------
+
     private DataSetService dataSetService;
 
     public void setDataSetService( DataSetService dataSetService )
@@ -51,6 +62,59 @@ public class GetDataSetReportOptionsAction
         this.dataSetService = dataSetService;
     }
     
+    private OrganisationUnitService organisationUnitService;
+
+    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
+    {
+        this.organisationUnitService = organisationUnitService;
+    }
+    
+    private SelectionTreeManager selectionTreeManager;
+
+    public void setSelectionTreeManager( SelectionTreeManager selectionTreeManager )
+    {
+        this.selectionTreeManager = selectionTreeManager;
+    }
+
+    // -------------------------------------------------------------------------
+    // Input
+    // -------------------------------------------------------------------------
+
+    private String ds;
+
+    public String getDs()
+    {
+        return ds;
+    }
+
+    public void setDs( String ds )
+    {
+        this.ds = ds;
+    }
+
+    private String pe;
+
+    public String getPe()
+    {
+        return pe;
+    }
+
+    public void setPe( String pe )
+    {
+        this.pe = pe;
+    }
+
+    private String ou;
+
+    public void setOu( String ou )
+    {
+        this.ou = ou;
+    }
+
+    // -------------------------------------------------------------------------
+    // Output
+    // -------------------------------------------------------------------------
+
     private List<DataSet> dataSets;
 
     public List<DataSet> getDataSets()
@@ -65,13 +129,51 @@ public class GetDataSetReportOptionsAction
         return periodTypes;
     }
 
+    private boolean render;
+    
+    public boolean isRender()
+    {
+        return render;
+    }
+    
+    private int offset;
+
+    public int getOffset()
+    {
+        return offset;
+    }
+
+    private PeriodType periodType;
+    
+    public PeriodType getPeriodType()
+    {
+        return periodType;
+    }
+
+    // -------------------------------------------------------------------------
+    // Action implementation
+    // -------------------------------------------------------------------------
+
     public String execute()
     {
         dataSets = new ArrayList<DataSet>( dataSetService.getAllDataSets() );
         
         Collections.sort( dataSets, IdentifiableObjectNameComparator.INSTANCE );
         
-        periodTypes = PeriodType.getAvailablePeriodTypes();
+        periodTypes = getAvailablePeriodTypes();
+        
+        render = ( ds != null && pe != null && ou != null );
+        
+        if ( pe != null && getPeriodFromIsoString( pe ) != null )
+        {
+            Period period = getPeriodFromIsoString( pe );
+                        
+            offset = new Cal().set( period.getStartDate() ).getYear() - new Cal().now().getYear();
+            
+            periodType = period.getPeriodType();
+            
+            selectionTreeManager.setSelectedOrganisationUnit( organisationUnitService.getOrganisationUnit( ou ) ); //TODO set unit state in client instead
+        }
         
         return SUCCESS;
     }

@@ -20,7 +20,7 @@
 
 <table id="catalogTypeMembersArea">    
     <thead>
-      <tr>        
+      <tr>
         <th>$i18n.getString( "available_catalogType_attribute" )</th>
         <th>$i18n.getString( "filter" )</th>
         <th>$i18n.getString( "selected_catalogType_attribute" )							
@@ -37,15 +37,15 @@
         </td>
         <td>         
             <input type="button" value="&gt;" onclick="selectCatalogTypeAttributes()" class='filterButton' /><br/>    
-            <input type="button" value="&lt;" onclick="unselectCatalogTypeAttributes()" class='filterButton' /><br/><br/>                    
+            <input type="button" value="&lt;" onclick="unselectCatalogTypeAttributes()" class='filterButton' /><br/><br/>
+        </td>                      
         <td>
-			<div class="catalogTypeAttributeDiv">
+			<div class="catalogTypeAttributeDiv"><br/>
 				<table>
-					<thead>
+					<!--<thead>
 						<tr>
 							<th>$i18n.getString( "catalogType_attributes" )</th>
-							
-					</thead>
+					</thead>-->
 					<tbody id="selectedList"></tbody>
 				</table>
 			</div>

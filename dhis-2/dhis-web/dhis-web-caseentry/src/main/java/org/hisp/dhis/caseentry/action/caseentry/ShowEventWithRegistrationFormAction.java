@@ -30,9 +30,13 @@ package org.hisp.dhis.caseentry.action.caseentry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
-import org.hisp.dhis.dataentryform.DataEntryForm;
+import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
 import org.hisp.dhis.patient.PatientAttribute;
@@ -41,19 +45,20 @@ import org.hisp.dhis.patient.PatientAttributeGroupService;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
+import org.hisp.dhis.patient.PatientRegistrationForm;
+import org.hisp.dhis.patient.PatientRegistrationFormService;
 import org.hisp.dhis.patient.comparator.PatientAttributeGroupSortOrderComparator;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramDataEntryService;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 
 /**
  * @author Chau Thu Tran
- * 
- * @version $ShowEventWithRegistrationFormAction.java Jun 26, 2012 4:41:09 PM$
  */
 public class ShowEventWithRegistrationFormAction
     implements Action
@@ -67,20 +72,6 @@ public class ShowEventWithRegistrationFormAction
     public void setSelectionManager( OrganisationUnitSelectionManager selectionManager )
     {
         this.selectionManager = selectionManager;
-    }
-
-    private PatientAttributeService patientAttributeService;
-
-    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
-    {
-        this.patientAttributeService = patientAttributeService;
-    }
-
-    private PatientAttributeGroupService patientAttributeGroupService;
-
-    public void setPatientAttributeGroupService( PatientAttributeGroupService patientAttributeGroupService )
-    {
-        this.patientAttributeGroupService = patientAttributeGroupService;
     }
 
     private PatientIdentifierTypeService patientIdentifierTypeService;
@@ -97,11 +88,46 @@ public class ShowEventWithRegistrationFormAction
         this.programService = programService;
     }
 
+    private PatientRegistrationFormService patientRegistrationFormService;
+
+    public void setPatientRegistrationFormService( PatientRegistrationFormService patientRegistrationFormService )
+    {
+        this.patientRegistrationFormService = patientRegistrationFormService;
+    }
+
     private ProgramDataEntryService programDataEntryService;
 
     public void setProgramDataEntryService( ProgramDataEntryService programDataEntryService )
     {
         this.programDataEntryService = programDataEntryService;
+    }
+
+    private PatientAttributeService attributeService;
+
+    public void setAttributeService( PatientAttributeService attributeService )
+    {
+        this.attributeService = attributeService;
+    }
+
+    private PatientAttributeGroupService attributeGroupService;
+
+    public void setAttributeGroupService( PatientAttributeGroupService attributeGroupService )
+    {
+        this.attributeGroupService = attributeGroupService;
+    }
+
+    private I18n i18n;
+
+    public void setI18n( I18n i18n )
+    {
+        this.i18n = i18n;
+    }
+
+    private I18nFormat format;
+
+    public void setFormat( I18nFormat format )
+    {
+        this.format = format;
     }
 
     // -------------------------------------------------------------------------
@@ -110,9 +136,7 @@ public class ShowEventWithRegistrationFormAction
 
     private Integer programId;
 
-    private Collection<PatientAttribute> noGroupAttributes;
-
-    private List<PatientAttributeGroup> attributeGroups;
+    private Collection<PatientAttribute> noGroupAttributes = new HashSet<PatientAttribute>();
 
     private Collection<PatientIdentifierType> identifierTypes;
 
@@ -122,38 +146,78 @@ public class ShowEventWithRegistrationFormAction
 
     private List<ProgramStageDataElement> programStageDataElements = new ArrayList<ProgramStageDataElement>();
 
+    private ProgramStage programStage;
+
+    private Collection<User> healthWorkers;
+
+    private String customRegistrationForm;
+
+    private List<PatientAttributeGroup> attributeGroups;
+
+    private Map<Integer, Collection<PatientAttribute>> attributeGroupsMap = new HashMap<Integer, Collection<PatientAttribute>>();
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
 
     public String execute()
     {
-        identifierTypes = patientIdentifierTypeService.getPatientIdentifierTypesWithoutProgram();
-
-        noGroupAttributes = patientAttributeService.getPatientAttributes( null, null );
-
-        attributeGroups = new ArrayList<PatientAttributeGroup>( patientAttributeGroupService
-            .getPatientAttributeGroupsWithoutProgram() );
-        Collections.sort( attributeGroups, new PatientAttributeGroupSortOrderComparator() );
-
+        // Get health workers
         organisationUnit = selectionManager.getSelectedOrganisationUnit();
-
-        // Get data entry form
+        healthWorkers = organisationUnit.getUsers();
 
         Program program = programService.getProgram( programId );
+        PatientRegistrationForm patientRegistrationForm = patientRegistrationFormService
+            .getPatientRegistrationForm( program );
 
-        ProgramStage programStage = program.getProgramStages().iterator().next();
-
-        DataEntryForm dataEntryForm = programStage.getDataEntryForm();
-
-        if ( dataEntryForm != null )
+        if ( patientRegistrationForm != null )
         {
-            customDataEntryFormCode = programDataEntryService.prepareDataEntryFormForEdit( dataEntryForm.getHtmlCode() );
+            customRegistrationForm = patientRegistrationFormService.prepareDataEntryFormForAdd( patientRegistrationForm
+                .getDataEntryForm().getHtmlCode(), healthWorkers, null, null, i18n, format );
+        }
+
+        if ( customRegistrationForm == null )
+        {
+            identifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
+
+            Collection<PatientAttribute> patientAttributesInProgram = new HashSet<PatientAttribute>();
+            Collection<Program> programs = programService.getAllPrograms();
+            programs.remove( program );
+            for ( Program p : programs )
+            {
+                identifierTypes.removeAll( p.getPatientIdentifierTypes() );
+                patientAttributesInProgram.addAll( p.getPatientAttributes() );
+            }
+
+            attributeGroups = new ArrayList<PatientAttributeGroup>(
+                attributeGroupService.getAllPatientAttributeGroups() );
+            Collections.sort( attributeGroups, new PatientAttributeGroupSortOrderComparator() );
+            for ( PatientAttributeGroup attributeGroup : attributeGroups )
+            {
+                List<PatientAttribute> attributes = attributeGroupService.getPatientAttributes( attributeGroup );
+                attributes.removeAll( patientAttributesInProgram );
+
+                if ( attributes.size() > 0 )
+                {
+                    attributeGroupsMap.put( attributeGroup.getId(), attributes );
+                }
+            }
+
+            noGroupAttributes = attributeService.getPatientAttributesWithoutGroup();
+            noGroupAttributes.removeAll( patientAttributesInProgram );
+        }
+
+        // Get data entry form
+        programStage = program.getProgramStages().iterator().next();
+        if ( programStage.getDataEntryForm() != null )
+        {
+            customDataEntryFormCode = programDataEntryService.prepareDataEntryFormForAdd( programStage
+                .getDataEntryForm().getHtmlCode(), i18n, programStage );
         }
         else
         {
-            programStageDataElements = new ArrayList<ProgramStageDataElement>( programStage
-                .getProgramStageDataElements() );
+            programStageDataElements = new ArrayList<ProgramStageDataElement>(
+                programStage.getProgramStageDataElements() );
         }
 
         return SUCCESS;
@@ -163,19 +227,29 @@ public class ShowEventWithRegistrationFormAction
     // Getter/Setter
     // -------------------------------------------------------------------------
 
+    public Collection<User> getHealthWorkers()
+    {
+        return healthWorkers;
+    }
+
+    public String getCustomRegistrationForm()
+    {
+        return customRegistrationForm;
+    }
+
     public Collection<PatientIdentifierType> getIdentifierTypes()
     {
         return identifierTypes;
     }
 
-    public List<PatientAttributeGroup> getAttributeGroups()
-    {
-        return attributeGroups;
-    }
-
     public void setProgramId( Integer programId )
     {
         this.programId = programId;
+    }
+
+    public ProgramStage getProgramStage()
+    {
+        return programStage;
     }
 
     public Collection<PatientAttribute> getNoGroupAttributes()
@@ -196,5 +270,15 @@ public class ShowEventWithRegistrationFormAction
     public List<ProgramStageDataElement> getProgramStageDataElements()
     {
         return programStageDataElements;
+    }
+
+    public List<PatientAttributeGroup> getAttributeGroups()
+    {
+        return attributeGroups;
+    }
+
+    public Map<Integer, Collection<PatientAttribute>> getAttributeGroupsMap()
+    {
+        return attributeGroupsMap;
     }
 }

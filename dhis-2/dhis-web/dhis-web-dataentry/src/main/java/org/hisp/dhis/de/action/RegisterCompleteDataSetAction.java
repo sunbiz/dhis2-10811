@@ -35,7 +35,6 @@ import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.i18n.I18nFormat;
-import org.hisp.dhis.message.MessageService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
@@ -43,6 +42,7 @@ import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.user.CurrentUserService;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author Lars Helge Overland
@@ -84,13 +84,6 @@ public class RegisterCompleteDataSetAction
         this.currentUserService = currentUserService;
     }
 
-    private MessageService messageService;
-
-    public void setMessageService( MessageService messageService )
-    {
-        this.messageService = messageService;
-    }
-
     private I18nFormat format;
 
     public void setFormat( I18nFormat format )
@@ -123,6 +116,13 @@ public class RegisterCompleteDataSetAction
         this.organisationUnitId = organisationUnitId;
     }
 
+    private boolean multiOrganisationUnit;
+
+    public void setMultiOrganisationUnit( boolean multiOrganisationUnit )
+    {
+        this.multiOrganisationUnit = multiOrganisationUnit;
+    }
+
     private int statusCode;
 
     public int getStatusCode()
@@ -136,11 +136,10 @@ public class RegisterCompleteDataSetAction
 
     public String execute()
     {
-        CompleteDataSetRegistration registration = new CompleteDataSetRegistration();
-
         DataSet dataSet = dataSetService.getDataSet( dataSetId );
         Period period = PeriodType.createPeriodExternalId( periodId );
         OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
+        Set<OrganisationUnit> children = organisationUnit.getChildren();
 
         String storedBy = currentUserService.getCurrentUsername();
 
@@ -148,14 +147,53 @@ public class RegisterCompleteDataSetAction
         // Check locked status
         // ---------------------------------------------------------------------
 
-        if ( dataSetService.isLocked( dataSet, period, organisationUnit, null ) )
+        if ( !multiOrganisationUnit )
         {
-            return logError( "Entry locked for combination: " + dataSet + ", " + period + ", " + organisationUnit, 2 );
+            if ( dataSetService.isLocked( dataSet, period, organisationUnit, null ) )
+            {
+                return logError( "Entry locked for combination: " + dataSet + ", " + period + ", " + organisationUnit, 2 );
+            }
+        }
+        else
+        {
+            for ( OrganisationUnit ou : children )
+            {
+                if ( ou.getDataSets().contains( dataSet ) && dataSetService.isLocked( dataSet, period, ou, null ) )
+                {
+                    return logError( "Entry locked for combination: " + dataSet + ", " + period + ", " + ou, 2 );
+                }
+            }
         }
 
         // ---------------------------------------------------------------------
         // Register as completed dataSet
         // ---------------------------------------------------------------------
+
+        if ( !multiOrganisationUnit )
+        {
+            registerCompleteDataSet( dataSet, period, organisationUnit, storedBy );
+        }
+        else
+        {
+            for ( OrganisationUnit ou : children )
+            {
+                if ( ou.getDataSets().contains( dataSet ) )
+                {
+                    registerCompleteDataSet( dataSet, period, ou, storedBy );
+                }
+            }
+        }
+
+        return SUCCESS;
+    }
+
+    // -------------------------------------------------------------------------
+    // Supportive methods
+    // -------------------------------------------------------------------------
+
+    private void registerCompleteDataSet( DataSet dataSet, Period period, OrganisationUnit organisationUnit, String storedBy )
+    {
+        CompleteDataSetRegistration registration = new CompleteDataSetRegistration();
 
         if ( registrationService.getCompleteDataSetRegistration( dataSet, period, organisationUnit ) == null )
         {
@@ -165,21 +203,13 @@ public class RegisterCompleteDataSetAction
             registration.setDate( new Date() );
             registration.setStoredBy( storedBy );
 
-            registrationService.saveCompleteDataSetRegistration( registration );
+            registration.setPeriodName( format.formatPeriod( registration.getPeriod() ) );
+
+            registrationService.saveCompleteDataSetRegistration( registration, true );
 
             log.info( "DataSet registered as complete: " + registration );
-
-            registration.getPeriod().setName( format.formatPeriod( registration.getPeriod() ) );
-
-            messageService.sendCompletenessMessage( registration );
         }
-
-        return SUCCESS;
     }
-
-    // -------------------------------------------------------------------------
-    // Supportive methods
-    // -------------------------------------------------------------------------
 
     private String logError( String message, int statusCode )
     {

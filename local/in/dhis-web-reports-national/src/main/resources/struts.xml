@@ -1005,6 +1005,49 @@
             </result>
         </action>
 
+        <!--District Feedback-->
+
+        <action name="districtFeedbackReportAnalyser"
+                class="org.hisp.dhis.reports.districtfeedback.action.GenerateAggregationDistrictFeedbackReportAnalyserFormAction">
+            <result name="success" type="velocity">/main.vm</result>
+            <param name="page">/dhis-web-reports/districtFeedbackReportAnalysisFront.vm</param>
+            <param name="menu">/dhis-web-reports/menuWithTreeForDistrictFeedbackReport.vm</param>
+            <param name="javascripts">../dhis-web-commons/ouwt/ouwt.js,../dhis-web-commons/calendar/calendar.js,../dhis-web-commons/calendar/calendar-lang.js,../dhis-web-commons/calendar/calendar-setup.js,../dhis-web-commons/lists/lists.js,javascript/reportManagement.js,javascript/hashtable.js,../dhis-web-commons/util/validate/jquery.validate.js,../dhis-web-commons/util/jquery.metadata.js,../dhis-web-commons/util/validate/additional-methods.js,../dhis-web-commons/util/validate/messages_locale.js</param>
+            <param name="stylesheets">css/StylesForTags.css</param>
+            <param name="requiredAuthorities">F_REPORT_DISTRICTFEEDBACK</param>
+            <interceptor-ref name="organisationUnitTreeStack"/>
+        </action>
+        <action name="generateDistrictFeedbackReport"
+                class="org.hisp.dhis.reports.districtfeedback.action.GenerateAggregationDistrictFeedbackReportAnalyserResultAction">
+            <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel</param>
+                <param name="inputName">inputStream</param>
+                <param name="contentDisposition">filename="${fileName}"</param>
+                <param name="bufferSize">1024</param>
+            </result>
+        </action>		
+		
+        <!-- ranking2 Reports -->
+        <action name="ranking2ReportForm"
+            class="org.hisp.dhis.reports.ranking2.action.Ranking2ReportFormAction">
+            <result name="success" type="velocity">/main.vm</result>
+            <param name="page">/dhis-web-reports/ranking2ReportFront.vm</param>
+            <param name="menu">/dhis-web-reports/menuWithTreeForRanking2Reports.vm</param>
+            <param name="javascripts">../dhis-web-commons/ouwt/ouwt.js,../dhis-web-commons/lists/lists.js,javascript/reportManagement.js,javascript/hashtable.js</param>
+            <param name="stylesheets">css/StylesForTags.css</param>
+             <param name="requiredAuthorities">F_REPORT_RANKING</param>
+             <interceptor-ref name="organisationUnitTreeStack"/>
+        </action>
+        
+        <action name="generateRanking2Report"
+            class="org.hisp.dhis.reports.ranking2.action.GenerateRanking2ReportAction">
+             <result name="success" type="stream">
+                <param name="contentType">application/vnd.ms-excel</param>
+                <param name="inputName">inputStream</param>
+                <param name="contentDisposition">filename="${fileName}"</param>
+                <param name="bufferSize">1024</param></result>            
+        </action>		
+		
         <!-- AJAX Requests -->
         <action name="getDataElements"
             class="org.hisp.dhis.reports.action.GetDataElementsAction">
@@ -1044,5 +1087,18 @@
             <param name="onExceptionReturn">plainTextError</param>
         </action>
 
+		<!-- Daily Food Situation Reports -->
+    <action name="dailyFoodReportAnalyser" class="org.hisp.dhis.reports.action.NoAction">
+        <result name="success" type="velocity">/main.vm</result>
+        <param name="menu">/dhis-web-reports/menu.vm</param>
+        <param name="page">/dhis-web-reports/dailyFoodSituationForm.vm</param>        
+    </action>
+		
+	<action name="generateDailyFoodReport" class="org.hisp.dhis.reports.dailyfood.action.GenerateDailyFoodReportAction">
+        <result name="success" type="velocity">/main.vm</result>
+        <param name="menu">/dhis-web-reports/menu.vm</param>
+        <param name="page">/dhis-web-reports/welcome.vm</param>        
+    </action>
+		
     </package>
 </struts>

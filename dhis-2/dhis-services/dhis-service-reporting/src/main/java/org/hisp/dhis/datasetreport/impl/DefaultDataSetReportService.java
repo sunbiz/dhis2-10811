@@ -31,18 +31,16 @@ import static org.hisp.dhis.dataentryform.DataEntryFormService.DATAELEMENT_TOTAL
 import static org.hisp.dhis.dataentryform.DataEntryFormService.IDENTIFIER_PATTERN;
 import static org.hisp.dhis.dataentryform.DataEntryFormService.INDICATOR_PATTERN;
 import static org.hisp.dhis.dataentryform.DataEntryFormService.INPUT_PATTERN;
+import static org.hisp.dhis.datasetreport.DataSetReportStore.SEPARATOR;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 
-import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.common.GridHeader;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
@@ -55,6 +53,7 @@ import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.Section;
 import org.hisp.dhis.dataset.comparator.SectionOrderComparator;
 import org.hisp.dhis.datasetreport.DataSetReportService;
+import org.hisp.dhis.datasetreport.DataSetReportStore;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.i18n.I18n;
@@ -63,6 +62,7 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.system.filter.AggregatableDataElementFilter;
+import org.hisp.dhis.system.grid.GridUtils;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.hisp.dhis.system.util.FilterUtils;
 
@@ -72,9 +72,8 @@ import org.hisp.dhis.system.util.FilterUtils;
  */
 public class DefaultDataSetReportService
     implements DataSetReportService
-{
+{   
     private static final String NULL_REPLACEMENT = "";
-    private static final String SEPARATOR = ":";
     private static final String DEFAULT_HEADER = "Value";
     private static final String TOTAL_HEADER = "Total";
     private static final String SPACE = " ";
@@ -89,12 +88,12 @@ public class DefaultDataSetReportService
     {
         this.dataValueService = dataValueService;
     }
+    
+    private DataSetReportStore dataSetReportStore;
 
-    private AggregatedDataValueService aggregatedDataValueService;
-
-    public void setAggregatedDataValueService( AggregatedDataValueService aggregatedDataValueService )
+    public void setDataSetReportStore( DataSetReportStore dataSetReportStore )
     {
-        this.aggregatedDataValueService = aggregatedDataValueService;
+        this.dataSetReportStore = dataSetReportStore;
     }
 
     // -------------------------------------------------------------------------
@@ -104,12 +103,27 @@ public class DefaultDataSetReportService
     public String getCustomDataSetReport( DataSet dataSet, OrganisationUnit unit, Period period,
         boolean selectedUnitOnly, I18nFormat format )
     {
-        Map<String, String> aggregatedDataValueMap = getAggregatedValueMap( dataSet, unit, period, selectedUnitOnly,
-            format );
-
-        Map<Integer, String> aggregatedIndicatorMap = getAggregatedIndicatorValueMap( dataSet, unit, period, format );
-
-        return prepareReportContent( dataSet.getDataEntryForm(), aggregatedDataValueMap, aggregatedIndicatorMap );
+        Map<String, Double> valueMap = dataSetReportStore.getAggregatedValues( dataSet, period, unit, selectedUnitOnly );
+        valueMap.putAll( dataSetReportStore.getAggregatedTotals( dataSet, period, unit ) );
+        
+        Map<String, Double> indicatorValueMap = dataSetReportStore.getAggregatedIndicatorValues( dataSet, period, unit );
+        
+        return prepareReportContent( dataSet.getDataEntryForm(), valueMap, indicatorValueMap, format );
+    }
+    
+    public List<Grid> getCustomDataSetReportAsGrid( DataSet dataSet, OrganisationUnit unit, Period period,
+        boolean selectedUnitOnly, I18nFormat format )
+    {
+        String html = getCustomDataSetReport( dataSet, unit, period, selectedUnitOnly, format );
+        
+        try
+        {
+            return GridUtils.fromHtml( html );
+        }
+        catch ( Exception ex )
+        {
+            throw new RuntimeException( "Failed to render custom data set report as grid", ex );
+        }
     }
 
     public List<Grid> getSectionDataSetReport( DataSet dataSet, Period period, OrganisationUnit unit,
@@ -117,6 +131,10 @@ public class DefaultDataSetReportService
     {
         List<Section> sections = new ArrayList<Section>( dataSet.getSections() );
         Collections.sort( sections, new SectionOrderComparator() );
+
+        Map<String, Double> valueMap = dataSetReportStore.getAggregatedValues( dataSet, period, unit, selectedUnitOnly );
+        Map<String, Double> subTotalMap = dataSetReportStore.getAggregatedSubTotals( dataSet, period, unit );
+        Map<String, Double> totalMap = dataSetReportStore.getAggregatedTotals( dataSet, period, unit );
 
         List<Grid> grids = new ArrayList<Grid>();
 
@@ -164,7 +182,7 @@ public class DefaultDataSetReportService
 
             List<DataElement> dataElements = new ArrayList<DataElement>( section.getDataElements() );
             FilterUtils.filter( dataElements, new AggregatableDataElementFilter() );
-
+            
             for ( DataElement dataElement : dataElements )
             {
                 grid.addRow();
@@ -182,7 +200,7 @@ public class DefaultDataSetReportService
                     }
                     else
                     {
-                        value = aggregatedDataValueService.getAggregatedValue( dataElement, optionCombo, period, unit );
+                        value = valueMap.get( dataElement.getUid() + SEPARATOR + optionCombo.getUid() );
                     }
 
                     grid.addValue( value );
@@ -192,7 +210,7 @@ public class DefaultDataSetReportService
                 {
                     for ( DataElementCategoryOption categoryOption : categoryCombo.getCategoryOptions() )
                     {
-                        Double value = aggregatedDataValueService.getAggregatedValue( dataElement, categoryOption, period, unit );
+                        Double value = subTotalMap.get( dataElement.getUid() + SEPARATOR + categoryOption.getUid() );
 
                         grid.addValue( value );
                     }
@@ -200,7 +218,7 @@ public class DefaultDataSetReportService
 
                 if ( categoryCombo.doTotal() && !selectedUnitOnly ) // Total
                 {
-                    Double value = aggregatedDataValueService.getAggregatedValue( dataElement, period, unit );
+                    Double value = totalMap.get( String.valueOf( dataElement.getUid() ) );
 
                     grid.addValue( value );
                 }
@@ -219,6 +237,9 @@ public class DefaultDataSetReportService
         Collections.sort( dataElements, IdentifiableObjectNameComparator.INSTANCE );
         FilterUtils.filter( dataElements, new AggregatableDataElementFilter() );
 
+        Map<String, Double> valueMap = dataSetReportStore.getAggregatedValues( dataSet, period, unit, selectedUnitOnly );
+        Map<String, Double> indicatorValueMap = dataSetReportStore.getAggregatedIndicatorValues( dataSet, period, unit );
+        
         // ---------------------------------------------------------------------
         // Get category option combos
         // ---------------------------------------------------------------------
@@ -274,7 +295,7 @@ public class DefaultDataSetReportService
                 }
                 else
                 {
-                    value = aggregatedDataValueService.getAggregatedValue( dataElement, optionCombo, period, unit );
+                    value = valueMap.get( dataElement.getUid() + SEPARATOR + optionCombo.getUid() );
                 }
 
                 grid.addValue( value );
@@ -294,7 +315,7 @@ public class DefaultDataSetReportService
 
             grid.addValue( indicator.getName() );
             
-            Double value = aggregatedDataValueService.getAggregatedValue( indicator, period, unit );
+            Double value = indicatorValueMap.get( String.valueOf( indicator.getUid() ) );
             
             grid.addValue( value );
             
@@ -312,95 +333,6 @@ public class DefaultDataSetReportService
     // -------------------------------------------------------------------------
 
     /**
-     * Generates a map with aggregated data values or regular data values
-     * (depending on the selectedUnitOnly argument) mapped to a DataElemenet
-     * operand identifier.
-     * 
-     * @param dataSet the DataSet.
-     * @param unit the OrganisationUnit.
-     * @param period the Period.
-     * @param selectedUnitOnly whether to include aggregated or regular data in
-     *        the map.
-     * @param format the I18nFormat.
-     * @return a map.
-     */
-    private Map<String, String> getAggregatedValueMap( DataSet dataSet, OrganisationUnit unit, Period period,
-        boolean selectedUnitOnly, I18nFormat format )
-    {
-        Collection<DataElement> dataElements = new ArrayList<DataElement>( dataSet.getDataElements() );
-
-        FilterUtils.filter( dataElements, new AggregatableDataElementFilter() );
-
-        Map<String, String> map = new TreeMap<String, String>();
-
-        for ( DataElement dataElement : dataElements )
-        {
-            for ( DataElementCategoryOptionCombo categoryOptionCombo : dataElement.getCategoryCombo().getOptionCombos() )
-            {
-                String value;
-
-                if ( selectedUnitOnly )
-                {
-                    DataValue dataValue = dataValueService.getDataValue( unit, dataElement, period, categoryOptionCombo );
-                    value = (dataValue != null) ? dataValue.getValue() : null;
-                }
-                else
-                {
-                    Double aggregatedValue = aggregatedDataValueService.getAggregatedValue( dataElement, categoryOptionCombo, period, unit );
-
-                    value = format.formatValue( aggregatedValue );
-                }
-
-                if ( value != null )
-                {
-                    map.put( dataElement.getId() + SEPARATOR + categoryOptionCombo.getId(), value );
-                }
-            }
-            
-            Double aggregatedValue = aggregatedDataValueService.getAggregatedValue( dataElement, period, unit );
-                
-            String value = format.formatValue( aggregatedValue );
-            
-            if ( value != null )
-            {
-                map.put( String.valueOf( dataElement.getId() ), value );
-            }
-        }
-
-        return map;
-    }
-
-    /**
-     * Generates a map with aggregated indicator values mapped to an Indicator
-     * identifier.
-     * 
-     * @param dataSet the DataSet.
-     * @param unit the OrganisationUnit.
-     * @param period the Period.
-     * @param format the I18nFormat.
-     * @return a map.
-     */
-    private Map<Integer, String> getAggregatedIndicatorValueMap( DataSet dataSet, OrganisationUnit unit, Period period,
-        I18nFormat format )
-    {
-        Map<Integer, String> map = new TreeMap<Integer, String>();
-
-        for ( Indicator indicator : dataSet.getIndicators() )
-        {
-            Double aggregatedValue = aggregatedDataValueService.getAggregatedValue( indicator, period, unit );
-
-            String value = format.formatValue( aggregatedValue );
-
-            if ( value != null )
-            {
-                map.put( indicator.getId(), value );
-            }
-        }
-
-        return map;
-    }
-
-    /**
      * Puts in aggregated datavalues in the custom dataentry form and returns
      * whole report text.
      * 
@@ -409,8 +341,8 @@ public class DefaultDataSetReportService
      * @return data entry form HTML code populated with aggregated data in the
      *         input fields.
      */
-    private String prepareReportContent( DataEntryForm dataEntryForm, Map<String, String> dataValues,
-        Map<Integer, String> indicatorValues )
+    private String prepareReportContent( DataEntryForm dataEntryForm, Map<String, Double> dataValues,
+        Map<String, Double> indicatorValues, I18nFormat format )
     {
         StringBuffer buffer = new StringBuffer();
 
@@ -438,34 +370,28 @@ public class DefaultDataSetReportService
 
             if ( identifierMatcher.find() && identifierMatcher.groupCount() > 0 )
             {
-                Integer dataElementId = Integer.parseInt( identifierMatcher.group( 1 ) );
-                Integer optionComboId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                String dataElementId = identifierMatcher.group( 1 );
+                String optionComboId = identifierMatcher.group( 2 );
 
-                String dataValue = dataValues.get( dataElementId + SEPARATOR + optionComboId );
+                Double dataValue = dataValues.get( dataElementId + SEPARATOR + optionComboId );
 
-                dataValue = dataValue != null ? dataValue : NULL_REPLACEMENT;
-
-                inputMatcher.appendReplacement( buffer, dataValue );
+                inputMatcher.appendReplacement( buffer, format.formatValue( dataValue ) );
             }
             else if ( dataElementTotalMatcher.find() && dataElementTotalMatcher.groupCount() > 0 )
             {
-                Integer dataElementId = Integer.parseInt( dataElementTotalMatcher.group( 1 ) );
+                String dataElementId = dataElementTotalMatcher.group( 1 );
                 
-                String dataValue = dataValues.get( String.valueOf( dataElementId ) );
+                Double dataValue = dataValues.get( dataElementId );
 
-                dataValue = dataValue != null ? dataValue : NULL_REPLACEMENT;
-
-                inputMatcher.appendReplacement( buffer, dataValue );
+                inputMatcher.appendReplacement( buffer, format.formatValue( dataValue ) );
             }
             else if ( indicatorMatcher.find() && indicatorMatcher.groupCount() > 0 )
             {
-                Integer indicatorId = Integer.parseInt( indicatorMatcher.group( 1 ) );
+                String indicatorId = indicatorMatcher.group( 1 );
 
-                String indicatorValue = indicatorValues.get( indicatorId );
+                Double indicatorValue = indicatorValues.get( indicatorId );
 
-                indicatorValue = indicatorValue != null ? indicatorValue : NULL_REPLACEMENT;
-
-                inputMatcher.appendReplacement( buffer, indicatorValue );
+                inputMatcher.appendReplacement( buffer, format.formatValue( indicatorValue ) );
             }
         }
 

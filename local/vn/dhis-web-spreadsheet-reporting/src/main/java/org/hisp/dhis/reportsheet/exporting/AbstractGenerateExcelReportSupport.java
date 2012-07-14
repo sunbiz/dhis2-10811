@@ -26,7 +26,12 @@ package org.hisp.dhis.reportsheet.exporting;
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import org.hisp.dhis.period.Period;
+import static org.hisp.dhis.reportsheet.utils.NumberUtils.PATTERN_DECIMAL_FORMAT1;
+import static org.hisp.dhis.reportsheet.utils.NumberUtils.applyPatternDecimalFormat;
+import static org.hisp.dhis.reportsheet.utils.NumberUtils.resetDecimalFormatByLocale;
+
+import java.util.Locale;
+
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.reportsheet.ExportReport;
 
@@ -49,13 +54,16 @@ public abstract class AbstractGenerateExcelReportSupport
     {
         statementManager.initialise();
 
-        Period period = PeriodType.createPeriodExternalId( selectionManager.getSelectedPeriodIndex() );
+        selectedPeriod = PeriodType.createPeriodExternalId( selectionManager.getSelectedPeriodIndex() );
 
         ExportReport exportReport = exportReportService.getExportReport( selectionManager.getSelectedReportId() );
 
-        this.installPeriod( period );
+        this.installPeriod();
 
-        executeGenerateOutputFile( exportReport, period );
+        resetDecimalFormatByLocale( Locale.GERMAN );
+        applyPatternDecimalFormat( PATTERN_DECIMAL_FORMAT1 );
+        
+        executeGenerateOutputFile( exportReport );
 
         this.complete();
 
@@ -75,6 +83,6 @@ public abstract class AbstractGenerateExcelReportSupport
      * @param exportReport
      * @param organisationUnit
      */
-    protected abstract void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected abstract void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception;
 }

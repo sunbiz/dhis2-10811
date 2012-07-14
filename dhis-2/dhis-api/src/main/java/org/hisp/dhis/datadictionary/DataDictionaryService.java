@@ -28,6 +28,7 @@ package org.hisp.dhis.datadictionary;
  */
 
 import java.util.Collection;
+import java.util.List;
 
 import org.hisp.dhis.dataelement.DataElement;
 
@@ -73,7 +74,7 @@ public interface DataDictionaryService
      * @param name the name of the DataDictionary.
      * @return the DataDictionary.
      */
-    DataDictionary getDataDictionaryByName( String name );
+    List<DataDictionary> getDataDictionaryByName( String name );
     
     /**
      * Deteles the DataDictionary.
@@ -87,13 +88,13 @@ public interface DataDictionaryService
      * 
      * @return a collection of DataDictionaries.
      */
-    Collection<DataDictionary> getAllDataDictionaries();
+    List<DataDictionary> getAllDataDictionaries();
     
-    Collection<DataElement> getDataElementsByDictionaryId( int dictionaryId );
+    List<DataElement> getDataElementsByDictionaryId( int dictionaryId );
     
-    Collection<DataDictionary> getDataDictionarysBetween( int first, int max );
+    List<DataDictionary> getDataDictionarysBetween( int first, int max );
     
-    Collection<DataDictionary> getDataDictionarysBetweenByName( String name, int first, int max );
+    List<DataDictionary> getDataDictionarysBetweenByName( String name, int first, int max );
     
     int getDataDictionaryCount();
     

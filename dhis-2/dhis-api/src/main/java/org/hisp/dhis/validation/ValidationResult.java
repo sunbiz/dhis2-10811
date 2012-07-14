@@ -50,9 +50,9 @@ public class ValidationResult
 
     private ValidationRule validationRule;
 
-    private double leftsideValue;
+    private Double leftsideValue;
 
-    private double rightsideValue;
+    private Double rightsideValue;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -63,7 +63,7 @@ public class ValidationResult
     }
 
     public ValidationResult( Period period, OrganisationUnit source, ValidationRule validationRule,
-                             double leftsideValue, double rightsideValue )
+        Double leftsideValue, Double rightsideValue )
     {
         this.source = source;
         this.period = period;
@@ -189,22 +189,22 @@ public class ValidationResult
         this.validationRule = validationRule;
     }
 
-    public double getLeftsideValue()
+    public Double getLeftsideValue()
     {
         return leftsideValue;
     }
 
-    public void setLeftsideValue( double leftsideValue )
+    public void setLeftsideValue( Double leftsideValue )
     {
         this.leftsideValue = leftsideValue;
     }
 
-    public double getRightsideValue()
+    public Double getRightsideValue()
     {
         return rightsideValue;
     }
 
-    public void setRightsideValue( double rightsideValue )
+    public void setRightsideValue( Double rightsideValue )
     {
         this.rightsideValue = rightsideValue;
     }

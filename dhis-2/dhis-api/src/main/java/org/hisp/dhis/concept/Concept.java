@@ -29,7 +29,7 @@ package org.hisp.dhis.concept;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 
 /**
  * A Concept Name is a short name which is used as an attribute name
@@ -40,7 +40,7 @@ import org.hisp.dhis.common.Dxf2Namespace;
  *
  * @author Dang Duy Hieu
  */
-@JacksonXmlRootElement( localName = "concept", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "concept", namespace = DxfNamespaces.DXF_2_0 )
 public class Concept
     extends BaseIdentifiableObject
 {

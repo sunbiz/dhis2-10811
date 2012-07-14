@@ -33,8 +33,6 @@ import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeOption;
 import org.hisp.dhis.patient.PatientAttributeOptionService;
 import org.hisp.dhis.patient.PatientAttributeService;
-import org.hisp.dhis.program.Program;
-import org.hisp.dhis.program.ProgramService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -61,13 +59,6 @@ public class AddPatientAttributeAction
     public void setPatientAttributeOptionService( PatientAttributeOptionService patientAttributeOptionService )
     {
         this.patientAttributeOptionService = patientAttributeOptionService;
-    }
-
-    private ProgramService programService;
-
-    public void setProgramService( ProgramService programService )
-    {
-        this.programService = programService;
     }
 
     // -------------------------------------------------------------------------
@@ -102,13 +93,6 @@ public class AddPatientAttributeAction
         this.mandatory = mandatory;
     }
 
-    private Boolean inheritable;
-
-    public void setInheritable( Boolean inheritable )
-    {
-        this.inheritable = inheritable;
-    }
-
     private List<String> attrOptions;
 
     public void setAttrOptions( List<String> attrOptions )
@@ -116,11 +100,18 @@ public class AddPatientAttributeAction
         this.attrOptions = attrOptions;
     }
 
-    private Integer programId;
+    private Boolean inherit;
 
-    public void setProgramId( Integer programId )
+    public void setInherit( Boolean inherit )
     {
-        this.programId = programId;
+        this.inherit = inherit;
+    }
+
+    private String expression;
+
+    public void setExpression( String expression )
+    {
+        this.expression = expression;
     }
 
     // -------------------------------------------------------------------------
@@ -135,15 +126,13 @@ public class AddPatientAttributeAction
         patientAttribute.setName( name );
         patientAttribute.setDescription( description );
         patientAttribute.setValueType( valueType );
-        
+        patientAttribute.setExpression( expression );
+
         mandatory = (mandatory == null) ? false : true;
         patientAttribute.setMandatory( mandatory );
-        
-        inheritable = (inheritable == null) ? false : true;
-        patientAttribute.setInheritable( inheritable );
-        
-        Program program = (programId != null) ? programService.getProgram( programId ) : null;
-        patientAttribute.setProgram( program );
+
+        inherit = (inherit == null) ? false : true;
+        patientAttribute.setInherit( inherit );
 
         patientAttributeService.savePatientAttribute( patientAttribute );
 

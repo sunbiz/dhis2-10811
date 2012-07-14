@@ -64,6 +64,23 @@
         <interceptor-ref name="fileUploadStack"/>
     </action>
 
+    <!-- BDExcel Data Import -->
+        <action name="BDDataImportForm"
+                class="org.hisp.dhis.excelimport.bddataimport.action.BDExcelImportFormAction">
+            <result name="success" type="velocity">/main.vm</result>
+            <param name="page">/dhis-web-excelimport/BDDataImportForm.vm</param>
+            <param name="menu">/dhis-web-excelimport/menu.vm</param>
+            <param name="javascripts">javascript/hashtable.js</param>
+            <param name="stylesheets">css/StylesForTags.css</param>
+        </action>
+
+        <action name="BDExcelImportResult" class="org.hisp.dhis.excelimport.bddataimport.action.BDExcelImportResultAction">
+            <result name="success" type="velocity">/main.vm</result>
+            <param name="page">/dhis-web-excelimport/BDDataImportResult.vm</param>
+            <param name="menu">/dhis-web-excelimport/menu.vm</param>
+            <interceptor-ref name="fileUploadStack"/>
+        </action>
+
     <!-- TCS Data Import -->
     <action name="tcsDataImportForm"
         class="org.hisp.dhis.excelimport.tcs.action.TCSXmlImportFormAction">

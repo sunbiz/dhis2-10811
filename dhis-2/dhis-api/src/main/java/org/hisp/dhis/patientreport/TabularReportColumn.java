@@ -7,6 +7,7 @@ public class TabularReportColumn
     public static String PREFIX_FIXED_ATTRIBUTE = "fixedAttr";    
     public static String PREFIX_PATIENT_ATTRIBUTE = "attr";
     public static String PREFIX_DATA_ELEMENT = "de";
+    public static String PREFIX_NUMBER_DATA_ELEMENT = "numberDe";
     
     private String prefix;
     
@@ -71,7 +72,12 @@ public class TabularReportColumn
     
     public boolean isDataElement()
     {
-        return PREFIX_DATA_ELEMENT.equals( prefix );
+        return PREFIX_DATA_ELEMENT.equals( prefix ) || PREFIX_NUMBER_DATA_ELEMENT.equals( prefix ) ;
+    }
+    
+    public boolean isNumberDataElement()
+    {
+        return PREFIX_NUMBER_DATA_ELEMENT.equals( prefix );
     }
 
     // -------------------------------------------------------------------------

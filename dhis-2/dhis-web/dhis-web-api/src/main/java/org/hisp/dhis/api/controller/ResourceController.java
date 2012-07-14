@@ -27,7 +27,7 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.api.utils.WebUtils;
+import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.webdomain.Resource;
 import org.hisp.dhis.api.webdomain.Resources;
 import org.springframework.stereotype.Controller;
@@ -61,7 +61,7 @@ public class ResourceController
         {
             for ( Resource resource : resources.getResources() )
             {
-                resource.setLink( WebUtils.getPath( resource.getClazz() ) );
+                resource.setHref( ContextUtils.getPath( resource.getClazz() ) );
             }
         }
 

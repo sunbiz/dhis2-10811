@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.importing.action;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,14 @@ package org.hisp.dhis.reportsheet.importing.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Set;
+
+import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.importing.ImportDataGeneric;
 
 /**
- * @author Chau Thu Tran
  * @author Dang Duy Hieu
  * @version $Id$
  */
@@ -45,14 +47,16 @@ public class ImportDataOrganizationGroupAction
     // -------------------------------------------------------------------------
 
     @Override
-    public void executeToImport( OrganisationUnit organisationUnit, Period period, String[] importItemIds )
+    public void executeToImport( OrganisationUnit organisationUnit, Period period, String[] importItemIds,
+        Set<DataValue> oldDataValues, Set<DataValue> newDataValues )
     {
         for ( int i = 0; i < importItemIds.length; i++ )
         {
             OrganisationUnit o = organisationUnitService.getOrganisationUnit( Integer.parseInt( importItemIds[i]
-                .split( "-" )[0] ) );
+                .split( "_" )[0] ) );
 
-            addDataValue( o, period, importItemIds[i].split( "_" )[1], importItemIds[i].split( "_" )[2] );
+            addDataValue( o, period, importItemIds[i].split( "_" )[1], importItemIds[i].split( "_" )[2], oldDataValues,
+                newDataValues );
         }
     }
 }

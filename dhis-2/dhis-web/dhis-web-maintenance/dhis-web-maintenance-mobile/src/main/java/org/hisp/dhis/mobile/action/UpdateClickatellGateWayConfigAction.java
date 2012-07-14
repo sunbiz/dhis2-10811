@@ -120,6 +120,11 @@ public class UpdateClickatellGateWayConfigAction
                 gatewayConfig.setUsername( username );
                 gatewayConfig.setApiId( apiId );
 
+                if ( config.getGateways() == null || config.getGateways().isEmpty() )
+                {
+                    gatewayConfig.setDefault( true );
+                }
+
                 if ( index >= 0 )
                 {
                     config.getGateways().set( index, gatewayConfig );

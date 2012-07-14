@@ -104,6 +104,10 @@ public interface UserCredentialsStore
     Collection<UserCredentials> getUsersByOrganisationUnitBetweenByName( OrganisationUnit orgUnit, String name,
         int first, int max );
 
+    Collection<UserCredentials> getSelfRegisteredUserCredentials( int first, int max );
+    
+    int getSelfRegisteredUserCredentialsCount();
+    
     Collection<UserCredentials> getInactiveUsers( Date date );
     
     Collection<UserCredentials> getInactiveUsers( Date date, int first, int max );
@@ -174,4 +178,7 @@ public interface UserCredentialsStore
      * @return a Collection of UserSettings.
      */
     Collection<UserSetting> getUserSettings( String name );
+    
+    Collection<String> getUsernames( String key, Integer max );
+
 }

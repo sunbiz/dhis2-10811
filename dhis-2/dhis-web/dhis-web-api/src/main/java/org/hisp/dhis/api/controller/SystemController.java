@@ -27,31 +27,110 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.common.CodeGenerator;
+import org.hisp.dhis.dxf2.metadata.ImportSummary;
+import org.hisp.dhis.dxf2.utils.JacksonUtils;
+import org.hisp.dhis.scheduling.TaskCategory;
+import org.hisp.dhis.scheduling.TaskId;
+import org.hisp.dhis.system.notification.Notification;
+import org.hisp.dhis.system.notification.Notifier;
+import org.hisp.dhis.system.scheduling.Scheduler;
+import org.hisp.dhis.user.CurrentUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Controller
-@RequestMapping( value = SystemController.RESOURCE_PATH )
+@RequestMapping(value = SystemController.RESOURCE_PATH)
 public class SystemController
 {
     public static final String RESOURCE_PATH = "/system";
+
+    @Autowired
+    private Scheduler scheduler;
+
+    @Autowired
+    private CurrentUserService currentUserService;
+
+    @Autowired
+    private Notifier notifier;
 
     //--------------------------------------------------------------------------
     // UID Generator
     //--------------------------------------------------------------------------
 
-    @RequestMapping( value = "/uid", method = RequestMethod.GET )
-    public void getUid( HttpServletResponse response ) throws IOException
+    @RequestMapping(value = "/uid", method = RequestMethod.GET)
+    public void getUid( @RequestParam( required = false ) Integer n, HttpServletResponse response ) throws IOException
     {
-        response.setContentType( "text/plain" );
-        response.getWriter().write( CodeGenerator.generateCode() );
+        response.setContentType( ContextUtils.CONTENT_TYPE_JSON );
+
+        List<String> codes = new ArrayList<String>();
+
+        if ( n == null )
+        {
+            codes.add( CodeGenerator.generateCode() );
+        }
+        else
+        {
+            if ( n > 10000 )
+            {
+                n = 10000;
+            }
+
+            for ( int i = 0; i < n; i++ )
+            {
+                codes.add( CodeGenerator.generateCode() );
+            }
+        }
+
+        JacksonUtils.toJson( response.getOutputStream(), codes );
+    }
+
+    @RequestMapping( value = "/tasks/{category}", method = RequestMethod.GET, produces = { "*/*", "application/json" } )
+    public void getTaskJson( HttpServletResponse response, @PathVariable( "category" ) String category ) throws IOException
+    {
+        List<Notification> notifications = new ArrayList<Notification>();
+
+        if ( category != null )
+        {
+            TaskCategory taskCategory = TaskCategory.valueOf( category.toUpperCase() );
+
+            TaskId taskId = new TaskId( taskCategory, currentUserService.getCurrentUser() );
+
+            notifications = notifier.getNotifications( taskId, taskCategory, null );
+        }
+
+        JacksonUtils.toJson( response.getOutputStream(), notifications );
+    }
+
+    @RequestMapping( value = "/taskSummaries/{category}", method = RequestMethod.GET, produces = { "*/*", "application/json" } )
+    public void getTaskSummaryJson( HttpServletResponse response, @PathVariable( "category" ) String category ) throws IOException
+    {
+        ImportSummary importSummary = new ImportSummary();
+
+        if ( category != null )
+        {
+            TaskCategory taskCategory = TaskCategory.valueOf( category.toUpperCase() );
+
+            TaskId taskId = new TaskId( taskCategory, currentUserService.getCurrentUser() );
+
+            importSummary = (ImportSummary) notifier.getTaskSummary( taskId, taskCategory );
+
+            notifier.clear( taskId, taskCategory );
+        }
+
+        JacksonUtils.toJson( response.getOutputStream(), importSummary );
     }
 }

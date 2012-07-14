@@ -27,18 +27,18 @@ package org.hisp.dhis.security.intercept;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.config.entities.ActionConfig;
+import com.opensymphony.xwork2.interceptor.Interceptor;
 import org.hisp.dhis.security.ActionAccessResolver;
+import org.hisp.dhis.security.SecurityService;
 import org.hisp.dhis.security.authority.RequiredAuthoritiesProvider;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.config.entities.ActionConfig;
-import com.opensymphony.xwork2.interceptor.Interceptor;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -54,6 +54,8 @@ public class XWorkSecurityInterceptor
     private static final long serialVersionUID = -3734961911452433836L;
 
     private static final String KEY_ACTION_ACCESS_RESOLVER = "auth";
+
+    private static final String KEY_SECURITY_SERVICE = "security";
 
     private ThreadLocal<SecurityMetadataSource> definitionSourceTag = new ThreadLocal<SecurityMetadataSource>();
 
@@ -73,6 +75,13 @@ public class XWorkSecurityInterceptor
     public void setActionAccessResolver( ActionAccessResolver actionAccessResolver )
     {
         this.actionAccessResolver = actionAccessResolver;
+    }
+
+    private SecurityService securityService;
+
+    public void setSecurityService( SecurityService securityService )
+    {
+        this.securityService = securityService;
     }
 
     // -------------------------------------------------------------------------
@@ -152,7 +161,10 @@ public class XWorkSecurityInterceptor
     private void addActionAccessResolver( ActionInvocation invocation )
     {
         Map<String, Object> accessResolverMap = new HashMap<String, Object>( 1 );
+
         accessResolverMap.put( KEY_ACTION_ACCESS_RESOLVER, actionAccessResolver );
+        accessResolverMap.put( KEY_SECURITY_SERVICE, securityService );
+
         invocation.getStack().push( accessResolverMap );
     }
 }

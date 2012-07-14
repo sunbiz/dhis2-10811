@@ -31,7 +31,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * 
@@ -39,7 +39,6 @@ import static junit.framework.Assert.assertEquals;
  */
 public class StringFormatTest
 {
-
     private static Date getDate( int year, int month, int day )
     {
         final Calendar calendar = Calendar.getInstance();

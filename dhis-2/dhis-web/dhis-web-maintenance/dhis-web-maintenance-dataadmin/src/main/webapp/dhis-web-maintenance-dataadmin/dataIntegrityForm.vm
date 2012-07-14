@@ -27,7 +27,6 @@
 #integrityItem( $i18n.getString( "organisation_units_with_cyclic_references" ) "organisationUnitsWithCyclicReferences" )
 #integrityItem( $i18n.getString( "orphaned_organisation_units" ) "orphanedOrganisationUnits" )
 #integrityItem( $i18n.getString( "organisation_units_without_groups" ) "organisationUnitsWithoutGroups" )
-#integrityItem( $i18n.getString( "organisation_units_violating_compulsory_group_sets" ) "organisationUnitsViolatingCompulsoryGroupSets" )
 #integrityItem( $i18n.getString( "organisation_units_violation_exclusive_group_sets" ) "organisationUnitsViolatingExclusiveGroupSets" )
 #integrityItem( $i18n.getString( "organisation_unit_groups_without_group_sets" ) "organisationUnitGroupsWithoutGroupSets" )
 #integrityItem( $i18n.getString( "validation_rules_without_groups" ) "validationRulesWithoutGroups" )

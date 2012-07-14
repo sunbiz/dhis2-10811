@@ -28,13 +28,11 @@ package org.hisp.dhis.aggregation;
  */
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.hisp.dhis.completeness.DataSetCompletenessResult;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
-import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.indicator.Indicator;
@@ -122,11 +120,6 @@ public class DefaultAggregatedDataValueService
     {
         aggregatedDataValueStore.deleteAggregatedDataValues( dataElementIds, periodIds, organisationUnitIds );
     }
-
-    public void deleteAggregatedDataValues( Collection<Integer> periodIds )
-    {
-        aggregatedDataValueStore.deleteAggregatedDataValues( periodIds );
-    }
     
     public void deleteAggregatedDataValues()
     {
@@ -142,17 +135,7 @@ public class DefaultAggregatedDataValueService
     {
         return aggregatedDataValueStore.countDataValuesAtLevel( orgunit, level, periods );
     }
-    
-    public void createIndex( boolean dataElement, boolean indicator )
-    {
-        aggregatedDataValueStore.createIndex( dataElement, indicator );
-    }
-
-    public void dropIndex( boolean dataElement, boolean indicator )
-    {
-        aggregatedDataValueStore.dropIndex( dataElement, indicator );
-    }
-    
+        
     // -------------------------------------------------------------------------
     // AggregatedDataMapValue
     // -------------------------------------------------------------------------
@@ -196,11 +179,6 @@ public class DefaultAggregatedDataValueService
         Collection<Integer> organisationUnitIds )
     {
         aggregatedDataValueStore.deleteAggregatedIndicatorValues( indicatorIds, periodIds, organisationUnitIds );
-    }
-
-    public void deleteAggregatedIndicatorValues( Collection<Integer> periodIds )
-    {
-        aggregatedDataValueStore.deleteAggregatedIndicatorValues( periodIds );
     }
     
     public void deleteAggregatedIndicatorValues()
@@ -249,10 +227,5 @@ public class DefaultAggregatedDataValueService
     public DataValue getDataValue( int dataElementId, int categoryOptionComboId, int periodId, int sourceId )
     {
         return aggregatedDataValueStore.getDataValue( dataElementId, categoryOptionComboId, periodId, sourceId );
-    }
-    
-    public Map<DataElementOperand, String> getDataValueMap( int periodId, int sourceId )
-    {
-        return aggregatedDataValueStore.getDataValueMap( periodId, sourceId );
     }
 }

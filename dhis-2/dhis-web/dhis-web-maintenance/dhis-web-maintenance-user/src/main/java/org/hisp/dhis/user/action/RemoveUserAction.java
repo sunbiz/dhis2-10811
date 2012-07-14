@@ -95,6 +95,16 @@ public class RemoveUserAction
 
         User currentUser = currentUserService.getCurrentUser();
 
+        if ( currentUser == null || user == null )
+        {
+            return ERROR;
+        }
+        
+        if ( !currentUser.getUserCredentials().canModify( user.getUserCredentials() ) )
+        {
+            return ERROR;
+        }
+        
         boolean isCurrentUser = currentUser != null && currentUser.equals( user );
 
         UserCredentials userCredentials = user.getUserCredentials();

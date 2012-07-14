@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>$encoder.htmlEncode( $applicationTitle )</title>
+    <script type="text/javascript" src="../javascripts/jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="../javascripts/useraccount/recovery.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/account.css">
+</head>
+<body>
+
+<div id="accountHeader"></div>
+
+<div id="accountContainer">
+
+<div id="bannerArea"><a href="http://dhis2.org"><img src="../security/logo_front.png" style="border:none"></a></div>
+
+<div id="accountInput">
+
+<h3>$i18n.getString( "account_recovery" )</h3>
+
+<form id="recoveryForm">
+
+<table>
+    <tr>
+        <td style="width:100px"><label for="username">$i18n.getString( "user_name" )</label></td>
+        <td><input type="text" id="username" name="username" autocomplete="off"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input id="recoveryButton" type="button" value="$i18n.getString( 'recover' )" style="width:10em" onclick="recoverAccount()"></td>
+    </tr>
+</table>
+
+</form>
+
+<div id="recoverySuccessMessage" style="display:none">
+Please check the email account which you registered for this username. We have 
+sent you instructions on how to restore your password.	
+</div>
+
+<div id="recoveryErrorMessage" style="display:none">
+Sorry, we were not able to restore your account. The user name might be invalid, 
+your account might not permit restore or you might have entered an invalid email 
+address for your account.
+</div>
+
+</div>
+
+</div>
+
+</body>
+</htm>

@@ -42,6 +42,10 @@ public class PatientAttribute
 
     private String value;
 
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
     public PatientAttribute( String name, String value )
     {
         this.name = name;
@@ -51,6 +55,10 @@ public class PatientAttribute
     public PatientAttribute()
     {
     }
+
+    // -------------------------------------------------------------------------
+    // Gettes && Setters
+    // -------------------------------------------------------------------------
 
     @XmlAttribute
     public String getName()
@@ -114,6 +122,14 @@ public class PatientAttribute
     {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // TODO Auto-generated method stub
+        
     }
 
 }

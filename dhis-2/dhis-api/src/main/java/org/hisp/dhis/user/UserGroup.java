@@ -1,7 +1,7 @@
 package org.hisp.dhis.user;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@ package org.hisp.dhis.user;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
@@ -44,7 +45,7 @@ import org.hisp.dhis.common.view.ExportView;
 import java.util.HashSet;
 import java.util.Set;
 
-@JacksonXmlRootElement( localName = "userGroup", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement(localName = "userGroup", namespace = DxfNamespaces.DXF_2_0)
 public class UserGroup
     extends BaseIdentifiableObject
 {
@@ -108,11 +109,6 @@ public class UserGroup
         return name.equals( userGroup.getName() );
     }
 
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
@@ -127,13 +123,13 @@ public class UserGroup
         members.add( user );
         user.getGroups().add( this );
     }
-    
+
     public void removeUser( User user )
     {
         members.remove( user );
         user.getGroups().remove( this );
     }
-    
+
     public void updateUsers( Set<User> updates )
     {
         for ( User user : new HashSet<User>( members ) )
@@ -143,22 +139,40 @@ public class UserGroup
                 removeUser( user );
             }
         }
-        
+
         for ( User user : updates )
         {
             addUser( user );
         }
     }
-    
+
     // -------------------------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------------------------
 
-    @JsonProperty( value = "users" )
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "users", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "user", namespace = Dxf2Namespace.NAMESPACE )
+    @Override
+    public boolean haveUniqueNames()
+    {
+        return false;
+    }
+
+    @JsonIgnore
+    public User getUser()
+    {
+        return user;
+    }
+
+    @JsonIgnore
+    public void setUser( User user )
+    {
+        this.user = user;
+    }
+
+    @JsonProperty(value = "users")
+    @JsonSerialize(contentAs = BaseIdentifiableObject.class)
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "users", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "user", namespace = DxfNamespaces.DXF_2_0)
     public Set<User> getMembers()
     {
         return members;
@@ -169,10 +183,10 @@ public class UserGroup
         this.members = members;
     }
 
-    @JsonProperty( value = "attributes" )
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "attributes", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "attribute", namespace = Dxf2Namespace.NAMESPACE )
+    @JsonProperty(value = "attributes")
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "attributes", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "attribute", namespace = DxfNamespaces.DXF_2_0)
     public Set<AttributeValue> getAttributeValues()
     {
         return attributeValues;

@@ -3,8 +3,8 @@
                 xmlns:d="http://dhis2.org/schema/dxf/2.0"
     >
 
-  <xsl:template match="d:userAuthorityGroup">
-    <div class="userAuthorityGroup">
+  <xsl:template match="d:userRole">
+    <div class="userRole">
       <h2>
         <xsl:value-of select="@name" />
       </h2>
@@ -40,10 +40,10 @@
     <li><xsl:value-of select="." /> </li>
   </xsl:template>
 
-  <xsl:template match="d:userAuthorityGroups" mode="short">
+  <xsl:template match="d:userRoles" mode="short">
     <xsl:if test="count(child::*) > 0">
-      <h3>UserAuthorityGroups</h3>
-      <table class="userAuthorityGroups">
+      <h3>UserRoles</h3>
+      <table class="userRoles">
         <xsl:apply-templates select="child::*" mode="row"/>
       </table>
     </xsl:if>

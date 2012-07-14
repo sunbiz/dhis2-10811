@@ -8,7 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.period.PeriodStore;
+import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.reportsheet.importitem.ImportItem;
 import org.hisp.dhis.reportsheet.importitem.ImportReport;
@@ -60,11 +60,11 @@ public class HibernateImportReportStore
         this.sessionFactory = sessionFactory;
     }
 
-    private PeriodStore periodStore;
+    private PeriodService periodService;
 
-    public void setPeriodStore( PeriodStore periodStore )
+    public void setPeriodService( PeriodService periodService )
     {
-        this.periodStore = periodStore;
+        this.periodService = periodService;
     }
 
     // ----------------------------------------------------------------------
@@ -127,7 +127,7 @@ public class HibernateImportReportStore
 
     public int addImportReport( ImportReport importReport )
     {
-        PeriodType periodType = periodStore.getPeriodType( importReport.getPeriodType().getClass() );
+        PeriodType periodType = periodService.reloadPeriodType( importReport.getPeriodType() );
 
         importReport.setPeriodType( periodType );
 
@@ -178,7 +178,7 @@ public class HibernateImportReportStore
 
     public void updateImportReport( ImportReport importReport )
     {
-        PeriodType periodType = periodStore.getPeriodType( importReport.getPeriodType().getClass() );
+        PeriodType periodType = periodService.reloadPeriodType( importReport.getPeriodType() );
 
         importReport.setPeriodType( periodType );
 
@@ -222,5 +222,4 @@ public class HibernateImportReportStore
 
         return criteria.setProjection( Projections.distinct( Projections.property( "sheetNo" ) ) ).list();
     }
-
 }

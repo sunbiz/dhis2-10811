@@ -64,7 +64,7 @@
         <td style="width:20em; padding-left:2em; vertical-align:top">
             <div id="detailsArea" style="display:none">
                 <div style="float:right">
-                    <a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_details' )"/></a>
+                    <a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"/></a>
                 </div>
                 <p><label>$i18n.getString( "organisation_unit" ):</label><br/><span id="organisationUnitField"></span></p>
                 <p><label>$i18n.getString( "dataset" ):</label><br/><span id="dataSetField"></span></p>
@@ -73,7 +73,7 @@
 
            <div id="warningArea" style="position:fixed;right:10px;top:200px;display:none">
               <div style="float:right">
-                  <a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_warning' )"/></a>
+                  <a href="javascript:hideWarning()" title="$i18n.getString( 'hide_warning' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_warning' )"/></a>
               </div>
               <p><span id="warningField"></span></p>
           </div>

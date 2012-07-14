@@ -137,7 +137,6 @@
             <id>65</id>
             <uid>E3133935ECA</uid>
             <name>DataElementA</name>
-            <alternativeName>AlternativeNameA</alternativeName>
             <shortName>ShortNameA</shortName>
             <code>CodeA</code>
             <description>DescriptionA</description>
@@ -150,7 +149,6 @@
             <id>66</id>
             <uid>E3133935ECB</uid>
             <name>DataElementB</name>
-            <alternativeName>AlternativeNameB</alternativeName>
             <shortName>ShortNameB</shortName>
             <code>CodeB</code>
             <description>DescriptionB</description>

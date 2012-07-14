@@ -35,6 +35,8 @@ import org.hisp.dhis.importexport.ImportParams;
 import org.hisp.dhis.importexport.Importer;
 import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id$
@@ -47,25 +49,25 @@ public class DataDictionaryImporter
     public DataDictionaryImporter()
     {
     }
-    
+
     public DataDictionaryImporter( BatchHandler<DataDictionary> batchHandler, DataDictionaryService dataDictionaryService )
     {
         this.batchHandler = batchHandler;
         this.dataDictionaryService = dataDictionaryService;
     }
-    
+
     @Override
     public void importObject( DataDictionary object, ImportParams params )
-    {        
+    {
         NameMappingUtil.addDataDictionaryMapping( object.getId(), object.getName() );
-        
-        read( object, GroupMemberType.NONE, params );        
+
+        read( object, GroupMemberType.NONE, params );
     }
-    
+
     @Override
     protected void importUnique( DataDictionary object )
     {
-        batchHandler.addObject( object );        
+        batchHandler.addObject( object );
     }
 
     @Override
@@ -74,16 +76,15 @@ public class DataDictionaryImporter
         match.setName( object.getName() );
         match.setDescription( object.getDescription() );
         match.setRegion( object.getRegion() );
-        
+
         dataDictionaryService.saveDataDictionary( match );
     }
 
     @Override
     protected DataDictionary getMatching( DataDictionary object )
     {
-        DataDictionary match = dataDictionaryService.getDataDictionaryByName( object.getName() );
-        
-        return match;
+        List<DataDictionary> dataDictionaryByName = dataDictionaryService.getDataDictionaryByName( object.getName() );
+        return dataDictionaryByName.isEmpty() ? null : dataDictionaryByName.get( 0 );
     }
 
     @Override
@@ -93,15 +94,15 @@ public class DataDictionaryImporter
         {
             return false;
         }
-        if ( !isSimiliar( object.getDescription(), existing.getDescription() ) || ( isNotNull( object.getDescription(), existing.getDescription() ) && !object.getDescription().equals( existing.getDescription() ) ) )
+        if ( !isSimiliar( object.getDescription(), existing.getDescription() ) || (isNotNull( object.getDescription(), existing.getDescription() ) && !object.getDescription().equals( existing.getDescription() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getRegion(), existing.getRegion() ) || ( isNotNull( object.getRegion(), existing.getRegion() ) && !object.getRegion().equals( existing.getRegion() ) ) )
+        if ( !isSimiliar( object.getRegion(), existing.getRegion() ) || (isNotNull( object.getRegion(), existing.getRegion() ) && !object.getRegion().equals( existing.getRegion() )) )
         {
             return false;
         }
-        
+
         return true;
     }
 }

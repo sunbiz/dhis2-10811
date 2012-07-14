@@ -27,10 +27,10 @@ package org.hisp.dhis.constant;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,11 +76,11 @@ public class ConstantServiceTest
         constantB = constantService.getConstant( idB );
 
         assertEquals( idA, constantA.getId() );
-        assertEquals( 1.23, constantA.getValue() );
+        assertEquals( 1.23, constantA.getValue(), DELTA );
         assertEq( 'A', constantA );
 
         assertEquals( idB, constantB.getId() );
-        assertEquals( 21.3, constantB.getValue() );
+        assertEquals( 21.3, constantB.getValue(), DELTA );
         assertEq( 'B', constantB );
     }
 

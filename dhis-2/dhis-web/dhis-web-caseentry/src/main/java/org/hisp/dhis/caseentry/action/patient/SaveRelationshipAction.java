@@ -146,19 +146,15 @@ public class SaveRelationshipAction
         {
             relationship.setPatientA( partner );
             relationship.setPatientB( patient );
-
-            relationship.setRelationshipType( relationshipType );
-            relationshipService.saveRelationship( relationship );
-
         }
         else if ( relationshipType.getbIsToA().equalsIgnoreCase( relationshipName ) )
         {
             relationship.setPatientA( patient );
             relationship.setPatientB( partner );
-
-            relationship.setRelationshipType( relationshipType );
-            relationshipService.saveRelationship( relationship );
         }
+
+        relationship.setRelationshipType( relationshipType );
+        relationshipService.saveRelationship( relationship );
 
         return SUCCESS;
     }

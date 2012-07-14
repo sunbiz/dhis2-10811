@@ -32,8 +32,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementOperand;
-import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataelement.comparator.DataElementOperandNameComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
@@ -57,11 +57,11 @@ public class GetCompulsoryDataElementsAction
         this.dataSetService = dataSetService;
     }
 
-    private DataElementService dataElementService;
+    private DataElementCategoryService dataElementCategoryService;
 
-    public void setDataElementService( DataElementService dataElementService )
+    public void setDataElementCategoryService( DataElementCategoryService dataElementCategoryService )
     {
-        this.dataElementService = dataElementService;
+        this.dataElementCategoryService = dataElementCategoryService;
     }
 
     // -------------------------------------------------------------------------
@@ -108,20 +108,18 @@ public class GetCompulsoryDataElementsAction
 
         selectedOperands = new ArrayList<DataElementOperand>( dataSet.getCompulsoryDataElementOperands() );
 
-        availableOperands = new ArrayList<DataElementOperand>( dataElementService.getAllGeneratedOperands( dataSet
+        availableOperands = new ArrayList<DataElementOperand>( dataElementCategoryService.getOperands( dataSet
             .getDataElements() ) );
-        
         
         for ( DataElementOperand selectedOperand : selectedOperands )
         {
-            Iterator<DataElementOperand> iter = availableOperands.iterator();
+            Iterator<DataElementOperand> availableIter = availableOperands.iterator();
         
-            while ( iter.hasNext() )
+            while ( availableIter.hasNext() )
             {
-                DataElementOperand item = iter.next();
-                if ( selectedOperand.getPersistedId().equals( item.getOperandId() + "" ))
+                if ( selectedOperand.getPersistedId().equals( availableIter.next().getOperandId() ) )
                 {
-                    iter.remove();
+                    availableIter.remove();
                 }
             }
         }

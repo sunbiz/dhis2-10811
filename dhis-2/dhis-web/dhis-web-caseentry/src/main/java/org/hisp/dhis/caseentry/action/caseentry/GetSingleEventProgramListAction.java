@@ -85,6 +85,7 @@ public class GetSingleEventProgramListAction
         if ( orgunit != null )
         {
             programs = programService.getPrograms( Program.SINGLE_EVENT_WITH_REGISTRATION, orgunit );
+            programs.retainAll( programService.getProgramsByCurrentUser());
         }
         
         return SUCCESS;

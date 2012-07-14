@@ -27,6 +27,10 @@ package org.hisp.dhis.importexport.dxf.converter;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
+import javax.xml.namespace.QName;
+
 import org.amplecode.quick.BatchHandler;
 import org.amplecode.quick.BatchHandlerFactory;
 import org.amplecode.staxwax.reader.XMLReader;
@@ -117,10 +121,6 @@ import org.hisp.dhis.report.ReportService;
 import org.hisp.dhis.reporttable.ReportTable;
 import org.hisp.dhis.reporttable.ReportTableService;
 import org.hisp.dhis.validation.ValidationRuleService;
-
-import javax.xml.namespace.QName;
-
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 /**
  * DXFConverter class This does NOT implement XMLConverter, because we need to
@@ -591,9 +591,8 @@ public class DXFConverter
                     IndicatorBatchHandler.class ).init();
 
                 XMLConverter converter = new IndicatorConverter( batchHandler, importObjectService, indicatorService,
-                    expressionService, objectMappingGenerator.getIndicatorTypeMapping( params.skipMapping() ),
-                    objectMappingGenerator.getDataElementMapping( params.skipMapping() ), objectMappingGenerator
-                        .getCategoryOptionComboMapping( params.skipMapping() ), importAnalyser );
+                    objectMappingGenerator.getIndicatorTypeMapping( params.skipMapping() ),
+                    importAnalyser );
 
                 converterInvoker.invokeRead( converter, reader, params );
 
@@ -916,9 +915,7 @@ public class DXFConverter
 
                 state.setMessage( "importing_validation_rules" );
 
-                XMLConverter converter = new ValidationRuleConverter( importObjectService, validationRuleService,
-                    expressionService, objectMappingGenerator.getDataElementMapping( params.skipMapping() ),
-                    objectMappingGenerator.getCategoryOptionComboMapping( params.skipMapping() ) );
+                XMLConverter converter = new ValidationRuleConverter( importObjectService, validationRuleService, expressionService );
 
                 converterInvoker.invokeRead( converter, reader, params );
 

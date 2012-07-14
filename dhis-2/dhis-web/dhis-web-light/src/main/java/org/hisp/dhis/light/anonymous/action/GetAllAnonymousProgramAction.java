@@ -30,8 +30,6 @@ package org.hisp.dhis.light.anonymous.action;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
-
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
 
@@ -68,10 +66,22 @@ public class GetAllAnonymousProgramAction
         return programs;
     }
 
+    private boolean validated;
+
+    public boolean isValidated()
+    {
+        return validated;
+    }
+
+    public void setValidated( boolean validated )
+    {
+        this.validated = validated;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
-
+    
     @Override
     public String execute()
         throws Exception

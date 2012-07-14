@@ -1,9 +1,7 @@
 
-var selectedOrganisationUnits = [];
-
-function selectOrganisationUnit__( units )
+function submitMessage()
 {
-	selectedOrganisationUnits = units;
+	$( "#messageForm" ).submit();
 }
 
 function removeMessage( id )
@@ -20,14 +18,23 @@ function validateMessage()
 {
 	var subject = $( "#subject" ).val();
 	var text = $( "#text" ).val();
-	
-	if ( subject == null || subject.trim() == '' )
+
+	if ( isDefined( selectionTreeSelection ) && $( "#recipients" ).length )
+	{
+	    if ( !( selectionTreeSelection.isSelected() || $( "#recipients" ).val().length ) )
+	    {
+	        setHeaderMessage( i18n_select_one_or_more_recipients );
+	        return false;
+	    }
+	}
+
+	if ( subject == null || subject.trim().length == 0 )
 	{
 		setHeaderMessage( i18n_enter_subject );
 		return false;
 	}
 	
-	if ( text == null || text.trim() == '' )
+	if ( text == null || text.trim().length == 0 )
 	{
 		setHeaderMessage( i18n_enter_text );
 		return false;
@@ -36,26 +43,9 @@ function validateMessage()
 	return true;
 }
 
-function showSenderInfo( messageId, senderId )
+function toggleMetaData( id )
 {
-	var metaData = $( "#metaData" + messageId ).html();
-	
-	$.getJSON( "../dhis-web-commons-ajax-json/getUser.action", { id:senderId }, function( json ) {
-		$( "#senderName" ).html( json.user.firstName + " " + json.user.surname );
-		$( "#senderEmail" ).html( json.user.email );
-		$( "#senderUsername" ).html( json.user.username );
-		$( "#senderPhoneNumber" ).html( json.user.phoneNumber );
-		$( "#senderOrganisationUnits" ).html( joinNameableObjects( json.user.organisationUnits ) );
-		$( "#senderUserRoles" ).html( joinNameableObjects( json.user.roles ) );		
-		$( "#messageMetaData" ).html( metaData );	
-				
-		$( "#senderInfo" ).dialog( {
-	        modal : true,
-	        width : 350,
-	        height : 350,
-	        title : "Sender"
-	    } );
-	} );
+	$( "#metaData" + id ).toggle();
 }
 
 function sendReply()
@@ -91,4 +81,20 @@ function toggleFollowUp( id, followUp )
 			
 		$( "#" + imageId ).attr( "src", imageSrc );
 	} );
+}
+
+function formatItem( item )
+{
+    if ( item.id && item.id.indexOf("u:") != -1 )
+    {
+        return '<img src="../icons/glyphicons_003_user.png" style="width: 12px; height: 12px; padding-right: 5px;"/>' + item.text;
+    }
+    else if ( item.id && item.id.indexOf('ug:') != -1 )
+    {
+        return '<img src="../icons/glyphicons_043_group.png" style="width: 12px; height: 12px; padding-right: 5px;"/>' + item.text;
+    }
+    else
+    {
+        return item.text;
+    }
 }

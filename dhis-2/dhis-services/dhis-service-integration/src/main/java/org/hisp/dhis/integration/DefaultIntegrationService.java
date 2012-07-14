@@ -41,44 +41,44 @@ import org.hisp.dhis.scheduling.TaskId;
 /**
  * @author bobj
  */
-public class DefaultIntegrationService 
+public class DefaultIntegrationService
     implements IntegrationService
-{    
-    @EndpointInject(uri = XMLDataIn.XMLDATA_IN)
+{
+    @EndpointInject( uri = XMLDataIn.XMLDATA_IN )
     private ProducerTemplate xmlIn;
 
-    @EndpointInject(uri = SDMXDataIn.SDMXDATA_IN)
+    @EndpointInject( uri = SDMXDataIn.SDMXDATA_IN )
     private ProducerTemplate sdmxIn;
 
     @Override
     public ImportSummary importXMLDataValueSet( InputStream in, ImportOptions importOptions )
     {
-       return (ImportSummary) xmlIn.requestBodyAndHeader( in, IMPORT_OPTIONS_HDR, importOptions);
+        return (ImportSummary) xmlIn.requestBodyAndHeader( in, IMPORT_OPTIONS_HDR, importOptions );
     }
 
     @Override
     public ImportSummary importSDMXDataValueSet( InputStream in, ImportOptions importOptions )
     {
-       return (ImportSummary) sdmxIn.requestBodyAndHeader( in, IMPORT_OPTIONS_HDR, importOptions);
+        return (ImportSummary) sdmxIn.requestBodyAndHeader( in, IMPORT_OPTIONS_HDR, importOptions );
     }
 
     @Override
     public ImportSummary importXMLDataValueSet( InputStream in, ImportOptions options, TaskId taskId )
     {
-        Map<String,Object> headers = new HashMap<String,Object>();
+        Map<String, Object> headers = new HashMap<String, Object>();
         headers.put( TASK_ID_HDR, taskId );
-        headers.put( IMPORT_OPTIONS_HDR, options);
-        
-       return (ImportSummary) xmlIn.requestBodyAndHeaders( in, headers);
+        headers.put( IMPORT_OPTIONS_HDR, options );
+
+        return (ImportSummary) xmlIn.requestBodyAndHeaders( in, headers );
     }
 
     @Override
     public ImportSummary importSDMXDataValueSet( InputStream in, ImportOptions options, TaskId taskId )
     {
-        Map<String,Object> headers = new HashMap<String,Object>();
+        Map<String, Object> headers = new HashMap<String, Object>();
         headers.put( TASK_ID_HDR, taskId );
-        headers.put( IMPORT_OPTIONS_HDR, options);
-        
-       return (ImportSummary) sdmxIn.requestBodyAndHeaders( in, headers);
+        headers.put( IMPORT_OPTIONS_HDR, options );
+
+        return (ImportSummary) sdmxIn.requestBodyAndHeaders( in, headers );
     }
 }

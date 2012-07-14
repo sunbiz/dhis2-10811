@@ -38,4 +38,7 @@ public interface PatientMobileSettingService
     public void updatePatientMobileSetting( PatientMobileSetting setting );
 
     public Collection<PatientMobileSetting> getCurrentSetting();
+    
+    public PatientMobileSetting get( int id );
+    
 }

@@ -136,13 +136,6 @@ public class UpdateUserAction
         this.phoneNumber = phoneNumber;
     }
 
-    private String jobTitle;
-    
-    public void setJobTitle( String jobTitle )
-    {
-        this.jobTitle = jobTitle;
-    }
-
     private Collection<String> selectedList = new ArrayList<String>();
 
     public void setSelectedList( Collection<String> selectedList )
@@ -192,7 +185,6 @@ public class UpdateUserAction
         user.setFirstName( firstName );
         user.setEmail( email );
         user.setPhoneNumber( phoneNumber );
-        user.setJobTitle( jobTitle );
         user.updateOrganisationUnits( new HashSet<OrganisationUnit>( units ) );
 
         UserCredentials userCredentials = userService.getUserCredentials( user );

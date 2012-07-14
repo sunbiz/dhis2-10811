@@ -29,6 +29,7 @@ package org.hisp.dhis.system.objectmapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.amplecode.quick.mapper.RowMapper;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
@@ -61,6 +62,21 @@ import org.hisp.dhis.datavalue.DeflatedDataValue;
 public class DeflatedDataValueNameMinMaxRowMapper
     implements RowMapper<DeflatedDataValue>, org.springframework.jdbc.core.RowMapper<DeflatedDataValue>
 {
+    private Map<Integer, Integer> minMap;
+    private Map<Integer, Integer> maxMap;
+    private Map<Integer, String> optionComboMap;
+    
+    public DeflatedDataValueNameMinMaxRowMapper()
+    {
+    }
+    
+    public DeflatedDataValueNameMinMaxRowMapper( Map<Integer, Integer> minMap, Map<Integer, Integer> maxMap, Map<Integer, String> optionComboMap )
+    {
+        this.minMap = minMap;
+        this.maxMap = maxMap;
+        this.optionComboMap = optionComboMap;
+    }
+    
     public DeflatedDataValue mapRow( ResultSet resultSet )
         throws SQLException
     {
@@ -75,15 +91,15 @@ public class DeflatedDataValueNameMinMaxRowMapper
         value.setTimestamp( resultSet.getDate( "lastupdated" ) );
         value.setComment( resultSet.getString( "comment" ) );
         value.setFollowup( resultSet.getBoolean( "followup" ) );
-        value.setMin( resultSet.getInt( "minvalue" ) );
-        value.setMax( resultSet.getInt( "maxvalue" ) );
+        value.setMin( minMap != null ? minMap.get( value.getSourceId() ) : resultSet.getInt( "minvalue" ) );
+        value.setMax( maxMap != null ? maxMap.get( value.getSourceId() ) : resultSet.getInt( "maxvalue" ) );
         value.setDataElementName( resultSet.getString( "dataelementname" ) );
         value.setPeriod( 
             resultSet.getString( "periodtypename" ), 
             resultSet.getString( "startdate" ),
             resultSet.getString( "enddate" ) );
         value.setSourceName( resultSet.getString( "sourcename" ) );
-        value.setCategoryOptionComboName( resultSet.getString( "categoryoptioncomboname" ) );
+        value.setCategoryOptionComboName( optionComboMap != null ? optionComboMap.get( value.getCategoryOptionComboId() ) : resultSet.getString( "categoryoptioncomboname" ) );
         
         return value;
     }

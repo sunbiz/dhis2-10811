@@ -2,9 +2,13 @@
 
 <h3>$i18n.getString( "edit_program_stage" )</h3>
 
+<h4>$programStage.program.displayName</h4>
+
 <form id="updateProgramStageForm" name="updateProgramStageForm" action="updateProgramStage.action" method="post">
 	<input type="hidden" id="id" name="id" value="$programStage.id"/>
-	  
+	<select id='daysAllowedSendMessages' name="daysAllowedSendMessages" multiple="multiple" class="hidden"></select>
+	<select id='templateMessages' name="templateMessages" multiple="multiple" class="hidden"></select>
+	
 	<table id="detailsList">
 		<thead>
 			<tr><th colspan="2">$i18n.getString( "program_stage_details" )</th></tr>
@@ -12,34 +16,65 @@
 		<tbody>
 			<tr>
 				<td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-				<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $programStage.name )" class="{validate:{required:true,rangelength:[4,160]}}"/></td>
+				<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $programStage.displayName )" class="{validate:{required:true,rangelength:[4,160]}}"/></td>
 			</tr>
 
 			<tr>
 				<td><label>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 				<td><input type="text" id="description" name="description" value="$encoder.htmlEncode( $programStage.description )" class="{validate:{required:true,minlength:4}}"/></td>
-			</tr>  
-
+			</tr> 
+			
 			<tr>
 				<td><label>$i18n.getString( "scheduled_days_from_start" )</label></td>
 				<td><input type="text" id="minDaysFromStart" name="minDaysFromStart" value="$programStage.minDaysFromStart" class="{validate:{number:true,min:0}}"/></td>
-			</tr> 
-
-			<tr>
-				<td><label>$i18n.getString( "repeatable" )</label></td>
-				<td><input type="checkbox" id="irregular" name="irregular" value='true' #if( $programStage.irregular && $programStage.irregular=='true' ) checked #end onchange='repeatableOnChange();' /></td>
-			</tr>	
-		  
-			<tr>
-				<td><label>$i18n.getString( "standard_interval_days" )</label></td>
-				<td><input type="text" id="standardInterval" name="standardInterval" value='$!programStage.standardInterval' class="{validate:{required:true,number:true}}" #if($programStage.irregular!='true' ) disabled #end /></td>
 			</tr>
-			<tr><td>&nbsp;</td></tr>       
-		  
+			
+			<tr>
+				<td><label>$i18n.getString( "auto_generate_event" )</label></td>
+				<td><input type="checkbox" id="autoGenerateEvent" name="autoGenerateEvent" value='true' #if( $programStage.autoGenerateEvent && $programStage.autoGenerateEvent=='true' ) checked #end /></td>
+			</tr>
+			
+			#if($programStage.program.type!=3)
+				<tr><th colspan="2">$i18n.getString( "repeatable_program_stage_details" )</th></tr>
+		
+				<tr>
+					<td><label>$i18n.getString( "repeatable" )</label></td>
+					<td><input type="checkbox" id="irregular" name="irregular" value='true' #if( $programStage.irregular && $programStage.irregular=='true' ) checked #end onchange='repeatableOnChange();' /></td>
+				</tr>	
+
+				<tr>
+					<td><label>$i18n.getString( "display_generate_event_box_after_completed" )</label></td>
+					<td><input type="checkbox" id="displayGenerateEventBox" name="displayGenerateEventBox" value='true' #if( $programStage.displayGenerateEventBox && $programStage.displayGenerateEventBox=='true' ) checked #end #if($programStage.irregular!='true' ) disabled checked #end /></td>
+				</tr>
+	
+				<tr>
+					<td><label>$i18n.getString( "standard_interval_days" )</label></td>
+					<td><input type="text" id="standardInterval" name="standardInterval" value='$!programStage.standardInterval'class="{validate:{number:true}}" #if($programStage.irregular!='true' ) disabled #end /></td>
+				</tr>
+			#end
+			
+			<tr><th colspan="2">$i18n.getString( "form_details" )</th></tr>
+	
+			<tr>
+				<td><label>$i18n.getString( "complete_allowed_only_if_validation_passes" )</label></td>
+				<td><input type="checkbox" id="validCompleteOnly" name="validCompleteOnly" value='true' #if( $programStage.validCompleteOnly && $programStage.validCompleteOnly=='true' ) checked #end /></td>
+			</tr>
+			
+			<tr>
+				<td><label>$i18n.getString( "report_date_description" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+				<td><input type="text" id="reportDateDescription" name="reportDateDescription" value='$!programStage.reportDateDescription' class="{validate:{required:true}}" /></td>
+			</tr>
+			
 		</tbody>
+		<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
 	</table>
 
 	<table id="programStageMembersArea">
+		<colgroup>
+			<col style="width:550px;"/>
+			<col/>
+			<col style="width:500px;"/>
+		</colgroup>
 		<thead>
 			<tr>
 				<th>$i18n.getString( "available_data_elements" )</th>
@@ -48,6 +83,7 @@
 					<select id="selectedDataElementsValidator" name='selectedDataElementsValidator' multiple="multiple" class="hidden" > </select>
 					<select id="compulsories" name='compulsories' multiple="multiple" class="hidden"></select>
 					<select id="allowProvidedElsewhere" name='allowProvidedElsewhere' multiple="multiple" class="hidden"></select>
+					<select id="displayInReports" name='displayInReports' multiple="multiple" class="hidden"></select>
 				</th>
 			</tr>
 		</thead>
@@ -56,7 +92,7 @@
 		
 		<tr>
 			<td>
-				<select size="15" id="availableList" multiple="multiple" ondblclick="selectDataElements( )">
+				<select style='width:100%;' size="15" id="availableList" multiple="multiple" ondblclick="selectDataElements( )">
 				</select>
 			</td>
 			
@@ -70,19 +106,26 @@
 			<td>
 				<div class="dataElementDiv">
 					<table>
+						<colgroup>
+							<col/>
+							<col style="width:20px;"/>
+							<col style="width:20px;"/>
+						</colgroup>
 						<thead>
 							<tr>
 								<th>$i18n.getString( "dataelement" )</th>
-								<th width="20px">$i18n.getString( "compulsory" )</th>
-								<th width="20px">$i18n.getString( "allow_provided_elsewhere" )</th>
+								<th>$i18n.getString( "compulsory" )</th>
+								<th>$i18n.getString( "allow_provided_elsewhere" )</th>
+								<th>$i18n.getString( "display_in_reports" )</th>
 							</tr>
 						</thead>
 						<tbody id="selectedList">
 							#foreach ( $programStageDataElement in $programStageDataElements )
 								<tr ondblclick="unSelectDataElement( this )" id="$programStageDataElement.dataElement.id">
-									<td onclick="select(this)">$encoder.htmlEncode( $programStageDataElement.dataElement.name )</td>
+									<td onmousedown="select(event,this)">$encoder.htmlEncode( $programStageDataElement.dataElement.name )</td>
 									<td align="center"><input type="checkbox" name="compulsory" value="$programStageDataElement.dataElement.id" #if($programStageDataElement.compulsory == true ) checked #end /></td>
 									<td align="center"><input type="checkbox" name="allowProvided" value="$programStageDataElement.dataElement.id" #if($programStageDataElement.allowProvidedElsewhere == true ) checked #end /></td>
+									<td align="center"><input type="checkbox" name="displayInReport" value="$programStageDataElement.dataElement.id" #if($programStageDataElement.displayInReports == true ) checked #end /></td>
 								</tr>
 							#end
 						</tbody>
@@ -97,7 +140,57 @@
 			
 		</tr>
 		</tbody>
+		
+		#if($programStage.program.type!=3)
+			<tr><th colspan='3'>$i18n.getString("template_reminder_message")</th></tr>
+		#end
 	</table>
+	
+	#if($programStage.program.type!=3)
+	<table>
+		<tbody id='programStageMessage'>
+			#set($index = 0)
+			#foreach($reminder in $programStage.patientReminders)
+				#set($index = $index + 1)
+				<tr name="tr$index" class="listAlternateRow" >
+					<td colspan='2'>
+						$i18n.getString( "reminder" ) $index
+						<span style="align:right"><a href='javascript:removeTemplateMessageForm($index)'> ( $i18n.getString("remove_reminder") )</a>
+					</td>
+				</tr>
+				<tr name="tr$index">
+					<td><label>$i18n.getString( "days_before_after_due_date" )</label></td>
+					<td><input type="text" id="daysAllowedSendMessage$index" name="daysAllowedSendMessage$index" class="daysAllowedSendMessage {validate:{required:true,number:true}}" value="$!reminder.daysAllowedSendMessage"/></td>
+				</tr>
+				<tr name="tr$index">
+					<td>$i18n.getString( "params" )</td>
+					<td>
+						<select multiple size='4' ondblclick="insertParams(this.value, $index);">
+							<option value="{patient-name}">$i18n.getString("patient_name")</option>
+							<option value="{program-name}">$i18n.getString("program_name")</option>
+							<option value="{program-stage-name}">$i18n.getString("program_stage_name")</option>
+							<option value="{due-date}">$i18n.getString("due_date")</option>
+							<option value="{days-since-due-date}">$i18n.getString("days_since_due_date")</option>
+							<option value="{orgunit-name}">$i18n.getString("orgunit_name")</option>
+						</select>
+					</td>
+				</tr>
+				<tr name="tr$index">
+					<td><label>$i18n.getString( "message" )</label></td>
+					<td><textarea id="templateMessage$index" name="templateMessage$index" style="width:320px" class="templateMessage {validate:{required:true, rangelength:[3,160]}}">$reminder.templateMessage</textarea></td>
+				</tr>
+			#end
+		</tbody>
+		
+		<tr>
+			<td></td>
+			<td>
+				<input type="button" value="$i18n.getString('add_more')" onclick='generateTemplateMessageForm();'>
+			</td>
+		</tr>
+	</table>
+	#end
+		
 	<p>
 		<input type="submit" value="$i18n.getString( 'update' )" />
 		<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='programStage.action?id=$programStage.program.id'" />
@@ -110,4 +203,15 @@
     var i18n_value_must_positive = '$encoder.jsEscape( $i18n.getString( "value_must_positive" ) , "'")';
     var i18n_value_must_integer = '$encoder.jsEscape( $i18n.getString( "value_must_integer" ) , "'")';
     var i18n_compulsory_checkbox_title = '$encoder.jsEscape( $i18n.getString( "compulsory_checkbox_title" ) , "'")';      
+	var i18n_reminder = '$encoder.jsEscape( $i18n.getString( "reminder" ) , "'")';   
+	var i18n_remove_reminder = '$encoder.jsEscape( $i18n.getString( "remove_reminder" ) , "'")';   
+	var i18n_params = '$encoder.jsEscape( $i18n.getString( "params" ) , "'")';   
+	var i18n_patient_name = '$encoder.jsEscape( $i18n.getString( "patient_name" ) , "'")';   
+	var i18n_program_name = '$encoder.jsEscape( $i18n.getString( "program_name" ) , "'")';   
+	var i18n_program_stage_name = '$encoder.jsEscape( $i18n.getString( "program_stage_name" ) , "'")';   
+	var i18n_due_date = '$encoder.jsEscape( $i18n.getString( "due_date" ) , "'")';   
+	var i18n_orgunit_name = '$encoder.jsEscape( $i18n.getString( "orgunit_name" ) , "'")';   
+	var i18n_days_since_due_date = '$encoder.jsEscape( $i18n.getString( "days_since_due_date" ) , "'")';   
+	var i18n_message = '$encoder.jsEscape( $i18n.getString( "message" ) , "'")';   
+	var i18n_days_before_after_due_date = '$encoder.jsEscape( $i18n.getString( "days_before_after_due_date" ) , "'")';   
 </script>

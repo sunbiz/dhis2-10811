@@ -27,6 +27,7 @@ package org.hisp.dhis.period;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.common.GenericStore;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 
@@ -40,6 +41,7 @@ import java.util.Date;
  * @version $Id: PeriodStore.java 5983 2008-10-17 17:42:44Z larshelg $
  */
 public interface PeriodStore
+    extends GenericStore<Period>
 {
     String ID = PeriodStore.class.getName();
 
@@ -56,21 +58,6 @@ public interface PeriodStore
     int addPeriod( Period period );
 
     /**
-     * Deletes a Period.
-     *
-     * @param period the Period to delete.
-     */
-    void deletePeriod( Period period );
-
-    /**
-     * Returns a Period.
-     *
-     * @param id the id of the Period to return.
-     * @return the Period with the given id, or null if no match.
-     */
-    Period getPeriod( int id );
-
-    /**
      * Returns a Period.
      *
      * @param startDate  the start date of the Period.
@@ -79,13 +66,6 @@ public interface PeriodStore
      * @return the Period matching the dates and periodtype, or null if no match.
      */
     Period getPeriod( Date startDate, Date endDate, PeriodType periodType );
-
-    /**
-     * Returns all persisted Periods.
-     *
-     * @return all persisted Periods.
-     */
-    Collection<Period> getAllPeriods();
 
     /**
      * Returns a Period.
@@ -237,4 +217,15 @@ public interface PeriodStore
      * @return the Period.
      */
     PeriodType reloadPeriodType( PeriodType periodType );
+
+    // -------------------------------------------------------------------------
+    // RelativePeriods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Deletes a RelativePeriods instance.
+     * 
+     * @param relativePeriods the RelativePeriods instance.
+     */
+    void deleteRelativePeriods( RelativePeriods relativePeriods );
 }

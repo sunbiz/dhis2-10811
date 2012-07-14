@@ -2,6 +2,7 @@
     var i18n_execute_tasks_confirmation = '$encoder.jsEscape( $i18n.getString( "execute_tasks_confirmation" ), "'" )';
 	var i18n_generating_resource_tables = '$encoder.jsEscape( $i18n.getString( "generating_resource_tables" ), "'" )';
 	var i18n_resource_tables_generated = '$encoder.jsEscape( $i18n.getString( "resource_tables_generated" ), "'" )';
+	var i18n_select_options = '$encoder.jsEscape( $i18n.getString( "select_options" ), "'" )';
 </script>
 
 <h3>$i18n.getString( "resource_table" ) #openHelp( "resourceTables" )</h3>
@@ -39,6 +40,11 @@
 <p>
     <input type="checkbox" name="resourceTableCheckBox" id="dataElementStructure"/>
     <label for="dataElementStructure">$i18n.getString( "data_element_structure" ) <span style="color:#606060">(_dataelementstructure)</span></label>
+</p>
+
+<p>
+    <input type="checkbox" name="resourceTableCheckBox" id="periodStructure"/>
+    <label for="periodStructure">$i18n.getString( "period_structure" ) <span style="color:#606060">(_periodstructure)</span></label>
 </p>
 
 <table>

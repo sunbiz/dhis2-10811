@@ -87,9 +87,9 @@ public class DataElementCategoryOptionComboDeletionHandler
         final String sql =
             "select count(*) from datavalue dv " +
             "where dv.categoryoptioncomboid in ( " +
-              "select cc.categoryoptioncomboid from categoryoptioncombos_categoryoptions cc, categories_categoryoptions co " +
-              "where cc.categoryoptionid = co.categoryoptionid " +
-              "and co.categoryid=" + category.getId() + " );";        
+              "select cc.categoryoptioncomboid from categoryoptioncombos_categoryoptions cc " +
+              "join categories_categoryoptions co on cc.categoryoptionid=co.categoryoptionid " +
+              "where co.categoryid=" + category.getId() + " );";        
 
         return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
     }

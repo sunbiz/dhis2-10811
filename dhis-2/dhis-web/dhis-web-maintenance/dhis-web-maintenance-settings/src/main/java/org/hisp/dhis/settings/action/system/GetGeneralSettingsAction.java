@@ -104,13 +104,6 @@ public class GetGeneralSettingsAction
         return feedbackRecipients;
     }
 
-    private UserGroup completenessRecipients;
-
-    public UserGroup getCompletenessRecipients()
-    {
-        return completenessRecipients;
-    }
-
     private OrganisationUnitLevel offlineOrganisationUnitLevel;
 
     public OrganisationUnitLevel getOfflineOrganisationUnitLevel()
@@ -175,15 +168,14 @@ public class GetGeneralSettingsAction
 
         feedbackRecipients = configurationService.getConfiguration().getFeedbackRecipients();
 
-        completenessRecipients = configurationService.getConfiguration().getCompletenessRecipients();
-
         offlineOrganisationUnitLevel = configurationService.getConfiguration().getOfflineOrganisationUnitLevel();
 
         if ( offlineOrganisationUnitLevel == null )
         {
             // default to highest level
-            // TODO what do we do if the orgunit level hierarchy hasn't been created yet?
+            // TODO what if the org unit level hierarchy hasn't been created yet?
             int size = organisationUnitService.getOrganisationUnitLevels().size();
+            
             offlineOrganisationUnitLevel = organisationUnitService.getOrganisationUnitLevelByLevel( size );
         }
 
@@ -199,7 +191,7 @@ public class GetGeneralSettingsAction
 
         organisationUnitLevels = organisationUnitService.getOrganisationUnitLevels();
 
-        Collections.sort( organisationUnitLevels, new OrganisationUnitLevelComparator() );
+        Collections.sort( organisationUnitLevels, OrganisationUnitLevelComparator.INSTANCE );
 
         return SUCCESS;
     }

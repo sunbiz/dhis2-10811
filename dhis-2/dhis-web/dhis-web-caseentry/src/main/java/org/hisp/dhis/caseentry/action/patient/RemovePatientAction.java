@@ -29,6 +29,7 @@ package org.hisp.dhis.caseentry.action.patient;
 
 import org.hisp.dhis.common.DeleteNotAllowedException;
 import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientService;
 
 import com.opensymphony.xwork2.Action;
@@ -84,7 +85,12 @@ public class RemovePatientAction
     {
         try
         {
-            patientService.deletePatient( patientService.getPatient( id ) );
+            Patient patient = patientService.getPatient( id );
+            
+            if ( patient != null )
+            {
+                patientService.deletePatient( patient );
+            }
         }
         catch ( DeleteNotAllowedException ex )
         {

@@ -20,7 +20,7 @@
 
 <h3>$i18n.getString( "edit_attribute" )</h3>
 
-<form id="updateAttributeForm" action="updateAttribute.action" method="post" >
+<form id="updateAttributeForm" action="updateAttribute.action" method="post" class="inputForm">
 <input type="hidden" id="id" name="id" value="$!attribute.id"/>
 
 <table>
@@ -33,7 +33,7 @@
 
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:20em" value="$encoder.htmlEncode( $!attribute.name )"/></td>
+		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $!attribute.name )"/></td>
 	</tr>
 
 	<tr>

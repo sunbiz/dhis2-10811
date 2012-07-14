@@ -44,9 +44,17 @@ public class JacksonPeriodSerializer
     @Override
     public void serialize( Period value, JsonGenerator jgen, SerializerProvider provider ) throws IOException, JsonProcessingException
     {
-        if ( value.getIsoDate() != null )
+        if ( value != null && value.getIsoDate() != null )
         {
-            jgen.writeString( value.getIsoDate() );
+            jgen.writeStartObject();
+            jgen.writeStringField( "id", value.getIsoDate() );
+
+            if ( value.getName() != null )
+            {
+                jgen.writeStringField( "name", value.getName() );
+            }
+
+            jgen.writeEndObject();
         }
     }
 }

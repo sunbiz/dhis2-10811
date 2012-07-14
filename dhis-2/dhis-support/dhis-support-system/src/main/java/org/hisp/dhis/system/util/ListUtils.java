@@ -28,6 +28,7 @@ package org.hisp.dhis.system.util;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,6 +41,58 @@ import java.util.Set;
  */
 public class ListUtils
 {
+    /**
+     * Removes from the given list the elements at the given indexes.
+     * 
+     * @param list the list to remove elements from.
+     * @param indexes the indexes for the elements to remove.
+     */
+    public static <T> void removeAll( List<T> list, List<Integer> indexes )
+    {
+        if ( list == null || indexes == null )
+        {
+            return;
+        }
+        
+        Collections.sort( indexes, Collections.reverseOrder() );
+        
+        for ( Integer index : indexes )
+        {            
+            list.remove( (int) index );
+        }
+    }
+    
+    /**
+     * Removes from the given list the elements at the given indexes.
+     * 
+     * @param indexes the list to remove elements from.
+     * @param indexes the indexes for the elements to remove.
+     */
+    public static <T> void removeAll( List<T> list, Integer... indexes )
+    {
+        List<Integer> inx = new ArrayList<Integer>( Arrays.asList( indexes ) );
+        
+        removeAll( list, inx );
+    }
+    
+    /**
+     * Returns a sublist of the given list with the elements at the given indexes.
+     * 
+     * @param list the list to select from.
+     * @param indexes the indexes of the elements in the list to select.
+     */
+    public static <T> List<T> getAll( List<T> list, List<Integer> indexes )
+    {
+        List<T> elements = new ArrayList<T>();
+        
+        for ( Integer index : indexes )
+        {
+            elements.add( list.get( index ) );
+        }
+        
+        return elements;
+    }
+    
     /**
      * Checks whether the given list contains duplicates. List entries are compared
      * using the given comparator.

@@ -87,12 +87,7 @@ public class IndicatorRowHandler
     public void handleRow( Object object )
     {
         final Indicator indicator = (Indicator) object;
-        
-        if ( indicator.getAlternativeName() != null && indicator.getAlternativeName().trim().length() == 0 )
-        {
-            indicator.setAlternativeName( null );
-        }
-        
+                
         if ( indicator.getCode() != null && indicator.getCode().trim().length() == 0 )
         {
             indicator.setCode( null );

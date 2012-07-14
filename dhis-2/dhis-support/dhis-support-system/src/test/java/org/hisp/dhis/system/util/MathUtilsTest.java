@@ -27,9 +27,9 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.hisp.dhis.expression.Operator.equal_to;
 import static org.hisp.dhis.expression.Operator.greater_than;
 import static org.hisp.dhis.expression.Operator.greater_than_or_equal_to;
@@ -65,7 +65,7 @@ public class MathUtilsTest
     {
         double[] array = { 5.0, 2.0, 6.0, 12.0 };
         
-        assertEquals( 2.0, MathUtils.getMin( array ) );
+        assertEquals( 2.0, MathUtils.getMin( array ), 0.01 );
     }
 
     @Test
@@ -73,7 +73,7 @@ public class MathUtilsTest
     {
         double[] array = { 5.0, 2.0, 12.0, 6.0 };
         
-        assertEquals( 12.0, MathUtils.getMax( array ) );
+        assertEquals( 12.0, MathUtils.getMax( array ), 0.01 );
     }
 
     @Test
@@ -116,6 +116,6 @@ public class MathUtilsTest
     @Test
     public void testGetAverage()
     {
-        assertEquals( 7.5, MathUtils.getAverage( Arrays.asList( 5.0, 5.0, 10.0, 10.0 ) ) );
+        assertEquals( 7.5, MathUtils.getAverage( Arrays.asList( 5.0, 5.0, 10.0, 10.0 ) ), 0.01 );
     }
 }

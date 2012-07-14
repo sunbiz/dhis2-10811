@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.dispatcher.Dispatcher;
+import org.hisp.dhis.security.ActionAccessResolver;
 
 import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.entities.PackageConfig;
@@ -68,6 +69,13 @@ public class DefaultModuleManager
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
+
+    private ActionAccessResolver actionAccessResolver;
+
+    public void setActionAccessResolver( ActionAccessResolver actionAccessResolver )
+    {
+        this.actionAccessResolver = actionAccessResolver;
+    }
 
     private Comparator<Module> moduleComparator;
 
@@ -127,6 +135,13 @@ public class DefaultModuleManager
         return maintenanceMenuModules;
     }
 
+    public List<Module> getAccessibleMaintenanceModules()
+    {
+        detectModules();
+        
+        return getAccessibleModules( maintenanceMenuModules );
+    }
+    
     public List<Module> getServiceMenuModules()
     {
         detectModules();
@@ -134,6 +149,13 @@ public class DefaultModuleManager
         return serviceMenuModules;
     }
 
+    public List<Module> getAccessibleServiceModules()
+    {
+        detectModules();
+        
+        return getAccessibleModules( serviceMenuModules );
+    }
+    
     public Collection<Module> getAllModules()
     {
         detectModules();
@@ -220,9 +242,15 @@ public class DefaultModuleManager
         }
 
         Collections.sort( menuModules, moduleComparator );
+        Collections.sort( maintenanceMenuModules, moduleComparator );
+        Collections.sort( serviceMenuModules, moduleComparator );
 
         modulesDetected = true;
     }
+
+    // -------------------------------------------------------------------------
+    // Supportive methods
+    // -------------------------------------------------------------------------
 
     private Collection<PackageConfig> getPackageConfigs()
     {
@@ -231,5 +259,20 @@ public class DefaultModuleManager
         Map<String, PackageConfig> packageConfigs = configuration.getPackageConfigs();
 
         return packageConfigs.values();
+    }
+    
+    private List<Module> getAccessibleModules( List<Module> modules )
+    {
+        List<Module> list = new ArrayList<Module>();
+        
+        for ( Module module : modules )
+        {
+            if ( module != null && actionAccessResolver.hasAccess( module.getName(), defaultActionName ) )
+            {
+                list.add( module );
+            }
+        }
+        
+        return list;
     }
 }

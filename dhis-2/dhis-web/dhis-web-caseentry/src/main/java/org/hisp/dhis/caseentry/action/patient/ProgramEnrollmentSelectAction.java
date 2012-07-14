@@ -28,7 +28,6 @@ package org.hisp.dhis.caseentry.action.patient;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 import org.hisp.dhis.caseentry.state.SelectedStateManager;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -113,33 +112,20 @@ public class ProgramEnrollmentSelectAction
         throws Exception
     {
         OrganisationUnit orgunit = selectedStateManager.getSelectedOrganisationUnit();
-
         patient = patientService.getPatient( id );
 
         // Get all programs
         programs = programService.getPrograms( Program.MULTIPLE_EVENTS_WITH_REGISTRATION );
-
-        // Except anonymous program
-        programs.removeAll( programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) );
-
-        // Get single-event if patient no have any single event
-        // OR have un-completed single-event
-        Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, true );
-
-        Collection<Program> completedPrograms = new HashSet<Program>();
+        programs.addAll( programService.getPrograms( Program.SINGLE_EVENT_WITH_REGISTRATION, orgunit ) );
+        programs.retainAll( programService.getProgramsByCurrentUser());
+        programs.removeAll( patient.getPrograms() );
+        
+        Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, false );
 
         for ( ProgramInstance programInstance : programInstances )
         {
-            if ( programInstance.getProgram().isSingleEvent() )
-            {
-                completedPrograms.add( programInstance.getProgram() );
-            }
+            programs.remove( programInstance.getProgram() );
         }
-
-        // Get single-event programs by the selected orgunit
-        Collection<Program> singleProgramsByOrgunit = programService.getPrograms( Program.SINGLE_EVENT_WITH_REGISTRATION, orgunit );
-        singleProgramsByOrgunit.remove( completedPrograms );
-        programs.addAll( singleProgramsByOrgunit );
 
         return SUCCESS;
     }

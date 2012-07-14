@@ -27,16 +27,15 @@ package org.hisp.dhis.sqlview;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.hisp.dhis.DhisSpringTest;
-import org.junit.Ignore;
+import org.hisp.dhis.DhisTest;
 import org.junit.Test;
 
 /**
@@ -44,7 +43,7 @@ import org.junit.Test;
  * @version $Id$
  */
 public class SqlViewServiceTest
-    extends DhisSpringTest
+    extends DhisTest
 {
     private SqlViewService sqlViewService;
 
@@ -57,8 +56,7 @@ public class SqlViewServiceTest
         + "GROUP BY _icgss.indicatorid;";
 
     protected static final String SQL4 = "SELECT de.name, dv.sourceid, dv.value, p.startdate "
-        + "FROM dataelement AS de, datavalue AS dv, period AS p " 
-        + "WHERE de.dataelementid=dv.dataelementid "
+        + "FROM dataelement AS de, datavalue AS dv, period AS p " + "WHERE de.dataelementid=dv.dataelementid "
         + "AND dv.periodid=p.periodid LIMIT 10";
 
     @Override
@@ -66,7 +64,7 @@ public class SqlViewServiceTest
     {
         sqlViewService = (SqlViewService) getBean( SqlViewService.ID );
     }
-    
+
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
@@ -83,7 +81,6 @@ public class SqlViewServiceTest
     // -------------------------------------------------------------------------
 
     @Test
-    @Ignore //FIXME
     public void testAddSqlView()
     {
         SqlView sqlViewA = createSqlView( 'A', SQL1 );
@@ -100,6 +97,9 @@ public class SqlViewServiceTest
 
         assertEquals( idB, sqlViewB.getId() );
         assertEq( 'B', sqlViewB, SQL2 );
+
+        sqlViewService.deleteSqlView( sqlViewA );
+        sqlViewService.deleteSqlView( sqlViewB );
     }
 
     @Test
@@ -120,6 +120,8 @@ public class SqlViewServiceTest
         sqlView = sqlViewService.getSqlView( id );
 
         assertEquals( sqlView.getName(), "SqlViewC" );
+
+        sqlViewService.deleteSqlView( sqlView );
     }
 
     @Test
@@ -158,6 +160,9 @@ public class SqlViewServiceTest
         assertEquals( sqlViewService.getSqlView( "SqlViewA" ).getId(), idA );
         assertEquals( sqlViewService.getSqlView( "SqlViewB" ).getId(), idB );
         assertNull( sqlViewService.getSqlView( "SqlViewC" ) );
+
+        sqlViewService.deleteSqlView( sqlViewA );
+        sqlViewService.deleteSqlView( sqlViewB );
     }
 
     @Test
@@ -179,6 +184,10 @@ public class SqlViewServiceTest
         assertTrue( sqlViews.contains( sqlViewB ) );
         assertTrue( sqlViews.contains( sqlViewC ) );
         assertTrue( !sqlViews.contains( sqlViewD ) );
+
+        sqlViewService.deleteSqlView( sqlViewA );
+        sqlViewService.deleteSqlView( sqlViewB );
+        sqlViewService.deleteSqlView( sqlViewC );
     }
 
     @Test
@@ -195,6 +204,8 @@ public class SqlViewServiceTest
         SqlView sqlViewB = sqlViewService.getSqlView( idA );
 
         assertEq( 'A', sqlViewB, "SELECT * FROM _categorystructure;" );
+
+        sqlViewService.deleteSqlView( sqlViewService.getSqlView( idA ) );
     }
 
     @Test
@@ -203,14 +214,8 @@ public class SqlViewServiceTest
         SqlView sqlViewC = createSqlView( 'C', SQL3 );
         SqlView sqlViewD = createSqlView( 'D', SQL4 );
 
-        sqlViewService.saveSqlView( sqlViewC );
-        sqlViewService.saveSqlView( sqlViewD );
-
-        String viewC = sqlViewService.setUpViewTableName( sqlViewService.getSqlView( "SqlViewC" ).getName() );
-        String viewD = sqlViewService.setUpViewTableName( sqlViewService.getSqlView( "SqlViewD" ).getName() );
-
-        assertEquals( "_view_SqlViewC", viewC );
-        assertNotSame( "_view_SqlViewC", viewD );
+        assertEquals( "_view_SqlViewC", sqlViewC.getViewName() );
+        assertNotSame( "_view_SqlViewC", sqlViewD.getViewName() );
 
     }
 
@@ -230,5 +235,27 @@ public class SqlViewServiceTest
         boolean flag = sqlViewService.createAllViewTables();
 
         assertTrue( flag );
+
+        sqlViewService.dropViewTable( sqlViewA.getViewName() );
+        sqlViewService.dropViewTable( sqlViewB.getViewName() );
+        sqlViewService.dropViewTable( sqlViewC.getViewName() );
+        sqlViewService.dropViewTable( sqlViewD.getViewName() );
+
+        sqlViewService.deleteSqlView( sqlViewA );
+        sqlViewService.deleteSqlView( sqlViewB );
+        sqlViewService.deleteSqlView( sqlViewC );
+        sqlViewService.deleteSqlView( sqlViewD );
+    }
+
+    @Test
+    public void testTestSqlGrammar()
+    {
+        String sql = "select de.name, de.name from dataelement de";
+
+        assertNotSame( sqlViewService.testSqlGrammar( sql ), "" );
+
+        sql += " xyz";
+
+        assertNotSame( sqlViewService.testSqlGrammar( sql ), "" );
     }
 }

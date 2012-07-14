@@ -16,7 +16,7 @@
     "parentOrganisationUnitName": "$!encoder.jsonEncode( ${object.parentOrganisationUnit.name} )",
     "parentOrganisationUnitLevel": "$!{object.parentOrganisationUnit.level}",
     "organisationUnitLevel": "$!{object.organisationUnitLevel.level}",
-    "organisationUnitLevelName": "$!{object.organisationUnitLevel.name}",
+    "organisationUnitLevelName": "$!{object.organisationUnitLevel.displayName}",
     "mapLegendType": "$!encoder.jsonEncode( ${object.mapLegendType} )",
     "method": "$!{object.method}",
     "classes": "$!{object.classes}",

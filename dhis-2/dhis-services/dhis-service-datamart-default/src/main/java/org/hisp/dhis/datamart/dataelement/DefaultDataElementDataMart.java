@@ -140,7 +140,9 @@ public class DefaultDataElementDataMart
     @Async
     public Future<?> exportDataValues( Collection<DataElementOperand> operands, Collection<Period> periods, 
         Collection<OrganisationUnit> organisationUnits, Collection<OrganisationUnitGroup> organisationUnitGroups, 
-        DataElementOperandList operandList, OrganisationUnitHierarchy hierarchy, Class<? extends BatchHandler<AggregatedDataValue>> clazz, String key )
+        DataElementOperandList operandList, OrganisationUnitHierarchy hierarchy, 
+        Map<String, Integer> dataElementUidIdMap, Map<String, Integer> categoryOptionComboUidIdMap,
+        Class<? extends BatchHandler<AggregatedDataValue>> clazz, String key )
     {
         statementManager.initialise(); // Running in separate thread
         
@@ -189,8 +191,8 @@ public class DefaultDataElementDataMart
                             
                             final double value = getRounded( entry.getValue(), DECIMALS );
                             
-                            aggregatedValue.setDataElementId( entry.getKey().getDataElementId() );
-                            aggregatedValue.setCategoryOptionComboId( entry.getKey().getOptionComboId() );
+                            aggregatedValue.setDataElementId( dataElementUidIdMap.get( entry.getKey().getDataElementId() ) );
+                            aggregatedValue.setCategoryOptionComboId( categoryOptionComboUidIdMap.get( entry.getKey().getOptionComboId() ) );
                             aggregatedValue.setPeriodId( period.getId() );
                             aggregatedValue.setPeriodTypeId( period.getPeriodType().getId() );
                             aggregatedValue.setOrganisationUnitId( unit.getId() );

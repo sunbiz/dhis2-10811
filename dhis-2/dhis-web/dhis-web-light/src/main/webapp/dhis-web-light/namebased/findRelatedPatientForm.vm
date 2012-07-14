@@ -18,8 +18,9 @@
            	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "fullName" ))</span>
      	#end
 		<input type="text" name="keyword" value="$!previousValues.get("fullName")" />
+		<a href="registerBeneficiary.action?orgUnitId=$orgUnitId&originalPatientId=$originalPatientId&relationshipTypeId=$relationshipTypeId">$i18n.getString( "or_register_new_person" )</a>
 	</p>
-		<p style="text-align: left;">
+	<p style="text-align: left;">
 		<label>$i18n.getString( "select_orgunit" )</label>
 		<select name="organisationUnitId">
 			<option value="0">$i18n.getString( "all_orgunit" )</option>

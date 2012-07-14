@@ -13,7 +13,7 @@
 		<td style="vertical-align:top">
 			<table class="listTable">
 				<col>          
-				<col width="90"> 
+				<col width="120"> 
 				<tr>
 					<td>
 						$i18n.getString( "filter_by_name" ): <input type="text" onkeyup="filterValues( this.value , 1)" style="width:250px"/>
@@ -29,10 +29,11 @@
 			<tbody id="list">
 			#foreach( $optionSet in $optionSets )
 			<tr id="tr${optionSet.id}">
-				<td>$encoder.htmlEncode( $optionSet.name )</td>
+				<td>$encoder.htmlEncode( $optionSet.displayName )</td>
 				<td style="text-align:right">
 					<a href="showUpdateOptionSetForm.action?id=$optionSet.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
-					<a href="javascript:removeOptionSet( $optionSet.id, '$encoder.jsEncode( $optionSet.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+					<a href="javascript:translate( 'OptionSet', '$optionSet.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+				    <a href="javascript:removeOptionSet( $optionSet.id, '$encoder.jsEncode( $optionSet.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
 					<a href="javascript:showOptionSetDetails( $optionSet.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
 				</td>
 			</tr>

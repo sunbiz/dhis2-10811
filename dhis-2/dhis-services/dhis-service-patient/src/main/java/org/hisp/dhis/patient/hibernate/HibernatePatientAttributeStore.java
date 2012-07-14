@@ -29,20 +29,17 @@ package org.hisp.dhis.patient.hibernate;
 
 import java.util.Collection;
 
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.patient.PatientAttribute;
-import org.hisp.dhis.patient.PatientAttributeGroup;
 import org.hisp.dhis.patient.PatientAttributeStore;
-import org.hisp.dhis.program.Program;
 
 /**
  * @author Abyot Asalefew Gizaw
  * @version $Id$
  */
 public class HibernatePatientAttributeStore
-    extends HibernateGenericStore<PatientAttribute>
+    extends HibernateIdentifiableObjectStore<PatientAttribute>
     implements PatientAttributeStore
 {
     @SuppressWarnings( "unchecked" )
@@ -70,40 +67,8 @@ public class HibernatePatientAttributeStore
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<PatientAttribute> get( Program program, PatientAttributeGroup group )
-    {
-        Criteria criteria = getCriteria();
-
-        if ( program == null )
-        {
-            criteria.add( Restrictions.isNull( "program" ) );
-        }
-        else
-        {
-            criteria.add( Restrictions.eq( "program", program ) );
-        }
-
-        if ( group == null )
-        {
-            criteria.add( Restrictions.isNull( "patientAttributeGroup" ) );
-        }
-        else
-        {
-            criteria.add( Restrictions.eq( "patientAttributeGroup", group ) );
-        }
-        
-        return criteria.list();
-    }
-
-    @SuppressWarnings("unchecked")
     public Collection<PatientAttribute> getWithoutGroup()
     {
         return getCriteria( Restrictions.isNull( "patientAttributeGroup" ) ).list();
-    }
-    
-    @SuppressWarnings("unchecked")
-    public Collection<PatientAttribute> get( Program program  )
-    {
-        return getCriteria( Restrictions.eq( "program", program ) ).list();
     }
 }

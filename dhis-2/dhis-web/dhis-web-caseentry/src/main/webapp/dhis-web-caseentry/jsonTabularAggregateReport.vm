@@ -1,0 +1,99 @@
+#set( $programStage=$aggregateReport.programStage)
+{
+	"id": "${aggregateReport.id}",
+	"name": "$!encoder.jsonEncode( ${aggregateReport.name} )",
+	"lastUpdated": "$!format.formatDate( ${aggregateReport.lastUpdated} )",
+	"programId": "${programStage.program.id}",
+	"singleEvent": 
+		#if($programStage.program.programStages.size() == 1 )
+			"true",
+		#else
+			"false",
+		#end
+	"type": "${programStage.program.type}",
+	"programStageId": "${programStage.id}",
+	"programStageName": "$!encoder.jsonEncode( ${programStage.displayName} )",
+	"startDates": [
+		#set( $size = ${aggregateReport.startDates.size()} )
+		#foreach( $startDate in $!aggregateReport.startDates )
+			"$format.formatDate( $startDate )"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"endDates": [
+		#set( $size = $aggregateReport.endDates.size() )
+		#foreach( $endDate in $!$aggregateReport.endDates )
+			"$format.formatDate( $endDate )"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"relativePeriods": [
+		#set( $size = ${aggregateReport.startDates.size()} )
+		#set( $relativePeriods = ${aggregateReport.relativePeriods} )
+		#foreach( ${relativePeriod} in $!{relativePeriods} )
+			"$relativePeriod"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"fixedPeriods": [
+		#set( $size = $aggregateReport.fixedPeriods.size() )
+		#set( $fixedPeriods = ${aggregateReport.fixedPeriods} )
+		#foreach( ${fixedPeriod} in $!{fixedPeriods} )
+			"$fixedPeriod"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"fixedPeriodNames":[
+		#set( $size = $fixedPeriodNames.size() )
+		#foreach( $fixedPeriodName in $!fixedPeriodNames )
+			"$!encoder.jsonEncode( $fixedPeriodName )"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"orgunitIds": [
+		#set( $size = $aggregateReport.organisationUnits.size() )
+		#set( $organisationUnits = ${aggregateReport.organisationUnits} )
+		#foreach( ${organisationUnit} in $!{organisationUnits} )
+			{
+				"id": "$organisationUnit.uid",
+				"localid": "$organisationUnit.id",
+				"path":"#foreach($anc in $organisationUnit.getAncestors())/${anc.uid}#end"
+			}
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"filterValues": [
+		#set( $size = $aggregateReport.filterValues.size() )
+		#set( $filterValues = ${aggregateReport.filterValues} )
+		#foreach( ${filterValue} in $!{filterValues} )
+			"$!encoder.jsonEncode( $filterValue )"
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"selectedDEs": [
+		#set( $size = ${selectedDataElements.size()} )
+		#foreach( ${dataElement} in $!{selectedDataElements} )
+			{
+				"id": "de_${dataElement.id}",
+				"name": "$!encoder.jsonEncode( ${dataElement.displayName} )",
+				"compulsory": "${dataElement.compulsory}",
+				"valueType": #if( $dataElement.optionSet )
+								"list"
+							 #else
+								"${dataElement.type}"
+							 #end
+			}
+			#if( $velocityCount < $size ),#end
+		#end
+	],
+	"facilityLB": "${aggregateReport.facilityLB}",
+	"limitRecords": "$!aggregateReport.limitRecords",
+	"position": "${aggregateReport.position}",
+	"deGroupBy": #if($!aggregateReport.deGroupBy) "de_$!aggregateReport.deGroupBy.id" #else "" #end,
+	"deSumId": #if($!aggregateReport.deSum) "de_$!aggregateReport.deSum.id" #else "" #end,
+	"deSumName": #if($!aggregateReport.deSum) "$!encoder.jsonEncode( ${aggregateReport.deSum.displayName})" #else "" #end,
+	"aggregateType": "${aggregateReport.aggregateType}",
+	"useCompletedEvents": "$!aggregateReport.useCompletedEvents",
+	"userOrganisationUnit": "$!aggregateReport.userOrganisationUnit",
+	"userOrganisationUnitChildren": "$!aggregateReport.userOrganisationUnitChildren"
+}

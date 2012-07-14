@@ -77,28 +77,25 @@ public class ActivityPlan
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-
-        if ( activitiesList == null )
+        if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            dout.writeInt( 0 );
+            this.serializeVerssion2_8( dout );
         }
-        else
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            dout.writeInt( activitiesList.size() );
-            for ( int i = 0; i < activitiesList.size(); i++ )
-            {
-                activitiesList.get( i ).serialize( dout );
-            }
+            this.serializeVerssion2_9( dout );
         }
-
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
+        {
+            this.serializeVerssion2_10( dout );
+        }
     }
 
     @Override
     public void deSerialize( DataInputStream dataInputStream )
         throws IOException
     {
-        // FIXME: Get implementation from client
-
+       
     }
 
     @Override
@@ -114,7 +111,9 @@ public class ActivityPlan
             dout.writeInt( activitiesList.size() );
             for ( int i = 0; i < activitiesList.size(); i++ )
             {
-                activitiesList.get( i ).serializeVerssion2_8( dout );
+                Activity activity = activitiesList.get( i );
+                activity.setClientVersion( TWO_POINT_EIGHT );
+                activity.serialize( dout );
             }
         }
     }
@@ -132,7 +131,29 @@ public class ActivityPlan
             dout.writeInt( activitiesList.size() );
             for ( int i = 0; i < activitiesList.size(); i++ )
             {
-                activitiesList.get( i ).serializeVerssion2_9( dout );
+                Activity activity = activitiesList.get( i );
+                activity.setClientVersion( TWO_POINT_NINE );
+                activity.serialize( dout );
+            }
+        }
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dout )
+        throws IOException
+    {
+        if ( activitiesList == null )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( activitiesList.size() );
+            for ( int i = 0; i < activitiesList.size(); i++ )
+            {
+                Activity activity = activitiesList.get( i );
+                activity.setClientVersion( TWO_POINT_TEN );
+                activity.serialize( dout );
             }
         }
     }

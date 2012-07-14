@@ -27,6 +27,9 @@ package org.hisp.dhis.dataanalysis;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,16 +44,17 @@ import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
+import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
+import org.hisp.dhis.system.util.ListUtils;
 import org.junit.Test;
 
 /**
- * @author eirikmi
- * @version $Id: StdDevOutlierAnalysisServiceTest.java 883 2009-05-15 00:42:45Z daghf $
+ * @author Lars Helge Overland
  */
 @SuppressWarnings( "unused" )
 public class StdDevOutlierAnalysisServiceTest
@@ -84,7 +88,7 @@ public class StdDevOutlierAnalysisServiceTest
     private Period periodJ;
 
     private OrganisationUnit organisationUnitA;
-
+    
     // ----------------------------------------------------------------------
     // Fixture
     // ----------------------------------------------------------------------
@@ -93,7 +97,7 @@ public class StdDevOutlierAnalysisServiceTest
     public void setUpTest()
     {
         stdDevOutlierAnalysisService = (DataAnalysisService) getBean( "org.hisp.dhis.dataanalysis.StdDevOutlierAnalysisService" );
-
+        
         dataElementService = (DataElementService) getBean( DataElementService.ID );
 
         categoryService = (DataElementCategoryService) getBean( DataElementCategoryService.ID );
@@ -121,7 +125,7 @@ public class StdDevOutlierAnalysisServiceTest
         dataElementsA.add( dataElementA );
         dataElementsA.add( dataElementB );
 
-        categoryOptionCombo = categoryCombo.getOptionCombos().iterator().next();
+        categoryOptionCombo = categoryService.getDefaultDataElementCategoryOptionCombo();
 
         periodA = createPeriod( new MonthlyPeriodType(), getDate( 2000, 3, 1 ), getDate( 2000, 3, 31 ) );
         periodB = createPeriod( new MonthlyPeriodType(), getDate( 2000, 4, 1 ), getDate( 2000, 4, 30 ) );
@@ -152,10 +156,6 @@ public class StdDevOutlierAnalysisServiceTest
     @Test
     public void testGetFindOutliers()
     {
-        // testvalues = [5, 5, -5, -5, 10, -10, 13, -13, 71, -71]
-        // mean(testvalues) = 0.0
-        // std(testvalues) = 34.51
-        
         dataValueA = createDataValue( dataElementA, periodI, organisationUnitA, "71", categoryOptionCombo );
         dataValueB = createDataValue( dataElementA, periodJ, organisationUnitA, "-71", categoryOptionCombo );
 
@@ -177,11 +177,16 @@ public class StdDevOutlierAnalysisServiceTest
         periods.add( periodA );
         periods.add( periodE );
 
-        //Collection<DeflatedDataValue> result = stdDevOutlierAnalysisService.findOutliers( organisationUnitA, dataElementsA, periods, stdDevFactor );
+        Collection<DeflatedDataValue> values = stdDevOutlierAnalysisService.analyse( ListUtils.getCollection( organisationUnitA ), dataElementsA, periods, stdDevFactor );
 
-        //double lowerBound = -34.51 * stdDevFactor;
-        //double upperBound = 34.51 * stdDevFactor;
+        double lowerBound = -34.51 * stdDevFactor;
+        double upperBound = 34.51 * stdDevFactor;
+
+        DeflatedDataValue valueA = new DeflatedDataValue( dataValueA );
+        DeflatedDataValue valueB = new DeflatedDataValue( dataValueB );
         
-        //assertEquals( 2, result.size() );
+        assertEquals( 2, values.size() );
+        assertTrue( values.contains( valueA ) );
+        assertTrue( values.contains( valueB ) );        
     }
 }

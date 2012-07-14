@@ -111,4 +111,9 @@ public class DefaultMinMaxDataElementService
     {
         minMaxDataElementStore.delete( optionCombo );
     }
+    
+    public void removeMinMaxDataElements( Collection<DataElement> dataElements, Collection<OrganisationUnit> organisationUnits )
+    {
+        minMaxDataElementStore.delete( dataElements, organisationUnits );
+    }
 }

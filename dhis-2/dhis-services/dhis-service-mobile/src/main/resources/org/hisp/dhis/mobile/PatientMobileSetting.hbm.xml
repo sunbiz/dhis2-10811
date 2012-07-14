@@ -17,6 +17,10 @@
     <property name="birthdate" column="birthdate" not-null="true" />
 
     <property name="registrationdate" column="registrationdate" not-null="true" />
+    
+    <property name="autoUpdateClient" column="autoUpdateClient" not-null="false" />
+    
+    <property name="versionToUpdate" column="versionToUpdate" not-null="false" />
 
     <list name="patientAttributes">
       <key column="patientmobilesettingid" />

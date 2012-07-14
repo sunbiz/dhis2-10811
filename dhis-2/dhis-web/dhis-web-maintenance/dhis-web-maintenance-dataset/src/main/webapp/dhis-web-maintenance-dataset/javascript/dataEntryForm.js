@@ -71,5 +71,5 @@ function saveDataEntryForm()
 function validateDataEntryFormTimeout()
 {
 	validateDataEntryForm( false );
-	window.setTimeout( "validateDataEntryFormTimeout();", 60000 );
+	timeOut = window.setTimeout( "validateDataEntryFormTimeout();", 60000 );
 }

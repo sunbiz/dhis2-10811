@@ -34,13 +34,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 
 /**
  * @author Chau Thu Tran
  * @version $Id$
  */
-@XmlRootElement( name = "patientAttributeGroup", namespace = Dxf2Namespace.NAMESPACE )
+@XmlRootElement( name = "patientAttributeGroup", namespace = DxfNamespaces.DXF_2_0)
 @XmlAccessorType( value = XmlAccessType.NONE )
 public class PatientAttributeGroup
     extends BaseIdentifiableObject

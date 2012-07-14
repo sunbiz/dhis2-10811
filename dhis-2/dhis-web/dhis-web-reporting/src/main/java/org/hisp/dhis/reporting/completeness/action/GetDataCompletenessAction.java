@@ -27,9 +27,13 @@ package org.hisp.dhis.reporting.completeness.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.system.util.ConversionUtils.getIdentifiers;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.common.GridHeader;
@@ -39,15 +43,15 @@ import org.hisp.dhis.completeness.DataSetCompletenessService;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
+import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.hisp.dhis.util.SessionUtils;
 
 import com.opensymphony.xwork2.Action;
-
-import static org.hisp.dhis.system.util.ConversionUtils.*;
 
 /**
  * @author Lars Helge Overland
@@ -60,10 +64,10 @@ public class GetDataCompletenessAction
 
     private static final String DEFAULT_TYPE = "html";
 
-    private static final String SPACE = " ";
-
+    private static final String TITLE_SEP = " - ";
+    
     private static final String EMPTY = "";
-
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -102,6 +106,13 @@ public class GetDataCompletenessAction
     {
         this.i18n = i18n;
     }
+    
+    private I18nFormat format;
+
+    public void setFormat( I18nFormat format )
+    {
+        this.format = format;
+    }
 
     // -------------------------------------------------------------------------
     // Input
@@ -133,6 +144,13 @@ public class GetDataCompletenessAction
     public void setType( String type )
     {
         this.type = type;
+    }
+    
+    private Set<Integer> groupId = new HashSet<Integer>();
+
+    public void setGroupId( Set<Integer> groupId )
+    {
+        this.groupId = groupId;
     }
 
     // -------------------------------------------------------------------------
@@ -173,7 +191,8 @@ public class GetDataCompletenessAction
             }
             else
             {
-                Integer _periodId = periodService.getPeriodByExternalId( periodId ).getId();
+                Period period = periodService.getPeriodByExternalId( periodId );
+                Integer _periodId = period.getId();
 
                 DataSet dataSet = null;
                 List<DataSetCompletenessResult> mainResults = new ArrayList<DataSetCompletenessResult>();
@@ -184,21 +203,21 @@ public class GetDataCompletenessAction
                 if ( dataSetId != null && dataSetId != 0 ) // One ds for one ou
                 {
                     mainResults = new ArrayList<DataSetCompletenessResult>( completenessService.getDataSetCompleteness(
-                        _periodId, getIdentifiers( OrganisationUnit.class, selectedUnit.getChildren() ), dataSetId ) );
+                        _periodId, getIdentifiers( OrganisationUnit.class, selectedUnit.getChildren() ), dataSetId, groupId ) );
 
                     footerResults = new ArrayList<DataSetCompletenessResult>(
                         completenessService.getDataSetCompleteness( _periodId, Arrays.asList( selectedUnit.getId() ),
-                            dataSetId ) );
+                            dataSetId, groupId ) );
 
                     dataSet = dataSetService.getDataSet( dataSetId );
                 }
                 else // All ds for children of one ou               
                 {
                     mainResults = new ArrayList<DataSetCompletenessResult>( completenessService.getDataSetCompleteness(
-                        _periodId, selectedUnit.getId() ) );
+                        _periodId, selectedUnit.getId(), groupId ) );
                 }
 
-                grid = getGrid( mainResults, footerResults, selectedUnit, dataSet );
+                grid = getGrid( mainResults, footerResults, selectedUnit, dataSet, period );
 
                 SessionUtils.setSessionVar( KEY_DATA_COMPLETENESS, grid );
             }
@@ -208,20 +227,21 @@ public class GetDataCompletenessAction
     }
 
     private Grid getGrid( List<DataSetCompletenessResult> mainResults, List<DataSetCompletenessResult> footerResults,
-        OrganisationUnit unit, DataSet dataSet )
+        OrganisationUnit unit, DataSet dataSet, Period period )
     {
-        String title = i18n.getString( "reporting_rate_summary" );
-        String subtitle = ( unit != null ? unit.getName() : EMPTY ) + SPACE
-            + ( dataSet != null ? dataSet.getName() : EMPTY );
+        String title = 
+            ( unit != null ? unit.getName() : EMPTY ) + 
+            ( dataSet != null ? TITLE_SEP + dataSet.getName() : EMPTY ) +
+            ( period != null ? TITLE_SEP + format.formatPeriod( period ) : EMPTY );
 
-        Grid grid = new ListGrid().setTitle( title ).setSubtitle( subtitle );
+        Grid grid = new ListGrid().setTitle( title );
 
         grid.addHeader( new GridHeader( i18n.getString( "name" ), false, true ) );
-        grid.addHeader( new GridHeader( i18n.getString( "actual" ), false, false ) );
-        grid.addHeader( new GridHeader( i18n.getString( "target" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "actual_reports" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "expected_reports" ), false, false ) );
         grid.addHeader( new GridHeader( i18n.getString( "percent" ), false, false ) );
-        grid.addHeader( new GridHeader( i18n.getString( "on_time" ), false, false ) );
-        grid.addHeader( new GridHeader( i18n.getString( "percent" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "reports_on_time" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "percent_on_time" ), false, false ) );
 
         for ( DataSetCompletenessResult result : mainResults )
         {

@@ -27,12 +27,9 @@
 
 package org.hisp.dhis.attribute.hibernate;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.amplecode.quick.StatementManager;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -41,6 +38,8 @@ import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.attribute.LocalAttributeValueStore;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author Chau Thu Tran
@@ -51,11 +50,11 @@ public class HibernateLocalAttributeValueStore
     extends HibernateGenericStore<AttributeValue>
     implements LocalAttributeValueStore
 {
-    private StatementManager statementManager;
+    private JdbcTemplate jdbcTemplate;
 
-    public void setStatementManager( StatementManager statementManager )
+    public void setJdbcTemplate( JdbcTemplate jdbcTemplate )
     {
-        this.statementManager = statementManager;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @SuppressWarnings( "unchecked" )
@@ -81,36 +80,34 @@ public class HibernateLocalAttributeValueStore
             + "inner join attributevalue av on av.attributevalueid = deav.attributevalueid "
             + "where dsm.datasetid = " + dataSet.getId();
 
-        return (statementManager.getHolder().queryForInteger( sql ) > 0) ? true : false;
+        return (jdbcTemplate.queryForInt( sql ) > 0) ? true : false;
     }
 
     public Collection<String> getByDataSet( DataSet dataSet )
     {
         Collection<String> result = new HashSet<String>();
+
         try
         {
             String sql = "select distinct(av.value) from datasetmembers dsm "
                 + "inner join dataelementattributevalues deav on deav.dataelementid = dsm.dataelementid "
                 + "inner join attributevalue av on av.attributevalueid = deav.attributevalueid "
-                + "where dsm.datasetid = " + dataSet.getId();
+                + "inner join attribute a on av.attributeid = a.attributeid "
+                + "where dsm.datasetid = " + dataSet.getId() + " "
+                + "and a.name <> 'attribute_column_index'";
 
-            ResultSet resultSet = statementManager.getHolder().getStatement().executeQuery( sql );
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
 
-            while ( resultSet.next() )
+            while ( rowSet.next() )
             {
-                result.add( resultSet.getString( 1 ) );
-            }
-
-            return result;
+                result.add( rowSet.getString( 1 ) );
+            }    
         }
-        catch ( SQLException e )
+        catch ( Exception e )
         {
             e.printStackTrace();
-            return new HashSet<String>();
         }
-        finally
-        {
-            statementManager.getHolder().close();
-        }
+        
+        return result;
     }
 }

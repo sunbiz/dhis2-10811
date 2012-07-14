@@ -30,6 +30,7 @@ package org.hisp.dhis.databrowser;
 import java.util.List;
 
 import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.period.PeriodType;
 
 /**
  * Contains methods for creating aggregated count queries for the Data Browser
@@ -51,10 +52,11 @@ public interface DataBrowserGridStore
      * an aggregated count.
      * 
      * @param betweenPeriodIds list of Period ids
+     * @param periodType
      * @param isZeroAdded if true then Zero can be added and false is not
      * @return the Grid with structure for presentation
      */
-    Grid getDataSetsBetweenPeriods( List<Integer> betweenPeriodIds, boolean isZeroAdded );
+    Grid getDataSetsBetweenPeriods( List<Integer> betweenPeriodIds, PeriodType periodType, boolean isZeroAdded );
 
     /**
      * Finds all DataElementGroups connected to any period in betweenPeriodIds
@@ -150,13 +152,14 @@ public interface DataBrowserGridStore
      * 
      * @param grid the Grid to insert column into
      * @param dataSetId id of DataSet the DataElements are for
+     * @param periodType the type of period
      * @param betweenPeriodIds List of Period ids
      * @param metaIds List of MetaValue ids
      * @param isZeroAdded if true then Zero can be added and false is not
      * @return 0 if no results are found else number of rows inserted
      */
-    Integer setCountDataElementsForDataSetBetweenPeriods( Grid grid, Integer dataSetId, List<Integer> betweenPeriodIds,
-        List<Integer> metaIds, boolean isZeroAdded );
+    Integer setCountDataElementsForDataSetBetweenPeriods( Grid grid, Integer dataSetId, PeriodType periodType,
+        List<Integer> betweenPeriodIds, List<Integer> metaIds, boolean isZeroAdded );
 
     /**
      * Sets DataElement count-Columns in DataBrowserTable for betweenPeriod List

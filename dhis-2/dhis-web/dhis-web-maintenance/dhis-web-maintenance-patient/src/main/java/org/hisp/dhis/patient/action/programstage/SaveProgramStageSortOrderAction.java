@@ -82,8 +82,6 @@ public class SaveProgramStageSortOrderAction
 
     public String execute()
     {
-        int stageInProgram = 1;
-
         Program program = programService.getProgram( id );
 
         if ( program.getProgramStages() != null )
@@ -93,12 +91,10 @@ public class SaveProgramStageSortOrderAction
 
             for ( ProgramStage programStage : programStages )
             {
-                programStage.setStageInProgram( stageInProgram++ );
-
                 programStageService.updateProgramStage( programStage );
             }
         }
-        
+
         return SUCCESS;
     }
 }

@@ -43,8 +43,28 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
         <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
         <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
-        <!--<property name="dataSetLockService" ref="org.hisp.dhis.datalock.DataSetLockService" />-->
         <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+    </bean>
+
+    <!-- BD Data Import -->
+
+    <bean id="org.hisp.dhis.excelimport.bddataimport.action.BDExcelImportFormAction"
+          class="org.hisp.dhis.excelimport.bddataimport.action.BDExcelImportFormAction"
+          scope="prototype">
+        <property name="reportService" ref="org.hisp.dhis.excelimport.util.ReportService" />
+    </bean>
+
+    <bean id="org.hisp.dhis.excelimport.bddataimport.action.BDExcelImportResultAction"
+          class="org.hisp.dhis.excelimport.bddataimport.action.BDExcelImportResultAction"
+          scope="prototype">
+        <property name="reportService" ref="org.hisp.dhis.excelimport.util.ReportService" />
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+        <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+        <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+        <property name="databaseInfoProvider" ref="databaseInfoProvider" />
     </bean>
     
     <!-- TCS Data Import -->
@@ -61,7 +81,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
         <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
-        <!--<property name="dataSetLockService" ref="org.hisp.dhis.datalock.DataSetLockService" />-->
         <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
     </bean>
     
@@ -108,6 +127,48 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         </property>
         <property name="dataSetService">
             <ref bean="org.hisp.dhis.dataset.DataSetService"/>
+        </property>
+    </bean>
+
+    <bean id="org.hisp.dhis.excelimport.emaildataimport.importEmailAttachmentData"
+          class="org.hisp.dhis.excelimport.emaildataimport.importEmailAttachmentData">
+         <property name="reportService" ref="org.hisp.dhis.excelimport.util.ReportService" />
+         <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+         <property name="jdbcTemplate" ref="jdbcTemplate" />
+         <property name="databaseInfoProvider" ref="databaseInfoProvider" />
+    </bean>
+
+    <!-- Task Scheduling -->
+
+    <bean id="schedulerTask"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="org.hisp.dhis.excelimport.emaildataimport.importEmailAttachmentData"/>
+        <property name="targetMethod" value="extractXLSToImport"/>
+    </bean>
+
+
+    <!-- Simple Trigger, run every 60 seconds -->
+
+    <bean id="simpleTrigger"
+          class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+
+        <property name="jobDetail" ref="schedulerTask"/>
+        <property name="repeatInterval" value="60000"/>
+        <property name="startDelay" value="1000"/>
+
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="jobDetails">
+            <list>
+                <ref bean="schedulerTask"/>
+            </list>
+        </property>
+
+        <property name="triggers">
+            <list>
+                <ref bean="simpleTrigger"/>
+            </list>
         </property>
     </bean>
     

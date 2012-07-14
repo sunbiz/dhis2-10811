@@ -27,6 +27,7 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.common.Pager;
 import org.hisp.dhis.dxf2.metadata.Options;
 
 import java.util.Map;
@@ -55,7 +56,7 @@ public class WebOptions
     {
         return stringAsBoolean( options.get( "paging" ), true );
     }
-
+    
     public int getPage()
     {
         return stringAsInt( options.get( "page" ), 1 );
@@ -64,5 +65,10 @@ public class WebOptions
     public String getViewClass( String defaultValue )
     {
         return stringAsString( options.get( "viewClass" ), defaultValue );
+    }
+    
+    public int getPageSize()
+    {
+        return stringAsInt( options.get( "pageSize" ), Pager.DEFAULT_PAGE_SIZE );
     }
 }

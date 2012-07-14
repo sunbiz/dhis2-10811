@@ -222,4 +222,16 @@ public class SixMonthlyPeriodType
             }
         }
     }
+    
+    @Override
+    public Date getRewindedDate( Date date, Integer rewindedPeriods )
+    {
+        date = date != null ? date : new Date();        
+        rewindedPeriods = rewindedPeriods != null ? rewindedPeriods : 1;
+
+        Calendar cal = createCalendarInstance( date );        
+        cal.add( Calendar.MONTH, (rewindedPeriods * -6) );
+
+        return cal.getTime();
+    }
 }

@@ -29,8 +29,6 @@ package org.hisp.dhis.mapping;
 
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 
-import java.util.Collection;
-
 /**
  * @author Jan Henrik Overland
  */
@@ -38,6 +36,4 @@ public interface MapLegendSetStore
     extends GenericIdentifiableObjectStore<MapLegendSet>
 {
     String ID = MapLegendSetStore.class.getName();
-
-    Collection<MapLegendSet> getMapLegendSetsByType( String type );
 }

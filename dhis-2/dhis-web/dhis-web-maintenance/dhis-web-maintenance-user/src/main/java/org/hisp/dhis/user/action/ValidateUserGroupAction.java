@@ -27,11 +27,10 @@ package org.hisp.dhis.user.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.user.UserGroup;
 import org.hisp.dhis.user.UserGroupService;
-
-import com.opensymphony.xwork2.Action;
 
 public class ValidateUserGroupAction
     implements Action
@@ -89,7 +88,7 @@ public class ValidateUserGroupAction
 
         if ( name != null )
         {
-            UserGroup match = userGroupService.getUserGroupByName( name );
+            UserGroup match = userGroupService.getUserGroupByName( name ).get( 0 );
 
             if ( match != null && (id == null || match.getId() != id) )
             {

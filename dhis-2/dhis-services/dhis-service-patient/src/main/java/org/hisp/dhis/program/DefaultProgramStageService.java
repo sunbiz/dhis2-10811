@@ -26,9 +26,12 @@
  */
 package org.hisp.dhis.program;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import java.util.Collection;
 
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
+import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageService;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +55,13 @@ public class DefaultProgramStageService
         this.programStageStore = programStageStore;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // ProgramStage implementation
     // -------------------------------------------------------------------------
@@ -68,12 +78,12 @@ public class DefaultProgramStageService
 
     public ProgramStage getProgramStage( int id )
     {
-        return programStageStore.get( id );
+        return i18n( i18nService, programStageStore.get( id ));
     }
 
     public ProgramStage getProgramStageByName( String name )
     {
-        return programStageStore.getByName( name );
+        return i18n( i18nService, programStageStore.getByName( name ));
     }
 
     public void updateProgramStage( ProgramStage programStage )
@@ -83,7 +93,11 @@ public class DefaultProgramStageService
 
     public Collection<ProgramStage> getAllProgramStages()
     {
-        return programStageStore.getAll();
+        return i18n( i18nService, programStageStore.getAll());
     }
 
+    public Collection<ProgramStage> getProgramStages( Program program )
+    {
+        return i18n( i18nService, program.getProgramStages() );
+    }
 }

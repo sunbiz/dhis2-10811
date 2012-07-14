@@ -27,12 +27,12 @@ package org.hisp.dhis.importexport.action.integration;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.List;
-
-import org.apache.camel.CamelContext;
-import org.apache.camel.model.RouteDefinition;
-
 import com.opensymphony.xwork2.Action;
+import java.util.Collection;
+import java.util.LinkedList;
+import org.apache.camel.CamelContext;
+import org.apache.camel.model.ModelCamelContext;
+import org.apache.camel.model.RouteDefinition;
 
 /**
  * @author Bob Jolliffe
@@ -45,16 +45,21 @@ public class DisplayRoutesAction
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private CamelContext builtinCamelContext;
+    private ModelCamelContext builtinCamelContext;
 
     public void setBuiltinCamelContext( CamelContext camelContext )
     {
-        this.builtinCamelContext = camelContext;
+        this.builtinCamelContext = (ModelCamelContext) camelContext;
     }
 
-    private List<RouteDefinition> routeDefinitions;
+    public CamelContext getBuiltinCamelContext()
+    {
+        return builtinCamelContext;
+    }
+    
+    private Collection<RouteDefinition> routeDefinitions;
 
-    public List<RouteDefinition> getRouteDefinitions()
+    public Collection<RouteDefinition> getRouteDefinitions()
     {
         return routeDefinitions;
     }
@@ -63,11 +68,19 @@ public class DisplayRoutesAction
     // Action implementation
     // -------------------------------------------------------------------------
 
+    @Override
     public String execute()
         throws Exception
     {
-        routeDefinitions = builtinCamelContext.getRouteDefinitions();
-
+        routeDefinitions = new LinkedList<RouteDefinition>();
+        for (RouteDefinition routeDefinition : builtinCamelContext.getRouteDefinitions()) 
+        {
+            // hide the internal routes
+            if (!routeDefinition.getId().startsWith( "internal") )
+            {
+                routeDefinitions.add( routeDefinition);
+            }
+        }
         return SUCCESS;
     }
 }

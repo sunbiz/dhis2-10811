@@ -32,7 +32,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseCollection;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +40,15 @@ import java.util.List;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JacksonXmlRootElement( localName = "dxf2", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "dxf2", namespace = DxfNamespaces.DXF_2_0)
 public class MessageConversations
     extends BaseCollection
 {
     private List<MessageConversation> messageConversations = new ArrayList<MessageConversation>();
 
     @JsonProperty
-    @JacksonXmlElementWrapper( localName = "messageConversations", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "messageConversation", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "messageConversations", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "messageConversation", namespace = DxfNamespaces.DXF_2_0)
     public List<MessageConversation> getMessageConversations()
     {
         return messageConversations;

@@ -25,7 +25,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class BasicAuthenticationRequiredFilter
     extends BasicAuthenticationFilter
 {
-
     @Override
     public void doFilter( ServletRequest req, ServletResponse res, FilterChain chain )
         throws IOException, ServletException

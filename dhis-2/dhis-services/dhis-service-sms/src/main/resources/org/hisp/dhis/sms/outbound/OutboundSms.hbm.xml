@@ -24,6 +24,8 @@
         <param name="enumClass">org.hisp.dhis.sms.outbound.OutboundSmsStatus</param>
       </type>
     </property>
+    
+    <property name="sender" />
 
   </class>
 </hibernate-mapping>

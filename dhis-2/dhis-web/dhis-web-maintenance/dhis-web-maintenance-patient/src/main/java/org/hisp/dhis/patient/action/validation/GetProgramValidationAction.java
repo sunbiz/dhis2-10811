@@ -27,7 +27,8 @@
 
 package org.hisp.dhis.patient.action.validation;
 
-import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramExpressionService;
 import org.hisp.dhis.program.ProgramValidation;
 import org.hisp.dhis.program.ProgramValidationService;
 
@@ -46,7 +47,17 @@ public class GetProgramValidationAction
 
     private ProgramValidationService programValidationService;
 
-    private CaseAggregationConditionService aggregationConditionService;
+    public void setProgramValidationService( ProgramValidationService programValidationService )
+    {
+        this.programValidationService = programValidationService;
+    }
+
+    private ProgramExpressionService programExpressionService;
+
+    public void setProgramExpressionService( ProgramExpressionService programExpressionService )
+    {
+        this.programExpressionService = programExpressionService;
+    }
 
     // -------------------------------------------------------------------------
     // Input && Output
@@ -54,44 +65,37 @@ public class GetProgramValidationAction
 
     private Integer validationId;
 
-    private ProgramValidation validation;
-
-    private String leftDescription;
-
-    public String getLeftDescription()
-    {
-        return leftDescription;
-    }
-
-    private String rightDescription;
-
-    public String getRightDescription()
-    {
-        return rightDescription;
-    }
-
-    // -------------------------------------------------------------------------
-    // Getter && Setter
-    // -------------------------------------------------------------------------
-
-    public void setProgramValidationService( ProgramValidationService programValidationService )
-    {
-        this.programValidationService = programValidationService;
-    }
-
-    public void setAggregationConditionService( CaseAggregationConditionService aggregationConditionService )
-    {
-        this.aggregationConditionService = aggregationConditionService;
-    }
-
     public void setValidationId( Integer validationId )
     {
         this.validationId = validationId;
     }
 
+    private ProgramValidation validation;
+
     public ProgramValidation getValidation()
     {
         return validation;
+    }
+
+    private String leftSideTextualExpression;
+
+    public String getLeftSideTextualExpression()
+    {
+        return leftSideTextualExpression;
+    }
+
+    private String rightSideTextualExpression;
+
+    public String getRightSideTextualExpression()
+    {
+        return rightSideTextualExpression;
+    }
+
+    private Program program;
+
+    public Program getProgram()
+    {
+        return program;
     }
 
     // -------------------------------------------------------------------------
@@ -104,10 +108,12 @@ public class GetProgramValidationAction
     {
         validation = programValidationService.getProgramValidation( validationId );
 
-        leftDescription = aggregationConditionService.getConditionDescription( validation.getLeftSide() );
-        rightDescription = aggregationConditionService.getConditionDescription( validation.getRightSide() );
+        leftSideTextualExpression = programExpressionService.getExpressionDescription( validation.getLeftSide().getExpression() );
+        
+        rightSideTextualExpression = programExpressionService.getExpressionDescription( validation.getRightSide().getExpression() );
+        
+        program = validation.getProgram();
 
         return SUCCESS;
     }
-
 }

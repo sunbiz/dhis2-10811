@@ -28,9 +28,9 @@
            ##data element name
            <td>
             #if( $useShortName )
-            	$encoder.htmlEncode( $dataElement.shortName )
+            	$encoder.htmlEncode( $dataElement.displayShortName )
             #else
-                $encoder.htmlEncode( $dataElement.name )
+                $encoder.htmlEncode( $dataElement.displayName )
             #end 	          	
            </td>
            

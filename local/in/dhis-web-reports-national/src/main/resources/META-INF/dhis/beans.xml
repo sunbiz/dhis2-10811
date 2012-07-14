@@ -352,7 +352,29 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
         <property name="reportService" ref="org.hisp.dhis.reports.ReportService" />
     </bean>
-    
+
+	
+    <!--District Feedback Reports -->
+
+    <bean
+		id="org.hisp.dhis.reports.districtfeedback.action.GenerateAggregationDistrictFeedbackReportAnalyserFormAction"
+		class="org.hisp.dhis.reports.districtfeedback.action.GenerateAggregationDistrictFeedbackReportAnalyserFormAction"
+		scope="prototype">
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+    </bean>
+
+    <bean
+		id="org.hisp.dhis.reports.districtfeedback.action.GenerateAggregationDistrictFeedbackReportAnalyserResultAction"
+		class="org.hisp.dhis.reports.districtfeedback.action.GenerateAggregationDistrictFeedbackReportAnalyserResultAction"
+		scope="prototype">
+        <property name="reportService" ref="org.hisp.dhis.reports.ReportService" />
+        <property name="statementManager" ref="statementManager" />
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="stateDistrictFeedbackReportService" ref="org.hisp.dhis.reports.StateDistrictFeedbackReportService"/>
+        <property name="reportOrgSpecificDataService" ref="org.hisp.dhis.reports.ReportOrgSpecificDataService"/>
+    </bean>	
+		    
     <!-- Upward / GOI Reports -->
     <bean
         id="org.hisp.dhis.reports.upward.action.GenerateUpwardReportAnalyserFormAction"
@@ -1575,5 +1597,27 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<property name="jdbcTemplate" ref="jdbcTemplate"/>
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
 		<property name="dataElementCategoryOptionComboService" ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
-    </bean>	
+    </bean>
+	
+   <!-- Ranking2 Reports -  -->
+   
+    <bean
+        id="org.hisp.dhis.reports.ranking2.action.Ranking2ReportFormAction"
+        class="org.hisp.dhis.reports.ranking2.action.Ranking2ReportFormAction"
+        scope="prototype">
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+		<property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    </bean>
+   
+   <bean
+        id="org.hisp.dhis.reports.ranking2.action.GenerateRanking2ReportAction"
+        class="org.hisp.dhis.reports.ranking2.action.GenerateRanking2ReportAction"
+        scope="prototype">
+        <property name="statementManager" ref="statementManager"/>
+        <property name="reportService" ref="org.hisp.dhis.reports.ReportService" />
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+		<property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    </bean>
+			
 </beans>

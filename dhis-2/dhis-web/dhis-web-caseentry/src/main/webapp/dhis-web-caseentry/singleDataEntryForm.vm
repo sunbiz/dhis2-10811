@@ -1,0 +1,96 @@
+#if( $customDataEntryFormCode )
+	$customDataEntryFormCode
+#else
+<tbody id="entryForm">
+	<tr>
+		<th colspan='2'>$programStage.program.displayName</th>
+	</tr>
+	<!-- Identifiers/Attributes belong to the selected single program -->
+	#set($program = $programStage.program)
+	#parse( "/dhis-web-caseentry/identifierAndAttributeForm.vm" )
+	
+	<!-- Data elements -->
+#set( $dataElementRowCount = 0 )
+#set( $tabIndex = 1 )
+#foreach( $programStageDataElement in $programStageDataElements )
+	#set( $dataElementRowCount = $dataElementRowCount + 1 )    
+	#set( $patientDataValue = false )
+	#set( $key = $programStageDataElement.dataElement.id )
+	#set( $patientDataValue = $patientDataValueMap.get( $key ) )    
+	<tr>
+		##data element name
+		<td class='text-column' align='center'>
+			<span id="value[$programStageDataElement.dataElement.id].name" title="$!encoder.htmlEncode( $programStageDataElement.dataElement.description )">
+				$encoder.htmlEncode( $programStageDataElement.dataElement.formNameFallback )						
+				#if ( $programStageDataElement.compulsory )
+					<em title="$i18n.getString( "required" )" class="required">*</em>
+				#end        
+			</span>
+			##type        
+			<span id="value[$programStageDataElement.dataElement.id].type" class="hidden">$encoder.htmlEncode( $programStageDataElement.dataElement.type )</span></td>       
+		</td>        
+		##entry        
+		<td class='input-column'>   
+			#set( $id = "DE_" + $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val' )
+			#if( $!programStageDataElement.dataElement.optionSet )
+				#set($hasOptionSet = 'true')
+			#else
+				#set($hasOptionSet = 'false')
+			#end
+			
+			#set($type=$programStageDataElement.dataElement.getDetailedNumberType())
+			#set($validate = '')
+			#if( $type=='number' ) 
+				#set($validate="number:true") 
+			#elseif( $type=='positiveNumber' )
+				#set($validate="positive_integer:true") 
+			#elseif( $type=='negativeNumber' )
+				#set($validate="negative_integer:true")
+			#elseif( $type=='int' )
+				#set($validate="integer:true")
+			#end
+			
+			#if($programStageDataElement.compulsory=='true')
+				#if($validate != '')
+					#set($validate=$validate + ",")
+				#end
+				#set($validate=$validate + "required:true")
+			#end
+				
+			#if( $programStageDataElement.dataElement.textType == "longText" )
+				<textarea name="entryfield" type="text" id="$id" maxlength=255 class="{validate:{$validate}}" >$!encoder.htmlEncode( $patientDataValue.value )</textarea>
+			#elseif( $programStageDataElement.dataElement.type == "bool" )
+				<select name="entryfield" id="$id" class="{validate:{$validate}}" >
+					<option value="">[$i18n.getString( "select_value" )]</option>
+					<option value="true" #if( $patientDataValue.value == "true" ) selected="selected" #end>$i18n.getString( "yes" )</option>
+					<option value="false" #if( $patientDataValue.value == "false" ) selected="selected" #end>$i18n.getString( "no" )</option>
+				</select>
+			#elseif( $programStageDataElement.dataElement.type == "trueOnly" )
+				<input name="entryfield" type="checkbox" id="$id" class="{validate:{$validate}}" >
+			#elseif( $programStageDataElement.dataElement.type == "date" )
+				<input name="entryfield" type="text" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )"class="{validate:{$validate}}">
+				<script type="text/javascript">
+					datePicker("DE_" +  $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false);
+				</script> 
+			#elseif($hasOptionSet=='true')
+				<input name="entryfield" options='$hasOptionSet' id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" class="option {validate:{$validate}}" />
+			#else
+				<input name="entryfield" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" class="{validate:{$validate}}" />
+			#end
+			#if( $programStage.program.displayProvidedOtherFacility=='true' )
+				#set( $id = "DE_" + $programStageDataElement.programStage.id + '_' + $programStageDataElement.dataElement.id + '_facility' )
+				#if( $programStageDataElement.allowProvidedElsewhere == 'true')
+					<input class='provided-elsewhere' name="$id" id="$id" type="checkbox" title="$i18n.getString('provided_elsewhere') ?"/>
+				#else
+					<input class='provided-elsewhere' name="$id" id="$id" type="hidden" value="false";>
+				#end
+			#end
+		</td>
+	</tr>
+	#set( $tabIndex = $tabIndex + 1 )
+#end	
+</tbody>
+#end
+<script>
+	entryFormContainerOnReady();
+</script>

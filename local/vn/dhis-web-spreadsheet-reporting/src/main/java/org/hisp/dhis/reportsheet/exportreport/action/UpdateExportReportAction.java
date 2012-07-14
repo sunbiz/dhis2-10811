@@ -27,8 +27,13 @@ package org.hisp.dhis.reportsheet.exportreport.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.reportsheet.ExportReportService;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.reportsheet.ExportReport;
+import org.hisp.dhis.reportsheet.ExportReportService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -48,6 +53,13 @@ public class UpdateExportReportAction
     public void setExportReportService( ExportReportService exportReportService )
     {
         this.exportReportService = exportReportService;
+    }
+
+    private DataSetService dataSetService;
+
+    public void setDataSetService( DataSetService dataSetService )
+    {
+        this.dataSetService = dataSetService;
     }
 
     // -------------------------------------------------------------------------
@@ -71,6 +83,8 @@ public class UpdateExportReportAction
     private ExportReport exportReport;
 
     private String group;
+
+    private Set<Integer> dataSetIds = new HashSet<Integer>();
 
     // -------------------------------------------------------------------------
     // Getter & Setter
@@ -121,6 +135,11 @@ public class UpdateExportReportAction
         this.organisationCol = organisationCol;
     }
 
+    public void setDataSetIds( Set<Integer> dataSetIds )
+    {
+        this.dataSetIds = dataSetIds;
+    }
+
     // -------------------------------------------------------------------------
     // Action implement
     // -------------------------------------------------------------------------
@@ -153,6 +172,11 @@ public class UpdateExportReportAction
         {
             exportReport.setOrganisationColumn( organisationCol );
             exportReport.setOrganisationRow( organisationRow );
+        }
+
+        if ( dataSetIds != null && !dataSetIds.isEmpty() )
+        {
+            exportReport.updateDataSetMembers( new HashSet<DataSet>( dataSetService.getDataSets( dataSetIds ) ) );
         }
 
         exportReportService.updateExportReport( exportReport );

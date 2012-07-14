@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class ExportReportVerticalCategory
     extends ExportReport
-{    
+{
     private List<CategoryOptionGroupOrder> categoryOptionGroupOrders;
 
     // -------------------------------------------------------------------------
@@ -45,6 +45,16 @@ public class ExportReportVerticalCategory
     public ExportReportVerticalCategory()
     {
         super();
+    }
+
+    public ExportReportVerticalCategory( String name, String group, String excelTemplateFile )
+    {
+        super( name, group, excelTemplateFile );
+    }
+
+    public ExportReportVerticalCategory( String name, String group, String excelTemplateFile, String createdBy )
+    {
+        super( name, group, excelTemplateFile, createdBy );
     }
 
     // -------------------------------------------------------------------------

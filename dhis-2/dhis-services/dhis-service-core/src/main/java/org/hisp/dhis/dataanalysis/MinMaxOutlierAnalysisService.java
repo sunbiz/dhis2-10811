@@ -27,42 +27,42 @@ package org.hisp.dhis.dataanalysis;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import org.amplecode.quick.BatchHandler;
+import org.amplecode.quick.BatchHandlerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
+import org.hisp.dhis.jdbc.batchhandler.MinMaxDataElementBatchHandler;
 import org.hisp.dhis.minmax.MinMaxDataElement;
 import org.hisp.dhis.minmax.MinMaxDataElementService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.system.filter.DataElementTypeFilter;
+import org.hisp.dhis.system.util.ConversionUtils;
+import org.hisp.dhis.system.util.Filter;
+import org.hisp.dhis.system.util.FilterUtils;
+import org.hisp.dhis.system.util.MathUtils;
 
 /**
- * @author Dag Haavi Finstad
  * @author Lars Helge Overland
  */
 public class MinMaxOutlierAnalysisService
-    implements DataAnalysisService
+    implements MinMaxDataAnalysisService
 {
+    private static final Log log = LogFactory.getLog( MinMaxOutlierAnalysisService.class );
+    
+    private static final Filter<DataElement> DATALEMENT_INT_FILTER = new DataElementTypeFilter( DataElement.VALUE_TYPE_INT );
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
-
-    private MinMaxDataElementService minMaxDataElementService;
-
-    public void setMinMaxDataElementService( MinMaxDataElementService minMaxDataElementService )
-    {
-        this.minMaxDataElementService = minMaxDataElementService;
-    }
-
-    private OrganisationUnitService organisationUnitService;
-    
-    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
-    {
-        this.organisationUnitService = organisationUnitService;
-    }
     
     private DataAnalysisStore dataAnalysisStore;
 
@@ -70,73 +70,89 @@ public class MinMaxOutlierAnalysisService
     {
         this.dataAnalysisStore = dataAnalysisStore;
     }
+    
+    private MinMaxDataElementService minMaxDataElementService;
+
+    public void setMinMaxDataElementService( MinMaxDataElementService minMaxDataElementService )
+    {
+        this.minMaxDataElementService = minMaxDataElementService;
+    }
+    
+    private BatchHandlerFactory batchHandlerFactory;
+
+    public void setBatchHandlerFactory( BatchHandlerFactory batchHandlerFactory )
+    {
+        this.batchHandlerFactory = batchHandlerFactory;
+    }
 
     // -------------------------------------------------------------------------
-    // MinMaxOutlierAnalysisService implementation
+    // DataAnalysisService implementation
     // -------------------------------------------------------------------------
 
-    public final Collection<DeflatedDataValue> analyse( OrganisationUnit organisationUnit,
+    public Collection<DeflatedDataValue> analyse( Collection<OrganisationUnit> organisationUnits,
         Collection<DataElement> dataElements, Collection<Period> periods, Double stdDevFactor )
     {
-        Collection<OrganisationUnit> units = organisationUnitService.getOrganisationUnitWithChildren( organisationUnit.getId() );
+        Set<DataElement> elements = new HashSet<DataElement>( dataElements );
         
-        Collection<DeflatedDataValue> outlierCollection = new ArrayList<DeflatedDataValue>();
+        FilterUtils.filter( elements, DATALEMENT_INT_FILTER );
         
-        loop : for ( OrganisationUnit unit : units )
+        Set<DataElementCategoryOptionCombo> categoryOptionCombos = new HashSet<DataElementCategoryOptionCombo>();
+        
+        for ( DataElement dataElement : elements )
         {
-            MinMaxValueMap map = getMinMaxValueMap( minMaxDataElementService.getMinMaxDataElements( unit, dataElements ) );
-            
-            for ( DataElement dataElement : dataElements )
+            categoryOptionCombos.addAll( dataElement.getCategoryCombo().getOptionCombos() );
+        }
+
+        log.debug( "Starting min-max analysis, no of data elements: " + elements.size() + ", no of org units: " + organisationUnits.size() );
+        
+        return dataAnalysisStore.getMinMaxViolations( elements, categoryOptionCombos, periods, organisationUnits, MAX_OUTLIERS );
+    }
+    
+    public void generateMinMaxValues( Collection<OrganisationUnit> organisationUnits,
+        Collection<DataElement> dataElements, Double stdDevFactor )
+    {
+        log.debug( "Starting min-max value generation, no of data elements: " + dataElements.size() + ", no of org units: " + organisationUnits.size() );
+
+        Set<Integer> orgUnitIds = new HashSet<Integer>( ConversionUtils.getIdentifiers( OrganisationUnit.class, organisationUnits ) ); 
+
+        minMaxDataElementService.removeMinMaxDataElements( dataElements, organisationUnits );
+
+        log.debug( "Deleted existing min-max values" );
+
+        BatchHandler<MinMaxDataElement> batchHandler = batchHandlerFactory.createBatchHandler( MinMaxDataElementBatchHandler.class ).init();
+        
+        for ( DataElement dataElement : dataElements )
+        {
+            if ( dataElement.getType().equals( DataElement.VALUE_TYPE_INT ) )
             {
-                if ( dataElement.getType().equals( DataElement.VALUE_TYPE_INT ) )
-                {                    
-                    Collection<DataElementCategoryOptionCombo> categoryOptionCombos = dataElement.getCategoryCombo().getOptionCombos();
+                Collection<DataElementCategoryOptionCombo> categoryOptionCombos = dataElement.getCategoryCombo().getOptionCombos();
+
+                for ( DataElementCategoryOptionCombo categoryOptionCombo : categoryOptionCombos )
+                {
+                    Map<Integer, Double> standardDeviations = dataAnalysisStore.getStandardDeviation( dataElement, categoryOptionCombo, orgUnitIds );
                     
-                    for ( DataElementCategoryOptionCombo categoryOptionCombo : categoryOptionCombos )
+                    Map<Integer, Double> averages = dataAnalysisStore.getAverage( dataElement, categoryOptionCombo, standardDeviations.keySet() );
+                    
+                    for ( Integer unit : averages.keySet() )
                     {
-                        outlierCollection.addAll( findOutliers( unit, dataElement, categoryOptionCombo, periods, map ) );
+                        Double stdDev = standardDeviations.get( unit );
+                        Double avg = averages.get( unit );
                         
-                        if ( outlierCollection.size() > MAX_OUTLIERS )
+                        if ( stdDev != null && avg != null )
                         {
-                            break loop;
+                            int min = (int) MathUtils.getLowBound( stdDev, stdDevFactor, avg );
+                            int max = (int) MathUtils.getHighBound( stdDev, stdDevFactor, avg );
+                            
+                            OrganisationUnit source = new OrganisationUnit();
+                            source.setId( unit );
+                            
+                            batchHandler.addObject( new MinMaxDataElement( source, dataElement, categoryOptionCombo, min, max, true ) );
                         }
-                    }
+                    }                        
                 }
             }
         }
-
-        return outlierCollection;
         
-        //TODO improve performance by joining datavalue with minmaxdataelement
-    }
-
-    // -------------------------------------------------------------------------
-    // Supportive methods
-    // -------------------------------------------------------------------------
-
-    private Collection<DeflatedDataValue> findOutliers( OrganisationUnit organisationUnit, DataElement dataElement, 
-        DataElementCategoryOptionCombo categoryOptionCombo, Collection<Period> periods, MinMaxValueMap map )
-    {
-        MinMaxDataElement minMaxDataElement = map.get( organisationUnit, dataElement, categoryOptionCombo );
-
-        if ( minMaxDataElement != null )
-        {
-            return dataAnalysisStore.getDeflatedDataValues( dataElement, categoryOptionCombo, periods, 
-                organisationUnit, minMaxDataElement.getMin(), minMaxDataElement.getMax() );
-        }
-        
-        return new ArrayList<DeflatedDataValue>();
-    }
-    
-    private MinMaxValueMap getMinMaxValueMap( Collection<MinMaxDataElement> minMaxDataElements )
-    {
-        MinMaxValueMap map = new MinMaxValueMap();
-        
-        for ( MinMaxDataElement element : minMaxDataElements )
-        {
-            map.put( element );
-        }
-        
-        return map;
+        batchHandler.flush();
     }
 }

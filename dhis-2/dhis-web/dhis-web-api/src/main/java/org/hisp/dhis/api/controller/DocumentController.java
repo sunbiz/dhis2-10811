@@ -27,21 +27,28 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.api.utils.ContextUtils.CONTENT_TYPE_JPG;
+import static org.hisp.dhis.api.utils.ContextUtils.CONTENT_TYPE_PDF;
+import static org.hisp.dhis.api.utils.ContextUtils.CONTENT_TYPE_PNG;
+
+import java.io.InputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.document.Document;
 import org.hisp.dhis.document.DocumentService;
 import org.hisp.dhis.external.location.LocationManager;
+import org.hisp.dhis.external.location.LocationManagerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.InputStream;
-
-import static org.hisp.dhis.api.utils.ContextUtils.*;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -54,6 +61,8 @@ public class DocumentController
 {
     public static final String RESOURCE_PATH = "/documents";
 
+    private static final Log log = LogFactory.getLog( DocumentController.class );
+    
     @Autowired
     private DocumentService documentService;
 
@@ -74,13 +83,25 @@ public class DocumentController
         }
         else
         {
+            InputStream in = null;
+            
+            try
+            {
+                in = locationManager.getInputStream( document.getUrl(), DocumentService.DIR );
+
+            }
+            catch ( LocationManagerException ex )
+            {
+                ContextUtils.conflictResponse( response, "Document could not be found: " + document.getUrl() );
+                log.error( ex );
+                return;
+            }
+            
             String ct = document.getContentType();
 
             boolean attachment = !(CONTENT_TYPE_PDF.equals( ct ) || CONTENT_TYPE_JPG.equals( ct ) || CONTENT_TYPE_PNG.equals( ct ));
 
             contextUtils.configureResponse( response, document.getContentType(), CacheStrategy.CACHE_TWO_WEEKS, document.getUrl(), attachment );
-
-            InputStream in = locationManager.getInputStream( document.getUrl(), DocumentService.DIR );
 
             IOUtils.copy( in, response.getOutputStream() );
         }

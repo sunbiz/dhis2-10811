@@ -63,15 +63,17 @@ public class ProgramStage
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-        dout.writeInt( this.getId() );
-        dout.writeUTF( this.getName() );
-
-        dout.writeInt( dataElements.size() );
-
-        for ( int i = 0; i < dataElements.size(); i++ )
+        if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            DataElement de = (DataElement) dataElements.get( i );
-            de.serialize( dout );
+            this.serializeVerssion2_8( dout );
+        }
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
+        {
+            this.serializeVerssion2_9( dout );
+        }
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
+        {
+            this.serializeVerssion2_10( dout );
         }
     }
 
@@ -87,7 +89,8 @@ public class ProgramStage
         for ( int i = 0; i < dataElements.size(); i++ )
         {
             DataElement de = (DataElement) dataElements.get( i );
-            de.serializeVerssion2_8( dout );
+            de.setClientVersion( TWO_POINT_EIGHT );
+            de.serialize( dout );
         }
     }
 
@@ -103,7 +106,25 @@ public class ProgramStage
         for ( int i = 0; i < dataElements.size(); i++ )
         {
             DataElement de = (DataElement) dataElements.get( i );
-            de.serializeVerssion2_9( dout );
+            de.setClientVersion( TWO_POINT_NINE );
+            de.serialize( dout );
+        }
+    }
+    
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dout )
+        throws IOException
+    {
+        dout.writeInt( this.getId() );
+        dout.writeUTF( this.getName() );
+
+        dout.writeInt( dataElements.size() );
+
+        for ( int i = 0; i < dataElements.size(); i++ )
+        {
+            DataElement de = (DataElement) dataElements.get( i );
+            de.setClientVersion( TWO_POINT_TEN );
+            de.serialize( dout );
         }
     }
 

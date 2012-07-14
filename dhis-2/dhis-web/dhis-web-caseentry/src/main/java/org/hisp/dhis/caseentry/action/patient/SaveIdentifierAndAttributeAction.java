@@ -38,11 +38,9 @@ import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeOption;
 import org.hisp.dhis.patient.PatientAttributeOptionService;
-import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientIdentifierService;
 import org.hisp.dhis.patient.PatientIdentifierType;
-import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
@@ -65,14 +63,10 @@ public class SaveIdentifierAndAttributeAction
 
     private PatientService patientService;
 
-    private PatientIdentifierTypeService identifierTypeService;
-
     private PatientIdentifierService patientIdentifierService;
 
     private PatientAttributeValueService patientAttributeValueService;
-
-    private PatientAttributeService patientAttributeService;
-
+    
     private PatientAttributeOptionService patientAttributeOptionService;
 
     private ProgramService programService;
@@ -101,11 +95,6 @@ public class SaveIdentifierAndAttributeAction
         this.patientAttributeValueService = patientAttributeValueService;
     }
 
-    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
-    {
-        this.patientAttributeService = patientAttributeService;
-    }
-
     public void setPatientAttributeOptionService( PatientAttributeOptionService patientAttributeOptionService )
     {
         this.patientAttributeOptionService = patientAttributeOptionService;
@@ -126,9 +115,14 @@ public class SaveIdentifierAndAttributeAction
         this.patientIdentifierService = patientIdentifierService;
     }
 
-    public void setIdentifierTypeService( PatientIdentifierTypeService identifierTypeService )
+    public Integer getProgramId()
     {
-        this.identifierTypeService = identifierTypeService;
+        return programId;
+    }
+
+    public Integer getPatientId()
+    {
+        return patientId;
     }
 
     public void setPatientId( Integer patientId )
@@ -170,7 +164,7 @@ public class SaveIdentifierAndAttributeAction
 
         String value = null;
 
-        Collection<PatientIdentifierType> identifierTypes = identifierTypeService.getPatientIdentifierTypes( program );
+        Collection<PatientIdentifierType> identifierTypes = program.getPatientIdentifierTypes();
 
         PatientIdentifier identifier = null;
 
@@ -215,7 +209,7 @@ public class SaveIdentifierAndAttributeAction
 
         String value = null;
 
-        Collection<PatientAttribute> attributes = patientAttributeService.getPatientAttributes( program );
+        Collection<PatientAttribute> attributes = program.getPatientAttributes();
 
         PatientAttributeValue attributeValue = null;
 

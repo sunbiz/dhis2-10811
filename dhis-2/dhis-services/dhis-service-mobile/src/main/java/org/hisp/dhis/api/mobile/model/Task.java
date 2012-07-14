@@ -132,4 +132,12 @@ public class Task
         dout.writeBoolean( this.isCompleted() );
 
     }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

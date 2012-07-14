@@ -37,6 +37,7 @@ import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.util.SessionUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -151,6 +152,9 @@ public class GetSingleEventBeneficiaryAction
     public String execute()
         throws Exception
     {
+        //delete previous data value of other single event form
+        SessionUtils.removeSessionVar( "prevDataValues" );
+        
         OrganisationUnit orgUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
         Program program = programService.getProgram( programId );
         Collection<Patient> allPatient = patientService.getPatients( orgUnit, null, null  );

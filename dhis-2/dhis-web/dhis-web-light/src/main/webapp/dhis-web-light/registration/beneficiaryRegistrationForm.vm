@@ -10,27 +10,41 @@
 
 <form action="saveBeneficiary.action" method="POST">
 <div class="header-box" align="center">
-<input type="hidden" name="orgUnitId" value="$orgUnitId"/>	
+<input type="hidden" name="orgUnitId" value="$orgUnitId"/>
+#if ($originalPatientId)
+	<input type="hidden" name="originalPatientId" value="$originalPatientId"/>	
+#end
+
+#if ($relationshipTypeId)
+	<input type="hidden" name="relationshipTypeId" value="$relationshipTypeId"/>
+#end
+
+	
 	<p style="text-align: left;">
-		<label>$i18n.getString( "full_name" )</label>
+		<label>$i18n.getString( "full_name" )*</label>
+
 		#if( $validationMap.get( "fullName" ) )
            	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "fullName" ))</span>
      	#end
+
 		<input type="text" name="patientFullName" value="$!previousValues.get("fullName")" />
-		
+
 		<label>$i18n.getString( "gender" )</label>
 		<select name="gender">
+		
+		<option value="F"
+			#if($previousValues.get("gender") == "F")
+				selected
+			#end
+			>$i18n.getString( "female" )</option>
+			
 			<option value="M"
 			#if($previousValues.get("gender") == "M")
 				selected
 			#end
 			>$i18n.getString( "male" )</option>
 			
-			<option value="F"
-			#if($previousValues.get("gender") == "F")
-				selected
-			#end
-			>$i18n.getString( "female" )</option>
+			
 			
 			<option value="T"
 			#if($previousValues.get("gender") == "T")
@@ -39,7 +53,7 @@
 			>$i18n.getString( "transgender" )</option>
 		</select>
 		
-		<label>$i18n.getString( "date_of_birth_type" )</label>
+		<label>$i18n.getString( "date_of_birth" )</label>
 		<select name="dobType">
 			<option value="A"
 			#if($previousValues.get("dobType") == "A")
@@ -59,12 +73,19 @@
 			#end
 			>$i18n.getString( "verified" )</option>
 		</select>
-		
-		<label>$i18n.getString( "date_of_birth" )</label>
+
 		#if( $validationMap.get( "dob" ) )
-           	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "dob" ))</span>
+           	<span style="color: #990000;"> $i18n.getString($validationMap.get( "dob" ))</span>
      	#end
 		<input type="text" name="dateOfBirth" value="$!previousValues.get("dob")" />
+		
+		<label>$i18n.getString( "phone_number" )</label>
+		
+		#if( $validationMap.get( "phoneNumber" ) )
+           	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "phoneNumber" ))</span>
+     	#end
+		<input type="text" name="phoneNumber" value="$!previousValues.get("phoneNumber")" />
+		
 		
 		#foreach($patientIdentifierType in $patientIdentifierTypes)
 			#if(! $patientIdentifierType.program)
@@ -76,7 +97,7 @@
 				<input type="text" name="$key" value="$!previousValues.get($key)" />
 			#end
 		#end
-		
+
 		#foreach($patientAttribute in $patientAttributes)
 			#if(! $patientAttribute.program)
 				#set($key = "AT${patientAttribute.id}")
@@ -104,8 +125,6 @@
 				#end
 			#end
 		#end
-
-		
 	</p>
 </div>
 

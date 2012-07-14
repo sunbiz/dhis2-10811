@@ -7,9 +7,7 @@
     
       <table class="listTable">
           <col>          
-          <col width="20">
-          <col width="20">     
-          <col width="20">
+          <col width="120">
 		  <tr>
 		  	<td></td>
 			<td colspan="4" style="text-align:right"><input type="button" value="$i18n.getString( "add_new" )" onclick="window.location.href='showAddPatientIdentifierTypeForm.action'" style="width:70px"></td>
@@ -23,17 +21,12 @@
             #foreach( $identifierType in $identifierTypes )
               <tr id="tr${identifierType.id}">
               
-                <td onclick="showPatientIdentifierTypeDetails( $identifierType.id )">$encoder.htmlEncode( $identifierType.name )</td>                
+                <td onclick="showPatientIdentifierTypeDetails( $identifierType.id )">$encoder.htmlEncode( $identifierType.displayName )</td>                
                 
                 <td style="text-align:center"#alternate( $mark )>
                   <a href="showUpdatePatientIdentifierTypeForm.action?id=$identifierType.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>
-                </td>
- 
-                <td style="text-align:center"#alternate( $mark )>
-                  <a href="javascript:removePatientIdentifierType( '$identifierType.id', '$encoder.jsEncode( $identifierType.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
-                </td>            
-                
-                <td style="text-align:center"#alternate( $mark )>
+                  <a href="javascript:translate( 'PatientIdentifierType', '$identifierType.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+				  <a href="javascript:removePatientIdentifierType( '$identifierType.id', '$encoder.jsEncode( $identifierType.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
                   <a href="javascript:showPatientIdentifierTypeDetails( $identifierType.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"></a>
                 </td>
                 
@@ -47,7 +40,7 @@
 		<td style="width:20em; padding-left:2em; vertical-align:top">
 			<div id="detailsArea" style="display:none">
 				<div style="float:right">
-					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/close.png" alt="$i18n.getString( 'hide_details' )"></a>
+					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"></a>
 				</div>				
 				<p><label class="bold">$i18n.getString( "name" ):</label><br><span id="nameField"></span></p>
 				<p><label class="bold">$i18n.getString( "description" ):</label><br><span id="descriptionField"></span></p>
@@ -55,7 +48,6 @@
 				<p><label class="bold">$i18n.getString( "related" ):</label><br><span id="relatedField"></span></p>
 				<p><label class="bold">$i18n.getString( "no_of_char" ):</label><br><span id="noCharsField"></span></p>
 				<p><label class="bold">$i18n.getString( "type" ):</label><br><span id="typeField"></span></p>
-				<p><label class="bold">$i18n.getString( "program" ):</label><br><span id="programField"></span></p>
 			</div>
 		</td>
   </tr>

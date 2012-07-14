@@ -41,22 +41,22 @@ function showValidationCriteriaDetails( criteriaId )
 function showDivValue(){
 	
 	var propertyName = byId('property').value;
-	
 	hideDiv();
-	
 	if(propertyName != '')
 	{
-		 var div = byId(propertyName + 'Div');
-		 div.style.display = 'block';
-		 
-		 if( propertyName == 'gender' || 
+		hideById('emptyCriteria');
+		
+		var div = byId(propertyName + 'Div');
+		div.style.display = 'block';
+		if( propertyName == 'gender' || 
 			propertyName == 'dobType' ){
 				
 			byId('operator').selectedIndex = 1;
 			disable('operator');
-		 }else{
+		}
+		else{
 			enable('operator');
-		 }
+		}
 	 }
 }
 
@@ -66,6 +66,7 @@ function hideDiv()
 	hideById('integerValueOfAgeDiv');
 	hideById('birthDateDiv');
 	hideById('dobTypeDiv');	
+	showById('emptyCriteria');
 }
 
 function fillValue( value ){

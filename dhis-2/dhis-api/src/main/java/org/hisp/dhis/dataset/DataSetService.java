@@ -27,14 +27,14 @@ package org.hisp.dhis.dataset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Lars Helge Overland
@@ -103,7 +103,7 @@ public interface DataSetService
      * @param name The name.
      * @return A DataSet with the given name.
      */
-    DataSet getDataSetByName( String name );
+    List<DataSet> getDataSetByName( String name );
 
     /**
      * Returns the DataSet with the given short name.
@@ -111,12 +111,12 @@ public interface DataSetService
      * @param shortName The short name.
      * @return The DataSet with the given short name.
      */
-    DataSet getDataSetByShortName( String shortName );
+    List<DataSet> getDataSetByShortName( String shortName );
 
     /**
      * Returns the DataSet with the given code.
      *
-     * @param shortName The code.
+     * @param code The code.
      * @return The DataSet with the given code.
      */
     DataSet getDataSetByCode( String code );
@@ -203,12 +203,12 @@ public interface DataSetService
 
     /**
      * Returns a list of data sets with the given uids.
-     * 
+     *
      * @param uids the collection of uids.
      * @return a list of data sets.
      */
     List<DataSet> getDataSetsByUid( Collection<String> uids );
-    
+
     /**
      * Returns a collection of data elements associated with the given
      * corresponding data set.
@@ -315,21 +315,21 @@ public interface DataSetService
     /**
      * Checks whether the system is locked for data entry for the given input.
      *
-     * @param dataSet the data set
-     * @param period Period the period.s
+     * @param dataSet          the data set
+     * @param period           Period the period.s
      * @param organisationUnit the organisation unit.
-     * @param now the base date for deciding locked date, current date if null.
+     * @param now              the base date for deciding locked date, current date if null.
      * @return true or false indicating whether the system is locked or not.
      */
     boolean isLocked( DataSet dataSet, Period period, OrganisationUnit organisationUnit, Date now );
-    
+
     /**
      * Checks whether the system is locked for data entry for the given input.
-     * 
-     * @param dataElement the data element.
-     * @param period the period.
+     *
+     * @param dataElement      the data element.
+     * @param period           the period.
      * @param organisationUnit the organisation unit.
-     * @param now the base date for deciding locked date, current date if null.
+     * @param now              the base date for deciding locked date, current date if null.
      * @return true or false indicating whether the system is locked or not.
      */
     boolean isLocked( DataElement dataElement, Period period, OrganisationUnit organisationUnit, Date now );

@@ -1,0 +1,23 @@
+<ul>
+#if( $objects.size() > 0 )
+#foreach( $o in $objects )
+#if( $o )
+#if( "User" == $o.getClass().getSimpleName() )
+<li><a href="profile.action?id=${o.uid}"><img src="../images/user_small.png">&nbsp; $encoder.htmlEncode( $o.name )</a></li>
+#elseif( "Chart" == $o.getClass().getSimpleName() )
+<li><a href="../dhis-web-visualizer/app/index.html?id=${o.uid}"><img src="../images/chart_small.png">&nbsp; $encoder.htmlEncode( $o.name )</a></li>
+#elseif( "Map" == $o.getClass().getSimpleName() )
+<li><a href="../dhis-web-mapping/app/index.html?id=${o.uid}"><img src="../images/map_small.png">&nbsp; $encoder.htmlEncode( $o.name )</a></li>
+#elseif( "Report" == $o.getClass().getSimpleName() )
+<li><a href="../dhis-web-reporting/getReportParams.action?uid=${o.uid}&mode=report"><img src="../images/table_small.png">&nbsp; $encoder.htmlEncode( $o.name )</a></li>
+#elseif( "ReportTable" == $o.getClass().getSimpleName() )
+<li><a href="../dhis-web-reporting/getReportParams.action?uid=${o.uid}&mode=table"><img src="../images/table_small.png">&nbsp; $encoder.htmlEncode( $o.name )</a></li>
+#elseif( "Document" == $o.getClass().getSimpleName() )
+<li><a href="../api/documents/${o.uid}/data"><img src="../images/document_small.png">&nbsp; $encoder.htmlEncode( $o.name )</a></li>
+#end
+#end
+#end
+#else
+<li style="padding-left:12px">$i18n.getString( "no_hits" )</li>
+#end
+</ul>

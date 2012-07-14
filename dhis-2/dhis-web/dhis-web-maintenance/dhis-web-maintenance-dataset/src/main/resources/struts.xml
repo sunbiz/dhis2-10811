@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC
-"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
-"http://struts.apache.org/dtds/struts-2.0.dtd">
+  "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+  "http://struts.apache.org/dtds/struts-2.0.dtd">
 <struts>
 
   <include file="dhis-web-commons.xml" />
@@ -14,8 +14,8 @@
       <param name="menu">/dhis-web-maintenance-dataset/menu.vm</param>
     </action>
 
-	<!-- Dataset -->
-	  
+    <!-- Dataset -->
+
     <action name="dataSet" class="org.hisp.dhis.dataset.action.DataSetListAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-dataset/dataSetList.vm</param>
@@ -23,7 +23,7 @@
       <param name="javascripts">javascript/dataSet.js</param>
     </action>
 
-	<!-- Section -->
+    <!-- Section -->
 
     <action name="section" class="org.hisp.dhis.dataset.action.section.SectionListAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -53,7 +53,8 @@
 
     <action name="getSection" class="org.hisp.dhis.dataset.action.section.GetSectionAction">
       <result name="success" type="velocity-json">
-		/dhis-web-commons/ajax/jsonSection.vm</result>
+        /dhis-web-commons/ajax/jsonSection.vm
+      </result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
@@ -100,7 +101,7 @@
       <result name="success" type="redirect">section.action</result>
     </action>
 
-	<!-- Sort order -->
+    <!-- Sort order -->
 
     <action name="showSortDataSetForm" class="org.hisp.dhis.dataset.action.GetDataSetListSortOrderAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -111,16 +112,16 @@
       <result name="success" type="redirect">dataSet.action</result>
     </action>
 
-	<!-- Show add DataSet form -->
+    <!-- Show add DataSet form -->
 
-    <action name="addDataSetForm" class="org.hisp.dhis.dataset.action.PeriodTypeListAction">
+    <action name="addDataSetForm" class="org.hisp.dhis.dataset.action.EditDataSetFormAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-dataset/addDataSet.vm</param>
       <param name="javascripts">javascript/shortName.js,javascript/dataSet.js</param>
-      <param name="requiredAuthorities">F_DATASET_ADD</param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
-	<!-- Show edit DataSet form -->
+    <!-- Show edit DataSet form -->
 
     <action name="editDataSetForm" class="org.hisp.dhis.dataset.action.EditDataSetFormAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -129,7 +130,7 @@
       <param name="requiredAuthorities">F_DATASET_UPDATE</param>
     </action>
 
-	<!-- Validation, add, update, and delete -->
+    <!-- Validation, add, update, and delete -->
 
     <action name="validateDataSet" class="org.hisp.dhis.dataset.action.ValidateDataSetAction">
       <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
@@ -139,7 +140,7 @@
 
     <action name="addDataSet" class="org.hisp.dhis.dataset.action.AddDataSetAction">
       <result name="success" type="redirect">dataSet.action</result>
-      <param name="requiredAuthorities">F_DATASET_ADD</param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="updateDataSet" class="org.hisp.dhis.dataset.action.UpdateDataSetAction">
@@ -154,7 +155,7 @@
       <param name="requiredAuthorities">F_DATASET_DELETE</param>
     </action>
 
-	<!-- DataSet association -->
+    <!-- DataSet association -->
 
     <action name="defineDataSetAssociationsForm" class="org.hisp.dhis.dataset.action.GetDataSetAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -167,22 +168,26 @@
       <param name="requiredAuthorities">F_DATASET_UPDATE</param>
     </action>
 
-	<!-- DataEntryForm -->
+    <!-- DataEntryForm -->
 
     <action name="viewDataEntryForm" class="org.hisp.dhis.dataset.action.dataentryform.ViewDataEntryFormAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-dataset/viewDataEntryForm.vm</param>
       <param name="javascripts">../dhis-web-commons/ckeditor/ckeditor.js,
         ../dhis-web-commons/ckeditor/adapters/jquery.js,
-        javascript/dataEntryForm.js</param>
+        javascript/dataEntryForm.js
+      </param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="saveDataEntryForm" class="org.hisp.dhis.dataset.action.dataentryform.SaveDataEntryFormAction">
       <result name="success" type="redirect">dataSet.action</result>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="autoSaveDataEntryForm" class="org.hisp.dhis.dataset.action.dataentryform.AutoSaveDataEntryFormAction">
       <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="validateDataEntryForm" class="org.hisp.dhis.dataset.action.dataentryform.ValidateDataEntryFormAction">
@@ -193,42 +198,53 @@
 
     <action name="delDataEntryForm" class="org.hisp.dhis.dataset.action.dataentryform.DelDataEntryFormAction">
       <result name="success" type="redirect">dataSet.action</result>
+      <param name="requiredAuthorities">F_DATASET_DELETE</param>
     </action>
 
     <action name="getSelectedDataElements" class="org.hisp.dhis.dataset.action.dataentryform.GetSelectedDataElementsAction">
       <result name="success" type="velocity-xml">/dhis-web-maintenance-dataset/responseSelDataElementList.vm</result>
     </action>
 
-	<!-- Compulsory data elements -->
+    <action name="setAutoSaveSetting" class="org.hisp.dhis.dataset.action.dataentryform.SetAutoSaveSettingAction">
+      <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+    </action>
+
+    <!-- Compulsory data elements -->
 
     <action name="displayCompulsoryDataElementsForm" class="org.hisp.dhis.dataset.action.compulsory.GetCompulsoryDataElementsAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-dataset/compulsoryDataElementsForm.vm</param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="saveCompulsoryDataElements" class="org.hisp.dhis.dataset.action.compulsory.SaveCompulsoryDataElementsAction">
       <result name="success" type="redirect">dataSet.action</result>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
-	<!-- Dataset Editor -->
+    <!-- Dataset Editor -->
 
     <action name="displayEditorForm" class="org.hisp.dhis.dataset.action.NoAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-maintenance-dataset/viewEditorForm.vm</param>
       <param name="menu">/dhis-web-maintenance-dataset/menu.vm</param>
       <param name="javascripts">../dhis-web-commons/oust/oust.js,javascript/editor.js</param>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="showedAssociationsEditor" class="org.hisp.dhis.dataset.action.editor.ShowedAssociationsEditorAction">
       <result name="success" type="velocity">/dhis-web-maintenance-dataset/htmlGrid.vm</result>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="definedAssociationEditor" class="org.hisp.dhis.dataset.action.editor.DefinedAssociationEditorAction">
       <result name="success" type="velocity">/dhis-web-maintenance-dataset/loadIcon.vm</result>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
     <action name="definedMultiAssociationsEditor" class="org.hisp.dhis.dataset.action.editor.DefinedMultiAssociationsEditorAction">
       <result name="success" type="velocity">/dhis-web-maintenance-dataset/loadIcons.vm</result>
+      <param name="anyAuthorities">F_DATASET_PUBLIC_ADD, F_DATASET_PRIVATE_ADD</param>
     </action>
 
   </package>

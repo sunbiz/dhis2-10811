@@ -40,6 +40,7 @@ public class VelocityManager
 
     private static final String RESOURCE_LOADER_NAME = "class";
     private static final String VM_SUFFIX = ".vm";
+    
     private VelocityEngine velocity;
 
     public VelocityManager()
@@ -49,6 +50,7 @@ public class VelocityManager
         velocity.setProperty( RESOURCE_LOADER_NAME + ".resource.loader.class", ClasspathResourceLoader.class.getName() );
         velocity.setProperty( "runtime.log.logsystem.log4j.logger", "console" );
         velocity.setProperty( "runtime.log", "" );
+                
         velocity.init();
     }
 

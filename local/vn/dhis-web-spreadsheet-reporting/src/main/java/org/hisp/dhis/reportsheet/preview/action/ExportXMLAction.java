@@ -69,15 +69,11 @@ public class ExportXMLAction
     // Input && Output
     // -------------------------------------------------------------------------
 
-    private String xmlStructureResponse;
-
-    // -------------------------------------------------------------------------
-    // Getter & Setter
-    // -------------------------------------------
+    private String xml;
 
     public String getXmlStructureResponse()
     {
-        return xmlStructureResponse;
+        return xml;
     }
 
     // -------------------------------------------------------------------------
@@ -104,8 +100,7 @@ public class ExportXMLAction
                 }
             }
 
-            xmlStructureResponse = new XMLStructureResponse( selectionManager.getDownloadFilePath(), sheets, false,
-                false, true, false, true ).getXml();
+            xml = new XMLStructureResponse( selectionManager.getDownloadFilePath(), sheets, null ).getXml();
 
             return SUCCESS;
         }

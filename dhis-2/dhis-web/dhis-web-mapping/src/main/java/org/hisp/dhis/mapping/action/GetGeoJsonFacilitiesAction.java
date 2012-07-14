@@ -27,12 +27,21 @@ package org.hisp.dhis.mapping.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.util.ContextUtils.clearIfNotModified;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.apache.struts2.ServletActionContext;
+import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
+import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.system.filter.OrganisationUnitWithValidCoordinatesFilter;
 import org.hisp.dhis.system.util.FilterUtils;
@@ -68,23 +77,35 @@ public class GetGeoJsonFacilitiesAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer parentId;
+    private String parentId;
 
-    public void setParentId( Integer id )
+    public void setParentId( String parentId )
     {
-        this.parentId = id;
+        this.parentId = parentId;
     }
 
-    private Integer level;
+    private String level;
 
-    public void setLevel( Integer level )
+    public void setLevel( String level )
     {
         this.level = level;
+    }
+    
+    private String callback;
+    
+    public void setCallback( String callback )
+    {
+        this.callback = callback;
     }
 
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
+    
+    public String getCallback()
+    {
+        return callback;
+    }
 
     private Collection<OrganisationUnit> object;
 
@@ -92,7 +113,7 @@ public class GetGeoJsonFacilitiesAction
     {
         return object;
     }
-    
+
     private Collection<OrganisationUnitGroupSet> groupSets;
 
     public Collection<OrganisationUnitGroupSet> getGroupSets()
@@ -107,16 +128,61 @@ public class GetGeoJsonFacilitiesAction
     public String execute()
         throws Exception
     {
+        groupSets = organisationUnitGroupService.getAllOrganisationUnitGroupSets();
+
+        // ---------------------------------------------------------------------
+        // Check if modified for caching purposes
+        // ---------------------------------------------------------------------
+
+        Set<OrganisationUnitGroup> groups = new HashSet<OrganisationUnitGroup>();
+        
+        for ( OrganisationUnitGroupSet groupSet : groupSets )
+        {
+            groups.addAll( groupSet.getOrganisationUnitGroups() );
+        }
+        
+        // ---------------------------------------------------------------------
+        // Retrieve list of organisation units and populate group names
+        // ---------------------------------------------------------------------
+
         OrganisationUnit parent = organisationUnitService.getOrganisationUnit( parentId );
 
-        level = level == null ? organisationUnitService.getLevelOfOrganisationUnit( parent.getId() ) : level;
+        if ( parent == null )
+        {
+            parent = organisationUnitService.getOrganisationUnit( Integer.parseInt( parentId ) );
+        }
 
-        Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitsAtLevel( level,
-            parent );
+        OrganisationUnitLevel orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( level );
+
+        if ( orgUnitLevel == null )
+        {
+            orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( Integer.parseInt( level ) );
+        }
+
+        if ( orgUnitLevel == null )
+        {
+            orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( parent.getOrganisationUnitLevel() );
+        }
+
+        Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitsAtLevel(
+            orgUnitLevel.getLevel(), parent );
 
         FilterUtils.filter( organisationUnits, new OrganisationUnitWithValidCoordinatesFilter() );
 
-        groupSets = organisationUnitGroupService.getAllOrganisationUnitGroupSets();
+        // ---------------------------------------------------------------------
+        // Check both org unit groups and org units for caching purposes as both 
+        // membership and coordinates may have been modified
+        // ---------------------------------------------------------------------
+
+        Collection<IdentifiableObject> cachingCollection = new ArrayList<IdentifiableObject>( groups );
+        cachingCollection.addAll( organisationUnits );
+        
+        boolean modified = !clearIfNotModified( ServletActionContext.getRequest(), ServletActionContext.getResponse(), cachingCollection );
+        
+        if ( !modified )
+        {
+            return SUCCESS;
+        }
         
         object = new ArrayList<OrganisationUnit>();
 
@@ -124,17 +190,15 @@ public class GetGeoJsonFacilitiesAction
         {
             if ( unit.getFeatureType().equals( OrganisationUnit.FEATURETYPE_POINT ) )
             {
-                int i = 0;
+                List<String> groupNames = new ArrayList<String>( groupSets.size() );
 
-                String[] groupNames = new String[groupSets.size()];
-                
                 for ( OrganisationUnitGroupSet groupSet : groupSets )
                 {
-                    groupNames[ i++ ] = unit.getGroupNameInGroupSet( groupSet );
+                    groupNames.add( unit.getGroupNameInGroupSet( groupSet ) );
                 }
-                
+
                 unit.setGroupNames( groupNames );
-                
+
                 object.add( unit );
             }
         }

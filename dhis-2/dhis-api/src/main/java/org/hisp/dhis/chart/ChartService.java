@@ -54,7 +54,17 @@ public interface ChartService
 
     JFreeChart getJFreeChart( Chart chart, I18nFormat format );
 
-    JFreeChart getJFreeChart( Chart chart, Date date, I18nFormat format );
+    /**
+     * Generates a JFreeChart.
+     * 
+     * @param chart the chart to use as basis for the JFreeChart generation.
+     * @param date the date to use as basis for relative periods, can be null.
+     * @param unit the org unit to use as basis for relative units, will
+     *        override the current user org unit if set, can be null.
+     * @param format the i18n format.
+     * @return a JFreeChart object.
+     */
+    JFreeChart getJFreeChart( Chart chart, Date date, OrganisationUnit unit, I18nFormat format );
     
     JFreeChart getJFreePeriodChart( Indicator indicator, OrganisationUnit unit, boolean title, I18nFormat format );
 
@@ -69,9 +79,9 @@ public interface ChartService
     JFreeChart getJFreeChartHistory( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo,
                                      Period lastPeriod, OrganisationUnit organisationUnit, int historyLength, I18nFormat format );
 
-    int saveChart( Chart chart );
+    int addChart( Chart chart );
 
-    void saveOrUpdate( Chart chart );
+    void updateChart( Chart chart );
 
     Chart getChart( int id );
 

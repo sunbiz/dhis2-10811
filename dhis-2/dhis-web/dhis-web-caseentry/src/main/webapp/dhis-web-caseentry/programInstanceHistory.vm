@@ -1,0 +1,31 @@
+<table class="contentProviderTable" width="100%;">
+	<colgroup>
+		<col width="40%">
+		<col width="60%">
+	</colgroup>
+	<thead>
+		<tr>
+		#foreach( $header in $grid.getVisibleHeaders() )
+			<th>$!encoder.htmlEncode( $header.name )</th>
+		#end
+		</tr>
+	</thead>
+
+	<tbody>  
+		#set( $mark = false )
+		#set( $flag = 0 )
+		#foreach( $row in $grid.getVisibleRows() )
+			<tr #alternate($mark)>
+				#foreach( $col in $row )
+					#set( $index = ( $velocityCount - 1 ) )
+					#if( $grid.getVisibleHeaders().get( $index ).meta )
+						<td>$!encoder.htmlEncode( $col )</td>
+					#else 
+						<td>$!col</td>
+					#end
+				#end
+			</tr>
+		#end
+		#set( $mark = !$mark)
+	</tbody>
+</table>

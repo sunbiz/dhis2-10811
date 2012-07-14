@@ -16,6 +16,6 @@ jQuery(document).ready(	function(){
 		}); 
 		
 		jQuery("#attributeComboRow").hide();
-			
+		
 		checkValueIsExist( "name", "validatePatientAttribute.action");
 	});	

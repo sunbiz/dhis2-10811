@@ -16,17 +16,14 @@ jQuery(document).ready(	function(){
 		});
 		
 		
-		validation2( 'addPatientAttributeGroupForm', function(form){
+		validation( 'addPatientAttributeGroupForm', function(form){
 			form.submit();
-		}, {
-			'beforeValidateHandler' : function()
-			{
-				listValidator( 'memberValidator', 'selectedAttributes' );
-			},
-			'rules' : getValidationRules( 'patientAttributeGroup' )
-		} ); 
+		}, function(){
+			selectAllById('selectedAttributes');
+			if(jQuery("#selectedAttributes option").length > 0 ){
+				setFieldValue('hasAttributes', 'true');
+			}
+		});
 		
 		checkValueIsExist( "name", "validatePatientAttributeGroup.action" );
-		
-		
 	});		

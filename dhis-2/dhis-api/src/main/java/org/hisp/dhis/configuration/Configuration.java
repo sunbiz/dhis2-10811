@@ -30,9 +30,11 @@ package org.hisp.dhis.configuration;
 import java.io.Serializable;
 
 import org.hisp.dhis.dataelement.DataElementGroup;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.YearlyPeriodType;
+import org.hisp.dhis.user.UserAuthorityGroup;
 import org.hisp.dhis.user.UserGroup;
 
 /**
@@ -52,13 +54,15 @@ public class Configuration
     
     private UserGroup feedbackRecipients;
     
-    private UserGroup completenessRecipients;
-
     private OrganisationUnitLevel offlineOrganisationUnitLevel;
 
     private DataElementGroup infrastructuralDataElements;
     
     private PeriodType infrastructuralPeriodType;
+    
+    private UserAuthorityGroup selfRegistrationRole;
+    
+    private OrganisationUnit selfRegistrationOrgUnit;
     
     public Configuration()
     {
@@ -71,6 +75,12 @@ public class Configuration
     public PeriodType getInfrastructuralPeriodTypeDefaultIfNull()
     {
         return infrastructuralPeriodType != null ? infrastructuralPeriodType : DEFAULT_INFRASTRUCTURAL_PERIODTYPE;
+    }
+    
+    public boolean selfRegistrationAllowed()
+    {
+        return selfRegistrationRole != null && selfRegistrationRole instanceof UserAuthorityGroup &&
+            selfRegistrationOrgUnit != null && selfRegistrationOrgUnit instanceof OrganisationUnit;
     }
     
     // -------------------------------------------------------------------------
@@ -95,16 +105,6 @@ public class Configuration
     public void setFeedbackRecipients( UserGroup feedbackRecipients )
     {
         this.feedbackRecipients = feedbackRecipients;
-    }
-
-    public UserGroup getCompletenessRecipients()
-    {
-        return completenessRecipients;
-    }
-
-    public void setCompletenessRecipients( UserGroup completenessRecipients )
-    {
-        this.completenessRecipients = completenessRecipients;
     }
 
     public void setOfflineOrganisationUnitLevel( OrganisationUnitLevel offlineOrganisationUnitLevel )
@@ -135,5 +135,25 @@ public class Configuration
     public void setInfrastructuralPeriodType( PeriodType infrastructuralPeriodType )
     {
         this.infrastructuralPeriodType = infrastructuralPeriodType;
+    }
+
+    public UserAuthorityGroup getSelfRegistrationRole()
+    {
+        return selfRegistrationRole;
+    }
+
+    public void setSelfRegistrationRole( UserAuthorityGroup selfRegistrationRole )
+    {
+        this.selfRegistrationRole = selfRegistrationRole;
+    }
+
+    public OrganisationUnit getSelfRegistrationOrgUnit()
+    {
+        return selfRegistrationOrgUnit;
+    }
+
+    public void setSelfRegistrationOrgUnit( OrganisationUnit selfRegistrationOrgUnit )
+    {
+        this.selfRegistrationOrgUnit = selfRegistrationOrgUnit;
     }
 }

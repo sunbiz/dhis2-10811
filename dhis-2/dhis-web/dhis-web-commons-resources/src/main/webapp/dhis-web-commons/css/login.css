@@ -24,37 +24,66 @@ a:hover
   color: #fff;
 }
 
+input[type=text],input[type=password]
+{
+  border: 1px solid #888;
+  padding: 3px 1px;
+}
+
 #flagArea
 {
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: 22px;
+  left: 52px;
   border: 1px solid #d5d5d5;
   border-radius: 2px;
-  width: 105px;
+  max-width: 105px;
   margin-bottom: 5%;
 }
 
 #titleArea
 {
   position: absolute;
-  top: 17px;
-  left: 140px;
-  font-size: 18px;
+  top: 24px;
+  left: 177px;
+  font-size: 19px;
+}
+
+#introArea
+{
+  width: 250px;
+  position: absolute;
+  top: 53px;
+  left: 177px;
+  font-size: 17px;
+  color: #bfd9f2;
+}
+
+#bannerArea
+{
+  margin-bottom: 35px;
+  border: none;
+}
+
+#loginFormFooter
+{
+  font-size: 14px;
+}
+
+#accountArea
+{
+  position: absolute;
+  right: 17px;
+  padding: 18px 30px 18px 0;
+  font-size: 17px;
 }
 
 #loginField
 {
   position: relative;
-  margin: 7% auto 0 auto;
-  width: 340px;
+  margin: 130px auto 0 auto;
+  width: 350px;
   text-align: center;
-}
-
-#bannerArea
-{
-  margin-bottom: 9%;
-  border: none;
 }
 
 #loginField td
@@ -69,24 +98,43 @@ a:hover
   border-width: 1px;
   border-color: #D0D0D0;
   padding: 11px;
-  margin: 20px 15px 0 15px;
+  margin: 20px 15px 0 40px;
   display: block;
-  width: 280px;
+  width: 286px;
   border-radius: 2px;
 }
 
-#footerArea
+#notificationArea
 {
-  position: absolute;
-  font-size: 13px;
-  bottom: 20px;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  text-align: center;
+  background-color: #D0E6FD;
+  color: #1D5288;
+  margin: 40px 0 0 40px;
+  padding: 15px;
+  border-radius: 3px;
 }
 
-.button {
+.greenButtonLink
+{
+  padding: 6px 12px;
+  height: 27px;
+  border: 1px solid #67A767;
+  border-radius: 3px;
+  margin-right: 4px;
+  font-family: LiberationSansBold, arial;
+  font-size: 13px;
+  background-color: #1A9B20;
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+.greenButtonLink:hover
+{
+  text-decoration: none;
+  background-color: #1DA223;
+}
+
+.button 
+{
   font-family: LiberationSansBold, arial;
   background: -webkit-linear-gradient(top, #f1f1f1, #d1d1d1);
   background: -moz-linear-gradient(top, #f1f1f1, #d1d1d1);
@@ -98,7 +146,8 @@ a:hover
   color: #222;
 }
 
-.button:hover {
+.button:hover 
+{
   background: -webkit-linear-gradient(top, #fafafa, #dadada);
   background: -moz-linear-gradient(top, #fafafa, #dadada);
   background: -ms-linear-gradient(top, #fafafa, #dadada);

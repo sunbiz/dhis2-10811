@@ -15,8 +15,9 @@
 		<tr>
 			<td><label>$i18n.getString( "inventorytype" )</label></td>
 			<td style="padding-right:5px">
-				<select id="inventoryType" style="min-width:16em" onchange="inventoryTypeChange( this.value )">
-					<option value="0">$i18n.getString( "select_inventorytype" )</option>
+				<!--<select id="inventoryType" style="min-width:16em" onchange="inventoryTypeChange( this.value )">-->
+				<select id="inventoryType" style="min-width:16em" onchange="inventoryTypeChange()">
+					<!--<option value="0">$i18n.getString( "select_inventorytype" )</option>-->
 					#foreach( $inventoryType in $inventoryTypes )
 						<option value="$inventoryType.id">$inventoryType.name</option>
 					#end
@@ -57,6 +58,7 @@
 <div id='editEquipmentDataDiv'></div> <!-- Add / Edit Equipment Data -->
 <div id='equipmentStatusHistoryDiv'></div> <!-- List Equipment Status History -->
 <div id='resultSearchDiv' style='font-size:13px'></div> <!-- List searching Equipment -->
+<div id='equipmentDataEntryDiv'></div> <!-- List All/Filtered Equipments -->
 
 #parse( "/dhis-web-commons/loader/loader.vm" )
 
@@ -164,4 +166,11 @@
         showById('searchPatientDiv');
     #end
     
+</script>
+<script type="text/javascript">
+jQuery( document ).ready( function()
+{
+	inventoryTypeChange();
+	loadAllEquipments();
+});
 </script>

@@ -153,45 +153,22 @@ public interface DataElementStore
     Collection<DataElement> getDataElementsWithDataSets();
     
     /**
-     * Checks whether a DataElement with the given identifier exists.
+     * Returns all DataElements which are assigned to any of the given DataSets.
      * 
-     * @param id the DataElement identifier.
-     * @return true or false.
+     * @param dataSets the collection of DataSets.
+     * @return all DataElements which are assigned to any of the given DataSets.
      */
-    boolean dataElementExists( int id );
+    Collection<DataElement> getDataElementsByDataSets( Collection<DataSet> dataSets );
     
     /**
-     * Checks whether a DataElementCategoryOptionCombo with the given identifier exists.
+     * Returns all DataElements which have the given aggregation level assigned.
      * 
-     * @param id the DataElementCategoryOptionCombo identifier.
-     * @return true or false.
+     * @param aggregationLevel the aggregation level.
+     * @return all DataElements which have the given aggregation level assigned.
      */
-    boolean dataElementCategoryOptionComboExists( int id );
-    
-    Collection<DataElement> getDataElementsByDataSets( Collection<DataSet> dataSets );
+    Collection<DataElement> getDataElementsByAggregationLevel( int aggregationLevel );
 
-    Map<Integer, Set<Integer>> getDataElementCategoryOptionCombos();
+    Map<String, Set<String>> getDataElementCategoryOptionCombos();
     
     Collection<DataElement> get( DataSet dataSet, String key, Integer max );
-    
-    // -------------------------------------------------------------------------
-    // DataElementOperand
-    // -------------------------------------------------------------------------
-
-    /**
-     * Returns all generated permutations of Operands. Requires the 
-     * categoryoptioncomboname resource table to be populated.
-     * 
-     * @return a collection of all Operands.
-     */
-    Collection<DataElementOperand> getAllGeneratedOperands();
-
-    /**
-     * Returns all generated permutations of Operands for the given collection of
-     * DataElements. Requires the categoryoptioncomboname resource table to be populated.
-     * 
-     * @param dataElements the DataElements.
-     * @return a collection of all Operands.
-     */
-    Collection<DataElementOperand> getAllGeneratedOperands( Collection<DataElement> dataElements );
 }

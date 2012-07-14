@@ -45,6 +45,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.reports.ReportService;
 import org.hisp.dhis.reports.Report_in;
 import org.hisp.dhis.reports.Report_inDesign;
@@ -230,18 +231,23 @@ public class GenerateOuWiseProgressReportResultAction
         selectedOrgUnit = organisationUnitService.getOrganisationUnit( ouIDTB );
         int selectedOrgUnitLevel = organisationUnitService.getLevelOfOrganisationUnit( ouIDTB );
 
+                System.out.println( selectedOrgUnit.getName()+ " : " + selReportObj.getName()+" : Report Generation Start Time is : " + new Date() );
+                
         if ( reportModelTB.equalsIgnoreCase( "PROGRESSIVE-ORGUNIT" ) )
-        {
-            orgUnitList = new ArrayList<OrganisationUnit>( selectedOrgUnit.getChildren() );
-            
+        {            
             if( orgUnitGroup != 0 )
             {
+                orgUnitList = getChildOrgUnitTree( selectedOrgUnit );
                 OrganisationUnitGroup ouGroup = organisationUnitGroupService.getOrganisationUnitGroup( orgUnitGroup );
             
                 if( ouGroup != null )
                 {
                     orgUnitList.retainAll( ouGroup.getMembers() );
                 }
+            }
+            else
+            {
+                orgUnitList = new ArrayList<OrganisationUnit>( selectedOrgUnit.getChildren() );
             }
             
             Collections.sort( orgUnitList, new IdentifiableObjectNameComparator() );
@@ -260,7 +266,7 @@ public class GenerateOuWiseProgressReportResultAction
             */
         }
 
-        System.out.println( selectedOrgUnit.getName()+ " : " + selReportObj.getName()+" : Report Generation Start Time is : " + new Date() );
+        
 
         String inputTemplatePath = System.getenv( "DHIS2_HOME" ) + File.separator + raFolderName + File.separator + "template" + File.separator + reportFileNameTB;
         //String outputReportPath = System.getenv( "DHIS2_HOME" ) + File.separator + raFolderName + File.separator + "output" + File.separator + UUID.randomUUID().toString() + ".xls";
@@ -288,11 +294,13 @@ public class GenerateOuWiseProgressReportResultAction
         sDate = format.parseDate( startDate );
         eDate = format.parseDate( endDate );
         
-        List<Period> periodList = new ArrayList<Period>( periodService.getIntersectingPeriods( sDate, eDate ) );
-        
-        Collection<Integer> periodIds = new ArrayList<Integer>( getIdentifiers(Period.class, periodList ) );
-        
+        PeriodType selPeriodType = selReportObj.getPeriodType();
+        List<Period> periodList = new ArrayList<Period>( periodService.getPeriodsBetweenDates( selPeriodType, sDate, eDate ) );
+        //List<Period> periodList = new ArrayList<Period>( periodService.getIntersectingPeriods( sDate, eDate ) );        
+        Collection<Integer> periodIds = new ArrayList<Integer>( getIdentifiers(Period.class, periodList ) );        
         String periodIdsByComma = getCommaDelimitedString( periodIds );
+        
+        //System.out.println( "periodIdsByComma :"+ periodIdsByComma );
         
         // Getting DataValues
         List<Report_inDesign> reportDesignList = reportService.getReportDesign( deCodesXMLFileName );
@@ -649,5 +657,27 @@ public class GenerateOuWiseProgressReportResultAction
             throw new RuntimeException( "Illegal DataElement id", ex );
         }
     }
+    
+    
+    // Returns the OrgUnitTree for which Root is the orgUnit
+    public List<OrganisationUnit> getChildOrgUnitTree( OrganisationUnit orgUnit )
+    {
+        List<OrganisationUnit> orgUnitTree = new ArrayList<OrganisationUnit>();
+        orgUnitTree.add( orgUnit );
 
+        List<OrganisationUnit> children = new ArrayList<OrganisationUnit>( orgUnit.getChildren() );
+        Collections.sort( children, new IdentifiableObjectNameComparator() );
+        //Collections.sort( children, new OrganisationUnitNameComparator() );
+
+        Iterator<OrganisationUnit> childIterator = children.iterator();
+        OrganisationUnit child;
+        while ( childIterator.hasNext() )
+        {
+            child = (OrganisationUnit) childIterator.next();
+            orgUnitTree.addAll( getChildOrgUnitTree( child ) );
+        }
+        return orgUnitTree;
+    }
+    // getChildOrgUnitTree end
+    
 }

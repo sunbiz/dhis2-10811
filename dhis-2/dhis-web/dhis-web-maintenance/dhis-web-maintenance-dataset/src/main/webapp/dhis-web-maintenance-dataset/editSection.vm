@@ -23,7 +23,7 @@
 
 <h3>$i18n.getString( "edit_section" )</h3>
 
-<form id="editDataSetForm" name="editDataSetForm" action="updateSection.action" method="post" >
+<form id="editDataSetForm" name="editDataSetForm" action="updateSection.action" method="post" class="inputForm">
   <input type="hidden" id="dataSetId" name="dataSetId" value="$dataSet.id"/>
   <input type="hidden" id="sectionId" name="sectionId" value="$section.id"/>
   <input type="hidden" id="categoryComboId" name="categoryComboId" value="$!categoryCombo.id"/>
@@ -39,24 +39,26 @@
     <tbody>
       <tr>
         <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="sectionName" name="sectionName" style="width:20em" value= "$section.name"></td>        
+        <td><input type="text" id="sectionName" name="sectionName" value= "$section.name"></td>
       </tr>     
       <tr>
       	<td><label>$i18n.getString( "dataset" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" style="width:20em" value="$dataSet.name" disabled="disabled"/></td>
+        <td><input type="text" value="$dataSet.displayName" disabled="disabled"/></td>
       </tr>
       <tr>
         <td><label>$i18n.getString( "category_combo" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" style="width:20em" value="$!categoryCombo.name" disabled="disabled"/></td>
+        <td><input type="text" value="$!categoryCombo.displayName" disabled="disabled"/></td>
       </tr>
     </tbody>
   </table>
 
   <table id="dataElementSelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
-    <col/>
+      <colgroup>
+        <col style="width: 500px;"/>
+        <col/>
+        <col style="width: 500px;"/>
+        <col/>
+      </colgroup>
 
     <thead>
       <tr>                
@@ -82,7 +84,7 @@
 		<td>
 			<select id="selectedList" name="selectedList" multiple="multiple" style="height: 200px; width: 100%; margin-top: 22px;">
             #foreach ( $dataElement in $section.dataElements )
-              <option value="$dataElement.id">$dataElement.name</option>
+              <option value="$dataElement.id">$dataElement.displayName</option>
             #end
 			</select>
         </td> 

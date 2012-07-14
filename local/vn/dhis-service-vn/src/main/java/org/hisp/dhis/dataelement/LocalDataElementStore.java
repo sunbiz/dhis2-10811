@@ -28,6 +28,8 @@
 package org.hisp.dhis.dataelement;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.hisp.dhis.attribute.Attribute;
 import org.hisp.dhis.dataset.DataSet;
@@ -44,4 +46,6 @@ public interface LocalDataElementStore
     int getDataElementCount( Integer dataElementId, Integer attributeId, String value );
     
     Collection<DataElement> get( DataSet dataSet, String value );
+
+    Map<String, List<Integer>> get( DataSet dataSet, List<String> values );
 }

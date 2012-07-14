@@ -1,6 +1,6 @@
-#set( $size = ${tabularReports.size()} )
+#set( $size = ${reports.size()} )
 { "tabularReports": [
-  #foreach( ${tabularReport} in $!{tabularReports} )
+  #foreach( ${tabularReport} in $!{reports} )
   {
 	"id": "${tabularReport.id}",
 	"name": "$!encoder.jsonEncode( ${tabularReport.name} )",

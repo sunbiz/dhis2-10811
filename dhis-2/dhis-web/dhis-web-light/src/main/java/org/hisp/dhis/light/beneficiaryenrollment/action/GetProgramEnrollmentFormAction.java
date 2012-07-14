@@ -28,9 +28,12 @@
 package org.hisp.dhis.light.beneficiaryenrollment.action;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
@@ -109,10 +112,8 @@ public class GetProgramEnrollmentFormAction
     }
 
     private Program program;
-    
+
     private String now;
-    
-    
 
     public String getNow()
     {
@@ -124,13 +125,47 @@ public class GetProgramEnrollmentFormAction
         this.now = now;
     }
 
+    private Collection<PatientIdentifierType> patientIdentifierTypes;
+
+    public Collection<PatientIdentifierType> getPatientIdentifierTypes()
+    {
+        return patientIdentifierTypes;
+    }
+
+    public void setPatientIdentifierTypes( Collection<PatientIdentifierType> patientIdentifierTypes )
+    {
+        this.patientIdentifierTypes = patientIdentifierTypes;
+    }
+
+    private Collection<PatientAttribute> patientAttributes;
+
+    public Collection<PatientAttribute> getPatientAttributes()
+    {
+        return patientAttributes;
+    }
+
+    public void setPatientAttributes( Collection<PatientAttribute> patientAttributes )
+    {
+        this.patientAttributes = patientAttributes;
+    }
+
+    public static final String REDIRECT = "redirect";
+
     @Override
     public String execute()
         throws Exception
     {
         patient = patientService.getPatient( patientId );
         program = programService.getProgram( programId );
-        now = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+        if ( this.program.isSingleEvent() )
+        {
+            return REDIRECT;
+        }
+
+        patientAttributes = program.getPatientAttributes();
+        patientIdentifierTypes = program.getPatientIdentifierTypes();
+        now = new SimpleDateFormat( "yyyy-MM-dd" ).format( new Date() );
 
         return SUCCESS;
     }

@@ -2,13 +2,40 @@
 <h3>$i18n.getString( "dhis-web-caseentry" )</h3>
 
 <ul class="introList">
-	#introListImgItem( "patient.action" "patient" "patient" )
-    #introListImgItem( "dataEntrySelect.action" "name_based_data_entry" "dataentry" )
-	#introListImgItem( "multipledataEntrySelect.action" "multiple_name_based_data_entry" "dataentry" )
-	#introListImgItem( "anonymousRegistration.action" "anonymous_events" "dataentry" )
-	#introListImgItem( "singleEventSelect.action" "single_event_with_registration" "dataentry" )
-    #introListImgItem( "reportSelect.action" "program_summary" "summaryreport" )
-	#introListImgItem( "app/index.html" "tabular_report" "summaryreport" )
-	#introListImgItem( "visitplan.action" "visit_plan" "visitplan" )
-    #introListImgItem( "caseAggregationForm.action" "case_aggregation" "caseaggregation" )
+	#if( $auth.hasAccess( "dhis-web-caseentry", "patient" ) )
+		#introListImgItem( "patient.action" "find_and_add_person" "patient" )
+	#end
+	
+	#if( $auth.hasAccess( "dhis-web-caseentry", "activityPlanSelect" ) )
+		#introListImgItem( "activityPlanSelect.action" "activity_planning" "visitplan" )
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "smsReminderSelect" ) )
+		#introListImgItem( "smsReminderSelect.action" "program_tracking" "summaryreport" )
+	#end
+		
+	#if( $auth.hasAccess( "dhis-web-caseentry", "multipledataEntrySelect" ) )
+		#introListImgItem( "multipledataEntrySelect.action" "multiple_individual_records" "attribute" )
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "singleEventSelect" ) )
+		#introListImgItem( "singleEventSelect.action" "single_event_with_registration" "attribute" )
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "anonymousRegistration" ) )
+		#introListImgItem( "anonymousRegistration.action" "anonymous_events" "attribute" )
+	#end
+	
+	#if( $auth.hasAccess( "dhis-web-caseentry", "reportSelect" ) )
+		#introListImgItem( "reportSelect.action" "program_summary" "summaryreport" )
+	#end
+	
+	#if( $auth.hasAccess( "dhis-web-caseentry", "generateTabularReport" ) )
+		#introListImgItem( "app/index.html" "tabular_report" "summaryreport" )
+	#end
+	
+	#if( $auth.hasAccess( "dhis-web-caseentry", "statisticalProgramReportSelect" ) )
+		#introListImgItem( "statisticalProgramReportSelect.action" "statistical_program" "validationanalysis" )
+	#end
+	
+	#if( $auth.hasAccess( "dhis-web-caseentry", "caseAggregationForm" ) )
+		#introListImgItem( "caseAggregationForm.action" "manual_person_aggregation" "caseaggregation" )
+	#end
 </ul>

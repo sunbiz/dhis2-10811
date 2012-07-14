@@ -27,9 +27,12 @@
 
 package org.hisp.dhis.validation;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import java.util.Collection;
 
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
+import org.hisp.dhis.common.GenericNameableObjectStore;
+import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -44,11 +47,18 @@ public class DefaultValidationCriteriaService
     // Dependency
     // -------------------------------------------------------------------------
 
-    private GenericIdentifiableObjectStore<ValidationCriteria> validationCriteriaStore;
+    private GenericNameableObjectStore<ValidationCriteria> validationCriteriaStore;
 
-    public void setValidationCriteriaStore( GenericIdentifiableObjectStore<ValidationCriteria> validationCriteriaStore )
+    public void setValidationCriteriaStore( GenericNameableObjectStore<ValidationCriteria> validationCriteriaStore )
     {
         this.validationCriteriaStore = validationCriteriaStore;
+    }
+
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
     }
 
     // -------------------------------------------------------------------------
@@ -58,13 +68,13 @@ public class DefaultValidationCriteriaService
     public int saveValidationCriteria( ValidationCriteria validationCriteria )
     {
         return validationCriteriaStore.save( validationCriteria );
-    } 
+    }
 
     public void updateValidationCriteria( ValidationCriteria validationCriteria )
     {
         validationCriteriaStore.update( validationCriteria );
     }
-    
+
     public void deleteValidationCriteria( ValidationCriteria validationCriteria )
     {
         validationCriteriaStore.delete( validationCriteria );
@@ -72,17 +82,17 @@ public class DefaultValidationCriteriaService
 
     public ValidationCriteria getValidationCriteria( int id )
     {
-        return validationCriteriaStore.get( id );
+        return i18n( i18nService, validationCriteriaStore.get( id ) );
     }
 
     public Collection<ValidationCriteria> getAllValidationCriterias()
     {
-        return validationCriteriaStore.getAll();
+        return i18n( i18nService, validationCriteriaStore.getAll() );
     }
-    
+
     public ValidationCriteria getValidationCriteria( String name )
     {
-        return validationCriteriaStore.getByName( name );
+        return i18n( i18nService, validationCriteriaStore.getByName( name ) );
     }
 
 }

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.hisp.dhis</groupId>
     <artifactId>dhis</artifactId>
-    <version>2.9-SNAPSHOT</version>
+    <version>2.11-SNAPSHOT</version>
   </parent>
 
   <artifactId>dhis-dxf2</artifactId>

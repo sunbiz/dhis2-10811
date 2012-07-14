@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.hibernate;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -427,5 +427,18 @@ public class HibernateExportReportStore
         query.setString( "newName", newTemplateName ).setString( "curName", curTemplateName );
 
         query.executeUpdate();
+    }
+
+    public ExportReport getExportReportByDataSet( DataSet dataSet )
+    {
+        Session session = sessionFactory.getCurrentSession();
+
+        Criteria criteria = session.createCriteria( ExportReport.class );
+
+        criteria.createAlias( "dataSets", "d" );
+
+        criteria.add( Restrictions.eq( "d.id", dataSet.getId() ) );
+
+        return (ExportReport) criteria.uniqueResult();
     }
 }

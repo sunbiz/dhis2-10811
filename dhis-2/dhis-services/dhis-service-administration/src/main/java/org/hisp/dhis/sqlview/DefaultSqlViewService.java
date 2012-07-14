@@ -27,12 +27,13 @@ package org.hisp.dhis.sqlview;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
 
 /**
  * @author Dang Duy Hieu
@@ -115,13 +116,13 @@ public class DefaultSqlViewService
     @Override
     public Collection<SqlView> getSqlViewsBetween( int first, int max )
     {
-        return sqlViewStore.getBetween( first, max );
+        return sqlViewStore.getAllOrderedName( first, max );
     }
 
     @Override
     public Collection<SqlView> getSqlViewsBetweenByName( String name, int first, int max )
     {
-        return sqlViewStore.getBetweenByName( name, first, max );
+        return sqlViewStore.getAllLikeNameOrderedName( name, first, max );
     }
 
     @Override
@@ -133,12 +134,6 @@ public class DefaultSqlViewService
     // -------------------------------------------------------------------------
     // SqlView expanded
     // -------------------------------------------------------------------------
-
-    @Override
-    public String setUpViewTableName( String input )
-    {
-        return sqlViewExpandStore.setUpViewTableName( input );
-    }
 
     @Override
     public Collection<String> getAllSqlViewNames()
@@ -175,11 +170,11 @@ public class DefaultSqlViewService
     }
 
     @Override
-    public Grid getDataSqlViewGrid( String viewTableName )
+    public Grid getSqlViewGrid( SqlView sqlView, Map<String, String> criteria )
     {
         Grid sqlViewGrid = new ListGrid();
 
-        sqlViewExpandStore.setUpDataSqlViewTable( sqlViewGrid, viewTableName );
+        sqlViewExpandStore.setUpDataSqlViewTable( sqlViewGrid, sqlView.getViewName(), criteria );
 
         return sqlViewGrid;
     }

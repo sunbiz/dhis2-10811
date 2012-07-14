@@ -27,9 +27,12 @@ package org.hisp.dhis.resourcetable;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.resourcetable.ResourceTableStore.TABLE_NAME_PERIOD_STRUCTURE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,8 @@ import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.resourcetable.statement.CreateCategoryTableStatement;
 import org.hisp.dhis.resourcetable.statement.CreateDataElementGroupSetTableStatement;
@@ -63,8 +68,6 @@ import org.hisp.dhis.resourcetable.statement.CreateOrganisationUnitGroupSetTable
 
 /**
  * @author Lars Helge Overland
- * @version $Id: DefaultResourceTableService.java 5459 2008-06-26 01:12:03Z
- *          larshelg $
  */
 public class DefaultResourceTableService
     implements ResourceTableService
@@ -114,6 +117,13 @@ public class DefaultResourceTableService
     {
         this.indicatorService = indicatorService;
     }
+    
+    private PeriodService periodService;
+
+    public void setPeriodService( PeriodService periodService )
+    {
+        this.periodService = periodService;
+    }
 
     private BatchHandlerFactory batchHandlerFactory;
 
@@ -143,23 +153,26 @@ public class DefaultResourceTableService
 
             for ( OrganisationUnit unit : units )
             {
-                List<Integer> structure = new ArrayList<Integer>();
+                List<String> structure = new ArrayList<String>();
 
-                structure.add( unit.getId() );
-                structure.add( level );
+                structure.add( String.valueOf( unit.getId() ) );
+                structure.add( String.valueOf( level ) );
 
                 Map<Integer, Integer> identifiers = new HashMap<Integer, Integer>();
+                Map<Integer, String> uids = new HashMap<Integer, String>();
 
                 for ( int j = level; j > 0; j-- )
                 {
                     identifiers.put( j, unit.getId() );
+                    uids.put( j, unit.getUid() );
 
                     unit = unit.getParent();
                 }
                
-                for (int k = 1 ; k <= maxLevel ; k ++ )
+                for ( int k = 1 ; k <= maxLevel ; k ++ )
                 {
-                    structure.add( identifiers.get( k ) );
+                    structure.add( identifiers.get( k ) != null ? String.valueOf( identifiers.get( k ) ) : null );
+                    structure.add( uids.get( k ) );
                 }
                 
                 batchHandler.addObject( structure );
@@ -233,7 +246,8 @@ public class DefaultResourceTableService
             {
                 DataElementGroup group = groupSet.getGroup( dataElement );
                 
-                values.add( group != null ? group.getName() : null );    
+                values.add( group != null ? group.getName() : null );
+                values.add( group != null ? group.getUid() : null );
             }
             
             batchHandler.addObject( values );
@@ -280,7 +294,8 @@ public class DefaultResourceTableService
             {
                 IndicatorGroup group = groupSet.getGroup( indicator );
                 
-                values.add( group != null ? group.getName() : null );    
+                values.add( group != null ? group.getName() : null );
+                values.add( group != null ? group.getUid() : null );
             }
             
             batchHandler.addObject( values );
@@ -330,6 +345,7 @@ public class DefaultResourceTableService
                 OrganisationUnitGroup group = groupSet.getGroup( unit );
                 
                 values.add( group != null ? group.getName() : null );
+                values.add( group != null ? group.getUid() : null );
             }
 
             batchHandler.addObject( values );
@@ -373,9 +389,10 @@ public class DefaultResourceTableService
             
             for ( DataElementCategory category : categories )
             {
-                DataElementCategoryOption dimensionOption = category.getCategoryOption( categoryOptionCombo );
+                DataElementCategoryOption categoryOption = category.getCategoryOption( categoryOptionCombo );
                 
-                values.add( dimensionOption != null ? dimensionOption.getName() : null );    
+                values.add( categoryOption != null ? categoryOption.getName() : null );
+                values.add( categoryOption != null ? String.valueOf( categoryOption.getId() ) : null );
             }
             
             batchHandler.addObject( values );
@@ -419,6 +436,56 @@ public class DefaultResourceTableService
             batchHandler.addObject( values );
         }
         
+        batchHandler.flush();
+    }
+
+    // -------------------------------------------------------------------------
+    // PeriodTable
+    // -------------------------------------------------------------------------
+
+    public void generatePeriodTable()
+    {
+        // ---------------------------------------------------------------------
+        // Create table
+        // ---------------------------------------------------------------------
+
+        Collection<Period> periods = periodService.getAllPeriods();
+        
+        resourceTableStore.createPeriodStructure();
+        
+        // ---------------------------------------------------------------------
+        // Populate table
+        // ---------------------------------------------------------------------
+        
+        BatchHandler<Object> batchHandler = batchHandlerFactory.createBatchHandler( GenericBatchHandler.class ).
+            setTableName( TABLE_NAME_PERIOD_STRUCTURE ).init();
+        
+        for ( Period period : periods )
+        {
+            final Date startDate = period.getStartDate();
+            final PeriodType rowType = period.getPeriodType();
+            
+            final List<String> values = new ArrayList<String>();
+            
+            values.add( String.valueOf( period.getId() ) );
+            values.add( period.getIsoDate() );
+            values.add( String.valueOf( rowType.getFrequencyOrder() ) );
+            
+            for ( PeriodType periodType : PeriodType.PERIOD_TYPES )
+            {
+                if ( rowType.getFrequencyOrder() <= periodType.getFrequencyOrder() )
+                {
+                    values.add( periodType.createPeriod( startDate ).getIsoDate() );
+                }
+                else
+                {
+                    values.add( null );
+                }
+            }
+            
+            batchHandler.addObject( values );
+        }
+
         batchHandler.flush();
     }
 }

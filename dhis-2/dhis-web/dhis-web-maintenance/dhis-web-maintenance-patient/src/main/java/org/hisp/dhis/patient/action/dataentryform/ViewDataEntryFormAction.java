@@ -172,8 +172,8 @@ public class ViewDataEntryFormAction
             listAssociationIds.add( ps.getId() );
         }
 
-        existingDataEntryForms = new ArrayList<DataEntryForm>( dataEntryFormService
-            .listDisctinctDataEntryFormByProgramStageIds( listAssociationIds ) );
+        existingDataEntryForms = new ArrayList<DataEntryForm>(
+            dataEntryFormService.listDisctinctDataEntryFormByProgramStageIds( listAssociationIds ) );
 
         existingDataEntryForms.remove( dataEntryForm );
 
@@ -192,9 +192,9 @@ public class ViewDataEntryFormAction
         // ---------------------------------------------------------------------
 
         dataElements = new ArrayList<DataElement>( programStageDataElementService.getListDataElement( programStage ) );
-        
+
         Collections.sort( dataElements, new IdentifiableObjectNameComparator() );
-        
+
         return SUCCESS;
     }
 }

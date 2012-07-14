@@ -53,17 +53,15 @@ public interface ProgramService
     Collection<Program> getAllPrograms();
 
     Collection<Program> getPrograms( OrganisationUnit organisationUnit );
+    
+    Collection<Program> getProgramsByCurrentUser();
 
     Collection<Program> getPrograms( ValidationCriteria validationCriteria );
 
     Collection<Program> getPrograms( int type );
     
     Collection<Program> getPrograms( int type, OrganisationUnit orgunit );
-
-//    Collection<Program> getPrograms( boolean singleEvent );
-//
-//    Collection<Program> getPrograms( boolean singleEvent, boolean anonymous );
-//
-//    Collection<Program> getPrograms( boolean singleEvent, boolean anonymous, OrganisationUnit orgunit );
+    
+    Program getProgram( String uid );
 
 }

@@ -34,6 +34,8 @@ import org.hisp.dhis.attribute.comparator.AttributeSortOrderComparator;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.indicator.IndicatorType;
+import org.hisp.dhis.mapping.MapLegendSet;
+import org.hisp.dhis.mapping.MappingService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +65,13 @@ public class ShowAddIndicatorForm
         this.attributeService = attributeService;
     }
 
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
+    }
+
     // -------------------------------------------------------------------------
     // Input/output
     // -------------------------------------------------------------------------
@@ -81,6 +90,13 @@ public class ShowAddIndicatorForm
         return attributes;
     }
 
+    private List<MapLegendSet> legendSets;
+
+    public List<MapLegendSet> getLegendSets()
+    {
+        return legendSets;
+    }
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -88,11 +104,15 @@ public class ShowAddIndicatorForm
     public String execute()
     {
         indicatorTypes = new ArrayList<IndicatorType>( indicatorService.getAllIndicatorTypes() );
-        Collections.sort( indicatorTypes, IdentifiableObjectNameComparator.INSTANCE );
         
         attributes = new ArrayList<Attribute>( attributeService.getIndicatorAttributes() );
-        Collections.sort( attributes, new AttributeSortOrderComparator() );
 
+        legendSets = new ArrayList<MapLegendSet>( mappingService.getAllMapLegendSets() );
+        
+        Collections.sort( indicatorTypes, IdentifiableObjectNameComparator.INSTANCE );
+        Collections.sort( attributes, new AttributeSortOrderComparator() );
+        Collections.sort( legendSets, IdentifiableObjectNameComparator.INSTANCE );
+        
         return SUCCESS;
     }
 }

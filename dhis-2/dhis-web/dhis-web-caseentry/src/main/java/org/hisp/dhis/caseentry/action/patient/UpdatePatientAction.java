@@ -50,6 +50,7 @@ import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
+import org.hisp.dhis.user.UserService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -80,6 +81,8 @@ public class UpdatePatientAction
 
     private PatientAttributeOptionService patientAttributeOptionService;
 
+    private UserService userService;
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -99,7 +102,7 @@ public class UpdatePatientAction
     private Boolean verified;
 
     private String gender;
-    
+
     private String phoneNumber;
 
     private boolean underAge;
@@ -108,8 +111,12 @@ public class UpdatePatientAction
 
     private Integer relationshipTypeId;
 
+    private Integer healthWorker;
+
     private Character dobType;
-    
+
+    private String registrationDate;
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -166,6 +173,10 @@ public class UpdatePatientAction
         patient.setGender( gender );
         patient.setIsDead( isDead );
         patient.setPhoneNumber( phoneNumber );
+        if ( healthWorker != null )
+        {
+            patient.setHealthWorker( userService.getUser( healthWorker ) );
+        }
 
         if ( deathDate != null )
         {
@@ -187,6 +198,11 @@ public class UpdatePatientAction
         }
 
         patient.setDobType( dobType );
+
+        if ( registrationDate != null )
+        {
+            patient.setRegistrationDate( format.parseDate( registrationDate ) );
+        }
 
         // -------------------------------------------------------------------------------------
         // Save PatientIdentifier
@@ -229,7 +245,6 @@ public class UpdatePatientAction
                 else if ( identifier != null )
                 {
                     patient.getIdentifiers().remove( identifier );
-//                    patientIdentifierService.deletePatientIdentifier( identifier );
                 }
             }
         }
@@ -326,6 +341,16 @@ public class UpdatePatientAction
     // Getter/Setter
     // -----------------------------------------------------------------------------
 
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
+    }
+
+    public void setHealthWorkerId( Integer healthWorkerId )
+    {
+        this.healthWorker = healthWorkerId;
+    }
+
     public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
     {
         this.patientIdentifierTypeService = patientIdentifierTypeService;
@@ -371,7 +396,7 @@ public class UpdatePatientAction
         this.id = id;
     }
 
-    public void setDead( boolean isDead )
+    public void setIsDead( boolean isDead )
     {
         this.isDead = isDead;
     }
@@ -395,7 +420,7 @@ public class UpdatePatientAction
     {
         this.gender = gender;
     }
-    
+
     public void setPhoneNumber( String phoneNumber )
     {
         this.phoneNumber = phoneNumber;
@@ -435,4 +460,10 @@ public class UpdatePatientAction
     {
         this.verified = verified;
     }
+
+    public void setRegistrationDate( String registrationDate )
+    {
+        this.registrationDate = registrationDate;
+    }
+
 }

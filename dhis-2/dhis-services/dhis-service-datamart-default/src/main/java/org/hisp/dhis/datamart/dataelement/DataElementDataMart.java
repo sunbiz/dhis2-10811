@@ -28,6 +28,7 @@ package org.hisp.dhis.datamart.dataelement;
  */
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.amplecode.quick.BatchHandler;
@@ -46,5 +47,7 @@ public interface DataElementDataMart
 {
     Future<?> exportDataValues( Collection<DataElementOperand> operands, Collection<Period> periods, 
         Collection<OrganisationUnit> organisationUnits, Collection<OrganisationUnitGroup> organisationUnitGroups, 
-        DataElementOperandList operandList, OrganisationUnitHierarchy hierarchy, Class<? extends BatchHandler<AggregatedDataValue>> clazz, String key );
+        DataElementOperandList operandList, OrganisationUnitHierarchy hierarchy, 
+        Map<String, Integer> dataElementUidIdMap, Map<String, Integer> categoryOptionComboUidIdMap,
+        Class<? extends BatchHandler<AggregatedDataValue>> clazz, String key );
 }

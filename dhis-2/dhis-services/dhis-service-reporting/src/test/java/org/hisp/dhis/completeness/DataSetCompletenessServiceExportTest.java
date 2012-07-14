@@ -27,7 +27,7 @@ package org.hisp.dhis.completeness;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.hisp.dhis.system.util.ConversionUtils.getIdentifiers;
 
 import java.util.ArrayList;
@@ -163,20 +163,20 @@ public class DataSetCompletenessServiceExportTest
         completenessEngine.exportDataSetCompleteness( getIdentifiers( DataSet.class, dataSets ),
             getIdentifiers( Period.class, periods ), getIdentifiers( OrganisationUnit.class, units ), null );
         
-        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodA.getId(), unitB.getId() ) );
-        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodA.getId(), unitC.getId() ) );
-        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodA.getId(), unitA.getId() ) );
+        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodA.getId(), unitB.getId() ), DELTA );
+        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodA.getId(), unitC.getId() ), DELTA );
+        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodA.getId(), unitA.getId() ), DELTA );
         
-        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodB.getId(), unitB.getId() ) );
-        assertEquals( 0.0, completenessStore.getPercentage( dataSetA.getId(), periodB.getId(), unitC.getId() ) );
-        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodB.getId(), unitA.getId() ) );
+        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodB.getId(), unitB.getId() ), DELTA );
+        assertEquals( 0.0, completenessStore.getPercentage( dataSetA.getId(), periodB.getId(), unitC.getId() ), DELTA );
+        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodB.getId(), unitA.getId() ), DELTA );
 
-        assertEquals( 0.0, completenessStore.getPercentage( dataSetA.getId(), periodC.getId(), unitB.getId() ) );
-        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodC.getId(), unitC.getId() ) );
-        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodC.getId(), unitA.getId() ) );
+        assertEquals( 0.0, completenessStore.getPercentage( dataSetA.getId(), periodC.getId(), unitB.getId() ), DELTA );
+        assertEquals( 100.0, completenessStore.getPercentage( dataSetA.getId(), periodC.getId(), unitC.getId() ), DELTA );
+        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodC.getId(), unitA.getId() ), DELTA );
         
-        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodD.getId(), unitB.getId() ) );
-        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodD.getId(), unitC.getId() ) );
-        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodD.getId(), unitA.getId() ) );
+        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodD.getId(), unitB.getId() ), DELTA );
+        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodD.getId(), unitC.getId() ), DELTA );
+        assertEquals( 66.7, completenessStore.getPercentage( dataSetA.getId(), periodD.getId(), unitA.getId() ), DELTA );
     }
 }

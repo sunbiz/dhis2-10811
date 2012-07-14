@@ -1,16 +1,15 @@
 package org.hisp.dhis.excelimport.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 
-import com.opensymphony.xwork2.Action;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class ExcelImportFormAction
     implements Action
@@ -98,9 +97,9 @@ public class ExcelImportFormAction
     public String execute()
         throws Exception
     {
-        //raFolderName = reportService.getRAFolderName();
 
         /* Period Info */
+
         periodTypes = periodService.getAllPeriodTypes();
 
         Iterator<PeriodType> alldeIterator = periodTypes.iterator();

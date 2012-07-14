@@ -56,7 +56,7 @@ public interface ConstantService
 
     Collection<Constant> getAllConstants();
 
-    Map<Integer, Double> getConstantMap();
+    Map<String, Double> getConstantMap();
 
     Map<String, Double> getConstantParameterMap();
 

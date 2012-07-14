@@ -28,10 +28,20 @@ package org.hisp.dhis.dxf2.datavalueset;
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import org.hisp.dhis.common.DxfNamespaces;
+import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.dxf2.datavalue.DataValue;
 
+@JacksonXmlRootElement( localName = "dataValueSet", namespace = DxfNamespaces.DXF_2_0)
 public class DataValueSet
 {
     //--------------------------------------------------------------------------
@@ -72,6 +82,9 @@ public class DataValueSet
     // Getters and setters
     //--------------------------------------------------------------------------
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getDataElementIdScheme()
     {
         return dataElementIdScheme;
@@ -82,6 +95,9 @@ public class DataValueSet
         this.dataElementIdScheme = dataElementIdScheme;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getOrgUnitIdScheme()
     {
         return orgUnitIdScheme;
@@ -92,6 +108,9 @@ public class DataValueSet
         this.orgUnitIdScheme = orgUnitIdScheme;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Boolean getDryRun()
     {
         return dryRun;
@@ -102,6 +121,9 @@ public class DataValueSet
         this.dryRun = dryRun;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getStrategy()
     {
         return strategy;
@@ -112,6 +134,9 @@ public class DataValueSet
         this.strategy = strategy;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getDataSet()
     {
         return dataSet;
@@ -122,6 +147,9 @@ public class DataValueSet
         this.dataSet = dataSet;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getCompleteDate()
     {
         return completeDate;
@@ -132,6 +160,9 @@ public class DataValueSet
         this.completeDate = completeDate;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getPeriod()
     {
         return period;
@@ -142,6 +173,9 @@ public class DataValueSet
         this.period = period;
     }
 
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getOrgUnit()
     {
         return orgUnit;
@@ -152,6 +186,10 @@ public class DataValueSet
         this.orgUnit = orgUnit;
     }
 
+    @JsonProperty( value = "dataValues" )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlElementWrapper( localName = "dataValues", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "dataValue", namespace = DxfNamespaces.DXF_2_0)
     public List<DataValue> getDataValues()
     {
         return dataValues;
@@ -166,25 +204,42 @@ public class DataValueSet
     // Logic
     //--------------------------------------------------------------------------
 
+    private Iterator<DataValue> dataValueIterator;
+
+    public void refreshDataValueIterator()
+    {
+        dataValueIterator = dataValues.iterator();
+    }
+
     public boolean hasNextDataValue()
     {
-        return dataValues.iterator().hasNext();
+        if ( dataValueIterator == null )
+        {
+            refreshDataValueIterator();
+        }
+
+        return dataValueIterator.hasNext();
     }
-    
+
     public DataValue getNextDataValue()
     {
-        return dataValues.iterator().next();
+        if ( dataValueIterator == null )
+        {
+            refreshDataValueIterator();
+        }
+
+        return dataValueIterator.next();
     }
 
     public DataValue getDataValueInstance()
     {
         return new DataValue();
     }
-    
+
     public void close()
     {
     }
-    
+
     @Override
     public String toString()
     {

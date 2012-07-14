@@ -54,6 +54,8 @@ public class AttributeUtils
     public static void updateAttributeValuesFromJson( Set<AttributeValue> attributeValues,
         List<String> jsonAttributeValues, AttributeService attributeService )
     {
+        attributeValues.clear();
+
         for ( String jsonAttributeValue : jsonAttributeValues )
         {
             JSONObject json = JSONObject.fromObject( jsonAttributeValue );

@@ -111,11 +111,9 @@ public class DataRecordingSelectAction
         // ---------------------------------------------------------------------
 
         programs = programService.getPrograms( orgunit );
-
         programs.retainAll( patient.getPrograms() );
-
-        programs.addAll( programService.getPrograms( Program.SINGLE_EVENT_WITH_REGISTRATION, orgunit ) );
-
+        programs.retainAll( programService.getProgramsByCurrentUser());
+        
         selectedStateManager.setSelectedPatient( patient );
 
         return SUCCESS;

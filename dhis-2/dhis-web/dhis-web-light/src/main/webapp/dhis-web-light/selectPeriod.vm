@@ -2,7 +2,7 @@
 #if( $dataSet.alternativeName )
     #set( $dataSetName = $dataSet.alternativeName )
 #else
-    #set( $dataSetName = $dataSet.name )
+    #set( $dataSetName = $dataSet.displayName )
 #end
 
 <div class="header-box" align="center">
@@ -11,17 +11,15 @@
         $dataSetName
     </p>
 </div>
-
 <h2>$i18n.getString( "available_periods" )</h2>
-
 <p>
 <ul>
 #foreach( $period in $periods )
 <li>
     #if( ! $lockedPeriods.contains( $period ) && ! $periodCompletedMap.get($period) )
         <a href="dataEntry.action?organisationUnitId=$organisationUnitId&dataSetId=$dataSetId&periodId=$period.getExternalId()">$!encoder.htmlEncode( ${period.name} )</a>
-    #else
-        $!encoder.htmlEncode( ${period.name} )
+    #elseif( $periodCompletedMap.get($period) )
+        <a href="dataEntry.action?organisationUnitId=$organisationUnitId&dataSetId=$dataSetId&periodId=$period.getExternalId()">$!encoder.htmlEncode( ${period.name} )</a>
     #end
 
 	#if( $periodCompletedMap.get($period) )<img src="../dhis-web-light/images/checkmark.jpg" />#end

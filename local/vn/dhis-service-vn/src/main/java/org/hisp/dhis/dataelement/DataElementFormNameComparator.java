@@ -31,17 +31,14 @@ import java.util.Comparator;
 
 /**
  * @author Chau Thu Tran
- *
+ * 
  * @version $DataElementFormNameComparator.java Mar 29, 2012 11:26:55 AM$
  */
-public class DataElementFormNameComparator 
-implements Comparator<DataElement>
+public class DataElementFormNameComparator
+    implements Comparator<DataElement>
 {
     public int compare( DataElement dataElement0, DataElement dataElement1 )
     {
-        String name0 = ( dataElement0.getFormName() != null && !dataElement0.getFormName().isEmpty() ) ? dataElement0.getFormName() : dataElement0.getName();
-        String name1 = ( dataElement1.getFormName() != null && !dataElement1.getFormName().isEmpty() ) ? dataElement1.getFormName() : dataElement1.getName();
-        
-        return name0.compareToIgnoreCase( name1 );
+        return dataElement0.getFormNameFallback().compareToIgnoreCase( dataElement1.getFormNameFallback() );
     }
 }

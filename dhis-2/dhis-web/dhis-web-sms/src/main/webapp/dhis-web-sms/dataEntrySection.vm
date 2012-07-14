@@ -4,7 +4,7 @@
 #if( $dataSet.alternativeName )
 	#set( $dataSetName = $dataSet.alternativeName )
 #else
-	#set( $dataSetName = $dataSet.name )
+	#set( $dataSetName = $dataSet.displayName )
 #end
 
 <h2>$encoder.htmlEncode( $dataSetName )</h2>

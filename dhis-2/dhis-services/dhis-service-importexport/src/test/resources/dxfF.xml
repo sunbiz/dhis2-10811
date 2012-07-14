@@ -137,7 +137,6 @@
             <id>65</id>
             <uid>E3133935ECA</uid>
             <name>DataElementA</name>
-            <alternativeName>AlternativeNameA2</alternativeName>
             <shortName>ShortNameA</shortName>
             <code>CodeA</code>
             <description>DescriptionA</description>
@@ -150,7 +149,6 @@
             <id>66</id>
             <uid>E3133935ECB</uid>
             <name>DataElementB</name>
-            <alternativeName>AlternativeNameB2</alternativeName>
             <shortName>ShortNameB</shortName>
             <code>CodeB</code>
             <description>DescriptionB</description>
@@ -163,7 +161,6 @@
             <id>67</id>
             <uid>E3133935ECC</uid>
             <name>DataElementC</name>
-            <alternativeName>AlternativeNameC</alternativeName>
             <shortName>ShortNameC</shortName>
             <code>CodeC</code>
             <description>DescriptionC</description>

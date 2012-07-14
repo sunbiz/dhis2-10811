@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://www.springframework.org/schema/beans"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:sec="http://www.springframework.org/schema/security"
-    xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:sec="http://www.springframework.org/schema/security"
+  xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
   <sec:global-method-security pre-post-annotations="enabled" />
-
-  <mvc:resources mapping="/static/**" location="classpath:/static/" />
 
   <mvc:annotation-driven>
     <mvc:message-converters>
@@ -21,17 +19,32 @@
 
   <context:component-scan base-package="org.hisp.dhis.api" />
 
-  <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-    <property name="order" value="1" />
-    <property name="mediaTypes">
+  <bean id="headerContentNegotiationStrategy" class="org.springframework.web.accept.HeaderContentNegotiationStrategy" />
+
+  <bean id="pathExtensionContentNegotiationStrategy" class="org.springframework.web.accept.PathExtensionContentNegotiationStrategy">
+    <constructor-arg name="mediaTypes">
       <map>
-        <entry key="xml" value="application/xml" />
+        <entry key="html" value="text/html" />
         <entry key="json" value="application/json" />
         <entry key="jsonp" value="application/javascript" />
-        <entry key="html" value="text/html" />
+        <entry key="xml" value="application/xml" />
         <entry key="png" value="image/png" />
       </map>
-    </property>
+    </constructor-arg>
+  </bean>
+
+  <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManager">
+    <constructor-arg>
+      <list>
+        <ref bean="pathExtensionContentNegotiationStrategy" />
+        <ref bean="headerContentNegotiationStrategy" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    <property name="order" value="1" />
+    <property name="contentNegotiationManager" ref="contentNegotiationManager" />
 
     <property name="defaultViews">
       <list>
@@ -54,9 +67,6 @@
         </bean>
       </list>
     </property>
-
-    <property name="defaultContentType" value="text/html" />
-    <property name="favorParameter" value="true" />
   </bean>
 
 </beans>

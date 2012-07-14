@@ -12,7 +12,7 @@
 		<!-- Default -->
 
 		<action name="index" class="org.hisp.dhis.mapping.action.NoAction">
-			<result name="success" type="redirect">mapping/index.html
+			<result name="success" type="redirect">app/index.html
 			</result>
 		</action>
 
@@ -83,6 +83,12 @@
 			<result name="success" type="velocity-json">
 				/dhis-web-mapping/jsonminFacilityInfo.vm</result>
 		</action>
+
+        <action name="getOrganisationUnitGroupsByGroupSet"
+            class="org.hisp.dhis.mapping.action.GetOrganisationUnitGroupsByGroupSetAction">
+            <result name="success" type="velocity-json">/dhis-web-mapping/jsonminOrganisationUnitGroups.vm
+            </result>
+        </action>
 
         <!-- OrganisationUnitLevel -->
 
@@ -168,24 +174,6 @@
 				/dhis-web-mapping/jsonMapLegendSet.vm</result>
 		</action>
 
-		<action name="getMapLegendSetByIndicator"
-			class="org.hisp.dhis.mapping.action.GetMapLegendSetByIndicatorAction">
-			<result name="success" type="velocity-json">
-				/dhis-web-mapping/jsonMapLegendSet.vm</result>
-		</action>
-
-        <action name="getMapLegendSetByDataElement"
-            class="org.hisp.dhis.mapping.action.GetMapLegendSetByDataElementAction">
-            <result name="success" type="velocity-json">
-                /dhis-web-mapping/jsonMapLegendSet.vm</result>
-        </action>
-
-		<action name="getMapLegendSetsByType"
-			class="org.hisp.dhis.mapping.action.GetMapLegendSetsByTypeAction">
-			<result name="success" type="velocity-json">
-				/dhis-web-mapping/jsonMapLegendSets.vm</result>
-		</action>
-
 		<action name="assignIndicatorsToMapLegendSet"
 			class="org.hisp.dhis.mapping.action.AssignIndicatorsToMapLegendSetAction">
 			<result name="success" type="velocity-json">/dhis-web-mapping/void.vm
@@ -198,17 +186,16 @@
             </result>
         </action>
 
-		<!-- MapView -->
+        <!-- Map -->
 
-        <action name="addMapView"
-            class="org.hisp.dhis.mapping.action.AddMapViewAction">
-            <result name="success" type="velocity-json">/dhis-web-mapping/void.vm
-            </result>
+        <action name="renameMap" class="org.hisp.dhis.mapping.action.RenameMapAction">
+            <result name="success" type="velocity-json">/dhis-web-mapping/void.vm</result>
         </action>
 
+		<!-- MapView -->
+
 		<action name="deleteMapView" class="org.hisp.dhis.mapping.action.DeleteMapViewAction">
-			<result name="success" type="velocity-json">/dhis-web-mapping/void.vm
-			</result>
+			<result name="success" type="velocity-json">/dhis-web-mapping/void.vm</result>
 		</action>
 
 		<action name="getMapView" class="org.hisp.dhis.mapping.action.GetMapViewAction">
@@ -227,12 +214,6 @@
 			<result name="success" type="velocity-json">
 				/dhis-web-mapping/jsonminMapViews.vm</result>
 		</action>
-
-        <action name="getMapViewsByFeatureType"
-            class="org.hisp.dhis.mapping.action.GetMapViewsByFeatureTypeAction">
-            <result name="success" type="velocity-json">/dhis-web-mapping/jsonMapViews.vm
-            </result>
-        </action>
 
 		<action name="addMapViewToDashboard"
 			class="org.hisp.dhis.mapping.action.AddMapViewToDashboardAction">

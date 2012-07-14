@@ -25,22 +25,34 @@
 	<!-- Statement -->
 	
 	<select id="getSemiPermanentDataValues" resultMap="semiPermanentDataValueResultMap">
-		SELECT SemiPermanentData.DataElementID, SemiPermanentData.ValidFrom, SemiPermanentData.ValidTo, 
-		SemiPermanentData.OrgUnitID, SemiPermanentData.EntryNumber, SemiPermanentData.EntryYesNo, DataElement.DataPeriodTypeID 
-		FROM SemiPermanentData, DataElement 
-        WHERE SemiPermanentData.DataElementID = DataElement.DataElementID
+		SELECT SPD.DataElementID, SPD.ValidFrom, SPD.ValidTo, 
+		SPD.OrgUnitID, SPD.EntryNumber, SPD.EntryYesNo, DataElement.DataPeriodTypeID 
+		FROM SemiPermanentData AS SPD, DataElement 
+        WHERE SPD.DataElementID = DataElement.DataElementID
+        UNION
+        SELECT SPD.DataElementID, SPD.ValidFrom, SPD.ValidTo, 
+        SPD.OrgUnitID, SPD.EntryNumber, SPD.EntryYesNo, DataElement.DataPeriodTypeID 
+        FROM SemiPermanentDataArchive AS SPD, DataElement 
+        WHERE SPD.DataElementID = DataElement.DataElementID
 	</select>
   
     <select id="getSemiPermanentDataValuesLastUpdated" parameterClass="java.util.Date" resultMap="semiPermanentDataValueResultMap">
-        SELECT SemiPermanentData.DataElementID, SemiPermanentData.ValidFrom, SemiPermanentData.ValidTo, 
-        SemiPermanentData.OrgUnitID, SemiPermanentData.EntryNumber, SemiPermanentData.EntryYesNo, DataElement.DataPeriodTypeID 
-        FROM SemiPermanentData, DataElement 
-        WHERE SemiPermanentData.DataElementID = DataElement.DataElementID 
-        AND LastUpdated > #value#
+        SELECT SPD.DataElementID, SPD.ValidFrom, SPD.ValidTo, 
+        SPD.OrgUnitID, SPD.EntryNumber, SPD.EntryYesNo, DataElement.DataPeriodTypeID 
+        FROM SemiPermanentData AS SPD, DataElement 
+        WHERE SPD.DataElementID = DataElement.DataElementID 
+        AND SPD.LastUpdated > #value#
+        UNION
+        SELECT SPD.DataElementID, SPD.ValidFrom, SPD.ValidTo, 
+        SPD.OrgUnitID, SPD.EntryNumber, SPD.EntryYesNo, DataElement.DataPeriodTypeID 
+        FROM SemiPermanentDataArchive AS SPD, DataElement 
+        WHERE SPD.DataElementID = DataElement.DataElementID 
+        AND SPD.LastUpdated > #value#
     </select>
   
     <select id="getSemiPermanentDataValuesOutOfRange" resultClass="java.lang.Integer">
-		SELECT COUNT(*) FROM SemiPermanentData WHERE EntryNumber > 2147483647
+		SELECT COUNT(*) FROM SemiPermanentData WHERE EntryNumber > 2147483647 UNION
+		SELECT COUNT(*) FROM SemiPermanentDataArchive WHERE EntryNumber > 2147483647
 	</select>
   
 </sqlMap>

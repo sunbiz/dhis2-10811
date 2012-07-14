@@ -2,21 +2,23 @@
 	"user":
 	{
 		"id":"$!currentUser.id",
-		"isAdmin":true,
-		"ou":[
-			"$!currentUser.organisationUnit.id",
-			"$!encoder.jsonEncode(${currentUser.organisationUnit.name})"
+		"isAdmin":$!currentUser.userCredentials.isSuper(),
+		"ous":[
+			#foreach( $orgunit in $currentUser.organisationUnits )
+			   {
+					 "id":  "${orgunit.uid}" ,
+					 "localid": "$orgunit.id",
+					 "name": "$!encoder.jsonEncode( ${orgunit.name} )",
+					 "leaf": !$orgunit.hasChild()
+			   }#if( $velocityCount < $programs.size() ),#end
+			#end
 		]
 	},
-	"rn":[
-		"$!{rootNode.id}",
-		"$!encoder.jsonEncode(${rootNode.name})"
-	],
 	"programs": [
 		#foreach( $program in $programs )
 		  {
 			"id":  "${program.id}" ,
-			"name": "$!encoder.jsonEncode( ${program.name} )",
+			"name": "$!encoder.jsonEncode( ${program.displayName} )",
 			"type": "$program.type"
 		  }#if( $velocityCount < $programs.size() ),#end
 		#end
@@ -24,8 +26,8 @@
 	"orgunitGroups": [
 		#foreach( $orgunitGroup in $orgunitGroups )
 		  {
-			"id":  "${orgunitGroup.id}" ,
-			"name": "${orgunitGroup.name}"
+			"id":  "${orgunitGroup.uid}" ,
+			"name": "$!encoder.jsonEncode( ${orgunitGroup.name} )"
 		  }#if($velocityCount < $orgunitGroups.size()),#end
 		#end
 	],
@@ -33,7 +35,7 @@
 		#foreach( $level in $levels )
 		  {
 			"value":  "${level.level}" ,
-			"name": "${level.name}"
+			"name": "$!encoder.jsonEncode( ${level.displayName} )"
 		  }#if($velocityCount < $levels.size()),#end
 		#end
 	]

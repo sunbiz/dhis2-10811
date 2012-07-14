@@ -31,7 +31,10 @@ import com.opensymphony.xwork2.Action;
 import org.apache.commons.lang3.StringUtils;
 import org.hisp.dhis.dxf2.metadata.ExchangeClasses;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,7 +61,10 @@ public class MetaDataExportFormAction
     @Override
     public String execute() throws Exception
     {
-        for ( String key : ExchangeClasses.getExportMap().values() )
+        List<String> values = new ArrayList<String>( ExchangeClasses.getExportMap().values() );
+        Collections.sort( values );
+
+        for ( String key : values )
         {
             String[] camelCaseWords = StringUtils.capitalize( key ).split( "(?=[A-Z])" );
             exportClasses.put( key, StringUtils.join( camelCaseWords, " " ) );

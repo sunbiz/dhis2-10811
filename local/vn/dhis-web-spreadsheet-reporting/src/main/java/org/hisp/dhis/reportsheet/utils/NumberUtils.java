@@ -42,8 +42,8 @@ public class NumberUtils
 
     // This pattern used for VN
     public static final String PATTERN_DECIMAL_FORMAT1 = "#,##0.######";
-    
-    // This pattern is default in DHIS2    
+
+    // This pattern is default in DHIS2
     public static final String PATTERN_DECIMAL_FORMAT2 = "#0.######";
 
     // -------------------------------------------------------------------------
@@ -62,6 +62,11 @@ public class NumberUtils
 
     public static String getFormattedNumber( String input )
     {
+        if ( df == null )
+        {
+            return input;
+        }
+        
         try
         {
             return df.format( Double.parseDouble( input ) );

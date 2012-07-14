@@ -32,8 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
-import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.patientdatavalue.PatientDataValueService;
@@ -60,13 +58,6 @@ public class ViewRecordsAction
         this.patientDataValueService = patientDataValueService;
     }
 
-    private DataElementCategoryService dataElementCategoryService;
-
-    public void setDataElementCategoryService( DataElementCategoryService dataElementCategoryService )
-    {
-        this.dataElementCategoryService = dataElementCategoryService;
-    }
-
     private ProgramStageInstanceService programStageInstanceService;
 
     public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
@@ -85,14 +76,14 @@ public class ViewRecordsAction
         this.id = id;
     }
 
-    Collection<PatientDataValue> patientDataValues = new ArrayList<PatientDataValue>();
+    private Collection<PatientDataValue> patientDataValues = new ArrayList<PatientDataValue>();
 
     public Collection<PatientDataValue> getPatientDataValues()
     {
         return patientDataValues;
     }
 
-    Map<Integer, String> optionValueMap = new HashMap<Integer, String>();
+    private Map<Integer, String> optionValueMap = new HashMap<Integer, String>();
 
     public Map<Integer, String> getOptionValueMap()
     {

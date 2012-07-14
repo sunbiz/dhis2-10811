@@ -3,7 +3,7 @@
 		#foreach ( $dataSet in $dataSets )
 		<dataSet>
 			<id>$dataSet.id</id>
-			<name>$encoder.xmlEncode( $dataSet.name )</name>
+			<name>$encoder.xmlEncode( $dataSet.displayName )</name>
 			<locked>$dataSet.locked</locked>
 		</dataSet>
 		#end

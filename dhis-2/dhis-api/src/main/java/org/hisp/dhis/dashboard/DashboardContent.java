@@ -27,24 +27,25 @@ package org.hisp.dhis.dashboard;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DxfNamespaces;
+import org.hisp.dhis.common.view.BasicView;
+import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.document.Document;
+import org.hisp.dhis.mapping.Map;
+import org.hisp.dhis.report.Report;
+import org.hisp.dhis.reporttable.ReportTable;
+import org.hisp.dhis.user.User;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
-import org.hisp.dhis.common.view.BasicView;
-import org.hisp.dhis.common.view.DetailedView;
-import org.hisp.dhis.document.Document;
-import org.hisp.dhis.mapping.MapView;
-import org.hisp.dhis.report.Report;
-import org.hisp.dhis.reporttable.ReportTable;
-import org.hisp.dhis.user.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * it would make sense to make this an idObject, so that we could have nameable (switchable?)
@@ -52,7 +53,7 @@ import java.util.List;
  *
  * @author Lars Helge Overland
  */
-@JacksonXmlRootElement( localName = "dashboardContent", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "dashboardContent", namespace = DxfNamespaces.DXF_2_0)
 public class DashboardContent
 {
     private final static int MAX_DASHBOARD_ELEMENTS = 6;
@@ -67,7 +68,7 @@ public class DashboardContent
 
     private List<ReportTable> reportTables = new ArrayList<ReportTable>();
 
-    private List<MapView> mapViews = new ArrayList<MapView>();
+    private List<Map> maps = new ArrayList<Map>();
 
     public DashboardContent()
     {
@@ -148,15 +149,15 @@ public class DashboardContent
         }
     }
 
-    public void addMapView( MapView mapView )
+    public void addMap( Map map )
     {
-        if ( !mapViews.contains( mapView ) )
+        if ( !maps.contains( map ) )
         {
-            mapViews.add( 0, mapView );
+            maps.add( 0, map );
 
-            while ( mapViews.size() > MAX_DASHBOARD_ELEMENTS )
+            while ( maps.size() > MAX_DASHBOARD_ELEMENTS )
             {
-                mapViews.remove( MAX_DASHBOARD_ELEMENTS );
+                maps.remove( MAX_DASHBOARD_ELEMENTS );
             }
         }
     }
@@ -239,15 +240,15 @@ public class DashboardContent
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class} )
-    @JacksonXmlElementWrapper( localName = "mapViews" )
-    @JacksonXmlProperty( localName = "mapView" )
-    public List<MapView> getMapViews()
+    @JacksonXmlElementWrapper( localName = "maps" )
+    @JacksonXmlProperty( localName = "map" )
+    public List<Map> getMaps()
     {
-        return mapViews;
+        return maps;
     }
 
-    public void setMapViews( List<MapView> mapViews )
+    public void setMaps( List<Map> maps )
     {
-        this.mapViews = mapViews;
+        this.maps = maps;
     }
 }

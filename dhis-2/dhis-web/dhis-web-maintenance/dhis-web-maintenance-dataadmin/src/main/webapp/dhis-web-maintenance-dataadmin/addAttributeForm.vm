@@ -20,7 +20,7 @@
 
 <h3>$i18n.getString( "create_new_attribute" )</h3>
 
-<form id="addAttributeForm" action="addAttribute.action" method="post" >
+<form id="addAttributeForm" action="addAttribute.action" method="post" class="inputForm">
 
 <table>
 	<col style="width: 100px"/>
@@ -32,7 +32,7 @@
 
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:20em"/></td>
+		<td><input type="text" id="name" name="name"></td>
 	</tr>
 
 	<tr>
@@ -57,7 +57,7 @@
 	<tr>
 		<td><label for="valueType">$i18n.getString( "value_type" )</td>
 		<td>
-			<select id="valueType" name="valueType" style="width:20em">
+			<select id="valueType" name="valueType">
 				<option value="string">$i18n.getString( "text" )</option>
 				<option value="bool">$i18n.getString( "yes_no" )</option>
 				<option value="date">$i18n.getString( "date" )</option>

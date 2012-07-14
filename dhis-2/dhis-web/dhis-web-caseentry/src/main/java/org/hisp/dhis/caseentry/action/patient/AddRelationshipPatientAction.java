@@ -24,7 +24,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- package org.hisp.dhis.caseentry.action.patient;
+package org.hisp.dhis.caseentry.action.patient;
 
 import java.util.Collection;
 
@@ -102,7 +102,7 @@ public class AddRelationshipPatientAction
     private Character dobType;
 
     private String gender;
-    
+
     private String phoneNumber;
 
     private String registrationDate;
@@ -112,6 +112,8 @@ public class AddRelationshipPatientAction
     private Integer relationshipId;
 
     private Integer relationshipTypeId;
+
+    private boolean relationshipFromA;
 
     // -------------------------------------------------------------------------
     // Output
@@ -256,9 +258,16 @@ public class AddRelationshipPatientAction
                     patient.setRepresentative( relationship );
 
                 Relationship rel = new Relationship();
-                rel.setPatientA( relationship );
-                rel.setPatientB( patient );
-
+                if ( relationshipFromA )
+                {
+                    rel.setPatientA( relationship );
+                    rel.setPatientB( patient );
+                }
+                else
+                {
+                    rel.setPatientA( patient );
+                    rel.setPatientB( relationship );
+                }
                 if ( relationshipTypeId != null )
                 {
                     RelationshipType relType = relationshipTypeService.getRelationshipType( relationshipTypeId );
@@ -328,6 +337,11 @@ public class AddRelationshipPatientAction
     public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
     {
         this.patientIdentifierTypeService = patientIdentifierTypeService;
+    }
+
+    public void setRelationshipFromA( boolean relationshipFromA )
+    {
+        this.relationshipFromA = relationshipFromA;
     }
 
     public void setBirthDate( String birthDate )

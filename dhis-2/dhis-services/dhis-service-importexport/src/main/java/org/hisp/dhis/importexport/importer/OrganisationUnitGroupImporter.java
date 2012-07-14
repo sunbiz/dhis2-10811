@@ -8,6 +8,8 @@ import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 
+import java.util.List;
+
 /*
  * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
@@ -43,18 +45,18 @@ public class OrganisationUnitGroupImporter
     public OrganisationUnitGroupImporter()
     {
     }
-    
+
     public OrganisationUnitGroupImporter( BatchHandler<OrganisationUnitGroup> batchHandler, OrganisationUnitGroupService organisationUnitGroupService )
     {
         this.batchHandler = batchHandler;
         this.organisationUnitGroupService = organisationUnitGroupService;
     }
-    
+
     @Override
     public void importObject( OrganisationUnitGroup object, ImportParams params )
     {
         NameMappingUtil.addOrganisationUnitGroupMapping( object.getId(), object.getName() );
-        
+
         read( object, GroupMemberType.NONE, params );
     }
 
@@ -68,14 +70,16 @@ public class OrganisationUnitGroupImporter
     protected void importMatching( OrganisationUnitGroup object, OrganisationUnitGroup match )
     {
         match.setName( object.getName() );
-        
+
         organisationUnitGroupService.updateOrganisationUnitGroup( match );
     }
 
     @Override
     protected OrganisationUnitGroup getMatching( OrganisationUnitGroup object )
     {
-        return organisationUnitGroupService.getOrganisationUnitGroupByName( object.getName() );
+        List<OrganisationUnitGroup> organisationUnitGroupByName = organisationUnitGroupService.getOrganisationUnitGroupByName( object.getName() );
+
+        return organisationUnitGroupByName.isEmpty() ? null : organisationUnitGroupByName.get( 0 );
     }
 
     @Override

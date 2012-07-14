@@ -1,15 +1,16 @@
 CACHE MANIFEST
-# 2.9-SNAPSHOT Version 1
+# 2.11-SNAPSHOT V8
 NETWORK:
 *
 CACHE:
-css/light_blue/dom.js
 css/light_blue/light_blue.css
 css/light_blue/logo_background.png
 css/light_blue/logo_banner.png
 css/light_blue/logo_separator.png
 css/widgets.css
+css/print.css
 ../dhis-web-dataentry/style/dhis-web-dataentry.css
+../favicon.ico
 javascripts/jQuery/jquery.min.js
 javascripts/jQuery/jquery.metadata.js
 javascripts/jQuery/jquery.glob.js
@@ -25,6 +26,10 @@ javascripts/dhis2/dhis2.array.js
 javascripts/dhis2/dhis2.select.js
 javascripts/dhis2/dhis2.comparator.js
 javascripts/dhis2/dhis2.availability.js
+javascripts/dhis2/dhis2.storage.js
+javascripts/dhis2/dhis2.storage.dom-ss.js
+javascripts/dhis2/dhis2.storage.dom.js
+javascripts/dhis2/dhis2.storage.idb.js
 javascripts/jQuery/jquery.cookie.js
 ../main.js
 ouwt/ouwt.js 
@@ -49,4 +54,3 @@ fonts/LiberationSans-Bold-webfont.svg
 ../images/ajax-loader-bar.gif
 ../dhis-web-dataentry/javascript/form.js
 ../dhis-web-dataentry/javascript/entry.js
-../dhis-web-dataentry/javascript/history.js

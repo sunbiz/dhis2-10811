@@ -5,106 +5,168 @@
 
 .contentProviderTable
 {
-  width:295px;
+  width: 295px;
 }
 
 .contentProviderTable td
 {
-  padding-top:3px;
-  padding-bottom:3px;
-  border-bottom:1px solid #cad5e5;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #cad5e5;
 }
 
 #contentDiv
 {
-  position:relative;
-  top: 38px;
+  position: relative;
+  top: 44px;
 }
 
 .removeIcon
 {
-   padding:3px 3px 2px 3px;
+   padding: 2px 2px 1px 2px;
 }
 
 .linkArea
 {
-  border:1px solid #d0d0d0;
-  padding:1px;
-  height:196px;
-  width:295px;
-  overflow:hidden;
-  margin-bottom:15px;
+  border: 1px solid #d0d0d0;
+  padding: 1px;
+  height: 196px;
+  width: 295px;
+  overflow: hidden;
+  margin-bottom: 15px;
 }
 
 .linkArea div
 {
-  position:absolute;
+  position: absolute;
 }
 
 .chartArea
 {
-  border:1px solid #d0d0d0;
-  padding:1px;
-  height:310px;
-  width:310px;
-  overflow:hidden;
-  margin-bottom:15px;
+  border: 1px solid #d0d0d0;
+  padding: 1px;
+  height: 310px;
+  width: 310px;
+  overflow: hidden;
+  margin-bottom: 15px;
 }
 
 .chartArea div
 {
-  position:absolute;
+  position: absolute;
 }
 
 .buttonArea
 {
-  margin-bottom:2px;
+  margin-bottom: 2px;
 }
 
 .labelText
 {
-  color:#888;
-  padding:3px;
+  color: #999;
+  font-size: 16px;
+  padding: 40px 0 0 30px;
+  width: 230px;
 }
 
-#subMenu
-{
-  position:absolute;
+#dashboardMenu
+{  
+  position: absolute; 
+  margin-top: 6px;
 }
 
-#subMenu ul
+.horizontalMenu ul
 {
-  list-style-type:none;
+  list-style-type: none;
   margin: 0;
 }
 
-#subMenu li
+.horizontalMenu li
 {
-  float:left;
+  float: left;
 }
 
-#subMenu a
+#searchDiv
 {
-  padding: 6px 12px;
-  height: 25px;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  margin-right: 4px;
-  font-family: LiberationSansBold, arial;
-  font-size: 13px;
-  color: #606060;
-  background-color: #f3f3f3;
+  position: absolute;
+  left: 331px;
+  height: 22px;
+  width: 335px;
+  border: 1px solid #bbb;
+  padding: 5px 6px 0 6px;
 }
 
-#subMenu a:hover
+#searchField
+{
+  width: 320px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  outline: none;
+  width: 100%;
+  vertical-align: top;
+  font-size: 10pt;
+}
+
+#hitDiv
+{
+  position: absolute;
+  margin-top: 29px;
+  left: 331px;
+  width: 347px;
+  border-right: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
+  border-left: 1px solid #bbb;
+  background-color: #fff;
+  display: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+#hitDiv ul
+{
+  list-style-type: none;
+}
+
+#hitDiv a
+{
+  display: block;
+  width: 100%;
+  padding: 7px 6px 7px 12px;
+}
+
+#hitDiv a:hover
 {
   text-decoration: none;
-  background-color: #f8f8f8;
+  background-color: #eee;
 }
 
 #shareForm
 {
   display: none;
+}
+
+#shareHelpForm
+{
+  display: none;
+  padding: 5px 35px 5px 35px;
+}
+
+#shareHelpForm li
+{
+  margin-bottom: 10px;
+}
+
+#shareHelpForm a
+{
+  color: #3567cd;
+  outline: none;
+}
+
+#shareHelpLink
+{
+  color: #3567cd;
+  cursor: pointer;
 }
 
 #chartView
@@ -132,62 +194,113 @@
   margin: 0 0 6px 4px;
 }
 
+.interpretationCommentHeader
+{
+  padding: 7px 0 5px 0;
+  margin: 1px 0 12px 0;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+a.alert, .alert
+{
+  color: #E92B2B;
+}
+
 /*----------------------------------------------------------------------------*/
 /* Message                                                                    */
 /*----------------------------------------------------------------------------*/
 
 .plainList
 {
-  border-collapse:collapse;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
 .plainList td
 {
-  border-bottom:1px solid #c0c0c0;
-  cursor:pointer;
+  border-bottom: 1px solid #c0c0c0;
+  cursor: pointer;
 }
 
 .unread td
 {
-  background-color:#ebf0f6;
+  background-color: #ebf0f6;
 }
 
 .messageDiv
 {
-  width:50%;
-  border-bottom:1px solid #cccccc; 
-  margin-bottom:15px;
-  padding-bottom:15px;
+  width: 700px;
+  border-bottom: 1px solid #cccccc;
+  padding-left: 38px;
+  padding-top: 16px;
+  padding-bottom: 22px;
+}
+
+.messageText
+{
+  padding: 8px 0;
+}
+
+.messageTopDiv
+{
+  width: 700px;
+  border-bottom: 1px solid #cccccc;
+  padding-top: 10px;
+  padding-bottom: 35px;
 }
 
 .messageBottomDiv
 {
-  width:50%;
-  border-top:1px solid #cccccc; 
-  margin-top:20px;
-  padding-top:15px;
-  margin-bottom:20px;
-  padding-bottom:15px;
+  width: 700px;
+  border-top: 1px solid #cccccc; 
+  margin-top: 20px;
+  padding-top: 18px;
+  margin-bottom: 50px;
+  padding-bottom: 15px;
+}
+
+.messageMetaData
+{
+  display: none;
+  color: #666;
+  padding-top: 10px;
+}
+
+.messageSymbol
+{
+  margin-top: 8px;
+  float: left;
 }
 
 .replyArea
 {
-  width:495px;
-  height:80px;
+  width: 530px;
+  height: 80px;
   border: 1px solid #ccc;
   resize: none;
   overflow: auto;
-  padding: 4px 0px 0px 6px;
+  padding: 5px 6px;
+}
+
+.replyDiv
+{
+  margin-top: 15px;
 }
 
 div#selectionTree 
 {
-  height:200px;
+  height: 200px;
 }
 
 .grey
 {
   color: #555;
+}
+
+.userLink
+{
+  font-size: 10pt;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -196,7 +309,7 @@ div#selectionTree
 
 #interpretationFeed
 {
-  width: 550px;
+  width: 600px;
   border-top: 1px solid #ccc;
 }
 
@@ -207,11 +320,21 @@ div#selectionTree
   margin-bottom: 9px;
 }
 
+.interpretationContainer
+{
+  width: 590px;
+  border-bottom: 1px solid #ccc;
+  padding: 24px 10px 24px 10px;
+}
+
 .interpretation
 {
-  width: 550px;
-  border-bottom: 1px solid #ccc;
-  padding: 22px 10px 16px 10px;
+  margin-left: 48px;
+}
+
+.interpretationSymbol
+{
+  float: left;
 }
 
 .interpretationName
@@ -240,7 +363,7 @@ div#selectionTree
 .commentArea
 {
   height: 18px;
-  width: 370px;
+  width: 360px;
   border: 1px solid #ccc;
   resize: none;
   overflow: auto;
@@ -260,3 +383,82 @@ div#selectionTree
   cursor:pointer;
 }
 
+/*----------------------------------------------------------------------------*/
+/* Profile                                                                    */
+/*----------------------------------------------------------------------------*/
+
+#userHeader
+{
+  display: inline-block;
+  margin-left: 36px;
+  font-size: 14pt;
+  color: #303030;
+  padding: 3px 0 15px 0;
+}
+
+#userProfileLink
+{
+  position: relative; 
+  top: -3px; 
+  display: inline-block; 
+  margin-left: 200px;
+}
+
+#userCover
+{
+  border-top: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+#userInfo
+{
+  margin-left: 36px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+#userInfoLink
+{
+  margin-left: 40px;
+}
+
+.userRow
+{
+  display: block;
+  margin-top: 5px;
+}
+
+.userLabel
+{
+  display: inline-block;
+  color: #777;
+  font-size: 11pt;
+  width: 110px;
+  text-align: right;
+  padding-right: 20px;
+  vertical-align: top;
+}
+
+.userValue
+{
+  display: inline-block;
+  font-size: 11pt;
+  max-width: 510px;
+}
+
+#profileInterpretationHeader
+{
+  font-size: 9pt;
+  width: 610px;
+  margin-left: 40px;
+  margin-top: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+#profileInterpretationFeed
+{
+  width: 610px;
+  margin-left: 38px;
+}

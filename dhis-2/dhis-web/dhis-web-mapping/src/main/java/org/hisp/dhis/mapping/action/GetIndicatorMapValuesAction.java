@@ -27,16 +27,17 @@ package org.hisp.dhis.mapping.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.api.utils.ContextUtils.CONTENT_TYPE_JSON;
+
 import java.util.Collection;
 
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.aggregation.AggregatedMapValue;
 import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.mapping.MappingService;
 
 import com.opensymphony.xwork2.Action;
-
-import static org.hisp.dhis.api.utils.ContextUtils.*;
 
 /**
  * @author Jan Henrik Overland
@@ -112,7 +113,7 @@ public class GetIndicatorMapValuesAction
 
     public String execute()
         throws Exception
-    {
+    {            
         object = mappingService.getIndicatorMapValues( id, periodId, parentId, level );
         
         contextUtils.configureResponse( ServletActionContext.getResponse(), CONTENT_TYPE_JSON, CacheStrategy.RESPECT_SYSTEM_SETTING, null, false );

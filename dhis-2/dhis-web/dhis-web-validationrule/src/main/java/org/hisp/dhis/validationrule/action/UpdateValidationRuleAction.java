@@ -116,6 +116,13 @@ public class UpdateValidationRuleAction
         this.leftSideDescription = leftSideDescription;
     }
 
+    private boolean leftSideNullIfBlank;
+    
+    public void setLeftSideNullIfBlank( boolean leftSideNullIfBlank )
+    {
+        this.leftSideNullIfBlank = leftSideNullIfBlank;
+    }
+
     private String rightSideExpression;
 
     public void setRightSideExpression( String rightSideExpression )
@@ -128,6 +135,13 @@ public class UpdateValidationRuleAction
     public void setRightSideDescription( String rightSideDescription )
     {
         this.rightSideDescription = rightSideDescription;
+    }
+
+    private boolean rightSideNullIfBlank;
+
+    public void setRightSideNullIfBlank( boolean rightSideNullIfBlank )
+    {
+        this.rightSideNullIfBlank = rightSideNullIfBlank;
     }
 
     private String periodTypeName;
@@ -151,17 +165,15 @@ public class UpdateValidationRuleAction
 
         validationRule.getLeftSide().setExpression( leftSideExpression );
         validationRule.getLeftSide().setDescription( leftSideDescription );
-        validationRule.getLeftSide().setDataElementsInExpression(
-            expressionService.getDataElementsInExpression( leftSideExpression ) );
-        validationRule.getLeftSide().setOptionCombosInExpression(
-            expressionService.getOptionCombosInExpression( leftSideExpression ) );
+        validationRule.getLeftSide().setNullIfBlank( leftSideNullIfBlank );
+        validationRule.getLeftSide().setDataElementsInExpression( expressionService.getDataElementsInExpression( leftSideExpression ) );
+        validationRule.getLeftSide().setOptionCombosInExpression( expressionService.getOptionCombosInExpression( leftSideExpression ) );
 
         validationRule.getRightSide().setExpression( rightSideExpression );
         validationRule.getRightSide().setDescription( rightSideDescription );
-        validationRule.getRightSide().setDataElementsInExpression(
-            expressionService.getDataElementsInExpression( rightSideExpression ) );
-        validationRule.getRightSide().setOptionCombosInExpression(
-            expressionService.getOptionCombosInExpression( rightSideExpression ) );
+        validationRule.getRightSide().setNullIfBlank( rightSideNullIfBlank );
+        validationRule.getRightSide().setDataElementsInExpression( expressionService.getDataElementsInExpression( rightSideExpression ) );
+        validationRule.getRightSide().setOptionCombosInExpression( expressionService.getOptionCombosInExpression( rightSideExpression ) );
 
         PeriodType periodType = periodService.getPeriodTypeByName( periodTypeName );
         validationRule.setPeriodType( periodService.getPeriodTypeByClass( periodType.getClass() ) );

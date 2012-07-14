@@ -5,9 +5,11 @@
 		<dataElement>
 			<id>$dataElement.id</id>
 			<name>$encoder.xmlEncode( $dataElement.name )</name>
+			<code>$encoder.xmlEncode( $dataElement.code )</code>
 			<shortName>$encoder.xmlEncode( $dataElement.shortName )</shortName>
 			<type>$dataElement.type</type>
-			<json>$dataElement.toJSON()</json>
+			#set($deJSON = '{' + '"id"' + ":" + $dataElement.id + "," + '"name"' + ':"' + "$dataElement.name" + '",' + '"shortName"' + ':"' + "$dataElement.shortName" + '",' + '"type"' + ':"' + "$dataElement.getDetailedTextType()"  + '"}' );
+			<json>$deJSON</json>
 			<optionCombos> 
 			#foreach( $optionCombo in $dataElement.categoryCombo.optionCombos)
 				<optionCombo>

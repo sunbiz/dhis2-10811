@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.exporting.action;
 
 /*
- * Copyright (c) 2004-2011, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,16 +31,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
+import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
-import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportOrganizationGroupListing;
@@ -59,6 +60,8 @@ public class GenerateReportOrgGroupListingAction
 {
     private static final String PREFIX_FORMULA_SUM = "SUM(";
 
+    private static final int SHIFT_NUMBER_OF_ROWS = 5;
+
     private Map<Integer, List<OrganisationUnit>> childrenGroupMap = new HashMap<Integer, List<OrganisationUnit>>();
 
     // -------------------------------------------------------------------------
@@ -69,11 +72,22 @@ public class GenerateReportOrgGroupListingAction
     private OrganisationUnitService organisationUnitService;
 
     // -------------------------------------------------------------------------
+    // Input & Output
+    // -------------------------------------------------------------------------
+
+    private boolean showSubItem;
+
+    public void setShowSubItem( boolean showSubItem )
+    {
+        this.showSubItem = showSubItem;
+    }
+
+    // -------------------------------------------------------------------------
     // Override
     // -------------------------------------------------------------------------
 
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnit organisationUnit = organisationUnitSelectionManager.getSelectedOrganisationUnit();
@@ -85,7 +99,7 @@ public class GenerateReportOrgGroupListingAction
 
         prepareChildrenGroupMap( exportReportInstance, organisationUnit, orgUnitGroupAtLevels );
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnit );
+        this.installReadTemplateFile( exportReportInstance, organisationUnit );
 
         Collection<ExportItem> exportReportItems = null;
 
@@ -95,7 +109,16 @@ public class GenerateReportOrgGroupListingAction
 
             exportReportItems = exportReportInstance.getExportItemBySheet( sheetNo );
 
-            generateOutPutFile( exportReportInstance, exportReportItems, sheet );
+            if ( showSubItem )
+            {
+                generateOutPutFile1( exportReportInstance, exportReportItems, sheet );
+            }
+            else
+            {
+                generateOutPutFile2( exportReportInstance, exportReportItems, sheet );
+            }
+
+            this.recalculatingFormula( sheet );
         }
 
         /**
@@ -117,6 +140,7 @@ public class GenerateReportOrgGroupListingAction
         Collection<OrganisationUnit> membersOfGroup = null;
         Collection<OrganisationUnit> organisationUnitsAtLevel = null;
         Collection<OrganisationUnit> childrens = organisationUnit.getChildren();
+        Collection<DataSet> dataSets = exportReport.getDataSets();
 
         for ( OrganisationUnitGroup organisationUnitGroup : exportReport.getOrganisationUnitGroups() )
         {
@@ -143,6 +167,16 @@ public class GenerateReportOrgGroupListingAction
                 organisationUnits.retainAll( childrens );
             }
 
+            Iterator<OrganisationUnit> iterater = organisationUnits.iterator();
+
+            while ( iterater.hasNext() )
+            {
+                if ( !iterater.next().getDataSets().retainAll( dataSets ) )
+                {
+                    iterater.remove();
+                }
+            }
+
             Collections.sort( organisationUnits, new IdentifiableObjectNameComparator() );
 
             childrenGroupMap.put( organisationUnitGroup.getId(), organisationUnits );
@@ -151,16 +185,20 @@ public class GenerateReportOrgGroupListingAction
         /**
          * Garbage
          */
+        dataSets = null;
         childrens = null;
         membersOfGroup = null;
         organisationUnitLevel = null;
         organisationUnitsAtLevel = null;
     }
 
-    private void generateOutPutFile( ExportReportOrganizationGroupListing exportReport,
+    private void generateOutPutFile1( ExportReportOrganizationGroupListing exportReport,
         Collection<ExportItem> exportReportItems, Sheet sheet )
     {
         List<OrganisationUnit> organisationUnits = null;
+
+        boolean isFirst = true;
+        boolean isTitleSetup = isTitleSetup( exportReportItems );
 
         for ( ExportItem reportItem : exportReportItems )
         {
@@ -172,35 +210,47 @@ public class GenerateReportOrgGroupListingAction
 
             String totalFormula = PREFIX_FORMULA_SUM;
 
-            for ( OrganisationUnitGroup organisationUnitGroup : exportReport.getOrganisationUnitGroups() )
+            for ( OrganisationUnitGroup unitGroup : exportReport.getOrganisationUnitGroups() )
             {
+                run++;
                 int beginChapter = rowBegin;
 
-                organisationUnits = childrenGroupMap.get( organisationUnitGroup.getId() );
+                organisationUnits = childrenGroupMap.get( unitGroup.getId() );
 
-                if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.ORGANISATION )
-                    && (!organisationUnits.isEmpty()) )
+                // Shift the number of rows - From start-row To end-row
+
+                if ( isTitleSetup && isFirst )
                 {
-                    ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), organisationUnitGroup.getName(),
-                        ExcelUtils.TEXT, sheet, this.csText12BoldCenter );
+                    sheet.shiftRows( rowBegin, rowBegin + SHIFT_NUMBER_OF_ROWS, organisationUnits.size() + 1 );
                 }
-                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL )
-                    && (!organisationUnits.isEmpty()) )
+
+                if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.ORGANISATION ) )
+                {
+                    ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), unitGroup.getName(), ExcelUtils.TEXT,
+                        sheet, this.csText12NormalCenter );
+                }
+                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL ) )
                 {
                     ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), chappter[chapperNo++],
-                        ExcelUtils.TEXT, sheet, this.csText12BoldCenter );
+                        ExcelUtils.TEXT, sheet, this.csText12NormalCenter );
+                }
+                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.FORMULA_EXCEL ) )
+                {
+                    ExcelUtils.writeFormulaByPOI( rowBegin, reportItem.getColumn(), ExcelUtils.generateExcelFormula(
+                        reportItem.getExpression(), run, run ), sheet, this.csFormulaBold, evaluatorFormula );
                 }
 
-                run++;
                 rowBegin++;
                 int serial = 1;
 
                 for ( OrganisationUnit o : organisationUnits )
                 {
+                    run++;
+
                     if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.ORGANISATION ) )
                     {
                         ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), o.getName(), ExcelUtils.TEXT,
-                            sheet, this.csText10Bold );
+                            sheet, this.csText10Normal );
                     }
                     else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL ) )
                     {
@@ -225,10 +275,10 @@ public class GenerateReportOrgGroupListingAction
                     // FORMULA_EXCEL
                     {
                         ExcelUtils.writeFormulaByPOI( rowBegin, reportItem.getColumn(), ExcelUtils
-                            .generateExcelFormula( reportItem.getExpression(), run, run ), sheet, this.csFormula );
+                            .generateExcelFormula( reportItem.getExpression(), run, run ), sheet, this.csFormulaNormal,
+                            evaluatorFormula );
                     }
 
-                    run++;
                     rowBegin++;
                     serial++;
                 }
@@ -243,7 +293,7 @@ public class GenerateReportOrgGroupListingAction
                         formula = "SUM(" + columnName + (beginChapter + 1) + ":" + columnName + (rowBegin - 1) + ")";
 
                         ExcelUtils.writeFormulaByPOI( beginChapter, reportItem.getColumn(), formula, sheet,
-                            this.csFormula );
+                            this.csFormulaBold, evaluatorFormula );
 
                         totalFormula += columnName + beginChapter + ",";
                     }
@@ -252,8 +302,15 @@ public class GenerateReportOrgGroupListingAction
                         formula = ExcelUtils.generateExcelFormula( reportItem.getExtraExpression(), next + 1, 0 );
 
                         ExcelUtils.writeFormulaByPOI( beginChapter, reportItem.getColumn(), formula, sheet,
-                            this.csFormula );
+                            this.csFormulaBold, evaluatorFormula );
                     }
+                }
+                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT )
+                    || reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.INDICATOR )
+                    || reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.FORMULA_EXCEL ) )
+                {
+                    ExcelUtils.writeValueByPOI( rowBegin - 1, reportItem.getColumn(), null, ExcelUtils.NUMBER, sheet,
+                        this.csText10Normal );
                 }
 
                 next = run;
@@ -264,16 +321,119 @@ public class GenerateReportOrgGroupListingAction
             {
                 totalFormula = totalFormula.substring( 0, totalFormula.length() - 1 ) + ")";
 
-                ExcelUtils.writeFormulaByPOI( firstRow, reportItem.getColumn(), totalFormula, sheet, this.csFormula );
+                ExcelUtils.writeFormulaByPOI( firstRow, reportItem.getColumn(), totalFormula, sheet,
+                    this.csFormulaBold, evaluatorFormula );
             }
             else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.INDICATOR ) )
             {
                 totalFormula = ExcelUtils.generateExcelFormula( reportItem.getExtraExpression(), 0, 0 );
 
-                ExcelUtils.writeFormulaByPOI( firstRow, reportItem.getColumn(), totalFormula, sheet, this.csFormula );
+                ExcelUtils.writeFormulaByPOI( firstRow, reportItem.getColumn(), totalFormula, sheet,
+                    this.csFormulaBold, evaluatorFormula );
             }
+
+            isFirst = false;
         }
 
         organisationUnits = null;
     }
+
+    private void generateOutPutFile2( ExportReportOrganizationGroupListing exportReport,
+        Collection<ExportItem> exportReportItems, Sheet sheet )
+    {
+        List<OrganisationUnit> organisationUnits = null;
+
+        boolean isFirst = true;
+        boolean isTitleSetup = isTitleSetup( exportReportItems );
+
+        for ( ExportItem reportItem : exportReportItems )
+        {
+            int run = 0;
+            int chapperNo = 0;
+            int firstRow = reportItem.getRow();
+            int rowBegin = firstRow + 1;
+
+            double value = 0;
+            double totalValue = 0;
+
+            for ( OrganisationUnitGroup unitGroup : exportReport.getOrganisationUnitGroups() )
+            {
+                run++;
+
+                organisationUnits = childrenGroupMap.get( unitGroup.getId() );
+
+                // Shift the number of rows - From start-row To end-row
+
+                if ( isTitleSetup && isFirst )
+                {
+                    sheet.shiftRows( rowBegin, rowBegin + SHIFT_NUMBER_OF_ROWS, organisationUnits.size() + 1 );
+                }
+
+                if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.ORGANISATION ) )
+                {
+                    ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), unitGroup.getName(), ExcelUtils.TEXT,
+                        sheet, this.csText12NormalCenter );
+                }
+                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL ) )
+                {
+                    ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), chappter[chapperNo++],
+                        ExcelUtils.TEXT, sheet, this.csText12NormalCenter );
+                }
+                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT ) )
+                {
+                    for ( OrganisationUnit o : organisationUnits )
+                    {
+                        value += this.getDataValue( reportItem, o );
+                    }
+
+                    ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), value + "", ExcelUtils.NUMBER, sheet,
+                        this.csNumber );
+                }
+                else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.INDICATOR ) )
+                {
+                    for ( OrganisationUnit o : organisationUnits )
+                    {
+                        value += this.getIndicatorValue( reportItem, o );
+                    }
+
+                    ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), value + "", ExcelUtils.NUMBER, sheet,
+                        this.csNumber );
+                }
+                else
+                // FORMULA_EXCEL
+                {
+                    ExcelUtils.writeFormulaByPOI( rowBegin, reportItem.getColumn(), ExcelUtils.generateExcelFormula(
+                        reportItem.getExpression(), run, run ), sheet, this.csFormulaNormal, evaluatorFormula );
+                }
+
+                rowBegin++;
+                totalValue += value;
+                value = 0;
+            }
+
+            if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT ) )
+            {
+                ExcelUtils.writeValueByPOI( firstRow, reportItem.getColumn(), totalValue + "", ExcelUtils.NUMBER,
+                    sheet, this.csNumber );
+            }
+
+            isFirst = false;
+        }
+
+        organisationUnits = null;
+    }
+
+    private boolean isTitleSetup( Collection<ExportItem> exportReportItems )
+    {
+        for ( ExportItem item : exportReportItems )
+        {
+            if ( item.getItemType().equalsIgnoreCase( ExportItem.TYPE.ORGANISATION ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

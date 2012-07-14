@@ -253,6 +253,7 @@ public class GetSectionFormAction
         {
             for ( DataElementOperand operand : section.getGreyedFields() )
             {
+                System.out.println("Grey field:" + operand.getDataElement().getId() + ":" + operand.getCategoryOptionCombo().getId());
                 greyedFields.put( operand.getDataElement().getId() + ":" + operand.getCategoryOptionCombo().getId(),
                     true );
             }

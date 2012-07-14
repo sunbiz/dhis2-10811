@@ -35,6 +35,8 @@ import org.hisp.dhis.importexport.ImportParams;
 import org.hisp.dhis.importexport.Importer;
 import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id: AbstractDataSetConverter.java 4646 2008-02-26 14:54:29Z larshelg $
@@ -53,19 +55,19 @@ public class DataSetImporter
         this.batchHandler = batchHandler;
         this.dataSetService = dataSetService;
     }
-    
+
     @Override
     public void importObject( DataSet object, ImportParams params )
     {
         NameMappingUtil.addDataSetMapping( object.getId(), object.getName() );
-        
-        read( object, GroupMemberType.NONE, params );        
+
+        read( object, GroupMemberType.NONE, params );
     }
 
     @Override
     protected void importUnique( DataSet object )
     {
-        batchHandler.addObject( object );    
+        batchHandler.addObject( object );
     }
 
     @Override
@@ -73,20 +75,22 @@ public class DataSetImporter
     {
         match.setName( object.getName() );
         match.setPeriodType( object.getPeriodType() );
-        
+
         dataSetService.updateDataSet( match );
     }
 
     @Override
     protected DataSet getMatching( DataSet object )
     {
-        DataSet match = dataSetService.getDataSetByName( object.getName() );
-        
+        List<DataSet> dataSetByName = dataSetService.getDataSetByName( object.getName() );
+        DataSet match = dataSetByName.isEmpty() ? null : dataSetByName.get( 0 );
+
         if ( match == null )
         {
-            match = dataSetService.getDataSetByShortName( object.getShortName() );
+            List<DataSet> dataSetByShortName = dataSetService.getDataSetByShortName( object.getShortName() );
+            match = dataSetByShortName.isEmpty() ? null : dataSetByShortName.get( 0 );
         }
-        
+
         return match;
     }
 
@@ -101,7 +105,7 @@ public class DataSetImporter
         {
             return false;
         }
-        
+
         return true;
     }
 }

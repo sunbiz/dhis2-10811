@@ -27,18 +27,27 @@ package org.hisp.dhis.hibernate;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hisp.dhis.common.AccessStringHelper;
+import org.hisp.dhis.common.AuditLogUtil;
+import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.GenericNameableObjectStore;
+import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.SharingUtils;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,11 +56,12 @@ import java.util.List;
 
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class HibernateGenericStore<T>
     implements GenericNameableObjectStore<T>
 {
+    private static final Log log = LogFactory.getLog( HibernateGenericStore.class );
+
     protected SessionFactory sessionFactory;
 
     @Required
@@ -66,6 +76,9 @@ public class HibernateGenericStore<T>
     {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     private Class<T> clazz;
 
@@ -133,7 +146,7 @@ public class HibernateGenericStore<T>
     }
 
     /**
-     * Creates a Critera for the implementation Class type.
+     * Creates a Criteria for the implementation Class type.
      *
      * @return a Criteria instance.
      */
@@ -172,7 +185,7 @@ public class HibernateGenericStore<T>
      * @param expressions the Criterions for the Criteria.
      * @return an object of the implementation Class type.
      */
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     protected final T getObject( Criterion... expressions )
     {
         return (T) getCriteria( expressions ).uniqueResult();
@@ -184,7 +197,7 @@ public class HibernateGenericStore<T>
      * @param expressions the Criterions for the Criteria.
      * @return a List with objects of the implementation Class type.
      */
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     protected final List<T> getList( Criterion... expressions )
     {
         return getCriteria( expressions ).list();
@@ -197,141 +210,645 @@ public class HibernateGenericStore<T>
     @Override
     public int save( T object )
     {
+        if ( !isWriteAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_CREATE_DENIED );
+            throw new AccessDeniedException( "You do not have write access to object" );
+        }
+
+        if ( currentUserService.getCurrentUser() != null && SharingUtils.isSupported( clazz ) )
+        {
+            BaseIdentifiableObject identifiableObject = (BaseIdentifiableObject) object;
+
+            if ( identifiableObject.getUser() == null )
+            {
+                identifiableObject.setUser( currentUserService.getCurrentUser() );
+            }
+
+            if ( SharingUtils.canCreatePublic( currentUserService.getCurrentUser(), identifiableObject ) )
+            {
+                identifiableObject.setPublicAccess( AccessStringHelper.newInstance().enable( AccessStringHelper.Permission.READ ).build() );
+            }
+            else if ( SharingUtils.canCreatePrivate( currentUserService.getCurrentUser(), identifiableObject ) )
+            {
+                identifiableObject.setPublicAccess( AccessStringHelper.newInstance().build() );
+            }
+            else
+            {
+                AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_CREATE_DENIED );
+                throw new AccessDeniedException( "You are not allowed to create public or private objects of this kind" );
+            }
+        }
+
+        AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_CREATE );
         return (Integer) sessionFactory.getCurrentSession().save( object );
     }
 
     @Override
     public void update( T object )
     {
+        if ( !isUpdateAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_UPDATE_DENIED );
+            throw new AccessDeniedException( "You do not have update access to object" );
+        }
+
+        AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_UPDATE );
         sessionFactory.getCurrentSession().update( object );
     }
 
     @Override
-    public void saveOrUpdate( T object )
-    {
-        sessionFactory.getCurrentSession().saveOrUpdate( object );
-    }
-
-    @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public final T get( int id )
     {
-        return (T) sessionFactory.getCurrentSession().get( getClazz(), id );
+        T object = (T) sessionFactory.getCurrentSession().get( getClazz(), id );
+
+        if ( !isReadAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
+            throw new AccessDeniedException( "You do not have read access to object with id " + id );
+        }
+
+        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
+        return object;
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public final T load( int id )
     {
-        return (T) sessionFactory.getCurrentSession().load( getClazz(), id );
+        T object = (T) sessionFactory.getCurrentSession().load( getClazz(), id );
+
+        if ( !isReadAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
+            throw new AccessDeniedException( "You do not have read access to object with id " + id );
+        }
+
+        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
+        return object;
     }
-    
+
     @Override
     public final T getByUid( String uid )
     {
-        return getObject( Restrictions.eq( "uid", uid ) );
+        T object = getObject( Restrictions.eq( "uid", uid ) );
+
+        if ( !isReadAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
+            throw new AccessDeniedException( "You do not have read access to object with uid " + uid );
+        }
+
+        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
+        return object;
     }
 
     @Override
+    @Deprecated
     public final T getByName( String name )
     {
-        return getObject( Restrictions.eq( "name", name ) );
+        T object = getObject( Restrictions.eq( "name", name ) );
+
+        if ( !isReadAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
+            throw new AccessDeniedException( "You do not have read access to object with name " + name );
+        }
+
+        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
+        return object;
     }
 
     @Override
-    public final T getByAlternativeName( String alternativeName )
-    {
-        return getObject( Restrictions.eq( "alternativeName", alternativeName ) );
-    }
-
-    @Override
+    @Deprecated
     public final T getByShortName( String shortName )
     {
-        return getObject( Restrictions.eq( "shortName", shortName ) );
+        T object = getObject( Restrictions.eq( "shortName", shortName ) );
+
+        if ( !isReadAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
+            throw new AccessDeniedException( "You do not have read access to object with shortName " + shortName );
+        }
+
+        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
+        return object;
     }
 
     @Override
     public final T getByCode( String code )
     {
-        return getObject( Restrictions.eq( "code", code ) );
-    }
+        T object = getObject( Restrictions.eq( "code", code ) );
 
-    @Override
-    @SuppressWarnings( "unchecked" )
-    public Collection<T> getLikeName( String name )
-    {
-        return getCriteria().add( Restrictions.ilike( "name", "%" + name + "%" ) ).list();
-    }
+        if ( !isReadAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
+            throw new AccessDeniedException( "You do not have read access to object with code " + code );
+        }
 
-    @Override
-    @SuppressWarnings( "unchecked" )
-    public final Collection<T> getAll()
-    {
-        return getCriteria().list();
-    }
-
-    @Override
-    @SuppressWarnings( "unchecked" )
-    public final Collection<T> getAllSorted()
-    {
-        return getCriteria().addOrder( Order.asc( "name" ) ).list();
+        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
+        return object;
     }
 
     @Override
     public final void delete( T object )
     {
+        if ( !isDeleteAllowed( object ) )
+        {
+            AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_DELETE_DENIED );
+            throw new AccessDeniedException( "You do not have delete access to this object." );
+        }
+
+        AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_DELETE );
         sessionFactory.getCurrentSession().delete( object );
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public Collection<T> getBetween( int first, int max )
+    @SuppressWarnings("unchecked")
+    public final List<T> getAll()
     {
-        Criteria criteria = getCriteria();
-        criteria.addOrder( Order.asc( "name" ) );
-        criteria.setFirstResult( first );
-        criteria.setMaxResults( max );
-        return criteria.list();
+        Query query = sharingEnabled() ? getQueryAllACL() : getQueryAll();
+
+        return query.list();
+    }
+
+    private Query getQueryAllACL()
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+
+        return query;
+    }
+
+    private Query getQueryAll()
+    {
+        return getQuery( "from " + clazz.getName() + " c" );
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public List<T> getBetweenOrderderByLastUpdated( int first, int max )
+    @SuppressWarnings("unchecked")
+    public List<T> getAllEqName( String name )
     {
-        Criteria criteria = getCriteria();
-        criteria.addOrder( Order.desc( "lastUpdated" ) );
-        criteria.setFirstResult( first );
-        criteria.setMaxResults( max );
-        return criteria.list();
+        Query query = sharingEnabled() ? getQueryAllEqNameACL( name ) : getQueryAllEqName( name );
+
+        return query.list();
+    }
+
+    private Query getQueryAllEqNameACL( String name )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where name = :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.name";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setString( "name", name );
+
+        return query;
+    }
+
+    private Query getQueryAllEqName( String name )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where name = :name order by c.name" );
+        query.setString( "name", name );
+
+        return query;
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public Collection<T> getBetweenByName( String name, int first, int max )
+    @SuppressWarnings("unchecked")
+    public List<T> getAllEqNameIgnoreCase( String name )
     {
-        Criteria criteria = getCriteria();
-        criteria.add( Restrictions.ilike( "name", "%" + name + "%" ) );
-        criteria.addOrder( Order.asc( "name" ) );
-        criteria.setFirstResult( first );
-        criteria.setMaxResults( max );
-        return criteria.list();
+        Query query = sharingEnabled() ? getQueryAllEqNameACLIgnoreCase( name ) : getQueryAllEqNameIgnoreCase( name );
+
+        return query.list();
+    }
+
+    private Query getQueryAllEqNameACLIgnoreCase( String name )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where lower(name) = :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.name";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setString( "name", name.toLowerCase() );
+
+        return query;
+    }
+
+    private Query getQueryAllEqNameIgnoreCase( String name )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where lower(name) = :name order by c.name" );
+        query.setString( "name", name.toLowerCase() );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllEqShortName( String shortName )
+    {
+        Query query = sharingEnabled() ? getQueryAllEqShortNameACL( shortName ) : getQueryAllEqShortName( shortName );
+
+        return query.list();
+    }
+
+    private Query getQueryAllEqShortNameACL( String shortName )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where shortName = :shortName and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.shortName";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setString( "shortName", shortName );
+
+        return query;
+    }
+
+    private Query getQueryAllEqShortName( String shortName )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where shortName = :shortName order by c.shortName" );
+        query.setString( "shortName", shortName );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllEqShortNameIgnoreCase( String shortName )
+    {
+        Query query = sharingEnabled() ? getQueryAllEqShortNameACLIgnoreCase( shortName ) : getQueryAllEqShortNameIgnoreCase( shortName );
+
+        return query.list();
+    }
+
+    private Query getQueryAllEqShortNameACLIgnoreCase( String shortName )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where lower(shortName) = :shortName and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.shortName";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setString( "shortName", shortName.toLowerCase() );
+
+        return query;
+    }
+
+    private Query getQueryAllEqShortNameIgnoreCase( String shortName )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where lower(shortName) = :shortName order by c.shortName" );
+        query.setString( "shortName", shortName.toLowerCase() );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllLikeName( String name )
+    {
+        Query query = sharingEnabled() ? getQueryAllLikeNameACL( name ) : getQueryAllLikeName( name );
+
+        return query.list();
+    }
+
+    private Query getQueryAllLikeNameACL( String name )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where lower(name) like :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.name";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setString( "name", "%" + name.toLowerCase() + "%" );
+
+        return query;
+    }
+
+    private Query getQueryAllLikeName( String name )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where lower(name) like :name order by c.name" );
+        query.setString( "name", "%" + name.toLowerCase() + "%" );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public final List<T> getAllOrderedName()
+    {
+        Query query = sharingEnabled() ? getQueryAllOrderedNameACL() : getQueryAllOrderedName();
+
+        return query.list();
+    }
+
+    private Query getQueryAllOrderedNameACL()
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " order by c.name";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+
+        return query;
+    }
+
+    private Query getQueryAllOrderedName()
+    {
+        return getQuery( "from " + clazz.getName() + " c order by c.name" );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllOrderedName( int first, int max )
+    {
+        Query query = sharingEnabled() ? getQueryAllOrderedNameACL() : getQueryAllOrderedName();
+
+        query.setFirstResult( first );
+        query.setMaxResults( max );
+
+        return query.list();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllOrderedLastUpdated( int first, int max )
+    {
+        Query query = sharingEnabled() ? getQueryAllOrderedLastUpdatedACL() : getQueryAllOrderedLastUpdated();
+
+        query.setFirstResult( first );
+        query.setMaxResults( max );
+
+        return query.list();
+    }
+
+    private Query getQueryAllOrderedLastUpdatedACL()
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " order by c.lastUpdated desc";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+
+        return query;
+    }
+
+    private Query getQueryAllOrderedLastUpdated()
+    {
+        return getQuery( "from " + clazz.getName() + " c order by lastUpdated desc" );
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllLikeNameOrderedName( String name, int first, int max )
+    {
+        Query query = sharingEnabled() ? getQueryAllLikeNameOrderedNameACL( name ) : getQueryAllLikeNameOrderedName( name );
+
+        query.setFirstResult( first );
+        query.setMaxResults( max );
+
+        return query.list();
+    }
+
+    private Query getQueryAllLikeNameOrderedNameACL( String name )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where lower(c.name) like :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.name";
+
+        Query query = getQuery( hql );
+        query.setString( "name", "%" + name.toLowerCase() + "%" );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+
+        return query;
+    }
+
+    private Query getQueryAllLikeNameOrderedName( String name )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where lower(name) like :name order by name" );
+        query.setString( "name", "%" + name.toLowerCase() + "%" );
+
+        return query;
     }
 
     @Override
     public int getCount()
     {
-        Criteria criteria = getCriteria();
-        criteria.setProjection( Projections.rowCount() );
-        return ((Number) criteria.uniqueResult()).intValue();
+        Query query = sharingEnabled() ? getQueryCountACL() : getQueryCount();
+
+        return ((Long) query.uniqueResult()).intValue();
+    }
+
+    private Query getQueryCountACL()
+    {
+        String hql = "select count(distinct c) from " + clazz.getName() + " c"
+            + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+
+        return query;
+    }
+
+    private Query getQueryCount()
+    {
+        return getQuery( "select count(distinct c) from " + clazz.getName() + " c" );
     }
 
     @Override
-    public int getCountByName( String name )
+    public int getCountLikeName( String name )
     {
-        Criteria criteria = getCriteria();
-        criteria.setProjection( Projections.rowCount() );
-        criteria.add( Restrictions.ilike( "name", "%" + name + "%" ) );
-        return ((Number) criteria.uniqueResult()).intValue();
+        Query query = sharingEnabled() ? getQueryCountLikeNameACL( name ) : getQueryCountLikeName( name );
+
+        return ((Long) query.uniqueResult()).intValue();
+    }
+
+    private Query getQueryCountLikeNameACL( String name )
+    {
+        String hql = "select count(distinct c) from " + clazz.getName() + " c"
+            + " where lower(name) like :name and (c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " )";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setString( "name", "%" + name.toLowerCase() + "%" );
+
+        return query;
+    }
+
+    private Query getQueryCountLikeName( String name )
+    {
+        Query query = getQuery( "select count(distinct c) from " + clazz.getName() + " c where lower(name) like :name" );
+        query.setString( "name", "%" + name.toLowerCase() + "%" );
+
+        return query;
+    }
+
+    @Override
+    public long getCountGeLastUpdated( Date lastUpdated )
+    {
+        Query query = sharingEnabled() ? getQueryCountGeLastUpdatedACL( lastUpdated ) : getQueryCountGeLastUpdated( lastUpdated );
+
+        return ((Long) query.uniqueResult()).intValue();
+    }
+
+    private Query getQueryCountGeLastUpdatedACL( Date lastUpdated )
+    {
+        String hql = "select count(distinct c) from " + clazz.getName() + " c"
+            + " where c.lastUpdated >= :lastUpdated and (c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " )";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setDate( "lastUpdated", lastUpdated );
+
+        return query;
+    }
+
+    private Query getQueryCountGeLastUpdated( Date lastUpdated )
+    {
+        Query query = getQuery( "select count(distinct c) from " + clazz.getName() + " c where lastUpdated >= :lastUpdated" );
+        query.setDate( "lastUpdated", lastUpdated );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllGeLastUpdated( Date lastUpdated )
+    {
+        Query query = sharingEnabled() ? getQueryAllGeLastUpdatedACL( lastUpdated ) : getQueryAllGeLastUpdated( lastUpdated );
+
+        return query.list();
+    }
+
+    private Query getQueryAllGeLastUpdatedACL( Date lastUpdated )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where c.lastUpdated >= :lastUpdated and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " )";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setDate( "lastUpdated", lastUpdated );
+
+        return query;
+    }
+
+    private Query getQueryAllGeLastUpdated( Date lastUpdated )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where c.lastUpdated >= :lastUpdated" );
+        query.setDate( "lastUpdated", lastUpdated );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllGeCreated( Date created )
+    {
+        Query query = sharingEnabled() ? getQueryAllGeCreatedACL( created ) : getQueryAllGeCreated( created );
+
+        return query.list();
+    }
+
+    private Query getQueryAllGeCreatedACL( Date created )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where c.created >= :created and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.name";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setDate( "created", created );
+
+        return query;
+    }
+
+    private Query getQueryAllGeCreated( Date created )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where c.created >= :created" );
+        query.setDate( "created", created );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getAllGeLastUpdatedOrderedName( Date lastUpdated )
+    {
+        Query query = sharingEnabled() ? getQueryAllGeLastUpdatedOrderedNameACL( lastUpdated ) : getQueryAllGeLastUpdatedOrderedName( lastUpdated );
+
+        return query.list();
+    }
+
+    private Query getQueryAllGeLastUpdatedOrderedNameACL( Date lastUpdated )
+    {
+        String hql = "select distinct c from " + clazz.getName() + " c"
+            + " where c.lastUpdated >= :lastUpdated and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
+            + " or exists "
+            + "     (from c.userGroupAccesses uga join uga.userGroup ug join ug.members ugm where ugm = :user and uga.access like 'r%')"
+            + " ) order by c.name";
+
+        Query query = getQuery( hql );
+        query.setEntity( "user", currentUserService.getCurrentUser() );
+        query.setDate( "lastUpdated", lastUpdated );
+
+        return query;
+    }
+
+    private Query getQueryAllGeLastUpdatedOrderedName( Date lastUpdated )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where c.lastUpdated >= :lastUpdated order by c.name" );
+        query.setDate( "lastUpdated", lastUpdated );
+
+        return query;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<T> getByUser( User user )
+    {
+        Query query = getQuery( "from " + clazz.getName() + " c where user = :user" );
+        query.setEntity( "user", user );
+
+        return query.list();
     }
 
     @Override
@@ -356,31 +873,151 @@ public class HibernateGenericStore<T>
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public List<T> getByLastUpdated( Date lastUpdated )
+    @SuppressWarnings("unchecked")
+    public List<T> getAccessibleByUser( User user )
     {
-        return getCriteria().add( Restrictions.ge( "lastUpdated", lastUpdated ) ).list();
+        //TODO link to interface
+
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
+        criteria.addOrder( Order.asc( "name" ) );
+        return criteria.list();
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public List<T> getByLastUpdatedSorted( Date lastUpdated )
+    @SuppressWarnings("unchecked")
+    public List<T> getAccessibleByLastUpdated( User user, Date lastUpdated )
     {
-        return getCriteria().add( Restrictions.ge( "lastUpdated", lastUpdated ) ).addOrder( Order.asc( "name" ) ).list();
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
+        criteria.add( Restrictions.ge( "lastUpdated", lastUpdated ) );
+        criteria.addOrder( Order.asc( "name" ) ).list();
+        return criteria.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<T> getAccessibleLikeName( User user, String name )
+    {
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.ilike( "name", "%" + name + "%" ) );
+        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
+        criteria.addOrder( Order.asc( "name" ) );
+        return criteria.list();
     }
 
     @Override
-    public long getCountByLastUpdated( Date lastUpdated )
+    @SuppressWarnings("unchecked")
+    public List<T> getAccessibleBetween( User user, int first, int max )
     {
-        Object count  = getCriteria().add( Restrictions.ge( "lastUpdated", lastUpdated ) ).setProjection( Projections.rowCount() ).list().get( 0 );
-        
-        return count != null ? (Long) count : -1;
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
+        criteria.addOrder( Order.asc( "name" ) );
+        criteria.setFirstResult( first );
+        criteria.setMaxResults( max );
+        return criteria.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<T> getAccessibleBetweenLikeName( User user, String name, int first, int max )
+    {
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.ilike( "name", "%" + name + "%" ) );
+        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
+        criteria.addOrder( Order.asc( "name" ) );
+        criteria.setFirstResult( first );
+        criteria.setMaxResults( max );
+        return criteria.list();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+    // No ACL (unfiltered methods)
+    //----------------------------------------------------------------------------------------------------------------
+
+    @Override
+    public int getCountEqNameNoAcl( String name )
+    {
+        Query query = getQuery( "select count(distinct c) from " + clazz.getName() + " c where c.name = :name" );
+        query.setParameter( "name", name );
+
+        return ((Long) query.uniqueResult()).intValue();
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
-    public Collection<T> getByUser( User user )
+    public int getCountEqShortNameNoAcl( String shortName )
     {
-        return getCriteria( Restrictions.eq( "user", user ) ).list();
+        Query query = getQuery( "select count(distinct c) from " + clazz.getName() + " c where c.shortName = :shortName" );
+        query.setParameter( "shortName", shortName );
+
+        return ((Long) query.uniqueResult()).intValue();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+    // Helpers
+    //----------------------------------------------------------------------------------------------------------------
+
+    private boolean sharingEnabled()
+    {
+        return SharingUtils.isSupported( clazz ) && !(currentUserService.getCurrentUser() == null ||
+            currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities().contains( SharingUtils.SHARING_OVERRIDE_AUTHORITY ));
+    }
+
+    private boolean isReadAllowed( T object )
+    {
+        if ( IdentifiableObject.class.isInstance( object ) )
+        {
+            IdentifiableObject idObject = (IdentifiableObject) object;
+
+            if ( sharingEnabled() )
+            {
+                return SharingUtils.canRead( currentUserService.getCurrentUser(), idObject );
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isWriteAllowed( T object )
+    {
+        if ( IdentifiableObject.class.isInstance( object ) )
+        {
+            IdentifiableObject idObject = (IdentifiableObject) object;
+
+            if ( sharingEnabled() )
+            {
+                return SharingUtils.canWrite( currentUserService.getCurrentUser(), idObject );
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isUpdateAllowed( T object )
+    {
+        if ( IdentifiableObject.class.isInstance( object ) )
+        {
+            IdentifiableObject idObject = (IdentifiableObject) object;
+
+            if ( SharingUtils.isSupported( clazz ) )
+            {
+                return SharingUtils.canUpdate( currentUserService.getCurrentUser(), idObject );
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isDeleteAllowed( T object )
+    {
+        if ( IdentifiableObject.class.isInstance( object ) )
+        {
+            IdentifiableObject idObject = (IdentifiableObject) object;
+
+            if ( SharingUtils.isSupported( clazz ) )
+            {
+                return SharingUtils.canDelete( currentUserService.getCurrentUser(), idObject );
+            }
+        }
+
+        return true;
     }
 }

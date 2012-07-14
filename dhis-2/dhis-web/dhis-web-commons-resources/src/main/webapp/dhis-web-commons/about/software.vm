@@ -17,5 +17,3 @@
 	<dt>$i18n.getString( "mobile_client" )</dt>
 	<dd><a href="http://dhis2.org/downloads#mobileclient" target="blank">Mobile client</a> - $i18n.getString( "mobile_client_description" )</dd>
 </dl>
-
-<div><input type="button" value="$i18n.getString( 'back' )" onclick="window.location.href='$!backUrl'" style="width:140px"/></div>

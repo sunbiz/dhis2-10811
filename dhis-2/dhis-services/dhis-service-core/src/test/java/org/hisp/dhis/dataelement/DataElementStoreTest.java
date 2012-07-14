@@ -27,11 +27,11 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -196,28 +196,6 @@ public class DataElementStoreTest
         assertEquals( "DataElementB", dataElementB.getName() );
 
         DataElement dataElementC = dataElementStore.getByName( "DataElementC" );
-        assertNull( dataElementC );
-    }
-
-    @Test
-    public void testGetDataElementByAlternativeName()
-    {
-        DataElement dataElementA = createDataElement( 'A' );
-        DataElement dataElementB = createDataElement( 'B' );
-        int idA = dataElementStore.save( dataElementA );
-        int idB = dataElementStore.save( dataElementB );
-
-        dataElementA = dataElementStore.getByAlternativeName( "DataElementAlternativeA" );
-        assertNotNull( dataElementA );
-        assertEquals( idA, dataElementA.getId() );
-        assertEquals( "DataElementA", dataElementA.getName() );
-
-        dataElementB = dataElementStore.getByAlternativeName( "DataElementAlternativeB" );
-        assertNotNull( dataElementB );
-        assertEquals( idB, dataElementB.getId() );
-        assertEquals( "DataElementB", dataElementB.getName() );
-
-        DataElement dataElementC = dataElementStore.getByAlternativeName( "DataElementAlternativeC" );
         assertNull( dataElementC );
     }
 
@@ -424,6 +402,39 @@ public class DataElementStoreTest
         assertEquals( aggregationLevels, dataElementStore.get( idA ).getAggregationLevels() );
     }
         
+    @Test
+    public void testGetDataElementsByAggregationLevel()
+    {
+        DataElement dataElementA = createDataElement( 'A' );
+        DataElement dataElementB = createDataElement( 'B' );
+        DataElement dataElementC = createDataElement( 'C' );
+        
+        dataElementA.getAggregationLevels().addAll( Arrays.asList( 3, 5 ) );
+        dataElementB.getAggregationLevels().addAll( Arrays.asList( 4, 5 ) );
+
+        dataElementStore.save( dataElementA );
+        dataElementStore.save( dataElementB );
+        dataElementStore.save( dataElementC );
+        
+        Collection<DataElement> dataElements = dataElementStore.getDataElementsByAggregationLevel( 2 );
+        
+        assertEquals( 0, dataElements.size() );
+        
+        dataElements = dataElementStore.getDataElementsByAggregationLevel( 3 );
+        
+        assertEquals( 1, dataElements.size() );
+
+        dataElements = dataElementStore.getDataElementsByAggregationLevel( 4 );
+        
+        assertEquals( 1, dataElements.size() );
+        
+        dataElements = dataElementStore.getDataElementsByAggregationLevel( 5 );
+        
+        assertEquals( 2, dataElements.size() );
+        assertTrue( dataElements.contains( dataElementA ) );
+        assertTrue( dataElements.contains( dataElementB ) );
+    }
+    
     @Test
     public void testGetDataElementsZeroIsSignificant()
     {

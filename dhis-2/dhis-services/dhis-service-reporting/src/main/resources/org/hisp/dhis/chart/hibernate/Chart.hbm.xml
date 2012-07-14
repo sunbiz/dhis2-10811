@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
-    [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
-    >
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"
+  [<!ENTITY identifiableProperties SYSTEM "classpath://org/hisp/dhis/common/identifiableProperties.hbm">]
+  >
 
 <hibernate-mapping>
   <class name="org.hisp.dhis.chart.Chart" table="chart">
@@ -15,9 +15,11 @@
     </id>
 
     <property name="name" column="name" not-null="true" length="230" />
-	  
+
     <property name="uid" column="uid" length="11" />
-	  
+
+    <property name="created" type="timestamp" />
+
     <property name="lastUpdated" type="timestamp" />
 
     <property name="domainAxisLabel" />
@@ -51,7 +53,7 @@
       <key column="chartid" foreign-key="fk_chart_indicators_chartid" />
       <list-index column="sort_order" base="0" />
       <many-to-many column="indicatorid" class="org.hisp.dhis.indicator.Indicator"
-          foreign-key="fk_chart_indicators_indicatorid" />
+        foreign-key="fk_chart_indicators_indicatorid" />
     </list>
 
     <list name="dataElements" table="chart_dataelements">
@@ -59,7 +61,7 @@
       <key column="chartid" foreign-key="fk_chart_dataelements_chartid" />
       <list-index column="sort_order" base="0" />
       <many-to-many column="dataelementid" class="org.hisp.dhis.dataelement.DataElement"
-          foreign-key="fk_chart_dataelements_dataelementid" />
+        foreign-key="fk_chart_dataelements_dataelementid" />
     </list>
 
     <list name="dataSets" table="chart_datasets">
@@ -67,7 +69,7 @@
       <key column="chartid" foreign-key="fk_chart_datasets_chartid" />
       <list-index column="sort_order" base="0" />
       <many-to-many column="datasetid" class="org.hisp.dhis.dataset.DataSet"
-          foreign-key="fk_chart_datasets_datasetid" />
+        foreign-key="fk_chart_datasets_datasetid" />
     </list>
 
     <list name="organisationUnits" table="chart_organisationunits">
@@ -75,18 +77,18 @@
       <key column="chartid" foreign-key="fk_chart_organisationunits_chartid" />
       <list-index column="sort_order" base="0" />
       <many-to-many column="organisationunitid" class="org.hisp.dhis.organisationunit.OrganisationUnit"
-          foreign-key="fk_chart_organisationunits_organisationunitid" />
+        foreign-key="fk_chart_organisationunits_organisationunitid" />
     </list>
 
     <many-to-one name="organisationUnitGroupSet" class="org.hisp.dhis.organisationunit.OrganisationUnitGroupSet"
-        column="organisationunitgroupsetid" foreign-key="fk_chart_organisationunitgroupsetid" />
+      column="organisationunitgroupsetid" foreign-key="fk_chart_organisationunitgroupsetid" />
 
     <list name="periods" table="chart_periods">
       <cache usage="read-write" />
       <key column="chartid" foreign-key="fk_chart_periods_chartid" />
       <list-index column="sort_order" base="0" />
       <many-to-many column="periodid" class="org.hisp.dhis.period.Period"
-          foreign-key="fk_chart_periods_periodid" />
+        foreign-key="fk_chart_periods_periodid" />
     </list>
 
     <component name="relatives">
@@ -95,6 +97,7 @@
       <property name="lastSixMonth" />
       <property name="thisYear" />
       <property name="last12Months" />
+      <property name="last3Months" />
       <property name="last4Quarters" />
       <property name="last2SixMonths" />
       <property name="lastYear" />
@@ -106,6 +109,8 @@
     <property name="userOrganisationUnitChildren" />
 
     <property name="showData" />
+
+    <property name="rewindRelativePeriods" />
 
     <many-to-one name="user" class="org.hisp.dhis.user.User" column="userid" foreign-key="fk_chart_userid" />
 

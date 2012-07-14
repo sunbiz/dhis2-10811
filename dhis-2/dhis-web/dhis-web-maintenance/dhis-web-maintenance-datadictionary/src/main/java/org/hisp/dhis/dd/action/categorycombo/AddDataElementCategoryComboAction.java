@@ -60,11 +60,18 @@ public class AddDataElementCategoryComboAction
     // Input
     // -------------------------------------------------------------------------
 
-    private String name;;
+    private String name;
 
     public void setName( String name )
     {
         this.name = name;
+    }
+
+    private boolean skipTotal;
+    
+    public void setSkipTotal( boolean skipTotal )
+    {
+        this.skipTotal = skipTotal;
     }
 
     private Collection<String> selectedList = new HashSet<String>();
@@ -82,6 +89,7 @@ public class AddDataElementCategoryComboAction
     {
         DataElementCategoryCombo dataElementCategoryCombo = new DataElementCategoryCombo();
         dataElementCategoryCombo.setName( name );
+        dataElementCategoryCombo.setSkipTotal( skipTotal );
 
         List<DataElementCategory> categories = new ArrayList<DataElementCategory>();
 

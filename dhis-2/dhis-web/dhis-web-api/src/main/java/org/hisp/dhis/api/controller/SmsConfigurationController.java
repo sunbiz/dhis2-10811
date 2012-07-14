@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.sms.SmsConfigurationManager;
 import org.hisp.dhis.sms.config.GenericHttpGatewayConfig;
 import org.hisp.dhis.sms.config.SmsConfiguration;
@@ -111,7 +112,7 @@ public class SmsConfigurationController
     {
         log.info( "Exception", exception );
         response.setStatus( HttpServletResponse.SC_CONFLICT );
-        response.setContentType( "text/plain" );
+        response.setContentType( ContextUtils.CONTENT_TYPE_TEXT );
         response.getWriter().write( exception.getMessage() );
     }
 }

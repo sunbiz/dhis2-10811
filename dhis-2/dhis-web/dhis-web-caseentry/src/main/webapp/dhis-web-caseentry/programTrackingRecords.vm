@@ -1,0 +1,130 @@
+<script src="javascript/tooltip.js" type="text/javascript"></script>
+<table>
+	<tr>
+		<td class='text-column' >$i18n.getString( "search_result_matching_the_search_criteria" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td id='searchInforLbl'>
+		#if($!listAll)
+			$i18n.getString( "list_all_patients" )
+		#else
+			$i18n.getString( "search_patients" )
+		#end
+		</td>
+	</tr>	
+	
+	<tr>
+		<td class='text-column'>$i18n.getString( "total_result" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td id='totalTd'>$!total</td>
+	</tr>
+</table>
+
+#if( $patients && $patients.size()>0 )
+	<p>#parse( "/dhis-web-caseentry/colorHelp.vm" )</p>
+	
+	<table id="patientList" class="listTable">
+		#set( $mark = false )                 
+		#foreach( $patient in $patients )
+			#set( $programInstance = '')
+			#set( $programInstance = $programInstanceMap.get( $patient ) )
+				<tr #alternate( $mark ) id='event_$programInstance.id'>
+					<td>
+						#set( $value="")
+						#foreach( $identifierType in $programInstance.program.patientIdentifierTypes )
+							#foreach( $pIdentifier in $patient.identifiers )
+								#if($identifierType.personDisplayName=="true" && $identifierType.id==$pIdentifier.identifierType.id)
+									#set($value=$value + $pIdentifier.identifier + "&#13;&#10;" )
+								#end
+							#end
+						#end
+						#if($value=="")
+							#set($value=$patient.getFullName())
+						#end
+						<input type='button' class='patient-object' value='$value' onclick='javascript:showPatientDashboardForm( "$programInstance.patient.id" );' title='$i18n.getString( "patient_dashboard" )'>
+					</td>
+					<td class='bold' style='cursor:pointer;font-size:25px' onclick="eventFlowToggle($programInstance.id)">
+						<a>&raquo;</a>
+					</td>
+					#set( $programStageInstances = $programInstance.programStageInstances )
+					<td>
+						<table id='tb_$programInstance.id' class="stage-container">	
+							<tr>
+								<td>
+									<div class="arrow-left" onclick="moveLeft('flow_$programInstance.id')">&nbsp;</div>
+								</td>
+								<td>
+									<div id='flow_$!programInstance.id' class="stage-flow">
+										<table class="table-flow">
+										<tr>
+										#set( $flag = "false" )
+										#set( $idx = 0)
+										#foreach( $programStageInstance in $programStageInstances )
+											#set( $idx = $idx + 1)
+											<td id="arrow_$programStageInstance.id" style='font-size:25px;'>&rarr;</td>
+											<td id="td_$programStageInstance.id">
+												#set($title="")
+												#set($index = 0)
+												#foreach( $comment in $programStageInstance.patientComments)
+													#if( $index < 5)
+														#set( $title= $title + "$format.formatDate( $comment.createdDate ) - $comment.creator - $comment.commentText &#13;&#10;" )
+														#set( $index = $index + 1 )
+													#end
+												#end
+												
+												#set($valueDate=$format.formatDate( $programStageInstance.dueDate ))
+												#if($!programStageInstance.executionDate)
+													#set($valueDate=$format.formatDate( $programStageInstance.executionDate ))
+												#end
+												
+												<input type='button' id='ps_$programStageInstance.id' name='programStageBtn' 
+													programStageInstanceId='$programStageInstance.id' 
+													programStageName='$encoder.htmlEncode($programStageInstance.programStage.displayName)' 
+													programStageId='$programStageInstance.programStage.id' 
+													programInstanceId='$programInstance.id'
+													dueDate='$format.formatDate( $programStageInstance.dueDate )'
+													status='$programStageInstance.getEventStatus()'
+													index="$idx"
+													class='stage-object'
+													value='$programStageInstance.programStage.displayName&#13;&#10;$valueDate' 
+													title="$title" onclick='javascript:programTrackingList( $programStageInstance.id, false );'>
+												<script>
+													var status = $programStageInstance.getEventStatus(); 
+													var dueDate = "$format.formatDate($programStageInstance.dueDate)";
+													setEventColorStatus( $programStageInstance.id ,status, dueDate );
+												</script>
+											</td>
+										#end
+										</tr>
+									</table></div>
+								</td>
+								
+								<td>
+									<div class="arrow-right" onclick="moveRight('flow_$programInstance.id')">&nbsp;</div>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			#if( $mark )
+				#set( $mark = false )
+			#else
+				#set( $mark = true )
+			#end 
+		#end
+	</table>
+	
+	<div class="paging-container">
+		#parse( "/dhis-web-commons/paging/paging.vm" )
+	</div>
+	
+	<div id="detailsInfo"></div>
+#end
+
+<script>
+	$(window).bind('resize', function(e){ 
+		resize();
+	});
+	reloadRecordList();
+</script>

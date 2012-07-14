@@ -27,30 +27,34 @@ package org.hisp.dhis.validation;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.i18n.I18nUtils.*;
+import static org.hisp.dhis.i18n.I18nUtils.getCountByName;
+import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetween;
+import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetweenByName;
+import static org.hisp.dhis.i18n.I18nUtils.getObjectsByName;
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
 import static org.hisp.dhis.system.util.MathUtils.expressionIsTrue;
 import static org.hisp.dhis.system.util.MathUtils.getRounded;
+import static org.hisp.dhis.system.util.MathUtils.zeroIfNull;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
-import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.constant.ConstantService;
 import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.dataelement.DataElementOperand;
+import org.hisp.dhis.dataentryform.DataEntryFormService;
 import org.hisp.dhis.dataset.DataSet;
-import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.expression.ExpressionService;
+import org.hisp.dhis.expression.Operator;
 import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
-import org.hisp.dhis.system.grid.ListGrid;
-import org.hisp.dhis.system.util.CompositeCounter;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +94,13 @@ public class DefaultValidationRuleService
     {
         this.expressionService = expressionService;
     }
+    
+    private DataEntryFormService dataEntryFormService;
+
+    public void setDataEntryFormService( DataEntryFormService dataEntryFormService )
+    {
+        this.dataEntryFormService = dataEntryFormService;
+    }
 
     private PeriodService periodService;
 
@@ -98,18 +109,18 @@ public class DefaultValidationRuleService
         this.periodService = periodService;
     }
 
-    private DataSetService dataSetService;
+    private DataValueService dataValueService;
 
-    public void setDataSetService( DataSetService dataSetService )
+    public void setDataValueService( DataValueService dataValueService )
     {
-        this.dataSetService = dataSetService;
+        this.dataValueService = dataValueService;
     }
+    
+    private ConstantService constantService;
 
-    private DataElementService dataElementService;
-
-    public void setDataElementService( DataElementService dataElementService )
+    public void setConstantService( ConstantService constantService )
     {
-        this.dataElementService = dataElementService;
+        this.constantService = constantService;
     }
 
     private I18nService i18nService;
@@ -123,94 +134,10 @@ public class DefaultValidationRuleService
     // ValidationRule business logic
     // -------------------------------------------------------------------------
 
-    public Grid getAggregateValidationResult( Collection<ValidationResult> results, List<Period> periods,
-        List<OrganisationUnit> sources )
-    {
-        int number = validationRuleStore.getCount();
-
-        Grid grid = new ListGrid();
-
-        CompositeCounter counter = new CompositeCounter();
-
-        for ( ValidationResult result : results )
-        {
-            counter.count( result.getPeriod(), result.getSource() );
-        }
-
-        grid.addRow();
-        grid.addValue( StringUtils.EMPTY );
-
-        for ( Period period : periods )
-        {
-            grid.addValue( period.getName() );
-        }
-
-        for ( OrganisationUnit source : sources )
-        {
-            grid.addRow();
-            grid.addValue( source.getName() );
-
-            for ( Period period : periods )
-            {
-                double percentage = (double) (100 * counter.getCount( period, source )) / number;
-
-                grid.addValue( String.valueOf( getRounded( percentage, DECIMALS ) ) );
-            }
-        }
-
-        return grid;
-    }
-
-    public Collection<ValidationResult> validateAggregate( Date startDate, Date endDate,
-        Collection<OrganisationUnit> sources )
-    {
-        Collection<Period> periods = periodService.getPeriodsBetweenDates( startDate, endDate );
-
-        Collection<ValidationRule> validationRules = getAllValidationRules();
-
-        Collection<ValidationResult> validationViolations = new HashSet<ValidationResult>();
-
-        for ( OrganisationUnit source : sources )
-        {
-            for ( Period period : periods )
-            {
-                validationViolations.addAll( validateInternal( period, source, validationRules, true,
-                    validationViolations.size() ) );
-            }
-        }
-
-        return validationViolations;
-    }
-
-    public Collection<ValidationResult> validateAggregate( Date startDate, Date endDate,
-        Collection<OrganisationUnit> sources, ValidationRuleGroup group )
-    {
-        Collection<Period> periods = periodService.getPeriodsBetweenDates( startDate, endDate );
-
-        Collection<DataSet> dataSets = dataSetService.getDataSetsBySources( sources );
-
-        Collection<DataElement> dataElements = dataElementService.getDataElementsByDataSets( dataSets );
-
-        Collection<ValidationRule> validationRules = getValidationRulesByDataElements( dataElements );
-
-        validationRules.retainAll( group.getMembers() );
-
-        Collection<ValidationResult> validationViolations = new HashSet<ValidationResult>();
-
-        for ( OrganisationUnit source : sources )
-        {
-            for ( Period period : periods )
-            {
-                validationViolations.addAll( validateInternal( period, source, validationRules, true,
-                    validationViolations.size() ) );
-            }
-        }
-
-        return validationViolations;
-    }
-
     public Collection<ValidationResult> validate( Date startDate, Date endDate, Collection<OrganisationUnit> sources )
     {
+        Map<String, Double> constantMap = constantService.getConstantMap();
+        
         Collection<ValidationResult> validationViolations = new HashSet<ValidationResult>();
 
         Collection<Period> relevantPeriods = periodService.getPeriodsBetweenDates( startDate, endDate );
@@ -218,12 +145,14 @@ public class DefaultValidationRuleService
         for ( OrganisationUnit source : sources )
         {
             Collection<ValidationRule> relevantRules = getRelevantValidationRules( source.getDataElementsInDataSets() );
-
+            
+            Set<DataElement> dataElements = getDataElementsInValidationRules( relevantRules ); //TODO move outside loop?
+            
             if ( relevantRules != null && relevantRules.size() > 0 )
             {
                 for ( Period period : relevantPeriods )
                 {
-                    validationViolations.addAll( validateInternal( period, source, relevantRules, false,
+                    validationViolations.addAll( validateInternal( period, source, relevantRules, dataElements, constantMap, 
                         validationViolations.size() ) );
                 }
             }
@@ -235,6 +164,8 @@ public class DefaultValidationRuleService
     public Collection<ValidationResult> validate( Date startDate, Date endDate, Collection<OrganisationUnit> sources,
         ValidationRuleGroup group )
     {
+        Map<String, Double> constantMap = constantService.getConstantMap();
+        
         Collection<ValidationResult> validationViolations = new HashSet<ValidationResult>();
 
         Collection<Period> relevantPeriods = periodService.getPeriodsBetweenDates( startDate, endDate );
@@ -244,11 +175,13 @@ public class DefaultValidationRuleService
             Collection<ValidationRule> relevantRules = getRelevantValidationRules( source.getDataElementsInDataSets() );
             relevantRules.retainAll( group.getMembers() );
 
+            Set<DataElement> dataElements = getDataElementsInValidationRules( relevantRules );
+            
             if ( relevantRules != null && relevantRules.size() > 0 )
             {
                 for ( Period period : relevantPeriods )
                 {
-                    validationViolations.addAll( validateInternal( period, source, relevantRules, false,
+                    validationViolations.addAll( validateInternal( period, source, relevantRules, dataElements, constantMap, 
                         validationViolations.size() ) );
                 }
             }
@@ -259,15 +192,19 @@ public class DefaultValidationRuleService
 
     public Collection<ValidationResult> validate( Date startDate, Date endDate, OrganisationUnit source )
     {
+        Map<String, Double> constantMap = constantService.getConstantMap();
+        
         Collection<ValidationResult> validationViolations = new HashSet<ValidationResult>();
 
         Collection<ValidationRule> relevantRules = getRelevantValidationRules( source.getDataElementsInDataSets() );
 
+        Set<DataElement> dataElements = getDataElementsInValidationRules( relevantRules );
+        
         Collection<Period> relevantPeriods = periodService.getPeriodsBetweenDates( startDate, endDate );
 
         for ( Period period : relevantPeriods )
         {
-            validationViolations.addAll( validateInternal( period, source, relevantRules, false, validationViolations
+            validationViolations.addAll( validateInternal( period, source, relevantRules, dataElements, constantMap, validationViolations
                 .size() ) );
         }
 
@@ -276,7 +213,22 @@ public class DefaultValidationRuleService
 
     public Collection<ValidationResult> validate( DataSet dataSet, Period period, OrganisationUnit source )
     {
-        return validateInternal( period, source, getRelevantValidationRules( dataSet.getDataElements() ), false, 0 );
+        Map<String, Double> constantMap = constantService.getConstantMap();
+        
+        Collection<ValidationRule> relevantRules = null;
+        
+        if ( DataSet.TYPE_CUSTOM.equals( dataSet.getDataSetType() ) )
+        {
+            relevantRules = getRelevantValidationRules( dataSet );
+        }
+        else
+        {
+            relevantRules = getRelevantValidationRules( dataSet.getDataElements() );
+        }
+        
+        Set<DataElement> dataElements = getDataElementsInValidationRules( relevantRules );
+        
+        return validateInternal( period, source, relevantRules, dataElements, constantMap, 0 );
     }
 
     public Collection<DataElement> getDataElementsInValidationRules()
@@ -302,14 +254,19 @@ public class DefaultValidationRuleService
      * @param period the period to validate for.
      * @param source the source to validate for.
      * @param validationRules the rules to validate.
+     * @param dataElementsInRules the data elements which are part of the rules expressions.
+     * @param constantMap the constants which are part of the rule expressions.
+     * @param currentSize the current number of validation violations.
      * @returns a collection of rules that did not pass validation.
      */
-    private Collection<ValidationResult> validateInternal( final Period period, final OrganisationUnit source,
-        final Collection<ValidationRule> validationRules, boolean aggregate, int currentSize )
+    private Collection<ValidationResult> validateInternal( Period period, OrganisationUnit unit,
+        Collection<ValidationRule> validationRules, Set<DataElement> dataElementsInRules, Map<String, Double> constantMap, int currentSize )
     {
+        Map<DataElementOperand, Double> valueMap = dataValueService.getDataValueMap( dataElementsInRules, period, unit );
+
         final Collection<ValidationResult> validationViolations = new HashSet<ValidationResult>();
 
-        if ( currentSize < MAX_VIOLATIONS )
+        if ( currentSize < MAX_VIOLATIONS && !valueMap.isEmpty() )
         {
             Double leftSide = null;
             Double rightSide = null;
@@ -321,22 +278,29 @@ public class DefaultValidationRuleService
                 if ( validationRule.getPeriodType() != null
                     && validationRule.getPeriodType().equals( period.getPeriodType() ) )
                 {
-                    leftSide = expressionService.getExpressionValue( validationRule.getLeftSide(), period, source,
-                        true, aggregate, null );
+                    Operator operator = validationRule.getOperator();
+                    
+                    leftSide = expressionService.getExpressionValue( validationRule.getLeftSide(), valueMap, constantMap, null );
 
-                    if ( leftSide != null )
+                    if ( leftSide != null || Operator.compulsory_pair.equals( operator ) )
                     {
-                        rightSide = expressionService.getExpressionValue( validationRule.getRightSide(), period,
-                            source, true, aggregate, null );
+                        rightSide = expressionService.getExpressionValue( validationRule.getRightSide(), valueMap, constantMap, null );
 
-                        if ( rightSide != null )
+                        if ( rightSide != null || Operator.compulsory_pair.equals( operator )  )
                         {
-                            violation = !expressionIsTrue( leftSide, validationRule.getOperator(), rightSide );
-
+                            if ( Operator.compulsory_pair.equals( operator ) )
+                            {
+                                violation = ( leftSide != null && rightSide == null ) || ( leftSide == null && rightSide != null );
+                            }
+                            else
+                            {
+                                violation = !expressionIsTrue( leftSide, operator, rightSide );
+                            }
+                            
                             if ( violation )
                             {
-                                validationViolations.add( new ValidationResult( period, source, validationRule,
-                                    getRounded( leftSide, DECIMALS ), getRounded( rightSide, DECIMALS ) ) );
+                                validationViolations.add( new ValidationResult( period, unit, validationRule,
+                                    getRounded( zeroIfNull( leftSide ), DECIMALS ), getRounded( zeroIfNull( rightSide ), DECIMALS ) ) );
                             }
                         }
                     }
@@ -355,29 +319,70 @@ public class DefaultValidationRuleService
      * @return all validation rules which have data elements assigned to it
      *         which are members of the given data set.
      */
-    private Collection<ValidationRule> getRelevantValidationRules( Collection<DataElement> dataElements )
+    private Collection<ValidationRule> getRelevantValidationRules( Set<DataElement> dataElements )
     {
-        final Set<ValidationRule> relevantValidationRules = new HashSet<ValidationRule>();
-
+        Set<ValidationRule> relevantValidationRules = new HashSet<ValidationRule>();
+        
+        Set<DataElement> validationRuleElements = new HashSet<DataElement>();
+        
         for ( ValidationRule validationRule : getAllValidationRules() )
         {
-            for ( DataElement dataElement : dataElements )
+            validationRuleElements.clear();
+            validationRuleElements.addAll( validationRule.getLeftSide().getDataElementsInExpression() );
+            validationRuleElements.addAll( validationRule.getRightSide().getDataElementsInExpression() );
+            
+            if ( dataElements.containsAll( validationRuleElements ) )
             {
-                if ( validationRule.getPeriodType() != null && dataElement.getPeriodType() != null
-                    && validationRule.getPeriodType().equals( dataElement.getPeriodType() ) )
-                {
-                    if ( validationRule.getLeftSide().getDataElementsInExpression().contains( dataElement )
-                        || validationRule.getRightSide().getDataElementsInExpression().contains( dataElement ) )
-                    {
-                        relevantValidationRules.add( validationRule );
-                    }
-                }
+                relevantValidationRules.add( validationRule );
             }
         }
 
         return relevantValidationRules;
     }
+    
+    public Collection<ValidationRule> getRelevantValidationRules( DataSet dataSet )
+    {
+        Set<ValidationRule> relevantValidationRules = new HashSet<ValidationRule>();
+        
+        Set<DataElementOperand> operands = dataEntryFormService.getOperandsInDataEntryForm( dataSet );
+        
+        Set<DataElementOperand> validationRuleOperands = new HashSet<DataElementOperand>();
+        
+        for ( ValidationRule validationRule : getAllValidationRules() )
+        {
+            validationRuleOperands.clear();
+            validationRuleOperands.addAll( expressionService.getOperandsInExpression( validationRule.getLeftSide().getExpression() ) );
+            validationRuleOperands.addAll( expressionService.getOperandsInExpression( validationRule.getRightSide().getExpression() ) );
+            
+            if ( operands.containsAll( validationRuleOperands ) )
+            {
+                relevantValidationRules.add( validationRule );
+            }
+        }
+        
+        return relevantValidationRules;
+    }
 
+    /**
+     * Returns all validation rules referred to in the left and right side expressions
+     * of the given validation rules.
+     * 
+     * @param validationRules the validation rules.
+     * @return a collection of data elements.
+     */
+    private Set<DataElement> getDataElementsInValidationRules( Collection<ValidationRule> validationRules )
+    {
+        Set<DataElement> dataElements = new HashSet<DataElement>();
+
+        for ( ValidationRule rule : validationRules )
+        {
+            dataElements.addAll( rule.getLeftSide().getDataElementsInExpression() );
+            dataElements.addAll( rule.getRightSide().getDataElementsInExpression() );
+        }
+
+        return dataElements;
+    }
+    
     // -------------------------------------------------------------------------
     // ValidationRule CRUD operations
     // -------------------------------------------------------------------------

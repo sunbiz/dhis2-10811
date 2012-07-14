@@ -1,6 +1,6 @@
 <h3>$i18n.getString( "define_dataset_associations" )</h3>
 
-<h4>$encoder.htmlEncode( $dataSet.name )</h4>
+<h4>$encoder.htmlEncode( $dataSet.displayName )</h4>
 
 <form id="defineDataSetAssociationsForm" action="defineDataSetAssociations.action" method="post">
   <div style="display:inline">

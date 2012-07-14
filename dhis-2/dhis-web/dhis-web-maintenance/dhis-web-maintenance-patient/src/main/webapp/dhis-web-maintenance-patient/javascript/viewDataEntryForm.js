@@ -6,16 +6,16 @@ var existedDataEntry;
 jQuery(function(){
 	dataElementSelector = jQuery("#dataElementSelection").dialog({
 		title: i18n_dataelement,
-		height: 350,
-		width:350,
+		height: 400,
+		width: jQuery("#dataElementSelection [id=dataElementIds]").outerWidth() + 30,
 		autoOpen: false,
 		zIndex:99999
 	});
 	
 	otherProgramStageDataElements = jQuery("#otherProgramStageDataElements").dialog({
 		title: i18n_dataelement_of_orther_program_stage,
-		height: 350,
-		width:350,
+		height: 460,
+		width:jQuery("#otherProgramStageDataElements [id=dataElementIds]").outerWidth() + 50,
 		autoOpen: false,
 		zIndex:99999
 	});
@@ -81,8 +81,8 @@ function getProgramStageDataElements( id )
 			associationId: id
 		}, function( xml ){			
 			jQuery( xml ).find( 'dataElement' ).each( function(i, item ){
-				dataElements.append("<option value='" + jQuery( item ).find( "json" ).text() + "'>" + jQuery( item ).find( "name" ).text() + "</option>");
-				dataElementIdsStore.append("<option value='" + jQuery( item ).find( "json" ).text() + "'>" + jQuery( item ).find( "name" ).text() + "</option>");
+				dataElements.append("<option value='" + jQuery( item ).find( "json" ).text() + "' dename='" + jQuery( item ).find( "name" ).text() + "' decode='" + jQuery( item ).find( "code" ).text() + "'>" + jQuery( item ).find( "name" ).text() + "</option>");
+				dataElementIdsStore.append("<option value='" + jQuery( item ).find( "json" ).text() + "' dename='" + jQuery( item ).find( "name" ).text() + "' decode='" + jQuery( item ).find( "code" ).text() + "'>" + jQuery( item ).find( "name" ).text() + "</option>");
 			});
 		});
 	}
@@ -125,7 +125,7 @@ function filterDataElements( filter, container, list )
 		item = jQuery( item );		
 		var toMatch = item.text().toString().toLowerCase();		
         if( toMatch.indexOf(filterLower) != -1 ){
-			dataElementList.append( "<option value='" + item.attr('value') + "'>" + item.text() + "</option>" );
+			dataElementList.append( "<option value='" + item.attr('value') + "' dename='"+item.attr('dename')+"' decode='"+item.attr('decode')+"'>" + item.text() + "</option>" );
 		};
 	});	
 }
@@ -148,31 +148,28 @@ function insertDataElement( source, programStageId )
 	var dataElementType = dataElement.type;
 	
 	var htmlCode = "";
-	var id = programStageId + "-" + dataElementId + "-val" ;
+	var id = programStageId + "-" + dataElementId + "-val" ;	
+	var titleValue = dataElementId + " - " + dataElementName + " - " + dataElementType;
 	
 	if ( dataElementType == "bool" )
 	{
-		var titleValue = "-- " + dataElementId + "." + dataElementName + " ("+dataElementType+") --";
 		var displayName = dataElementName;
-		htmlCode = "<input title=\"" + titleValue + "\" name=\"entryselect\" id=\"" + id + "\" value=\"" + displayName + "\" title=\"" + displayName + "\">";
+		htmlCode = "<input title=\"" + titleValue + "\" name=\"entryselect\" id=\"" + id + "\" value=\"[" + displayName + "]\" title=\"" + displayName + "\">";
 	} 
 	else if ( dataElementType == "trueOnly" )
 	{
-		var titleValue = "-- " + dataElementId + "." + dataElementName + " ("+dataElementType+") --";
 		var displayName = dataElementName;
 		htmlCode = "<input type=\"checkbox\" title=\"" + titleValue + "\" name=\"entryselect\" id=\"" + id + "\" title=\"" + displayName + "\">";
 	} 
-	else if ( dataElementType == "longText" )
+	else if ( dataElementType == "username" )
 	{
-		var titleValue = "-- " + dataElementId + "." + dataElementName + " ("+dataElementType+") --";
 		var displayName = dataElementName;
-		htmlCode = "<textarea title=\"" + titleValue + " \"name=\"entryfield\" id=\"" + id + "\" title=\"" + displayName + "\" ></textarea>";
-	}
-	else if ( dataElementType == "int" || dataElementType == "text" ) 
+		htmlCode = "<input title=\"" + titleValue + "\" value=\"[" + displayName + "]\" name=\"entryfield\" id=\"" + id + "\" username=\"true\" />";
+	} 
+	else
 	{
-		var titleValue = "-- " + dataElementId + "." + dataElementName +" (" + dataElementType + ") --";
 		var displayName = dataElementName;
-		htmlCode += "<input title=\"" + titleValue + "\" value=\"" + displayName + "\" name=\"entryfield\" id=\"" + id + "\" />";
+		htmlCode = "<input title=\"" + titleValue + "\" value=\"[" + displayName + "]\" name=\"entryfield\" id=\"" + id + "\" />";
 	}
 	
 	if( checkExisted( id ) )
@@ -184,4 +181,84 @@ function insertDataElement( source, programStageId )
 	}
 
 	oEditor.insertHtml( htmlCode );
+}
+
+
+function displayNameOnChange( div, displayName )
+{
+	// display - name
+	if(displayName=='1'){
+		jQuery('#' + div + ' [id=dataElementIds] option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('dename');
+			item[0].title = item[0].text;
+		});
+		jQuery('#' + div + ' [id=dataElementIdsStore] option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('dename');
+		});
+	}
+	// display - code
+	else if(displayName=='2'){
+		jQuery('#' + div + ' [id=dataElementIds] option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('decode');
+			item[0].title = item[0].text;
+		});
+		jQuery('#' + div + ' [id=dataElementIdsStore] option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('decode');
+		});
+	}
+	// display - code and name
+	else{
+		jQuery('#' + div + ' [id=dataElementIds] option').each(function(){
+			var item = jQuery(this);
+			item[0].text = "(" + item.attr('decode') + ") " + item.attr('dename');
+			item[0].title = item[0].text;
+		});
+		jQuery('#' + div + ' [id=dataElementIdsStore] option').each(function(){
+			var item = jQuery(this);
+			item[0].text = "(" + item.attr('decode') + ") " + item.attr('dename');
+		});
+	}
+	jQuery('#' + div + ' [id=dataElementIds]').width(jQuery("#" + div).width() - 10 );	
+}
+
+function sortByOnChange( div, sortBy)
+{
+	if( sortBy == 1)
+	{
+		jQuery('#' + div + ' [id=dataElementIds]').each(function() {
+
+			// Keep track of the selected option.
+			var selectedValue = $(this).val();
+
+			// sort it out
+			$(this).html($("option", $(this)).sort(function(a, b) { 
+				return $(a).attr('dename') == $(b).attr('dename') ? 0 : $(a).attr('dename') < $(b).attr('dename') ? -1 : 1 
+			}));
+
+			// Select one option.
+			$(this).val(selectedValue);
+
+		});
+	}
+	else
+	{
+		jQuery('#' + div + ' [id=dataElementIds]').each(function() {
+
+			// Keep track of the selected option.
+			var selectedValue = $(this).val();
+
+			// sort it out
+			$(this).html($("option", $(this)).sort(function(a, b) { 
+				return $(a).attr('decode') == $(b).attr('decode') ? 0 : $(a).attr('decode') < $(b).attr('decode') ? -1 : 1 
+			}));
+
+			// Select one option.
+			$(this).val(selectedValue);
+
+		});
+	} 
 }

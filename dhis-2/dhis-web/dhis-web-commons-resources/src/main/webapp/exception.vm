@@ -66,9 +66,9 @@
     var stackTraceId = 'stackTrace' + idCount;
     var toggleId = 'toggle' + idCount;
     
-    var stackTraceElement = document.getElementById( stackTraceId ); // div
-    var toggleElement = document.getElementById( toggleId );         // span
-    toggleElement = toggleElement.firstChild;                        // a
+    var stackTraceElement = document.getElementById( stackTraceId );
+    var toggleElement = document.getElementById( toggleId );
+    toggleElement = toggleElement.firstChild;
     
     if ( stackTraceElement.style.display == 'none' )
     {
@@ -87,16 +87,14 @@
 </head>
 <body>
 
-## -------------------------------------------------------------------------- ##
-
 <h2>$i18n.getString( "an_exception_occured" )</h2>
 
 <p>$encoder.htmlEncode( $i18n.getString( "exception_explanation_text" ))</p>
 <p><input type="button" value="$encoder.htmlEncode( $i18n.getString( "go_back" ))" onclick="history.go( -1 )"></p>
 
+#if( $runningAsPortal == "false" )
 #printException( $exception $i18n.getString( "exception" ) )
-
-## -------------------------------------------------------------------------- ##
+#end
 
 </body>
 </html>

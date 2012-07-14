@@ -1,0 +1,170 @@
+<h3>
+ <a href="javascript:onClickBackBtn();">$i18n.getString( 'program_tracking' )</a>
+ &#8226; <a href="javascript:showPatientDashboardForm( $programStageInstance.programInstance.patient.id );">$i18n.getString( 'patient_dashboard' )</a>
+ &raquo; $encoder.htmlEncode($programStageInstance.programStage.displayName)
+</h3>
+
+<input type='hidden' id='currentUsername' name='currentUsername' value='$currentUsername'>
+<input type='hidden' id='programInstanceId' name='programInstanceId' value='$programStageInstance.programInstance.id'>
+
+<div class='dashboard-area'>
+	<div class="link-area" style="height:200px">
+		<p class='header'>$i18n.getString("demographics")</p>
+		<div class="contentProviderTable" style="height:200px">
+			#set($status = $programStageInstance.getEventStatus())
+			<table>
+				<tr>            
+					<td class="bold">$i18n.getString( "full_name" ):</td>
+					<td>$encoder.htmlEncode($programStageInstance.programInstance.patient.getFullName()) ( $programStageInstance.programInstance.patient.gender )</td>
+				</tr>
+				<tr>
+					<td class="bold">$i18n.getString( "date_of_birth" ):</td>
+					<td>$format.formatDate( $programStageInstance.programInstance.patient.birthDate ) ( $programStageInstance.programInstance.patient.getAge() )</td>
+				</tr>
+				<tr>
+					<td class="bold">$i18n.getString("phone_number")</td>
+					<td>
+						#if($!programStageInstance.programInstance.patient.phoneNumber && $!programStageInstance.programInstance.patient.phoneNumber!='')
+							$!programStageInstance.programInstance.patient.phoneNumber
+						#else
+							[$i18n.getString('none')]
+						#end
+					</td>
+				</tr>
+				<tr>
+					<td class="bold">$i18n.getString("health_worker")</td>
+					<td>
+						#if($!programStageInstance.programInstance.patient.healthWorker )
+							$encoder.htmlEncode($!programStageInstance.programInstance.patient.healthWorker.name)
+						#else
+							[$i18n.getString('none')]
+						#end
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+		
+	<div class="link-area-tracking">
+		<p class='header'>
+			$i18n.getString("reschedule_and_set_status")
+			#if( $auth.hasAccess( "dhis-web-caseentry", "removeCurrentEncounter" ) || ( $status==1 ) )
+				&#8226; <a href="javascript:removeEvent($programStageInstance.id, true)" title='$i18n.getString( "remove_this_event" )'> $i18n.getString('remove_this_event') </a>
+			#end
+			</p>
+		<div class="contentProviderTable" style="height:200px">
+			<table id='progarmStageListDiv' name='progarmStageListDiv' >
+				<tr>
+					<td>$i18n.getString( "due_date" )</td>        
+					#set( $duedateId = "value_" + $programStageInstance.id + "_date" )        
+					<td>        
+						<input type="text" id="$duedateId" value="$!format.formatDate( $programStageInstance.dueDate )" onchange="saveDueDate( $programInstance.id, $programStageInstance.id, '$encoder.jsEncode( $programStageInstance.programStage.displayName )' )" />
+						<input type="hidden" name="enrollmentDate" id="enrollmentDate" value="$!format.formatDate( $programInstance.enrollmentDate )">
+						<input type="hidden" name="dateOfIncident" id="dateOfIncident" value="$!format.formatDate( $programInstance.dateOfIncident )">
+						<script type="text/javascript">
+							#if($status==1 || $status==2 || $status==5 )
+								disable('$duedateId');
+							#else
+								datePicker( '$duedateId' );
+							#end
+						</script> 
+					</td> 
+				</tr>
+				<tr>
+					<td>$i18n.getString( "status" )</td>
+					<td>
+						<select id="stat_$programStageInstance.id" name="status_$programStageInstance.id" onchange="setEventStatus(this, $programStageInstance.id)">
+							#if($status==4)
+								<option value='4'>$i18n.getString("overdue")</option>
+								<option value='5'>$i18n.getString("skipped")</option>
+							#elseif($status==3)
+								<option value='3'>$i18n.getString("scheduled_in_future")</option>
+								<option value='5'>$i18n.getString("skipped")</option>
+							#elseif($status==5)
+								<option value='4'>$i18n.getString("overdue")</option>
+								<option value='3'>$i18n.getString("scheduled_in_future")</option>
+								<option value='5'>$i18n.getString("skipped")</option>
+							#else
+								<option value='1'>$i18n.getString("completed")</option>
+								<option value='2'>$i18n.getString("incompleted")</option>
+							#end
+						</select>
+						<script>
+							setFieldValue("stat_$programStageInstance.id", $status);
+						</script>
+					</td>
+				</tr>
+				<tr>
+					<td>$i18n.getString( "post_comment" )</td>
+					<td>
+						<input type='text' id='commentText' name='commentText' onkeypress="keypressOnComent(event,this,'$programStageInstance.id');">
+						<input type='button' value="+" class='tiny-button' title='$i18n.getString("post_comment")' onclick="addComment( byId('commentText'),'$programStageInstance.id');">
+					</td>
+				</tr>
+				<tr>
+					<td>$i18n.getString( "send_message" )</td>
+					<td>
+						<input type="text" id="smsMessage" name="smsMessage" class="{validate:{required:true,maxlength:160}}" onkeypress="keypressOnMessage(event, this,'$programStageInstance.id');"></input>
+						<input type="button" value="&raquo;" class='tiny-button' onclick="sendSmsOnePatient( byId('smsMessage'),'$programStageInstance.id' );"/>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td id="smsError" style="color:red;"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>			
+
+<table class="mainPageTable">
+	<colgroup>
+		<col width="160px"/>
+		<col width="160px"/>
+		<col width="100px"/>
+		<col/>
+	</colgroup>
+	<tr>
+		<th>$i18n.getString( "date" )</th>
+		<th>$i18n.getString( "program_stage" )</th>
+		<th>$i18n.getString( "sender" )</th>
+		<th>$i18n.getString( "message" )</th>
+	</tr>
+	<tbody id='commentTB'>
+		#foreach( $comment in $comments )
+			<tr id="comment_$comment.id">
+				<td>$format.formatDateTime($comment.createdDate)</td>
+				<td>$encoder.htmlEncode($programStageInstance.programStage.displayName)</td>
+				<td>$encoder.htmlEncode($comment.creator)</td>
+				<td>$encoder.htmlEncode($comment.commentText)</td>
+			</tr>
+		#end
+		
+		#foreach( $sms in $outboundSms )
+			<tr id="tr${sms.id}" >
+				<td>$format.formatDateTime($!sms.date)</td>
+				<td>$encoder.htmlEncode($programStageInstance.programStage.displayName)</td>
+				<td>$encoder.htmlEncode($sms.sender)</td>
+				<td>$encoder.htmlEncode($sms.message)</td>
+			</tr>
+		#end
+	</tbody>
+</table>
+<p>
+	#set($count = $comments.size() + $outboundSms.size() )
+	<input type='button' id="showCommentBtn" name="showCommentBtn" value='$i18n.getString("show_hide_more")' #if($count && $count<=5) class='hidden' #end onclick='commentDivToggle(false);'>
+	<input type='button' id="hideCommentBtn" name="hideCommentBtn" value='$i18n.getString("show_hide_more")' class='hidden' onclick='commentDivToggle(true);'>
+</p>
+
+<script type="text/javascript">
+	jQuery(document).ready(	function(){
+		setFieldValue('programStageName', "$programStageInstance.programStage.displayName");
+		setFieldValue( "programStageInstanceId", "$!programStageInstance.id" );
+		commentDivToggle(true);
+	});
+	
+	var i18n_color_quick_help = '$encoder.jsEscape( $i18n.getString( "color_quick_help" ) , "'")';
+	var i18n_comment_added = '$encoder.jsEscape( $i18n.getString( "comment_added" ) , "'")';
+	var i18n_this_field_is_required = '$encoder.jsEscape( $i18n.getString( "this_field_is_required" ) , "'")';
+	
+</script>

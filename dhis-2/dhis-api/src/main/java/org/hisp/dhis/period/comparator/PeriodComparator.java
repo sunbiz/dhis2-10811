@@ -40,6 +40,8 @@ import org.hisp.dhis.period.Period;
 public class PeriodComparator
     implements Comparator<Period>
 {
+    public static final PeriodComparator INSTANCE = new PeriodComparator();
+    
     public int compare( Period period1, Period period2 )
     {
         if ( period1.getStartDate() == null )

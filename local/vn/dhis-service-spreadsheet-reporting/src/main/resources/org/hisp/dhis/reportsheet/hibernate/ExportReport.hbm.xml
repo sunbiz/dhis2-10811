@@ -15,6 +15,7 @@
 		<property name="organisationRow" column="organisationrow" />
 		<property name="organisationColumn" column="organisationcolumn" />
 		<property name="group" column="reportgroup" not-null="true"/>
+		<property name="createdBy" column="createdby" />
 
 		<set name="exportItems" lazy="false" cascade="all-delete-orphan" inverse="true">
 			<key column="reportexcelid" />
@@ -24,13 +25,19 @@
 		<set name="organisationAssocitions" table="reportexcel_associations" lazy="false">
 			<key column="reportexcelid" />
 			<many-to-many class="org.hisp.dhis.organisationunit.OrganisationUnit"
-				column="organisationid"  foreign-key="fk_reportexcel_organisation"/>
+				column="organisationid" foreign-key="fk_reportexcel_organisation"/>
+		</set>
+
+		<set name="dataSets" table="reportexcel_datasets" lazy="false">
+			<key column="reportexcelid" />
+			<many-to-many class="org.hisp.dhis.dataset.DataSet"
+				column="datasetid" foreign-key="fk_reportexcel_dataset"/>
 		</set>	
 		
 		<set name="userRoles" table="reportexcel_userroles" lazy="false">
 			<key column="reportexcelid" />
 			<many-to-many class="org.hisp.dhis.user.UserAuthorityGroup"
-				column="userroleid"  foreign-key="fk_reportexcel_userroles"/>
+				column="userroleid" foreign-key="fk_reportexcel_userroles"/>
 		</set>
 		
 		<!-- NORMAL -->

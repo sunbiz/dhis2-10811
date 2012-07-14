@@ -27,11 +27,12 @@ package org.hisp.dhis.oum.action.organisationunitgroup;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.List;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -97,13 +98,14 @@ public class ValidateOrganisationUnitGroupAction
         // ---------------------------------------------------------------------
         // Validate values
         // ---------------------------------------------------------------------
-        if ( name != null )
-        {
-            OrganisationUnitGroup match = organisationUnitGroupService.getOrganisationUnitGroupByName( name );
 
-            if ( match != null && (id == null || match.getId() != id) )
+        if ( name != null && !name.trim().isEmpty() )
+        {
+            List<OrganisationUnitGroup> organisationUnitGroups = organisationUnitGroupService.getOrganisationUnitGroupByName( name );
+
+            if ( !organisationUnitGroups.isEmpty() && (id == null || organisationUnitGroups.get( 0 ).getId() != id) )
             {
-                message = i18n.getString( "name_is_already_in_use" );
+                message = i18n.getString( "name_in_use" );
 
                 return ERROR;
             }

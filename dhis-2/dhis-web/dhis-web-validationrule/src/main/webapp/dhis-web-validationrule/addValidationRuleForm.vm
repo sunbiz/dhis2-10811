@@ -1,22 +1,22 @@
 <h3>$encoder.htmlEncode( $i18n.getString( "create_new_validation_rule" ) )</h3>
 
-<form id="addValidationRuleForm" action="addValidationRule.action" method="post" onsubmit="enable('periodTypeName');">
+<form id="addValidationRuleForm" action="addValidationRule.action" method="post" onsubmit="enable('periodTypeName');" class="inputForm">
 <table>
 	<tr>
 		<th colspan="2">$i18n.getString( "details" )</th>
 	</tr>
 	<tr>
-		<td><label for="name">$encoder.htmlEncode( $i18n.getString( "name" ) ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:20em"></td>
+		<td style="width:120px"><label for="name">$encoder.htmlEncode( $i18n.getString( "name" ) ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
+		<td><input type="text" id="name" name="name"></td>
 	</tr>
 	<tr>
-		<td><label for="description">$encoder.htmlEncode( $i18n.getString( "description" ) )</label></td>
-		<td><textarea name="description" style="width:20em; height:6em"></textarea></td>
+		<td><label for="description">$encoder.htmlEncode( $i18n.getString( "description" ) ) ($encoder.htmlEncode( $i18n.getString( "visible_in_validation_violations" ) ))</label></td>
+		<td><textarea name="description"></textarea></td>
 	</tr>
 	<tr>
 		<td><label for="periodType">$encoder.htmlEncode( $i18n.getString( "period_type" ) )<em title="$i18n.getString( "required" )" class="required">*</em></label></td>
 		<td>
-			<select type="text" id="periodTypeName" name="periodTypeName" style="min-width:20em" >
+			<select type="text" id="periodTypeName" name="periodTypeName">
 				#foreach ( $periodType in $periodTypes )
 				 <option value="$periodType.name" #if( $periodType.name.equals( ${monthlyPeriodTypeName} ) ) selected #end>$i18n.getString($periodType.name)</option>
 				#end						
@@ -27,14 +27,15 @@
 	<tr>
 		<td><label for="operatorId">$encoder.htmlEncode( $i18n.getString( "operator" ) ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
 		<td>
-			<select id="operator" name="operator" style="width:20em">
+			<select id="operator" name="operator">
 				<option value="">[ $i18n.getString( "select_operator" ) ]</option>
 				<option value="equal_to">$encoder.htmlEncode( $i18n.getString( "equal_to" ) )</option>
 				<option value="not_equal_to">$encoder.htmlEncode( $i18n.getString( "not_equal_to" ) )</option>
 				<option value="greater_than">$encoder.htmlEncode( $i18n.getString( "greater_than" ) )</option>
 				<option value="greater_than_or_equal_to">$encoder.htmlEncode( $i18n.getString( "greater_than_or_equal_to" ) )</option>
 				<option value="less_than">$encoder.htmlEncode( $i18n.getString( "less_than" ) )</option>
-				<option value="less_than_or_equal_to">$encoder.htmlEncode( $i18n.getString( "less_than_or_equal_to" ) )</option>			
+				<option value="less_than_or_equal_to">$encoder.htmlEncode( $i18n.getString( "less_than_or_equal_to" ) )</option>
+                <option value="compulsory_pair">$encoder.htmlEncode( $i18n.getString( "compulsory_pair" ) )</option>
 			</select>
 		</td>
 	</tr>
@@ -45,10 +46,13 @@
 			<input type="hidden" id="leftSideDescription" name="leftSideDescription">
 			<input type="hidden" id="leftSideExpression" name="leftSideExpression">
 			<input type="hidden" id="leftSideTextualExpression" name="leftSideTextualExpression">
+			<input type="hidden" id="leftSideNullIfBlank" name="leftSideNullIfBlank">
+			
 			<input type="button" value="$i18n.getString( 'edit_right_side' )" style="width:10em" onclick="editRightExpression();"></td>
 			<input type="hidden" id="rightSideDescription" name="rightSideDescription">
 			<input type="hidden" id="rightSideExpression" name="rightSideExpression">
 			<input type="hidden" id="rightSideTextualExpression" name="rightSideTextualExpression">
+			<input type="hidden" id="rightSideNullIfBlank" name="rightSideNullIfBlank">
 		</td>	
 	</tr>
 	<tr>

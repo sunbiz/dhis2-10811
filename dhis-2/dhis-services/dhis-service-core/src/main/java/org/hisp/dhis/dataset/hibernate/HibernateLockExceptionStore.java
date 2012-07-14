@@ -27,11 +27,6 @@ package org.hisp.dhis.dataset.hibernate;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Projections;
@@ -46,6 +41,11 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.springframework.jdbc.core.RowCallbackHandler;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -80,24 +80,24 @@ public class HibernateLockExceptionStore
     public int save( LockException lockException )
     {
         lockException.setPeriod( periodService.reloadPeriod( lockException.getPeriod() ) );
-        
+
         return super.save( lockException );
     }
-    
+
     @Override
     public void update( LockException lockException )
     {
         lockException.setPeriod( periodService.reloadPeriod( lockException.getPeriod() ) );
-        
+
         super.update( lockException );
     }
-    
+
     @Override
-    public Collection<LockException> getCombinations()
+    public List<LockException> getCombinations()
     {
         final String sql = "select distinct datasetid, periodid from lockexception";
 
-        final Collection<LockException> lockExceptions = new ArrayList<LockException>();
+        final List<LockException> lockExceptions = new ArrayList<LockException>();
 
         jdbcTemplate.query( sql, new RowCallbackHandler()
         {
@@ -125,7 +125,7 @@ public class HibernateLockExceptionStore
     public void deleteCombination( DataSet dataSet, Period period )
     {
         final String hql = "delete from LockException where dataSet=:dataSet and period=:period";
-        
+
         Query query = getQuery( hql );
         query.setParameter( "dataSet", dataSet );
         query.setParameter( "period", period );
@@ -135,7 +135,7 @@ public class HibernateLockExceptionStore
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<LockException> getBetween( int first, int max )
+    public List<LockException> getAllOrderedName( int first, int max )
     {
         Criteria criteria = getCriteria();
         criteria.setFirstResult( first );
@@ -143,24 +143,24 @@ public class HibernateLockExceptionStore
 
         return criteria.list();
     }
-    
+
     public long getCount( DataElement dataElement, Period period, OrganisationUnit organisationUnit )
     {
-        Criteria criteria = getCriteria( 
+        Criteria criteria = getCriteria(
             Restrictions.eq( "period", periodService.reloadPeriod( period ) ),
             Restrictions.eq( "organisationUnit", organisationUnit ),
             Restrictions.in( "dataSet", dataElement.getDataSets() ) );
-        
+
         return (Long) criteria.setProjection( Projections.rowCount() ).uniqueResult();
     }
-    
+
     public long getCount( DataSet dataSet, Period period, OrganisationUnit organisationUnit )
     {
-        Criteria criteria = getCriteria( 
+        Criteria criteria = getCriteria(
             Restrictions.eq( "period", periodService.reloadPeriod( period ) ),
             Restrictions.eq( "organisationUnit", organisationUnit ),
             Restrictions.eq( "dataSet", dataSet ) );
-        
+
         return (Long) criteria.setProjection( Projections.rowCount() ).uniqueResult();
     }
 }

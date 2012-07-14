@@ -54,6 +54,16 @@ public class ExportReportOrganizationGroupListing
         super();
     }
 
+    public ExportReportOrganizationGroupListing( String name, String group, String excelTemplateFile )
+    {
+        super( name, group, excelTemplateFile );
+    }
+
+    public ExportReportOrganizationGroupListing( String name, String group, String excelTemplateFile, String createdBy )
+    {
+        super( name, group, excelTemplateFile, createdBy );
+    }
+
     // -------------------------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------------------------

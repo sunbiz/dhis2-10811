@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.hisp.dhis</groupId>
   <artifactId>dhis</artifactId>
-  <version>2.9-SNAPSHOT</version>
+  <version>2.11-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>DHIS 2</name>
   <url>http://dhis2.org</url>
@@ -127,6 +127,7 @@
 
   <build>
     <plugins>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -137,6 +138,7 @@
           <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -151,6 +153,7 @@
           <argLine>-Xmx256m</argLine>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -159,6 +162,7 @@
           <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
@@ -170,6 +174,34 @@
           <excludeFilterFile>${rootDir}findbugs-exclude.xml</excludeFilterFile>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <tstamp>
+                  <format property="now" pattern="yyyy-MM-dd HH:mm:ss" />
+                </tstamp>
+                <mkdir dir="${project.build.outputDirectory}" />
+                <exec executable="bzr" outputproperty="revision" failifexecutionfails="false">
+                  <arg value="revno" />
+                </exec>
+                <echo file="${project.build.outputDirectory}/build.properties"
+                  message="build.version = ${project.version}&#10;build.time = ${now}&#10;build.revision = ${revision}&#10;" />
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
@@ -246,15 +278,14 @@
         <artifactId>dhis-service-mapgeneration</artifactId>
         <version>${project.version}</version>
       </dependency>
-
-      <!--dependency>
-        <groupId>org.hisp.dhis</groupId>
-        <artifactId>dhis-service-excel-reporting</artifactId>
-        <version>${project.version}</version>
-        </dependency -->
       <dependency>
         <groupId>org.hisp.dhis</groupId>
         <artifactId>dhis-service-administration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hisp.dhis</groupId>
+        <artifactId>dhis-service-analytics</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -302,17 +333,17 @@
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring-asm</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <dependency>
@@ -359,6 +390,11 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.hateoas</groupId>
+        <artifactId>spring-hateoas</artifactId>
+        <version>0.4.0.RELEASE</version>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -460,7 +496,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.2</version>
+        <version>1.4.3</version>
       </dependency>
       <dependency>
         <groupId>jep</groupId>
@@ -470,12 +506,12 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.10</version>
+        <version>4.11</version>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-        <version>1.9.0</version>
+        <version>1.9.5</version>
       </dependency>
       <dependency>
         <groupId>org.amplecode</groupId>
@@ -499,7 +535,6 @@
         <version>2.4</version>
         <classifier>jdk15</classifier>
       </dependency>
-
       <!-- Apache Commons -->
       <dependency>
         <groupId>commons-collections</groupId>
@@ -539,7 +574,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.3</version>
+        <version>2.4</version>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
@@ -604,6 +639,16 @@
         <version>${hibernate.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>1.0.0.GA</version>
+      </dependency>
+      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
@@ -616,7 +661,7 @@
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.16</version>
+        <version>1.2.17</version>
       </dependency>
       <dependency>
         <groupId>geronimo-spec</groupId>
@@ -637,13 +682,12 @@
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>9.1-901-1.jdbc4</version>
-
       </dependency>
       <!--Reporting -->
       <dependency>
         <groupId>net.sf.jasperreports</groupId>
         <artifactId>jasperreports</artifactId>
-        <version>4.5.1</version>
+        <version>4.7.0</version>
         <exclusions>
           <exclusion>
             <groupId>xalan</groupId>
@@ -711,6 +755,12 @@
         <version>1.1.3.4.O</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+        <groupId>org.htmlparser</groupId>
+        <artifactId>htmlparser</artifactId>
+        <version>2.1</version>
+      </dependency>
+
       <!-- GIS -->
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
@@ -728,7 +778,8 @@
         <artifactId>batik-codec</artifactId>
         <version>1.7</version>
       </dependency>
-      <!-- Relaxng schema validation. -->
+
+      <!-- Relaxng schema validation -->
       <dependency>
         <groupId>net.java.dev.msv</groupId>
         <artifactId>msv</artifactId>
@@ -752,7 +803,6 @@
       </dependency>
 
       <!-- Jackson JSON Mapper -->
-
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
@@ -773,7 +823,7 @@
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-render</artifactId>
-        <version>8.0-M4</version>
+        <version>${geotools.version}</version>
         <exclusions>
           <exclusion>
             <groupId>xalan</groupId>
@@ -788,7 +838,7 @@
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-epsg-wkt</artifactId>
-        <version>8.0-M4</version>
+        <version>${geotools.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-pool</groupId>
@@ -797,17 +847,19 @@
         </exclusions>
       </dependency>
 
-      <!-- Apache Camel -->
+      <!-- JAXB -->
       <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
-        <version>2.2.5</version>
+        <version>2.2.6</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>2.2.5</version>
+        <version>2.2.6</version>
       </dependency>
+
+      <!-- Apache Camel -->
       <dependency>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-core</artifactId>
@@ -833,17 +885,31 @@
         <artifactId>camel-quartz</artifactId>
         <version>${camel.version}</version>
       </dependency>
+
+      <!-- SMS -->
+      <dependency>
+        <groupId>org.smslib</groupId>
+        <artifactId>smslib</artifactId>
+        <version>3.5.2-r2307</version>
+      </dependency>
+      <dependency>
+        <groupId>org.rxtx</groupId>
+        <artifactId>rxtx</artifactId>
+        <version>2.1.7</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <properties>
     <rootDir></rootDir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring.version>3.1.1.RELEASE</spring.version>
-    <spring.security.version>3.1.0.RELEASE</spring.security.version>
-    <hibernate.version>4.1.3.Final</hibernate.version>
-    <jackson.version>2.0.2</jackson.version>
-    <camel.version>2.9.2</camel.version>
-    <slf4j.version>1.6.4</slf4j.version>
+    <spring.version>3.2.0.RELEASE</spring.version>
+    <spring.security.version>3.1.3.RELEASE</spring.security.version>
+    <hibernate.version>4.1.8.Final</hibernate.version>
+    <hibernate-validator.version>4.3.1.Final</hibernate-validator.version>
+    <jackson.version>2.0.6</jackson.version>
+    <camel.version>2.10.2</camel.version>
+    <slf4j.version>1.6.6</slf4j.version>
+    <geotools.version>8.4</geotools.version>
   </properties>
 </project>

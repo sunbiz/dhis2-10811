@@ -37,6 +37,9 @@ import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dashboard.DashboardManager;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -64,6 +67,13 @@ public class ProvideContentAction
     public void setChartService( ChartService chartService )
     {
         this.chartService = chartService;
+    }
+    
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
     }
 
     // -------------------------------------------------------------------------
@@ -101,6 +111,13 @@ public class ProvideContentAction
     {
         return chartAreas;
     }
+    
+    private OrganisationUnit organisationUnit;
+
+    public OrganisationUnit getOrganisationUnit()
+    {
+        return organisationUnit;
+    }
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -133,7 +150,14 @@ public class ProvideContentAction
             
             chartAreas.add( chart );
         }
+        
+        User user = currentUserService.getCurrentUser();
 
+        if ( user != null )
+        {
+            organisationUnit = user.getOrganisationUnit();
+        }
+        
         return SUCCESS;
     }
 }

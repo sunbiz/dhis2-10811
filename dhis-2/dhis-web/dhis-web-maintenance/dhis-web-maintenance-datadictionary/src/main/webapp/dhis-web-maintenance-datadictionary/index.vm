@@ -12,6 +12,7 @@ jQuery(function() {
 	#introListImgItem( "dataElementGroup.action" "data_element_group" "dataelement" )
     #introListImgItem( "dataElementGroupEditor.action" "data_element_group_editor" "dataelement" )
     #introListImgItem( "dataElementGroupSet.action" "data_element_group_set" "dataelement" )
+    #introListImgItem( "categoryOption.action" "data_element_category_option" "dataelement" )
     #introListImgItem( "category.action" "data_element_category" "dataelement" )
     #introListImgItem( "categoryCombo.action" "data_element_category_combo" "dataelement" )
 	#introListImgItem( "concept.action" "concept" "dataelement" )

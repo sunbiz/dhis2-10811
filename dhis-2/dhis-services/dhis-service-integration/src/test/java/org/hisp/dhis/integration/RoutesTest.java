@@ -27,12 +27,9 @@ package org.hisp.dhis.integration;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertNotNull;
-import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.*;
-import static org.hisp.dhis.importexport.ImportStrategy.*;
-
-
+import static org.junit.Assert.assertNotNull;
 import org.hisp.dhis.DhisTest;
+import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.CODE;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
@@ -43,12 +40,12 @@ import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.dxf2.importsummary.ImportSummary;
 import org.hisp.dhis.dxf2.metadata.ImportOptions;
+import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;

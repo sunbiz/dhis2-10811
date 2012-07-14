@@ -13,7 +13,7 @@
         } );
 
         /* remote validation */
-        checkValueIsExist( "name", "validateUserGroup.action" );
+        // checkValueIsExist( "name", "validateUserGroup.action" );
 
 		jQuery("#availableUsersList").dhisAjaxSelect({
 			source: "../dhis-web-commons-ajax-json/getUsers.action",
@@ -32,11 +32,10 @@
 
 <h3>$i18n.getString( "add_user_group" )</h3>
 
-<form id="addUserGroupForm" name="addUserGroupForm" action="addUserGroup.action" method="post" >
+<form id="addUserGroupForm" name="addUserGroupForm" action="addUserGroup.action" method="post" class="inputForm">
  
 <table id="detailsList">
-    <col style="width: 200px"/>
-    <col style="width: 270px"/>
+    <col style="width: 120px"/>
 
     <tr>
         <th colspan="2">$i18n.getString( "user_group_details" )</th>
@@ -44,16 +43,18 @@
 
 	<tr>
 		<td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:240px"></td>
+		<td><input type="text" id="name" name="name"></td>
 	</tr>
 </table>
 
 #tblDynamicAttributes( { "attributes": $attributes } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
     <tr>
         <th>$i18n.getString( "available_users" )</th>

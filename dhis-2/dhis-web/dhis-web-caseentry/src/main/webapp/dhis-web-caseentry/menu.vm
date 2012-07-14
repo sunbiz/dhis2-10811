@@ -1,29 +1,58 @@
-
-<h2>$i18n.getString( "registration" )&nbsp;</h2>
+#if( $auth.hasAccess( "dhis-web-caseentry", "patient" ) )
+<h2>$i18n.getString( "patient" )&nbsp;</h2>
 <ul>
-	<li><a href="patient.action">$i18n.getString( "patient" )</a></li>	
+	<li><a href="patient.action">$i18n.getString( "find_and_add_person" )</a></li>
 </ul>
+#end
 
+#if( $auth.hasAccess( "dhis-web-caseentry", "activityPlanSelect" ) 
+	|| $auth.hasAccess( "dhis-web-caseentry", "smsReminderSelect" ) )
+<h2>$i18n.getString( "tracking" )&nbsp;</h2>
+#end
+<ul>
+    #if( $auth.hasAccess( "dhis-web-caseentry", "activityPlanSelect" ) )
+		<li><a href="activityPlanSelect.action">$i18n.getString( "activity_plan" )</a></li>     
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "smsReminderSelect" ) )
+		<li><a href="smsReminderSelect.action">$i18n.getString( "program_tracking" )</a></li>     
+	#end
+</ul>
+#if( $auth.hasAccess( "dhis-web-caseentry", "multipledataEntrySelect" ) 
+	|| $auth.hasAccess( "dhis-web-caseentry", "singleEventSelect" ) 
+	|| $auth.hasAccess( "dhis-web-caseentry", "anonymousRegistration" ) )
 <h2>$i18n.getString( "data_entry" )&nbsp;</h2>
+#end
 <ul>
-	<li><a href="dataEntrySelect.action">$i18n.getString( "name_based" )&nbsp;</a></li>
-	<li><a href="multipledataEntrySelect.action">$i18n.getString( "multiple_name_based" )&nbsp;</a></li>
-	<li><a href="anonymousRegistration.action">$i18n.getString( "anonymous_events" )</a></li>
-	<li><a href="singleEventSelect.action">$i18n.getString( "single_event_with_registration" )</a></li>
+	#if( $auth.hasAccess( "dhis-web-caseentry", "multipledataEntrySelect" ) )
+		<li><a href="multipledataEntrySelect.action">$i18n.getString( "multiple_individual_records" )&nbsp;</a></li>
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "singleEventSelect" ) )
+		<li><a href="singleEventSelect.action">$i18n.getString( "single_event_with_registration" )</a></li>
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "anonymousRegistration" ) )
+		<li><a href="anonymousRegistration.action">$i18n.getString( "anonymous_events" )</a></li>
+	#end
 </ul>
 
+#if( $auth.hasAccess( "dhis-web-caseentry", "reportSelect" ) 
+	|| $auth.hasAccess( "dhis-web-caseentry", "generateTabularReport" ) )	
 <h2>$i18n.getString( "reports" )&nbsp;</h2>
+#end
 <ul>
-    <li><a href="reportSelect.action">$i18n.getString( "program_summary" )&nbsp;</a></li> 
-	<li><a href="app/index.html"> $i18n.getString( "tabular_report" )&nbsp;</a></li> 
+    #if( $auth.hasAccess( "dhis-web-caseentry", "reportSelect" ) )
+		<li><a href="reportSelect.action">$i18n.getString( "program_summary" )&nbsp;</a></li> 
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "generateTabularReport" ) )
+	<li><a href="app/index.html"> $i18n.getString( "tabular_report" )&nbsp;</a></li>
+	#end
+	#if( $auth.hasAccess( "dhis-web-caseentry", "statisticalProgramReportSelect" ) )
+	<li><a href="statisticalProgramReportSelect.action"> $i18n.getString( "statistical_program" )&nbsp;</a></li>
+	#end
 </ul>
 
-<h2>$i18n.getString( "activity_planning" )&nbsp;</h2>
+#if( $auth.hasAccess( "dhis-web-caseentry", "caseAggregationForm" ) )	
+<h2>$i18n.getString( "person_aggregation" )&nbsp;</h2>
 <ul>
-    <li><a href="visitplan.action">$i18n.getString( "visit_plan" )&nbsp;</a></li>     
+    <li><a href="caseAggregationForm.action">$i18n.getString( "manual_person_aggregation" )</a></li>     
 </ul>
-
-<h2>$i18n.getString( "case_aggregation" )&nbsp;</h2>
-<ul>
-    <li><a href="caseAggregationForm.action">$i18n.getString( "case_aggregation" )</a></li>     
-</ul>
+#end

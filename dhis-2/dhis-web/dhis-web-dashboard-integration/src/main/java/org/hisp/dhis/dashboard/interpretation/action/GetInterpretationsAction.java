@@ -29,8 +29,12 @@ package org.hisp.dhis.dashboard.interpretation.action;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hisp.dhis.interpretation.Interpretation;
 import org.hisp.dhis.interpretation.InterpretationService;
+import org.hisp.dhis.user.User;
+import org.hisp.dhis.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
@@ -40,15 +44,34 @@ import com.opensymphony.xwork2.Action;
 public class GetInterpretationsAction
     implements Action
 {
+    private static final int PAGE_SIZE = 5;
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
 
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
     private InterpretationService interpretationService;
 
-    public void setInterpretationService( InterpretationService interpretationService )
+    // -------------------------------------------------------------------------
+    // Input
+    // -------------------------------------------------------------------------
+
+    private Integer page;
+
+    public void setPage( Integer page )
     {
-        this.interpretationService = interpretationService;
+        this.page = page;
+    }
+    
+    private String userId;
+
+    public void setUserId( String userId )
+    {
+        this.userId = userId;
     }
 
     // -------------------------------------------------------------------------
@@ -61,16 +84,29 @@ public class GetInterpretationsAction
     {
         return interpretations;
     }
-
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
 
     public String execute()
     {
-        interpretationService.updateCurrentUserLastChecked();
+        userId = StringUtils.trimToNull( userId );
         
-        interpretations = interpretationService.getInterpretations( 0, 20 );
+        int first = page != null ? ( page * PAGE_SIZE ) : 0;
+        
+        if ( userId != null )
+        {
+            User user = userService.getUser( userId );
+            
+            interpretations = interpretationService.getInterpretations( user, first, PAGE_SIZE );
+        }
+        else
+        {
+            interpretationService.updateCurrentUserLastChecked();
+            
+            interpretations = interpretationService.getInterpretations( first, PAGE_SIZE );
+        }
         
         return SUCCESS;
     }

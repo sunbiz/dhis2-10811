@@ -41,6 +41,7 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.user.UserGroupService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -93,6 +94,13 @@ public class UpdateDataSetAction
         this.sectionService = sectionService;
     }
 
+    private UserGroupService userGroupService;
+
+    public void setUserGroupService( UserGroupService userGroupService )
+    {
+        this.userGroupService = userGroupService;
+    }
+
     // -------------------------------------------------------------------------
     // Input & output
     // -------------------------------------------------------------------------
@@ -125,18 +133,25 @@ public class UpdateDataSetAction
         this.description = description;
     }
 
-    private boolean allowFuturePeriods;
-
-    public void setAllowFuturePeriods( boolean allowFuturePeriods )
-    {
-        this.allowFuturePeriods = allowFuturePeriods;
-    }
-    
     private int expiryDays;
 
     public void setExpiryDays( int expiryDays )
     {
         this.expiryDays = expiryDays;
+    }
+
+    private int notificationRecipients;
+    
+    public void setNotificationRecipients( int notificationRecipients )
+    {
+        this.notificationRecipients = notificationRecipients;
+    }
+
+    private boolean notifyCompletingUser;
+
+    public void setNotifyCompletingUser( boolean notifyCompletingUser )
+    {
+        this.notifyCompletingUser = notifyCompletingUser;
     }
 
     private boolean skipAggregation;
@@ -158,6 +173,34 @@ public class UpdateDataSetAction
     public void setDataSetId( int dataSetId )
     {
         this.dataSetId = dataSetId;
+    }
+
+    private boolean allowFuturePeriods;
+
+    public void setAllowFuturePeriods( boolean allowFuturePeriods )
+    {
+        this.allowFuturePeriods = allowFuturePeriods;
+    }
+    
+    private boolean fieldCombinationRequired;
+    
+    public void setFieldCombinationRequired( boolean fieldCombinationRequired )
+    {
+        this.fieldCombinationRequired = fieldCombinationRequired;
+    }
+
+    private boolean validCompleteOnly;
+
+    public void setValidCompleteOnly( boolean validCompleteOnly )
+    {
+        this.validCompleteOnly = validCompleteOnly;
+    }
+
+    private boolean skipOffline;
+
+    public void setSkipOffline( boolean skipOffline )
+    {
+        this.skipOffline = skipOffline;
     }
 
     private Collection<String> dataElementsSelectedList = new HashSet<String>();
@@ -209,7 +252,7 @@ public class UpdateDataSetAction
 
         dataSet.setExpiryDays( expiryDays );
         dataSet.setSkipAggregation( skipAggregation );
-
+        
         if ( !(equalsNullSafe( name, dataSet.getName() ) && periodType.equals( dataSet.getPeriodType() )
             && dataElements.equals( dataSet.getDataElements() ) && indicators.equals( dataSet.getIndicators() )) )
         {
@@ -219,11 +262,16 @@ public class UpdateDataSetAction
         dataSet.setName( name );
         dataSet.setShortName( shortName );
         dataSet.setDescription( description );
-        dataSet.setAllowFuturePeriods( allowFuturePeriods );
         dataSet.setCode( code );
         dataSet.setPeriodType( periodService.getPeriodTypeByClass( periodType.getClass() ) );
         dataSet.updateDataElements( dataElements );
         dataSet.setIndicators( indicators );
+        dataSet.setAllowFuturePeriods( allowFuturePeriods );
+        dataSet.setFieldCombinationRequired( fieldCombinationRequired );
+        dataSet.setValidCompleteOnly( validCompleteOnly );
+        dataSet.setNotifyCompletingUser( notifyCompletingUser );
+        dataSet.setSkipOffline( skipOffline );
+        dataSet.setNotificationRecipients( userGroupService.getUserGroup( notificationRecipients ) );
 
         dataSetService.updateDataSet( dataSet );
 

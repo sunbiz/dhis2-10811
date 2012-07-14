@@ -7,7 +7,7 @@ function saveComment()
     var commentValue = $( '#commentTextArea' ).val();
     var periodId = $( '#selectedPeriodId' ).val();
 
-    if( commentValue.length > 359 )
+    if ( commentValue.length > 360 )
     {
         markComment( COLOR_YELLOW );
         window.alert(i18n_value_too_long + " for comment field");

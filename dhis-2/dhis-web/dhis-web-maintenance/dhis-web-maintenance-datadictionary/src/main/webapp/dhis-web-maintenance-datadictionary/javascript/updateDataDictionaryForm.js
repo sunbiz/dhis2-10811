@@ -1,8 +1,24 @@
 jQuery( document ).ready( function()
 {
+    function preSubmit() {
+        var $selectedDataElements = $('#selectedDataElements');
+        var $selectedIndicators = $('#selectedIndicators');
+
+        var hasDataElements = $selectedDataElements.val() != null && $selectedDataElements.val().length > 0;
+        var hasIndicators = $selectedIndicators.val() != null && $selectedIndicators.val().length > 0;
+
+        if( !hasDataElements && !hasIndicators )
+        {
+            setHeaderDelayMessage('Data Elements or Indicators are required.')
+            return false;
+        }
+
+        return true;
+    }
+
     validation2( 'updateDataDictionaryForm', function( form )
     {
-        form.submit();
+        preSubmit() && form.submit();
     }, {
         'beforeValidateHandler' : function()
         {

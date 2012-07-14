@@ -27,11 +27,9 @@
 
 package org.hisp.dhis.caseentry.action.caseaggregation;
 
-import org.hisp.dhis.caseentry.state.PeriodGenericManager;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
-import org.hisp.dhis.period.Period;
 
 import com.opensymphony.xwork2.Action;
 
@@ -48,8 +46,6 @@ public class ValidationCaseAggregationAction
 
     private SelectionTreeManager selectionTreeManager;
 
-    private PeriodGenericManager periodGenericManager;
-
     private I18n i18n;
 
     // -------------------------------------------------------------------------
@@ -57,20 +53,11 @@ public class ValidationCaseAggregationAction
     // -------------------------------------------------------------------------
     
     private String message;
-
-    private int sDateLB;
-
-    private int eDateLB;
     
     // -------------------------------------------------------------------------
     // Getters/Setters
     // -------------------------------------------------------------------------
-
-    public void setPeriodGenericManager( PeriodGenericManager periodGenericManager )
-    {
-        this.periodGenericManager = periodGenericManager;
-    }
-
+    
     public void setSelectionTreeManager( SelectionTreeManager selectionTreeManager )
     {
         this.selectionTreeManager = selectionTreeManager;
@@ -79,16 +66,6 @@ public class ValidationCaseAggregationAction
     public void setI18n( I18n i18n )
     {
         this.i18n = i18n;
-    }
-
-    public void setEDateLB( int dateLB )
-    {
-        eDateLB = dateLB;
-    }
-
-    public void setSDateLB( int dateLB )
-    {
-        sDateLB = dateLB;
     }
 
     public String getMessage()
@@ -114,28 +91,6 @@ public class ValidationCaseAggregationAction
         if ( selectedOrgunit == null )
         {
             message = i18n.getString("please_specify_an_orgunit");
-            return INPUT;
-        }
-
-        // ---------------------------------------------------------------------
-        // Check start-date and end-date
-        // ---------------------------------------------------------------------
-
-        periodGenericManager.setSelectedPeriodIndex( PeriodGenericManager.SESSION_KEY_SELECTED_PERIOD_INDEX_START,
-            sDateLB );
-        Period startPeriod = periodGenericManager.getSelectedPeriod(
-            PeriodGenericManager.SESSION_KEY_SELECTED_PERIOD_INDEX_START,
-            PeriodGenericManager.SESSION_KEY_BASE_PERIOD_START );
-
-        periodGenericManager.setSelectedPeriodIndex( PeriodGenericManager.SESSION_KEY_SELECTED_PERIOD_INDEX_END,
-            eDateLB );
-        Period endPeriod = periodGenericManager.getSelectedPeriod(
-            PeriodGenericManager.SESSION_KEY_SELECTED_PERIOD_INDEX_END,
-            PeriodGenericManager.SESSION_KEY_BASE_PERIOD_END );
-
-        if ( startPeriod.getEndDate().after( endPeriod.getEndDate()  ) )
-        {
-            message = i18n.getString("please_select_to_date_greater_or_equals_to_from_date");
             return INPUT;
         }
 

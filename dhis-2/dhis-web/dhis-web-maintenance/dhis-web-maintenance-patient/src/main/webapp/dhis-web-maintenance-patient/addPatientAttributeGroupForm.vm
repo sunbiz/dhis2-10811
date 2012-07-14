@@ -2,7 +2,7 @@
 
 <h3>$i18n.getString( "create_new_patient_attribute_group" )</h3>
 																			
-<form id="addPatientAttributeGroupForm" action="addPatientAttributeGroup.action" method="post" >
+<form id="addPatientAttributeGroupForm" name="addPatientAttributeGroupForm" action="addPatientAttributeGroup.action" method="post" >
 
 <table>
 	<tr>
@@ -10,11 +10,11 @@
 	</tr>
 	<tr>
 		<td>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></td>
-		<td><input type="text" id="name" name="name"/></td>
+		<td><input type="text" id="name" name="name" class="{validate:{required:true}}"/></td>
 	</tr> 	
 	<tr>
 		<td>$i18n.getString( "description" ) <em title="$i18n.getString( 'required' )" class="required">*</em></td>
-		<td><input type="text" id="description" name="description"/></td>
+		<td><input type="text" id="description" name="description" class="{validate:{required:true}}"/></td>
 	</tr>
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -22,25 +22,29 @@
 </table>
 
 <table>
-	
+	<colgroup>
+		<col style='width:300px'/>
+		<col/>
+		<col style='width:300px'/>
+	</colgroup>
 	<tr>
 		<th>$i18n.getString( "availableAttribute" )</th>
 		<th>$i18n.getString( "filter" )</th>
 		<th>$i18n.getString( "selectedAttribute" )
-			<select id="memberValidator" multiple="multiple" class="{validate:{required:true}} hidden"/>
+			<input type='hidden' id='hasAttributes' name='hasAttributes' class="{validate:{required:true}}">
 		</th>
 	</tr>
 	
 	<tr>
 		<td>
-			<select multiple="multiple" id="availableAttributes" name="availableAttributes" size="15" ></select>
+			<select style='width:100%' multiple="multiple" id="availableAttributes" name="availableAttributes" size="15" ></select>
 		</td>
 		<td>
 			<input type="button" value="&gt;" title="$i18n.getString('move_selected')" onclick="dhisAjaxSelect_moveAllSelected( 'availableAttributes', 'selectedAttributes' )" class='filterButton'/><br/>
 			<input type="button" value="&lt;" title="$i18n.getString('remove_selected')" onclick="dhisAjaxSelect_moveAllSelected( 'selectedAttributes', 'availableAttributes' )" class='filterButton'/>
 		</td>
 		<td>
-			<select multiple="multiple" id="selectedAttributes" name="selectedAttributes" size="15" ></select>
+			<select style='width:100%' multiple="multiple" id="selectedAttributes" name="selectedAttributes" size="15" ></select>
 		</td>
 		<td>
 			<a href="javascript:moveUpSelectedOption( 'selectedAttributes')" title="$i18n.getString( 'move_up' )"><img src="../images/move_up.png" alt="$i18n.getString( 'move_up' )"/></a><br/><br/>
@@ -48,7 +52,7 @@
 		</td>
 	</tr>  
 	<tr>
-		<td>
+		<td colspan='2'>
 			<input type="submit" value="$i18n.getString( 'add' )" />
 			<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='patientAttributeGroup.action'"/>
 		</td>

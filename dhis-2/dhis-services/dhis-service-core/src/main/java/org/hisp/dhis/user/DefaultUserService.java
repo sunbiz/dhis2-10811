@@ -36,12 +36,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.common.AuditLogUtil;
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.filter.UserCredentialsCanUpdateFilter;
-import org.hisp.dhis.system.util.AuditLogUtil;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,8 +160,7 @@ public class DefaultUserService
 
     public int addUser( User user )
     {
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(), AuditLogUtil.ACTION_ADD, User.class
-            .getSimpleName(), user.getName() ) );
+        AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), user, AuditLogUtil.ACTION_CREATE );
 
         return userStore.save( user );
     }
@@ -170,15 +169,13 @@ public class DefaultUserService
     {
         userStore.update( user );
 
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(), AuditLogUtil.ACTION_EDIT,
-            User.class.getSimpleName(), user.getName() ) );
+        AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), user, AuditLogUtil.ACTION_UPDATE );
     }
 
     public void deleteUser( User user )
     {
-        log.info( AuditLogUtil.logMessage( currentUserService.getCurrentUsername(), AuditLogUtil.ACTION_DELETE,
-            User.class.getSimpleName(), user.getName() ) );
-        
+        AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), user, AuditLogUtil.ACTION_DELETE );
+
         userStore.delete( user );
     }
 
@@ -190,13 +187,19 @@ public class DefaultUserService
     @Override
     public Collection<User> getAllUsersBetween( int first, int max )
     {
-        return userStore.getBetween( first, max );
+        return userStore.getAllOrderedName( first, max );
+    }
+    
+    @Override
+    public Collection<User> getAllUsersBetweenByName( String name, int first, int max )
+    {
+        return userStore.getAllLikeNameOrderedName( name, first, max );
     }
 
     @Override
     public Collection<User> getUsersByLastUpdated( Date lastUpdated )
     {
-        return userStore.getByLastUpdated( lastUpdated );
+        return userStore.getAllGeLastUpdated( lastUpdated );
     }
 
     public User getUser( int userId )
@@ -211,11 +214,11 @@ public class DefaultUserService
 
     public Collection<UserCredentials> getUsers( final Collection<Integer> identifiers, User user )
     {
-        Collection<UserCredentials> userCredentialsS = getAllUserCredentials();
+        Collection<UserCredentials> userCredentials = getAllUserCredentials();
 
-        FilterUtils.filter( userCredentialsS, new UserCredentialsCanUpdateFilter( user ) );
+        FilterUtils.filter( userCredentials, new UserCredentialsCanUpdateFilter( user ) );
 
-        return identifiers == null ? userCredentialsS : FilterUtils.filter( userCredentialsS,
+        return identifiers == null ? userCredentials : FilterUtils.filter( userCredentials,
             new Filter<UserCredentials>()
             {
                 public boolean retain( UserCredentials object )
@@ -249,6 +252,11 @@ public class DefaultUserService
     public Collection<User> getUsersByPhoneNumber( String phoneNumber )
     {
         return userStore.getUsersByPhoneNumber( phoneNumber );
+    }
+    
+    public Collection<User> getUsersByName( String name )
+    {
+        return userStore.getUsersByName( name );
     }
 
     public Collection<User> getUsersWithoutOrganisationUnit()
@@ -307,12 +315,12 @@ public class DefaultUserService
 
     public Collection<UserAuthorityGroup> getUserRolesBetween( int first, int max )
     {
-        return userAuthorityGroupStore.getBetween( first, max );
+        return userAuthorityGroupStore.getAllOrderedName( first, max );
     }
 
     public Collection<UserAuthorityGroup> getUserRolesBetweenByName( String name, int first, int max )
     {
-        return userAuthorityGroupStore.getBetweenByName( name, first, max );
+        return userAuthorityGroupStore.getAllLikeNameOrderedName( name, first, max );
     }
 
     public int getUserRoleCount()
@@ -322,7 +330,7 @@ public class DefaultUserService
 
     public int getUserRoleCountByName( String name )
     {
-        return userAuthorityGroupStore.getCountByName( name );
+        return userAuthorityGroupStore.getCountLikeName( name );
     }
 
     public void assignDataSetToUserRole( DataSet dataSet )
@@ -418,6 +426,16 @@ public class DefaultUserService
         updateUserCredentials( credentials );
     }
 
+    public Collection<UserCredentials> getSelfRegisteredUserCredentials( int first, int max )
+    {
+        return userCredentialsStore.getSelfRegisteredUserCredentials( first, max );
+    }
+
+    public int getSelfRegisteredUserCredentialsCount()
+    {
+        return userCredentialsStore.getSelfRegisteredUserCredentialsCount();
+    }
+    
     public Collection<UserCredentials> getInactiveUsers( int months )
     {
         Calendar cal = PeriodType.createCalendarInstance();
@@ -500,4 +518,10 @@ public class DefaultUserService
     {
         userStore.removeUserSettings( user );
     }
+    
+    public Collection<String> getUsernames( String query, Integer max )
+    {
+        return userCredentialsStore.getUsernames( query, max );
+    }
+    
 }

@@ -1,16 +1,20 @@
 package org.hisp.dhis.mobile.action.smscommand;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataelement.comparator.DataElementSortOrderComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.sms.parse.ParserType;
 import org.hisp.dhis.smscommand.SMSCode;
-import org.hisp.dhis.smscommand.SMSCommandService;
 import org.hisp.dhis.smscommand.SMSCommand;
+import org.hisp.dhis.smscommand.SMSCommandService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -43,16 +47,19 @@ public class SMSCommandAction
         return SUCCESS;
     }
 
-    public Set<DataElement> getDataSetElements()
+    public List<DataElement> getDataSetElements()
     {
         if ( getSMSCommand() != null )
         {
             DataSet d = getSMSCommand().getDataset();
             if ( d != null )
             {
-                return d.getDataElements();
+                List<DataElement> x = new ArrayList<DataElement>( d.getDataElements() );
+                Collections.sort( x, new DataElementSortOrderComparator() );
+                return x;
             }
         }
+
         return null;
     }
 
@@ -63,7 +70,6 @@ public class SMSCommandAction
 
     public Collection<SMSCommand> getSMSCommands()
     {
-        System.out.println( "get:" + smsCommandService.getSMSCommands() );
         return smsCommandService.getSMSCommands();
     }
 
@@ -117,6 +123,10 @@ public class SMSCommandAction
     public void setCodes( Map<String, String> codes )
     {
         this.codes = codes;
+    }
+    
+    public ParserType[] getParserType(){       
+        return ParserType.values();
     }
 
 }

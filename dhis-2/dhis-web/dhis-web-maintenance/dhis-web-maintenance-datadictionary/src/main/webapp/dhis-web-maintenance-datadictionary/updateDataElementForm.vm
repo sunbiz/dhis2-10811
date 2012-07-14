@@ -9,6 +9,7 @@
 	        {
 	            setFieldValue( 'submitCategoryComboId', getFieldValue( 'selectedCategoryComboId' ) );
 	            setFieldValue( 'submitValueType', getFieldValue( 'valueType' ) );
+				enable('aggregationOperatorSelect');
 				#tblDynamicAttributesJavascript()
 	        },
 	        'rules' : getValidationRules( "dataElement" )
@@ -16,7 +17,6 @@
 
 		checkValueIsExist( "name", "validateDataElement.action", {id:getFieldValue('id')});
 		checkValueIsExist( "shortName", "validateDataElement.action", {id:getFieldValue('id')});
-		checkValueIsExist( "alternativeName", "validateDataElement.action", {id:getFieldValue('id')});
 		checkValueIsExist( "code", "validateDataElement.action", {id:getFieldValue('id')});
 
 		updateAggreationOperation( getFieldValue('valueType') );
@@ -27,7 +27,7 @@
 
 <h3>$i18n.getString( "edit_data_element" )</h3>
 
-<form id="updateDataElementForm" action="updateDataElement.action" method="POST" >
+<form id="updateDataElementForm" action="updateDataElement.action" method="post" class="inputForm">
 <input type="hidden" id="id" name="id" value="$dataElement.id"/>
 <input type="hidden" id="defaultCategoryCombo" value="$defaultCategoryCombo.id"/>
 <select name="factors" id="factorsSubmit" multiple="multiple" style="display:none"></select>
@@ -38,32 +38,28 @@
 	</tr>
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $dataElement.name )" onchange="nameChanged()" style="width:240px;"/></td>
+		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $dataElement.name )" onchange="nameChanged()"></td>
 	</tr>
 	<tr>
 		<td><label for="shortName">$i18n.getString( "short_name" )</label></td>
-		<td><input type="text" id="shortName" name="shortName" value="$encoder.htmlEncode( $dataElement.shortName )" style="width:240px;"/></td>
-	</tr>
-	<tr>
-		<td><label for="alternativeName">$i18n.getString( "alternative_name" )</label></td>
-		<td><input type="text" id="alternativeName" name="alternativeName" value="$!encoder.htmlEncode( $dataElement.alternativeName )" style="width:240px;"/></td>
+		<td><input type="text" id="shortName" name="shortName" value="$encoder.htmlEncode( $dataElement.shortName )"></td>
 	</tr>
 	<tr>
 		<td><label for="code">$i18n.getString( "code" )</label></td>
-		<td><input type="text" id="code" name="code" value="$!encoder.htmlEncode( $dataElement.code )" style="width:240px;"/></td>
+		<td><input type="text" id="code" name="code" value="$!encoder.htmlEncode( $dataElement.code )"></td>
 	</tr>
 	<tr>
 		<td><label for="description">$i18n.getString( "description" )</label></td>
-		<td><textarea id="description" name="description" style="width:240px; height:8em">$!encoder.htmlEncode( $dataElement.description )</textarea></td>
+		<td><textarea id="description" name="description">$!encoder.htmlEncode( $dataElement.description )</textarea></td>
 	</tr>
 	<tr>
 		<td><label for="formName">$i18n.getString( "form_name" )</label></td>
-		<td><input type="text" id="formName" name="formName" value="$!encoder.htmlEncode( $dataElement.formName )" style="width:240px"/></td>
+		<td><input type="text" id="formName" name="formName" value="$!encoder.htmlEncode( $dataElement.formName )"></td>
 	</tr>
 	<tr>
 		<td><label for="active">$i18n.getString( "active" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td>
-			<select id="active" name="active" style="min-width:246px; margin: 0;">
+			<select id="active" name="active">
 				<option value="true" #if( $dataElement.active ) selected="selected" #end>$i18n.getString( "yes" )</option>
 				<option value="false" #if( !$dataElement.active ) selected="selected" #end>$i18n.getString( "no" )</option>
 			</select>
@@ -72,7 +68,7 @@
 	<tr>
 		<td><label for="domainType">$i18n.getString( "domain_type" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td>
-			<select id="domainType" name="domainType" style="min-width:246px; margin: 0;">
+			<select id="domainType" name="domainType" onchange='domainTypeChange(this.value)'>
 				<option value="aggregate" #if( $dataElement.getDomainTypeNullSafe() == 'aggregate' ) selected="selected" #end>$i18n.getString( "aggregate" )</option>
 				<option value="patient" #if( $dataElement.getDomainTypeNullSafe() == 'patient' ) selected="selected" #end>$i18n.getString( "patient" )</option>				
 			</select>
@@ -81,19 +77,20 @@
 	<tr #if( $calculatedDataElement ) style="display:none" #end>
 		<td><label for="valueType">$i18n.getString( "value_type" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td>
-			<select id="valueType" name="valueType" style="min-width:246px;" onchange="changeValueType( this.value )">
+            <select id="valueType" name="valueType" onchange="changeValueType( this.value )">
 				<option value="int" #if( $dataElement.type == 'int' ) selected="selected" #end >$i18n.getString( "number" )</option>
 				<option value="string" #if( $dataElement.type == 'string' ) selected="selected" #end >$i18n.getString( "text" )</option>
 				<option value="trueOnly" #if( $dataElement.type == 'trueOnly' ) selected="selected" #end >$i18n.getString( "yes_only" )</option>
 				<option value="bool" #if( $dataElement.type == 'bool' ) selected="selected" #end >$i18n.getString( "yes_no" )</option>
 				<option value="date" #if( $dataElement.type == 'date' ) selected="selected" #end >$i18n.getString( "date" )</option>
+				<option value="username" #if( $dataElement.type == 'username' ) selected="selected" #end >$i18n.getString( "user_name" )</option>
 			</select>
 		</td>
 	</tr>
 	<tr id='numberTypeTR' #if( $dataElement.type != 'int' ) style="display:none" #end>
 		<td><label for="numberValueType">$i18n.getString( "number_value_type" )</label></td>
 		<td>
-			<select id="numberType" name="numberType" >
+            <select id="numberType" name="numberType">
 				<option value="number" #if( $dataElement.numberType == 'number' ) selected="selected" #end style="min-width:246px;">$i18n.getString( "number" )</option>
 				<option value="int" #if( $dataElement.numberType == 'int' ) selected="selected" #end>$i18n.getString( "int" )</option>
 				<option value="positiveNumber" #if( $dataElement.numberType == 'positiveNumber' ) selected="selected" #end>$i18n.getString( "positiveNumber" )</option>
@@ -106,47 +103,47 @@
 	<tr id='textTypeTR' #if( $dataElement.type != 'string' ) style='display:none;' #end>
 		<td><label for="textValueType">$i18n.getString( "text_type" )</label></td>
 		<td>
-			<select id="textType" name="textType" style="min-width:246px;" >
+			<select id="textType" name="textType">
 				<option value="text" #if( $dataElement.textType == 'text' ) selected="selected" #end>$i18n.getString( "text" )</option>
 				<option value="longText" #if( $dataElement.textType == 'longText' ) selected="selected" #end >$i18n.getString( "long_text" )</option>
 			</select>
  		</td>
  	</tr>
 	<tr>
-		<td><label for="zeroIsSignificant ">$i18n.getString( "store_zero_data_values" )</label></td>
+		<td><label for="aggregationOperatorSelect" id="lblOperator">$i18n.getString( "aggregation_operator" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td>
-			<select id="zeroIsSignificant" name="zeroIsSignificant" style="min-width:246px; margin: 0;">				
-				<option value="false"#if(!$dataElement.zeroIsSignificant) selected="selected" #end >$i18n.getString( "no" )</option>
-				<option value="true" #if($dataElement.zeroIsSignificant) selected="selected" #end >$i18n.getString( "yes" )</option>
-			</select>
-			<script>
-				if( '$dataElement.type' == 'int' ){
-					enable('zeroIsSignificant');
-				}else{
-					disable('zeroIsSignificant');
-				}
-			</script>
- 		</td>
- 	</tr>
-	<tr>
-		<td><label for="aggregationOperator" id="lblOperator">$i18n.getString( "aggregation_operator" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td>
-			<select id="aggregationOperator" name="aggregationOperator" style="min-width:246px; margin: 0;">
+			<select id="aggregationOperatorSelect" name="aggregationOperator">
 				<option value="sum" #if( $dataElement.aggregationOperator == 'sum' ) selected="selected" #end>$i18n.getString( "sum" )</option>
 				<option value="average" #if( $dataElement.aggregationOperator == 'average' ) selected="selected" #end>$i18n.getString( "average" )</option>
 			</select>
 		</td>
 	</tr>
     <tr>
+   		<td><label for="zeroIsSignificant ">$i18n.getString( "store_zero_data_values" )</label></td>
+   		<td>
+   			<select id="zeroIsSignificant" name="zeroIsSignificant">
+   				<option value="false">$i18n.getString( "no" )</option>
+   				<option value="true" #if( $dataElement.zeroIsSignificant ) selected="selected" #end>$i18n.getString( "yes" )</option>
+   			</select>
+   			<script>
+   				if( '$dataElement.type' == 'int' ){
+   					enable('zeroIsSignificant');
+   				}else{
+   					disable('zeroIsSignificant');
+   				}
+   			</script>
+        </td>
+    </tr>
+    <tr>
         <td><label for="url">$i18n.getString( "url" )</label></td>
-        <td><input type="text" id="url" name="url" value="$!encoder.htmlEncode( $dataElement.url )" style="width:240px"/></td>
+        <td><input type="text" id="url" name="url" value="$!encoder.htmlEncode( $dataElement.url )"></td>
     </tr>
 	<tr #if( $calculatedDataElement ) style="display:none" #end >	
 		<td><label for="selectedCategoryComboId">$i18n.getString( "category_combo" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td>
-			<select id="selectedCategoryComboId" style="min-width:246px; margin: 0;">				
+			<select id="selectedCategoryComboId" #if( $dataElement.getDomainTypeNullSafe()=='patient') disabled #end>>				
 			#foreach( $dataElementCategoryCombo in $dataElementCategoryCombos )
-				<option value="$dataElementCategoryCombo.id" #if( $dataElementCategoryCombo.id == $dataElement.categoryCombo.id ) selected="selected" #end>$encoder.htmlEncode( $dataElementCategoryCombo.name )</option>
+				<option value="$dataElementCategoryCombo.id" #if( $dataElementCategoryCombo.id == $dataElement.categoryCombo.id ) selected="selected" #end>$encoder.htmlEncode( $dataElementCategoryCombo.displayName )</option>
 			#end
 			</select>
 			<input type="hidden" id="submitCategoryComboId" name="selectedCategoryComboId"/>
@@ -159,13 +156,24 @@
 	<tr>
 		<td>$i18n.getString( 'option_set' )</td>			
 		<td>
-			<select id="selectedOptionSetId" name="selectedOptionSetId" style="min-width:246px; margin: 0;;">
+			<select id="selectedOptionSetId" name="selectedOptionSetId">
 				<option value="0">[$i18n.getString('please_select')]</option>
 				#foreach ( $optionSet in $optionSets )
-				<option value="$optionSet.id" #if( $dataElement.optionSet.id == "$optionSet.id" ) selected #end >$optionSet.name</option>
+				<option value="$optionSet.id" #if( $dataElement.optionSet && $dataElement.optionSet.id == "$optionSet.id" ) selected #end>$encoder.htmlEncode( $optionSet.displayName )</option>
 				#end
 			</select>
 		</td>
+    </tr>
+    <tr>
+        <td>$i18n.getString( 'legend_set' )</td>            
+        <td>
+            <select id="selectedLegendSetId" name="selectedLegendSetId">
+                <option value="0">[$i18n.getString('please_select')]</option>
+                #foreach ( $legendSet in $legendSets )
+                <option value="$legendSet.id" #if( $dataElement.legendSet && $dataElement.legendSet.id == "$legendSet.id" ) selected #end>$encoder.htmlEncode( $legendSet.name )</option>
+                #end
+            </select>
+        </td>
     </tr>
 </table>
 
@@ -179,7 +187,7 @@
         <td>
             <select multiple size="4" id="organisationUnitLevels" style="width:450px" ondblclick="moveSelectedById( 'organisationUnitLevels', 'aggregationLevels' )">
             #foreach( $level in $organisationUnitLevels )
-                <option value="$level.level">$level.name</option>
+                <option value="$level.level">$level.displayName</option>
             #end
             </select>
         </td>
@@ -197,7 +205,7 @@
         <td>
             <select multiple size="4" id="aggregationLevels" name="aggregationLevels" style="width:450px" ondblclick="moveSelectedById( 'aggregationLevels', 'organisationUnitLevels' )">
             #foreach( $level in $aggregationLevels )
-            	<option value="$level.level">$level.name</option>
+            	<option value="$level.level">$level.displayName</option>
             #end
             </select>
         </td>
@@ -222,7 +230,7 @@
     <tr>
 		<td>$encoder.htmlEncode( $groupSet.name )</td>
 		<td>
-			<select id="dataElementGroups" name="dataElementGroups" style="min-width:246px; margin: 0;">
+			<select id="dataElementGroups" name="dataElementGroups">
 				<option value="-1">[ $i18n.getString( "select_group" ) ]</option>
 				#foreach ( $group in $groupSet.getSortedGroups() )
 				<option value="$group.id" #if( $group.members.contains( $dataElement ) ) selected="selected" #end>$group.name</option>

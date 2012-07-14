@@ -6,8 +6,9 @@
 				smtpUsername: getFieldValue( 'smtpUsername' ),
 				smtpPassword: getFieldValue( 'smtpPassword' )
 			}, function( json ) {
-				if ( json.response == "success" )
+				if ( json.response == "success" ) {
 					setHeaderDelayMessage( json.message );
+				}
 			});
 		}, {
 			"rules" : getValidationRules( "emailSettings" )
@@ -17,23 +18,22 @@
 	});
 </script>
 
-
 <h3>$i18n.getString( "smtp_settings" ) #openHelp( "systemEmailSettings" )</h3>
 
 <form id="emailSettingForm">
 
-<h4>$i18n.getString( "host_name" )</h4>
+<div class="settingLabel">$i18n.getString( "host_name" )</div>
 
-<p><input type="text" id="smtpHostName" name="smtpHostName" style="width:20em" value="$!smtpHostName"/></p>
+<div class="setting"><input type="text" id="smtpHostName" name="smtpHostName" style="width:20em" value="$!smtpHostName"/></div>
 
-<h4>$i18n.getString( "username" )</h4>
+<div class="settingLabel">$i18n.getString( "username" )</div>
 
-<p><input type="text" id="smtpUsername" name="smtpUsername" value="$!smtpUsername" style="width:20em" autocomplete="off"/></p>
+<div class="setting"><input type="text" id="smtpUsername" name="smtpUsername" value="$!smtpUsername" style="width:20em" autocomplete="off"/></div>
 
-<h4>$i18n.getString( "password" )</h4>
+<div class="settingLabel">$i18n.getString( "password" )</div>
 
-<p><input type="password" id="smtpPassword" name="smtpPassword" value="$!smtpPassword" style="width:20em" autocomplete="off"/></p>
+<div class="setting"><input type="password" id="smtpPassword" name="smtpPassword" value="$!smtpPassword" style="width:20em" autocomplete="off"/></div>
 
-<p><input type="submit" value="$i18n.getString( 'save' )" style="width:10em"/></p>
+<div class="setting"><input type="submit" value="$i18n.getString( 'save' )" style="width:10em"/></div>
 
 </form>

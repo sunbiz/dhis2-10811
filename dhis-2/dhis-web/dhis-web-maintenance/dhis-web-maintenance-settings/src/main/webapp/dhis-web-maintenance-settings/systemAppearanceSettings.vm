@@ -2,13 +2,16 @@
 	jQuery(document).ready(function() {
 		jQuery("input[type=button]").click(function() {
 			jQuery.postUTF8( 'setSystemAppearanceSettings.action', {
-				applicationTitle: getFieldValue( 'applicationTitle' ),
-				currentStyle: getFieldValue( 'currentStyle' ),
+                applicationTitle: getFieldValue( 'applicationTitle' ),
+                applicationIntro: getFieldValue( 'applicationIntro' ),
+                applicationNotification: getFieldValue( 'applicationNotification' ),
+                currentStyle: getFieldValue( 'currentStyle' ),
 				flag: getFieldValue( 'flag' ),
 				startModule: getFieldValue( 'startModule' )
 			}, function( json ) {
-				if ( json.response == "success" )
+				if ( json.response == "success" ) {
 					setHeaderDelayMessage( json.message );
+				}
 			});
 		});
 	});
@@ -16,38 +19,48 @@
 
 <h3>$i18n.getString( "appearance_settings" ) #openHelp( "systemAppearanceSettings" )</h3>
 
-<h4>$i18n.getString( "application_title" )</h4>
+<div class="settingLabel">$i18n.getString( "application_title" )</div>
 
-<p><input type="text" id="applicationTitle" name="applicationTitle" style="width:30em" maxlength="40" value="$!applicationTitle"/></p>
+<div class="setting"><input type="text" id="applicationTitle" name="applicationTitle" maxlength="40" value="$!{applicationTitle}"/></div>
 
-<h4>$i18n.getString( "style" )</h4>
+<div class="settingLabel">$i18n.getString( "application_introduction" )</div>
 
-<select id='currentStyle' name='currentStyle' style="width:30em">
+<div class="setting"><input type="text" id="applicationIntro" name="applicationIntro" maxlength="80" value="$!{keyApplicationIntro}"/></div>
+
+<div class="settingLabel">$i18n.getString( "application_notification" )</div>
+
+<div class="setting"><textarea id="applicationNotification" name="applicationNotification">$!{keyApplicationNotification}</textarea></div>
+
+<div class="settingLabel">$i18n.getString( "style" )</div>
+
+<div class="setting">
+<select id="currentStyle" name="currentStyle">
 	#foreach( $style in $styles.entrySet() )
 	<option value="$style.value" #if( $style.value == $currentStyle )selected="selected"#end>$i18n.getString( $style.key )</option>
 	#end
 </select>
+</div>
 
-<h4>$i18n.getString( "flag" )</h4>
+<div class="settingLabel">$i18n.getString( "flag" )</div>
 
-<p>
-<select id="flag" name="flag" style="width:30em">
+<div class="setting">
+<select id="flag" name="flag">
 	<option value="NO_FLAG">$i18n.getString( "no_flag" )</option>
 	#foreach ( $flag in $flags )
 	<option value="$flag" #if( $flag == $keyFlag )selected="selected"#end>$i18n.getString( $flag )</option>
     #end
 </select>
-</p>
+</div>
 
-<h4>$i18n.getString( "start_page" )</h4>
+<div class="settingLabel">$i18n.getString( "start_page" )</div>
 
-<p>
-<select id="startModule" name="startModule" style="width:30em">
+<div class="setting">
+<select id="startModule" name="startModule">
     <option value="NO_START_PAGE">$i18n.getString( "system_overview" )</option>
 	#foreach ( $module in $modules )
 	<option value="$module.name" #if( $module.name == $startModule )selected="selected"#end>$i18n.getString( "$module.name" )</option>
 	#end
 </select>
-</p>
+</div>
 
-<p><input type="button" value="$i18n.getString( 'save' )" style="width:10em"/></p>
+<div class="setting"><input type="button" value="$i18n.getString( 'save' )" style="width:10em"/></div>

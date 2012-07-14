@@ -27,12 +27,12 @@ package org.hisp.dhis.i18n;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.hisp.dhis.i18n.locale.LocaleManager;
 import org.hisp.dhis.i18n.resourcebundle.ResourceBundleManager;
 import org.hisp.dhis.i18n.resourcebundle.ResourceBundleManagerException;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @author Pham Thi Thuy
@@ -67,7 +67,20 @@ public class DefaultI18nManager
     public I18n getI18n( Class<?> clazz )
         throws I18nManagerException
     {
-        return new I18n( getGlobalResourceBundle(), getSpecificResourceBundle( clazz ) );
+        return new I18n( getGlobalResourceBundle(), getSpecificResourceBundle( clazz.getName() ) );
+    }
+
+    /**
+     * Used to send a specific clazzName (path) to the resource bundler.
+     *
+     * @param clazzName Path to use for getting i18n prop file
+     * @return I18n object
+     * @throws I18nManagerException
+     */
+    @Override
+    public I18n getI18n( String clazzName ) throws I18nManagerException
+    {
+        return new I18n( getGlobalResourceBundle(), getSpecificResourceBundle( clazzName ) );
     }
 
     public I18nFormat getI18nFormat()
@@ -95,6 +108,11 @@ public class DefaultI18nManager
         {
             throw new I18nManagerException( "Failed to get global resource bundle", e );
         }
+    }
+
+    private ResourceBundle getSpecificResourceBundle( String clazzName )
+    {
+        return resourceBundleManager.getSpecificResourceBundle( clazzName, getCurrentLocale() );
     }
 
     private ResourceBundle getSpecificResourceBundle( Class<?> clazz )

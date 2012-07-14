@@ -17,7 +17,7 @@
 	</tr>    
 </table>
 
-<h4>$i18n.getString( "records_for" ) $encoder.htmlEncode( $programStageInstance.programStage.name ) </h4>
+<h4>$i18n.getString( "records_for" ) $encoder.htmlEncode( $programStageInstance.programStage.displayName ) </h4>
 
 <table class="mainPageTable">
 	<col id="noCol">

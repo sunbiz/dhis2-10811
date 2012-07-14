@@ -2,7 +2,7 @@
 
 <h3>$encoder.htmlEncode( $i18n.getString( "update_sql_view" ) )</h3>
 
-<form id="updateSqlViewForm" action="updateSqlViewInstance.action" method="post" >
+<form id="updateSqlViewForm" action="updateSqlViewInstance.action" method="post" class="inputForm">
 
 	<div>
 		<input type="hidden" id="id" name="id" value="$!sqlViewObject.id" />
@@ -16,13 +16,13 @@
 		<tr>
 			<td><label for="name">$encoder.htmlEncode( $i18n.getString( "name" ) ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 			<td>
-				<input type="text" id="name" name="name" value="$!encoder.htmlEncode( $!sqlViewObject.name )" style="width:20em" disabled="disabled" />
+				<input type="text" id="name" name="name" value="$!encoder.htmlEncode( $!sqlViewObject.name )" disabled="disabled" />
 			</td>
 		</tr>
 		<tr>
 			<td><label for="description">$encoder.htmlEncode( $i18n.getString( "description" ) ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 			<td>
-				<textarea id="description" name="description" style="width:20em; height:6em">$!encoder.htmlEncode( $!sqlViewObject.description )</textarea>
+				<textarea id="description" name="description">$!encoder.htmlEncode( $!sqlViewObject.description )</textarea>
 			</td>
 		</tr>
 		<tr>

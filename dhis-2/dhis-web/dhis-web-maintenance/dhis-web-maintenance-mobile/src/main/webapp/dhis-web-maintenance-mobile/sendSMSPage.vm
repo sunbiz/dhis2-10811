@@ -4,11 +4,24 @@
 		
 		selectionTreeSelection.setListenerFunction( selectedOrganisationUnitSendSMS );
 
-		toggleSMSGUI( "phone" );
+		var target = '${sendTo}';
+		
+		jQuery( "#sendTarget > option" ).each( function( i, item )
+		{
+			if ( item.value == target )
+			{
+			
+				item.selected = true;
+			}
+		} );
+		
+		toggleSMSGUI( target );
 	});
 	
 	var i18n_no_recipient = '$encoder.jsEscape( $i18n.getString( "no_recipient" ) , "'")';
+	var i18n_person_list_empty = '$encoder.jsEscape( $i18n.getString( "person_list_empty" ) , "'")';
 	var i18n_please_verify_phone = '$encoder.jsEscape( $i18n.getString( "please_verify_phone" ) , "'")';
+	var i18n_please_select_user_group = '$encoder.jsEscape( $i18n.getString( "please_select_user_group" ) , "'")';
 	var i18n_please_select_orgunit = '$encoder.jsEscape( $i18n.getString( "please_select_orgunit" ) , "'")';
 </script>
 
@@ -26,15 +39,13 @@
 #if ( $!gatewayMap && $!gatewayMap.size() > 0 )
 <form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action">
 	<table id="detailsList">
-	    <col width="300px"/>
-		<col width="80px"/>
 		<tbody>
-			<tr>
+			<!--tr>
 				<th colspan="2">$i18n.getString( "gateway_type" )</th>
 			</tr>
 			<tr>
-				<td><label for="type">$i18n.getString( "type" ):</label></td>
-				<td>
+				<td width="328"><label for="type">$i18n.getString( "type" ):</label></td>
+				<td width="100">
 				#set( $keys = $!gatewayMap.keySet() )
 					<select id="gatewayId" name="gatewayId" style="width: 100%;">
 						#foreach( $key in $!keys )
@@ -42,41 +53,46 @@
 						#end
 					</select>
 				</td>
-			</tr>
+			</tr-->
 			
 			<tr>
-				<td>$i18n.getString( "send_sms_to_target" )</td>
-				<td>
+				<td>$i18n.getString( "send_sms_to_target" ):
 					<select id="sendTarget" name="sendTarget" onchange="javascript:toggleSMSGUI( this.value );">
 						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
+						<option value="userGroup">$i18n.getString( "user_group" )</option>
 						<option value="user">$i18n.getString( "assigned_user_number" )</option>
-						<option value="unit">$i18n.getString( "selected_unit_number" )</option>
+						<option value="unit">$i18n.getString( "stakeholder_number" )</option>
 						<option value="patient">$i18n.getString( "patient_number" )</option>
 					</select>
 				</td>
 			</tr>
+			<tr id="trUserGroup" style="display:none">
+				<td>$i18n.getString( "user_group" ):
+				<select id="userGroup" name="userGroup">
+				#foreach( $group in $userGroups )
+					<option value="$group.id">$!encoder.htmlEncode( $group.name )</option>
+				#end
+				</select></td>
+			</tr>
+			<tr id="trRawPhone">
+				<td>$i18n.getString( "phone_number" ): <input type="text" id="recipient" name="recipient" style="width:53%"/></td>
+			</tr>
 			
-			<tr><th colspan="2">$i18n.getString( "message" )</th></tr>
-			<tr><td colspan="2"><textarea id="smsMessage" name="smsMessage" cols="95" rows="5" class="{validate:{required:true}}"></textarea></td></tr>
+			<tr><th>$i18n.getString( "message" )</th></tr>
+			<tr><td><textarea id="smsMessage" name="smsMessage" cols="86" rows="5" class="{validate:{required:true}}"></textarea></td></tr>
 		</tbody>
 	</table>
 
 	<table id="detailsList">
 		<col width="300px"/>
-		<col width="80px"/>
-		<tbody id="phoneType">
-			<tr><th colspan="2">$i18n.getString( "phone_number" ):</th></tr>
-			<tr><td colspan="2"><input type="text" id="recipient" name="recipient" style="width:520px" /></td></tr>
-		</tbody>
-	
 		<tbody id="orgunitType" style="display:none">
 			<tr><td>#organisationUnitSelectionTree( true, true, false )</td></tr>
 		</tbody>
 		
 		<tbody>
 			<tr>
-				<td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )"/></td>
-				<td><input type="button" name="viewSentSms" value="View Sent Sms" onclick="window.location='showSentPage.action'"/></td>				
+				<td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )"/>
+				<input type="button" name="viewSentSms" value="View Sent Sms" onclick="window.location='showSentPage.action'"/></td>				
 			</tr>
 		</tbody>
 	</table>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <!-- Maintenance -->
 
@@ -11,9 +11,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="maintenanceService" ref="org.hisp.dhis.maintenance.MaintenanceService" />
     <property name="completenessService" ref="compulsoryDataCompletenessService" />
     <property name="aggregatedDataValueService" ref="org.hisp.dhis.aggregation.AggregatedDataValueService" />
-    <property name="aggregatedOrgUnitDataValueService"
-        ref="org.hisp.dhis.aggregation.AggregatedOrgUnitDataValueService" />
+    <property name="aggregatedOrgUnitDataValueService" ref="org.hisp.dhis.aggregation.AggregatedOrgUnitDataValueService" />
+	<property name="dataMartManager" ref="org.hisp.dhis.datamart.DataMartManager" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+    <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
   </bean>
 
   <!-- Resource table -->
@@ -22,7 +23,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
       class="org.hisp.dhis.dataadmin.action.resourcetable.GenerateResourceTableAction"
       scope="prototype">
     <property name="resourceTableService" ref="org.hisp.dhis.resourcetable.ResourceTableService" />
-    <property name="sqlViewService" ref="org.hisp.dhis.sqlview.SqlViewService" />
+    <property name="sqlViewService" ref="org.hisp.dhis.sqlview.SqlViewService" />    
+    <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
   </bean>
 
   <!-- Cache -->
@@ -149,34 +151,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
   <bean id="org.hisp.dhis.dataadmin.action.minmaxvalidation.GenerateMinMaxValuesAction"
       class="org.hisp.dhis.dataadmin.action.minmaxvalidation.GenerateMinMaxValuesAction">
-    <property name="selectionTreeManager">
-      <ref bean="org.hisp.dhis.oust.manager.SelectionTreeManager" />
-    </property>
-    <property name="dataSetService">
-      <ref bean="org.hisp.dhis.dataset.DataSetService" />
-    </property>
-    <property name="minMaxValuesGenerationService"
-        ref="org.hisp.dhis.minmax.validation.MinMaxValuesGenerationService" />
+    <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
+    <property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
+    <property name="selectionTreeManager" ref="org.hisp.dhis.oust.manager.SelectionTreeManager" />
+	<property name="dataAnalysisService" ref="org.hisp.dhis.dataanalysis.MinMaxOutlierAnalysisService" />
     <property name="minMaxDataElementService" ref="org.hisp.dhis.minmax.MinMaxDataElementService" />
-    <property name="systemSettingManager">
-      <ref bean="org.hisp.dhis.setting.SystemSettingManager" />
-    </property>
-  </bean>
-
-  <bean id="org.hisp.dhis.dataadmin.action.minmaxvalidation.RemoveMinMaxValueAction"
-      class="org.hisp.dhis.dataadmin.action.minmaxvalidation.RemoveMinMaxValueAction">
-    <property name="selectionTreeManager">
-      <ref bean="org.hisp.dhis.oust.manager.SelectionTreeManager" />
-    </property>
-    <property name="dataSetService">
-      <ref bean="org.hisp.dhis.dataset.DataSetService" />
-    </property>
-    <property name="minMaxValuesGenerationService"
-        ref="org.hisp.dhis.minmax.validation.MinMaxValuesGenerationService" />
-    <property name="minMaxDataElementService" ref="org.hisp.dhis.minmax.MinMaxDataElementService" />
-    <property name="systemSettingManager">
-      <ref bean="org.hisp.dhis.setting.SystemSettingManager" />
-    </property>
+	<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
   </bean>
 
   <!-- Sql View -->

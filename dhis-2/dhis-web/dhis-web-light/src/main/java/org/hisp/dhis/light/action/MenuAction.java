@@ -36,6 +36,9 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
+import org.hisp.dhis.util.SessionUtils;
 
 public class MenuAction
     implements Action
@@ -70,6 +73,13 @@ public class MenuAction
     public void setPeriodService( PeriodService periodService )
     {
         this.periodService = periodService;
+    }
+    
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
     }
 
     private I18nFormat format;
@@ -143,6 +153,13 @@ public class MenuAction
     {
         return complete;
     }
+    
+    private User user;
+    
+    public User getUser()
+    {
+        return user;
+    }
 
     // -------------------------------------------------------------------------
     // Action Implementation
@@ -151,6 +168,10 @@ public class MenuAction
     @Override
     public String execute()
     {
+        SessionUtils.removeSessionVar( "prevDataValues" );
+        
+        this.user = currentUserService.getCurrentUser();       
+        
         if ( complete )
         {
             organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );

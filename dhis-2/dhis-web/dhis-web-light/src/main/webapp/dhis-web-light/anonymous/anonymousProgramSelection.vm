@@ -1,5 +1,9 @@
-
 <h2>$i18n.getString("anonymous_menu")</h2>
+	#if( $validated)
+		<div class="header-box">
+			<h3 style="text-align: left;">$i18n.getString("successfully_saved")</h3>
+		</div>	
+	#end
 <p>
 <ul>
 #foreach( $program in $programs)

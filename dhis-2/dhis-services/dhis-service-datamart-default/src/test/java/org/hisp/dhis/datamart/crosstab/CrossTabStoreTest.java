@@ -28,10 +28,10 @@ public class CrossTabStoreTest
         crossTabStore = (CrossTabStore) getBean( CrossTabStore.ID );
         
         operands = new ArrayList<DataElementOperand>();
-        operands.add( new DataElementOperand( 1, 1 ) );
-        operands.add( new DataElementOperand( 1, 2 ) );
-        operands.add( new DataElementOperand( 2, 1 ) );
-        operands.add( new DataElementOperand( 2, 2 ) );        
+        operands.add( new DataElementOperand( "a", "a" ) );
+        operands.add( new DataElementOperand( "a", "b" ) );
+        operands.add( new DataElementOperand( "b", "a" ) );
+        operands.add( new DataElementOperand( "b", "b" ) );        
     }
 
     @Override

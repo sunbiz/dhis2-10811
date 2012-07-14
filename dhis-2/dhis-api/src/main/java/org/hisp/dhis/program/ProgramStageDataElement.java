@@ -26,13 +26,12 @@
  */
 package org.hisp.dhis.program;
 
-import java.io.Serializable;
-
 import org.hisp.dhis.dataelement.DataElement;
+
+import java.io.Serializable;
 
 /**
  * @author Viet Nguyen
- * 
  * @version $Id$
  */
 public class ProgramStageDataElement
@@ -62,6 +61,8 @@ public class ProgramStageDataElement
     private Boolean allowProvidedElsewhere;
 
     private Integer sortOrder;
+
+    private Boolean displayInReports;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -135,6 +136,16 @@ public class ProgramStageDataElement
     public void setSortOrder( Integer sortOrder )
     {
         this.sortOrder = sortOrder;
+    }
+
+    public Boolean getDisplayInReports()
+    {
+        return displayInReports;
+    }
+
+    public void setDisplayInReports( Boolean displayInReports )
+    {
+        this.displayInReports = displayInReports;
     }
 
     // -------------------------------------------------------------------------

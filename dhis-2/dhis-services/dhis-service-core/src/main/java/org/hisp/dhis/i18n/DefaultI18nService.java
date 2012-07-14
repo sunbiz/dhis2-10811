@@ -46,6 +46,7 @@ import java.util.Map;
 
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.NameableObject;
+import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.system.util.LocaleUtils;
 import org.hisp.dhis.translation.Translation;
 import org.hisp.dhis.translation.TranslationService;
@@ -86,20 +87,20 @@ public class DefaultI18nService
         for ( String string : localeStrings )
         {
             Locale locale = LocaleUtils.getLocale( string );
-            
+
             if ( locale != null )
             {
                 locales.add( locale );
             }
         }
-        
+
         Collections.sort( locales, new Comparator<Locale>()
+        {
+            public int compare( Locale l1, Locale l2 )
             {
-                public int compare( Locale l1, Locale l2 )
-                {
-                    return l1.getDisplayName().compareTo( l2.getDisplayName() );
-                }
-            } );
+                return l1.getDisplayName().compareTo( l2.getDisplayName() );
+            }
+        } );
     }
 
     // -------------------------------------------------------------------------
@@ -136,18 +137,18 @@ public class DefaultI18nService
         {
             return;
         }
-        
+
         List<String> properties = getObjectPropertyNames( object );
-        
+
         Collection<Translation> translations = translationService.getTranslations( getClassName( object ),
             getId( object ), locale );
-        
+
         Map<String, String> translationMap = convertTranslations( translations );
-        
+
         for ( String property : properties )
         {
             String value = translationMap.get( property );
-            
+
             if ( value != null && !value.isEmpty() )
             {
                 setProperty( object, "display", property, value );
@@ -161,21 +162,21 @@ public class DefaultI18nService
         {
             return;
         }
-        
+
         Object peek = objects.iterator().next();
 
         List<String> properties = getObjectPropertyNames( peek );
-        
+
         Collection<Translation> translations = translationService.getTranslations( getClassName( peek ), locale );
 
         for ( Object object : objects )
         {
             Map<String, String> translationMap = getTranslationsForObject( translations, getId( object ) );
-            
+
             for ( String property : properties )
             {
                 String value = translationMap.get( property );
-                
+
                 if ( value != null && !value.isEmpty() )
                 {
                     setProperty( object, "display", property, value );
@@ -183,31 +184,37 @@ public class DefaultI18nService
             }
         }
     }
-    
+
     public Map<String, String> getObjectPropertyValues( Object object )
     {
         List<String> properties = getObjectPropertyNames( object );
-        
+
         Map<String, String> translations = new HashMap<String, String>();
-        
+
         for ( String property : properties )
         {
             translations.put( property, getProperty( object, property ) );
         }
-        
+
         return translations;
     }
 
     public List<String> getObjectPropertyNames( Object object )
     {
-        if ( !( object instanceof IdentifiableObject ) )
+        if ( !(object instanceof IdentifiableObject) )
         {
             throw new IllegalArgumentException( "I18n object must be identifiable: " + object );
         }
         
-        return ( object instanceof NameableObject ) ? Arrays.asList( NameableObject.I18N_PROPERTIES ) : Arrays.asList( IdentifiableObject.I18N_PROPERTIES );        
+        if ( object instanceof DataElement )
+        {
+            return Arrays.asList( DataElement.I18N_PROPERTIES );
+        }
+
+        return (object instanceof NameableObject) ? Arrays.asList( NameableObject.I18N_PROPERTIES ) : Arrays
+            .asList( IdentifiableObject.I18N_PROPERTIES );
     }
-    
+
     // -------------------------------------------------------------------------
     // Object
     // -------------------------------------------------------------------------
@@ -232,9 +239,9 @@ public class DefaultI18nService
             {
                 String key = translationEntry.getKey();
                 String value = translationEntry.getValue();
-    
+
                 Translation translation = translationService.getTranslation( className, id, locale, key );
-    
+
                 if ( value != null && !value.trim().isEmpty() )
                 {
                     if ( translation != null )
@@ -260,33 +267,33 @@ public class DefaultI18nService
     {
         return getTranslations( className, id, getCurrentLocale() );
     }
-    
+
     public Map<String, String> getTranslations( String className, int id, Locale locale )
     {
         if ( locale != null && className != null )
         {
             return convertTranslations( translationService.getTranslations( className, id, locale ) );
         }
-        
+
         return new HashMap<String, String>();
     }
 
     // -------------------------------------------------------------------------
     // Locale
     // -------------------------------------------------------------------------
-    
+
     public Locale getCurrentLocale()
     {
         return (Locale) userSettingService.getUserSetting( UserSettingService.KEY_DB_LOCALE );
     }
-    
+
     public boolean currentLocaleIsBase()
     {
         return getCurrentLocale() == null;
     }
-    
+
     public List<Locale> getAvailableLocales()
-    {        
+    {
         return locales;
     }
 

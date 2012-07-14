@@ -214,7 +214,7 @@ public class ImportReport
         return this.getType().equalsIgnoreCase( TYPE.CATEGORY );
     }
 
-    public boolean isOrganisationUnitGroupListing()
+    public boolean isOrgUnitGroupListing()
     {
         return this.getType().equalsIgnoreCase( TYPE.ORGANIZATION_GROUP_LISTING );
     }

@@ -34,6 +34,8 @@ import java.util.List;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.period.PeriodType;
 
 import com.opensymphony.xwork2.Action;
@@ -56,6 +58,13 @@ public class GetDataCompletenessOptionsAction
         this.dataSetService = dataSetService;
     }
     
+    private OrganisationUnitGroupService organisationUnitGroupService;
+
+    public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
+    {
+        this.organisationUnitGroupService = organisationUnitGroupService;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -66,14 +75,21 @@ public class GetDataCompletenessOptionsAction
     {
         return dataSets;
     }
-    
+
+    private List<OrganisationUnitGroupSet> groupSets = new ArrayList<OrganisationUnitGroupSet>();
+
+    public List<OrganisationUnitGroupSet> getGroupSets()
+    {
+        return groupSets;
+    }
+
     private List<PeriodType> periodTypes;
 
     public List<PeriodType> getPeriodTypes()
     {
         return periodTypes;
     }
-
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -81,8 +97,10 @@ public class GetDataCompletenessOptionsAction
     public String execute()
     {
         dataSets = new ArrayList<DataSet>( dataSetService.getAllDataSets() );
+        groupSets = new ArrayList<OrganisationUnitGroupSet>( organisationUnitGroupService.getCompulsoryOrganisationUnitGroupSets() );
         
         Collections.sort( dataSets, IdentifiableObjectNameComparator.INSTANCE );
+        Collections.sort( groupSets, IdentifiableObjectNameComparator.INSTANCE );
         
         periodTypes = PeriodType.getAvailablePeriodTypes();
         

@@ -1,3 +1,4 @@
+#if ( $!headerIds )
 <style type="text/css">
 .pivot td
 {
@@ -6,13 +7,13 @@
 }
 </style>
 
-#set( $headers = $grid.getVisibleHeaders() )
+#set( $headers = $!grid.getVisibleHeaders() )
 #set( $i18nAssigned = $i18n.getString( "assigned" ) )
 #set( $i18nUnassigned = $i18n.getString( "unassigned" ) )
 
-<h3>$!encoder.htmlEncode( $grid.title )</h3>
+<h3>$!encoder.htmlEncode( $!grid.title )</h3>
 
-<h5>$!encoder.htmlEncode( $grid.subtitle )</h5>
+<h5>$!encoder.htmlEncode( $!grid.subtitle )</h5>
 
 <table class="pivot">
 	<thead>
@@ -52,13 +53,14 @@
 
 <script type="text/javascript">	
 	
-	if( arrayIds.length < $headerIds.size() )
+	if( arrayIds.length < '$!headerIds.size()' )
 	{	
 		arrayIds.length = 0;
 	
-		#foreach( $id in $headerIds )
+		#foreach( $id in $!headerIds )
 			arrayIds.push( '$encoder.jsEscape( $id, "'" )' );	
 		#end
 	}
 	
 </script>
+#end

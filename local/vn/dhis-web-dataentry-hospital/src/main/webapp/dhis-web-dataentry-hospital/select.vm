@@ -1,3 +1,4 @@
+<!--script type="text/javascript" src="javascript/jquery.fixedheadertable.js"></script-->
 <script type="text/javascript">
 	jQuery(document).ready( function() {
 		jQuery.get( '../dhis-web-spreadsheet-reporting/getAttributeValueGroupOrders.action',
@@ -26,65 +27,35 @@
     <input type="button" value="$i18n.getString( 'run_validation' )" onclick="validate()" id="validationButton" style="width:150px;" disabled="disabled"/>
 </div>
 
-<div id="showButtonDiv" style="display:none">
-	<input type="button" onclick="showExportDiv();" value="$i18n.getString( 'show_export_params' )"/>
-</div>
-
 <br/>
 
-<div class="inputCriteria" id='inputCriteria' style="width:640px;height:250px;">
+<div class="inputCriteria" id='inputCriteria' style="width:504px;height:80px;">
 <input type='hidden' id='dataSetId' name='dataSetId'/>
 <table>
 	<tr>
-		<td><label class='bold' for="selectedOrganisationUnit">$i18n.getString( "organisation_unit" )</label>
-	</tr>
-	
-	<tr>
-		<td>
-			<span id="selectedOrganisationUnit">[ $i18n.getString( 'select_from_tree' ) ]</span></td>
-		</td>
-	</tr>
-	
-	<tr>
-		<td><label class='bold' for="selectedDataSetId">$i18n.getString( "data_set" )</label></td>
-		<td><label class='bold' for="selectedPeriodId">$i18n.getString( "period" )</label></td>
-		<td id='departmentTitleDiv' style='display:none;'><label class='bold' for="selectedPeriodId">$i18n.getString( "department" )</label></td>
-	</tr>
-	
-	<tr>
-		<td><select id="selectedDataSetId" name="selectedDataSetId" size='10' style="width:371px" onchange="dataSetSelected()" disabled="disabled"></select>
-			<span id="loaderSpan" style="display:none"><img src='../images/ajax-loader-bar.gif'/></span>
-		</td>
-		<td><select id="selectedPeriodId" name="selectedPeriodId" size='9' style="width:230px" disabled="disabled"></select><br/>
-			<input type="button" id="prevButton" style="width:75px" value="$i18n.getString( 'prev_year' )" title="$i18n.getString('earlier_periods')" onclick="previousPeriodsSelected()" disabled="disabled"/>
-			<input type="button" id="nextButton" style="width:75px" value="$i18n.getString( 'next_year' )" title="$i18n.getString('later_periods')" onclick="nextPeriodsSelected()" disabled="disabled"/>
-		</td>
-		<td id='departmentDiv' style='display:none;'>
-			<select id='subDataSetId' name='subDataSetId' size="10" onchange='javascript:loadDepartmentFormSelected();'/></select>
-		</td>
-	</tr>	
-	
-	<tr id='attributeDiv' style='display:none;'>
-		<td>
-			<br/><label class='bold' for="chapterId">$i18n.getString( "chapter" )</label>
-			<select id='chapterId' name='chapterId' style="width:330px" onchange="loadAttributeValuesByChapter( this.value );"></select><br/>
-			<label class='bold' for="attributeId">$i18n.getString( "attribute" )</label>
-			<select id='value' name='value' style='display:none;' ></select>
-			<input type="text" id="valueInput" style="width:330px" name="valueInput" />
-			<button type='button' id='valueButton' class='small-button' >&nbsp;</button>
-		</td>
-		<td><br/><br/>
-			<input type="button" id="showReportButton" value="$i18n.getString( 'show_icd_report' )"
-				style="display:none" onclick="showICDReport();"/>
-		</td>
+		<td><label class='bold' for="selectedOrganisationUnit">$i18n.getString( "organisation_unit" )</label></td>
+		<td><span id="selectedOrganisationUnit">[ $i18n.getString( 'select_from_tree' ) ]</span></td>
 	</tr>
 
 	<tr>
-		<td colspan="3" align="right">
-			<a title="$i18n.getString( 'hide_params' )" href="javascript:hideExportDiv();">
-			<img width="16" height="16" title="$i18n.getString( 'hide_export_params' )" src="../images/up_left.png"/></a>
+		<td><label class='bold' for="selectedDataSetId">$i18n.getString( "data_set" )</label></td>
+		<td><select id="selectedDataSetId" name="selectedDataSetId" style="width:371px" onchange="dataSetSelected()" disabled="disabled"></select>
+			<span id="loaderSpan" style="display:none"><img src='../images/ajax-loader-bar.gif'/></span>
 		</td>
-    </tr>
+	</tr>
+	
+	<tr>
+		<td><label class='bold' for="selectedPeriodId">$i18n.getString( "period" )</label></td>
+		<td><select id="selectedPeriodId" name="selectedPeriodId" style="width:215px" disabled="disabled"></select>
+			<input type="button" id="prevButton" style="width:75px" value="$i18n.getString( 'prev_year' )" title="$i18n.getString('earlier_periods')" onclick="previousPeriodsSelected()" disabled="disabled"/>
+			<input type="button" id="nextButton" style="width:75px" value="$i18n.getString( 'next_year' )" title="$i18n.getString('later_periods')" onclick="nextPeriodsSelected()" disabled="disabled"/>
+		</td>
+	</tr>	
+	
+	<tr id='chapterTR' style='display:none;'>
+		<td><label class='bold' for="chapterId">$i18n.getString( "chapter" )</label></td>
+		<td><select id='chapterId' name='chapterId' style="width:370px" onchange="loadFormByChapter( this.value );"></select></td>
+	</tr>
 
 </table>
 </div>
@@ -144,8 +115,6 @@
 
 <script type="text/javascript">
 
-leftBar.hideAnimated();
-
 var openICD = true;
 
 var i18n_select_data_set = '$encoder.jsEscape( $i18n.getString( "select_data_set" ) , "'")';
@@ -182,6 +151,7 @@ var i18n_sync_success = '$encoder.jsEscape( $i18n.getString( "sync_success" ) , 
 var i18n_sync_failed = '$encoder.jsEscape( $i18n.getString( "sync_failed" ) , "'")';
 var i18n_uploading_data_notification = '$encoder.jsEscape( $i18n.getString( "uploading_data_notification" ) , "'")';
 var i18n_ajax_login_failed = '$encoder.jsEscape( $i18n.getString( "ajax_login_failed" ) , "'")';
+var i18n_no_period_selected = '$encoder.jsEscape( $i18n.getString( "no_period_selected" ) , "'")';
 var i18n_no_dataelement_selected = '$encoder.jsEscape( $i18n.getString( "no_dataelement_selected" ) , "'")';
 var i18n_dataset_is_locked = '$encoder.jsEscape( $i18n.getString( "dataset_is_locked" ) , "'")';
 var i18n_register_complete_failed_dataset_is_locked = '$encoder.jsEscape( $i18n.getString( "register_complete_failed_dataset_is_locked" ) , "'")';
@@ -190,7 +160,10 @@ var i18n_select_attribute = "[ " + '$encoder.jsEscape( $i18n.getString( "select_
 var i18n_show_all_items = '$encoder.jsEscape( $i18n.getString( "show_all_items" ) , "'")';
 var i18n_select_department = "[ " + '$encoder.jsEscape( $i18n.getString( "please_select_department" ) , "'")' + " ]";
 var i18n_please_select_unit = "[ " + '$encoder.jsEscape( $i18n.getString( "please_select_organisation_unit" ) , "'")' + " ]";
+var i18n_please_select_data_set = "[ " + '$encoder.jsEscape( $i18n.getString( "please_select_data_set" ) , "'")' + " ]";
+var i18n_please_select_chapter = "[ " + '$encoder.jsEscape( $i18n.getString( "please_select_chapter" ) , "'")' + " ]";
 var i18n_select_chapter = "[ " + '$encoder.jsEscape( $i18n.getString( "select_chapter" ) , "'")' + " ]";
 var i18n_explore_icd_report_result = '$encoder.jsEscape( $i18n.getString( "explore_icd_report_result" ) , "'")';
 var i18n_collpase_icd_report_result = '$encoder.jsEscape( $i18n.getString( "collapse_icd_report_result" ) , "'")';
+var i18n_filter_disease_or_icd_code = '$encoder.jsEscape( $i18n.getString( "filter_disease_or_icd_code" ) , "'")';
 </script>

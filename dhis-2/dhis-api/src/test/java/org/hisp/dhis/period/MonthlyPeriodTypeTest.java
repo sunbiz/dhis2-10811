@@ -27,11 +27,9 @@ package org.hisp.dhis.period;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.junit.Assert.assertEquals;
-
+import java.util.Calendar;
 import java.util.List;
-
-import org.hisp.dhis.period.Cal;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -78,6 +76,25 @@ public class MonthlyPeriodTypeTest
         assertEquals( endCal.time(), period.getEndDate() );
     }
 
+    @Test
+    public void testCreatePeriodFromISOString()
+    {
+        String isoPeriod = "201001";
+        String alternativeIsoPeriod = "201001";
+        
+        Period period1 = periodType.createPeriod( isoPeriod );
+        Period period2 = periodType.createPeriod( alternativeIsoPeriod );
+        
+        testCal.set( period1.getStartDate());
+        assertEquals( 2010, testCal.get( Calendar.YEAR) );
+        assertEquals( 0, testCal.get( Calendar.MONTH) );
+        
+        testCal.set( period2.getStartDate());
+        assertEquals( 2010, testCal.get( Calendar.YEAR) );
+        assertEquals( 0, testCal.get( Calendar.MONTH) );
+        
+    }
+        
     @Test
     public void testGetNextPeriod()
     {

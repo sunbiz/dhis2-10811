@@ -39,6 +39,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="localDataElementService" ref="org.hisp.dhis.dataelement.LocalDataElementService" />
   </bean>
 
+  <bean id="org.hisp.dhis.de.action.LoadICDFormAction" class="org.hisp.dhis.de.action.LoadICDFormAction" scope="prototype" />
+
   <bean id="org.hisp.dhis.de.action.SaveValueAction" class="org.hisp.dhis.de.action.SaveValueAction" scope="prototype">
     <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
     <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
@@ -105,12 +107,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="validationRuleService" ref="org.hisp.dhis.validation.ValidationRuleService" />
     <property name="expressionService" ref="org.hisp.dhis.expression.ExpressionService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
-    <property name="stdDevOutlierAnalysisService" ref="org.hisp.dhis.dataanalysis.StdDevOutlierAnalysisService" />
     <property name="minMaxOutlierAnalysisService" ref="org.hisp.dhis.dataanalysis.MinMaxOutlierAnalysisService" />
-    <property name="minMaxValuesGenerationService"
-        ref="org.hisp.dhis.minmax.validation.MinMaxValuesGenerationService" />
-    <property name="minMaxDataElementService" ref="org.hisp.dhis.minmax.MinMaxDataElementService" />
-    <property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
     <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
   </bean>

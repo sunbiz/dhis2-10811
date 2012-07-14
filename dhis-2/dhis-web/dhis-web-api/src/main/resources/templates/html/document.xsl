@@ -11,7 +11,7 @@
 	  <table>
 		<tr>
 			<td>Resource Data</td>
-			<td><a href="{@link}/data">any</a></td>
+			<td><a href="{@href}/data">any</a></td>
 		</tr>
 	  </table><br/>
 	  

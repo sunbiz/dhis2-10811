@@ -44,7 +44,6 @@ public class ClassPathUriResolver implements URIResolver
 
     public ClassPathUriResolver()
     {
-
     }
 
     public ClassPathUriResolver( String templatePath )

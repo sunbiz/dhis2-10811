@@ -11,7 +11,7 @@
 	  <table>
 		<tr>
 			<td>Resource Data</td>
-			<td><a href="{@link}/data">png</a></td>
+			<td><a href="{@href}/data">png</a></td>
 		</tr>
 		<tr>
 			<td>width</td>
@@ -54,7 +54,7 @@
 		</tr>
 	  </table><br/>
 	  
-      <a href="{@link}/data"><img src="{@link}/data" style="border-style:solid; border-width: 1px; padding: 5px;" /></a>
+      <a href="{@href}/data"><img src="{@href}/data" style="border-style:solid; border-width: 1px; padding: 5px;" /></a>
 
       <h3>Details</h3>
 

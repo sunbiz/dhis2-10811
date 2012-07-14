@@ -30,19 +30,25 @@ package org.hisp.dhis.expression;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.indicator.Indicator;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 
 /**
- * Interface for ExpressionService. Defines service functionality for
- * Expressions.
+ * Expressions are mathematical formulas and can contain references to various
+ * elements.
+ * 
+ * - Data element operands on the form #{dataelementuid.categoryoptioncombouid}
+ * - Data element totals on the form #{dataelementuid}
+ * - Constants on the form C{constantuid}
+ * - Days in aggregation period as the symbol D{}
  *
  * @author Margrethe Store
+ * @author Lars Helge Overland
  * @version $Id: ExpressionService.java 6461 2008-11-24 11:32:37Z larshelg $
  */
 public interface ExpressionService
@@ -51,21 +57,24 @@ public interface ExpressionService
     
     final String VALID = "valid";
     final String EXPRESSION_IS_EMPTY = "expression_is_empty";
-    final String ID_NOT_NUMERIC = "id_not_numeric";
     final String DATAELEMENT_DOES_NOT_EXIST = "data_element_does_not_exist";
     final String CATEGORYOPTIONCOMBO_DOES_NOT_EXIST = "category_option_combo_does_not_exist";
-    final String EXPRESSION_NOT_WELL_FORMED = "expression_not_well_formed";
     final String CONSTANT_DOES_NOT_EXIST = "constant_does_not_exist";
-
+    final String EXPRESSION_NOT_WELL_FORMED = "expression_not_well_formed";
 
     final String DAYS_DESCRIPTION = "[Number of days]";
     final String NULL_REPLACEMENT = "0";
     final String SPACE = " ";
 
-    final String FORMULA_EXPRESSION = "\\[.+?\\]";
-    final String OPERAND_EXPRESSION = "\\[\\d+?.*?\\]";
-    final String DAYS_EXPRESSION = "[days]";
-    final String CONSTANT_EXPRESSION = "\\[C(\\d+?)\\]";
+    final String OPERAND_EXPRESSION = "#\\{(\\w+)\\.?(\\w*)\\}";
+    final String CONSTANT_EXPRESSION = "C\\{(\\w+)\\}";
+    final String DAYS_EXPRESSION = "\\[days\\]";
+
+    final Pattern OPERAND_PATTERN = Pattern.compile( OPERAND_EXPRESSION );
+    final Pattern CONSTANT_PATTERN = Pattern.compile( CONSTANT_EXPRESSION );
+    final Pattern DAYS_PATTERN = Pattern.compile( DAYS_EXPRESSION );
+
+    final String DAYS_SYMBOL = "[days]";
     
     /**
      * Adds a new Expression to the database.
@@ -103,32 +112,39 @@ public interface ExpressionService
      * @return A collection with all Expressions.
      */
     Collection<Expression> getAllExpressions();
-
+    
+    Double getIndicatorValue( Indicator indicator, Period period, Map<DataElementOperand, Double> valueMap, 
+        Map<String, Double> constantMap, Integer days );
+    
     /**
-     * Calculates the value of the given Expression.
+     * Generates the calculated value for the given expression base on the values
+     * supplied in the value map, constant map and days.
      * 
-     * @param expression The Expression.
-     * @param source The Source.
-     * @param period The Period.
-     * @param nullIfNoValues indicates whether null should be returned if no
-     *        DataValues are registered for a DataElement in the expression.
-     * @param aggregated indicates whether aggregated or raw data should be
-     *        used when evaluating the expression.     *        
-     * @param days The number to be substituted with the days expression in the formula.
-     * @return The value of the given Expression, or null
-     *         if no values are registered for a given combination of 
-     *         DataElement, Source, and Period.
+     * @param expression the expression which holds the formula for the calculation.
+     * @param valueMap the mapping between data element operands and values to
+     *        use in the calculation.
+     * @param constantMap the mapping between the constant uid and value to use
+     *        in the calculation.
+     * @param days the number of days to use in the calculation.
+     * @return the calculated value as a double.
      */
-    Double getExpressionValue( Expression expression, Period period, OrganisationUnit source, boolean nullIfNoValues, boolean aggregate, Integer days );
+    Double getExpressionValue( Expression expression, Map<DataElementOperand, Double> valueMap, 
+        Map<String, Double> constantMap, Integer days );
     
     /**
      * Returns all DataElements included in the given expression string.
      * 
-     * @param expression The expression string.
-     * @return A Set of DataElements included in the expression string.
+     * @param expression the expression string.
+     * @return a Set of DataElements included in the expression string.
      */
     Set<DataElement> getDataElementsInExpression( String expression );
     
+    /**
+     * Returns all CategoryOptionCombos in the given expression string.
+     * 
+     * @param expression the expression string.
+     * @return a Set of CategoryOptionCombos included in the expression string.
+     */
     Set<DataElementCategoryOptionCombo> getOptionCombosInExpression( String expression );
     
     /**
@@ -141,18 +157,13 @@ public interface ExpressionService
     Set<DataElementOperand> getOperandsInExpression( String expression );
     
     /**
-     * Converts the given expression based on the maps of corresponding data element
-     * identifiers and category option combo identifiers.
+     * Returns all data elements which are present in the numerator and denominator
+     * of the given indicators.
      * 
-     * @param expression the expression formula.
-     * @param dataElementMapping the data element mapping.
-     * @param categoryOptionComboMapping the category option combo mapping.
-     * 
-     * @return an expression which has converted its data element and category
-     *         option combo identifiers with the corresponding entries in the
-     *         mappings.
+     * @param indicators the collection of indicators.
+     * @return a set of data elements.
      */
-    String convertExpression( String expression, Map<Object, Integer> dataElementMapping, Map<Object, Integer> categoryOptionComboMapping );
+    Set<DataElement> getDataElementsInIndicators( Collection<Indicator> indicators );
     
     /**
      * Filters indicators from the given collection where the numerator and /
@@ -168,12 +179,27 @@ public interface ExpressionService
      * 
      * @param formula the expression formula.
      * @return VALID if the expression is valid.
-     * 	       DATAELEMENT_ID_NOT_NUMERIC if the data element is not a number.
-     * 	       CATEGORYOPTIONCOMBO_ID_NOT_NUMERIC if the category option combo id is not a number.
+     * 	       EXPRESSION_IS_EMPTY if the expression is empty.
      * 	       DATAELEMENT_DOES_NOT_EXIST if the data element does not exist.
      *         CATEGORYOPTIONCOMBO_DOES_NOT_EXIST if the category option combo does not exist.
+     *         CONSTANT_DOES_NOT_EXIST if the constant does not exist.
+     *         EXPRESSION_NOT_WELL_FORMED if the expression is not well-formed.
      */
     String expressionIsValid( String formula );
+
+    /**
+     * Tests whether the expression is valid. Returns a positive value if the
+     * expression is valid, or a negative value if not.
+     * 
+     * @param formula the expression formula.
+     * @return VALID if the expression is valid.
+     *         EXPRESSION_IS_EMPTY if the expression is empty.
+     *         DATAELEMENT_DOES_NOT_EXIST if the data element does not exist.
+     *         CATEGORYOPTIONCOMBO_DOES_NOT_EXIST if the category option combo does not exist.
+     *         CONSTANT_DOES_NOT_EXIST if the constant does not exist.
+     *         EXPRESSION_NOT_WELL_FORMED if the expression is not well-formed.
+     */
+    String expressionIsValid( String formula, Set<String> dataElements, Set<String> categoryOptionCombos, Set<String> constants );
     
     /**
      * Creates an expression string containing DataElement names and the names of
@@ -224,24 +250,6 @@ public interface ExpressionService
     String substituteExpression( String expression, Integer days );
     
     /**
-     * Converts an expression on the form [34] + [23], where the numbers are 
-     * IDs of DataElements, to the form 200 + 450, where the numbers are the 
-     * values of the DataValues registered for the Period and Source. "0" is
-     * included if there is no DataValue registered for the given parameters.
-     * 
-     * @param expression The expression string.
-     * @param period The Period.
-     * @param source The Source.
-     * @param nullIfNoValues indicates whether null should be returned if no
-     *        DataValues are registered for a DataElement in the expression.
-     * @param aggregated indicates whether aggregated or raw data should be
-     *        used when evaluating the expression.
-     * @param days The number to be substituted with the days expression in the formula.
-     * @return A numerical expression.
-     */    
-    String generateExpression( String expression, Period period, OrganisationUnit source, boolean nullIfNoValues, boolean aggregated, Integer days );
-
-    /**
      * Generates an expression where the Operand identifiers, consisting of 
      * data element id and category option combo id, are replaced
      * by the aggregated value for the relevant combination of data element,
@@ -251,7 +259,7 @@ public interface ExpressionService
      * @param valueMap The map containing data element identifiers and aggregated value.
      * @param days The number to be substituted with the days expression in the formula.
      */
-    String generateExpression( String expression, Map<DataElementOperand, Double> valueMap, Map<Integer, Double> constantMap, Integer days );
+    String generateExpression( String expression, Map<DataElementOperand, Double> valueMap, Map<String, Double> constantMap, Integer days, boolean nullIfNoValues );
     
     /**
      * Returns all Operands included in the formulas for the given collection of

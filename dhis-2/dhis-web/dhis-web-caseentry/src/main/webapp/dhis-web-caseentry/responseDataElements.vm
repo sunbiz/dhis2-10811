@@ -3,8 +3,9 @@
 #foreach( $psDataElement in $psDataElements )
   {
     "id": "de_$!{psDataElement.dataElement.id}",
-    "name": "$encoder.xmlEncode(${psDataElement.dataElement.displayName} )",
+    "name": "$encoder.xmlEncode(${psDataElement.dataElement.getFormNameFallback()} )",
 	"compulsory": "${psDataElement.compulsory}",
+	"displayInReports": "$psDataElement.displayInReports",
 	"valueType": #if( $psDataElement.dataElement.optionSet )
 					"list"
 				 #else

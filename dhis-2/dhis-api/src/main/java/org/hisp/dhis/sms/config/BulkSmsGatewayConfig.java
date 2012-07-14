@@ -35,6 +35,8 @@ public class BulkSmsGatewayConfig
     private String username;
 
     private String password;
+    
+    private String region;
 
     public String getUsername()
     {
@@ -54,6 +56,16 @@ public class BulkSmsGatewayConfig
     public void setPassword( String password )
     {
         this.password = password;
+    }
+    
+    public String getRegion()
+    {
+        return region;
+    }
+
+    public void setRegion( String region )
+    {
+        this.region = region;
     }
 
     @Override

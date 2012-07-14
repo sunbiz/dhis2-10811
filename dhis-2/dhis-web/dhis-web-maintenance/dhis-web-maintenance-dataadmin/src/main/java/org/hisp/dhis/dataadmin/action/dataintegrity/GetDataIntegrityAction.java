@@ -179,13 +179,6 @@ public class GetDataIntegrityAction
         return organisationUnitsWithoutGroups;
     }
 
-    private List<OrganisationUnit> organisationUnitsViolatingCompulsoryGroupSets;
-
-    public List<OrganisationUnit> getOrganisationUnitsViolatingCompulsoryGroupSets()
-    {
-        return organisationUnitsViolatingCompulsoryGroupSets;
-    }
-
     private SortedMap<OrganisationUnit, Collection<OrganisationUnitGroup>> organisationUnitsViolatingExclusiveGroupSets;
 
     public SortedMap<OrganisationUnit, Collection<OrganisationUnitGroup>> getOrganisationUnitsViolatingExclusiveGroupSets()
@@ -254,8 +247,6 @@ public class GetDataIntegrityAction
             .getOrphanedOrganisationUnits() );
         organisationUnitsWithoutGroups = new ArrayList<OrganisationUnit>( dataIntegrityService
             .getOrganisationUnitsWithoutGroups() );
-        organisationUnitsViolatingCompulsoryGroupSets = new ArrayList<OrganisationUnit>( dataIntegrityService
-            .getOrganisationUnitsViolatingCompulsoryGroupSets() );
         organisationUnitsViolatingExclusiveGroupSets = dataIntegrityService.getOrganisationUnitsViolatingExclusiveGroupSets();
         organisationUnitGroupsWithoutGroupSets = new ArrayList<OrganisationUnitGroup>( dataIntegrityService
             .getOrganisationUnitGroupsWithoutGroupSets() );
@@ -277,7 +268,6 @@ public class GetDataIntegrityAction
         Collections.sort( organisationUnitsWithCyclicReferences, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( orphanedOrganisationUnits, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( organisationUnitsWithoutGroups, IdentifiableObjectNameComparator.INSTANCE );
-        Collections.sort( organisationUnitsViolatingCompulsoryGroupSets, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( organisationUnitGroupsWithoutGroupSets, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( validationRulesWithoutGroups, IdentifiableObjectNameComparator.INSTANCE );
 

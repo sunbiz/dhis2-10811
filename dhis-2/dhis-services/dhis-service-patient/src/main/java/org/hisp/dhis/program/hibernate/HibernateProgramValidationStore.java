@@ -30,7 +30,7 @@ package org.hisp.dhis.program.hibernate;
 import java.util.Collection;
 
 import org.hibernate.criterion.Restrictions;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramValidation;
 import org.hisp.dhis.program.ProgramValidationStore;
@@ -40,18 +40,12 @@ import org.hisp.dhis.program.ProgramValidationStore;
  * @version $ HibernateProgramValidationStore.java Apr 28, 2011 10:43:09 AM $
  */
 public class HibernateProgramValidationStore
-    extends HibernateGenericStore<ProgramValidation>
+    extends HibernateIdentifiableObjectStore<ProgramValidation>
     implements ProgramValidationStore
 {
     @SuppressWarnings( "unchecked" )
     public Collection<ProgramValidation> get( Program program )
     {
         return getCriteria( Restrictions.eq( "program", program ) ).list();
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public Collection<ProgramValidation> get( Program program, Boolean dateType )
-    {
-        return getCriteria( Restrictions.eq( "program", program ), Restrictions.eq( "dateType", dateType ) ).list();
     }
 }

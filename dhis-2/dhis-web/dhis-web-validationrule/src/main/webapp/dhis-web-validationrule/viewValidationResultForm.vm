@@ -16,24 +16,21 @@
 	    <col width="150">
         <col width="150">
         <col width="150">
-        <col width="150">
 	</colgroup>
 	<tr>
 		<td>$i18n.getString( "start_date" ):</td>
 		<td>$startDate</td>
 		<td><input type="button" value="$i18n.getString( 'get_report_as_pdf' )" style="width:140px" onclick="exportValidationResult( 'pdf' )"></td>
 		<td><input type="button" value="$i18n.getString( 'get_report_as_xls' )" style="width:140px" onclick="exportValidationResult( 'xls' )"></td>
-		<td>#if( $aggregate )<input id="resultTypeButton" type="button" value="$i18n.getString( 'see_statistics' )" style="width:140px" onclick="showAggregateResults()">#end</td>
     </tr>
 	<tr>
 		<td>$i18n.getString( "end_date" ):</td>
 		<td>$endDate</td>
 		<td><input type="button" value="$i18n.getString( 'get_report_as_csv' )" style="width:140px" onclick="exportValidationResult( 'csv' )"></td>
 		<td><input name="button" type="button" style="width:140px" onclick="window.location.href='showRunValidationForm.action'" value="$i18n.getString( 'done' )"></td>
-		<td></td>
 	</tr>
 	<tr>
-		<td colspan="5" height="15"></td>
+		<td colspan="4" height="15"></td>
 	</tr>
 </table>
 
@@ -77,7 +74,7 @@
 	<tbody>
 		#foreach( $result in $validationResults )
 		<tr id="tr${result.id}">
-		  <td#if( $aggregate ) style="cursor:pointer" onclick="drillDownValidation( '$!result.source.id' )"#end>$!result.source.name</td>
+		  <td>$!result.source.name</td>
 		  <td>$!format.formatPeriod( $result.period )</td>
 		  <td>$!result.validationRule.leftSide.description</td>
 		  <td>$!result.leftsideValue</td>
@@ -93,34 +90,6 @@
 		#end
 	</tbody>
 </table>
-
-</div>
-
-<div id="aggregateResults" style="display:none">
-
-#if( $aggregate )
-	
-<table class="listTable" style="width:100%">
-	<thead>
-		#foreach( $col in $aggregateResults.getRow( 0 ) )
-		<th>$col</th>
-		#end
-	</thead>
-	<tbody>
-		#set( $lastIndex = $aggregateResults.rows.size() - 1 )
-		#foreach( $row in $aggregateResults.rows )
-		#if ( $velocityCount <= $lastIndex )
-		<tr style="height:32px">
-			#foreach( $col in $aggregateResults.getRow( $velocityCount ) )
-			<td>$col</td>
-			#end
-		</tr>
-		#end
-		#end
-	</tbody>
-</table>
-
-#end
 
 </div>
 

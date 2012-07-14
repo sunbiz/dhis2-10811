@@ -1,56 +1,66 @@
-#if( $patientListByOrgUnit && $patientListByOrgUnit.size()>0 )
-	<table class="mainPageTable">
-		<tr>
-			<td>    
-			<table class="listTable" id="patientList">
-				<tbody id="list">
-					#set( $mark = false )                 
-					#foreach( $patient in $patientListByOrgUnit )
-						#set( $programInstance = $programInstanceMap.get( $patient ) )
-							<tr #alternate( $mark )>
-								<td>
-									<input type='button' class='patient-object' value='$patient.getFullName()' onclick='javascript:showPatientHistory( "$patient.id" );' title='$i18n.getString( "patient_details_and_history" )'>
-								</td>
-								#foreach( $programStageInstance in $programInstance.programStageInstances )
-									<td>
-										<img src='images/rightarrow.png'>
-									</td>
-									
-									<td width='100px;'>
-										<input type='button' id='ps_$programStageInstance.id' name='programStageBtn' class='stage-object' value='$programStageInstance.programStage.name $format.formatDate( $programStageInstance.dueDate )' onclick='javascript:viewPrgramStageRecords( $programStageInstance.id );'>
-										<script>	
-											var status = $statusMap.get( $programStageInstance.id );
-											setEventColorStatus( 'ps_' + $programStageInstance.id ,status);
-										</script>
-									</td>
-								#end
-							</tr>
-						#if( $mark )
-							#set( $mark = false )
-						#else
-							#set( $mark = true )
-						#end 
-					#end    
-				</tbody>
-				<tr>
-					#set( $size=$program.programStages.size() + 2 )
-					<td colspan="$size">
-						<p></p>
-						<div class="paging-container">
-							#parse( "/dhis-web-commons/paging/paging.vm" )
-						</div>
-					</td>
-					<td></td>
-				</tr>
-			</table>
-			</td>
-		</tr>
-	</table>
+<table>
+	<tr>
+		<td class='text-column' >$i18n.getString( "search_result_matching_the_search_criteria" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>
+		#if($!listAll)
+			$i18n.getString( "list_all_patients" )
+		#else
+			$i18n.getString( "search_patients" )
+		#end
+		</td>
+	</tr>	
+	
+	<tr>
+		<td class='text-column' >$i18n.getString( "total_result" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>$!total</td>
+	</tr>
+</table>
 
-	<div id="detailsInfo">
+#if( $patients && $patients.size()>0 )
+	<p>#parse( "/dhis-web-caseentry/colorHelp.vm" )</p>
+	
+	<table class="listTable mainPageTable" id="patientList">
+		#set( $mark = false )                 
+		#foreach( $patient in $patients )
+			#set( $programInstance = '')
+			#set( $programInstance = $programInstanceMap.get( $patient ) )
+				<tr #alternate( $mark )>
+					<td>
+						#set( $value="")
+						#foreach( $identifierType in $program.patientIdentifierTypes )
+							#foreach( $pIdentifier in $patient.identifiers )
+								#if($identifierType.personDisplayName=="true" && $identifierType.id==$pIdentifier.identifierType.id)
+									#set($value=$value + $pIdentifier.identifier + "&#13;&#10;" )
+								#end
+							#end
+						#end
+						#if($value=="")
+							#set($value=$patient.getFullName())
+						#end
+						<input type='button' class='patient-object' value="$encoder.htmlEncode($value)"
+							onclick='javascript:showPatientHistory( "$patient.id" );' title='$i18n.getString( "patient_details_and_history" )'>
+					</td>
+					#set( $programStageInstances = $programInstance.programStageInstances )
+					<td>
+						#parse( "/dhis-web-caseentry/programStageInstanceFlow.vm" )
+					</td>
+				</tr>
+			#if( $mark )
+				#set( $mark = false )
+			#else
+				#set( $mark = true )
+			#end 
+		#end
+	</table>
+	<div class="paging-container">
+		#parse( "/dhis-web-commons/paging/paging.vm" )
 	</div>
-#else
-	<h5>$i18n.getString('no_patient_enrolled_the_program')</h5>
+	
+	<div id="detailsInfo"></div>
 #end
 
 <script>

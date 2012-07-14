@@ -10,7 +10,7 @@ function saveTable()
 		{
 			if ( json.response == "input" )
 			{
-				setMessage( json.message );
+				setHeaderDelayMessage( json.message );
 				return false;
 			}
 			else if ( json.response == "success" )
@@ -38,7 +38,7 @@ function selectTableForm()
 
     selectAllById( "selectedPeriods" );
     selectAllById( "selectedOrganisationUnits" );
-    
+
     if ( isNotEmpty( "selectedOrganisationUnitGroups" ) )
     {
         selectAllById( "selectedOrganisationUnitGroups" );
@@ -62,7 +62,7 @@ function validateCollections()
 {
     if ( isChecked( "regression" ) && selectionTreeSelection.getSelected().length > 1 )
     {
-        setMessage( i18n_cannot_include_more_organisation_unit_regression );
+    	setHeaderDelayMessage( i18n_cannot_include_more_organisation_unit_regression );
 
         return false;
     }
@@ -70,28 +70,28 @@ function validateCollections()
     if ( !hasElements( "selectedDataElements" ) && !hasElements( "selectedIndicators" )
             && !hasElements( "selectedDataSets" ) )
     {
-        setMessage( i18n_must_select_at_least_one_indictor_data_element_data_set );
+    	setHeaderDelayMessage( i18n_must_select_at_least_one_indictor_data_element_data_set );
 
         return false;
     }
 
     if ( !selectionTreeSelection.isSelected() && !hasElements( "selectedOrganisationUnitGroups" ) && !organisationUnitReportParamsChecked() )
     {
-        setMessage( i18n_must_select_at_least_one_unit );
+    	setHeaderDelayMessage( i18n_must_select_at_least_one_unit );
 
         return false;
     }
 
     if ( bothOrganisationUnitReportParamsChecked() )
     {
-        setMessage( i18n_cannot_select_orgunit_and_parent_orgunit_param );
+    	setHeaderDelayMessage( i18n_cannot_select_orgunit_and_parent_orgunit_param );
 
         return false;
     }
 
     if ( !hasElements( "selectedPeriods" ) && !relativePeriodsChecked() )
     {
-        setMessage( i18n_must_select_at_least_one_period );
+    	setHeaderDelayMessage( i18n_must_select_at_least_one_period );
 
         return false;
     }
@@ -108,7 +108,7 @@ function isTrue( elementId )
 
 function organisationUnitReportParamsChecked()
 {
-    return ( isChecked( "paramLeafParentOrganisationUnit" ) || isChecked( "paramGrandParentOrganisationUnit" ) 
+    return ( isChecked( "paramGrandParentOrganisationUnit" )
     	|| isChecked( "paramParentOrganisationUnit" ) || isChecked( "paramOrganisationUnit" ) );
 }
 
@@ -116,10 +116,6 @@ function bothOrganisationUnitReportParamsChecked()
 {
     var count = 0;
 
-    if ( isChecked( "paramLeafParentOrganisationUnit" ) )
-    {
-        count++;
-    }
     if ( isChecked( "paramGrandParentOrganisationUnit" ) )
     {
         count++;
@@ -174,7 +170,7 @@ function toggleRegression()
 
         disable( "doOrganisationUnits" );
         disable( "doPeriods" );
-    } 
+    }
     else
     {
         enable( "doOrganisationUnits" );

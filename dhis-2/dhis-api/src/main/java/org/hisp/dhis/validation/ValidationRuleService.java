@@ -27,15 +27,13 @@ package org.hisp.dhis.validation;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.common.Grid;
+import java.util.Collection;
+import java.util.Date;
+
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author Margrethe Store
@@ -50,33 +48,6 @@ public interface ValidationRuleService
     // -------------------------------------------------------------------------
     // ValidationRule business logic
     // -------------------------------------------------------------------------
-
-    /**
-     * Returns a Grid containing the percentage of aggregated violations. Periods
-     * are listed as columns and Sources are listed as rows.
-     */
-    Grid getAggregateValidationResult( Collection<ValidationResult> results, List<Period> periods, List<OrganisationUnit> sources );
-
-    /**
-     * Validates AggregatedDataValues.
-     *
-     * @param startDate the start date.
-     * @param endDate   the end date.
-     * @param sources   a collection of Sources.
-     * @return a collection of ValidationResults for each validation violation.
-     */
-    Collection<ValidationResult> validateAggregate( Date startDate, Date endDate, Collection<OrganisationUnit> sources );
-
-    /**
-     * Validate AggregatedDataValues.
-     *
-     * @param startDate the start date.
-     * @param endDate   the end date.
-     * @param sources   a collection of Sources.
-     * @param group     a group of ValidationRules.
-     * @return a collection of ValidationResults for each validation violation.
-     */
-    public Collection<ValidationResult> validateAggregate( Date startDate, Date endDate, Collection<OrganisationUnit> sources, ValidationRuleGroup group );
 
     /**
      * Validate DataValues.

@@ -14,8 +14,7 @@
       <param name="menu">/dhis-web-maintenance-settings/settingsMenu.vm</param>
     </action>
     
-    <!-- System settings -->
-		<!-- General settings -->
+    <!-- General settings -->
 
     <action name="systemGeneralSettings" class="org.hisp.dhis.settings.action.system.GetGeneralSettingsAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -28,9 +27,10 @@
       <result name="success" type="velocity-json">
 		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
 	  <param name="onExceptionReturn">plainTextError</param>
+	  <param name="requiredAuthorities">F_SYSTEM_SETTING</param>
     </action>
 	
-		<!-- Appearance settings -->
+	<!-- Appearance settings -->
 
     <action name="systemAppearanceSettings" class="org.hisp.dhis.settings.action.system.GetAppearanceSettingsAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -43,9 +43,10 @@
       <result name="success" type="velocity-json">
 		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
 	  <param name="onExceptionReturn">plainTextError</param>
+	  <param name="requiredAuthorities">F_SYSTEM_SETTING</param>
     </action>
 	
-		<!-- Email settings -->
+	<!-- Email settings -->
 
     <action name="systemEmailSettings" class="org.hisp.dhis.settings.action.system.GetSMTPSettingsAction">
       <result name="success" type="velocity">/main.vm</result>
@@ -58,36 +59,24 @@
       <result name="success" type="velocity-json">
 		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
 	  <param name="onExceptionReturn">plainTextError</param>
+	  <param name="requiredAuthorities">F_SYSTEM_SETTING</param>
     </action>
     
-    <!-- User settings -->
-		<!-- General settings -->
+    <!-- Access settings -->
 
-    <action name="userGeneralSettings" class="org.hisp.dhis.settings.action.user.GetGeneralSettingsAction">
+    <action name="systemAccessSettings" class="org.hisp.dhis.settings.action.system.GetAccessSettingsAction">
       <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-settings/userGeneralSettings.vm</param>
+      <param name="page">/dhis-web-maintenance-settings/systemAccessSettings.vm</param>
       <param name="menu">/dhis-web-maintenance-settings/settingsMenu.vm</param>
+      <param name="requiredAuthorities">F_SYSTEM_SETTING</param>
     </action>
 
-    <action name="setUserGeneralSettings" class="org.hisp.dhis.settings.action.user.SetGeneralSettingsAction">
+    <action name="setSystemAccessSettings" class="org.hisp.dhis.settings.action.system.SetAccessSettingsAction">
       <result name="success" type="velocity-json">
-		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-	  <param name="onExceptionReturn">plainTextError</param>
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+      <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_SYSTEM_SETTING</param>
     </action>
-		
-		<!-- Message notification settings -->
-
-    <action name="userMessageSettings" class="org.hisp.dhis.settings.action.user.GetMessageSettingsAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-settings/userMessageSettings.vm</param>
-      <param name="menu">/dhis-web-maintenance-settings/settingsMenu.vm</param>
-    </action>
-
-    <action name="setUserMessageSettings" class="org.hisp.dhis.settings.action.user.SetMessageSettingsAction">
-      <result name="success" type="velocity-json">
-		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-	  <param name="onExceptionReturn">plainTextError</param>
-    </action>
-
+    
   </package>
 </struts>

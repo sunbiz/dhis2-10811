@@ -167,6 +167,8 @@ public class GenerateExcelReportGeneric
 
     protected InputStream inputStream;
 
+    private boolean generateByDataSet;
+
     // -------------------------------------------------------------------------
     // Local variables
     // -------------------------------------------------------------------------
@@ -207,41 +209,45 @@ public class GenerateExcelReportGeneric
 
     protected Date endSixMonthly;
 
+    protected Period selectedPeriod;
+
     // -------------------------------------------------------------------------
     // Excel format
     // -------------------------------------------------------------------------
 
     protected Font csFont;
 
+    protected Font csFont8Normal;
+
+    protected Font csFont10Normal;
+
     protected Font csFont11Bold;
 
-    protected Font csFont10Bold;
+    protected Font csFont11Normal;
 
-    protected Font csFont9Bold;
-
-    protected Font csFont8Bold;
-
-    protected Font csFont12BoldCenter;
+    protected Font csFont12NormalCenter;
 
     protected CellStyle csNumber;
 
-    protected CellStyle csFormula;
+    protected CellStyle csFormulaBold;
+
+    protected CellStyle csFormulaNormal;
 
     protected CellStyle csText;
 
     protected CellStyle csTextWithoutBorder;
 
-    protected CellStyle csText10Bold;
+    protected CellStyle csText10Normal;
 
     protected CellStyle csText9Bold;
 
-    protected CellStyle csText8Bold;
+    protected CellStyle csText8Normal;
 
     protected CellStyle csTextSerial;
 
     protected CellStyle csTextICDJustify;
 
-    protected CellStyle csText12BoldCenter;
+    protected CellStyle csText12NormalCenter;
 
     protected FormulaEvaluator evaluatorFormula;
 
@@ -269,6 +275,16 @@ public class GenerateExcelReportGeneric
         return inputStream;
     }
 
+    public boolean isGenerateByDataSet()
+    {
+        return generateByDataSet;
+    }
+
+    public void setGenerateByDataSet( boolean generateByDataSet )
+    {
+        this.generateByDataSet = generateByDataSet;
+    }
+
     // -------------------------------------------------------------------------
     // Supporting methods
     // -------------------------------------------------------------------------
@@ -294,21 +310,21 @@ public class GenerateExcelReportGeneric
     {
         sheetPOI = templateWorkbook.getSheetAt( 0 );
         csFont = templateWorkbook.createFont();
-        csFont8Bold = templateWorkbook.createFont();
-        csFont9Bold = templateWorkbook.createFont();
-        csFont10Bold = templateWorkbook.createFont();
+        csFont8Normal = templateWorkbook.createFont();
+        csFont10Normal = templateWorkbook.createFont();
         csFont11Bold = templateWorkbook.createFont();
-        csFont12BoldCenter = templateWorkbook.createFont();
+        csFont11Normal = templateWorkbook.createFont();
+        csFont12NormalCenter = templateWorkbook.createFont();
         csNumber = templateWorkbook.createCellStyle();
-        csFormula = templateWorkbook.createCellStyle();
+        csFormulaBold = templateWorkbook.createCellStyle();
+        csFormulaNormal = templateWorkbook.createCellStyle();
         csText = templateWorkbook.createCellStyle();
         csTextWithoutBorder = templateWorkbook.createCellStyle();
-        csText8Bold = templateWorkbook.createCellStyle();
-        csText9Bold = templateWorkbook.createCellStyle();
-        csText10Bold = templateWorkbook.createCellStyle();
+        csText8Normal = templateWorkbook.createCellStyle();
+        csText10Normal = templateWorkbook.createCellStyle();
         csTextSerial = templateWorkbook.createCellStyle();
         csTextICDJustify = templateWorkbook.createCellStyle();
-        csText12BoldCenter = templateWorkbook.createCellStyle();
+        csText12NormalCenter = templateWorkbook.createCellStyle();
     }
 
     @SuppressWarnings( "static-access" )
@@ -320,33 +336,33 @@ public class GenerateExcelReportGeneric
 
         csTextWithoutBorder.setFont( csFont );
 
-        initPOIStylesManager.initFont( csFont8Bold, "Tahoma", (short) 8, Font.BOLDWEIGHT_BOLD, IndexedColors.BLACK
+        initPOIStylesManager.initFont( csFont8Normal, "Tahoma", (short) 8, Font.BOLDWEIGHT_NORMAL, IndexedColors.BLACK
             .getIndex() );
-        initPOIStylesManager.initFont( csFont9Bold, "Tahoma", (short) 9, Font.BOLDWEIGHT_BOLD, IndexedColors.BLACK
-            .getIndex() );
-        initPOIStylesManager.initFont( csFont10Bold, "Tahoma", (short) 10, Font.BOLDWEIGHT_BOLD, IndexedColors.BLACK
-            .getIndex() );
+        initPOIStylesManager.initFont( csFont10Normal, "Tahoma", (short) 10, Font.BOLDWEIGHT_NORMAL,
+            IndexedColors.BLACK.getIndex() );
         initPOIStylesManager.initFont( csFont11Bold, "Tahoma", (short) 11, Font.BOLDWEIGHT_BOLD,
             IndexedColors.DARK_BLUE.getIndex() );
-        initPOIStylesManager.initFont( csFont12BoldCenter, "Tahoma", (short) 12, Font.BOLDWEIGHT_BOLD,
+        initPOIStylesManager.initFont( csFont11Normal, "Tahoma", (short) 11, Font.BOLDWEIGHT_NORMAL,
+            IndexedColors.DARK_BLUE.getIndex() );
+        initPOIStylesManager.initFont( csFont12NormalCenter, "Tahoma", (short) 12, Font.BOLDWEIGHT_NORMAL,
             IndexedColors.BLUE.getIndex() );
 
         initPOIStylesManager.initCellStyle( csNumber, csFont, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR,
             this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR,
             this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_ALIGN_RIGHT, false );
-        initPOIStylesManager.initCellStyle( csFormula, csFont11Bold, this.CELLSTYLE_BORDER,
+        initPOIStylesManager.initCellStyle( csFormulaBold, csFont11Bold, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR,
             this.CELLSTYLE_ALIGN_RIGHT, true );
-        initPOIStylesManager.initCellStyle( csText8Bold, csFont8Bold, this.CELLSTYLE_BORDER,
+        initPOIStylesManager.initCellStyle( csFormulaNormal, csFont11Normal, this.CELLSTYLE_BORDER,
+            this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
+            this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR,
+            this.CELLSTYLE_ALIGN_RIGHT, true );
+        initPOIStylesManager.initCellStyle( csText8Normal, csFont8Normal, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_ALIGN_LEFT,
             true );
-        initPOIStylesManager.initCellStyle( csText9Bold, csFont9Bold, this.CELLSTYLE_BORDER,
-            this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
-            this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_ALIGN_LEFT,
-            true );
-        initPOIStylesManager.initCellStyle( csText10Bold, csFont10Bold, this.CELLSTYLE_BORDER,
+        initPOIStylesManager.initCellStyle( csText10Normal, csFont10Normal, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_ALIGN_LEFT,
             true );
@@ -357,20 +373,20 @@ public class GenerateExcelReportGeneric
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR,
             this.CELLSTYLE_ALIGN_JUSTIFY, true );
-        initPOIStylesManager.initCellStyle( csText12BoldCenter, csFont12BoldCenter, this.CELLSTYLE_BORDER,
+        initPOIStylesManager.initCellStyle( csText12NormalCenter, csFont12NormalCenter, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER,
             this.CELLSTYLE_BORDER_COLOR, this.CELLSTYLE_BORDER, this.CELLSTYLE_BORDER_COLOR,
             this.CELLSTYLE_ALIGN_CENTER, true );
 
     }
 
-    protected void installPeriod( Period period )
+    protected void installPeriod()
     {
         Calendar calendar = Calendar.getInstance();
 
         // Daily (or Monthly) period
-        startDate = period.getStartDate();
-        endDate = period.getEndDate();
+        startDate = selectedPeriod.getStartDate();
+        endDate = selectedPeriod.getEndDate();
 
         // So-far-this-month
         firstDayOfMonth = getFirstDayOfMonth( startDate );
@@ -380,13 +396,13 @@ public class GenerateExcelReportGeneric
         // Last 2 months + this month = last 3 month
         last3MonthStartDate = getTimeRoll( startDate, Calendar.MONTH, -2 );
         last3MonthStartDate = getTimeRoll( last3MonthStartDate, Calendar.DATE, -1 );
-        last3MonthEndDate = period.getEndDate();
+        last3MonthEndDate = selectedPeriod.getEndDate();
 
         // Last 6 month period
         // Last 5 months + this month = last 6 month
         last6MonthStartDate = getTimeRoll( startDate, Calendar.MONTH, -5 );
         last6MonthStartDate = getTimeRoll( last6MonthStartDate, Calendar.DATE, -1 );
-        last6MonthEndDate = period.getEndDate();
+        last6MonthEndDate = selectedPeriod.getEndDate();
 
         // Quarterly
         startQuaterly = getStartQuaterly( startDate );
@@ -406,16 +422,12 @@ public class GenerateExcelReportGeneric
         endDateOfYear = getLastDayOfYear( calendar.get( Calendar.YEAR ) );
     }
 
-    protected void installReadTemplateFile( ExportReport exportReport, Period period, Object object )
+    protected void installReadTemplateFile( ExportReport exportReport, Object object )
         throws Exception
     {
-        this.outputReportFile = new File
-        (
-            reportLocationManager.getExportReportTemporaryDirectory(),
-            currentUserService.getCurrentUsername()
-            + this.dateformatter.format( Calendar.getInstance().getTime() )
-            + exportReport.getExcelTemplateFile()
-        );
+        this.outputReportFile = new File( reportLocationManager.getExportReportTemporaryDirectory(), currentUserService
+            .getCurrentUsername()
+            + this.dateformatter.format( Calendar.getInstance().getTime() ) + exportReport.getExcelTemplateFile() );
 
         this.outputStreamExcelTemplate = new FileOutputStream( outputReportFile );
 
@@ -424,6 +436,8 @@ public class GenerateExcelReportGeneric
         this.initExcelFormat();
 
         this.installDefaultExcelFormat();
+
+        this.initFormulaEvaluating();
 
         if ( exportReport.getOrganisationRow() != null && exportReport.getOrganisationColumn() != null )
         {
@@ -445,7 +459,7 @@ public class GenerateExcelReportGeneric
         if ( exportReport.getPeriodRow() != null && exportReport.getPeriodColumn() != null )
         {
             ExcelUtils.writeValueByPOI( exportReport.getPeriodRow(), exportReport.getPeriodColumn(), format
-                .formatPeriod( period ), ExcelUtils.TEXT, sheetPOI, csTextWithoutBorder );
+                .formatPeriod( selectedPeriod ), ExcelUtils.TEXT, sheetPOI, csTextWithoutBorder );
         }
     }
 
@@ -458,25 +472,32 @@ public class GenerateExcelReportGeneric
         String result = "";
         Collection<Period> periods = new ArrayList<Period>();
 
-        if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
+        if ( generateByDataSet )
         {
-            periods = periodService.getPeriodsBetweenDates( periodService.getPeriodTypeByName( DailyPeriodType.NAME ),
-                startDate, startDate );
+            periods = periodService.getPeriodsBetweenDates( selectedPeriod.getPeriodType(), startDate, endDate );
         }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+        else
         {
-            periods = periodService.getPeriodsBetweenDates(
-                periodService.getPeriodTypeByName( MonthlyPeriodType.NAME ), startDate, endDate );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
-        {
-            periods = periodService.getPeriodsBetweenDates( periodService
-                .getPeriodTypeByName( QuarterlyPeriodType.NAME ), startQuaterly, endQuaterly );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
-        {
-            periods = periodService.getPeriodsBetweenDates( periodService.getPeriodTypeByName( YearlyPeriodType.NAME ),
-                firstDayOfYear, endDateOfYear );
+            if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( DailyPeriodType.NAME ), startDate, startDate );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( MonthlyPeriodType.NAME ), startDate, endDate );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( QuarterlyPeriodType.NAME ), startQuaterly, endQuaterly );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( YearlyPeriodType.NAME ), firstDayOfYear, endDateOfYear );
+            }
         }
 
         for ( Period p : periods )
@@ -495,25 +516,32 @@ public class GenerateExcelReportGeneric
         String result = "";
         Collection<Period> periods = new ArrayList<Period>();
 
-        if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
+        if ( generateByDataSet )
         {
-            periods = periodService.getPeriodsBetweenDates( periodService.getPeriodTypeByName( DailyPeriodType.NAME ),
-                startDate, startDate );
+            periods = periodService.getPeriodsBetweenDates( selectedPeriod.getPeriodType(), startDate, endDate );
         }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+        else
         {
-            periods = periodService.getPeriodsBetweenDates(
-                periodService.getPeriodTypeByName( MonthlyPeriodType.NAME ), startDate, endDate );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
-        {
-            periods = periodService.getPeriodsBetweenDates( periodService
-                .getPeriodTypeByName( QuarterlyPeriodType.NAME ), startDate, endDate );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
-        {
-            periods = periodService.getPeriodsBetweenDates( periodService.getPeriodTypeByName( YearlyPeriodType.NAME ),
-                startDate, endDate );
+            if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( DailyPeriodType.NAME ), startDate, startDate );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( MonthlyPeriodType.NAME ), startDate, endDate );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( QuarterlyPeriodType.NAME ), startDate, endDate );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
+            {
+                periods = periodService.getPeriodsBetweenDates( periodService
+                    .getPeriodTypeByName( YearlyPeriodType.NAME ), startDate, endDate );
+            }
         }
 
         for ( Period p : periods )
@@ -534,62 +562,69 @@ public class GenerateExcelReportGeneric
     {
         double value = 0.0;
 
-        if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, startDate, startDate, organisationUnit,
-                dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_MONTH ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, firstDayOfMonth, endDate, organisationUnit,
-                dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_QUARTER ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, startQuaterly, endDate, organisationUnit,
-                dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_YEAR ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, firstDayOfYear, endDate, organisationUnit,
-                dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+        if ( generateByDataSet )
         {
             value = calculateExpression( generateExpression( exportItem, startDate, endDate, organisationUnit,
                 dataElementService, categoryService, aggregationService ) );
         }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_3_MONTH ) )
+        else
         {
-            value = calculateExpression( generateExpression( exportItem, last3MonthStartDate, last3MonthEndDate,
-                organisationUnit, dataElementService, categoryService, aggregationService ) );
+            if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, startDate, startDate, organisationUnit,
+                    dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_MONTH ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, firstDayOfMonth, endDate,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_QUARTER ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, startQuaterly, endDate, organisationUnit,
+                    dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_YEAR ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, firstDayOfYear, endDate, organisationUnit,
+                    dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, startDate, endDate, organisationUnit,
+                    dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_3_MONTH ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, last3MonthStartDate, last3MonthEndDate,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_6_MONTH ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, last6MonthStartDate, last6MonthEndDate,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, startQuaterly, endQuaterly,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SIX_MONTH ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, startSixMonthly, endSixMonthly,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.THREE_SIX_NINE_TWELVE_MONTH ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, firstDayOfYear, endQuaterly,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
+            {
+                value = calculateExpression( generateExpression( exportItem, firstDayOfYear, endDateOfYear,
+                    organisationUnit, dataElementService, categoryService, aggregationService ) );
+            }
         }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_6_MONTH ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, last6MonthStartDate, last6MonthEndDate,
-                organisationUnit, dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, startQuaterly, endQuaterly, organisationUnit,
-                dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SIX_MONTH ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, startSixMonthly, endSixMonthly,
-                organisationUnit, dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.THREE_SIX_NINE_TWELVE_MONTH ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, firstDayOfYear, endQuaterly, organisationUnit,
-                dataElementService, categoryService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
-        {
-            value = calculateExpression( generateExpression( exportItem, firstDayOfYear, endDateOfYear,
-                organisationUnit, dataElementService, categoryService, aggregationService ) );
-        }
-
         return value;
     }
 
@@ -601,57 +636,64 @@ public class GenerateExcelReportGeneric
     {
         double value = 0.0;
 
-        if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, startDate, startDate,
-                organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+        if ( generateByDataSet )
         {
             value = calculateExpression( generateIndicatorExpression( exportItem, startDate, endDate, organisationUnit,
                 indicatorService, aggregationService ) );
         }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_QUARTER ) )
+        else
         {
-            value = calculateExpression( generateIndicatorExpression( exportItem, startQuaterly, endDate,
-                organisationUnit, indicatorService, aggregationService ) );
+            if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.DAILY ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, startDate, startDate,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SELECTED_MONTH ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, startDate, endDate,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_QUARTER ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, startQuaterly, endDate,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_YEAR ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, firstDayOfYear, endDate,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_3_MONTH ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, last3MonthStartDate,
+                    last3MonthEndDate, organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_6_MONTH ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, last6MonthStartDate,
+                    last6MonthEndDate, organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, startQuaterly, endQuaterly,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SIX_MONTH ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, startSixMonthly, endSixMonthly,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.THREE_SIX_NINE_TWELVE_MONTH ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, firstDayOfYear, endQuaterly,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
+            else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
+            {
+                value = calculateExpression( generateIndicatorExpression( exportItem, firstDayOfYear, endDateOfYear,
+                    organisationUnit, indicatorService, aggregationService ) );
+            }
         }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SO_FAR_THIS_YEAR ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, firstDayOfYear, endDate,
-                organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_3_MONTH ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, last3MonthStartDate,
-                last3MonthEndDate, organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.LAST_6_MONTH ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, last6MonthStartDate,
-                last6MonthEndDate, organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.QUARTERLY ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, startQuaterly, endQuaterly,
-                organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.SIX_MONTH ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, startSixMonthly, endSixMonthly,
-                organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.THREE_SIX_NINE_TWELVE_MONTH ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, firstDayOfYear, endQuaterly,
-                organisationUnit, indicatorService, aggregationService ) );
-        }
-        else if ( exportItem.getPeriodType().equalsIgnoreCase( ExportItem.PERIODTYPE.YEARLY ) )
-        {
-            value = calculateExpression( generateIndicatorExpression( exportItem, firstDayOfYear, endDateOfYear,
-                organisationUnit, indicatorService, aggregationService ) );
-        }
-
         return value;
     }
 
@@ -687,5 +729,4 @@ public class GenerateExcelReportGeneric
 
         selectionManager.setDownloadFilePath( outputReportFile.getPath() );
     }
-
 }

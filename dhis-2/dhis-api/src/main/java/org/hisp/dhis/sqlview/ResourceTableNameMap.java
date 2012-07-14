@@ -54,6 +54,10 @@ public class ResourceTableNameMap
 
         ignoredNameMap.put( "_users", "users" );
         ignoredNameMap.put( "_uinfo", "userinfo" );
+        ignoredNameMap.put( "_patient", "patient.*" );
+        ignoredNameMap.put( "_program", "program.*" );
+        ignoredNameMap.put( "_relationship", "relationship.*" );
+        ignoredNameMap.put( "_caseaggrcondition", "caseaggregationcondition" );
     }
 
     public static String getResourceNameByAlias( String alias )

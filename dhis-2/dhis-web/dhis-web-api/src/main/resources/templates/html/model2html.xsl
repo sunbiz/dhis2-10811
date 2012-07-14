@@ -17,6 +17,7 @@
   <xsl:include href="resource.xsl" />
   <xsl:include href="relativePeriods.xsl" />
   <xsl:include href="map.xsl" />
+  <xsl:include href="mapView.xsl" />
   <xsl:include href="mapLegend.xsl" />
   <xsl:include href="mapLegendSet.xsl" />
   <xsl:include href="mapLayer.xsl" />
@@ -35,6 +36,7 @@
   <xsl:include href="indicatorGroup.xsl" />
   <xsl:include href="indicatorGroupSet.xsl" />
   <xsl:include href="organisationUnit.xsl" />
+  <xsl:include href="organisationUnitLevel.xsl" />
   <xsl:include href="organisationUnitGroup.xsl" />
   <xsl:include href="organisationUnitGroupSet.xsl" />
   <xsl:include href="dataSet.xsl" />
@@ -50,6 +52,7 @@
   <xsl:include href="userCredentials.xsl" />
   <xsl:include href="messageConversations.xsl" />
   <xsl:include href="messageConversation.xsl" />
+  <xsl:include href="interpretation.xsl" />
   <xsl:include href="dataValueSets.xsl" />
   <xsl:include href="optionSets.xsl" />
 

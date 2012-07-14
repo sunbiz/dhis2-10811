@@ -48,8 +48,7 @@ public class HibernatePatientIdentifierStore
 {
     public PatientIdentifier get( Patient patient )
     {
-        return (PatientIdentifier) getCriteria( Restrictions.eq( "patient", patient ),
-            Restrictions.eq( "preferred", true ) ).uniqueResult();
+        return (PatientIdentifier) getCriteria( Restrictions.eq( "patient", patient ) ).uniqueResult();
     }
 
     public PatientIdentifier get( String identifier, OrganisationUnit organisationUnit )

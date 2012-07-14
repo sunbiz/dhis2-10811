@@ -40,5 +40,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserAuthorityGroupController
     extends AbstractCrudController<UserAuthorityGroup>
 {
-    public static final String RESOURCE_PATH = "/userAuthorityGroups";
+    public static final String RESOURCE_PATH = "/userRoles";
 }

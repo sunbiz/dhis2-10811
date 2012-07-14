@@ -80,7 +80,7 @@ public class UpdateChartNameAction
 
             chart.setName( name );
 
-            chartService.saveOrUpdate( chart );
+            chartService.updateChart( chart );
         }
 
         return SUCCESS;

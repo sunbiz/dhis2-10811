@@ -28,21 +28,28 @@ package org.hisp.dhis.program;
 
 import java.util.Collection;
 
-import org.hisp.dhis.common.GenericStore;
 import org.hisp.dhis.dataelement.DataElement;
 
 /**
  * @author Viet Nguyen
- *
+ * 
  * @version $Id$
  */
-public interface ProgramStageDataElementStore extends GenericStore<ProgramStageDataElement>
+public interface ProgramStageDataElementStore
 {
-    String ID = ProgramStageInstanceStore.class.getName();   
+    String ID = ProgramStageInstanceStore.class.getName();
+
+    void save( ProgramStageDataElement programStageDataElement );
+
+    void update( ProgramStageDataElement programStageDataElement );
+
+    void delete( ProgramStageDataElement programStageDataElement );
+
+    ProgramStageDataElement get( ProgramStage programStage, DataElement dataElement );
     
-    ProgramStageDataElement get( ProgramStage programStage, DataElement dataElement );   
-    
-    Collection<ProgramStageDataElement> get( ProgramStage programStage ); 
-    
+    Collection<ProgramStageDataElement> getAll();
+
+    Collection<ProgramStageDataElement> get( ProgramStage programStage );
+
     Collection<DataElement> getListDataElement( ProgramStage programStage );
 }

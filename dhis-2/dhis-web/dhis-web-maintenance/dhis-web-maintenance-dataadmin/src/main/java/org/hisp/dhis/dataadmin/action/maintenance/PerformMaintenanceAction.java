@@ -33,9 +33,11 @@ import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.aggregation.AggregatedOrgUnitDataValueService;
 import org.hisp.dhis.common.DeleteNotAllowedException;
 import org.hisp.dhis.completeness.DataSetCompletenessService;
+import org.hisp.dhis.datamart.DataMartManager;
 import org.hisp.dhis.maintenance.MaintenanceService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
+import org.hisp.dhis.user.CurrentUserService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -79,6 +81,13 @@ public class PerformMaintenanceAction
     {
         this.aggregatedOrgUnitDataValueService = aggregatedOrgUnitDataValueService;
     }
+    
+    private DataMartManager dataMartManager;
+
+    public void setDataMartManager( DataMartManager dataMartManager )
+    {
+        this.dataMartManager = dataMartManager;
+    }
 
     private PeriodService periodService;
 
@@ -87,6 +96,13 @@ public class PerformMaintenanceAction
         this.periodService = periodService;
     }
     
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
+    }
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -141,21 +157,25 @@ public class PerformMaintenanceAction
             aggregatedOrgUnitDataValueService.deleteAggregatedDataValues();
             aggregatedOrgUnitDataValueService.deleteAggregatedIndicatorValues();
             
-            log.info( "Cleared data mart" );
+            log.info( "'" + currentUserService.getCurrentUsername() + "': Cleared data mart" );
         }
         
         if ( dataMartIndex )
         {
-            aggregatedDataValueService.dropIndex( true, true );
-            aggregatedDataValueService.createIndex( true, true );
+            dataMartManager.dropDataValueIndex();
+            dataMartManager.dropIndicatorValueIndex();
+            dataMartManager.dropOrgUnitDataValueIndex();
+            dataMartManager.dropOrgUnitIndicatorValueIndex();
             
-            aggregatedOrgUnitDataValueService.dropIndex( true, true );
-            aggregatedOrgUnitDataValueService.createIndex( true, true );
+            dataMartManager.createDataValueIndex();
+            dataMartManager.createIndicatorValueIndex();
+            dataMartManager.createOrgUnitDataValueIndex();
+            dataMartManager.createOrgUnitIndicatorValueIndex();
             
             completenessService.dropIndex();
             completenessService.createIndex();
             
-            log.info( "Rebuilt data mart indexes" );
+            log.info( "'" + currentUserService.getCurrentUsername() + "': Rebuilt data mart indexes" );
         }
         
         if ( zeroValues )
@@ -169,12 +189,14 @@ public class PerformMaintenanceAction
         {
             completenessService.deleteDataSetCompleteness();
             
-            log.info( "Cleared data completeness" );
+            log.info( "'" + currentUserService.getCurrentUsername() + "': Cleared data completeness" );
         }
         
         if ( prunePeriods )
         {
             prunePeriods();
+            
+            log.info( "'" + currentUserService.getCurrentUsername() + "': Pruned periods" );
         }
         
         return SUCCESS;

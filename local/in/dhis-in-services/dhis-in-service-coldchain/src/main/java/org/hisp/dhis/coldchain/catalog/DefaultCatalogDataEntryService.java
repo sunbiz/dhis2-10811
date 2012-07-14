@@ -7,7 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.program.ProgramDataEntryService;
 
 /**
  * @author Mithilesh Kumar Thakur
@@ -119,15 +121,18 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
                 CatalogTypeAttribute catalogTypeAttribute = catalogTypeAttributeService.getCatalogTypeAttribute( catalogTypeAttributeId );
                 
-                if ( catalogTypeAttribute != null && (!CatalogTypeAttribute.TYPE_INT.equalsIgnoreCase( catalogTypeAttribute.getValueType() ) && !CatalogTypeAttribute.TYPE_STRING.equalsIgnoreCase( catalogTypeAttribute.getValueType() )) )
+                if ( catalogTypeAttribute != null && !CatalogTypeAttribute.TYPE_INT.equalsIgnoreCase( catalogTypeAttribute.getValueType() ) )
                 {
                     continue;
                 }
-                
+                else if ( catalogTypeAttribute != null && !CatalogTypeAttribute.TYPE_STRING.equalsIgnoreCase( catalogTypeAttribute.getValueType() ) )
+                {
+                    continue;
+                }
 
                 String displayValue = ( catalogTypeAttribute == null ) ? " value=\"" + CATALOG_TYPE_ATTRIBUTE_DOES_NOT_EXIST + "\" "
                     : " value=\"[ " + catalogTypeAttribute.getName() + " ]\"";
@@ -191,7 +196,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
                 CatalogTypeAttribute catalogTypeAttribute = catalogTypeAttributeService.getCatalogTypeAttribute( catalogTypeAttributeId );
                 
@@ -262,7 +267,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // -------------------------------------------------------------
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
                 CatalogTypeAttribute catalogTypeAttribute = catalogTypeAttributeService.getCatalogTypeAttribute( catalogTypeAttributeId );
                 
@@ -334,7 +339,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
                 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
                 CatalogTypeAttribute catalogTypeAttribute = catalogTypeAttributeService.getCatalogTypeAttribute( catalogTypeAttributeId );
 
@@ -392,7 +397,9 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
         // ---------------------------------------------------------------------
        
         Map<Integer, CatalogTypeAttribute> catalogTypeAttributeMap = getCatalogTypeAttributeMap( catalogType );
-
+        
+        int catalogTypeId = catalogType.getId();
+        
         while ( CatalogTypeAttributeMatcher.find() )
         {
             // -----------------------------------------------------------------
@@ -412,9 +419,9 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
 
-                int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
+                //int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
 
                 CatalogTypeAttribute catalogTypeAttribute = null;
 
@@ -587,8 +594,6 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
         // ---------------------------------------------------------------------
         // Pattern to match CatalogTypeAttributes in the HTML code
         // ---------------------------------------------------------------------
-
-
         
         Pattern INPUT_PATTERN = Pattern.compile( "(<input.*?)[/]?>", Pattern.DOTALL );
         
@@ -599,7 +604,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
         // ---------------------------------------------------------------------
        
         Map<Integer, CatalogTypeAttribute> catalogTypeAttributeMap = getCatalogTypeAttributeMap( catalogType );
-
+        int catalogTypeId = catalogType.getId();
        // Map<Integer, DataElement> dataElementMap = getDataElementMap( programStage );
 
         while ( CatalogTypeAttributeMatcher.find() )
@@ -620,9 +625,9 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
 
-                int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
+                //int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
 
                 CatalogTypeAttribute catalogTypeAttribute = null;
 
@@ -794,8 +799,6 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
         // Pattern to match CatalogTypeAttributes in the HTML code
         // ---------------------------------------------------------------------
 
-
-        
         Pattern INPUT_PATTERN = Pattern.compile( "(<input.*?)[/]?>", Pattern.DOTALL );
         
         Matcher CatalogTypeAttributeMatcher = INPUT_PATTERN.matcher( dataEntryFormCode );
@@ -805,6 +808,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
         // ---------------------------------------------------------------------
        
         Map<Integer, CatalogTypeAttribute> catalogTypeAttributeMap = getCatalogTypeAttributeMap( catalogType );
+        int catalogTypeId = catalogType.getId();
 
        // Map<Integer, DataElement> dataElementMap = getDataElementMap( programStage );
 
@@ -826,9 +830,9 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get catalogType attribute ID of catalogType attribute
                 // -------------------------------------------------------------
 
-                int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
+                //int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
 
                 CatalogTypeAttribute catalogTypeAttribute = null;
 
@@ -905,10 +909,43 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                     }
                 }
 
+                
+                String appendCode = catalogTypeAttributeCode.replaceFirst( "input", "select" );
+                appendCode = appendCode.replace( "name=\"entryfield\"", jsCodeForOptions );
+
+                // -------------------------------------------------------------
+                // Add title
+                // -------------------------------------------------------------
+
+                if ( catalogTypeAttributeCode.contains( "title=\"\"" ) )
+                {
+                    appendCode = appendCode.replace( "title=\"\"", "title=\"" + catalogTypeAttribute.getId() + "."
+                        + catalogTypeAttribute.getName() + "-" + catalogTypeAttributeType + "\" " );
+                }
+                else
+                {
+                    appendCode += "title=\"" + catalogTypeAttribute.getId() + "." + catalogTypeAttribute.getName() + "-"
+                        + catalogTypeAttributeType + "\" ";
+                }
+
+                appendCode += ">";
+                
+                
+                appendCode += "<option value=\"\">" + i18n.getString( "Please select" ) + "</option>";
+                
+                for( CatalogTypeAttributeOption catalogTypeAttributeOption : catalogTypeAttribute.getAttributeOptions() )
+                {
+                    appendCode += "<option value=\""+ catalogTypeAttributeOption.getId() +"\">" + catalogTypeAttributeOption.getName() + "</option>";
+                }
+                //appendCode += "<option value=\"true\">" + i18n.getString( "yes" ) + "</option>";
+                //appendCode += "<option value=\"false\">" + i18n.getString( "no" ) + "</option>";
+                
+                //--------------------------------------------------------------
                 // Insert title information - Data element id, name, type, min,
                 // max
                 // -------------------------------------------------------------
 
+                /*
                 if ( catalogTypeAttributeCode.contains( "title=\"\"" ) )
                 {
                     catalogTypeAttributeCode = catalogTypeAttributeCode.replace( "title=\"\"", "title=\"" + catalogTypeAttribute.getId() + "."
@@ -919,13 +956,14 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                     catalogTypeAttributeCode += "title=\"" + catalogTypeAttribute.getId() + "." + catalogTypeAttribute.getName() + " ("
                         + catalogTypeAttributeType + ")\" ";
                 }
-
+*/
                 // -------------------------------------------------------------
                 // Insert value of catalogType Attribute in output code
                 // -------------------------------------------------------------
                 
-                String appendCode = catalogTypeAttributeCode;
+                //String appendCode = catalogTypeAttributeCode;
 
+                /*
                 if ( appendCode.contains( "value=\"\"" ) )
                 {
                     appendCode = appendCode.replace( "value=\"\"", "value=\"" + catalogTypeAttributeValue + "\"" );
@@ -943,8 +981,8 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 }
 
                 appendCode += " />";
-
-
+                */
+                appendCode += "</select>";
                 disabled = "";
                 
                 if ( catalogTypeId != catalogType.getId() )
@@ -966,7 +1004,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 appendCode = appendCode.replace( "$SAVEMODE", "false" );
                 appendCode = appendCode.replaceAll( "\\$", "\\\\\\$" );
                 
-                System.out.println( "---appendCode---" + appendCode );
+                //System.out.println( "---appendCode---" + appendCode );
                 
                 CatalogTypeAttributeMatcher.appendReplacement( sb, appendCode );
             }
@@ -1017,7 +1055,7 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
         
         Map<Integer, CatalogTypeAttribute> catalogTypeAttributeMap = getCatalogTypeAttributeMap( catalogType );
         
-
+        int catalogTypeId = catalogType.getId();
        
         while ( CatalogTypeAttributeMatcher.find() )
         {
@@ -1026,7 +1064,6 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
             // -----------------------------------------------------------------
 
             String mandatory = "null";
-           
            
 
             String catalogTypeAttributeCode = CatalogTypeAttributeMatcher.group( 1 );
@@ -1039,9 +1076,9 @@ public class DefaultCatalogDataEntryService implements CatalogDataEntryService
                 // Get data element ID of data element
                 // -------------------------------------------------------------
 
-                int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
+                //int catalogTypeId = Integer.parseInt( identifierMatcher.group( 1 ) );
                 
-                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 2 ) );
+                int catalogTypeAttributeId = Integer.parseInt( identifierMatcher.group( 1 ) );
 
                 CatalogTypeAttribute catalogTypeAttribute = null;
 

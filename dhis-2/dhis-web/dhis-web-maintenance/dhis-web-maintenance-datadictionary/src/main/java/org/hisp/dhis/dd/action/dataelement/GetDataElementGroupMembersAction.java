@@ -118,15 +118,15 @@ public class GetDataElementGroupMembersAction
             {
                 for ( DataElementCategoryOptionCombo optionCombo : optionCombos )
                 {
-                    DataElementOperand operand = new DataElementOperand( dataElement.getId(), optionCombo.getId(), dataElement.getName()
-                        + optionCombo.getName() );
+                    DataElementOperand operand = new DataElementOperand( dataElement.getUid(), 
+                        optionCombo.getUid(), dataElement.getName() + optionCombo.getName() );
                     operands.add( operand );
                 }
             }
             else
             {
-                DataElementOperand operand = new DataElementOperand( dataElement.getId(), optionCombos.iterator().next().getId(), dataElement
-                    .getName() );
+                DataElementOperand operand = new DataElementOperand( dataElement.getUid(), 
+                    optionCombos.iterator().next().getUid(), dataElement.getName() );
                 operands.add( operand );
             }
         }

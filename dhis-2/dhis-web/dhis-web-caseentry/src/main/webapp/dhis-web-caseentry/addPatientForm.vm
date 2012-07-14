@@ -10,7 +10,7 @@
 				,errorElement:"span"
 				,submitHandler: function(form)
 					{
-						validateAddPatient();
+						validateAddPatient(isContinue);
 					}
 				,beforeValidateHandler: function(form)
 					{
@@ -30,24 +30,30 @@
 			});
 		
 		datePickerValid( 'patientForm [id=registrationDate]' );
+		datePickerValid( 'patientForm [id=birthDate]' );
+		datePickerValid( 'patientForm [id=deathDate]' );
 		addEventForPatientForm( 'patientForm' );
 	});	
-	
+	hideById('patientForm [id=age]');
+	hideById('mainLinkLbl');
 </script>
 
-<h4>$i18n.getString( "add_new_patient" )</h4>	
+<h3>
+	<a href="javascript:loadPatientList();">$i18n.getString( 'patient_management' )</a>
+	&#8226; $i18n.getString( "add_new_patient" )
+</h3>
 
 <form id="patientForm" name="patientForm" method="post" >
 <input type="hidden" id="representativeId" name="representativeId"/> 
 <input type="hidden" id="relationshipTypeId" name="relationshipTypeId"/>
-
 <table>
 	#parse( "/dhis-web-caseentry/patientForm.vm" )
 	<tr>
 		<td></td>
 		<td>
-			<input type="submit" class="button" value="$i18n.getString( 'add' )"/>
-			<input type="button" class="button" value="$i18n.getString( 'back_to_registration' )" onclick="loadPatientList();"/>
+			<input type="submit" class="button" value="$i18n.getString( 'add' )" onclick="isContinue=false;" style="width:80px;" />
+			<input type="submit" class="button" value="$i18n.getString( 'add_and_register_new' )" style="width:160px;" onclick="isContinue=true;"/>
+			<input type='button' class="button" value="$i18n.getString( 'cancel' )" onclick="loadPatientList();" style="width:80px;" />
 		</td>
 	</tr>
 </table>
@@ -57,4 +63,5 @@
 <script>
 	var i18n_error_connect_to_server = '$encoder.jsEscape( $i18n.getString( "error_connect_to_server" ) , "'" )';
 	var i18n_add_person_successfully = '$encoder.jsEscape( $i18n.getString( "add_person_successfully" ) , "'" )';
+	var i18n_error_connect_to_server = '$encoder.jsEscape( $i18n.getString( "error_connect_to_server" ) , "'" )';
 </script>

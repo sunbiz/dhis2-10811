@@ -34,6 +34,7 @@ import java.util.Set;
 
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.patient.PatientReminder;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageDataElementService;
@@ -119,12 +120,14 @@ public class UpdateProgramStageAction
     {
         this.compulsories = compulsories;
     }
- private List<Boolean> allowProvidedElsewhere = new ArrayList<Boolean>();
-    
+
+    private List<Boolean> allowProvidedElsewhere = new ArrayList<Boolean>();
+
     public void setAllowProvidedElsewhere( List<Boolean> allowProvidedElsewhere )
     {
         this.allowProvidedElsewhere = allowProvidedElsewhere;
     }
+
     private int programId;
 
     public int getProgramId()
@@ -146,6 +149,55 @@ public class UpdateProgramStageAction
         this.standardInterval = standardInterval;
     }
 
+    private String reportDateDescription;
+
+    public void setReportDateDescription( String reportDateDescription )
+    {
+        this.reportDateDescription = reportDateDescription;
+    }
+
+    private List<Integer> daysAllowedSendMessages = new ArrayList<Integer>();
+
+    public void setDaysAllowedSendMessages( List<Integer> daysAllowedSendMessages )
+    {
+        this.daysAllowedSendMessages = daysAllowedSendMessages;
+    }
+
+    private List<String> templateMessages = new ArrayList<String>();
+
+    public void setTemplateMessages( List<String> templateMessages )
+    {
+        this.templateMessages = templateMessages;
+    }
+
+    private Boolean autoGenerateEvent;
+
+    public void setAutoGenerateEvent( Boolean autoGenerateEvent )
+    {
+        this.autoGenerateEvent = autoGenerateEvent;
+    }
+
+    private List<Boolean> displayInReports = new ArrayList<Boolean>();
+
+    public void setDisplayInReports( List<Boolean> displayInReports )
+    {
+        this.displayInReports = displayInReports;
+    }
+
+    private Boolean validCompleteOnly;
+
+    public void setValidCompleteOnly( Boolean validCompleteOnly )
+    {
+        this.validCompleteOnly = validCompleteOnly;
+    }
+
+    private Boolean displayGenerateEventBox;
+
+    public void setDisplayGenerateEventBox( Boolean displayGenerateEventBox )
+    {
+        this.displayGenerateEventBox = displayGenerateEventBox;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -153,44 +205,63 @@ public class UpdateProgramStageAction
     public String execute()
         throws Exception
     {
+        minDaysFromStart = (minDaysFromStart == null) ? 0 : minDaysFromStart;
+        irregular = (irregular == null) ? false : irregular;
+        autoGenerateEvent = (autoGenerateEvent == null) ? false : autoGenerateEvent;
+        validCompleteOnly = (validCompleteOnly == null) ? false : validCompleteOnly;
+        displayGenerateEventBox = (displayGenerateEventBox == null) ? false : displayGenerateEventBox;
+
         ProgramStage programStage = programStageService.getProgramStage( id );
 
         programStage.setName( name );
         programStage.setDescription( description );
         programStage.setStandardInterval( standardInterval );
-
-        minDaysFromStart = (minDaysFromStart == null) ? 0 : minDaysFromStart;
+        programStage.setReportDateDescription( reportDateDescription );
         programStage.setMinDaysFromStart( minDaysFromStart );
-
-        irregular = (irregular == null) ? false : irregular;
         programStage.setIrregular( irregular );
+        programStage.setMinDaysFromStart( minDaysFromStart );
+        programStage.setDisplayGenerateEventBox( displayGenerateEventBox );
+
+        programStage.setAutoGenerateEvent( autoGenerateEvent );
+        programStage.setValidCompleteOnly( validCompleteOnly );
+
+        Set<PatientReminder> patientReminders = new HashSet<PatientReminder>();
+        for ( int i = 0; i < this.daysAllowedSendMessages.size(); i++ )
+        {
+            PatientReminder reminder = new PatientReminder( "", daysAllowedSendMessages.get( i ),
+                templateMessages.get( i ) );
+            patientReminders.add( reminder );
+        }
+        programStage.setPatientReminders( patientReminders );
 
         programStageService.updateProgramStage( programStage );
 
-        Set<ProgramStageDataElement> programStageDataElements = new HashSet<ProgramStageDataElement>( programStage
-            .getProgramStageDataElements() );
+        Set<ProgramStageDataElement> programStageDataElements = new HashSet<ProgramStageDataElement>(
+            programStage.getProgramStageDataElements() );
 
         for ( int i = 0; i < this.selectedDataElementsValidator.size(); i++ )
         {
             DataElement dataElement = dataElementService.getDataElement( selectedDataElementsValidator.get( i ) );
+            Boolean allowed = allowProvidedElsewhere.get( i ) == null ? false : allowProvidedElsewhere.get( i );
+            Boolean displayInReport = displayInReports.get( i ) == null ? false : displayInReports.get( i );
 
             ProgramStageDataElement programStageDataElement = programStageDataElementService.get( programStage,
                 dataElement );
 
             if ( programStageDataElement == null )
             {
-                programStageDataElement = new ProgramStageDataElement( programStage, dataElement, this.compulsories
-                    .get( i ), new Integer( i ) );
+                programStageDataElement = new ProgramStageDataElement( programStage, dataElement,
+                    this.compulsories.get( i ), new Integer( i ) );
+                programStageDataElement.setAllowProvidedElsewhere( allowed );
+                programStageDataElement.setDisplayInReports( displayInReport );
                 programStageDataElementService.addProgramStageDataElement( programStageDataElement );
             }
             else
             {
                 programStageDataElement.setCompulsory( this.compulsories.get( i ) );
-
                 programStageDataElement.setSortOrder( new Integer( i ) );
-
-                programStageDataElement.setAllowProvidedElsewhere( allowProvidedElsewhere.get( i ) );
-                
+                programStageDataElement.setAllowProvidedElsewhere( allowed );
+                programStageDataElement.setDisplayInReports( displayInReport );
                 programStageDataElementService.updateProgramStageDataElement( programStageDataElement );
 
                 programStageDataElements.remove( programStageDataElement );

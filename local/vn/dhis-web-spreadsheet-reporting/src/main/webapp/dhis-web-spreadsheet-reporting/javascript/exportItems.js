@@ -75,7 +75,11 @@ function changeItemType()
 		disable( 'expression-button' );
 		setFieldValue( 'exportItem input[id=expression]', value );
 		removeValidatorRulesById( 'exportItem input[id=expression]' );
-		removeValidatorRulesById( 'dataelement textarea[id=formula]' );
+
+		if ( !attribute && !categoryVertical )
+		{
+			removeValidatorRulesById( 'dataelement textarea[id=formula]' );
+		}
 	}
 }
 
@@ -98,15 +102,15 @@ function insertExpression()
 		setFieldValue( 'attributevalue [id=formula]', getFieldValue( 'attributevalue [id=formula]' ) + expression );
 	}
 	else if ( category ) {
-		expression = "[*." + getFieldValue( "dataelement [id=elementSelect]" ) + "]";
+		expression = "[*." + getFieldValue( "dataelement-elementSelect" ) + "]";
 		setFieldValue( 'dataelement [id=formula]', getFieldValue( 'dataelement [id=formula]' ) + expression );
 	}
 	else if ( categoryVertical ) {
-		expression = "[" + getFieldValue( "categoryoption [id=elementSelect]" ) + ".*]";
+		expression = "[" + getFieldValue( "categoryoption-elementSelect" ) + ".*]";
 		setFieldValue( 'categoryoption [id=formula]', getFieldValue( 'categoryoption [id=formula]' ) + expression );
 	}
 	else {
-		expression = getFieldValue('dataelement [id=elementSelect]');
+		expression = getFieldValue( 'dataelement-elementSelect' );
 		setFieldValue( 'dataelement [id=formula]', getFieldValue( 'dataelement [id=formula]' ) + expression );
 	}
 

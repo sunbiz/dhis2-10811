@@ -15,13 +15,13 @@
     #set( $attributeValue = false )
     #set( $attributeValue = $patientAttributeValueMap.get( $attribute.id ) )             
     <attribute>
-        <name>$!encoder.xmlEncode( $attribute.name )</name>
+        <name>$!encoder.xmlEncode( $attribute.displayName )</name>
         <value>$!encoder.xmlEncode( $attributeValue )</value>
     </attribute> 
   #end  
   #foreach( $program in $!patient.programs )
     <program>
-        <name>$!encoder.xmlEncode( $program.name )</name>
+        <name>$!encoder.xmlEncode( $program.displayName )</name>
     </program> 
   #end         
 </patient>

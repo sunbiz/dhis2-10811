@@ -3,7 +3,9 @@
 {
 #set( $noHeader = $grid.getHeaders().size() )
 #set( $metaData = $noHeader - $valueTypes.size() )
+"message": "$!message",
 "total": "$total",
+"totalRecords": "$totalRecords",
 "columns":[
   #set($index = 0)
   #foreach( $col in $grid.getHeaders() )
@@ -15,7 +17,7 @@
     ["$!encoder.jsonEncode( ${suggestedValue} )"]
 	#if( $velocityCount < $suggestedValues.size() ),#end
     #end],
-    "name": "$!col.name",
+    "name": "$!encoder.jsonEncode($!col.name)",
     "hidden": "$!col.hidden"
   }#if( $velocityCount < $noHeader ),#end
   #set($index = $index + 1)
@@ -25,7 +27,12 @@
   #foreach( $row in $grid.getRows() )
   [
   #foreach( $col in $row )
-  "$!col"#if( $velocityCount < $noHeader ),#end
+	#if( $velocityCount < 3)
+		"$!col"
+	#else
+		"$!encoder.jsonEncode($!col)"
+	#end
+  #if( $velocityCount < $noHeader ),#end
   #end
   ]#if( $velocityCount < $noRows ),#end
   #end

@@ -44,7 +44,7 @@
 <div id="contentDiv" style="display:none">
 <table width="100%">
     <tr>
-        <td style="width:170px">$i18n.getString( "start_date" )</td>
+        <td style="width:120px">$i18n.getString( "start_date" )</td>
         <td><input type="text" id="startDate"/></td>
     </tr>
     <tr>

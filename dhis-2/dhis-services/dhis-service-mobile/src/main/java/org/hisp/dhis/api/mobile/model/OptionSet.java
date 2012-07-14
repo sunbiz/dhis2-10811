@@ -70,12 +70,13 @@ public class OptionSet
     {
         dout.writeInt( this.getId() );
         dout.writeUTF( this.getName() );
-
         dout.writeInt( this.options.size() );
 
         for ( String option : this.options )
-        {
-            dout.writeUTF( option );
+        {	
+        	if (option != null) {
+        		dout.writeUTF( option );
+        	}
         }
     }
 

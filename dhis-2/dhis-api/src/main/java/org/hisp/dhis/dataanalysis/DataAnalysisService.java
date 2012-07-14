@@ -36,15 +36,13 @@ import org.hisp.dhis.period.Period;
 
 /**
  * @author Dag Haavi Finstad
- * @version $Id: StdDevOutlierAnalysisService.java 882 2009-05-14 23:09:31Z
- *          daghf $
  */
 public interface DataAnalysisService
 {
     String ID = DataAnalysisService.class.getName();
 
-    int MAX_OUTLIERS = 500;
+    final int MAX_OUTLIERS = 500;
     
-    Collection<DeflatedDataValue> analyse( OrganisationUnit organisationUnit, Collection<DataElement> dataElements,
+    Collection<DeflatedDataValue> analyse( Collection<OrganisationUnit> organisationUnits, Collection<DataElement> dataElements,
         Collection<Period> periods, Double stdDevFactor );
 }

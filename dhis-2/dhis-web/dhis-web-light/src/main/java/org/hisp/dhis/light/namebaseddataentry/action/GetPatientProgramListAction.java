@@ -29,8 +29,10 @@ package org.hisp.dhis.light.namebaseddataentry.action;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.hisp.dhis.light.utils.NamebasedUtils;
 import org.hisp.dhis.patient.Patient;
@@ -66,9 +68,9 @@ public class GetPatientProgramListAction
     {
         this.programInstanceService = programInstanceService;
     }
-    
+
     private PatientIdentifierService patientIdentifierService;
-    
+
     public PatientIdentifierService getPatientIdentifierService()
     {
         return patientIdentifierService;
@@ -126,9 +128,9 @@ public class GetPatientProgramListAction
     {
         this.relationshipService = relationshipService;
     }
-    
+
     public RelationshipTypeService relationshipTypeService;
-    
+
     public RelationshipTypeService getRelationshipTypeService()
     {
         return relationshipTypeService;
@@ -190,23 +192,21 @@ public class GetPatientProgramListAction
     {
         this.enrollmentProgramList = enrollmentProgramList;
     }
-    
-    //Use for add relationship
-    
-    private List<Patient> relatedPeople;
 
-    public List<Patient> getRelatedPeople()
+    private Map<Relationship, Patient> relatedPeople;
+
+    public Map<Relationship, Patient> getRelatedPeople()
     {
         return relatedPeople;
     }
 
-    public void setRelatedPeople( List<Patient> relatedPeople )
+    public void setRelatedPeople( Map<Relationship, Patient> relatedPeople )
     {
         this.relatedPeople = relatedPeople;
     }
-    
+
     private Collection<RelationshipType> relationshipTypes;
-    
+
     public Collection<RelationshipType> getRelationshipTypes()
     {
         return relationshipTypes;
@@ -216,9 +216,9 @@ public class GetPatientProgramListAction
     {
         this.relationshipTypes = relationshipTypes;
     }
-    
+
     private Boolean validated;
-    
+
     public Boolean getValidated()
     {
         return validated;
@@ -228,9 +228,9 @@ public class GetPatientProgramListAction
     {
         this.validated = validated;
     }
-    
+
     private Collection<PatientIdentifier> patientIdentifiers;
-    
+
     public Collection<PatientIdentifier> getPatientIdentifiers()
     {
         return patientIdentifiers;
@@ -241,17 +241,24 @@ public class GetPatientProgramListAction
         this.patientIdentifiers = patientIdentifiers;
     }
 
+    private List<ProgramInstance> listOfCompletedProgram;
+
+    public List<ProgramInstance> getListOfCompletedProgram()
+    {
+        return listOfCompletedProgram;
+    }
+
     @Override
     public String execute()
         throws Exception
     {
         programInstances.clear();
-        relatedPeople = new ArrayList<Patient>();
+        relatedPeople = new HashMap<Relationship, Patient>();
 
         patient = patientService.getPatient( patientId );
         for ( ProgramInstance programInstance : programInstanceService.getProgramInstances( patient ) )
         {
-            if ( !programInstance.getProgram().isSingleEvent() )
+            if ( !programInstance.isCompleted() )
             {
                 programInstances.add( programInstance );
             }
@@ -264,17 +271,31 @@ public class GetPatientProgramListAction
         {
             if ( relationship.getPatientA().getId() != patient.getId() )
             {
-                relatedPeople.add( relationship.getPatientA() );
+                relatedPeople.put( relationship, relationship.getPatientA() );
             }
 
             if ( relationship.getPatientB().getId() != patient.getId() )
             {
-                relatedPeople.add( relationship.getPatientB() );
+                relatedPeople.put( relationship, relationship.getPatientB() );
             }
         }
-        
+
         relationshipTypes = relationshipTypeService.getAllRelationshipTypes();
+
         patientIdentifiers = patientIdentifierService.getPatientIdentifiers( patient );
+
+        Collection<ProgramInstance> listOfProgramInstance = programInstanceService.getProgramInstances( patient );
+
+        this.listOfCompletedProgram = new ArrayList<ProgramInstance>();
+
+        for ( ProgramInstance each : listOfProgramInstance )
+        {
+            if ( each.isCompleted() )
+            {
+                this.listOfCompletedProgram.add( each );
+            }
+        }
+
         return SUCCESS;
     }
 
@@ -284,7 +305,7 @@ public class GetPatientProgramListAction
         for ( Program program : programService.getPrograms( patient.getOrganisationUnit() ) )
 
         {
-            if ( !program.isSingleEvent() )
+            if ( (program.isSingleEvent() && program.isRegistration()) || !program.isSingleEvent() )
             {
                 if ( programInstanceService.getProgramInstances( patient, program ).size() == 0 )
                 {

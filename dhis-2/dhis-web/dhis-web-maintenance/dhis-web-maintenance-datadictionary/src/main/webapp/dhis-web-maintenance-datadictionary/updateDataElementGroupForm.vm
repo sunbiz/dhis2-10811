@@ -32,7 +32,7 @@
 
 <h3>$i18n.getString( "edit_data_element_group" )</h3>
 
-<form id="updateDataElementGroupForm" action="updateDataElementGroup.action" method="post" >
+<form id="updateDataElementGroupForm" action="updateDataElementGroup.action" method="post" class="inputForm">
 
 <div>
 	<input type="hidden" id="id" name="id" value="$dataElementGroup.id"/>
@@ -44,8 +44,8 @@
 	</tr>
 
 	<tr>
-		<td style="width: 200px;"><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td style="min-width: 240px;"><input type="text" id="name" name="name" value="$encoder.htmlEncode( $dataElementGroup.name )" style="width:240px"/>
+		<td style="width: 120px;"><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td><input type="text" id="name" name="name" value="$encoder.htmlEncode( $dataElementGroup.name )">
 		</td>
 	</tr>
 </table>
@@ -53,9 +53,11 @@
 #tblDynamicAttributes( { "attributes": $attributes, "attributeValues": $attributeValues } )
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<tr>
 		<th>$i18n.getString( "available_data_elements" )</th>

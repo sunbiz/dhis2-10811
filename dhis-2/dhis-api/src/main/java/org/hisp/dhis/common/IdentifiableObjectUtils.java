@@ -65,6 +65,24 @@ public class IdentifiableObjectUtils
 
         return null;
     }
+    
+    /**
+     * Returns a list of uids for the given collection of IdentifiableObjects.
+     * 
+     * @param objects the list of IdentifiableObjects.
+     * @return a list of uids.
+     */
+    public static <T extends IdentifiableObject> List<String> getUids( Collection<T> objects )
+    {
+        List<String> uids = new ArrayList<String>();
+        
+        for ( T object : objects )
+        {
+            uids.add( object.getUid() );
+        }
+        
+        return uids;
+    }
 
     /**
      * Filters the given list of IdentifiableObjects based on the given key.
@@ -98,6 +116,58 @@ public class IdentifiableObjectUtils
 
         return objects;
     }
+    
+    /**
+     * Returns a list of IdentifiableObjects.
+     * 
+     * @param objects the IdentifiableObjects to include in the list.
+     * @return a list of IdentifiableObjects.
+     */
+    public static List<IdentifiableObject> getList( IdentifiableObject... objects )
+    {
+        List<IdentifiableObject> list = new ArrayList<IdentifiableObject>();
+        
+        for ( IdentifiableObject object : objects )
+        {
+            list.add( object );
+        }
+        
+        return list;
+    }
+    
+    /**
+     * Returns a list with erasure IdentifiableObject based on the given collection.
+     * 
+     * @param collection the collection.
+     * @return a list of IdentifiableObjects.
+     */
+    public static List<IdentifiableObject> asList( Collection<? extends IdentifiableObject> collection )
+    {
+        List<IdentifiableObject> list = new ArrayList<IdentifiableObject>();
+        list.addAll( collection );
+        return list;
+    }
+    
+    /**
+     * Returns a list typed with the desired erasure based on the given collection.
+     * This operation implies an unchecked cast and it is the responsibility of
+     * the caller to make sure the cast is valid.
+     * 
+     * @param collection the collection.
+     * @return a list.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends IdentifiableObject> List<T> asTypedList( Collection<IdentifiableObject> collection )
+    {
+        List<T> list = new ArrayList<T>();
+        
+        for ( IdentifiableObject object : collection )
+        {
+            list.add( (T) object );
+        }
+        
+        return list;
+    }
 
     /**
      * Generates a tag reflecting the date of when the most recently updated
@@ -114,7 +184,7 @@ public class IdentifiableObjectUtils
         {
             for ( IdentifiableObject object : objects )
             {
-                if ( object != null && object.getLastUpdated() != null && (latest == null || object.getLastUpdated().after( latest )) )
+                if ( object != null && object.getLastUpdated() != null && ( latest == null || object.getLastUpdated().after( latest ) ) )
                 {
                     latest = object.getLastUpdated();
                 }

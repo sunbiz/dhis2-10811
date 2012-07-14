@@ -49,9 +49,11 @@
 <form id="exportForm" name="exportForm" method="post" action="exportDetailedMetaData.action">
 <input type="hidden" name="exportFormat" value="$!exportFormat">
   <table id="dataElementSelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-    <col style="width: 450px"/>
+      <colgroup>
+        <col style="width: 500px;"/>
+        <col/>
+        <col style="width: 500px"/>
+      </colgroup>
     <thead>
       <tr>
         <th>$i18n.getString( "available_data_elements" )</th>
@@ -78,9 +80,11 @@
   </table>
 
   <table id="indicatorSelectionArea">
-    <col style="width: 450px"/>
-    <col/>
-	<col style="width: 450px"/>
+      <colgroup>
+        <col style="width: 500px;"/>
+        <col/>
+        <col style="width: 500px;"/>
+      </colgroup>
 
     <thead>
       <tr>

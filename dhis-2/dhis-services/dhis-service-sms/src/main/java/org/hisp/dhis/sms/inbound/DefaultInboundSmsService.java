@@ -34,6 +34,7 @@ import org.hisp.dhis.sms.incoming.IncomingSmsService;
 import org.hisp.dhis.sms.incoming.IncomingSmsStore;
 import org.hisp.dhis.sms.incoming.SmsMessageEncoding;
 import org.hisp.dhis.sms.incoming.SmsMessageStatus;
+import org.hisp.dhis.sms.queue.MessageQueue;
 import org.smslib.InboundMessage;
 import org.smslib.Service;
 
@@ -45,6 +46,13 @@ public class DefaultInboundSmsService
     // -------------------------------------------------------------------------
 
     private IncomingSmsStore incomingSmsStore;
+    
+    private MessageQueue incomingSmsQueue;
+
+    public void setIncomingSmsQueue( MessageQueue incomingSmsQueue )
+    {
+        this.incomingSmsQueue = incomingSmsQueue;
+    }
 
     public void setIncomingSmsStore( IncomingSmsStore incomingSmsStore )
     {
@@ -119,6 +127,7 @@ public class DefaultInboundSmsService
     public void save( IncomingSms incomingSms )
     {
         incomingSmsStore.save( incomingSms );
+        incomingSmsQueue.put( incomingSms );
     }
 
     @Override

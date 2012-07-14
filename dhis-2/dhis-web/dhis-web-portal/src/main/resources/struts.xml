@@ -8,11 +8,5 @@
   
   <package name="dhis-web-portal" extends="dhis-web-commons" namespace="/dhis-web-portal">
     
-    <action name="redirect" class="org.hisp.dhis.commons.action.NoAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-portal/redirect.vm</param>
-      <param name="javascripts">javascript/intro.js</param>
-    </action>
-    
   </package>
 </struts>

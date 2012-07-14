@@ -71,6 +71,8 @@ public class UploadExcelFileAction
 
     private boolean isDraft;
 
+    private boolean allowNewName = true;
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -101,6 +103,11 @@ public class UploadExcelFileAction
         this.isDraft = isDraft;
     }
 
+    public void setAllowNewName( boolean allowNewName )
+    {
+        this.allowNewName = allowNewName;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -114,9 +121,18 @@ public class UploadExcelFileAction
 
         if ( isDraft )
         {
-            directory = reportLocationManager.getExportReportTemporaryDirectory();
+            if ( allowNewName )
+            {
+                directory = reportLocationManager.getExportReportTemporaryDirectory();
 
-            output = new File( directory, (Math.random() * 1000) + fileName );
+                output = new File( directory, (Math.random() * 1000) + fileName );
+            }
+            else
+            {
+                directory = reportLocationManager.getExportReportTemporaryDirectory();
+
+                output = new File( directory, fileName );
+            }
         }
         else
         {
@@ -149,5 +165,4 @@ public class UploadExcelFileAction
 
         return SUCCESS;
     }
-
 }

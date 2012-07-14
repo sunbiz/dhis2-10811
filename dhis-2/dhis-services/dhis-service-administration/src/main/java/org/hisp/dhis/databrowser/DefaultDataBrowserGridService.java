@@ -92,7 +92,7 @@ public class DefaultDataBrowserGridService
         List<Integer> betweenPeriodIds = getAllPeriodIdsBetweenDatesOnPeriodType( startDate, endDate, periodType,
             format );
 
-        return dataBrowserGridStore.getDataSetsBetweenPeriods( betweenPeriodIds, isZeroAdded );
+        return dataBrowserGridStore.getDataSetsBetweenPeriods( betweenPeriodIds, periodType, isZeroAdded );
     }
 
     public Grid getDataElementGroupsInPeriod( String startDate, String endDate, PeriodType periodType,
@@ -145,8 +145,8 @@ public class DefaultDataBrowserGridService
 
         dataBrowserGridStore.setDataElementStructureForDataSet( grid, dataSetId, metaIds );
 
-        dataBrowserGridStore.setCountDataElementsForDataSetBetweenPeriods( grid, dataSetId, betweenPeriodIds, metaIds,
-            isZeroAdded );
+        dataBrowserGridStore.setCountDataElementsForDataSetBetweenPeriods( grid, dataSetId, periodType,
+            betweenPeriodIds, metaIds, isZeroAdded );
 
         return grid;
     }
@@ -282,11 +282,8 @@ public class DefaultDataBrowserGridService
             endDate = ENDDATE;
         }
 
-        Date date1 = new Date();
-        Date date2 = new Date();
-
-        date1 = i18nFormat.parseDate( startDate );
-        date2 = i18nFormat.parseDate( endDate );
+        Date date1 = i18nFormat.parseDate( startDate );
+        Date date2 = i18nFormat.parseDate( endDate );
 
         Collection<Period> pp = periodService.getPeriodsBetweenDates( periodType, date1, date2 );
 
@@ -295,8 +292,7 @@ public class DefaultDataBrowserGridService
 
         while ( it.hasNext() )
         {
-            Period p = it.next();
-            betweenPeriodIds.add( p.getId() );
+            betweenPeriodIds.add( it.next().getId() );
         }
 
         if ( betweenPeriodIds.size() <= 0 )

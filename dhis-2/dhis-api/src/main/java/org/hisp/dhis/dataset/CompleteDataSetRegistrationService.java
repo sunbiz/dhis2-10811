@@ -49,6 +49,14 @@ public interface CompleteDataSetRegistrationService
     void saveCompleteDataSetRegistration( CompleteDataSetRegistration registration );
 
     /**
+     * Saves a CompleteDataSetRegistration.
+     * 
+     * @param registration the CompleteDataSetRegistration to save.
+     * @param notify indicates whether a notification should be sent.
+     */    
+    void saveCompleteDataSetRegistration( CompleteDataSetRegistration registration, boolean notify );
+
+    /**
      * Updates a CompleteDataSetRegistration.
      * 
      * @param registration the CompleteDataSetRegistration to update.

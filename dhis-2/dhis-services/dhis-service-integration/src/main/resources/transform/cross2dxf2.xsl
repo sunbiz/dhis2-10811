@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:d="http://dhis2.org/schema/dxf/2.0"
-  version="1.0">
+                xmlns:d="http://dhis2.org/schema/dxf/2.0"
+                version="1.0">
   
-  <xsl:output method="xml" indent="yes" />
+    <xsl:output method="xml" indent="yes" />
 
-  <xsl:template match="/">
-      <d:dxf>
-        <d:dataValueSets>
-        <xsl:for-each select="//*[local-name()='Group']">
-          <xsl:variable name="dataset"
-            select="substring-before(substring-after(substring-after(namespace-uri(),'='),':'),':')"/>
-          <xsl:variable name="period" select="@*[local-name()='TIME_PERIOD']"/>
-          <d:dataValueSet period='{$period}' idScheme='CODE' dataset='{$dataset}'>
-
-            <xsl:for-each select="*[local-name()='Section']">
-              <xsl:for-each select="*[local-name()='OBS_VALUE']">
-                <xsl:variable name="orgUnit" select="@*[local-name()='FACILITY']"/>
-                <xsl:variable name="dataElement" select="@*[local-name()='DATAELEMENT']"/>
-                <xsl:variable name="value" select="@*[local-name()='value']"/>
-                <d:dataValue dataElement='{$dataElement}' orgUnit='{$orgUnit}' value='{$value}' />
-              </xsl:for-each>
-            </xsl:for-each>
-          </d:dataValueSet>
+    <xsl:template match="/">
+        <xsl:for-each select="//*[local-name()='DataSet']">
+            <d:dataValueSet period='{@TIME_PERIOD}' 
+              orgUnitIdScheme='code' 
+              dataElementIdScheme='code' 
+              dataSet='{@datasetID}' 
+              orgUnit='{@FACILITY}'>
+                <xsl:apply-templates />
+            </d:dataValueSet>
         </xsl:for-each>
-      </d:dataValueSets>
-    </d:dxf>
-  </xsl:template>
+    </xsl:template>
 
+    <xsl:template match='*[local-name()="OBS_VALUE"]'>
+      <xsl:element name="d:dataValue" >
+      <xsl:attribute name="dataElement"><xsl:value-of select="@DATAELEMENT"/></xsl:attribute>  
+      <xsl:if test="@DISAGG">
+        <xsl:attribute name="categoryOptionCombo"><xsl:value-of select="@DISAGG"/></xsl:attribute>
+      </xsl:if>
+      <xsl:attribute name="value"><xsl:value-of select="@value"/></xsl:attribute>  
+    </xsl:element>
+
+    </xsl:template> 
 </xsl:stylesheet>

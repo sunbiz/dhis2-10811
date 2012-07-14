@@ -68,7 +68,7 @@
 			</tr>
 			<tr>
 				<td>$i18n.getString('code')</td>
-				<td><input type="text" style="width:400px" id="code" name="code" class="{validate:{required:true}}"/></td>
+				<td><input type="text" style="width:400px" id="code" name="code" /></td>
 			</tr>
 		</table>		
 		<br/>		

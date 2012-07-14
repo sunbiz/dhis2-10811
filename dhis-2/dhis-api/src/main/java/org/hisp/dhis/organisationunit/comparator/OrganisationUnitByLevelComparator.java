@@ -37,9 +37,11 @@ import java.util.Comparator;
 public class OrganisationUnitByLevelComparator
     implements Comparator<OrganisationUnit>
 {
+    public static final Comparator<OrganisationUnit> INSTANCE = new OrganisationUnitByLevelComparator();
+
     @Override
     public int compare( OrganisationUnit o1, OrganisationUnit o2 )
     {
-        return o1.getLevel() - o2.getLevel();
+        return ((Integer) o1.getOrganisationUnitLevel()).compareTo( o2.getOrganisationUnitLevel() );
     }
 }

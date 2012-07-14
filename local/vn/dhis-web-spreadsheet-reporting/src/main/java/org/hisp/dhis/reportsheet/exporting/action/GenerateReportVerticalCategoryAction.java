@@ -34,7 +34,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.CategoryOptionGroupOrder;
 import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
@@ -55,17 +54,17 @@ public class GenerateReportVerticalCategoryAction
     private OptionComboAssociationService optionComboAssociationService;
 
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnit unit = organisationUnitSelectionManager.getSelectedOrganisationUnit();
 
         ExportReportVerticalCategory exportReportInstance = (ExportReportVerticalCategory) exportReport;
 
-        this.installReadTemplateFile( exportReportInstance, period, unit );
+        this.installReadTemplateFile( exportReportInstance, unit );
 
         Collection<ExportItem> exportReportItems = null;
-        
+
         for ( Integer sheetNo : exportReportService.getSheets( selectionManager.getSelectedReportId() ) )
         {
             Sheet sheet = this.templateWorkbook.getSheetAt( sheetNo - 1 );
@@ -73,8 +72,10 @@ public class GenerateReportVerticalCategoryAction
             exportReportItems = exportReportInstance.getExportItemBySheet( sheetNo );
 
             this.generateVerticalOutPutFile( exportReportInstance, exportReportItems, unit, sheet );
+
+            this.recalculatingFormula( sheet );
         }
-        
+
         /**
          * Garbage
          */
@@ -104,12 +105,12 @@ public class GenerateReportVerticalCategoryAction
                 if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_NAME ) )
                 {
                     ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), group.getName(), ExcelUtils.TEXT,
-                        sheet, this.csText10Bold );
+                        sheet, this.csText10Normal );
                 }
                 else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL ) )
                 {
                     ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), chappter[chapperNo++],
-                        ExcelUtils.TEXT, sheet, this.csText10Bold );
+                        ExcelUtils.TEXT, sheet, this.csText10Normal );
                 }
 
                 run++;
@@ -125,7 +126,7 @@ public class GenerateReportVerticalCategoryAction
                             if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.DATAELEMENT_NAME ) )
                             {
                                 ExcelUtils.writeValueByPOI( rowBegin, reportItem.getColumn(), categoryOption.getName(),
-                                    ExcelUtils.TEXT, sheet, this.csText8Bold );
+                                    ExcelUtils.TEXT, sheet, this.csText8Normal );
                             }
                             else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.SERIAL ) )
                             {
@@ -135,7 +136,8 @@ public class GenerateReportVerticalCategoryAction
                             else if ( reportItem.getItemType().equalsIgnoreCase( ExportItem.TYPE.FORMULA_EXCEL ) )
                             {
                                 ExcelUtils.writeFormulaByPOI( rowBegin, reportItem.getColumn(), ExcelUtils
-                                    .generateExcelFormula( reportItem.getExpression(), run, run ), sheet, csFormula );
+                                    .generateExcelFormula( reportItem.getExpression(), run, run ), sheet,
+                                    csFormulaNormal, evaluatorFormula );
                             }
                             else
                             {
@@ -164,7 +166,7 @@ public class GenerateReportVerticalCategoryAction
                                     + (rowBegin - 1) + ")";
 
                                 ExcelUtils.writeFormulaByPOI( beginChapter, reportItem.getColumn(), formula, sheet,
-                                    this.csFormula );
+                                    this.csFormulaBold, evaluatorFormula );
                             }
 
                             break;

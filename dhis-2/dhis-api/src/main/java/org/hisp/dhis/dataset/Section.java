@@ -30,7 +30,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JacksonXmlRootElement( localName = "section", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "section", namespace = DxfNamespaces.DXF_2_0)
 public class Section
     extends BaseIdentifiableObject
 {
@@ -196,7 +196,7 @@ public class Section
     @JsonProperty
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public DataSet getDataSet()
     {
         return dataSet;
@@ -210,8 +210,8 @@ public class Section
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "dataElements", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "dataElement", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "dataElements", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "dataElement", namespace = DxfNamespaces.DXF_2_0)
     public List<DataElement> getDataElements()
     {
         return dataElements;
@@ -234,8 +234,8 @@ public class Section
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "greyedFields", namespace = Dxf2Namespace.NAMESPACE )
-    @JacksonXmlProperty( localName = "greyedField", namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlElementWrapper( localName = "greyedFields", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "greyedField", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElementOperand> getGreyedFields()
     {
         return greyedFields;
@@ -255,7 +255,7 @@ public class Section
         {
             Section section = (Section) other;
 
-            dataSet = section.getDataSet() == null ? dataSet : section.getDataSet();
+            dataSet = section.getDataSet();
 
             removeAllDataElements();
 

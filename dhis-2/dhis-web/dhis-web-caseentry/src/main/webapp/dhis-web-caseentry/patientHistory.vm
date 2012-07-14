@@ -26,7 +26,6 @@
 			#set( $mark = false )
 			#foreach( $row in $grid.getVisibleRows() )
 			<tr #alternate($mark)>
-				#set( $nameCol='false' )
 				#foreach( $col in $row )
 					#set( $index = ( $velocityCount - 1 ) )
 					#if( $grid.getVisibleHeaders().get( $index ).meta )

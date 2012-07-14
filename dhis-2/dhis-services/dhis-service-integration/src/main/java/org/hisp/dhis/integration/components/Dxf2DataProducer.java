@@ -55,7 +55,7 @@ public class Dxf2DataProducer
         
         Dxf2DataEndpoint endpoint =  (Dxf2DataEndpoint) this.getEndpoint();
         
-        // get importOptions off the message header or default to options set on the endpoint
+        // get importOptions off the message header or default to options set on the end point
         ImportOptions options = (ImportOptions) exchange.getIn().
             getHeader( IntegrationService.IMPORT_OPTIONS_HDR, endpoint.getImportOptions() );
         

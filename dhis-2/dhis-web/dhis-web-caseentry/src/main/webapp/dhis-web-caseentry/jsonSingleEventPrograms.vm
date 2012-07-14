@@ -4,12 +4,12 @@
 		#foreach( $program in $programs )
 		  {
 			"id":  ${program.id} ,
-			"name": "$!encoder.jsonEncode( ${program.name} )",
+			"name": "$!encoder.jsonEncode( ${program.displayName} )",
 			"type": "$program.type",
-			"programStageId": 
-				#foreach( $programStage in $program.programStages )
-					"$programStage.id"
-				#end
+			#foreach( $programStage in $program.programStages )
+				"reportDateDescription": "$programStage.reportDateDescription",
+				"programStageId": "$programStage.id"
+			#end
 		  }#if( $velocityCount < $size ),#end
 		#end]
 }

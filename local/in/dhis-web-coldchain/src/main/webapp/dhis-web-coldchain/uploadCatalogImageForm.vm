@@ -22,8 +22,9 @@
     
 </script>
 <h3>$i18n.getString( "upload_catalog_image" )</h3>
-<!--<form id="uploadCatalogImageForm" name="uploadCatalogImageForm" action="uploadCatalogImage.action" method="post" enctype="multipart/form-data">-->
-<form id="uploadCatalogImageForm" name="uploadCatalogImageForm" method="post" enctype="multipart/form-data">
+<form id="uploadCatalogImageForm" name="uploadCatalogImageForm" action="uploadCatalogImage.action" method="post" enctype="multipart/form-data">
+<!--<form id="uploadCatalogImageForm" name="uploadCatalogImageForm" enctype="multipart/form-data">-->
+<!--<form id="uploadCatalogImageForm" name="uploadCatalogImageForm" method="post" enctype="multipart/form-data">-->
 
 	<div>
 		<input type="hidden" id="id" name="id" value="$catalog.id" />
@@ -65,8 +66,9 @@
 						<td>&nbsp;</td>
 						<td>
 							<input type="submit" class='button' value="$i18n.getString( 'upload_image' )" >&nbsp;
-							<!--<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='catalog.action'" />-->
-							<input type="button" class="button" value="$i18n.getString( 'cancel' )" onclick="loadAllCatalogs();"/>
+							<!--<input type="button" class='button' value="$i18n.getString( 'upload_image' )" onclick="upLoadImage()">&nbsp;-->
+							<input type="button" value="$i18n.getString( 'cancel' )" onclick="window.location.href='catalog.action'" />
+							<!--<input type="button" class="button" value="$i18n.getString( 'cancel' )" onclick="loadAllCatalogs();"/>-->
 						</td>
 					</tr>
 				</table>
@@ -74,5 +76,5 @@
 			<td valign="top"><img src="showImage.action?id=$catalog.id" style="width:200px;height:200px;" /></td>
 		</tr>
 	</table>
-
+<div id='imageSaveDiv'></div>
 </form> 	

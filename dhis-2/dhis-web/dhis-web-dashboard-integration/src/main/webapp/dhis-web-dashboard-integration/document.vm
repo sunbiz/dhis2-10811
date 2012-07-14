@@ -22,6 +22,6 @@
 </table>
 
 #if( $documents.size() == 0 )
-<div class="labelText">$i18n.getString( "insert_links_by_going_to" ) 
+<div class="labelText">$i18n.getString( "insert_links_by_going_to" )<br>
 <a href="../dhis-web-reporting/displayViewDocumentForm.action">$i18n.getString( "document" )</a></div>
 #end

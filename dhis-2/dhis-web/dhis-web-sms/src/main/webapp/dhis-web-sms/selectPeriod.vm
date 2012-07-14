@@ -2,7 +2,7 @@
 #if( $dataSet.alternativeName )
     #set( $dataSetName = $dataSet.alternativeName )
 #else
-    #set( $dataSetName = $dataSet.name )
+    #set( $dataSetName = $dataSet.displayName )
 #end
 
 <div class="header-box" align="center">

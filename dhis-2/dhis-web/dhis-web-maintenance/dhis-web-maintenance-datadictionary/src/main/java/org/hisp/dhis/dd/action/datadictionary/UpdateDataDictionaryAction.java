@@ -27,10 +27,7 @@ package org.hisp.dhis.dd.action.datadictionary;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.datadictionary.DataDictionary;
 import org.hisp.dhis.datadictionary.DataDictionaryService;
 import org.hisp.dhis.dataelement.DataElement;
@@ -38,9 +35,11 @@ import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.hisp.dhis.system.util.TextUtils.nullIfEmpty;;
+import static org.hisp.dhis.system.util.TextUtils.nullIfEmpty;
 
 /**
  * @author Lars Helge Overland
@@ -66,7 +65,7 @@ public class UpdateDataDictionaryAction
     {
         this.dataElementService = dataElementService;
     }
-    
+
     private IndicatorService indicatorService;
 
     public void setIndicatorService( IndicatorService indicatorService )
@@ -98,7 +97,7 @@ public class UpdateDataDictionaryAction
     {
         this.description = description;
     }
-    
+
     private String region;
 
     public void setRegion( String region )
@@ -111,7 +110,7 @@ public class UpdateDataDictionaryAction
     public void setSelectedDataElements( Collection<String> groupMembers )
     {
         this.selectedDataElements = groupMembers;
-    }    
+    }
 
     private Collection<String> selectedIndicators;
 
@@ -119,7 +118,7 @@ public class UpdateDataDictionaryAction
     {
         this.selectedIndicators = indicators;
     }
-    
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -127,7 +126,7 @@ public class UpdateDataDictionaryAction
     public String execute()
     {
         DataDictionary dictionary = dataDictionaryService.getDataDictionary( id );
-        
+
         dictionary.setName( name );
         dictionary.setDescription( nullIfEmpty( description ) );
         dictionary.setRegion( nullIfEmpty( region ) );
@@ -143,21 +142,29 @@ public class UpdateDataDictionaryAction
 
             dictionary.setDataElements( members );
         }
-        
+        else
+        {
+            dictionary.setDataElements( new HashSet<DataElement>() );
+        }
+
         if ( selectedIndicators != null )
         {
             Set<Indicator> members = new HashSet<Indicator>( selectedIndicators.size() );
-            
+
             for ( String id : selectedIndicators )
             {
                 members.add( indicatorService.getIndicator( Integer.parseInt( id ) ) );
             }
-            
+
             dictionary.setIndicators( members );
         }
-        
+        else
+        {
+            dictionary.setIndicators( new HashSet<Indicator>() );
+        }
+
         dataDictionaryService.saveDataDictionary( dictionary );
-        
+
         return SUCCESS;
     }
 }

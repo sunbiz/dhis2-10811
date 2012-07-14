@@ -4,6 +4,7 @@
   {
 	"id": "${dataElement.id}",
 	"name": "$!encoder.jsonEncode( ${dataElement.name} )",
+	"type": "${dataElement.type}",
 	"optionset": 
 		#if( $!dataElement.optionSet )
 			"$encoder.xmlEncode($!dataElement.optionSet.options.toString())"

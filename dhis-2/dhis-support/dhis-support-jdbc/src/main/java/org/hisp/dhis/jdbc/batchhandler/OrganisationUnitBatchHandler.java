@@ -95,6 +95,7 @@ public class OrganisationUnitBatchHandler
         statementBuilder.setColumn( "parentid" );
         statementBuilder.setColumn( "shortname" );
         statementBuilder.setColumn( "code" );
+        statementBuilder.setColumn( "description" );
         statementBuilder.setColumn( "openingdate" );
         statementBuilder.setColumn( "closeddate" );
         statementBuilder.setColumn( "active" );
@@ -112,6 +113,7 @@ public class OrganisationUnitBatchHandler
         statementBuilder.setValue( unit.getParent() != null ? unit.getParent().getId() : null );
         statementBuilder.setValue( unit.getShortName() );
         statementBuilder.setValue( unit.getCode() );
+        statementBuilder.setValue( unit.getDescription() );
         statementBuilder.setValue( unit.getOpeningDate() );
         statementBuilder.setValue( unit.getClosedDate() );
         statementBuilder.setValue( unit.isActive() );

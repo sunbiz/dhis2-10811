@@ -27,6 +27,7 @@ package org.hisp.dhis.dd.action.category;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.concept.ConceptService;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 
@@ -48,11 +49,18 @@ public class UpdateDataElementCategoryOptionAction
     public void setDataElementCategoryService( DataElementCategoryService dataElementCategoryService )
     {
         this.dataElementCategoryService = dataElementCategoryService;
-    }  
-    
+    }
+
+    private ConceptService conceptService;
+
+    public void setConceptService( ConceptService conceptService )
+    {
+        this.conceptService = conceptService;
+    }
+
     // -------------------------------------------------------------------------
     // Input
-    // -------------------------------------------------------------------------    
+    // -------------------------------------------------------------------------
 
     private Integer id;
 
@@ -68,6 +76,20 @@ public class UpdateDataElementCategoryOptionAction
         this.name = name;
     }
 
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
+    private Integer conceptId;
+
+    public void setConceptId( Integer conceptId )
+    {
+        this.conceptId = conceptId;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -76,6 +98,9 @@ public class UpdateDataElementCategoryOptionAction
     {
         DataElementCategoryOption categoryOption = dataElementCategoryService.getDataElementCategoryOption( id );
         categoryOption.setName( name );
+        categoryOption.setCode( code );
+        categoryOption.setConcept( conceptService.getConcept( conceptId ) );
+
         dataElementCategoryService.updateDataElementCategoryOption( categoryOption );
 
         return SUCCESS;

@@ -47,7 +47,7 @@
 
 <h3>$i18n.getString( "create_new_data_dictionary" )</h3>
 
-<form id="addDataDictionaryForm" action="addDataDictionary.action" method="post" >
+<form id="addDataDictionaryForm" action="addDataDictionary.action" method="post" class="inputForm">
 
 <table>	
 	<tr>
@@ -56,17 +56,17 @@
 
 	<tr>
 		<td><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-		<td><input type="text" id="name" name="name" style="width:28em"/></td>
+		<td><input type="text" id="name" name="name"/></td>
 	</tr>
 
 	<tr>
 		<td><label for="description">$i18n.getString( "description" )</label></td>
-		<td><textarea id="description" name="description" style="width:28em; height:8em"></textarea></td>
+		<td><textarea id="description" name="description"></textarea></td>
 	</tr>
 
 	<tr>
 		<td><label for="region">$i18n.getString( "region" )</label></td>
-		<td><input type="text" id="region" name="region" style="width:28em"/></td>
+		<td><input type="text" id="region" name="region"></td>
 	</tr>
 	<tr>
 		<td colspan="2" height="15px"></td>
@@ -74,9 +74,11 @@
 </table>
 
 <table>
-    <col style="width: 450px"/>
-    <col/>
-	<col style="width: 450px"/>
+    <colgroup>
+      <col style="width: 500px;"/>
+      <col/>
+      <col style="width: 500px;"/>
+    </colgroup>
 
 	<tr>
 		<th>$i18n.getString( "available_data_elements" )</th>

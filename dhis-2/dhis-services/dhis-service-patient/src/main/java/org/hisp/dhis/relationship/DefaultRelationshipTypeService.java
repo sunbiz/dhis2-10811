@@ -26,8 +26,11 @@
  */
 package org.hisp.dhis.relationship;
 
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
 import java.util.Collection;
 
+import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -49,6 +52,13 @@ public class DefaultRelationshipTypeService
         this.relationshipTypeStore = relationshipTypeStore;
     }
 
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation methods
     // -------------------------------------------------------------------------
@@ -60,12 +70,12 @@ public class DefaultRelationshipTypeService
 
     public Collection<RelationshipType> getAllRelationshipTypes()
     {
-        return relationshipTypeStore.getAll();
+        return i18n( i18nService, relationshipTypeStore.getAll() );
     }
 
     public RelationshipType getRelationshipType( int id )
     {
-        return relationshipTypeStore.get( id );
+        return i18n( i18nService, relationshipTypeStore.get( id ) );
     }
 
     public int saveRelationshipType( RelationshipType relationshipType )
@@ -80,6 +90,6 @@ public class DefaultRelationshipTypeService
 
     public RelationshipType getRelationshipType( String aIsToB, String bIsToA )
     {
-        return relationshipTypeStore.getRelationshipType( aIsToB, bIsToA );
+        return i18n( i18nService, relationshipTypeStore.getRelationshipType( aIsToB, bIsToA ) );
     }
 }

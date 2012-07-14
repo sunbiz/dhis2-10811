@@ -31,13 +31,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
+import org.hisp.dhis.common.DxfNamespaces;
 
 /**
  * @author Abyot Asalefew
  * @version $Id$
  */
-@XmlRootElement( name = "relationshipType", namespace = Dxf2Namespace.NAMESPACE )
+@XmlRootElement( name = "relationshipType", namespace = DxfNamespaces.DXF_2_0 )
 @XmlAccessorType( value = XmlAccessType.NONE )
 public class RelationshipType
     extends BaseIdentifiableObject

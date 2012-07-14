@@ -15,5 +15,10 @@ jQuery(document).ready(	function(){
 		});
 	});
 	
+	ATTRIBUTE_OPTION.selectValueType(byId("valueType"));
+	if( getFieldValue('expression') != "" ){
+		getConditionDescription();
+	}
+	
 	checkValueIsExist( "name", "validatePatientAttribute.action", {id:getFieldValue('id')});
 });		

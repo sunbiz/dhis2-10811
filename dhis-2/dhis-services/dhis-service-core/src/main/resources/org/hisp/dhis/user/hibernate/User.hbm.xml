@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
-    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+  "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
   <class name="org.hisp.dhis.user.User" lazy="false" table="userinfo">
@@ -18,6 +18,8 @@
 
     <property name="lastUpdated" type="timestamp" />
 
+    <property name="created" type="timestamp" />
+
     <property name="surname" not-null="true" length="160" />
 
     <property name="firstName" not-null="true" length="160" />
@@ -25,10 +27,26 @@
     <property name="email" length="160" />
 
     <property name="phoneNumber" length="80" />
-	
-	<property name="jobTitle" length="160" />
 
-	<property name="lastCheckedInterpretations" type="timestamp" />
+    <property name="jobTitle" length="160" />
+
+    <property name="introduction" type="text" />
+
+    <property name="gender" length="50" />
+
+    <property name="birthday" type="date" />
+
+    <property name="nationality" length="160" />
+
+    <property name="employer" length="160" />
+
+    <property name="education" type="text" />
+
+    <property name="interests" type="text" />
+
+    <property name="languages" type="text" />
+
+    <property name="lastCheckedInterpretations" type="timestamp" />
 
     <one-to-one name="userCredentials" class="org.hisp.dhis.user.UserCredentials" foreign-key="fk_userinfo_userid" />
 

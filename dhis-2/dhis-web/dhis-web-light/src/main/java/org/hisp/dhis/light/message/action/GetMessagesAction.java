@@ -27,12 +27,14 @@
 
 package org.hisp.dhis.light.message.action;
 
-import com.opensymphony.xwork2.Action;
-import org.hisp.dhis.message.MessageConversation;
-import org.hisp.dhis.message.MessageService;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hisp.dhis.message.MessageConversation;
+import org.hisp.dhis.message.MessageService;
+import org.hisp.dhis.message.UserMessage;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -62,14 +64,24 @@ public class GetMessagesAction
         return conversations;
     }
 
+    private List<UserMessage> usermessages;
+
+    public List<UserMessage> getUsermessages()
+    {
+        return usermessages;
+    }
+
     // -------------------------------------------------------------------------
     // Action Implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public String execute() throws Exception
+    public String execute()
+        throws Exception
     {
         conversations = new ArrayList<MessageConversation>( messageService.getMessageConversations( 0, 10 ) );
+
+        usermessages = new ArrayList<UserMessage>( messageService.getLastRecipients( 0, 5 ) );
 
         return SUCCESS;
     }

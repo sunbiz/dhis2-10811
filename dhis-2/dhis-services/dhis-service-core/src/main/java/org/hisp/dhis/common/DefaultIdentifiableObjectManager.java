@@ -31,6 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
 import org.hisp.dhis.common.NameableObject.NameableProperty;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,9 @@ public class DefaultIdentifiableObjectManager
 {
     private static final Log log = LogFactory.getLog( DefaultIdentifiableObjectManager.class );
 
+    @Autowired
+    private CurrentUserService currentUserService;
+    
     @Autowired
     private Set<GenericIdentifiableObjectStore<IdentifiableObject>> identifiableObjectStores;
 
@@ -74,6 +79,10 @@ public class DefaultIdentifiableObjectManager
         }
     }
 
+    //--------------------------------------------------------------------------
+    // IdentifiableObjectManager implementation
+    //--------------------------------------------------------------------------
+
     @Override
     public void save( IdentifiableObject object )
     {
@@ -82,10 +91,6 @@ public class DefaultIdentifiableObjectManager
         if ( store != null )
         {
             store.save( object );
-        }
-        else
-        {
-            log.warn( "No IdentifiableObject store found for " + object.getClass() + " (save)." );
         }
     }
 
@@ -98,10 +103,6 @@ public class DefaultIdentifiableObjectManager
         {
             store.update( object );
         }
-        else
-        {
-            log.warn( "No IdentifiableObject store found for " + object.getClass() + " (update)." );
-        }
     }
 
     @Override
@@ -113,10 +114,6 @@ public class DefaultIdentifiableObjectManager
         {
             store.delete( object );
         }
-        else
-        {
-            log.warn( "No IdentifiableObject store found for " + object.getClass() + " (delete)." );
-        }
     }
 
     @Override
@@ -127,8 +124,6 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning null." );
-
             return null;
         }
 
@@ -143,8 +138,6 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning null (getByCode)." );
-
             return null;
         }
 
@@ -159,8 +152,6 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning null (getByName)." );
-
             return null;
         }
 
@@ -193,8 +184,6 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty collection (getAll)." );
-
             return new ArrayList<T>();
         }
 
@@ -209,12 +198,24 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty collection (getAllSorted)." );
-
             return new ArrayList<T>();
         }
 
-        return (Collection<T>) store.getAllSorted();
+        return (Collection<T>) store.getAllOrderedName();
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> Collection<T> getLikeName( Class<T> clazz, String name )
+    {
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (Collection<T>) store.getAllLikeName( name );
     }
 
     @Override
@@ -225,12 +226,10 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty collection (getBetween)." );
-
             return new ArrayList<T>();
         }
 
-        return (Collection<T>) store.getBetween( first, max );
+        return (Collection<T>) store.getAllOrderedName( first, max );
     }
 
     @Override
@@ -241,12 +240,10 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty collection (getBetweenByName)." );
-
             return new ArrayList<T>();
         }
 
-        return (Collection<T>) store.getBetweenByName( name, first, max );
+        return (Collection<T>) store.getAllLikeNameOrderedName( name, first, max );
     }
 
     @Override
@@ -257,12 +254,10 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty collection (getByLastUpdated)." );
-
             return new ArrayList<T>();
         }
 
-        return (Collection<T>) store.getByLastUpdated( lastUpdated );
+        return (Collection<T>) store.getAllGeLastUpdated( lastUpdated );
     }
 
     @Override
@@ -273,14 +268,32 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty collection (getByLastUpdatedSorted)." );
-
             return new ArrayList<T>();
         }
 
-        return (Collection<T>) store.getByLastUpdatedSorted( lastUpdated );
+        return (Collection<T>) store.getAllGeLastUpdatedOrderedName( lastUpdated );
     }
 
+    @Override
+    public <T extends IdentifiableObject> Set<Integer> convertToId( Class<T> clazz, Collection<String> uids )
+    {
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+        
+        Set<Integer> ids = new HashSet<Integer>();
+        
+        for ( String uid : uids )
+        {
+            IdentifiableObject object = store.getByUid( uid );
+            
+            if ( object != null )
+            {
+                ids.add( object.getId() );
+            }
+        }
+        
+        return ids;
+    }
+    
     @Override
     @SuppressWarnings( "unchecked" )
     public <T extends IdentifiableObject> Map<String, T> getIdMap( Class<T> clazz, IdentifiableProperty property )
@@ -291,8 +304,6 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObject store found for " + clazz + ", returning empty map (getIdMap)." );
-
             return map;
         }
 
@@ -350,13 +361,6 @@ public class DefaultIdentifiableObjectManager
                 if ( object.getShortName() != null )
                 {
                     map.put( object.getShortName(), object );
-                }
-            }
-            else if ( property == NameableProperty.ALTERNATIVE_NAME )
-            {
-                if ( object.getAlternativeName() != null )
-                {
-                    map.put( object.getAlternativeName(), object );
                 }
             }
         }
@@ -433,10 +437,6 @@ public class DefaultIdentifiableObjectManager
         {
             return store.getCount();
         }
-        else
-        {
-            log.warn( "No IdentifiableObject store found for " + clazz + " (getCount)." );
-        }
 
         return 0;
     }
@@ -447,6 +447,8 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
+            log.warn( "No IdentifiableObjectStore found for class: " + clazz );
+            
             store = identifiableObjectStoreMap.get( clazz.getSuperclass() );
         }
 
@@ -459,9 +461,95 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
+            log.warn( "No NameableObjectStore found for class: " + clazz );
+            
             store = nameableObjectStoreMap.get( clazz.getSuperclass() );
         }
 
         return store;
+    }
+
+    //--------------------------------------------------------------------------
+    // Accessible
+    //--------------------------------------------------------------------------
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> List<T> getAllAccessible( Class<T> clazz )
+    {
+        User user = currentUserService.getCurrentUser();
+        
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( user == null || store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (List<T>) store.getAccessibleByUser( user );
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> List<T> getAccessibleLikeName( Class<T> clazz, String name )
+    {
+        User user = currentUserService.getCurrentUser();
+        
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( user == null || store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (List<T>) store.getAccessibleLikeName( user, name );
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> List<T> getAccessibleBetween( Class<T> clazz, int first, int max )
+    {
+        User user = currentUserService.getCurrentUser();
+        
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( user == null || store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (List<T>) store.getAccessibleBetween( user, first, max );
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> List<T> getAccessibleBetweenLikeName( Class<T> clazz, String name, int first, int max )
+    {
+        User user = currentUserService.getCurrentUser();
+        
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( user == null || store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (List<T>) store.getAccessibleBetweenLikeName( user, name, first, max );
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> List<T> getAccessibleByLastUpdated( Class<T> clazz, Date lastUpdated )
+    {
+        User user = currentUserService.getCurrentUser();
+        
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (List<T>) store.getAccessibleByLastUpdated( user, lastUpdated );
     }
 }

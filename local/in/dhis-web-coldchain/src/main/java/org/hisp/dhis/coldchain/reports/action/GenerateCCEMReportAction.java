@@ -348,6 +348,7 @@ public class GenerateCCEMReportAction implements Action
             ccemReportOutput.setTableHeadings( tableHeadings );
             ccemReportOutput.setReportHeading( ccemReport.getReportName() );
         }
+        
         else if( ccemReport.getReportType().equals( CCEMReport.ORGUNITGROUP_DATAVALUE ) )
         {
             ccemReportOutput = new CCEMReportOutput();
@@ -613,7 +614,6 @@ public class GenerateCCEMReportAction implements Action
         }
         else if( ccemReport.getReportType().equals( CCEMReport.VACCINE_STORAGE_CAPACITY ) )
         {
-
             ccemReportOutput = new CCEMReportOutput();
             List<String> tableHeadings = new ArrayList<String>();
             List<List<String>> tableSubHeadings = new ArrayList<List<String>>();
@@ -745,18 +745,24 @@ public class GenerateCCEMReportAction implements Action
             String vsReqCatalogAttribIds = catalogDataParts[5];
             
             Integer vsReqPackedVol = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[0] );
-            Integer vsReqDoses = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[1] );
-            Integer vsReqTargetPopCat= Integer.parseInt( vsReqCatalogAttribIds.split( "," )[2] );
-            Integer vsReqUsage = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[3] );
-            Integer vsReqWastage = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[4] );
+            Integer vsReqDiluentVol = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[1] );
+            Integer vsReqDoses = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[2] );
+            Integer vsReqTargetPopCat= Integer.parseInt( vsReqCatalogAttribIds.split( "," )[3] );
+            Integer vsReqUsage = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[4] );
+            Integer vsReqWastage = Integer.parseInt( vsReqCatalogAttribIds.split( "," )[5] );
 
             List<Integer> catalogIdsForRequirement = new ArrayList<Integer>( ccemReportManager.getCatalogIdsForRequirement( vsReqCatalogTypeId, vsReqStorageTempId, vsReqStorageTemp, vsReqNationalSupplyId, vsReqNationalSupply ) );
             
             Map<String, String> catalogDataForRequirement = new HashMap<String, String>( ccemReportManager.getCatalogDataForRequirement( vsReqCatalogTypeId, vsReqStorageTempId, vsReqStorageTemp, vsReqNationalSupplyId, vsReqNationalSupply, vsReqCatalogAttribIds ) );
             
+            Integer vsReqStaticDel = Integer.parseInt( partsOfCellContent[3].split( "," )[0] );
+            Integer vsReqOutReachDel = Integer.parseInt( partsOfCellContent[3].split( "," )[1] );
+            
+            String catalogOption_DataelementIds = vsReqStaticDel +"," + vsReqOutReachDel;
+            
             String[] dataelementDataParts = partsOfCellContent[1].split( "," );
             Map<String, Integer> catalogOption_DataelementMap = new HashMap<String, Integer>();
-            String catalogOption_DataelementIds = "-1";
+            
             
             for( String de_catalogOption : dataelementDataParts )
             {
@@ -875,6 +881,27 @@ public class GenerateCCEMReportAction implements Action
                         {
                             vsReqPackedVolData = 0.0;
                         }
+                    }
+                    
+                    String tempStr1 = dataElementDataForRequirement.get( vsReqStaticDel+":"+periodId+":"+orgUnit.getId() );
+                    String tempStr2 = dataElementDataForRequirement.get( vsReqOutReachDel+":"+periodId+":"+orgUnit.getId() );
+                    if( (tempStr1 != null && tempStr1.equalsIgnoreCase( "true" )) || (tempStr2 != null && tempStr2.equalsIgnoreCase( "true" )) )
+                    {
+                        Double vsReqDiluentVolData = 0.0;                        
+                        tempStr = catalogDataForRequirement.get( catalogId+":"+vsReqDiluentVol );
+                        if( tempStr != null )
+                        {
+                            try
+                            {
+                                vsReqDiluentVolData = Double.parseDouble( tempStr );
+                            }
+                            catch( Exception e )
+                            {
+                                vsReqDiluentVolData = 0.0;
+                            }
+                        }
+                        
+                        vsReqPackedVolData += vsReqDiluentVolData;
                     }
                     
                     Double vsReqWastageData = 0.0;

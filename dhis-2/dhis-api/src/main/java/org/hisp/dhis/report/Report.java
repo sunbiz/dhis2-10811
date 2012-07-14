@@ -27,36 +27,48 @@ package org.hisp.dhis.report;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DxfNamespaces;
+import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.common.view.ExportView;
+import org.hisp.dhis.period.RelativePeriods;
+import org.hisp.dhis.reporttable.ReportParams;
+import org.hisp.dhis.reporttable.ReportTable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.Dxf2Namespace;
-import org.hisp.dhis.common.IdentifiableObject;
-import org.hisp.dhis.common.view.DetailedView;
-import org.hisp.dhis.common.view.ExportView;
-import org.hisp.dhis.reporttable.ReportTable;
 
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
-@JacksonXmlRootElement( localName = "report", namespace = Dxf2Namespace.NAMESPACE )
+@JacksonXmlRootElement( localName = "report", namespace = DxfNamespaces.DXF_2_0 )
 public class Report
     extends BaseIdentifiableObject
 {
     private static final long serialVersionUID = 7880117720157807526L;
 
     public static final String TEMPLATE_DIR = "templates";
+    
+    public static final String TYPE_JASPER_REPORT_TABLE = "jasperReportTable";
+    public static final String TYPE_JASPER_JDBC = "jasperJdbc";
+    public static final String TYPE_HTML = "html";
 
+    private String type;
+    
     private String designContent;
 
     private ReportTable reportTable;
 
     private Boolean usingOrgUnitGroupSets;
 
+    private RelativePeriods relatives;
+
+    private ReportParams reportParams;
+    
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -65,17 +77,40 @@ public class Report
     {
     }
 
-    public Report( String name, String designContent, ReportTable reportTable )
+    public Report( String name, String type, String designContent, ReportTable reportTable )
     {
         this.name = name;
         this.designContent = designContent;
         this.reportTable = reportTable;
+    }
+    
+    public Report( String name, String type, String designContent, RelativePeriods relatives, ReportParams reportParams )
+    {
+        this.name = name;
+        this.designContent = designContent;
+        this.relatives = relatives;
+        this.reportParams = reportParams;
     }
 
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
 
+    public boolean isTypeReportTable()
+    {
+        return type != null && TYPE_JASPER_REPORT_TABLE.equals( type );
+    }
+    
+    public boolean isTypeJdbc()
+    {
+        return type != null && TYPE_JASPER_JDBC.equals( type );
+    }
+    
+    public boolean isTypeHtml()
+    {
+        return type != null && TYPE_HTML.equals( type );
+    }
+        
     public boolean hasReportTable()
     {
         return reportTable != null;
@@ -86,6 +121,22 @@ public class Report
         return usingOrgUnitGroupSets != null && usingOrgUnitGroupSets;
     }
 
+    /**
+     * Indicates whether this report has relative periods.
+     */
+    public boolean hasRelativePeriods()
+    {
+        return relatives != null && !relatives.getRelativePeriods().isEmpty();
+    }
+    
+    /**
+     * Indicates whether this report has report parameters set.
+     */
+    public boolean hasReportParams()
+    {
+        return reportParams != null && reportParams.isSet();
+    }
+    
     // -------------------------------------------------------------------------
     // Equals and hashCode
     // -------------------------------------------------------------------------
@@ -129,9 +180,28 @@ public class Report
     // Getters and setters
     // -------------------------------------------------------------------------
 
+    @Override
+    public boolean haveUniqueNames()
+    {
+        return false;
+    }
+
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getDesignContent()
     {
         return designContent;
@@ -145,7 +215,7 @@ public class Report
     @JsonProperty
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public ReportTable getReportTable()
     {
         return reportTable;
@@ -158,7 +228,7 @@ public class Report
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = Dxf2Namespace.NAMESPACE )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public Boolean getUsingOrgUnitGroupSets()
     {
         return usingOrgUnitGroupSets;
@@ -167,6 +237,32 @@ public class Report
     public void setUsingOrgUnitGroupSets( Boolean usingOrgUnitGroupSets )
     {
         this.usingOrgUnitGroupSets = usingOrgUnitGroupSets;
+    }
+
+    @JsonProperty( value = "relativePeriods" )
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public RelativePeriods getRelatives()
+    {
+        return relatives;
+    }
+
+    public void setRelatives( RelativePeriods relatives )
+    {
+        this.relatives = relatives;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public ReportParams getReportParams()
+    {
+        return reportParams;
+    }
+
+    public void setReportParams( ReportParams reportParams )
+    {
+        this.reportParams = reportParams;
     }
 
     @Override

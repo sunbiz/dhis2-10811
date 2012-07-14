@@ -31,11 +31,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
-import org.amplecode.quick.StatementHolder;
-import org.amplecode.quick.StatementManager;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -51,11 +50,14 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodStore;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.system.util.ConversionUtils;
+import org.hisp.dhis.system.util.MathUtils;
+import org.hisp.dhis.system.util.TextUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author Torgeir Lorange Ostby
- * @version $Id: HibernateDataValueStore.java 5715 2008-09-17 14:05:28Z larshelg
- *          $
  */
 public class HibernateDataValueStore
     implements DataValueStore
@@ -71,18 +73,18 @@ public class HibernateDataValueStore
         this.sessionFactory = sessionFactory;
     }
 
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
-
     private PeriodStore periodStore;
 
     public void setPeriodStore( PeriodStore periodStore )
     {
         this.periodStore = periodStore;
+    }
+
+    private JdbcTemplate jdbcTemplate;
+
+    public void setJdbcTemplate( JdbcTemplate jdbcTemplate )
+    {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     // -------------------------------------------------------------------------
@@ -153,15 +155,6 @@ public class HibernateDataValueStore
         criteria.add( Restrictions.eq( "optionCombo", optionCombo ) );
 
         return (DataValue) criteria.uniqueResult();
-    }
-
-    public String getValue( int dataElementId, int periodId, int sourceId, int categoryOptionComboId )
-    {
-        final String sql = "SELECT value " + "FROM datavalue " + "WHERE dataelementid='" + dataElementId + "' "
-            + "AND periodid='" + periodId + "' " + "AND sourceid='" + sourceId + "' " + "AND categoryoptioncomboid='"
-            + categoryOptionComboId + "'";
-
-        return statementManager.getHolder().queryForString( sql );
     }
 
     // -------------------------------------------------------------------------
@@ -399,31 +392,7 @@ public class HibernateDataValueStore
 
         return (DataValue) query.uniqueResult();
     }
-    
-    public Set<DataElementOperand> getOperandsWithDataValues( Set<DataElementOperand> operands )
-    {
-        final Set<DataElementOperand> operandsWithData = new HashSet<DataElementOperand>();
         
-        final StatementHolder holder = statementManager.getHolder();
-        
-        for ( DataElementOperand operand : operands )
-        {
-            final String sql = 
-                "SELECT COUNT(*) FROM datavalue " + 
-                "WHERE dataelementid=" + operand.getDataElementId() + " " +
-                "AND categoryoptioncomboid=" + operand.getOptionComboId();
-            
-            Integer count = holder.queryForInteger( sql );
-            
-            if ( count != null && count > 0 )
-            {
-                operandsWithData.add( operand );
-            }
-        }
-        
-        return operandsWithData;
-    }
-    
     public int getDataValueCount( Date date )
     {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria( DataValue.class );
@@ -434,5 +403,40 @@ public class HibernateDataValueStore
         Number rs = (Number) criteria.uniqueResult();
 
         return rs != null ? rs.intValue() : 0;
+    }
+    
+    public Map<DataElementOperand, Double> getDataValueMap( Collection<DataElement> dataElements, Period period, OrganisationUnit unit )
+    {
+        Map<DataElementOperand, Double> map = new HashMap<DataElementOperand, Double>();
+        
+        if ( dataElements.isEmpty() )
+        {
+            return map;
+        }
+        
+        final String sql = 
+            "select de.uid, coc.uid, value " +
+            "from datavalue dv " +
+            "join dataelement de on dv.dataelementid = de.dataelementid " +
+            "join categoryoptioncombo coc on dv.categoryoptioncomboid = coc.categoryoptioncomboid " +
+            "where dv.dataelementid in (" + TextUtils.getCommaDelimitedString( ConversionUtils.getIdentifiers( DataElement.class, dataElements ) ) + ") " +
+            "and dv.periodid = " + period.getId() + " " +
+            "and dv.sourceid = " + unit.getId();
+        
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
+        
+        while ( rowSet.next() )
+        {
+            String dataElement = rowSet.getString( 1 );
+            String optionCombo = rowSet.getString( 2 );
+            Double value = MathUtils.parseDouble( rowSet.getString( 3 ) );
+            
+            if ( value != null )
+            {
+                map.put( new DataElementOperand( dataElement, optionCombo ), value );
+            }
+        }
+        
+        return map; 
     }
 }

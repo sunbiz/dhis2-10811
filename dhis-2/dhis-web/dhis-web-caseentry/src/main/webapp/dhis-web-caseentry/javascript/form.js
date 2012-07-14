@@ -14,6 +14,48 @@ function organisationUnitSelected( orgUnits, orgUnitNames )
 	enable('searchBtn');	
 	enable('listPatientBtn');
 }
+//------------------------------------------------------------------------------
+// Load data entry form
+//------------------------------------------------------------------------------
+
+function loadDataEntry( programStageInstanceId )
+{
+	setInnerHTML('dataEntryFormDiv', '');
+	showById('executionDateTB');
+	showById('dataEntryFormDiv');
+	setFieldValue( 'dueDate', '' );
+	setFieldValue( 'executionDate', '' );
+	disable('validationBtn');
+	disableCompletedButton(true);
+	disable('uncompleteBtn');
+	
+	showLoader();	
+	$( '#dataEntryFormDiv' ).load( "dataentryform.action", 
+		{ 
+			programStageInstanceId: programStageInstanceId
+		},function( )
+		{
+			var executionDate = jQuery('#dataRecordingSelectDiv input[id=executionDate]').val();
+			var completed = jQuery('#entryFormContainer input[id=completed]').val();
+			var irregular = jQuery('#entryFormContainer input[id=irregular]').val();
+			showById('inputCriteriaDiv');
+			enable('validationBtn');
+			if( executionDate == '' )
+			{
+				disable('validationBtn');
+			}
+			else if( executionDate != '' && completed == 'false' )
+			{
+				disableCompletedButton(false);
+			}
+			else if( completed == 'true' )
+			{
+				disableCompletedButton(true);
+			}
+			hideLoader();
+			hideById('contentDiv'); 
+		} );
+}
 
 //--------------------------------------------------------------------------------------------
 // Show search-form
@@ -23,9 +65,10 @@ function showSearchForm()
 {
 	hideById('dataRecordingSelectDiv');
 	hideById('dataEntryFormDiv');
+	hideById('addNewDiv');
 	showById('searchDiv');
 	showById('contentDiv');
-	hideById('addNewDiv');
+	showById('mainLinkLbl');
 	jQuery('#createNewEncounterDiv').dialog('close');
 	jQuery('#resultSearchDiv').dialog('close');
 }
@@ -37,8 +80,14 @@ function showSearchForm()
 isAjax = true;
 function listAllPatient()
 {
+	hideById('advanced-search');
 	showLoader();
-	jQuery('#contentDiv').load( 'listAllPatients.action',{},
+	jQuery('#contentDiv').load( 'listAllPatients.action',{
+			listAll:false,
+			programIds:	getFieldValue("programIdAddPatient"),
+			searchTexts: "prg_" + getFieldValue("programIdAddPatient"),
+			searchBySelectedOrgunit:true
+		},
 		function()
 		{
 			hideById('dataRecordingSelectDiv');
@@ -71,45 +120,11 @@ function getKeyCode(e)
 	 return (e)? e.which : null;
 }
 
-function searchValidationCompleted( messageElement )
-{
-    messageElement = messageElement.getElementsByTagName( 'message' )[0];
-	var type = messageElement.getAttribute( 'type' );
-    var message = messageElement.firstChild.nodeValue;
-	
-    if ( type == 'success' )
-    {
-		showLoader();
-		hideById('dataEntryFormDiv');
-		hideById('dataRecordingSelectDiv');
-		$('#contentDiv').load( 'searchPatient.action', 
-			{
-				searchObjectId: getFieldValue('searchObjectId'), 
-				searchText: getFieldValue('searchText'),
-				searchBySelectedOrgunit: byId('searchBySelectedOrgunit').checked
-			},
-			function()
-			{
-				showById('searchDiv');
-				setFieldValue('listAll', false);
-				hideLoader();
-			});
-    }
-    else if ( type == 'error' )
-    {
-        showErrorMessage( i18n_searching_patient_failed + ':' + '\n' + message );
-    }
-    else if ( type == 'input' )
-    {
-        showWarningMessage( message );
-    }
-}
-
 //--------------------------------------------------------------------------------------------
 // Show selected data-recording
 //--------------------------------------------------------------------------------------------
 
-function showSelectedDataRecoding( patientId )
+function showSelectedDataRecoding( patientId, programId )
 {
 	showLoader();
 	hideById('searchDiv');
@@ -123,21 +138,10 @@ function showSelectedDataRecoding( patientId )
 			showById('dataRecordingSelectDiv');
 			hideLoader();
 			hideById('contentDiv');
-			jQuery("#dataRecordingSelectDiv [id=inputCriteria]").show();
-			if( getFieldValue('isRegistration') == 'true' )
-			{
-				jQuery("#dataRecordingSelectDiv [id=inputCriteria]").hide();
-				var singleProgramId = getFieldValue('programIdAddPatient');
-				jQuery("#dataRecordingSelectDiv select[id='programId'] option").each(function(){
-					if( jQuery(this).val()==singleProgramId){
-						jQuery(this).attr('selected', 'selected');
-						if( jQuery("#dataRecordingSelectDiv select[id='programId'] option").length > 2)
-						{
-							loadProgramStages();
-						}
-					}
-				});
-			}
+			hideById('contentDiv');
+			hideById('mainLinkLbl');
+			setInnerHTML('singleProgramName',jQuery('#programIdAddPatient option:selected').text());
+			loadProgramStages( patientId, programId )
 		});
 }
 
@@ -151,8 +155,49 @@ function advancedSearch( params )
 				statusSearching = 1;
 				setInnerHTML( 'contentDiv', html );
 				showById('contentDiv');
-				setInnerHTML('searchInforTD', i18n_search_patients_by_attributes );
+				setInnerHTML('searchInforTD', i18n_search_patients );
+				setFieldValue('listAll',false);
 				jQuery( "#loaderDiv" ).hide();
 			}
 		});
 }
+
+//--------------------------------------------------------------------------------------------
+// Load program-stages by the selected program
+//--------------------------------------------------------------------------------------------
+
+function loadProgramStages( patientId, programId )
+{
+	jQuery.getJSON( "loadProgramStageInstances.action",
+		{
+			programId: programId
+		},  
+		function( json ) 
+		{   
+			if( json.programStageInstances == 0)
+			{
+				createProgramInstance( patientId, programId );
+			}
+			else
+			{
+				jQuery("#selectForm [id=programStageId]").attr('psid', json.programStageInstances[0].programStageId);	
+				loadDataEntry( json.programStageInstances[0].id );
+			}
+		});
+}
+
+function createProgramInstance( patientId, programId )
+{
+	jQuery.postJSON( "saveProgramEnrollment.action",
+		{
+			patientId: patientId,
+			programId: programId,
+			dateOfIncident: getCurrentDate(),
+			enrollmentDate: getCurrentDate()
+		}, 
+		function( json ) 
+		{
+			jQuery("#selectForm [id=programStageId]").attr('psid', json.programStageId);	
+			loadDataEntry( json.activeProgramStageInstanceId );
+		});
+};		

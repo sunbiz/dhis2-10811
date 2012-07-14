@@ -6,27 +6,28 @@
   <input type="button" value="$i18n.getString( 'add_route' )" onclick="window.location.href='showAddRouteForm.action'"/>
 </div>
 
+
 <table class="listTable" id="routesList" width='100%'>
   <col/>
   <col/>				
   <thead>				
     <tr>
       <th>$i18n.getString( "route" )</th>
+      <th>$i18n.getString( "state" )</th>
       <th>$i18n.getString( "description" )</th>
       <th class="{sorter: false}" style="width:80px;">$i18n.getString( "operations" )</th>
     </tr>
   </thead>
   <tbody id="list">
   #set( $mark = false )
-  #foreach( $routeDefinition in $routeDefinitions )
-  <!--<td>$routeDefinition.toString()<td>-->
+  #foreach( $route in $routeDefinitions )
   <tr #alternate( $mark )>
-    <td>$encoder.htmlEncode( $routeDefinition.id )</td>
-    <td>$encoder.htmlEncode( $routeDefinition.description.text )</td>
+    <td>$encoder.htmlEncode( $route.id )</td>
+    <td>$encoder.htmlEncode( $route.getStatus( $builtinCamelContext ) )</td>
+    <td>$encoder.htmlEncode( $route.descriptionText )</td>
     <td style="text-align:right">
-      <a href="javascript:notImplemented( $routeDefinition.id )" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
-      <a href="javascript:notImplemented( $routeDefinition.id )" title="$i18n.getString( 'enable' )"><img src="../images/check.png" alt="$i18n.getString( 'enable' )"/></a>					
-      <a href="javascript:notImplemented( $routeDefinition.id )" title="$i18n.getString( 'disable' )"><img src="../images/cross.png" alt="$i18n.getString( 'disable' )"/></a>
+      <a href="routeOperation.action?id=$route.id&operation=enable" title="$i18n.getString( 'enable' )"><img src="../images/check.png" alt="$i18n.getString( 'enable' )"/></a>					
+      <a href="routeOperation.action?id=$route.id&operation=disable" title="$i18n.getString( 'disable' )"><img src="../images/cross.png" alt="$i18n.getString( 'disable' )"/></a>
     </td>
   </tr>
   #end

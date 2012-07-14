@@ -27,6 +27,17 @@ package org.hisp.dhis.period;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.system.util.ConversionUtils.getIdentifiers;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -34,8 +45,6 @@ import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 /**
  * @author Kristian Nordal
@@ -67,12 +76,24 @@ public class DefaultPeriodService
 
     public void deletePeriod( Period period )
     {
-        periodStore.deletePeriod( period );
+        periodStore.delete( period );
     }
 
     public Period getPeriod( int id )
     {
-        return periodStore.getPeriod( id );
+        return periodStore.get( id );
+    }
+    
+    public Period getPeriod( String isoPeriod )
+    {
+        Period period = PeriodType.getPeriodFromIsoString( isoPeriod );
+        
+        if ( period != null )
+        {        
+            period = periodStore.getPeriod( period.getStartDate(), period.getEndDate(), period.getPeriodType() );
+        }
+        
+        return period;
     }
 
     public Period getPeriod( Date startDate, Date endDate, PeriodType periodType )
@@ -82,7 +103,7 @@ public class DefaultPeriodService
 
     public Collection<Period> getAllPeriods()
     {
-        return periodStore.getAllPeriods();
+        return periodStore.getAll();
     }
 
     public Collection<Period> getPeriods( final Collection<Integer> identifiers )
@@ -258,6 +279,19 @@ public class DefaultPeriodService
     {
         return periodStore.reloadForceAddPeriod( period );
     }
+    
+    public PeriodHierarchy getPeriodHierarchy( Collection<Period> periods )
+    {
+        PeriodHierarchy hierarchy = new PeriodHierarchy();
+        
+        for ( Period period : periods )
+        {
+            hierarchy.getIntersectingPeriods().put( period.getId(), new HashSet<Integer>( getIdentifiers( Period.class, getIntersectingPeriods( period.getStartDate(), period.getEndDate() ) ) ) );            
+            hierarchy.getPeriodsBetween().put( period.getId(), new HashSet<Integer>( getIdentifiers( Period.class, getPeriodsBetweenDates( period.getStartDate(), period.getEndDate() ) ) ) );
+        }
+        
+        return hierarchy;
+    }
 
     // -------------------------------------------------------------------------
     // PeriodType
@@ -286,5 +320,14 @@ public class DefaultPeriodService
     public PeriodType reloadPeriodType( PeriodType periodType )
     {
         return periodStore.reloadPeriodType( periodType );
+    }
+
+    // -------------------------------------------------------------------------
+    // PeriodType
+    // -------------------------------------------------------------------------
+
+    public void deleteRelativePeriods( RelativePeriods relativePeriods )
+    {
+        periodStore.deleteRelativePeriods( relativePeriods );
     }
 }

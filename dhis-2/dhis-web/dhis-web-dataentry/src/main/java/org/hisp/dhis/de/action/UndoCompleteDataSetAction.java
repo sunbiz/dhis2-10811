@@ -39,6 +39,8 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 
+import java.util.Set;
+
 /**
  * @author Lars Helge Overland
  */
@@ -97,6 +99,13 @@ public class UndoCompleteDataSetAction
         this.organisationUnitId = organisationUnitId;
     }
 
+    private boolean multiOrganisationUnit;
+
+    public void setMultiOrganisationUnit( boolean multiOrganisationUnit )
+    {
+        this.multiOrganisationUnit = multiOrganisationUnit;
+    }
+
     private int statusCode;
 
     public int getStatusCode()
@@ -113,27 +122,48 @@ public class UndoCompleteDataSetAction
         DataSet dataSet = dataSetService.getDataSet( dataSetId );
         Period period = PeriodType.createPeriodExternalId( periodId );
         OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
+        Set<OrganisationUnit> children = organisationUnit.getChildren();
 
         // ---------------------------------------------------------------------
         // Check locked status
         // ---------------------------------------------------------------------
 
-        if ( dataSetService.isLocked( dataSet, period, organisationUnit, null ) )
+        if ( !multiOrganisationUnit )
         {
-            return logError( "Entry locked for combination: " + dataSet + ", " + period + ", " + organisationUnit, 2 );
+            if ( dataSetService.isLocked( dataSet, period, organisationUnit, null ) )
+            {
+                return logError( "Entry locked for combination: " + dataSet + ", " + period + ", " + organisationUnit, 2 );
+            }
+        }
+        else
+        {
+            for ( OrganisationUnit ou : children )
+            {
+                if ( ou.getDataSets().contains( dataSet ) && dataSetService.isLocked( dataSet, period, ou, null ) )
+                {
+                    return logError( "Entry locked for combination: " + dataSet + ", " + period + ", " + ou, 2 );
+                }
+            }
         }
 
         // ---------------------------------------------------------------------
         // Un-register as completed dataSet
         // ---------------------------------------------------------------------
 
-        CompleteDataSetRegistration registration = registrationService.getCompleteDataSetRegistration( dataSet, period, organisationUnit );
 
-        if ( registration != null )
+        if ( !multiOrganisationUnit )
         {
-            registrationService.deleteCompleteDataSetRegistration( registration );
-
-            log.info( "DataSet un-registered as complete: " + registration );
+            deregisterCompleteDataSet( dataSet, period, organisationUnit );
+        }
+        else
+        {
+            for ( OrganisationUnit ou : children )
+            {
+                if ( ou.getDataSets().contains( dataSet ) )
+                {
+                    deregisterCompleteDataSet( dataSet, period, ou );
+                }
+            }
         }
 
         return SUCCESS;
@@ -142,6 +172,18 @@ public class UndoCompleteDataSetAction
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
+
+    private void deregisterCompleteDataSet( DataSet dataSet, Period period, OrganisationUnit organisationUnit )
+    {
+        CompleteDataSetRegistration registration = registrationService.getCompleteDataSetRegistration( dataSet, period, organisationUnit );
+
+        if ( registration != null )
+        {
+            registrationService.deleteCompleteDataSetRegistration( registration );
+
+            log.info( "DataSet un-registered as complete: " + registration );
+        }
+    }
 
     private String logError( String message, int statusCode )
     {

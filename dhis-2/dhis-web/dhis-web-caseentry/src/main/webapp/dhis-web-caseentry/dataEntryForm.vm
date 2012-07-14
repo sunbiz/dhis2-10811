@@ -1,16 +1,18 @@
 <script>
 	jQuery("#entryFormContainer").ready(function(){
-		setFieldValue('programStageId', "$!programStageInstance.programStage.id");
+		#if($!programStageInstance.programStage.program.type!='1')
+			hideById('newEncounterBtn');
+		#end
+		#if($!programStageInstance.programStage.id)
+			setFieldValue('programStageId', "$!programStageInstance.programStage.id");
+		#end
 		#if( $programStageInstance )
 			setFieldValue( 'dueDate', "$!format.formatDate( $programStageInstance.dueDate )" );
 			setFieldValue( 'executionDate', "$!format.formatDate( $programStageInstance.executionDate )" );
 		#end
 		
-		$('#executionDate').change(function() {
-				saveExecutionDate( getFieldValue('programId'), getFieldValue('executionDate') );
-			});
-		
 		entryFormContainerOnReady();
+		
 	});
 </script>
 
@@ -20,123 +22,72 @@
 <input type='hidden' name='programStageInstanceId' id='programStageInstanceId' value='$!programStageInstance.id'>
 <input type='hidden' name='programInstanceId' id='programInstanceId' value='$!programStageInstance.programInstance.id'>
 <input type='hidden' name='irregular' id='irregular' value='$!programStageInstance.programStage.irregular'>
+<input type='hidden' name='displayGenerateEventBox' id='displayGenerateEventBox' value='$!programStageInstance.programStage.displayGenerateEventBox'>
 <input type='hidden' name='completed' id='completed' value='$!programStageInstance.completed'>
+<input type='hidden' name='programStageId' id='programStageId' value='$!programStageInstance.programStage.id'>
+<input type='hidden' name='programId' id='programId' value='$!programStageInstance.programInstance.program.id'>
+<input type='hidden' name='validCompleteOnly' id='validCompleteOnly' value='$!programStageInstance.programStage.validCompleteOnly'>
+<input type='hidden' name='currentUsername' id='currentUsername' value='$!currentUsername'>
+<input type='hidden' name='blockEntryForm' id='blockEntryForm'  value='$!programStageInstance.programInstance.program.blockEntryForm'>
 
-<div id='entryForm' #if($!programStageInstance.executionDate) class='visible' #else class='hidden' #end>
+<div id='entryForm' #if($!programStageInstance.executionDate) class='visible' #else class='hidden' #end>					
+	<table id="postCommentTbl" class="hidden">
+		<tr>
+			<td class="text-column">$i18n.getString('post_comment'):</td>
+			<td><input type="text" class="{validate:{maxlength:160}}" name="comment_$programStageInstance.id" id="comment_$programStageInstance.id" style="width:450px;" onkeypress="keypressOnComent(event,this,$programStageInstance.id);"></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td colspan='3'>
+				<table>
+					<tbody id="commentTB">
+						#foreach( $comment in $programStageInstance.patientComments )
+						<tr>
+							<td>$format.formatDateTime($comment.createdDate) </td>
+							<td>$comment.creator </td>
+							<td>$comment.commentText</td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</table>
 	#if( $customDataEntryFormCode )
-		<div id="customEntryScreenContainer">
-		   $customDataEntryFormCode
-		</div>
+		#parse( "/dhis-web-caseentry/customDataEntryForm.vm" )
+	#elseif( $sections && $sections.size() > 0 )
+		#parse( "/dhis-web-caseentry/sectionDataEntryForm.vm" )
 	#else
-		<table id="defaultEntryScreenContainer" class='entryScreen formSection'>
-			<col id="deCol">    
-			<col id="entryCol">
-			<tr>
-				<th>$i18n.getString( "data_element" )</th>                   
-				<th>$i18n.getString( "entry" )</th>
-				#if( $!programStageInstance.programStage.program.isRegistration() == 'true')
-				<th>$i18n.getString( "provided_elsewhere" )</th>
-				#end
-			</tr>
-		#set( $dataElementRowCount = 0 )
-		#set( $mark = true )
-		#set( $tabIndex = 1 )
-		#foreach( $programStageDataElement in $programStageDataElements )
-			#set( $dataElementRowCount = $dataElementRowCount + 1 )    
-			#set( $mark = !$mark )
-			#set( $patientDataValue = false )
-			#set( $key = $programStageDataElement.dataElement.id )
-			#set( $patientDataValue = $patientDataValueMap.get( $key ) )    
-			<tr #alternate( $mark )>
-				##data element name
-				<td class='text-column' align='center'>
-					<span id="value[$programStageDataElement.dataElement.id].name" title="$!encoder.htmlEncode( $programStageDataElement.dataElement.description )">
-						$encoder.htmlEncode( $programStageDataElement.dataElement.formNameFallback )						
-						#if ( $programStageDataElement.compulsory )
-							<em title="$i18n.getString( "required" )" class="required">*</em>
-						#end        
-					</span>
-					##type        
-					<span id="value[$programStageDataElement.dataElement.id].type" class="hidden">$encoder.htmlEncode( $programStageDataElement.dataElement.type )</span></td>       
-				</td>        
-				##entry        
-				<td class='input-column'>   
-					#set( $id = $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val' )
-					#if( $!programStageDataElement.dataElement.optionSet )
-						#set( $hasOptionSet = 'true')
-					#else
-						#set( $hasOptionSet = 'false')
-					#end
-					#if( $programStageDataElement.dataElement.textType == "longText" )
-						<textarea name="entryfield" type="text" data="{compulsory: $programStageDataElement.compulsory }" id="$id" name="entryfield" onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" maxlength=255 >$!encoder.htmlEncode( $patientDataValue.value )</textarea>
-					#elseif( $programStageDataElement.dataElement.type == "bool" )
-						<select name="entryfield" data="{compulsory: $programStageDataElement.compulsory }" id="$id" onchange="saveOpt( $programStageDataElement.dataElement.id )" tabindex="$tabIndex">
-							<option value="">[$i18n.getString( "select_value" )]</option>
-							<option value="true" #if( $patientDataValue.value == "true" ) selected="selected" #end>$i18n.getString( "yes" )</option>
-							<option value="false" #if( $patientDataValue.value == "false" ) selected="selected" #end>$i18n.getString( "no" )</option>
-						</select>
-					#elseif( $programStageDataElement.dataElement.type == "trueOnly" )
-						<input name="entryfield" type="checkbox" data="{compulsory: $programStageDataElement.compulsory, deType:'$programStageDataElement.dataElement.getType()'}" id="$id" name="entryfield" #if($patientDataValue.value=="true") checked #end onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" >
-					#elseif( $programStageDataElement.dataElement.type == "date" )
-						<input name="entryfield" type="text" data="{compulsory: $programStageDataElement.compulsory }" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )" onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" >
-						<script type="text/javascript">
-							datePicker($programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false);
-						</script> 
-					#elseif($hasOptionSet=='true')
-						<input name="entryfield" options='$hasOptionSet' #if($hasOptionSet == 'true') #end dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex"
-							#set( $type=$programStageDataElement.dataElement.getDetailedNumberType())
-							#if( $type=='number' ) 
-								class="{validate:{number:true}}" 
-							#elseif( $type=='positiveNumber' )
-								class="{validate:{positive_integer:true}}" 
-							#elseif( $type=='negativeNumber' )
-								class="{validate:{negative_integer:true}}" 
-							#elseif( $type=='int' )
-								class="{validate:{integer:true}}" 
-							#end />
-					#else
-						<input name="entryfield" dataElementId='$programStageDataElement.dataElement.id' 
-							data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" onkeypress="return keyPress(event, this)" tabindex="$tabIndex"
-							id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" 
-							onchange="saveVal( $programStageDataElement.dataElement.id )" 
-							onkeypress="return keyPress(event, this)" tabindex="$tabIndex"
-							
-							#set( $type=$programStageDataElement.dataElement.getDetailedNumberType())
-							#if( $type=='number' ) 
-								class="{validate:{number:true}}" 
-							#elseif( $type=='positiveNumber' )
-								class="{validate:{positive_integer:true}}" 
-							#elseif( $type=='negativeNumber' )
-								class="{validate:{negative_integer:true}}" 
-							#elseif( $type=='int' )
-								class="{validate:{integer:true}}" 
-							#end
-						/>
-					#end
-				</td> 
-				#if( $!programStageInstance.programStage.program.isRegistration() == 'true' )
-				<td style='width:20px;' align='center'>
-					#set( $id = $programStageDataElement.programStage.id + '_' + $programStageDataElement.dataElement.id + '_facility' )
-					#if( $programStageDataElement.allowProvidedElsewhere == 'true')
-						<div id='span_$id' class='provided-elsewhere'>
-							<input class='provided-elsewhere' name="$id" id="$id" type="checkbox" onclick="updateProvidingFacility( $programStageDataElement.dataElement.id, this )" #if($patientDataValue.providedElsewhere == 'true') checked #end />
-						</div>
-					#end
-				</td>
-				#end
-			</tr>
-			#set( $tabIndex = $tabIndex + 1 )
-		#end	
-		</table>
+		#parse( "/dhis-web-caseentry/defaultDataEntryForm.vm" )
 	#end
 </div>
 
-<div id='inputCriteriaDiv' class="page inputCriteria" style="display:none;width:490px;height:29px;">	
-	<input type="button" class='button' id="completeInBelowBtn" value="$i18n.getString('complete')" onClick="doComplete()" disabled="disabled">
-	<input type="button" onclick="doUnComplete()" value="$i18n.getString('uncomplete')" id="uncompleteBelowBtn">
-	<input type="button" class='button' id="validationInBelowBtn" value="$i18n.getString('run_validation')" onClick="javascript: runValidation();" >
+<div id='inputCriteriaDiv' class="page inputCriteria #if($programStageInstance.executionDate) #else hidden #end " style="width:490px;height:29px;">	
+	<input type="button" class='button' id="completeBtn" value="$i18n.getString('complete')" onClick="doComplete()" disabled="disabled">
+	<input type="button" id="uncompleteBtn" value="$i18n.getString('incomplete')" onclick="doUnComplete()" disabled="disabled">
+	<input type="button" class='button' id="validationBtn" value="$i18n.getString('run_validation')" onClick="javascript: runValidation();" disabled="disabled">
 </div>
 
+</div>
+
+<div id="loading-bar" class="hidden" align='center'>
+	<p>Validation rules are being processed, please wait ...<br>
+	<img src='../images/ajax-loader-circle.gif'></p>
 </div>
 
 <div id='validateProgramDiv'></div>
+
+<script>
+	var i18n_create_new_event = '$encoder.jsEscape( $i18n.getString( "create_new_event" ) , "'" )';
+	#if( $programStageInstance.programInstance.program.type=='1' && $programStageInstance.programInstance.completed=="true")
+		jQuery("[id=entryFormContainer] :input").prop('disabled', true);
+		jQuery("[id=entryFormContainer] :input").datepicker("destroy");
+		jQuery("[id=executionDate]").prop('disabled', true);
+		jQuery("[id=executionDate]").datepicker("destroy");
+	#end
+
+	if(getFieldValue('completed')=='true' && getFieldValue('blockEntryForm')=='true'){
+		blockEntryForm();
+	}
+</script>
+

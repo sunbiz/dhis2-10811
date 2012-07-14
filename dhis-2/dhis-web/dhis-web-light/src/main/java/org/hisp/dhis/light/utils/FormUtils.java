@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
@@ -47,14 +46,12 @@ import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.expression.ExpressionService;
-import org.hisp.dhis.minmax.MinMaxDataElement;
-import org.hisp.dhis.minmax.MinMaxDataElementService;
-import org.hisp.dhis.minmax.validation.MinMaxValuesGenerationService;
-import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.YearlyPeriodType;
+import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.filter.OrganisationUnitWithDataSetsFilter;
 import org.hisp.dhis.system.filter.PastAndCurrentPeriodFilter;
 import org.hisp.dhis.system.util.FilterUtils;
@@ -128,20 +125,6 @@ public class FormUtils
         this.systemSettingManager = systemSettingManager;
     }
 
-    private MinMaxValuesGenerationService minMaxValuesGenerationService;
-
-    public void setMinMaxValuesGenerationService( MinMaxValuesGenerationService minMaxValuesGenerationService )
-    {
-        this.minMaxValuesGenerationService = minMaxValuesGenerationService;
-    }
-
-    private MinMaxDataElementService minMaxDataElementService;
-
-    public void setMinMaxDataElementService( MinMaxDataElementService minMaxDataElementService )
-    {
-        this.minMaxDataElementService = minMaxDataElementService;
-    }
-
     private ValidationRuleService validationRuleService;
 
     public void setValidationRuleService( ValidationRuleService validationRuleService )
@@ -166,28 +149,16 @@ public class FormUtils
     {
         Map<String, DeflatedDataValue> validationErrorMap = new HashMap<String, DeflatedDataValue>();
 
-        Collection<MinMaxDataElement> minmaxs = minMaxDataElementService.getMinMaxDataElements( organisationUnit,
-            dataElements );
-        Collection<DeflatedDataValue> deflatedDataValues;
+        Double factor = (Double) systemSettingManager.getSystemSetting( SystemSettingManager.KEY_FACTOR_OF_DEVIATION,
+            2.0 );
 
-        if ( minmaxs == null )
-        {
-            Double factor = (Double) systemSettingManager.getSystemSetting(
-                SystemSettingManager.KEY_FACTOR_OF_DEVIATION, 2.0 );
+        Collection<DeflatedDataValue> stdDevs = stdDevOutlierAnalysisService.analyse(
+            ListUtils.getCollection( organisationUnit ), dataElements, ListUtils.getCollection( period ), factor );
 
-            Collection<DeflatedDataValue> stdDevs = stdDevOutlierAnalysisService.analyse( organisationUnit,
-                dataElements, ListUtils.getCollection( period ), factor );
+        Collection<DeflatedDataValue> minMaxs = minMaxOutlierAnalysisService.analyse(
+            ListUtils.getCollection( organisationUnit ), dataElements, ListUtils.getCollection( period ), null );
 
-            Collection<DeflatedDataValue> minMaxs = minMaxOutlierAnalysisService.analyse( organisationUnit,
-                dataElements, ListUtils.getCollection( period ), null );
-
-            deflatedDataValues = CollectionUtils.union( stdDevs, minMaxs );
-        }
-        else
-        {
-            deflatedDataValues = minMaxValuesGenerationService.findOutliers( organisationUnit,
-                ListUtils.getCollection( period ), minmaxs );
-        }
+        Collection<DeflatedDataValue> deflatedDataValues = CollectionUtils.union( stdDevs, minMaxs );
 
         for ( DeflatedDataValue deflatedDataValue : deflatedDataValues )
         {
@@ -288,18 +259,39 @@ public class FormUtils
         Validate.notNull( dataSetId );
 
         DataSet dataSet = dataSetService.getDataSet( dataSetId );
+        
+        CalendarPeriodType periodType = null;
 
-        CalendarPeriodType periodType = (CalendarPeriodType) dataSet.getPeriodType();
-        List<Period> periods = periodType.generateLast5Years( new Date() );
-        FilterUtils.filter( periods, new PastAndCurrentPeriodFilter() );
-        Collections.reverse( periods );
-
-        if ( periods.size() > (first + max) )
+        if ( dataSet.getPeriodType().getName().equalsIgnoreCase( "Yearly" ) )
         {
-            periods = periods.subList( first, max );
+            periodType = (CalendarPeriodType) new YearlyPeriodType();
         }
-
-        return periods;
+        else
+        {
+            periodType = (CalendarPeriodType) dataSet.getPeriodType();
+        }
+        
+        if ( dataSet.isAllowFuturePeriods() )
+        {
+            List<Period> periods = new ArrayList<Period>();
+            periods = periodType.generatePeriods( new Date() );
+            Collections.reverse( periods );
+            return periods;
+        }
+        else
+        {
+            
+            List<Period> periods = periodType.generateLast5Years( new Date() );
+            FilterUtils.filter( periods, new PastAndCurrentPeriodFilter() );
+            Collections.reverse( periods );
+    
+            if ( periods.size() > (first + max) )
+            {
+                periods = periods.subList( first, max );
+            }
+    
+            return periods;
+        }
     }
 
     // -------------------------------------------------------------------------

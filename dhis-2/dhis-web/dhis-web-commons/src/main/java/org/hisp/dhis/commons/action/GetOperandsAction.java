@@ -32,11 +32,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.DataElementService;
-import org.hisp.dhis.dataelement.comparator.DataElementOperandNameComparator;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.paging.ActionPagingSupport;
 import org.hisp.dhis.system.filter.AggregatableDataElementFilter;
@@ -173,10 +173,10 @@ public class GetOperandsAction
             FilterUtils.filter( dataElements, new DataElementPeriodTypeFilter( periodType ) );
         }
 
+        Collections.sort( dataElements, IdentifiableObjectNameComparator.INSTANCE );
+        
         operands = new ArrayList<DataElementOperand>( dataElementCategoryService.getOperands( dataElements,
             includeTotals ) );
-
-        Collections.sort( operands, new DataElementOperandNameComparator() );
 
         if ( usePaging )
         {

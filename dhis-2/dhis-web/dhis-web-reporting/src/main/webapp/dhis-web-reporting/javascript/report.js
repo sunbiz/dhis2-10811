@@ -1,6 +1,6 @@
 function addReport()
 {
-	if ( !hasText( "upload" ) )
+	if ( $( "#id" ).val().length == 0 && !hasText( "upload" ) )
 	{
 		setMessage( i18n_please_specify_file );
 		return false;
@@ -33,4 +33,48 @@ function addToDashboard( id )
     {
         $.get( "addReportToDashboard.action?id=" + id );
     }
+}
+
+function setReportType()
+{
+	var type = $( "#type :selected" ).val();
+	
+	if ( "jasperReportTable" == type )
+	{
+		$( ".jasperJdbcDataSource" ).hide();
+		$( ".htmlDataSource" ).hide();
+		$( ".jasperReportTableDataSource" ).show();
+	}
+	else if ( "jasperJdbc" == type )
+	{
+		$( ".jasperReportTableDataSource" ).hide();
+		$( ".htmlDataSource" ).hide();
+		$( ".jasperJdbcDataSource" ).show();
+	}
+	else if ( "html" == type )
+	{
+		$( ".jasperReportTableDataSource" ).hide();
+		$( ".jasperJdbcDataSource" ).hide();
+		$( ".htmlDataSource" ).show();
+	}
+}
+
+// -----------------------------------------------------------------------------
+// View details
+// -----------------------------------------------------------------------------
+
+function showReportDetails( reportId )
+{
+	jQuery.get( 'getReport.action', { "id": reportId }, function( json )
+	{
+		setInnerHTML( 'nameField', json.report.name );
+
+		var reportTableName = json.report.reportTableName;
+		setInnerHTML( 'reportTableNameField', reportTableName ? reportTableName : '[' + i18n_none + ']' );
+
+		var orgGroupSets = json.report.orgGroupSets;
+		setInnerHTML( 'orgGroupSetsField', orgGroupSets == 'true' ? i18n_yes : i18n_no );
+
+		showDetails();
+	});
 }

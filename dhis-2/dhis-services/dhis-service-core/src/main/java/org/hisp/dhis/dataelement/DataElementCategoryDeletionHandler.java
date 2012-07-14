@@ -27,6 +27,8 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Set;
+
 import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.concept.ConceptService;
 import org.hisp.dhis.dataelement.DataElementCategory;
@@ -109,11 +111,11 @@ public class DataElementCategoryDeletionHandler
     @Override
     public void deleteDataElementCategoryOption( DataElementCategoryOption categoryOption )
     {
-        DataElementCategory category = categoryOption.getCategory();
+        Set<DataElementCategory> categories = categoryOption.getCategories();
         
-        if ( category != null )
+        for ( DataElementCategory category : categories )
         {
-            category.getCategoryOptions().remove( categoryOption );
+            category.removeDataElementCategoryOption( categoryOption );
             categoryService.updateDataElementCategory( category );
         }
     }

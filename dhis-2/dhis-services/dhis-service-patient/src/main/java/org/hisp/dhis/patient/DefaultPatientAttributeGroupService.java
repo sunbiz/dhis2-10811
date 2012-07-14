@@ -26,9 +26,13 @@
  */
 package org.hisp.dhis.patient;
 
-import java.util.Collection;
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
-import org.hisp.dhis.program.Program;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -48,6 +52,13 @@ public class DefaultPatientAttributeGroupService
     public void setPatientAttributeGroupStore( PatientAttributeGroupStore patientAttributeGroupStore )
     {
         this.patientAttributeGroupStore = patientAttributeGroupStore;
+    }
+
+    private I18nService i18nService;
+
+    public void setI18nService( I18nService service )
+    {
+        i18nService = service;
     }
 
     // -------------------------------------------------------------------------
@@ -71,28 +82,22 @@ public class DefaultPatientAttributeGroupService
 
     public PatientAttributeGroup getPatientAttributeGroup( int id )
     {
-        return patientAttributeGroupStore.get( id );
+        return i18n( i18nService, patientAttributeGroupStore.get( id ) );
     }
 
     public PatientAttributeGroup getPatientAttributeGroupByName( String name )
     {
-        return patientAttributeGroupStore.getByName( name );
+        return i18n( i18nService, patientAttributeGroupStore.getByName( name ) );
     }
 
     public Collection<PatientAttributeGroup> getAllPatientAttributeGroups()
     {
-        return patientAttributeGroupStore.getAll();
+        return i18n( i18nService, patientAttributeGroupStore.getAll() );
     }
 
-    @Override
-    public Collection<PatientAttributeGroup> getPatientAttributeGroups( Program program )
+    public List<PatientAttribute> getPatientAttributes( PatientAttributeGroup patientAttributeGroup )
     {
-        return patientAttributeGroupStore.get( program );
+        return new ArrayList<PatientAttribute>( i18n( i18nService, patientAttributeGroup.getAttributes() ) );
     }
 
-    @Override
-    public Collection<PatientAttributeGroup> getPatientAttributeGroupsWithoutProgram()
-    {
-        return patientAttributeGroupStore.getWithoutProgram();
-    }
 }

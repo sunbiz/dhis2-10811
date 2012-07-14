@@ -106,4 +106,12 @@ public class Model
         dout.writeUTF( this.name );
     }
 
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+        throws IOException
+    {
+        // No change from 2.9 to 2.10
+        this.serializeVerssion2_9( dataOutputStream );
+    }
+
 }

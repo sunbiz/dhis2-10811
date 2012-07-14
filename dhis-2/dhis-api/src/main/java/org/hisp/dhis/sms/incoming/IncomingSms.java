@@ -60,6 +60,8 @@ public class IncomingSms
     private SmsMessageStatus status = SmsMessageStatus.INCOMING;
 
     private String statusMessage;
+    
+    private boolean parsed = false;
 
     /**
      * Incoming smses are one of two types, text or binary.
@@ -177,6 +179,16 @@ public class IncomingSms
     public void setStatusMessage( String statusMessage )
     {
         this.statusMessage = statusMessage;
+    }
+
+    public boolean isParsed()
+    {
+        return parsed;
+    }
+
+    public void setParsed( boolean parsed )
+    {
+        this.parsed = parsed;
     }
 
 }

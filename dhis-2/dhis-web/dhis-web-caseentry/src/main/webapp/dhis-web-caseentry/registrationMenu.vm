@@ -1,8 +1,8 @@
 
-<a href="index.action"><h2>$i18n.getString( "registration" )&nbsp;</h2></a>
+<a href="index.action"><h2>$i18n.getString( "patient" )&nbsp;</h2></a>
 
 <ul>
-	<li><a href="patient.action">$i18n.getString( "patient" )</a></li>
+	<li><a href="patient.action">$i18n.getString( "find_and_add_person" )</a></li>
 </ul>
 
 <br>

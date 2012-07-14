@@ -31,7 +31,6 @@ import java.util.Collection;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.period.Period;
 import org.hisp.dhis.reportsheet.ExportItem;
 import org.hisp.dhis.reportsheet.ExportReport;
 import org.hisp.dhis.reportsheet.ExportReportNormal;
@@ -48,14 +47,14 @@ public class GenerateReportNormalAction
     extends AbstractGenerateExcelReportSupport
 {
     @Override
-    protected void executeGenerateOutputFile( ExportReport exportReport, Period period )
+    protected void executeGenerateOutputFile( ExportReport exportReport )
         throws Exception
     {
         OrganisationUnit organisationUnit = organisationUnitSelectionManager.getSelectedOrganisationUnit();
 
         ExportReportNormal exportReportInstance = (ExportReportNormal) exportReport;
 
-        this.installReadTemplateFile( exportReportInstance, period, organisationUnit );
+        this.installReadTemplateFile( exportReportInstance, organisationUnit );
 
         Collection<ExportItem> exportReportItems = null;
 
@@ -66,6 +65,8 @@ public class GenerateReportNormalAction
             exportReportItems = exportReportInstance.getExportItemBySheet( sheetNo );
 
             this.generateOutPutFile( exportReportItems, organisationUnit, sheet );
+
+            this.recalculatingFormula( sheet );
         }
 
         /**
@@ -108,7 +109,7 @@ public class GenerateReportNormalAction
             // EXCEL FORMULA
             {
                 ExcelUtils.writeFormulaByPOI( reportItem.getRow(), reportItem.getColumn(), reportItem.getExpression(),
-                    sheet, this.csFormula );
+                    sheet, this.csFormulaBold, evaluatorFormula );
             }
         }
     }

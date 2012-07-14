@@ -47,8 +47,6 @@ public interface DataSetCompletenessStore
     
     Integer getCompulsoryDataElementRegistrations( DataSet dataSet, Collection<Integer> children, Collection<Integer> periods, int completenessOffset );
 
-    Integer getNumberOfValues( DataSet dataSet, Collection<Integer> children, Collection<Integer> periods );
-    
     Collection<DataSet> getDataSetsWithRegistrations( Collection<DataSet> dataSets );
     
     /**

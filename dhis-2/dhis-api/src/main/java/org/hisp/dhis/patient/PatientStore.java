@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hisp.dhis.common.GenericStore;
+import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.program.Program;
 
@@ -49,24 +50,38 @@ public interface PatientStore
     Collection<Patient> getByBirthDate( Date birthDate );
 
     Collection<Patient> getByNames( String name, Integer min, Integer max );
-    
-    Collection<Patient> get( String firstName, String middleName, String lastName, Date birthdate, String gender );    
-    
+
+    Collection<Patient> get( String firstName, String middleName, String lastName, Date birthdate, String gender );
+
     Collection<Patient> getByOrgUnit( OrganisationUnit organisationUnit, Integer min, Integer max );
-    
-    Collection<Patient> getByOrgUnitProgram( OrganisationUnit organisationUnit, Program program, Integer min, Integer max );
-    
+
+    Collection<Patient> getByOrgUnitProgram( OrganisationUnit organisationUnit, Program program, Integer min,
+        Integer max );
+
     Collection<Patient> getRepresentatives( Patient patient );
-    
-    int countListPatientByOrgunit(OrganisationUnit organisationUnit);
-    
+
+    int countListPatientByOrgunit( OrganisationUnit organisationUnit );
+
     int countGetPatientsByName( String name );
-    
+
     int countGetPatientsByOrgUnitProgram( OrganisationUnit organisationUnit, Program program );
 
     void removeErollmentPrograms( Program program );
-    
+
     Collection<Patient> search( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
-    
+
     int countSearch( List<String> searchKeys, OrganisationUnit orgunit );
+
+    Collection<String> getPatientPhoneNumbers( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+        Integer max );
+
+    Collection<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+        Integer max );
+
+    Grid getPatientEventReport( Grid grid, List<String> searchKeys, OrganisationUnit orgunit );
+    
+    Collection<Patient> getByPhoneNumber( String phoneNumber, Integer min, Integer max);
+    
+    Collection<Patient> getByFullName( String fullName );
+    
 }

@@ -55,14 +55,12 @@ public interface IndicatorService
     Collection<Indicator> getAllIndicators();
 
     Collection<Indicator> getIndicators( Collection<Integer> identifiers );
-    
+
     List<Indicator> getIndicatorsByUid( Collection<String> uids );
 
-    Indicator getIndicatorByName( String name );
+    List<Indicator> getIndicatorByName( String name );
 
-    Indicator getIndicatorByShortName( String shortName );
-
-    Indicator getIndicatorByAlternativeName( String alternativeName );
+    List<Indicator> getIndicatorByShortName( String shortName );
 
     Indicator getIndicatorByCode( String code );
 
@@ -121,7 +119,7 @@ public interface IndicatorService
     void deleteIndicatorGroup( IndicatorGroup indicatorGroup );
 
     IndicatorGroup getIndicatorGroup( int id );
-    
+
     IndicatorGroup getIndicatorGroup( int id, boolean i18nIndicators );
 
     Collection<IndicatorGroup> getIndicatorGroups( Collection<Integer> identifiers );
@@ -130,7 +128,7 @@ public interface IndicatorService
 
     Collection<IndicatorGroup> getAllIndicatorGroups();
 
-    IndicatorGroup getIndicatorGroupByName( String name );
+    List<IndicatorGroup> getIndicatorGroupByName( String name );
 
     Collection<IndicatorGroup> getGroupsContainingIndicator( Indicator indicator );
 
@@ -153,12 +151,12 @@ public interface IndicatorService
     void deleteIndicatorGroupSet( IndicatorGroupSet groupSet );
 
     IndicatorGroupSet getIndicatorGroupSet( int id );
-    
+
     IndicatorGroupSet getIndicatorGroupSet( int id, boolean i18nGroups );
-    
+
     IndicatorGroupSet getIndicatorGroupSet( String uid );
 
-    IndicatorGroupSet getIndicatorGroupSetByName( String name );
+    List<IndicatorGroupSet> getIndicatorGroupSetByName( String name );
 
     Collection<IndicatorGroupSet> getCompulsoryIndicatorGroupSets();
 

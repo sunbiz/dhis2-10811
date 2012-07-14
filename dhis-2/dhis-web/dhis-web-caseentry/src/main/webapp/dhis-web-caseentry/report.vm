@@ -1,4 +1,19 @@
+<table>
+	<tr>
+		<td style="text-align:left">$i18n.getString( "total_result" ): </td>
+		<td>
+			#if($!total)
+				$total
+			#else
+				0
+			#end
+		</td>
+	</tr>
+</table>
+
 #if( $programInstances && $programInstances.size() > 0 )
+<p>#parse( "/dhis-web-caseentry/colorHelp.vm" )</p>
+
 <table class="mainPageTable">
 <tr>
     <td style="vertical-align:top">    
@@ -8,20 +23,27 @@
 			#foreach( $programInstance in $programInstances )
                 <tr #alternate( $mark )>                
 					<td>
-						<input type='button' class='patient-object' value='$programInstance.patient.getFullName()' onclick='javascript:showPatientHistory( $programInstance.patient.id )' title='$i18n.getString( "patient_details_and_history" )'>
-					</td>				
-                    #foreach( $programStageInstance in $programInstance.programStageInstances )
-						<td>
-							<img src='images/rightarrow.png'>
-						</td>
-						<td width='100px;'>
-							<input type='button' class='stage-object' id='ps_$programStageInstance.id' value='$programStageInstance.programStage.name $format.formatDate( $programStageInstance.dueDate )' onclick='javascript:viewRecords( $programStageInstance.id )'>
-							<script>	
-								var status = $statusMap.get( $programStageInstance.id );
-								setEventColorStatus( 'ps_' + $programStageInstance.id ,status);
-							</script>
-						</td>
-                    #end
+						#set( $value="")
+						#if($program.patientIdentifierTypes)
+							#foreach( $identifierType in $program.patientIdentifierTypes )
+								#foreach( $pIdentifier in $programInstance.patient.identifiers )
+									#if($identifierType.personDisplayName=="true" && $identifierType.id==$pIdentifier.identifierType.id)
+										#set( $value= $value + $pIdentifier.identifier + '&#13;&#10;' )
+									#end
+								#end
+							#end
+						#end
+						#if($value=="")
+							#set( $value=$programInstance.patient.getFullName())
+						#end
+							
+						<input type='button' class='patient-object' value="$value"
+							onclick='javascript:showPatientHistory( $programInstance.patient.id )' title='$i18n.getString( "patient_details_and_history" )'>
+					</td>	
+					<td>
+						#set( $programStageInstances = $programInstance.programStageInstances )
+						#parse( "/dhis-web-caseentry/programStageInstanceFlow.vm" )
+					</td>
                 </tr>
                 #if( $mark )
                     #set( $mark = false )
@@ -45,9 +67,12 @@
 </table>
 
 <div id="viewRecordsDiv"></div>
-#else
-	<h4>$i18n.getString('no_result_found')</h4>
 #end
+
 <script>
 	var i18n_patient_details_and_history = '$encoder.jsEscape( $i18n.getString( "patient_details_and_history" ) , "'" )';
+	var i18n_records_for = '$encoder.jsEscape( $i18n.getString( "records_for" ) , "'" )';
+	var i18n_at = '$encoder.jsEscape( $i18n.getString( "at" ) , "'" )';
+	var i18n_on_date = '$encoder.jsEscape( $i18n.getString( "on_date" ) , "'" )';
+	var i18n_no_records = '$encoder.jsEscape( $i18n.getString( "no_records" ) , "'" )';
 </script>

@@ -28,12 +28,18 @@
 package org.hisp.dhis.program.hibernate;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.criterion.Restrictions;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramStore;
+import org.hisp.dhis.system.util.CollectionUtils;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.UserAuthorityGroup;
+import org.hisp.dhis.user.UserService;
 
 /**
  * @author Chau Thu Tran
@@ -41,9 +47,31 @@ import org.hisp.dhis.program.ProgramStore;
  * @version $Id: HibernateProgramStore.java Dec 14, 2011 9:24:21 AM $
  */
 public class HibernateProgramStore
-    extends HibernateGenericStore<Program>
+    extends HibernateIdentifiableObjectStore<Program>
     implements ProgramStore
 {
+    // -------------------------------------------------------------------------
+    // Dependency
+    // -------------------------------------------------------------------------
+
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
+    }
+
+    private UserService userService;
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
+    }
+
+    // -------------------------------------------------------------------------
+    // Implemented methods
+    // -------------------------------------------------------------------------
+
     @SuppressWarnings( "unchecked" )
     @Override
     public Collection<Program> getByType( int type )
@@ -56,7 +84,32 @@ public class HibernateProgramStore
     public Collection<Program> get( int type, OrganisationUnit organisationUnit )
     {
         final String hql = "from Program p where p.type = :type and :organisationUnit in elements(p.organisationUnits)";
-        
+
         return getQuery( hql ).setInteger( "type", type ).setEntity( "organisationUnit", organisationUnit ).list();
+    }
+
+    @Override
+    public Collection<Program> getByCurrentUser()
+    {
+        Collection<Program> programs = new HashSet<Program>();
+
+        if ( !currentUserService.currentUserIsSuper() )
+        {
+            Set<UserAuthorityGroup> userRoles = userService.getUserCredentials( currentUserService.getCurrentUser() )
+                .getUserAuthorityGroups();
+            
+            for ( Program program : getAll() )
+            {
+                if ( CollectionUtils.intersection( program.getUserRoles(), userRoles ).size() > 0 )
+                {
+                    programs.add( program );
+                }
+            }
+        }
+        else
+        {
+            programs = getAll();
+        }
+        return programs;
     }
 }

@@ -5,13 +5,14 @@
 			updateDeExpression();
 		});
 		
-		deExpressionDialog = setUpDialog( 'dataelement', i18n_expression, 800, 430 );
+		deExpressionDialog = setUpDialog( 'dataelement', i18n_expression, 820, 450 );
 		
 		#if( !$exportReport.isCategory() )
 		remoteValidate( jQuery( "#dataelement textarea[id=formula]" ), '../dhis-web-commons-ajax-json/getExpressionText.action' );
 		#end
 		
 		changeItemType();
+		jQuery( '#elementSelect_loader' ).hide();
 	});
 
 	var deExpressionValidator = null;
@@ -37,15 +38,17 @@
 				<a href="#" onclick="insertOperation( '-' )"><img src="images/minus.png" alt="$i18n.getString( 'minus' )"/></a>
 			</td>
 			<td>
-				#if(!$exportReport.isCategory()) 
-				<select id="groupSelect" style="width:500px" onchange="getDataElements(this.value, '#dataelement select[id=elementSelect]')"></select>												
+				#if( !$exportReport.isCategory() ) 
+				<select id="groupSelect" style="width:500px" onchange="getDataElements( this.value, '#dataelement-elementSelect' );"></select>
 				#end
-				<select id="elementSelect" size="15" style="width:500px;" ondblclick="insertExpression()"></select>	
-			</td>			
+				<input type="text" style="width:500px" placeholder="$i18n.getString( 'filter' )" onkeyup="filterList( this.value, 'dataelement-elementSelect');" />
+				<select id="dataelement-elementSelect" size="15" style="width:500px;" ondblclick="insertExpression()"></select>
+				<img src="../images/ajax-loader-bar.gif" id="elementSelect_loader" />
+			</td>		
 		</tr>
 		#if(!$exportReport.isCategory()) 
 		<tr>
-			<th colspan="2">$i18n.getString( "description" )</th>
+			<th>$i18n.getString( "description" )</th>
 		<tr>	
 		<tr>
 			<td colspan="2">
@@ -78,8 +81,9 @@
 		getDataElementCategoryOptionCombos();
 		#else
 		dataDictionary.loadDataElementGroups("#dataelement select[id=groupSelect]") ;
+		dataDictionary.loadOperands( '#dataelement-elementSelect', {id:getFieldValue( 'groupSelect' )} );
 		#end
-		
+
 		setFieldValue( 'dataelement textarea[id=formula]', getFieldValue('expression') );
 		getExpression();
 
@@ -106,7 +110,7 @@
 		, { id:$exportReport.id }
 		, function( json )
 		{
-			var select = jQuery("#dataelement select[id=elementSelect]");
+			var select = jQuery( "#dataelement-elementSelect" );
 			select.empty();
 			
 			if ( json.dataElementCategoryOptionCombos.length == 0 )

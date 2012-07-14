@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
+import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.report.Report;
 import org.hisp.dhis.report.ReportService;
 import org.hisp.dhis.reporttable.ReportTable;
@@ -85,7 +86,14 @@ public class GetReportOptionsAction
     {
         return report;
     }
-    
+
+    private RelativePeriods relatives;
+
+    public RelativePeriods getRelatives()
+    {
+        return relatives;
+    }
+
     private List<ReportTable> reportTables;
 
     public List<ReportTable> getReportTables()
@@ -105,7 +113,9 @@ public class GetReportOptionsAction
         
         if ( id != null )
         {
-            report = reportService.getReport( id );            
+            report = reportService.getReport( id );
+            
+            relatives = report.getRelatives();
         }
         
         return SUCCESS;

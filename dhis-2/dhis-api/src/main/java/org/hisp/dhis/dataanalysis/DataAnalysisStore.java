@@ -28,6 +28,8 @@ package org.hisp.dhis.dataanalysis;
  */
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
@@ -40,6 +42,8 @@ import org.hisp.dhis.period.Period;
  */
 public interface DataAnalysisStore
 {
+    final String ID = DataAnalysisStore.class.getName();
+    
     /**
      * Calculates the standard deviation of the DataValues registered for the given
      * data element, category option combo and organisation unit.
@@ -49,7 +53,7 @@ public interface DataAnalysisStore
      * @param organisationUnit the OrganisationUnit.
      * @return the standard deviation.
      */
-    Double getStandardDeviation( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo, OrganisationUnit organisationUnit );
+    Map<Integer, Double> getStandardDeviation( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo, Set<Integer> organisationUnits );
     
     /**
      * Calculates the average of the DataValues registered for the given
@@ -60,7 +64,10 @@ public interface DataAnalysisStore
      * @param organisationUnit the OrganisationUnit.
      * @return the average.
      */
-    Double getAverage( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo, OrganisationUnit organisationUnit );
+    Map<Integer, Double> getAverage( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo, Set<Integer> organisationUnits );
+    
+    Collection<DeflatedDataValue> getMinMaxViolations( Collection<DataElement> dataElements, Collection<DataElementCategoryOptionCombo> categoryOptionCombos,
+        Collection<Period> periods, Collection<OrganisationUnit> organisationUnits, int limit );
     
     /**
      * Returns a collection of DeflatedDataValues for the given input.
@@ -74,21 +81,8 @@ public interface DataAnalysisStore
      * @return
      */
     Collection<DeflatedDataValue> getDeflatedDataValues( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo,
-        Collection<Period> periods, OrganisationUnit organisationUnit, int lowerBound, int upperBound );
+        Collection<Period> periods, Map<Integer, Integer> lowerBoundMap, Map<Integer, Integer> upperBoundMap );
     
-    /**
-     * Returns a collection of gap DeflatedDataValues for the given input. A gap
-     * is a period for which there is no registered data values among the input periods.
-     * 
-     * @param dataElement the DataElement.
-     * @param categoryOptionCombo the DataElementCategoryOptionCombo.
-     * @param periods the collection of Periods.
-     * @param organisationUnit the OrganisationUnit.
-     * @return
-     */
-    Collection<DeflatedDataValue> getDeflatedDataValueGaps( DataElement dataElement, DataElementCategoryOptionCombo categoryOptionCombo,
-        Collection<Period> periods, OrganisationUnit organisationUnit );
-
     /**
      * Returns a collection of DeflatedDataValues which are marked for followup.
      * 

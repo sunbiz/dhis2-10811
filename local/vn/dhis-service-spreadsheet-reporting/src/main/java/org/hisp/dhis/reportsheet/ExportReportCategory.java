@@ -47,6 +47,16 @@ public class ExportReportCategory
         super();
     }
 
+    public ExportReportCategory( String name, String group, String excelTemplateFile )
+    {
+        super( name, group, excelTemplateFile );
+    }
+
+    public ExportReportCategory( String name, String group, String excelTemplateFile, String createdBy )
+    {
+        super( name, group, excelTemplateFile, createdBy );
+    }
+
     // -------------------------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------------------------
@@ -74,7 +84,7 @@ public class ExportReportCategory
         types.add( ExportItem.TYPE.DATAELEMENT );
         types.add( ExportItem.TYPE.DATAELEMENT_CODE );
         types.add( ExportItem.TYPE.DATAELEMENT_NAME );
-        types.add( ExportItem.TYPE.FORMULA_EXCEL);
+        types.add( ExportItem.TYPE.FORMULA_EXCEL );
         types.add( ExportItem.TYPE.SERIAL );
 
         return types;

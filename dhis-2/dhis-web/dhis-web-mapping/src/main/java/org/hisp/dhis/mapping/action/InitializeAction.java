@@ -32,10 +32,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.struts2.ServletActionContext;
+import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.configuration.ConfigurationService;
 import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.mapping.MapLayer;
-import org.hisp.dhis.mapping.MapView;
 import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.mapping.comparator.MapLayerNameComparator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -86,23 +87,28 @@ public class InitializeAction
     {
         this.id = id;
     }
+    
+    private String callback;
+    
+    public void setCallback( String callback )
+    {
+        this.callback = callback;
+    }
 
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
-
-    private MapView mapView;
-
-    public MapView getMapView()
+    
+    public String getCallback()
     {
-        return mapView;
+        return callback;
     }
 
-    private List<MapLayer> baseLayers;
+    private String contextPath;
 
-    public List<MapLayer> getBaseLayers()
+    public String getContextPath()
     {
-        return baseLayers;
+        return contextPath;
     }
 
     private List<MapLayer> overlays;
@@ -112,11 +118,11 @@ public class InitializeAction
         return overlays;
     }
 
-    private DataElementGroup infrastructuralDataElements;
+    private DataElementGroup infrastructuralDataElementGroup;
 
-    public DataElementGroup getInfrastructuralDataElements()
+    public DataElementGroup getInfrastructuralDataElementGroup()
     {
-        return infrastructuralDataElements;
+        return infrastructuralDataElementGroup;
     }
 
     private PeriodType infrastructuralPeriodType;
@@ -126,11 +132,11 @@ public class InitializeAction
         return infrastructuralPeriodType;
     }
 
-    private OrganisationUnit rootNode;
+    private Collection<OrganisationUnit> rootNodes;
 
-    public OrganisationUnit getRootNode()
+    public Collection<OrganisationUnit> getRootNodes()
     {
-        return rootNode;
+        return rootNodes;
     }
 
     // -------------------------------------------------------------------------
@@ -140,28 +146,17 @@ public class InitializeAction
     public String execute()
         throws Exception
     {
-        if ( id != null )
-        {
-            mapView = mappingService.getMapView( id );
-        }
-
-        baseLayers = new ArrayList<MapLayer>(
-            mappingService.getMapLayersByType( MappingService.MAP_LAYER_TYPE_BASELAYER ) );
-
-        Collections.sort( baseLayers, new MapLayerNameComparator() );
-
+        contextPath = ContextUtils.getContextPath( ServletActionContext.getRequest() );
+        
         overlays = new ArrayList<MapLayer>( mappingService.getMapLayersByType( MappingService.MAP_LAYER_TYPE_OVERLAY ) );
 
         Collections.sort( overlays, new MapLayerNameComparator() );
 
-        infrastructuralDataElements = configurationService.getConfiguration().getInfrastructuralDataElements();
+        infrastructuralDataElementGroup = configurationService.getConfiguration().getInfrastructuralDataElements();
 
         infrastructuralPeriodType = configurationService.getConfiguration().getInfrastructuralPeriodTypeDefaultIfNull();
 
-        Collection<OrganisationUnit> rootUnits = new ArrayList<OrganisationUnit>(
-            organisationUnitService.getOrganisationUnitsAtLevel( 1 ) );
-        
-        rootNode = rootUnits.size() > 0 ? rootUnits.iterator().next() : new OrganisationUnit();
+        rootNodes = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitsAtLevel( 1 ) );
 
         return SUCCESS;
     }

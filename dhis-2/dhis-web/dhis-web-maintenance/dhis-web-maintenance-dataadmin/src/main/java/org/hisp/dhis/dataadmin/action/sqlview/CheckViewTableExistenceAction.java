@@ -98,7 +98,7 @@ public class CheckViewTableExistenceAction
             return ERROR;
         }
 
-        String viewTableName = sqlViewService.setUpViewTableName( sqlViewService.getSqlView( id ).getName() );
+        String viewTableName = sqlViewService.getSqlView( id ).getViewName();
 
         if ( !sqlViewService.isViewTableExists( viewTableName ) )
         {

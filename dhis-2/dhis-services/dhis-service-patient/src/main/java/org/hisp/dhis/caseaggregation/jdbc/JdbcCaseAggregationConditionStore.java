@@ -28,19 +28,18 @@
 package org.hisp.dhis.caseaggregation.jdbc;
 
 import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
-import org.amplecode.quick.StatementHolder;
-import org.amplecode.quick.StatementManager;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.caseaggregation.CaseAggregationCondition;
 import org.hisp.dhis.caseaggregation.CaseAggregationConditionStore;
+import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
-import org.hisp.dhis.hibernate.HibernateGenericStore;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * @author Chau Thu Tran
@@ -48,22 +47,22 @@ import org.hisp.dhis.hibernate.HibernateGenericStore;
  * @version JdbcCaseAggregationConditionStore.java Nov 18, 2010 9:36:20 AM
  */
 public class JdbcCaseAggregationConditionStore
-    extends HibernateGenericStore<CaseAggregationCondition>
+    extends HibernateIdentifiableObjectStore<CaseAggregationCondition>
     implements CaseAggregationConditionStore
 {
     // -------------------------------------------------------------------------
     // Dependency
     // -------------------------------------------------------------------------
 
-    private StatementManager statementManager;
+    private JdbcTemplate jdbcTemplate;
 
     // -------------------------------------------------------------------------
     // Setters
     // -------------------------------------------------------------------------
 
-    public void setStatementManager( StatementManager statementManager )
+    public void setJdbcTemplate( JdbcTemplate jdbcTemplate )
     {
-        this.statementManager = statementManager;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     // -------------------------------------------------------------------------
@@ -73,34 +72,23 @@ public class JdbcCaseAggregationConditionStore
     @Override
     public List<Integer> executeSQL( String sql )
     {
-        StatementHolder holder = statementManager.getHolder();
-
-        List<Integer> patientIds = new ArrayList<Integer>();
-
         try
         {
-            Statement statement = holder.getStatement();
-
-            ResultSet resultSet = statement.executeQuery( sql );
-
-            while ( resultSet.next() )
+            List<Integer> patientIds = jdbcTemplate.query( sql, new RowMapper<Integer>()
             {
-                int patientId = resultSet.getInt( 1 );
-
-                patientIds.add( patientId );
-            }
-
+                public Integer mapRow( ResultSet rs, int rowNum )
+                    throws SQLException
+                {
+                    return rs.getInt( 1 );
+                }
+            } );
+            
             return patientIds;
-
         }
         catch ( Exception ex )
         {
             ex.printStackTrace();
             return null;
-        }
-        finally
-        {
-            holder.close();
         }
     }
 
@@ -108,19 +96,17 @@ public class JdbcCaseAggregationConditionStore
     @Override
     public Collection<CaseAggregationCondition> get( DataElement dataElement )
     {
-        return getCriteria( Restrictions.eq( "aggregationDataElement", dataElement ) )
-            .list();
+        return getCriteria( Restrictions.eq( "aggregationDataElement", dataElement ) ).list();
     }
-    
+
     @Override
     public CaseAggregationCondition get( DataElement dataElement, DataElementCategoryOptionCombo optionCombo )
     {
-        return (CaseAggregationCondition)getCriteria( Restrictions.eq( "aggregationDataElement", dataElement ),
-            Restrictions.eq( "optionCombo", optionCombo ))
-            .uniqueResult();
+        return (CaseAggregationCondition) getCriteria( Restrictions.eq( "aggregationDataElement", dataElement ),
+            Restrictions.eq( "optionCombo", optionCombo ) ).uniqueResult();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     @Override
     public Collection<CaseAggregationCondition> get( Collection<DataElement> dataElements )
     {

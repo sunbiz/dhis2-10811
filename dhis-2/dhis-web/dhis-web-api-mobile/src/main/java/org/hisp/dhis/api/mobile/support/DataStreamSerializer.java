@@ -27,10 +27,12 @@ public class DataStreamSerializer
         }
         catch ( InstantiationException e )
         {
+            e.printStackTrace();
             throw new IOException( "Can't instantiate class " + clazz.getName(), e );
         }
         catch ( IllegalAccessException e )
         {
+            e.printStackTrace();
             throw new IOException( "Not allowed to instantiate class " + clazz.getName(), e );
         }
     }

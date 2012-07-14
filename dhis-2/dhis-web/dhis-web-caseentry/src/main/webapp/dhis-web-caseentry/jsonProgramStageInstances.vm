@@ -1,14 +1,13 @@
-
- #set( $size = $programStageInstances.size() )
+#set( $size = $programInstance.programStageInstances.size() )
 { 
 "programStageInstances": [
-	#foreach( $programStageInstance in $!programStageInstances )
+	#foreach( $programStageInstance in $!programInstance.programStageInstances )
 	  {
 		"id": "$programStageInstance.id",
 		"programStageId": "$programStageInstance.programStage.id",
-		"programStageName": "$programStageInstance.programStage.name",
+		"programStageName": "$programStageInstance.programStage.displayName",
 		"dueDate": "$format.formatDate( $programStageInstance.dueDate )",
-		"status": "$statusMap.get( $programStageInstance.id )"
+		"status": "$programStageInstance.getEventStatus()"
 	  }#if( $velocityCount < $size ),#end
 	#end]
 }

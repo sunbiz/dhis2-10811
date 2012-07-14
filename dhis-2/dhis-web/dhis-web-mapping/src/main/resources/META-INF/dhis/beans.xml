@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
 	<!-- No -->
 
@@ -65,7 +64,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     </bean>
 
-    <!-- UserSetting -->
+    <bean id="org.hisp.dhis.mapping.action.GetOrganisationUnitGroupsByGroupSetAction"
+        class="org.hisp.dhis.mapping.action.GetOrganisationUnitGroupsByGroupSetAction"
+        scope="prototype">
+        <property name="organisationUnitGroupService"
+            ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    </bean>
+	
+	<!-- UserSetting -->
 
     <bean id="org.hisp.dhis.mapping.action.GetMapUserSettingsAction"
         class="org.hisp.dhis.mapping.action.GetMapUserSettingsAction"
@@ -152,24 +158,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
 	</bean>
 
-	<bean id="org.hisp.dhis.mapping.action.GetMapLegendSetByIndicatorAction"
-		class="org.hisp.dhis.mapping.action.GetMapLegendSetByIndicatorAction"
-		scope="prototype">
-		<property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
-	</bean>
-	
-	<bean id="org.hisp.dhis.mapping.action.GetMapLegendSetByDataElementAction"
-        class="org.hisp.dhis.mapping.action.GetMapLegendSetByDataElementAction"
-        scope="prototype">
-        <property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
-    </bean>
-
-	<bean id="org.hisp.dhis.mapping.action.GetMapLegendSetsByTypeAction"
-		class="org.hisp.dhis.mapping.action.GetMapLegendSetsByTypeAction"
-		scope="prototype">
-		<property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
-	</bean>
-
 	<bean
 		id="org.hisp.dhis.mapping.action.AssignIndicatorsToMapLegendSetAction"
 		class="org.hisp.dhis.mapping.action.AssignIndicatorsToMapLegendSetAction"
@@ -186,12 +174,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     </bean>
 
+    <!-- Map -->
+
+    <bean id="org.hisp.dhis.mapping.action.RenameMapAction" class="org.hisp.dhis.mapping.action.RenameMapAction"
+        scope="prototype"/>
+
 	<!-- MapView -->
-    
-    <bean id="org.hisp.dhis.mapping.action.AddMapViewAction"
-        class="org.hisp.dhis.mapping.action.AddMapViewAction" scope="prototype">
-        <property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
-    </bean>
 
 	<bean id="org.hisp.dhis.mapping.action.DeleteMapViewAction" class="org.hisp.dhis.mapping.action.DeleteMapViewAction"
 		scope="prototype">
@@ -207,11 +195,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		class="org.hisp.dhis.mapping.action.GetAllMapViewsAction" scope="prototype">
 		<property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
 	</bean>
-
-    <bean id="org.hisp.dhis.mapping.action.GetMapViewsByFeatureTypeAction"
-        class="org.hisp.dhis.mapping.action.GetMapViewsByFeatureTypeAction" scope="prototype">
-        <property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
-    </bean>
 
 	<bean id="org.hisp.dhis.mapping.action.AddMapViewToDashboardAction"
 		class="org.hisp.dhis.mapping.action.AddMapViewToDashboardAction"

@@ -91,13 +91,13 @@ public class DefaultConstantService
         return constantStore.getAll();
     }
     
-    public Map<Integer, Double> getConstantMap()
+    public Map<String, Double> getConstantMap()
     {
-        Map<Integer, Double> map = new HashMap<Integer, Double>();
+        Map<String, Double> map = new HashMap<String, Double>();
         
         for ( Constant constant : getAllConstants() )
         {
-            map.put( constant.getId(), constant.getValue() );
+            map.put( constant.getUid(), constant.getValue() );
         }
         
         return map;
@@ -126,16 +126,16 @@ public class DefaultConstantService
 
     public int getConstantCountByName( String name )
     {
-        return constantStore.getCountByName( name );
+        return constantStore.getCountLikeName( name );
     }
 
     public Collection<Constant> getConstantsBetween( int first, int max )
     {
-        return constantStore.getBetween( first, max );
+        return constantStore.getAllOrderedName( first, max );
     }
 
     public Collection<Constant> getConstantsBetweenByName( String name, int first, int max )
     {
-        return constantStore.getBetweenByName( name, first, max );
+        return constantStore.getAllLikeNameOrderedName( name, first, max );
     }
 }

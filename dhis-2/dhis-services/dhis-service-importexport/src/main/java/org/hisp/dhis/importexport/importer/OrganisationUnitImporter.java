@@ -27,8 +27,6 @@ package org.hisp.dhis.importexport.importer;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
 import org.amplecode.quick.BatchHandler;
 import org.hisp.dhis.importexport.GroupMemberType;
 import org.hisp.dhis.importexport.ImportParams;
@@ -36,6 +34,10 @@ import org.hisp.dhis.importexport.Importer;
 import org.hisp.dhis.importexport.mapping.NameMappingUtil;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+
+import java.util.List;
+
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
 /**
  * @author Lars Helge Overland
@@ -49,21 +51,21 @@ public class OrganisationUnitImporter
     public OrganisationUnitImporter()
     {
     }
-    
+
     public OrganisationUnitImporter( BatchHandler<OrganisationUnit> batchHandler, OrganisationUnitService organisationUnitService )
     {
         this.batchHandler = batchHandler;
         this.organisationUnitService = organisationUnitService;
     }
-    
+
     @Override
     public void importObject( OrganisationUnit object, ImportParams params )
     {
         NameMappingUtil.addOrganisationUnitMapping( object.getId(), object.getName() );
-        
+
         read( object, GroupMemberType.NONE, params );
     }
-    
+
     @Override
     protected void importUnique( OrganisationUnit object )
     {
@@ -84,20 +86,21 @@ public class OrganisationUnitImporter
         match.setFeatureType( defaultIfEmpty( object.getFeatureType(), match.getFeatureType() ) );
         match.setCoordinates( defaultIfEmpty( object.getCoordinates(), match.getCoordinates() ) );
         match.setLastUpdated( object.getLastUpdated() );
-        
+
         organisationUnitService.updateOrganisationUnit( match );
     }
 
     @Override
     protected OrganisationUnit getMatching( OrganisationUnit object )
     {
-        OrganisationUnit match = organisationUnitService.getOrganisationUnitByName( object.getName() );
-        
+        List<OrganisationUnit> organisationUnitByName = organisationUnitService.getOrganisationUnitByName( object.getName() );
+        OrganisationUnit match = organisationUnitByName.isEmpty() ? null : organisationUnitByName.get( 0 );
+
         if ( match == null )
         {
             match = organisationUnitService.getOrganisationUnitByCode( object.getCode() );
         }
-        
+
         return match;
     }
 
@@ -112,15 +115,15 @@ public class OrganisationUnitImporter
         {
             return false;
         }
-        if ( !isSimiliar( object.getCode(), existing.getCode() ) || ( isNotNull( object.getCode(), existing.getCode() ) && !object.getCode().equals( existing.getCode() ) ) )
+        if ( !isSimiliar( object.getCode(), existing.getCode() ) || (isNotNull( object.getCode(), existing.getCode() ) && !object.getCode().equals( existing.getCode() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getOpeningDate(), existing.getOpeningDate() ) || ( isNotNull( object.getOpeningDate(), existing.getOpeningDate() ) && !object.getOpeningDate().equals( existing.getOpeningDate() ) ) )
+        if ( !isSimiliar( object.getOpeningDate(), existing.getOpeningDate() ) || (isNotNull( object.getOpeningDate(), existing.getOpeningDate() ) && !object.getOpeningDate().equals( existing.getOpeningDate() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getClosedDate(), existing.getClosedDate() ) || ( isNotNull( object.getClosedDate(), existing.getClosedDate() ) && !object.getClosedDate().equals( existing.getClosedDate() ) ) )
+        if ( !isSimiliar( object.getClosedDate(), existing.getClosedDate() ) || (isNotNull( object.getClosedDate(), existing.getClosedDate() ) && !object.getClosedDate().equals( existing.getClosedDate() )) )
         {
             return false;
         }
@@ -128,23 +131,23 @@ public class OrganisationUnitImporter
         {
             return false;
         }
-        if ( !isSimiliar( object.getComment(), existing.getComment() ) || ( isNotNull( object.getComment(), existing.getComment() ) && !object.getComment().equals( existing.getComment() ) ) )
+        if ( !isSimiliar( object.getComment(), existing.getComment() ) || (isNotNull( object.getComment(), existing.getComment() ) && !object.getComment().equals( existing.getComment() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getGeoCode(), existing.getGeoCode() ) || ( isNotNull( object.getGeoCode(), existing.getGeoCode() ) && !object.getGeoCode().equals( existing.getGeoCode() ) ) )
+        if ( !isSimiliar( object.getGeoCode(), existing.getGeoCode() ) || (isNotNull( object.getGeoCode(), existing.getGeoCode() ) && !object.getGeoCode().equals( existing.getGeoCode() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getFeatureType(), existing.getFeatureType() ) || ( isNotNull( object.getFeatureType(), existing.getFeatureType() ) && !object.getFeatureType().equals( existing.getFeatureType() ) ) )
+        if ( !isSimiliar( object.getFeatureType(), existing.getFeatureType() ) || (isNotNull( object.getFeatureType(), existing.getFeatureType() ) && !object.getFeatureType().equals( existing.getFeatureType() )) )
         {
             return false;
         }
-        if ( !isSimiliar( object.getCoordinates(), existing.getCoordinates() ) || ( isNotNull( object.getCoordinates(), existing.getCoordinates() ) && !object.getCoordinates().equals( existing.getCoordinates() ) ) )
+        if ( !isSimiliar( object.getCoordinates(), existing.getCoordinates() ) || (isNotNull( object.getCoordinates(), existing.getCoordinates() ) && !object.getCoordinates().equals( existing.getCoordinates() )) )
         {
             return false;
         }
-        
+
         return true;
     }
 }

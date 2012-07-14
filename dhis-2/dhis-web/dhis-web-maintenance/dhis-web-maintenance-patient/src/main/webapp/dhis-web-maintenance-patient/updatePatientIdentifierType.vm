@@ -49,7 +49,7 @@
 		</tr> 	
 		
 		<tr>
-			<td><label for="type">$i18n.getString( "type" )<em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+			<td><label for="type">$i18n.getString( "type" )</label></td>
 			<td>
 				<select style="width: 336px;" id="type" name="type" class="{validate:{required:true}}">
 					<option value="text" #if( $patientIdentifierType.type=='text' ) selected="selected" #end>$i18n.getString( "text" )</option>
@@ -59,19 +59,6 @@
 			</td>		
 			<td></td>				
 		</tr>
-		
-		<tr>
-			<td><label for="programId">$i18n.getString( "program" )</label></td>
-			<td>
-				<select style="width: 336px;" type="text" name="programId" id="programId" value="$!patientIdentifierType.program" >
-					<option value=''>[$i18n.getString('all')]</option>
-					#foreach( $program in $programs)
-						<option value='$program.id' #if($patientIdentifierType.program.id==$program.id) selected #end>$program.name</option>
-					#end
-				</select>
-			</td>		
-			<td></td>				
-		</tr> 
 		
 	</tbody>
 	<tr>

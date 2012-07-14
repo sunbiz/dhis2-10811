@@ -18,12 +18,12 @@
 						<th>$i18n.getString( "stored_by" )</th>
 					</tr>
 				</thead>
-	
+	<!--value='$format.formatDate($!patient.birthDate)'-->
 				<tbody id="list"> 
 					#foreach( $equimentStatus in $equipmentStatusHistory )
 					<tr>
-						<td>$equimentStatus.reportingDate</td>
-						<td>$equimentStatus.updationDate</td>
+						<td>$!format.formatDate($!equimentStatus.reportingDate)</td>
+						<td>$!format.formatDate($!equimentStatus.updationDate)</td>
 						<td>$equimentStatus.status</td>
 						<td>$equimentStatus.description</td>
 						<td>$equimentStatus.storedBy</td>

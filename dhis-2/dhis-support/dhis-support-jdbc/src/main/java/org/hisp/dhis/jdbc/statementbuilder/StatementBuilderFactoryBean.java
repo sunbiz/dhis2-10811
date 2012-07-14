@@ -69,10 +69,6 @@ public class StatementBuilderFactoryBean
         {
             this.statementBuilder = new H2StatementBuilder();
         }
-        else if ( statementDialect.equals( StatementDialect.DERBY ) )
-        {
-            this.statementBuilder = new DerbyStatementBuilder();
-        }
         else
         {
             throw new RuntimeException( "Unsupported dialect: " + statementDialect.toString() );

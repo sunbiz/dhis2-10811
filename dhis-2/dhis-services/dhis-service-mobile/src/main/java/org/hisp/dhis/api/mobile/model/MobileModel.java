@@ -52,6 +52,8 @@ public class MobileModel
 
     private Collection<String> locales;
 
+    private List<SMSCommand> smsCommands;
+
     public ActivityPlan getActivityPlan()
     {
         return activityPlan;
@@ -111,72 +113,32 @@ public class MobileModel
     {
         this.clientVersion = clientVersion;
     }
+    
+    public List<SMSCommand> getSmsCommands()
+    {
+        return smsCommands;
+    }
+
+    public void setSmsCommands( List<SMSCommand> smsCommands )
+    {
+        this.smsCommands = smsCommands;
+    }
 
     @Override
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-        // if ( programs == null )
-        // {
-        // dout.writeInt( 0 );
-        // }
-        // else
-        // {
-        // dout.writeInt( programs.size() );
-        //
-        // for ( Program prog : programs )
-        // {
-        // prog.serialize( dout );
-        // }
-        // }
-        //
-        // // Write ActivityPlans
-        // if ( this.activityPlan == null )
-        // {
-        // dout.writeInt( 0 );
-        // }
-        // else
-        // {
-        // this.activityPlan.serialize( dout );
-        // }
-        //
-        // // Write current server's date
-        // dout.writeLong( serverCurrentDate.getTime() );
-        //
-        // // Write DataSets
-        // if ( datasets == null )
-        // {
-        // dout.writeInt( 0 );
-        // }
-        // else
-        // {
-        // dout.writeInt( datasets.size() );
-        // for ( DataSet ds : datasets )
-        // {
-        // ds.serialize( dout );
-        // }
-        // }
-        //
-        // // Write Locales
-        // if ( locales == null )
-        // {
-        // dout.writeInt( 0 );
-        // }
-        // else
-        // {
-        // dout.writeInt( locales.size() );
-        // for ( String locale : locales )
-        // {
-        // dout.writeUTF( locale );
-        // }
-        // }
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
             this.serializeVerssion2_8( dout );
         }
-        else
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
             this.serializeVerssion2_9( dout );
+        }
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
+        {
+            this.serializeVerssion2_10( dout );
         }
     }
 
@@ -201,7 +163,8 @@ public class MobileModel
 
             for ( Program prog : programs )
             {
-                prog.serializeVerssion2_8( dout );
+                prog.setClientVersion( DataStreamSerializable.TWO_POINT_EIGHT );
+                prog.serialize( dout );
             }
         }
 
@@ -212,7 +175,8 @@ public class MobileModel
         }
         else
         {
-            this.activityPlan.serializeVerssion2_8( dout );
+            activityPlan.setClientVersion( DataStreamSerializable.TWO_POINT_EIGHT );
+            this.activityPlan.serialize( dout );
         }
 
         // Write current server's date
@@ -228,7 +192,8 @@ public class MobileModel
             dout.writeInt( datasets.size() );
             for ( DataSet ds : datasets )
             {
-                ds.serializeVerssion2_8( dout );
+                ds.setClientVersion( DataStreamSerializable.TWO_POINT_EIGHT );
+                ds.serialize( dout );
             }
         }
 
@@ -261,7 +226,8 @@ public class MobileModel
 
             for ( Program prog : programs )
             {
-                prog.serializeVerssion2_9( dout );
+                prog.setClientVersion( DataStreamSerializable.TWO_POINT_NINE );
+                prog.serialize( dout );
             }
         }
 
@@ -272,7 +238,8 @@ public class MobileModel
         }
         else
         {
-            this.activityPlan.serializeVerssion2_9( dout );
+            this.activityPlan.setClientVersion( DataStreamSerializable.TWO_POINT_NINE );
+            this.activityPlan.serialize( dout );
         }
 
         // Write current server's date
@@ -288,7 +255,8 @@ public class MobileModel
             dout.writeInt( datasets.size() );
             for ( DataSet ds : datasets )
             {
-                ds.serializeVerssion2_9( dout );
+                ds.setClientVersion( DataStreamSerializable.TWO_POINT_NINE );
+                ds.serialize( dout );
             }
         }
 
@@ -304,6 +272,84 @@ public class MobileModel
             {
                 dout.writeUTF( locale );
             }
+        }
+    }
+
+    @Override
+    public void serializeVerssion2_10( DataOutputStream dout )
+        throws IOException
+    {
+        if ( programs == null )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( programs.size() );
+
+            for ( Program prog : programs )
+            {
+                prog.setClientVersion( DataStreamSerializable.TWO_POINT_TEN );
+                prog.serialize( dout );
+            }
+        }
+
+        // Write ActivityPlans
+        if ( this.activityPlan == null )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            this.activityPlan.setClientVersion( DataStreamSerializable.TWO_POINT_TEN );
+            this.activityPlan.serialize( dout );
+        }
+
+        // Write current server's date
+        dout.writeLong( serverCurrentDate.getTime() );
+
+        // Write DataSets
+        if ( datasets == null )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( datasets.size() );
+            for ( DataSet ds : datasets )
+            {
+                ds.setClientVersion( DataStreamSerializable.TWO_POINT_TEN );
+                ds.serialize( dout );
+            }
+        }
+
+        // Write Locales
+        if ( locales == null )
+        {
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( locales.size() );
+            for ( String locale : locales )
+            {
+                dout.writeUTF( locale );
+            }
+        }
+
+        // Write SMS Command
+
+        if ( smsCommands != null )
+        {
+            dout.writeInt( smsCommands.size() );
+            for (SMSCommand smsCommand : smsCommands) {
+                smsCommand.setClientVersion( getClientVersion() );
+                smsCommand.serialize( dout );
+            }
+        }
+        else
+        {
+            dout.writeInt( 0 );
         }
     }
 

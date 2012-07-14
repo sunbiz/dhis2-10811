@@ -8,6 +8,8 @@ function displayOrgUnitDistribution()
         return false;
     }
 
+    $( '#reportButton' ).attr( 'disabled', true );
+
     displayDiv( "loaderDiv", distributionDivs );
 
     var groupSetId = $( "#groupSetId" ).val();
@@ -16,6 +18,8 @@ function displayOrgUnitDistribution()
     {
         displayDiv( "tableDiv", distributionDivs );
         setTableStyles();
+
+        $( '#reportButton' ).removeAttr( 'disabled' );
     } );
 }
 
@@ -26,9 +30,13 @@ function getOrgUnitDistribution( type )
         return false;
     }
 
+    $('#chartButton').attr('disabled', true);
+
     var groupSetId = $( "#groupSetId" ).val();
     var url = "getOrgUnitDistribution.action?groupSetId=" + groupSetId + "&type=" + type + "&" + getDC();
     window.location.href = url;
+
+    $('#chartButton').removeAttr('disabled');
 }
 
 function displayOrgUnitDistributionChart()

@@ -27,11 +27,7 @@ package org.hisp.dhis.visualizer.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.system.util.DateUtils.setNames;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.dataelement.DataElementService;
@@ -46,7 +42,10 @@ import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.user.CurrentUserService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hisp.dhis.system.util.DateUtils.setNames;
 
 /**
  * @author Jan Henrik Overland
@@ -85,7 +84,7 @@ public class AddOrUpdateChartAction
     {
         this.dataSetService = dataSetService;
     }
-    
+
     private PeriodService periodService;
 
     public void setPeriodService( PeriodService periodService )
@@ -113,7 +112,7 @@ public class AddOrUpdateChartAction
     {
         this.currentUserService = currentUserService;
     }
-    
+
     private I18nManager i18nManager;
 
     public void setI18nManager( I18nManager i18nManager )
@@ -188,11 +187,11 @@ public class AddOrUpdateChartAction
         this.dataSetIds = dataSetIds;
     }
 
-    private boolean lastMonth;
+    private boolean reportingMonth;
 
-    public void setLastMonth( boolean lastMonth )
+    public void setReportingMonth( boolean reportingMonth )
     {
-        this.lastMonth = lastMonth;
+        this.reportingMonth = reportingMonth;
     }
 
     private boolean last12Months;
@@ -202,11 +201,18 @@ public class AddOrUpdateChartAction
         this.last12Months = last12Months;
     }
 
-    private boolean lastQuarter;
+    private boolean last3Months;
 
-    public void setLastQuarter( boolean lastQuarter )
+    public void setLast3Months( boolean last3Months )
     {
-        this.lastQuarter = lastQuarter;
+        this.last3Months = last3Months;
+    }
+
+    private boolean reportingQuarter;
+
+    public void setReportingQuarter( boolean reportingQuarter )
+    {
+        this.reportingQuarter = reportingQuarter;
     }
 
     private boolean last4Quarters;
@@ -250,9 +256,16 @@ public class AddOrUpdateChartAction
     {
         this.last5Years = last5Years;
     }
-    
+
+    private boolean rewind;
+
+    public void setRewind( boolean rewind )
+    {
+        this.rewind = rewind;
+    }
+
     private List<String> periodIds;
-    
+
     public void setPeriodIds( List<String> periodIds )
     {
         this.periodIds = periodIds;
@@ -428,33 +441,39 @@ public class AddOrUpdateChartAction
                 chart.getDataSets().add( dataSetService.getDataSet( id ) );
             }
         }
+        
+        RelativePeriods rp = new RelativePeriods();
 
-        if ( lastMonth || last12Months || lastQuarter || last4Quarters || lastSixMonth || last2SixMonths || thisYear
+        if ( reportingMonth || last12Months || last3Months || reportingQuarter || last4Quarters || lastSixMonth || last2SixMonths || thisYear
             || lastYear || last5Years )
         {
-            RelativePeriods rp = new RelativePeriods();
-            rp.setReportingMonth( lastMonth );
+            rp.setReportingMonth( reportingMonth );
             rp.setLast12Months( last12Months );
-            rp.setReportingQuarter( lastQuarter );
+            rp.setLast3Months( last3Months );
+            rp.setReportingQuarter( reportingQuarter );
             rp.setLast4Quarters( last4Quarters );
             rp.setLastSixMonth( lastSixMonth );
             rp.setLast2SixMonths( last2SixMonths );
             rp.setThisYear( thisYear );
             rp.setLastYear( lastYear );
             rp.setLast5Years( last5Years );
-
-            chart.setRelatives( rp );
         }
-        
+
+        chart.setRelatives( rp );
+
+        chart.setRewindRelativePeriods( rewind );
+
+        chart.getPeriods().clear();
+
         if ( periodIds != null )
         {
             List<Period> periods = new ArrayList<Period>();
-            
+
             for ( String id : periodIds )
             {
                 periods.add( PeriodType.getPeriodFromIsoString( id ) );
             }
-            
+
             chart.getPeriods().addAll( periodService.reloadPeriods( setNames( periods, i18nManager.getI18nFormat() ) ) );
         }
 
@@ -497,8 +516,15 @@ public class AddOrUpdateChartAction
 
         chart.setBaseLineLabel( baseLineLabel );
 
-        chartService.saveOrUpdate( chart );
-        
+        if ( uid == null )
+        {
+            chartService.addChart( chart );
+        }
+        else
+        {
+            chartService.updateChart( chart );
+        }
+
         chartId = chart.getUid();
 
         return SUCCESS;

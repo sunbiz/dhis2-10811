@@ -80,11 +80,11 @@ public class AddDataElementCategoryAction
         this.conceptId = conceptId;
     }
 
-    private List<String> categoryOptionNames = new ArrayList<String>();
+    private List<String> selectedList = new ArrayList<String>();
 
-    public void setCategoryOptionNames( List<String> categoryOptionNames )
+    public void setSelectedList( List<String> selectedList )
     {
-        this.categoryOptionNames = categoryOptionNames;
+        this.selectedList = selectedList;
     }
 
     // -------------------------------------------------------------------------
@@ -97,13 +97,16 @@ public class AddDataElementCategoryAction
         dataElementCategory.setName( name );
         dataElementCategory.setConcept( conceptService.getConcept( conceptId ) );
 
-        for ( String categoryOptionName : categoryOptionNames )
+        List<DataElementCategoryOption> options = new ArrayList<DataElementCategoryOption>();
+        
+        for ( String id : selectedList )
         {
-            DataElementCategoryOption categoryOption = new DataElementCategoryOption( categoryOptionName );
-            dataElementCategoryService.addDataElementCategoryOption( categoryOption );
-            dataElementCategory.getCategoryOptions().add( categoryOption );
+            DataElementCategoryOption categoryOption = dataElementCategoryService.getDataElementCategoryOption( Integer.parseInt( id ) );
+            options.add( categoryOption );
         }
 
+        dataElementCategory.setCategoryOptions( options );
+        
         dataElementCategoryService.addDataElementCategory( dataElementCategory );
 
         return SUCCESS;

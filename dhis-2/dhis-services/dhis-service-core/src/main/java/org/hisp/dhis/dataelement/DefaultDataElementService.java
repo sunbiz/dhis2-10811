@@ -27,11 +27,14 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.i18n.I18nUtils.getCountByName;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetween;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetweenByName;
-import static org.hisp.dhis.i18n.I18nUtils.getObjectsByName;
-import static org.hisp.dhis.i18n.I18nUtils.i18n;
+import org.hisp.dhis.common.GenericIdentifiableObjectStore;
+import org.hisp.dhis.dataelement.comparator.DataElementCategoryComboSizeComparator;
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.i18n.I18nService;
+import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.system.util.Filter;
+import org.hisp.dhis.system.util.FilterUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,14 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
-import org.hisp.dhis.dataelement.comparator.DataElementCategoryComboSizeComparator;
-import org.hisp.dhis.dataset.DataSet;
-import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.system.util.Filter;
-import org.hisp.dhis.system.util.FilterUtils;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hisp.dhis.i18n.I18nUtils.*;
 
 /**
  * @author Kristian Nordal
@@ -79,7 +75,8 @@ public class DefaultDataElementService
 
     private GenericIdentifiableObjectStore<DataElementGroupSet> dataElementGroupSetStore;
 
-    public void setDataElementGroupSetStore( GenericIdentifiableObjectStore<DataElementGroupSet> dataElementGroupSetStore )
+    public void setDataElementGroupSetStore(
+        GenericIdentifiableObjectStore<DataElementGroupSet> dataElementGroupSetStore )
     {
         this.dataElementGroupSetStore = dataElementGroupSetStore;
     }
@@ -142,7 +139,7 @@ public class DefaultDataElementService
             }
         } );
     }
-    
+
     public List<DataElement> getDataElementsByUid( Collection<String> uids )
     {
         return dataElementStore.getByUid( uids );
@@ -189,7 +186,14 @@ public class DefaultDataElementService
 
     public DataElement getDataElementByName( String name )
     {
-        return i18n( i18nService, dataElementStore.getByName( name ) );
+        List<DataElement> dataElements = new ArrayList<DataElement>( dataElementStore.getAllEqName( name ) );
+
+        if ( dataElements.isEmpty() )
+        {
+            return null;
+        }
+
+        return i18n( i18nService, dataElements.get( 0 ) );
     }
 
     public Collection<DataElement> searchDataElementsByName( String key )
@@ -197,14 +201,16 @@ public class DefaultDataElementService
         return i18n( i18nService, dataElementStore.searchDataElementsByName( key ) );
     }
 
-    public DataElement getDataElementByAlternativeName( String alternativeName )
-    {
-        return i18n( i18nService, dataElementStore.getByAlternativeName( alternativeName ) );
-    }
-
     public DataElement getDataElementByShortName( String shortName )
     {
-        return i18n( i18nService, dataElementStore.getByShortName( shortName ) );
+        List<DataElement> dataElements = new ArrayList<DataElement>( dataElementStore.getAllEqShortName( shortName ) );
+
+        if ( dataElements.isEmpty() )
+        {
+            return null;
+        }
+
+        return i18n( i18nService, dataElements.get( 0 ) );
     }
 
     public Collection<DataElement> getDataElementsByAggregationOperator( String aggregationOperator )
@@ -265,14 +271,14 @@ public class DefaultDataElementService
 
     public List<DataElementCategoryCombo> getDataElementCategoryCombos( List<DataElement> dataElements )
     {
-        Set<DataElementCategoryCombo> setCategoryCombos = new HashSet<DataElementCategoryCombo>();
+        Set<DataElementCategoryCombo> categoryCombos = new HashSet<DataElementCategoryCombo>();
 
         for ( DataElement dataElement : dataElements )
         {
-            setCategoryCombos.add( dataElement.getCategoryCombo() );
+            categoryCombos.add( dataElement.getCategoryCombo() );
         }
 
-        List<DataElementCategoryCombo> listCategoryCombos = new ArrayList<DataElementCategoryCombo>( setCategoryCombos );
+        List<DataElementCategoryCombo> listCategoryCombos = new ArrayList<DataElementCategoryCombo>( categoryCombos );
 
         Collections.sort( listCategoryCombos, new DataElementCategoryComboSizeComparator() );
 
@@ -297,16 +303,6 @@ public class DefaultDataElementService
     public Collection<DataElement> getDataElementsWithDataSets()
     {
         return i18n( i18nService, dataElementStore.getDataElementsWithDataSets() );
-    }
-
-    public boolean dataElementExists( int id )
-    {
-        return dataElementStore.dataElementExists( id );
-    }
-
-    public boolean dataElementCategoryOptionComboExists( int id )
-    {
-        return dataElementStore.dataElementCategoryOptionComboExists( id );
     }
 
     public Collection<DataElement> getDataElementsLikeName( String name )
@@ -339,16 +335,33 @@ public class DefaultDataElementService
         return i18n( i18nService, dataElementStore.getDataElementsByDataSets( dataSets ) );
     }
 
-    public Map<Integer, Set<Integer>> getDataElementCategoryOptionCombos()
+    public Collection<DataElement> getDataElementsByAggregationLevel( int aggregationLevel )
+    {
+        return i18n( i18nService, dataElementStore.getDataElementsByAggregationLevel( aggregationLevel ) );
+    }
+
+    public Map<String, Set<String>> getDataElementCategoryOptionCombos()
     {
         return dataElementStore.getDataElementCategoryOptionCombos();
     }
-    
+
+    public Map<String, Integer> getDataElementUidIdMap()
+    {
+        Map<String, Integer> map = new HashMap<String, Integer>();
+
+        for ( DataElement dataElement : getAllDataElements() )
+        {
+            map.put( dataElement.getUid(), dataElement.getId() );
+        }
+
+        return map;
+    }
+
     public Collection<DataElement> getDataElements( DataSet dataSet, String key, Integer max )
     {
-        return dataElementStore.get( dataSet, key, max );
+        return i18n( i18nService, dataElementStore.get( dataSet, key, max ) );
     }
-    
+
     // -------------------------------------------------------------------------
     // DataElementGroup
     // -------------------------------------------------------------------------
@@ -374,19 +387,19 @@ public class DefaultDataElementService
     {
         return i18n( i18nService, dataElementGroupStore.get( id ) );
     }
-    
+
     public DataElementGroup getDataElementGroup( int id, boolean i18nDataElements )
     {
         DataElementGroup group = getDataElementGroup( id );
-        
+
         if ( i18nDataElements )
         {
             i18n( i18nService, group.getMembers() );
         }
-        
+
         return group;
     }
-    
+
     public Collection<DataElementGroup> getDataElementGroups( final Collection<Integer> identifiers )
     {
         Collection<DataElementGroup> groups = getAllDataElementGroups();
@@ -398,6 +411,11 @@ public class DefaultDataElementService
                 return identifiers.contains( object.getId() );
             }
         } );
+    }
+
+    public Collection<DataElementGroup> getDataElementGroupsByUid( Collection<String> uids )
+    {
+        return dataElementGroupStore.getByUid( uids );
     }
 
     public DataElementGroup getDataElementGroup( String uid )
@@ -412,7 +430,14 @@ public class DefaultDataElementService
 
     public DataElementGroup getDataElementGroupByName( String name )
     {
-        return i18n( i18nService, dataElementGroupStore.getByName( name ) );
+        List<DataElementGroup> dataElementGroups = new ArrayList<DataElementGroup>( dataElementGroupStore.getAllEqName( name ) );
+
+        if ( dataElementGroups.isEmpty() )
+        {
+            return null;
+        }
+
+        return i18n( i18nService, dataElementGroups.get( 0 ) );
     }
 
     public Collection<DataElementGroup> getGroupsContainingDataElement( DataElement dataElement )
@@ -480,16 +505,16 @@ public class DefaultDataElementService
     {
         return i18n( i18nService, dataElementGroupSetStore.get( id ) );
     }
-    
+
     public DataElementGroupSet getDataElementGroupSet( int id, boolean i18nGroups )
     {
         DataElementGroupSet groupSet = getDataElementGroupSet( id );
-        
+
         if ( i18nGroups )
         {
             i18n( i18nService, groupSet.getDataElements() );
         }
-        
+
         return groupSet;
     }
 
@@ -500,7 +525,14 @@ public class DefaultDataElementService
 
     public DataElementGroupSet getDataElementGroupSetByName( String name )
     {
-        return i18n( i18nService, dataElementGroupSetStore.getByName( name ) );
+        List<DataElementGroupSet> dataElementGroupSets = new ArrayList<DataElementGroupSet>( dataElementGroupSetStore.getAllEqName( name ) );
+
+        if ( dataElementGroupSets.isEmpty() )
+        {
+            return null;
+        }
+
+        return i18n( i18nService, dataElementGroupSets.get( 0 ) );
     }
 
     @Override
@@ -565,6 +597,11 @@ public class DefaultDataElementService
         } );
     }
 
+    public List<DataElementGroupSet> getDataElementGroupSetsByUid( Collection<String> uids )
+    {
+        return dataElementGroupSetStore.getByUid( uids );
+    }
+
     public int getDataElementGroupSetCount()
     {
         return dataElementGroupSetStore.getCount();
@@ -584,19 +621,4 @@ public class DefaultDataElementService
     {
         return getObjectsBetweenByName( i18nService, dataElementGroupSetStore, name, first, max );
     }
-
-    // -------------------------------------------------------------------------
-    // DataElementOperand
-    // -------------------------------------------------------------------------
-
-    public Collection<DataElementOperand> getAllGeneratedOperands()
-    {
-        return dataElementStore.getAllGeneratedOperands();
-    }
-
-    public Collection<DataElementOperand> getAllGeneratedOperands( Collection<DataElement> dataElements )
-    {
-        return dataElementStore.getAllGeneratedOperands( dataElements );
-    }
-
 }

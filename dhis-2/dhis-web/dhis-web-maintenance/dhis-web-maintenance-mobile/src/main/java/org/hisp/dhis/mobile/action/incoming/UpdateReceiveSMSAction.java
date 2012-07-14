@@ -33,9 +33,9 @@ import org.hisp.dhis.sms.incoming.IncomingSmsService;
 import com.opensymphony.xwork2.Action;
 
 /**
-* @author Nguyen Kim Lai
-* @version $Id$
-*/
+ * @author Nguyen Kim Lai
+ * @version $Id$
+ */
 
 public class UpdateReceiveSMSAction
     implements Action
@@ -50,7 +50,7 @@ public class UpdateReceiveSMSAction
     {
         this.incomingSmsService = incomingSmsService;
     }
-    
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -61,9 +61,9 @@ public class UpdateReceiveSMSAction
     {
         this.id = id;
     }
-    
+
     private String text;
-    
+
     public void setText( String text )
     {
         this.text = text;
@@ -73,16 +73,12 @@ public class UpdateReceiveSMSAction
     public String execute()
         throws Exception
     {
-        System.out.println("welcome to update sMS function!!!!");
-        System.out.println("id: " + id);
-        System.out.println("text: " + text);
-        
         IncomingSms incomingSms = incomingSmsService.findBy( id );
-        
+
         incomingSms.setText( text );
-        
+
         incomingSmsService.update( incomingSms );
-        
+
         return SUCCESS;
     }
 

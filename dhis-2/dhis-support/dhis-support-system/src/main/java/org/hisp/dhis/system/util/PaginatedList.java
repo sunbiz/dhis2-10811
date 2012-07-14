@@ -66,7 +66,8 @@ public class PaginatedList<T>
     
     /**
      * Sets the number of pages. The page size will be calculated and set in
-     * order to provide the appropriate total number of pages.
+     * order to provide the appropriate total number of pages. The resulting
+     * number of pages can be lower than the given argument but not higher.
      */
     public PaginatedList<T> setNumberOfPages( int pages )
     {

@@ -52,14 +52,8 @@ public interface AggregatedOrgUnitDataValueService
     
     void deleteAggregatedDataValues( Collection<Integer> dataElementIds, Collection<Integer> periodIds, Collection<Integer> organisationUnitIds );
     
-    void deleteAggregatedDataValues( Collection<Integer> periodIds );
-    
     void deleteAggregatedDataValues();
     
-    void createIndex( boolean dataElement, boolean indicator );
-    
-    void dropIndex( boolean dataElement, boolean indicator );
-
     // -------------------------------------------------------------------------
     // AggregatedIndicatorValue
     // -------------------------------------------------------------------------
@@ -70,8 +64,6 @@ public interface AggregatedOrgUnitDataValueService
         Collection<Integer> periodIds, int organisationUnitId, Collection<Integer> organisationUnitGroupIds );
     
     void deleteAggregatedIndicatorValues( Collection<Integer> indicatorIds, Collection<Integer> periodIds, Collection<Integer> organisationUnitIds );
-    
-    void deleteAggregatedIndicatorValues( Collection<Integer> periodIds );
     
     void deleteAggregatedIndicatorValues();
 }

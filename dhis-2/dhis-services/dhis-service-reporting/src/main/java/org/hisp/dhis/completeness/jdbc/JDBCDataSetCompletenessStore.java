@@ -38,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.completeness.DataSetCompletenessStore;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.jdbc.StatementBuilder;
-import org.hisp.dhis.system.util.TextUtils;
 
 /**
  * @author Lars Helge Overland
@@ -77,7 +76,7 @@ public class JDBCDataSetCompletenessStore
 
     public Integer getCompleteDataSetRegistrations( DataSet dataSet, Collection<Integer> periods, Collection<Integer> relevantSources )
     {
-        if ( relevantSources == null || relevantSources.size() == 0 )
+        if ( relevantSources == null || relevantSources.isEmpty() || periods == null || periods.isEmpty() )
         {
             return 0;
         }        
@@ -94,7 +93,7 @@ public class JDBCDataSetCompletenessStore
 
     public Integer getCompleteDataSetRegistrations( DataSet dataSet, Collection<Integer> periods, Collection<Integer> relevantSources, int completenessOffset )
     {
-        if ( relevantSources == null || relevantSources.size() == 0 )
+        if ( relevantSources == null || relevantSources.isEmpty() || periods == null || periods.isEmpty() )
         {
             return 0;
         }        
@@ -121,7 +120,12 @@ public class JDBCDataSetCompletenessStore
     }
     
     public Integer getCompulsoryDataElementRegistrations( DataSet dataSet, Collection<Integer> children, Collection<Integer> periods, int completenessOffset )
-    {           
+    {
+        if ( children == null || children.isEmpty() || periods == null || periods.isEmpty() )
+        {
+            return 0;
+        }
+        
         final int compulsoryElements = dataSet.getCompulsoryDataElementOperands().size();
         
         final String deadlineCriteria = completenessOffset >= 0 ? "AND lastupdated <= " + statementBuilder.getAddDate( "pe.enddate", completenessOffset ) : "";
@@ -147,21 +151,6 @@ public class JDBCDataSetCompletenessStore
     // -------------------------------------------------------------------------
     // Based on number of data values
     // -------------------------------------------------------------------------
-
-    public Integer getNumberOfValues( DataSet dataSet, Collection<Integer> children, Collection<Integer> periods )
-    {
-        final String childrenIds = TextUtils.getCommaDelimitedString( children );
-        
-        final String sql =
-            "SELECT count(*) FROM datavalue dv " +
-            "JOIN datasetmembers dsm ON dv.dataelementid=dsm.dataelementid " +
-            "JOIN dataset ds ON dsm.datasetid=ds.datasetid " +
-            "WHERE ds.datasetid = " + dataSet.getId() + " " +
-            "AND periodid IN ( " + getCommaDelimitedString( periods ) + " ) " +
-            "AND sourceid IN (" + childrenIds + ")";
-
-        return statementManager.getHolder().queryForInteger( sql );
-    }
     
     public Collection<DataSet> getDataSetsWithRegistrations( Collection<DataSet> dataSets )
     {
@@ -198,6 +187,11 @@ public class JDBCDataSetCompletenessStore
     
     public void deleteDataSetCompleteness( Collection<Integer> dataSetIds, Collection<Integer> periodIds, Collection<Integer> organisationUnitIds )
     {
+        if ( dataSetIds == null || dataSetIds.isEmpty() || periodIds == null || periodIds.isEmpty() || organisationUnitIds == null || organisationUnitIds.isEmpty() )
+        {
+            return;
+        }
+        
         final String sql = 
             "DELETE FROM aggregateddatasetcompleteness " +
             "WHERE datasetid IN ( " + getCommaDelimitedString( dataSetIds ) + " ) " +
@@ -218,7 +212,7 @@ public class JDBCDataSetCompletenessStore
     {
         try
         {
-            final String sql = "CREATE INDEX aggregateddatasetcompleteness_index ON aggregateddatasetcompleteness (datasetid, periodid, organisationunitid)";        
+            final String sql = "CREATE INDEX aggregateddatasetcompleteness_index ON aggregateddatasetcompleteness (datasetid, periodid, organisationunitid, value)";        
             statementManager.getHolder().executeUpdate( sql, true );
         }
         catch ( Exception ex )

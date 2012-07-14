@@ -114,7 +114,7 @@ function SelectionTreeSelection()
 			selectedOrganisationUnitUid.push( unitUids[i] );
         }
 
-        jQuery("body").trigger("oust.selected", selectedOrganisationUnit);
+        jQuery( 'body' ).trigger( 'oust.selected', selectedOrganisationUnit);
         
         if ( listenerFunction )
         {
@@ -137,7 +137,7 @@ function SelectionTree()
     this.clearSelectedOrganisationUnits = function()
     {
     	$.ajax({ 
-    		url: selectionTreePath + "clearSelectedOrganisationUnits.action",
+    		url: selectionTreePath + 'clearSelectedOrganisationUnits.action',
 			async: false
     	});
     };
@@ -232,7 +232,7 @@ function SelectionTree()
         
         clearLoadingMessage( treeTag );
 
-        jQuery("body").trigger( "oust.selected", selectedOrganisationUnit );
+        jQuery( 'body' ).trigger( 'oust.selected', selectedOrganisationUnit );
     }
 
     function createChildren( parentTag, parentElement )

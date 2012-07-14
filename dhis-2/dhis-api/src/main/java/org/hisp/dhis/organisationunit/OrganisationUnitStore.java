@@ -30,6 +30,7 @@ package org.hisp.dhis.organisationunit;
 import org.hisp.dhis.common.GenericNameableObjectStore;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +48,42 @@ public interface OrganisationUnitStore
     // -------------------------------------------------------------------------
     // OrganisationUnit
     // -------------------------------------------------------------------------
+
+    /**
+     * Retrieves the object with the given uid.
+     *
+     * @param uuid the uid.
+     * @return the object with the given uid.
+     */
+    OrganisationUnit getByUuid( String uuid );
+
+    /**
+     * Returns all OrganisationUnits by status.
+     *
+     * @param active Get active or inactive
+     * @return a collection of all OrganisationUnits, or an empty collection if
+     *         there are no OrganisationUnits.
+     */
+    Collection<OrganisationUnit> getAllOrganisationUnitsByStatus( boolean active );
+
+    /**
+     * Returns all OrganisationUnits by lastUpdated.
+     *
+     * @param lastUpdated OrganisationUnits from this date
+     * @return a collection of all OrganisationUnits, or an empty collection if
+     *         there are no OrganisationUnits.
+     */
+    Collection<OrganisationUnit> getAllOrganisationUnitsByLastUpdated( Date lastUpdated );
+
+    /**
+     * Returns all OrganisationUnits by status and lastUpdated.
+     *
+     * @param active      Get active or inactive
+     * @param lastUpdated OrganisationUnits from this date
+     * @return a collection of all OrganisationUnits, or an empty collection if
+     *         there are no OrganisationUnits.
+     */
+    Collection<OrganisationUnit> getAllOrganisationUnitsByStatusLastUpdated( boolean active, Date lastUpdated );
 
     /**
      * Returns an OrganisationUnit with a given name. Case is ignored.
@@ -72,11 +109,56 @@ public interface OrganisationUnitStore
      */
     Collection<OrganisationUnit> getOrganisationUnitsWithoutGroups();
 
-    Collection<OrganisationUnit> getOrganisationUnitsByNameAndGroups( String name, Collection<OrganisationUnitGroup> groups, boolean limit );
+    /**
+     * Returns all OrganisationUnit which names are like the given name, or which
+     * code or uid are equal the given name, and are within the given groups.
+     *
+     * @param query  the query to match on name, code or uid.
+     * @param groups the organisation unit groups.
+     * @param limit  the limit of returned objects.
+     * @return a collection of OrganisationUnits.
+     */
+    Collection<OrganisationUnit> getOrganisationUnitsByNameAndGroups( String query, Collection<OrganisationUnitGroup> groups, boolean limit );
 
     Map<Integer, Set<Integer>> getOrganisationUnitDataSetAssocationMap();
 
     Set<Integer> getOrganisationUnitIdsWithoutData();
+
+
+    /**
+     * Retrieves the objects determined by the given first result and max result
+     * which status is like the current status.
+     *
+     * @param status the name which result object names must be like.
+     * @param first  the first result object to return.
+     * @param max    the max number of result objects to return.
+     * @return collection of objects.
+     */
+    Collection<OrganisationUnit> getBetweenByStatus( boolean status, int first, int max );
+
+    /**
+     * Retrieves the objects determined by the given first result and max result
+     * which lastUpdated is larger or equal.
+     *
+     * @param lastUpdated the name which result object names must be like.
+     * @param first       the first result object to return.
+     * @param max         the max number of result objects to return.
+     * @return collection of objects.
+     */
+    Collection<OrganisationUnit> getBetweenByLastUpdated( Date lastUpdated, int first, int max );
+
+
+    /**
+     * Retrieves the objects determined by the given first result and max result
+     * which status is like the current status, and lastUpdated is larger or equal.
+     *
+     * @param status      the name which result object names must be like.
+     * @param lastUpdated the name which result object names must be like.
+     * @param first       the first result object to return.
+     * @param max         the max number of result objects to return.
+     * @return collection of objects.
+     */
+    Collection<OrganisationUnit> getBetweenByStatusLastUpdated( boolean status, Date lastUpdated, int first, int max );
 
     // -------------------------------------------------------------------------
     // OrganisationUnitHierarchy

@@ -27,7 +27,8 @@
 
 package org.hisp.dhis.caseentry.action.caseentry;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -36,6 +37,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.program.comparator.ProgramDisplayNameComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -83,9 +85,9 @@ public class LoadAnonymousProgramsAction
         return orgunit;
     }
 
-    private Collection<Program> programs;
+    private List<Program> programs;
 
-    public Collection<Program> getPrograms()
+    public List<Program> getPrograms()
     {
         return programs;
     }
@@ -108,10 +110,14 @@ public class LoadAnonymousProgramsAction
 
         if ( orgunit != null )
         {
-            programs = programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION, orgunit );
+            programs = new ArrayList<Program>( programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION,
+                orgunit ) );
+            programs.retainAll( programService.getProgramsByCurrentUser());
+            
+            Collections.sort( programs, new ProgramDisplayNameComparator() );
         }
-        
-        levels = organisationUnitService.getFilledOrganisationUnitLevels();
+
+        levels = organisationUnitService.getOrganisationUnitLevels();
 
         return SUCCESS;
     }

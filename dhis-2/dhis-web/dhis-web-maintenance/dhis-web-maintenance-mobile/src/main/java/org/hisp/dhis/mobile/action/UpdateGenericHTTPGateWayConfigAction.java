@@ -127,6 +127,11 @@ public class UpdateGenericHTTPGateWayConfigAction
                 gatewayConfig.setName( name );
                 gatewayConfig.setUrlTemplate( urlTemplate );
 
+                if ( config.getGateways() == null || config.getGateways().isEmpty() )
+                {
+                    gatewayConfig.setDefault( true );
+                }
+
                 if ( index >= 0 )
                 {
                     config.getGateways().set( index, gatewayConfig );

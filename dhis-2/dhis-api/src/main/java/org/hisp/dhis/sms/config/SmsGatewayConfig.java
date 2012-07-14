@@ -38,6 +38,8 @@ public abstract class SmsGatewayConfig
 {
     private String name;
 
+    private boolean isDefault;
+
     public String getName()
     {
         return name;
@@ -48,8 +50,17 @@ public abstract class SmsGatewayConfig
         this.name = name;
     }
 
+    public boolean isDefault()
+    {
+        return isDefault;
+    }
+
+    public void setDefault( boolean isDefault )
+    {
+        this.isDefault = isDefault;
+    }
+
     public abstract boolean isInbound();
 
     public abstract boolean isOutbound();
-
 }

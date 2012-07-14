@@ -29,6 +29,9 @@ package org.hisp.dhis.organisationunit;
 
 import org.hisp.dhis.system.startup.AbstractStartupRoutine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Lars Helge Overland
  * @version $Id$
@@ -44,7 +47,7 @@ public class OrganisationUnitGroupSetPopulator
     // -------------------------------------------------------------------------
 
     private OrganisationUnitGroupService organisationUnitGroupService;
-    
+
     public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
     {
         this.organisationUnitGroupService = organisationUnitGroupService;
@@ -57,27 +60,29 @@ public class OrganisationUnitGroupSetPopulator
     public void execute()
         throws Exception
     {
-        OrganisationUnitGroupSet type = organisationUnitGroupService.getOrganisationUnitGroupSetByName( NAME_TYPE );
-        
+        List<OrganisationUnitGroupSet> types = new ArrayList<OrganisationUnitGroupSet>( organisationUnitGroupService.getOrganisationUnitGroupSetByName( NAME_TYPE ) );
+        OrganisationUnitGroupSet type = types.isEmpty() ? null : types.get( 0 );
+
         if ( type == null )
         {
             type = new OrganisationUnitGroupSet();
             type.setName( "Type" );
             type.setDescription( "Type of organisation unit, examples are PHU, chiefdom and district" );
             type.setCompulsory( false );
-            
+
             organisationUnitGroupService.addOrganisationUnitGroupSet( type );
         }
-        
-        OrganisationUnitGroupSet ownership = organisationUnitGroupService.getOrganisationUnitGroupSetByName( NAME_OWNERSHIP );
-        
+
+        List<OrganisationUnitGroupSet> ownerships = new ArrayList<OrganisationUnitGroupSet>( organisationUnitGroupService.getOrganisationUnitGroupSetByName( NAME_OWNERSHIP ) );
+        OrganisationUnitGroupSet ownership = ownerships.isEmpty() ? null : ownerships.get( 0 );
+
         if ( ownership == null )
         {
             ownership = new OrganisationUnitGroupSet();
             ownership.setName( "Ownership" );
             ownership.setDescription( "Ownership of organisation unit, examples are private and public" );
             ownership.setCompulsory( false );
-            
+
             organisationUnitGroupService.addOrganisationUnitGroupSet( ownership );
         }
     }

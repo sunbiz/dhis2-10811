@@ -27,11 +27,14 @@ package org.hisp.dhis.report;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.i18n.I18nFormat;
-
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Date;
+import java.util.List;
+
+import net.sf.jasperreports.engine.JasperPrint;
+
+import org.hisp.dhis.i18n.I18nFormat;
+import org.hisp.dhis.period.Period;
 
 /**
  * @author Lars Helge Overland
@@ -43,7 +46,34 @@ public interface ReportService
     final String REPORTTYPE_PDF = "pdf";
     final String REPORTTYPE_XLS = "xls";
 
-    void renderReport( OutputStream out, String reportUid, Date reportingPeriod,
+    final String PARAM_RELATIVE_PERIODS = "periods";
+    final String PARAM_ORG_UNITS = "organisationunits";
+    final String PARAM_ORGANISATIONUNIT_LEVEL = "organisationunit_level";
+    final String PARAM_ORGANISATIONUNIT_LEVEL_COLUMN = "organisationunit_level_column";
+    final String PARAM_ORGANISATIONUNIT_COLUMN_NAME = "organisationunit_name";
+    final String PARAM_PERIOD_NAME = "period_name";
+    
+    /**
+     * Renders a Jasper Report. 
+     * 
+     * Will make the following params available:
+     * 
+     * "periods" String of relative period ids (String)
+     * "organisationunits" String of selected organisation unit ids (String)
+     * "period_name" Name of the selected period (String)
+     * "organisationunit_name" Name of the selected organisation unit (String)
+     * "organisationunit_level" Level of the selected organisation unit (int)
+     * "organisationunit_level_column" Name of the relevant level column in 
+     *     table _orgunitstructure (String)
+     * 
+     * @param out the OutputStream to write the report to.
+     * @param reportUid the uid of the report to render.
+     * @param period the period to use as parameter.
+     * @param organisationUnitUid the uid of the org unit to use as parameter.
+     * @param type the type of the report, can be "xls" and "pdf".
+     * @param format the I18nFormat to use.
+     */
+    JasperPrint renderReport( OutputStream out, String reportUid, Period period,
                        String organisationUnitUid, String type, I18nFormat format );
 
     /**
@@ -90,7 +120,7 @@ public interface ReportService
      * @param max the maximum number of reports.
      * @return a collection of reports.
      */
-    Collection<Report> getReportsBetween( int first, int max );
+    List<Report> getReportsBetween( int first, int max );
 
     /**
      * Retrieves the given number of maximum reports starting at the given start
@@ -100,7 +130,7 @@ public interface ReportService
      * @param max the maximum number of reports.
      * @return a collection of reports.
      */
-    Collection<Report> getReportsBetweenByName( String name, int first, int max );
+    List<Report> getReportsBetweenByName( String name, int first, int max );
 
     /**
      * Deletes a Report.
@@ -114,7 +144,7 @@ public interface ReportService
      *
      * @return a Collection of Reports.
      */
-    Collection<Report> getAllReports();
+    List<Report> getAllReports();
 
     /**
      * Retrieves the Report with the given name.
@@ -122,7 +152,7 @@ public interface ReportService
      * @param name the name.
      * @return the Report.
      */
-    Report getReportByName( String name );
+    List<Report> getReportByName( String name );
 
     /**
      * Retrieves all Reports with the given identifiers.

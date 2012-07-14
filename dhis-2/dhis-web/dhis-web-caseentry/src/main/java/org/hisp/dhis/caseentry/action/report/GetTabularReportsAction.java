@@ -66,11 +66,11 @@ public class GetTabularReportsAction
     // Output
     // -------------------------------------------------------------------------
 
-    private Collection<PatientTabularReport> tabularReports = new HashSet<PatientTabularReport>();
+    private Collection<PatientTabularReport> reports = new HashSet<PatientTabularReport>();
 
-    public Collection<PatientTabularReport> getTabularReports()
+    public Collection<PatientTabularReport> getReports()
     {
-        return tabularReports;
+        return reports;
     }
 
     // -------------------------------------------------------------------------
@@ -81,8 +81,8 @@ public class GetTabularReportsAction
     public String execute()
         throws Exception
     {
-        tabularReports = tabularReportService.getPatientTabularReports( currentUserService.getCurrentUser() );
-        
+        reports = tabularReportService.getPatientTabularReports( currentUserService.getCurrentUser() );
+
         return SUCCESS;
     }
 }

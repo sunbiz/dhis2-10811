@@ -63,6 +63,10 @@ public class ReportType
     public final static String RT_COLDCHAIN_REPORT = "Cold Chain Reports";
     
     public final static String RT_MD_REPORT = "MD Reports";
+    
+    public final static String RT_RANKING_REPORT = "Ranking Reports";
+
+    public final static String RT_FEEDBACK_TEMPLATE = "Feedback Template";
 
     public static List<String> getReportTypes()
     {
@@ -99,6 +103,10 @@ public class ReportType
         reportTypes.add( RT_COLDCHAIN_REPORT );
         
         reportTypes.add( RT_MD_REPORT );
+        
+        reportTypes.add( RT_RANKING_REPORT);
+
+        reportTypes.add(RT_FEEDBACK_TEMPLATE);
         
         return reportTypes;
     }

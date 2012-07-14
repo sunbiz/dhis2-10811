@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.i18n.I18n;
 
@@ -44,9 +45,11 @@ public interface DataEntryFormService
     String ID = DataEntryFormService.class.getName();
 
     final Pattern INPUT_PATTERN = Pattern.compile( "(<input.*?/>)", Pattern.DOTALL );
-    final Pattern IDENTIFIER_PATTERN = Pattern.compile( "(\\d+)-(\\d+)-val" );
-    final Pattern DATAELEMENT_TOTAL_PATTERN = Pattern.compile( "dataelementid=\"(.*?)\"" );
-    final Pattern INDICATOR_PATTERN = Pattern.compile( "indicatorid=\"(.*?)\"" );
+    final Pattern IDENTIFIER_PATTERN = Pattern.compile( "id=\"(\\w+)-(\\w+)-val\"" );
+    final Pattern DATAELEMENT_TOTAL_PATTERN = Pattern.compile( "dataelementid=\"(\\w+?)\"" );
+    final Pattern INDICATOR_PATTERN = Pattern.compile( "indicatorid=\"(\\w+)\"" );
+    final Pattern DYNAMIC_INPUT_PATTERN = Pattern.compile( "(\\w+)-(\\w+)-dyninput" ); // Random code - category option combo id
+    final Pattern DYNAMIC_SELECT_PATTERN = Pattern.compile( "dynselect=\"(\\w+)\"" ); // Category combo id
     final Pattern VALUE_TAG_PATTERN = Pattern.compile( "value=\"(.*?)\"", Pattern.DOTALL );
     final Pattern TITLE_TAG_PATTERN = Pattern.compile( "title=\"(.*?)\"", Pattern.DOTALL );
     
@@ -141,7 +144,9 @@ public interface DataEntryFormService
      */
     String prepareDataEntryFormForEntry( String htmlCode, I18n i18n, DataSet dataSet );
     
-    Set<DataElement> getDataElementsInDataEntryForm( DataEntryForm form );
+    Set<DataElement> getDataElementsInDataEntryForm( DataSet dataSet );
+    
+    Set<DataElementOperand> getOperandsInDataEntryForm( DataSet dataSet );
     
     Collection<DataEntryForm> listDisctinctDataEntryFormByProgramStageIds( List<Integer> programStageIds );
     

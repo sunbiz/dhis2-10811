@@ -29,6 +29,7 @@ package org.hisp.dhis.dxf2.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -42,8 +43,6 @@ import org.hisp.dhis.common.view.ShortNameView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ public class JacksonUtils
 
     static
     {
-        ObjectMapper[] objectMappers = new ObjectMapper[] { jsonMapper, xmlMapper };
+        ObjectMapper[] objectMappers = new ObjectMapper[]{ jsonMapper, xmlMapper };
         // DateFormat format = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssZ" );
 
         for ( ObjectMapper objectMapper : objectMappers )
@@ -70,6 +69,12 @@ public class JacksonUtils
             objectMapper.configure( SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false );
             objectMapper.configure( SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false );
             objectMapper.configure( SerializationFeature.FAIL_ON_EMPTY_BEANS, false );
+            objectMapper.configure( SerializationFeature.WRAP_EXCEPTIONS, true );
+
+            objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+            objectMapper.configure( DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, true );
+            objectMapper.configure( DeserializationFeature.WRAP_EXCEPTIONS, true );
+
             objectMapper.disable( MapperFeature.AUTO_DETECT_FIELDS );
             objectMapper.disable( MapperFeature.AUTO_DETECT_CREATORS );
             objectMapper.disable( MapperFeature.AUTO_DETECT_GETTERS );
@@ -78,7 +83,18 @@ public class JacksonUtils
         }
 
         jsonMapper.getJsonFactory().enable( JsonGenerator.Feature.QUOTE_FIELD_NAMES );
+        // jsonMapper.getFactory().enable( JsonGenerator.Feature.QUOTE_FIELD_NAMES );
         xmlMapper.configure( ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
+
+        /*
+        jsonMapper.setAnnotationIntrospector(
+            new JacksonAnnotationIntrospector() );
+
+        xmlMapper.setAnnotationIntrospector(
+            new AnnotationIntrospectorPair(
+                new JacksonXmlAnnotationIntrospector(),
+                new JacksonAnnotationIntrospector() ) );
+        */
 
         // register view classes
         viewClasses.put( "default", BasicView.class );

@@ -1,34 +1,45 @@
 <!DOCTYPE HTML>
 <html>
     <head>
-        <title>DHIS 2</title>        
+        <title>$encoder.htmlEncode( $applicationTitle )</title>        
         <script type="text/javascript" src="../javascripts/jQuery/jquery.min.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 $('#j_username').focus();
 
                 $('#loginForm').bind('submit', function() {
-					$('#submit').attr('disabled', 'disabled');
-					$('#reset').attr('disabled', 'disabled');
+                    $('#submit').attr('disabled', 'disabled');
+                    $('#reset').attr('disabled', 'disabled');
 
-	                sessionStorage.removeItem( 'orgUnitSelected' );
+                    sessionStorage.removeItem( 'orgUnitSelected' );
                 });
             });
         </script>
+        <link type="text/css" rel="stylesheet" href="../css/widgets.css">
         <link type="text/css" rel="stylesheet" href="../css/login.css">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-    	<div id="headerArea">		
-		#if ( $keyFlag )
-			<img id="flagArea" src="../flags/${keyFlagImage}">
-		#end
-		#if ( $applicationTitle )
-        	<span id="titleArea">$encoder.htmlEncode( $applicationTitle )</span>
+    	<h1 style="display:none">$encoder.htmlEncode( $applicationTitle )</h1>
+    	<div style="display:none">DHIS 2</div>
+        <div>       
+        #if ( $keyFlag )
+            <img id="flagArea" src="../flags/${keyFlagImage}">
         #end
-	    </div>
+        #if ( $applicationTitle )
+            <span id="titleArea">$encoder.htmlEncode( $applicationTitle )</span>
+        #end        
+        #if ( $keyApplicationIntro )
+            <span id="introArea">$encoder.htmlEncode( $keyApplicationIntro )</span>
+        #end
+        </div>
+        #if ( $keyConfig.selfRegistrationAllowed() )
+        <div id="accountArea">
+        	<a class="greenButtonLink" href="account.action">Create an account</a>
+        </div>
+        #end
         <div id="loginField">
-            <div id="bannerArea"><a href="http://dhis2.org"><img alt="" src="logo_banner.png"></a></div>
+            <div id="bannerArea"><a href="http://dhis2.org"><img src="logo_front.png" style="border:none"></a></div>
             
             <form id="loginForm" action="../../dhis-web-commons-security/login.action" method="post">
                 <table>
@@ -43,15 +54,31 @@
                     <tr>
                         <td></td>
                         <td>
-                        	<input id="submit" class="button" type="submit" value="Login" style="width:120px">
+                            <input id="submit" class="button" type="submit" value="Login" style="width:120px">
                             <input id="reset" class="button" type="reset" value="Clear" style="width:120px">
-						</td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="padding-top:8px">
+                        	<span id="loginFormFooter">
+                        	#if( $keyAccountRecovery )
+                        	<a href="recovery.action">Forgot password?</a>&nbsp;
+                        	#end
+                        	#if( $keyConfig.selfRegistrationAllowed() )
+                        	<a href="account.action">Create an account</a>	
+	                        #end
+	                        </span>
+                        </td>
                     </tr>
                 </table>
             </form>
             #if( $failed == true )
             <span id="loginMessage">Wrong username or password</span>
-			#end            
+            #end
+            #if ( $keyApplicationNotification )
+            <div id="notificationArea">$encoder.htmlEncode( $keyApplicationNotification )</div>
+            #end
         </div>
     </body>
 </html>

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:aop="http://www.springframework.org/schema/aop"
-  xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
   <!-- ReportTable -->
 
   <bean id="org.hisp.dhis.reporttable.jdbc.ReportTableManager" class="org.hisp.dhis.reporttable.jdbc.JDBCReportTableManager">
-	<property name="jdbcTemplate" ref="jdbcTemplate" />
+	  <property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
 
   <bean id="org.hisp.dhis.reporttable.ReportTableStore" class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
@@ -38,7 +37,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
     <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
     <property name="constantService" ref="org.hisp.dhis.constant.ConstantService" />
     <property name="statementManager" ref="statementManager" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
     <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
   </bean>
 
   <!-- Chart -->
@@ -75,24 +76,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
   <bean id="dataCompletenessServiceProvider" class="org.hisp.dhis.common.ServiceProvider">
     <property name="services">
       <map>
-        <entry>
-          <key>
-            <value>registration</value>
-          </key>
-          <ref bean="registrationDataCompletenessService" />
-        </entry>
-        <entry>
-          <key>
-            <value>compulsory</value>
-          </key>
-          <ref bean="compulsoryDataCompletenessService" />
-        </entry>
-        <entry>
-          <key>
-            <value>ratio</value>
-          </key>
-          <ref bean="ratioDataCompletenessService" />
-        </entry>
+        <entry key="registration" value-ref="registrationDataCompletenessService" />
+        <entry key="compulsory" value-ref="compulsoryDataCompletenessService" />
       </map>
     </property>
   </bean>
@@ -111,15 +96,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
     <property name="batchHandlerFactory" ref="batchHandlerFactory" />
 	<property name="aggregationCache" ref="org.hisp.dhis.datamart.aggregation.cache.AggregationCache" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
-    <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
     <property name="completenessStore" ref="org.hisp.dhis.completeness.DataSetCompletenessStore" />
     <property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
   </bean>
-
-  <bean id="ratioDataCompletenessService" class="org.hisp.dhis.completeness.impl.RatioDataSetCompletenessService"
-    parent="compulsoryDataCompletenessService" />
 
   <bean id="registrationDataCompletenessService" class="org.hisp.dhis.completeness.impl.RegistrationDataSetCompletenessService"
     parent="compulsoryDataCompletenessService">
@@ -144,7 +126,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
   <bean id="org.hisp.dhis.datasetreport.DataSetReportService" class="org.hisp.dhis.datasetreport.impl.DefaultDataSetReportService">
     <property name="dataValueService" ref="org.hisp.dhis.datavalue.DataValueService" />
-    <property name="aggregatedDataValueService" ref="org.hisp.dhis.aggregation.AggregatedDataValueService" />
+	<property name="dataSetReportStore" ref="org.hisp.dhis.datasetreport.DataSetReportStore" />
+  </bean>
+  
+  <bean id="org.hisp.dhis.datasetreport.DataSetReportStore" class="org.hisp.dhis.datasetreport.jdbc.JdbcDataSetReportStore">
+	<property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
 
   <!-- Dashboard -->
@@ -158,6 +144,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
   <bean id="org.hisp.dhis.dashboard.DashboardService" class="org.hisp.dhis.dashboard.impl.DefaultDashboardService">
     <property name="dashboardContentStore" ref="org.hisp.dhis.dashboard.DashboardContentStore" />
+    <property name="userService" ref="org.hisp.dhis.user.UserService" />
+    <property name="chartService" ref="org.hisp.dhis.chart.ChartService" />
+    <property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
+    <property name="reportService" ref="org.hisp.dhis.report.ReportService" />
+    <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
+    <property name="documentService" ref="org.hisp.dhis.document.DocumentService" />
   </bean>
 
   <!-- Dashboard Content providers -->
@@ -183,7 +175,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
   <bean id="mapViewContentProvider" class="org.hisp.dhis.dashboard.provider.MapViewContentProvider">
     <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
     <property name="dashboardService" ref="org.hisp.dhis.dashboard.DashboardService" />
-    <property name="key" value="mapViews" />
+    <property name="key" value="maps" />
   </bean>
 
   <bean id="rssHealthContentProvider" class="org.hisp.dhis.dashboard.provider.RssContentProvider">
@@ -202,40 +194,22 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
     <property name="userSettingService" ref="org.hisp.dhis.user.UserSettingService" />
     <property name="contentProviders">
       <map>
-        <entry>
-          <key>
-            <value>report</value>
-          </key>
+        <entry key="report">
           <ref local="reportContentProvider" />
         </entry>
-        <entry>
-          <key>
-            <value>document</value>
-          </key>
+        <entry key="document">
           <ref local="documentContentProvider" />
         </entry>
-        <entry>
-          <key>
-            <value>report_table</value>
-          </key>
+        <entry key="report_table">
           <ref local="reportTableContentProvider" />
         </entry>
-        <entry>
-          <key>
-            <value>map_view</value>
-          </key>
+        <entry key="map_view">
           <ref local="mapViewContentProvider" />
         </entry>
-        <entry>
-          <key>
-            <value>rss_health</value>
-          </key>
+        <entry key="rss_health">
           <ref local="rssHealthContentProvider" />
         </entry>
-        <entry>
-          <key>
-            <value>rss_diseases</value>
-          </key>
+        <entry key="rss_diseases">
           <ref local="rssDiseasesContentProvider" />
         </entry>
       </map>
@@ -255,9 +229,10 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<property name="interpretationStore" ref="org.hisp.dhis.interpretation.InterpretationStore" />
 	<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 	<property name="userService" ref="org.hisp.dhis.user.UserService" />
+	<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
   </bean>
 
-  <bean id="org.hisp.dhis.interpretation.InterpretationStore" class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
+  <bean id="org.hisp.dhis.interpretation.InterpretationStore" class="org.hisp.dhis.interpretation.hibernate.HibernateInterpretationStore">
 	<property name="clazz" value="org.hisp.dhis.interpretation.Interpretation" />
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="cacheable" value="true" />
@@ -353,12 +328,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
       <aop:around pointcut="execution( * org.hisp.dhis.completeness.DataSetCompletenessService.exportDataSetCompleteness(..) )"
         method="intercept" />
       <aop:around pointcut="execution( * org.hisp.dhis.completeness.DataSetCompletenessService.getDataSetCompleteness(..) )"
-        method="intercept" />
-      <aop:around pointcut="execution( * org.hisp.dhis.datasetreport.DataSetReportService.getCustomDataSetReport(..) )"
-        method="intercept" />
-      <aop:around pointcut="execution( * org.hisp.dhis.datasetreport.DataSetReportService.getSectionDataSetReport(..) )"
-        method="intercept" />
-      <aop:around pointcut="execution( * org.hisp.dhis.datasetreport.DataSetReportService.getDefaultDataSetReport(..) )"
         method="intercept" />
     </aop:aspect>
 
