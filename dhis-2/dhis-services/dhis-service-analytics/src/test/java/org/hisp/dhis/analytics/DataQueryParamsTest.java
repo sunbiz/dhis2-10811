@@ -52,7 +52,7 @@ public class DataQueryParamsTest
     {
         List<String> expected = new ArrayList<String>( Arrays.asList( "D348asd782j", "kj78HnH6hgT", "9ds9dS98s2" ) );
         
-        assertEquals( expected, DataQueryParams.getDimensionOptionsFromParam( "de:D348asd782j;kj78HnH6hgT;9ds9dS98s2" ) );        
+        assertEquals( expected, DataQueryParams.getDimensionItemsFromParam( "de:D348asd782j;kj78HnH6hgT;9ds9dS98s2" ) );        
     }
     
     @Test

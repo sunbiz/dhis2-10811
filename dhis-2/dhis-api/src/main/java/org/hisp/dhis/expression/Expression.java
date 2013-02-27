@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
 import org.apache.commons.lang.Validate;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.DxfNamespaces;
@@ -64,7 +63,7 @@ import java.util.Set;
  * @author Margrethe Store
  * @version $Id: Expression.java 5011 2008-04-24 20:41:28Z larshelg $
  */
-@JacksonXmlRootElement( localName = "expression", namespace = DxfNamespaces.DXF_2_0)
+@JacksonXmlRootElement(localName = "expression", namespace = DxfNamespaces.DXF_2_0)
 public class Expression
     implements Serializable
 {
@@ -93,9 +92,9 @@ public class Expression
      * A description of the Expression.
      */
     private String description;
-    
+
     /**
-     * Indicates whether the expression should evaluate to null if there are 
+     * Indicates whether the expression should evaluate to null if there are
      * missing data values in the expression.
      */
     private boolean nullIfBlank;
@@ -228,8 +227,8 @@ public class Expression
     }
 
     @JsonProperty
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public String getExpression()
     {
         return expression;
@@ -240,11 +239,11 @@ public class Expression
         this.expression = expression;
     }
 
-    @JsonProperty( value = "dataElements" )
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "dataElements" )
-    @JacksonXmlProperty( localName = "dataElement" )
+    @JsonProperty(value = "dataElements")
+    @JsonSerialize(contentAs = BaseIdentifiableObject.class)
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "dataElements", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "dataElement", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElement> getDataElementsInExpression()
     {
         return dataElementsInExpression;
@@ -255,11 +254,11 @@ public class Expression
         this.dataElementsInExpression = dataElementsInExpression;
     }
 
-    @JsonProperty( value = "categoryOptionCombos" )
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "categoryOptionCombos" )
-    @JacksonXmlProperty( localName = "categoryOptionCombo" )
+    @JsonProperty(value = "categoryOptionCombos")
+    @JsonSerialize(contentAs = BaseIdentifiableObject.class)
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "categoryOptionCombos", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "categoryOptionCombo", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElementCategoryOptionCombo> getOptionCombosInExpression()
     {
         return optionCombosInExpression;
@@ -272,7 +271,7 @@ public class Expression
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getDescription()
     {
         return description;
@@ -284,8 +283,8 @@ public class Expression
     }
 
     @JsonProperty
-    @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public boolean isNullIfBlank()
     {
         return nullIfBlank;
@@ -295,17 +294,19 @@ public class Expression
     {
         this.nullIfBlank = nullIfBlank;
     }
-    
+
     public void mergeWith( Expression other )
     {
         Validate.notNull( other );
-        
+
         expression = other.getExpression() == null ? expression : other.getExpression();
         description = other.getDescription() == null ? description : other.getDescription();
         nullIfBlank = other.isNullIfBlank();
+
         dataElementsInExpression = other.getDataElementsInExpression() == null ?
             dataElementsInExpression : new HashSet<DataElement>( other.getDataElementsInExpression() );
-        optionCombosInExpression = other.getOptionCombosInExpression() == null ? 
-            optionCombosInExpression : new HashSet<DataElementCategoryOptionCombo>( other.getOptionCombosInExpression() );        
+
+        optionCombosInExpression = other.getOptionCombosInExpression() == null ?
+            optionCombosInExpression : new HashSet<DataElementCategoryOptionCombo>( other.getOptionCombosInExpression() );
     }
 }

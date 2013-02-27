@@ -547,7 +547,7 @@
 			<param name="page">/dhis-web-maintenance-patient/patientRegistrationForm.vm</param>
 			<param name="menu">/dhis-web-maintenance-patient/menu.vm</param>
 			<param name="javascripts">javascript/patientRegistrationForm.js</param>
-			<param name="requiredAuthorities">F_ADD_PATIENT_REGISTATION_FORM</param>
+			<param name="requiredAuthorities">F_ADD_PATIENT_REGISTRATION_FORM</param>
 		</action>
 
 		<action name="viewPatientRegistrationForm"
@@ -573,6 +573,11 @@
 			<result name="success" type="velocity-json">
 				/dhis-web-commons/ajax/jsonResponseSuccess.vm
 			</result>
+		</action>
+		
+		<action name="delRegistrationEntryFormAction"
+			class="org.hisp.dhis.patient.action.dataentryform.DelRegistrationFormAction">
+			<result name="success" type="redirect">patientRegistrationForm.action</result>
 		</action>
 
 		<action name="showPatientRegistrationForm"

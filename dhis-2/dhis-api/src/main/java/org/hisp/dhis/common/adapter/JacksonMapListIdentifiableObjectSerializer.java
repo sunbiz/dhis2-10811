@@ -1,4 +1,4 @@
-package org.hisp.dhis.system.util;
+package org.hisp.dhis.common.adapter;
 
 /*
  * Copyright (c) 2004-2012, University of Oslo
@@ -27,22 +27,45 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+
+import org.hisp.dhis.common.IdentifiableObject;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
  * @author Lars Helge Overland
  */
-public class ListMap<T, V>
-    extends HashMap<T, List<V>>
+public class JacksonMapListIdentifiableObjectSerializer
+    extends JsonSerializer<Map<String, List<IdentifiableObject>>>
 {
-    public List<V> putValue( T key, V value )
+    @Override
+    public void serialize( Map<String, List<IdentifiableObject>> value, JsonGenerator jgen, SerializerProvider provider )
+        throws IOException
     {
-        List<V> list = this.get( key );
-        list = list == null ? new ArrayList<V>() : list;        
-        list.add( value );
-        this.put( key, list );        
-        return null;
+        if ( value != null )
+        {
+            jgen.writeStartObject();
+            
+            for ( String key : value.keySet() )
+            {
+                jgen.writeArrayFieldStart( key );
+                
+                for ( IdentifiableObject object : value.get( key ) )
+                {
+                    jgen.writeStartObject();
+                    jgen.writeStringField( "id", object.getUid() );
+                    jgen.writeEndObject();
+                }
+                
+                jgen.writeEndArray();                
+            }
+            
+            jgen.writeEndObject();
+        }
     }
 }

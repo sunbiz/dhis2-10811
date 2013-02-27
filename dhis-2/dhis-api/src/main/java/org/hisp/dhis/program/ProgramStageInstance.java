@@ -78,6 +78,8 @@ public class ProgramStageInstance
 
     private Integer status;
 
+    private String coordinates;
+
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -272,6 +274,16 @@ public class ProgramStageInstance
     public void setStatus( Integer status )
     {
         this.status = status;
+    }
+
+    public String getCoordinates()
+    {
+        return coordinates;
+    }
+
+    public void setCoordinates( String coordinates )
+    {
+        this.coordinates = coordinates;
     }
 
     public Integer getEventStatus()

@@ -27,9 +27,7 @@
 
 package org.hisp.dhis.caseentry.action.report;
 
-import static org.hisp.dhis.patientreport.PatientTabularReport.PREFIX_DATA_ELEMENT;
-import static org.hisp.dhis.patientreport.PatientTabularReport.PREFIX_NUMBER_DATA_ELEMENT;
-import static org.hisp.dhis.patientreport.PatientTabularReport.VALUE_TYPE_OPTION_SET;
+import static org.hisp.dhis.patientreport.PatientTabularReport.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +47,11 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.paging.ActionPagingSupport;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientAttributeOption;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.patientreport.TabularReportColumn;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstance;
@@ -104,9 +107,37 @@ public class GenerateTabularReportAction
         this.currentUserService = currentUserService;
     }
 
+    private PatientAttributeService patientAttributeService;
+
+    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    {
+        this.patientAttributeService = patientAttributeService;
+    }
+
+    private PatientIdentifierTypeService patientIdentifierTypeService;
+
+    public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
+    {
+        this.patientIdentifierTypeService = patientIdentifierTypeService;
+    }
+
     // -------------------------------------------------------------------------
     // Input/Output
     // -------------------------------------------------------------------------
+
+    private List<PatientIdentifierType> identifierTypes = new ArrayList<PatientIdentifierType>();
+
+    public List<PatientIdentifierType> getIdentifierTypes()
+    {
+        return identifierTypes;
+    }
+
+    private List<PatientAttribute> patientAttributes = new ArrayList<PatientAttribute>();
+
+    public List<PatientAttribute> getPatientAttributes()
+    {
+        return patientAttributes;
+    }
 
     private Collection<Integer> orgunitIds = new HashSet<Integer>();
 
@@ -267,6 +298,8 @@ public class GenerateTabularReportAction
         return message;
     }
 
+    private boolean accessPrivateInfo = false;
+
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
@@ -376,14 +409,14 @@ public class GenerateTabularReportAction
                 this.paging = createPaging( totalRecords );
 
                 grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
-                    startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, getStartPos(), paging.getPageSize(),
-                    i18n );
+                    startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, accessPrivateInfo, getStartPos(),
+                    paging.getPageSize(), i18n );
             }
-            else
             // Download as Excel
+            else
             {
                 grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
-                    startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, null, null, i18n );
+                    startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, accessPrivateInfo, null, null, i18n );
             }
         }
         catch ( SQLGrammarException ex )
@@ -435,7 +468,29 @@ public class GenerateTabularReportAction
                 column.setHidden( Boolean.parseBoolean( values[2] ) );
                 column.setQuery( values.length == 4 ? TextUtils.lower( values[3] ) : null );
 
-                if ( PREFIX_DATA_ELEMENT.equals( prefix ) )
+                if ( PREFIX_FIXED_ATTRIBUTE.equals( prefix ) )
+                {
+                    column.setName( values[1] );
+                    accessPrivateInfo = true;
+                }
+                else if ( PREFIX_IDENTIFIER_TYPE.equals( prefix ) )
+                {
+                    PatientIdentifierType identifierType = patientIdentifierTypeService
+                        .getPatientIdentifierType( column.getIdentifierAsInt() );
+
+                    column.setName( identifierType.getName() );
+                }
+                else if ( PREFIX_PATIENT_ATTRIBUTE.equals( prefix ) )
+                {
+                    PatientAttribute attribute = patientAttributeService.getPatientAttribute( column
+                        .getIdentifierAsInt() );
+                    patientAttributes.add( attribute );
+                    valueTypes.add( attribute.getValueType() );
+                    mapSuggestedValues.put( index, getSuggestedAttributeValues( attribute ) );
+
+                    column.setName( attribute.getName() );
+                }
+                else if ( PREFIX_DATA_ELEMENT.equals( prefix ) )
                 {
                     int objectId = Integer.parseInt( values[1] );
                     DataElement dataElement = dataElementService.getDataElement( objectId );
@@ -460,6 +515,27 @@ public class GenerateTabularReportAction
         }
 
         return columns;
+    }
+
+    private List<String> getSuggestedAttributeValues( PatientAttribute patientAttribute )
+    {
+        List<String> values = new ArrayList<String>();
+        String valueType = patientAttribute.getValueType();
+
+        if ( valueType.equals( PatientAttribute.TYPE_BOOL ) )
+        {
+            values.add( i18n.getString( "yes" ) );
+            values.add( i18n.getString( "no" ) );
+        }
+        else if ( valueType.equals( PatientAttribute.TYPE_COMBO ) )
+        {
+            for ( PatientAttributeOption attributeOption : patientAttribute.getAttributeOptions() )
+            {
+                values.add( attributeOption.getName() );
+            }
+        }
+
+        return values;
     }
 
     private List<String> getSuggestedDataElementValues( DataElement dataElement )

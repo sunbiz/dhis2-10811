@@ -49,7 +49,7 @@ public class InMemoryNotifier
 {
     private static final Log log = LogFactory.getLog( InMemoryNotifier.class );
     
-    private int MAX_SIZE = 500;
+    private int MAX_SIZE = 100;
     
     private TaskLocalList<Notification> notifications;
     
@@ -77,11 +77,14 @@ public class InMemoryNotifier
     {
         Notification notification = new Notification( level, category, new Date(), message, completed );
         
-        notifications.get( id ).add( 0, notification );
-        
-        if ( notifications.get( id ).size() > MAX_SIZE )
+        if ( id != null )
         {
-            notifications.get( id ).remove( MAX_SIZE );
+            notifications.get( id ).add( 0, notification );
+            
+            if ( notifications.get( id ).size() > MAX_SIZE )
+            {
+                notifications.get( id ).remove( MAX_SIZE );
+            }
         }
 
         log.info( notification );
@@ -94,7 +97,7 @@ public class InMemoryNotifier
     {
         List<Notification> list = new ArrayList<Notification>();
         
-        if ( category != null )
+        if ( id != null && category != null )
         {
             for ( Notification notification : notifications.get( id ) )
             {
@@ -116,7 +119,7 @@ public class InMemoryNotifier
     @Override
     public Notifier clear( TaskId id, TaskCategory category )
     {
-        if ( category != null )
+        if ( id != null && category != null )
         {
             Iterator<Notification> iter = notifications.get( id ).iterator();
             

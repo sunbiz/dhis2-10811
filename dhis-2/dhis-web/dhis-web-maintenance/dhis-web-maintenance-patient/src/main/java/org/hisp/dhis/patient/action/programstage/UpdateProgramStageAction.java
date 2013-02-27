@@ -198,6 +198,13 @@ public class UpdateProgramStageAction
         this.displayGenerateEventBox = displayGenerateEventBox;
     }
 
+    private Boolean captureCoordinates;
+
+    public void setCaptureCoordinates( Boolean captureCoordinates )
+    {
+        this.captureCoordinates = captureCoordinates;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -221,9 +228,9 @@ public class UpdateProgramStageAction
         programStage.setIrregular( irregular );
         programStage.setMinDaysFromStart( minDaysFromStart );
         programStage.setDisplayGenerateEventBox( displayGenerateEventBox );
-
         programStage.setAutoGenerateEvent( autoGenerateEvent );
         programStage.setValidCompleteOnly( validCompleteOnly );
+        programStage.setCaptureCoordinates( captureCoordinates );
 
         Set<PatientReminder> patientReminders = new HashSet<PatientReminder>();
         for ( int i = 0; i < this.daysAllowedSendMessages.size(); i++ )

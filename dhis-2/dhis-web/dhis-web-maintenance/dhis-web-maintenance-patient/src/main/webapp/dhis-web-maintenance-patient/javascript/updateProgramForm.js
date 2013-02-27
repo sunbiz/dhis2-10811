@@ -21,6 +21,5 @@ jQuery(document).ready(	function(){
 		}
 	});
 	
-	//checkValueIsExist( "name", "validateProgram.action", {id:getFieldValue('id')});
 	programOnChange();
 });	

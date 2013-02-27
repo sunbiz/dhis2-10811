@@ -14,19 +14,18 @@
 	});	
 </script>
 
-<h3>$i18n.getString( "activity_plan" ) #openHelp('visit_schedule')</h3>
+<h3 id='mainLinkLbl'>$i18n.getString( "visit_schedule_form" ) #openHelp('visit_schedule')</h3>
 <form id='activityPlanForm' name='activityPlanForm'>
 	<input type='hidden' id='isRegistration' name= 'isRegistration' value='false'>
 	<input type='hidden' id='listAll' name='listAll'>
 	<input type='hidden' id='sendToList' name='sendToList'>
-	<input type='hidden' id='programStageInstanceId' name='programStageInstanceId' value='$programStageInstance.id'>
 	<input type='hidden' id='programStageName' name='programStageName'>
 	<input type='hidden' id='searchByProgramStage' name='searchByProgramStage' value="false">
 	<input type='hidden' id='orgunitId' name='orgunitId' value='$organisationUnit.id' >
 	<input type="hidden" id='hideLink' name='hideLink' value='false'>
 	<input type='hidden' id='isSearchByProgram' name='isSearchByProgram' value='false' >
 	<input type='hidden' id='export' name= 'export'>
-	<div id='advanced-search' style='width:550px;'>
+	<div id='selectDiv' class='advanced-search' style='width:550px;'>
 		<table style="margin-bottom:8px;width:550px;">    
 			<tr>
 				<td>
@@ -92,6 +91,14 @@
 				</td>
 			</tr>
 			<tr>
+				<td>$i18n.getString('use_data_from_level')</td>
+				<td>
+					<input type="radio" id='facilityLB1' name="facilityLB" value="selected" checked> $i18n.getString('selected')
+					<input type="radio" id='facilityLB2' name="facilityLB" value="childrenOnly"> $i18n.getString('children_only')
+					<input type="radio" id='facilityLB3' name="facilityLB" value="all"> $i18n.getString('all')
+				</td>
+			</tr>
+			<tr>
 				<td></td>
 				<td>
 					<input type="submit" class='large-button' id='listPatientBtn' value="$i18n.getString( 'show_activity_list' )" onclick="setFieldValue('export', false);">
@@ -102,7 +109,16 @@
 	</div>
 </form>
 
-<div id='listPatientDiv'></div>
+
+<div id='listPatientDiv'></div> <!-- List searching patients -->
+<div id='patientDashboard'></div> <!-- Patient dashboard -->
+<div id='editPatientDiv'></div> <!-- Add Patient Form -->
+<div id='resultSearchDiv' style='font-size:13px'></div> <!-- List searching patients -->
+<div id='enrollmentDiv'></div> <!-- Program Enrollment Form -->
+<div id='listRelationshipDiv'></div> <!-- List relationship -->
+<div id='addRelationshipDiv'></div> <!-- Add relationship -->
+<div id='migrationPatientDiv'></div> <!-- Migration Patient -->
+
 <div id='contentDataRecord'></div>
 	
 #parse( "dhis-web-commons/loader/loader.vm" )
@@ -110,12 +126,13 @@
 <div class='hidden'>
 	<input type='textbox' id='currentDate' name='currentDate'>
 	<script>
-		datePicker( 'currentDate' );
+		datePicker( 'currentDate', false );
 	</script>
 </div>
 
 <script>
 	unSave = false;
+	statusSearching = 2;
 	var i18n_please_select = '[' + '$encoder.jsEscape( $i18n.getString( "please_select" ) , "'")' + ']';
 	var i18n_color_quick_help = '$encoder.jsEscape( $i18n.getString( "color_quick_help" ) , "'")';
 	var i18n_patient_details_and_history = '$encoder.jsEscape( $i18n.getString( "patient_details_and_history" ) , "'")';
@@ -126,6 +143,7 @@
 	var i18n_please_select_criteria = '[' + '$encoder.jsEscape( $i18n.getString( "please_select_criteria" ) , "'")' + ']';
 	var i18n_program_stage = '$encoder.jsEscape( $i18n.getString( "program_stage" ) , "'")';
 	var i18n_show_all_items = '$encoder.jsEscape( $i18n.getString( "show_all_items" ) , "'")';
-
+	var i18n_main_form_link = '$encoder.jsEscape( $i18n.getString( "visit_schedule_form" ) , "'")';
+	var i18n_insert_a_report_date = '$encoder.jsEscape( $i18n.getString( "insert_a_report_date" ) , "'")';
 	setDateRange();
 </script>

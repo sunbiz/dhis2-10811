@@ -391,7 +391,7 @@ public class GetTableOptionsAction
             
             selectedOrganisationUnitGroups = reportTable.getOrganisationUnitGroups();
 
-            selectionTreeManager.setSelectedOrganisationUnits( reportTable.getUnits() );
+            selectionTreeManager.setSelectedOrganisationUnits( reportTable.getOrganisationUnits() );
         }
         
         return SUCCESS;

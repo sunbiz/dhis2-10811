@@ -26,4 +26,14 @@
   
   <bean id="org.hisp.dhis.analytics.QueryPlanner" class="org.hisp.dhis.analytics.data.DefaultQueryPlanner" />
 
+  <!-- Scheduled tasks -->
+  
+  <bean id="analyticsAllTask" class="org.hisp.dhis.analytics.scheduling.AnalyticsTableTask">
+    <property name="last3Years" value="false" />
+  </bean>
+  
+  <bean id="analyticsLast3YearsTask" class="org.hisp.dhis.analytics.scheduling.AnalyticsTableTask">
+    <property name="last3Years" value="true" />
+  </bean>
+
 </beans>

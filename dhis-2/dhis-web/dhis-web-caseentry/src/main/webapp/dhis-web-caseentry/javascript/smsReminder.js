@@ -40,7 +40,6 @@ selection.setListenerFunction( orgunitSelected );
 
 function listAllPatient()
 {
-	setFieldValue('listAll', "true");
 	hideById('listEventDiv');
 	hideById('advanced-search');
 	setFieldValue('statusEvent', "4");
@@ -75,7 +74,7 @@ function listAllPatient()
 			setInnerHTML('searchInforLbl',i18n_list_all_patients);
 			showById('colorHelpLink');
 			showById('listEventDiv');
-			resize();
+			setTableStyles();
 			hideLoader();
 		});
 }
@@ -97,11 +96,11 @@ function advancedSearch( params )
 		type:"POST",
 		data: params,
 		success: function( html ){
+			setTableStyles();
 			jQuery('#listEventDiv').html(html);
 			showById('colorHelpLink');
 			showById('listEventDiv');
 			eventList = 2;
-			resize();
 			hideLoader();
 		}
 	});
@@ -125,24 +124,6 @@ function programTrackingList( programStageInstanceId, isSendSMS )
 			hideById('listEventDiv');
 			showById('smsManagementDiv');
 		});
-}
-
-function eventFlowToggle( programInstanceId )
-{
-	jQuery("#tb_" + programInstanceId + " .stage-object").each( function(){
-		var programStageInstance = this.id.split('_')[1];
-		jQuery('#arrow_' + programStageInstance ).toggle();
-		jQuery('#ps_' + programStageInstance ).toggle();
-		jQuery(this).removeClass("stage-object-selected");
-	});
-		
-	if( jQuery("#tb_" + programInstanceId + " .searched").length>0)
-	{	
-		var id = jQuery("#tb_" + programInstanceId + " .searched").attr('id').split('_')[1];
-		showById("arrow_" + id);
-		showById("ps_" + id );
-	}
-	resize();
 }
 
 // --------------------------------------------------------------------
@@ -257,82 +238,6 @@ function loadDataEntry( programStageInstanceId )
 }
 
 function entryFormContainerOnReady(){}
-
-// --------------------------------------------------------------------
-// Cosmetic UI
-// --------------------------------------------------------------------
-
-function reloadRecordList()
-{
-	var listAll = getFieldValue('listAll');
-	var startDate = getFieldValue('startDueDate');
-	var endDate = getFieldValue('endDueDate');
-	var statusEvent = getFieldValue('statusEvent');
-	if( listAll == 'true' )
-	{
-		var date = new Date();
-		var d = date.getDate() - 1;
-		var m = date.getMonth();
-		var y1 = date.getFullYear() - 100;
-		var y2 = date.getFullYear();
-		startDate = jQuery.datepicker.formatDate( dateFormat, new Date(y1, m, d) );
-		endDate = jQuery.datepicker.formatDate( dateFormat, new Date(y2, m, d) );
-		status = 4;
-	}
-	
-	var paddingIndex = 1;
-	jQuery("#patientList .stage-object").each( function(){
-		var id = this.id.split('_')[1];
-		var dueDate = jQuery(this).attr('dueDate');
-		var status = jQuery(this).attr('status');
-		var programInstanceId = jQuery(this).attr('programInstanceId');
-		if( dueDate >= startDate && dueDate <= endDate && statusEvent == status )
-		{
-			if( jQuery("#tb_" + programInstanceId + " .searched").length > 0 ){
-				hideById('arrow_' + id );
-				hideById("ps_" + id );
-			}
-			else
-			{
-				jQuery("#arrow_" + id ).addClass("displayed");
-				var index = eval(jQuery("#ps_" + id ).attr("index"));
-				if( paddingIndex < index ){
-					 paddingIndex = index;
-				}
-			}
-			jQuery("#ps_" + id ).addClass("stage-object-selected searched");
-		}
-		else
-		{
-			hideById('arrow_' + id );
-			hideById('ps_' + id );
-		}
-	});
-	
-	jQuery("[id^=arrow_].displayed" ).each( function(){
-		var id = this.id.split('_')[1];
-		var index = eval(jQuery("#ps_" + id ).attr("index"));
-		if( index<paddingIndex){
-			var paddingLeft = ( paddingIndex - index ) * 20;
-			jQuery(this).css("padding-left", paddingLeft + "px");
-		}
-	});
-}
-
-function reloadOneRecord( programInstanceId )
-{
-	if(jQuery("#tb_" + programInstanceId + " .searched").length == 0 ){
-		var total = eval(getInnerHTML('totalTd')) - 1;
-		setInnerHTML('totalTd', total)
-		hideById("event_" + programInstanceId );
-	}
-	else
-	{
-		var firstSearched = jQuery("#tb_" + programInstanceId + " .searched:first");
-		firstSearched.show();
-		jQuery("#tb_" + programInstanceId + " [name^=arrow_]").show();
-	}
-}
 
 // --------------------------------------------------------------------
 // Show main form

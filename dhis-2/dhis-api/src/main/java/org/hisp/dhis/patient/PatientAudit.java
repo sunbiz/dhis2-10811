@@ -36,13 +36,19 @@ import java.util.Date;
  */
 public class PatientAudit
 {
+    public static final String MODULE_PATIENT_DASHBOARD = "patient_dashboard";
+
+    public static final String MODULE_TABULAR_REPORT = "tabular_report";
+
     private int id;
 
     private Patient patient;
-    
+
     private String visitor;
 
     private Date date;
+
+    private String accessedModule;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -53,11 +59,12 @@ public class PatientAudit
 
     }
 
-    public PatientAudit( Patient patient, Date date, String visitor )
+    public PatientAudit( Patient patient, String visitor, Date date, String accessedModule )
     {
         this.patient = patient;
-        this.date = date;
         this.visitor = visitor;
+        this.date = date;
+        this.accessedModule = accessedModule;
     }
 
     // -------------------------------------------------------------------------
@@ -102,6 +109,16 @@ public class PatientAudit
     public void setVisitor( String visitor )
     {
         this.visitor = visitor;
+    }
+
+    public String getAccessedModule()
+    {
+        return accessedModule;
+    }
+
+    public void setAccessedModule( String accessedModule )
+    {
+        this.accessedModule = accessedModule;
     }
 
 }

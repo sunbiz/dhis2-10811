@@ -6,115 +6,82 @@
 		<td>&nbsp;</td>
 		<td>$!total</td>
 	</tr>
-	#if( $patients && $patients.size()>0 )
-		<tr><td class='text-column'>#parse( "/dhis-web-caseentry/colorHelp.vm" )</td></tr>
-	#end
 </table>
 
-#if( $patients && $patients.size()>0 )
-	<table id="patientList" class="listTable">
-		#set( $mark = false )                 
-		#foreach( $patient in $patients )
-			#set( $programInstance = '')
-			#set( $programInstance = $programInstanceMap.get( $patient ) )
-				<tr #alternate( $mark )>
-					<td width="10px">
-						#set( $value="")
-						#foreach( $identifierType in $programInstance.program.patientIdentifierTypes )
-							#foreach( $pIdentifier in $patient.identifiers )
-								#if($identifierType.personDisplayName=="true" && $identifierType.id==$pIdentifier.identifierType.id)
-									#set($value=$value + $pIdentifier.identifier + "&#13;&#10;" )
-								#end
-							#end
-						#end
-						#if($value=="")
-							#set($value=$patient.getFullName())
-						#end
-						<input type='button' class='patient-object' value='$value' onclick='javascript:showPatientHistory( "$programInstance.patient.id" );' title='$i18n.getString( "patient_dashboard" )'>
-					</td>
-					<td class='bold' name="toggleFlowBtn" style='cursor:pointer;font-size:25px' onclick="eventFlowToggle($programInstance.id)">
-						<a>&raquo;</a>
-					</td>
-					#set( $programStageInstances = $programInstance.programStageInstances )
-						<td>
-						<table id='tb_$programInstance.id'>	
-							<tr>
-								<td>
-									<div class="arrow-left" onclick="moveLeft('flow_$programInstance.id')">&nbsp;</div>
-								</td>
-								<td>
-									<div id='flow_$programInstance.id' class='stage-flow'>
-										<table class="table-flow">
-										<tr>
-										#set( $flag = "false" )
-										#set( $idx = 0)
-										#foreach( $programStageInstance in $programStageInstances )
-											#set( $idx = $idx + 1)
-											<td id="arrow_$programStageInstance.id" style='font-size:25px;'>&rarr;</td>
-											<td>
-												#set($title="")
-												#set($index = 0)
-												#foreach( $comment in $programStageInstance.patientComments)
-													#if( $index < 5)
-														#set( $title= $title + "$format.formatDate( $comment.createdDate ) - $comment.creator - $comment.commentText &#13;&#10;" )
-														#set( $index = $index + 1 )
-													#end
-												#end
-												#set($valueDate=$format.formatDate( $programStageInstance.dueDate ))
-												#if($!programStageInstance.executionDate)
-													#set($valueDate=$format.formatDate( $programStageInstance.executionDate ))
-												#end
-												 <input type="button" name="programStageBtn"
-													id="ps_$!programStageInstance.id"
-													psid="$programStageInstance.programStage.id"
-													psname="$encoder.htmlEncode($programStageInstance.programStage.displayName)"
-													orgunit="$encoder.htmlEncode($!programStageInstance.organisationUnit.name)"
-													programType='$programInstance.program.type'
-													reportDate="$!format.formatDate( $!programStageInstance.executionDate )"
-													reportDateDes="$programStageInstance.programStage.reportDateDescription"
-													dueDate="$format.formatDate( $programStageInstance.dueDate )"
-													status='$programStageInstance.getEventStatus()'
-													index="$idx"
-													class="stage-object" 
-													title="$title"
-													value="$encoder.htmlEncode($programStageInstance.programStage.displayName)&#13;&#10;$valueDate" 
-													onclick="javascript:loadDataEntry( $programStageInstance.id );">
-												<script>	
-													var status = $programStageInstance.getEventStatus();
-													setEventColorStatus( $programStageInstance.id ,status);
-												</script>
-											</td> 
-										#end
-										</tr>
-									</table></div>
-								</td>
-								
-								<td>
-									<div class="arrow-right" onclick="moveRight('flow_$programInstance.id')">&nbsp;</div>
-								</td>
-							</tr>
-						</table>
-					</td>
-					</tr>
-			#if( $mark )
-				#set( $mark = false )
-			#else
-				#set( $mark = true )
-			#end 
-		#end
-	</table>
-	
-	<div class="paging-container">
-		#parse( "/dhis-web-commons/paging/paging.vm" )
-	</div>
-	
-	<div id="detailsInfo"></div>
-#end
+#if( $programStageInstances && $programStageInstances.size()>0 )
 
-<script>
-	reloadRecordList();
-	$(window).bind('resize', function(e){ 
-		resize();
-	});
-	
-</script>
+<table class='listTable gridTable'>
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>$i18n.getString('date_scheduled')</th>
+			<th>$i18n.getString('orgunit')</th>
+			<th>$i18n.getString('full_name')</th>
+			<th>$i18n.getString('phone_number')</th>
+			<th>$i18n.getString( "program_stage" )</th>
+			<th>$i18n.getString( "operations" )</th>
+		</tr>
+	</thead>
+	<tbody id="list">
+	#set( $mark = false ) 
+	#foreach( $programStageInstance in $programStageInstances )
+		#set($patient = $programStageInstance.programInstance.patient)
+		<tr id='tr$programStageInstance.id'>
+			<td>
+				#set( $nr = ( ( $paging.getCurrentPage() - 1  ) * $paging.pageSize ) + $velocityCount )
+				$nr
+			</td>
+			
+			<td>
+				#if($!programStageInstance.executionDate)
+					$format.formatDate($!programStageInstance.executionDate)
+				#else
+					$format.formatDate($!programStageInstance.dueDate)
+				#end
+			</td>
+			
+			<td>
+				#if($!programStageInstance.executionDate)
+					$!programStageInstance.organisationUnit.name
+				#else
+					$patient.organisationUnit.name
+				#end
+			</td>
+			
+			<td><a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )">
+				#set($value="")
+				#foreach( $identifierType in $identifierTypes)
+					#foreach( $identifier in $patient.identifiers)
+						#if($identifier.identifierType.id==$identifierType.id)
+							#set($value=$identifier.identifier)
+						#end
+					#end
+				#end
+				#if($value=="")
+					#set($value=$patient.getFullName())
+				#end
+				
+				$value
+			</a></td>
+			
+			<td>$!patient.phoneNumber</td>
+			
+			<td><a href="javascript:loadDataEntryDialog( $programStageInstance.id );">$programStageInstance.programStage.displayName</a></td>
+			
+			<td>
+				<a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )" title="$i18n.getString( 'edit_profile' )"><img src="../images/enroll.png" alt='$i18n.getString( "edit_profile" )'></a>
+				<a href="javascript:loadDataEntryDialog( $programStageInstance.id );" title="$i18n.getString( 'data_entry' )"><img src="images/data_entry.png" alt="$i18n.getString( 'data_entry' )"></a>   
+				<a href="javascript:showPatientHistory('$patient.id')" title='$i18n.getString( "patient_details_and_history" )'><img src="../images/information.png" alt='$i18n.getString( "patient_details_and_history" )'></a>
+			</td>
+			
+		</tr>
+	#end
+	</tbody>
+</table>
+<div class="paging-container">
+	#parse( "/dhis-web-commons/paging/paging.vm" )
+</div>
+
+<div id="detailsInfo"></div>
+
+#end

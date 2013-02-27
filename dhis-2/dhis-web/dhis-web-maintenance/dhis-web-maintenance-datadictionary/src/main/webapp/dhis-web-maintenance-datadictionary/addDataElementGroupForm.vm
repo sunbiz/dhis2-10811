@@ -11,7 +11,9 @@
         });
 
         checkValueIsExist("name", "validateDataElementGroup.action");
-
+		checkValueIsExist( "shortName", "validateDataElementGroup.action" );
+	    checkValueIsExist( "code", "validateDataElementGroup.action" );
+		
 		jQuery("#availableDataElementsList").dhisAjaxSelect({
 			source: "../dhis-web-commons-ajax-json/getDataElements.action",
 			iterator: "dataElements",
@@ -40,6 +42,14 @@
 		<td style="width: 120px;"><label for="name">$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
         <td><input type="text" id="name" name="name" /></td>
     </tr>
+	<tr>
+		<td><label for="shortName">$i18n.getString( "short_name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
+		<td><input type="text" id="shortName" name="shortName" /></td>
+	</tr>
+	<tr>
+		<td><label for="code">$i18n.getString( "code" )</label></td>
+		<td><input type="text" id="code" name="code" /></td>
+	</tr>
 </table>
 
 #tblDynamicAttributes( { "attributes": $attributes } )

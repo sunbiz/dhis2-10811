@@ -59,6 +59,8 @@ public class OrgUnitTest
         unit.setUpdateNewVersionUrl( "" );
         unit.setUpdateContactUrl( "updateContactUrl" );
         unit.setFindPatientUrl( "findPatientUrl" );
+        unit.setUploadProgramStageUrl( "uploadProgramStageUrl" );
+        unit.setEnrollProgramUrl( "enrollProgramUrl" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream( baos );

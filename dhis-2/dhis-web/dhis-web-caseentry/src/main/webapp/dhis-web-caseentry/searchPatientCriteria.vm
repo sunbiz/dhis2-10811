@@ -12,16 +12,18 @@
 			<input type="text" id='orgunitName' readonly="readonly" #if( $organisationUnit ) value="$encoder.htmlEncode( $organisationUnit.name )" #else value="[$i18n.getString( 'please_select_village' )]" #end >
 		</td>
 		<td rowspan='2' valign='bottom'>
-			<input type="button" class='large-button' id='listPatientBtn' value="$i18n.getString( 'list_all_patients' )" onclick="javascript:listAllPatient();" disabled >
-			<input type="button" class='large-button' id='addPatientBtn' name='addPatientBtn' class='large-button' value='$i18n.getString( "add_new" )' onclick="showAddPatientForm();" disabled >
-			<input type="button" class='large-button' id='advancedSearchBtn' value='$i18n.getString( "search" )' onclick="jQuery('#advanced-search').toggle();" disabled>
+			<input type="button" style='width:130px' id='listPatientBtn' style='260px;' value="$i18n.getString( 'list_all_patients' )" onclick="javascript:listAllPatient();" disabled >
+			<input type="button" style='width:130px' class='hidden' id='scheduled7DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_7_days' )" onclick="javascript:scheduled7Days();" >
+			<input type="button" style='width:130px' class='hidden' id='scheduled30DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_30_days' )" onclick="javascript:scheduled30Days();" >
+			<input type="button" style='width:130px' id='addPatientBtn' name='addPatientBtn' class='large-button' value='$i18n.getString( "add_new" )' onclick="showAddPatientForm();" disabled >
+			<input type="button" style='width:130px' id='advancedSearchBtn' value='$i18n.getString( "advanced_search" )' onclick="jQuery('#advanced-search').toggle();" disabled>
 		</td>
 	</tr> 
 	<tr id='programAddPatientTR'>
 		<td>$i18n.getString('program')</td>
 		<td>
 			<select id='programIdAddPatient' name='programIdAddPatient' onchange='enableBtn();'>
-				<option value='' type='2'>[$i18n.getString("please_select")]</option>
+				<option value='' type='2'>[$i18n.getString("view_all")]</option>
 				#foreach($program in $programs)
 					<option value="$program.id" type='$program.type'>$program.displayName</option>
 				#end
@@ -30,26 +32,8 @@
 	</tr>
 </table>
 
-<div id='advanced-search' class='hidden'>
+<div id='advanced-search' class='hidden advanced-search'>
 	<table>	
-		<tr id='programStageAddPatientTR' class='hidden'>
-			<td>$i18n.getString('status')</td>
-			<td>
-				<select id="statusEvent" name="statusEvent">
-					<option value='4'>$i18n.getString("overdue")</option>
-					<option value='2'>$i18n.getString("incomplete")</option>
-					<option value='1'>$i18n.getString("completed")</option>
-					<option value='3'>$i18n.getString("scheduled_in_future")</option> 
-				</select>
-			</td>
-		</tr>
-		<tr id='dueDateTR' class='hidden'>
-			<td>$i18n.getString('due_date_from_to')</td>
-			<td>
-				<input type='text' id='startDueDate' name='startDueDate' style='width:105px;'>
-				<input type='text' id='endDueDate' name='endDueDate' style='width:105px;'>
-			</td>
-		</tr>
 		#if( $auth.hasAccess( "dhis-web-caseentry", "searchAllFacilities" ) )
 			<tr id='searchBySelectedUnitTD'>
 				<td>
@@ -60,6 +44,25 @@
 		#else
 			<input type='checkbox' class='hidden' id='searchInAllFacility' name='searchInAllFacility' />
 		#end
+		<tr id='programStageAddPatientTR' class='hidden'>
+			<td>$i18n.getString('status')</td>
+			<td>
+				<select id="statusEvent" name="statusEvent">
+					<option value='4'>$i18n.getString("overdue")</option>
+					<option value='2'>$i18n.getString("incomplete")</option>
+					<option value='1'>$i18n.getString("completed")</option>
+					<option value='3'>$i18n.getString("scheduled_in_future")</option> 
+					<option value='5'>$i18n.getString("skipped")</option> 
+				</select>
+			</td>
+		</tr>
+		<tr id='dueDateTR' class='hidden'>
+			<td>$i18n.getString('due_date_from_to')</td>
+			<td>
+				<input type='text' id='startDueDate' name='startDueDate' style='width:127px;'>
+				<input type='text' id='endDueDate' name='endDueDate' style='width:127px;'>
+			</td>
+		</tr>
 		<tr>
 			<td id='searchingAttributeIdTD' class="hidden">
 			  <select class='search-field' id="searchObjectId" name="searchObjectId" #if( $patientAttributes.size() == 0 ) disabled="disabled" #end onchange="searchObjectOnChange(this)">
@@ -70,7 +73,9 @@
 				<option value="fixedAttr_gender">$i18n.getString( "gender" )</option>
 				<option value="fixedAttr_phoneNumber">$i18n.getString( "phone_number" )</option>
 				#foreach( $attribute in $patientAttributes )
+					#if($attribute.valueType!='calculated')
 					<option value="attr_$attribute.id" valueType='$attribute.valueType'>$encoder.htmlEncode( $attribute.displayName )</option>
+					#end
 				#end
 			  </select>
 			  <em title="$i18n.getString( 'required' )" class="required">*</em></label>
@@ -80,14 +85,14 @@
 			<tr>
 				<td></td>
 				<td></td>
-				<td rowspan='30' valign='bottom'>
-					<input type="button" class='large-button' value='$i18n.getString( "add" )' onclick='addAttributeOption();'>
+				<td name='addAndSearchBtn' rowspan='2' valign='bottom'>
+					<input type="button" class='normal-button' value='$i18n.getString( "add" )' onclick='addAttributeOption();'>
 				</td>
-				<td rowspan='30' valign='bottom' align="right" >
-					<input type="button" class='large-button' value='$i18n.getString( "search" )' onclick='validateAdvancedSearch();' id='searchPatientBtn'>
+				<td name='addAndSearchBtn' rowspan='2' valign='bottom' align="right" >
+					<input type="button" class='normal-button' value='$i18n.getString( "search" )' onclick='validateAdvancedSearch();' id='searchPatientBtn'>
 				</td>
-				<td rowspan='30' valign='bottom' align="right" >
-					<input type="button" class='large-button hidden' id='sendSmsToListBtn' value="$i18n.getString('send_message')" onclick="setFieldValue('sendToList', true);showSendSmsForm();" >
+				<td name='addAndSearchBtn' rowspan='2' valign='bottom' align="right" >
+					<input type="button" class='normal-button hidden' id='sendSmsToListBtn' value="$i18n.getString('sms')" onclick="setFieldValue('sendToList', true);showSendSmsForm();" >
 				</td>
 			</tr>
 			<tr id='advSearchBox0'>	       
@@ -100,20 +105,17 @@
 					<option value="fixedAttr_gender">$i18n.getString( "gender" )</option>
 					<option value="fixedAttr_phoneNumber">$i18n.getString( "phone_number" )</option>
 					#foreach( $attribute in $patientAttributes )
+						#if($attribute.valueType!='calculated')
 						<option value="attr_$attribute.id" valueType='$attribute.valueType'>$encoder.htmlEncode( $attribute.displayName )</option>
+						#end
 					#end
 				  </select>
 				  <em title="$i18n.getString( 'required' )" class="required">*</em></label>
 				</td>		
 				<td>
-					<input type="text" id="searchText" name="searchText" value="$!searchText" onkeyup='searchPatientsOnKeyUp( event );'>
-					<input type="button" class='large-button' name="clearSearchBtn" value='$i18n.getString( "clear" )' onclick="removeAttributeOption('advSearchBox0');" disabled>
+					<input type="text" id="searchText" name="searchText" value="$!searchText" onkeyup='searchPatientsOnKeyUp( event );' style='width:200px;'>
+					<input type="button" class='normal-button' name="clearSearchBtn" value='$i18n.getString( "clear" )' onclick="removeAttributeOption('advSearchBox0');" disabled>
 				</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td></td>
-				
 			</tr>
 		</tbody>
 	</table>
@@ -131,8 +133,8 @@
 	datePicker( 'startDueDate', true );
 	datePicker( 'endDueDate', true );
 	
-	var searchTextBox = '<input type="text" id="searchText" name="searchText" onkeyup="searchPatientsOnKeyUp( event );">';
-	var programComboBox = '<select class="search-field" id="searchText" name="searchText" >';
+	var searchTextBox = '<input type="text" id="searchText" name="searchText" onkeyup="searchPatientsOnKeyUp( event );" style="width:202px;">';
+	var programComboBox = '<select class="search-field" id="searchText" name="searchText" style="width:205px;">';
 	#foreach ( $program in $programs ) 
 		programComboBox += '<option value="$program.id">$program.displayName</option>';
 	#end

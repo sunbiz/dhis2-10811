@@ -34,18 +34,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.common.CombinationGenerator;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dataelement.DataElementOperand;
+import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.CollectionUtils;
-import org.hisp.dhis.system.util.ListMap;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.system.util.ListUtils;
 import org.hisp.dhis.system.util.MapMap;
 import org.hisp.dhis.system.util.MathUtils;
@@ -56,7 +59,7 @@ public class DataQueryParams
     public static final String INDICATOR_DIM_ID = "in";
     public static final String DATAELEMENT_DIM_ID = "de";
     public static final String DATASET_DIM_ID = "ds";
-    public static final String CATEGORYOPTIONCOMBO_DIM_ID = "coc";
+    public static final String CATEGORYOPTIONCOMBO_DIM_ID = "co";
     public static final String PERIOD_DIM_ID = "pe";
     public static final String ORGUNIT_DIM_ID = "ou";
     public static final String VALUE_ID = "value";    
@@ -69,10 +72,12 @@ public class DataQueryParams
     public static final List<String> DATA_DIMS = Arrays.asList( INDICATOR_DIM_ID, DATAELEMENT_DIM_ID, DATASET_DIM_ID );
     public static final List<String> FIXED_DIMS = Arrays.asList( DATA_X_DIM_ID, INDICATOR_DIM_ID, DATAELEMENT_DIM_ID, DATASET_DIM_ID, PERIOD_DIM_ID, ORGUNIT_DIM_ID );
     
+    public static final int MAX_DIM_OPT_PERM = 5000;
+    
     private static final List<DimensionType> COMPLETENESS_DIMENSION_TYTPES = Arrays.asList( DATASET, ORGANISATIONUNIT, ORGANISATIONUNIT_GROUPSET );
     
-    private static final DimensionOption[] DIM_OPT_ARR = new DimensionOption[0];
-    private static final DimensionOption[][] DIM_OPT_2D_ARR = new DimensionOption[0][];
+    private static final DimensionItem[] DIM_OPT_ARR = new DimensionItem[0];
+    private static final DimensionItem[][] DIM_OPT_2D_ARR = new DimensionItem[0][];
     
     private List<Dimension> dimensions = new ArrayList<Dimension>();
     
@@ -298,11 +303,11 @@ public class DataQueryParams
      * Returns the dimensions which are part of dimensions and filters. If any
      * such dimensions exist this object is in an illegal state.
      */
-    public Collection<Dimension> dimensionsAsFilters()
+    public Collection<Dimension> getDimensionsAsFilters()
     {
         return CollectionUtils.intersection( dimensions, filters );
     }
-    
+        
     /**
      * Indicates whether periods are present as a dimension or as a filter. If
      * not this object is in an illegal state.
@@ -313,6 +318,58 @@ public class DataQueryParams
         List<IdentifiableObject> filterOpts = getFilterOptions( PERIOD_DIM_ID );
         
         return ( dimOpts != null && !dimOpts.isEmpty() ) || ( filterOpts != null && !filterOpts.isEmpty() );
+    }
+    
+    /**
+     * Returns the number of dimension option permutations.
+     */
+    public int getNumberOfDimensionOptionPermutations()
+    {
+        int total = 1;
+        
+        for ( Dimension dim : dimensions )
+        {
+            total *= dim.getItems().size();
+        }
+        
+        return total;
+    }
+    
+    /**
+     * Returns a list of dimensions which occur more than once.
+     */
+    public List<Dimension> getDuplicateDimensions()
+    {
+        Set<Dimension> dims = new HashSet<Dimension>();
+        List<Dimension> duplicates = new ArrayList<Dimension>();
+        
+        for ( Dimension dim : dimensions )
+        {
+            if ( !dims.add( dim ) )
+            {
+                duplicates.add( dim );
+            }
+        }
+        
+        return duplicates;
+    }
+    
+    /**
+     * Returns a mapping between identifier and period type for all data sets
+     * in this query.
+     */
+    public Map<String, PeriodType> getDataSetPeriodTypeMap()
+    {
+        Map<String, PeriodType> map = new HashMap<String, PeriodType>();
+        
+        for ( IdentifiableObject dataSet : getDataSets() )
+        {
+            DataSet ds = (DataSet) dataSet;
+            
+            map.put( ds.getUid(), ds.getPeriodType() );
+        }
+        
+        return map;
     }
     
     /**
@@ -382,9 +439,9 @@ public class DataQueryParams
      * Generates all permutations of the dimension and filter options for this query.
      * Ignores the data element, category option combo and indicator dimensions.
      */
-    public List<List<DimensionOption>> getDimensionOptionPermutations()
+    public List<List<DimensionItem>> getDimensionItemPermutations()
     {
-        List<DimensionOption[]> dimensionOptions = new ArrayList<DimensionOption[]>();
+        List<DimensionItem[]> dimensionOptions = new ArrayList<DimensionItem[]>();
         
         List<String> ignoreDims = Arrays.asList( DATAELEMENT_DIM_ID, CATEGORYOPTIONCOMBO_DIM_ID, INDICATOR_DIM_ID );
         
@@ -392,20 +449,20 @@ public class DataQueryParams
         {
             if ( !ignoreDims.contains( dimension.getDimension() ) )
             {
-                List<DimensionOption> options = new ArrayList<DimensionOption>();
+                List<DimensionItem> options = new ArrayList<DimensionItem>();
                 
-                for ( IdentifiableObject option : dimension.getOptions() )
+                for ( IdentifiableObject option : dimension.getItems() )
                 {
-                    options.add( new DimensionOption( dimension.getDimension(), option ) );
+                    options.add( new DimensionItem( dimension.getDimension(), option ) );
                 }
                 
                 dimensionOptions.add( options.toArray( DIM_OPT_ARR ) );
             }
         }
                 
-        CombinationGenerator<DimensionOption> generator = new CombinationGenerator<DimensionOption>( dimensionOptions.toArray( DIM_OPT_2D_ARR ) );
+        CombinationGenerator<DimensionItem> generator = new CombinationGenerator<DimensionItem>( dimensionOptions.toArray( DIM_OPT_2D_ARR ) );
         
-        List<List<DimensionOption>> permutations = generator.getCombinations();
+        List<List<DimensionItem>> permutations = generator.getCombinations();
         
         return permutations;
     }
@@ -450,7 +507,7 @@ public class DataQueryParams
     {
         int index = dimensions.indexOf( new Dimension( dimension ) );
         
-        return index != -1 ? dimensions.get( index ).getOptions() : null;
+        return index != -1 ? dimensions.get( index ).getItems() : null;
     }
 
     /**
@@ -477,7 +534,7 @@ public class DataQueryParams
     {
         int index = filters.indexOf( new Dimension( filter ) );
         
-        return index != -1 ? filters.get( index ).getOptions() : null;
+        return index != -1 ? filters.get( index ).getItems() : null;
     }
     
     /**
@@ -523,7 +580,7 @@ public class DataQueryParams
      * name separator does not exist an empty list is returned, indicating that
      * all dimension options should be used.
      */
-    public static List<String> getDimensionOptionsFromParam( String param )
+    public static List<String> getDimensionItemsFromParam( String param )
     {
         if ( param == null )
         {
@@ -771,6 +828,11 @@ public class DataQueryParams
         }
     }
     
+    public boolean hasDimensionOrFilter( String key )
+    {
+        return dimensions.indexOf( new Dimension( key ) ) != -1 || filters.indexOf( new Dimension( key ) ) != -1;
+    }
+    
     // -------------------------------------------------------------------------
     // Get and set helpers for dimensions
     // -------------------------------------------------------------------------
@@ -836,6 +898,8 @@ public class DataQueryParams
                 list.add( dimension );
             }
         }
+        
+        //TODO filters?
         
         return list;
     }

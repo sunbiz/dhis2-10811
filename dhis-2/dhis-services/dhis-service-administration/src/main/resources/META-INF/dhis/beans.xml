@@ -16,7 +16,7 @@
     <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
-    <property name="batchHandlerFactory" ref="batchHandlerFactory" />
+    <property name="sqlViewService" ref="org.hisp.dhis.sqlview.SqlViewService" />
   </bean>
   
   <!-- Data integrity -->
@@ -52,7 +52,7 @@
     <property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
   
-  <!-- Databrowser Grid -->
+  <!-- Data browser -->
 
   <bean id="org.hisp.dhis.databrowser.DataBrowserGridStore" class="org.hisp.dhis.databrowser.jdbc.JDBCDataBrowserStore">
     <property name="statementBuilder" ref="statementBuilder" />
@@ -128,5 +128,9 @@
     <property name="sqlViewStore" ref="org.hisp.dhis.sqlview.SqlViewStore" />
     <property name="sqlViewExpandStore" ref="org.hisp.dhis.sqlview.SqlViewExpandStore" />
   </bean>
+  
+  <!-- Scheduled tasks -->
+  
+  <bean id="resourceTableTask" class="org.hisp.dhis.resourcetable.scheduling.ResourceTableTask" />
   
 </beans>

@@ -20,6 +20,8 @@ function showDataElementGroupDetails( dataElementGroupId )
 		{ id: dataElementGroupId }, function ( json ) {		
 	
 		setInnerHTML( 'nameField', json.dataElementGroup.name );
+		setInnerHTML( 'shortNameField', json.dataElementGroup.shortName );
+		setInnerHTML( 'codeField', json.dataElementGroup.code );
 		setInnerHTML( 'memberCountField', json.dataElementGroup.memberCount );
 
 		showDetails();

@@ -30,8 +30,6 @@ package org.hisp.dhis.patient.scheduling;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.hisp.dhis.caseaggregation.CaseAggregationCondition;
 import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
@@ -39,7 +37,6 @@ import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementService;
-import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -70,7 +67,7 @@ public class CaseAggregateConditionTask
     private DataElementService dataElementService;
 
     private DataElementCategoryService categoryService;
-    
+
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -96,29 +93,26 @@ public class CaseAggregateConditionTask
     {
         Collection<OrganisationUnit> orgunits = organisationUnitService.getAllOrganisationUnits();
 
-        Set<DataSet> dataSets = new HashSet<DataSet>();
-        
-        Collection<CaseAggregationCondition> aggConditions = aggregationConditionService
-            .getAllCaseAggregationCondition();
+        String datasetSQL = "select dm.datasetid as datasetid, pt.name as periodname";
+        datasetSQL += "      from caseaggregationcondition cagg inner join datasetmembers dm ";
+        datasetSQL += "            on cagg.aggregationdataelementid=dm.dataelementid inner join dataset ds ";
+        datasetSQL += "            on ds.datasetid = dm.datasetid inner join periodtype pt ";
+        datasetSQL += "            on pt.periodtypeid=ds.periodtypeid ";
 
-        for ( CaseAggregationCondition aggCondition : aggConditions )
+        SqlRowSet rsDataset = jdbcTemplate.queryForRowSet( datasetSQL );
+        while ( rsDataset.next() )
         {
-            DataElement dataElement = aggCondition.getAggregationDataElement();
+            int datasetId = rsDataset.getInt( "datasetid" );
 
-            dataSets.addAll( dataElement.getDataSets() );
-        }
-        
-        for ( DataSet dataSet : dataSets )
-        {
-            Period period = getPeriod( dataSet.getPeriodType().getName() );
+            Period period = getPeriod( rsDataset.getString( "periodname" ) );
 
             if ( period != null )
             {
                 String sql = "select caseaggregationconditionid, aggregationdataelementid, optioncomboid "
-                    + "from caseaggregationcondition cagg inner join datasetmembers dm "
-                    + "on cagg.aggregationdataelementid=dm.dataelementid " + "inner join dataset ds "
-                    + "on ds.datasetid = dm.datasetid " + "inner join periodtype pt "
-                    + "on pt.periodtypeid=ds.periodtypeid " + "where ds.datasetid = " + dataSet.getId();
+                    + "     from caseaggregationcondition cagg inner join datasetmembers dm "
+                    + "             on cagg.aggregationdataelementid=dm.dataelementid " + "inner join dataset ds "
+                    + "             on ds.datasetid = dm.datasetid " + "inner join periodtype pt "
+                    + "             on pt.periodtypeid=ds.periodtypeid " + "where ds.datasetid = " + datasetId;
 
                 SqlRowSet rs = jdbcTemplate.queryForRowSet( sql );
 
@@ -185,6 +179,7 @@ public class CaseAggregateConditionTask
                             dataValueService.deleteDataValue( dataValue );
                         }
                     }
+
                 }
             }
         }
@@ -196,14 +191,14 @@ public class CaseAggregateConditionTask
 
     private Period getPeriod( String periodTypeName )
     {
-        Calendar today = Calendar.getInstance();  
-        
-        today.add(Calendar.DATE, -1);  
+        Calendar today = Calendar.getInstance();
+
+        today.add( Calendar.DATE, -1 );
 
         CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( periodTypeName );
 
         Period period = periodType.createPeriod( today );
 
-        return ( period.getEndDate().before( today.getTime() )) ? period : null;
+        return (period.getEndDate().before( today.getTime() )) ? period : null;
     }
 }

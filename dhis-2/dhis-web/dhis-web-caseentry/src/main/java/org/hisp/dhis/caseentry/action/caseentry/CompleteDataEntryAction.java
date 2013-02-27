@@ -29,6 +29,8 @@ package org.hisp.dhis.caseentry.action.caseentry;
 import java.util.Date;
 import java.util.Set;
 
+import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
@@ -59,6 +61,13 @@ public class CompleteDataEntryAction
     public void setProgramInstanceService( ProgramInstanceService programInstanceService )
     {
         this.programInstanceService = programInstanceService;
+    }
+
+    private PatientService patientService;
+
+    public void setPatientService( PatientService patientService )
+    {
+        this.patientService = patientService;
     }
 
     // -------------------------------------------------------------------------
@@ -127,6 +136,14 @@ public class CompleteDataEntryAction
             programInstance.setEndDate( new Date() );
 
             programInstanceService.updateProgramInstance( programInstance );
+
+            Program program = programInstance.getProgram();
+            if ( !program.getOnlyEnrollOnce() )
+            {
+                Patient patient = programInstance.getPatient();
+                patient.getPrograms().remove( program );
+                patientService.updatePatient( patient );
+            }
         }
 
         return "programcompleted";

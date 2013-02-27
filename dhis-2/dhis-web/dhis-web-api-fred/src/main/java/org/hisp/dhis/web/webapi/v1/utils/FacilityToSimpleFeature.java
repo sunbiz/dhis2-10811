@@ -75,7 +75,7 @@ public class FacilityToSimpleFeature implements Converter<Facility, SimpleFeatur
             Point point = geometryFactory.createPoint( coordinate );
             featureBuilder.add( point );
 
-            featureBuilder.add( facility.getId() );
+            featureBuilder.add( facility.getUuid() );
             featureBuilder.add( facility.getName() );
             featureBuilder.add( facility.getActive() );
 

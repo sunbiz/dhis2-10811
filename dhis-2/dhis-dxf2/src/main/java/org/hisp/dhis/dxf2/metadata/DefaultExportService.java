@@ -82,6 +82,7 @@ public class DefaultExportService
     public MetaData getMetaData( Options options, TaskId taskId )
     {
         MetaData metaData = new MetaData();
+        metaData.setCreated( new Date() );
 
         log.info( "User '" + currentUserService.getCurrentUsername() + "' started export at " + new Date() );
 

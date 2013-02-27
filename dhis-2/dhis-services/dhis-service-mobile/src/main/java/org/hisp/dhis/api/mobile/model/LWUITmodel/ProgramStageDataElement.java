@@ -58,6 +58,7 @@ public class ProgramStageDataElement extends Model
     public void serialize( DataOutputStream dout )
         throws IOException
     {
+        super.serialize( dout );
         dout.writeUTF( this.getType() );
         dout.writeBoolean( this.isCompulsory() );
         
@@ -71,7 +72,7 @@ public class ProgramStageDataElement extends Model
             dout.writeInt( cateOptCombos.size() );
             for ( Model each : cateOptCombos )
             {
-                each.setClientVersion( TWO_POINT_NINE );
+                each.setClientVersion( TWO_POINT_TEN );
                 each.serialize( dout );
             }
         }
@@ -82,7 +83,7 @@ public class ProgramStageDataElement extends Model
         }
         else
         {
-            optionSet.setClientVersion( TWO_POINT_NINE );
+            optionSet.setClientVersion( TWO_POINT_TEN );
             optionSet.serialize( dout );
         }
         
@@ -90,11 +91,17 @@ public class ProgramStageDataElement extends Model
     }
     
     @Override
-    public void deSerialize( DataInputStream dataInputStream )
+    public void deSerialize( DataInputStream dint )
         throws IOException
     {
-        // TODO Auto-generated method stub
-        super.deSerialize( dataInputStream );
+        super.deSerialize( dint );
+        this.setType( dint.readUTF() );
+        this.setCompulsory( dint.readBoolean() );
+        /*this.categoryOptionCombos = new ModelList();
+        this.categoryOptionCombos.deSerialize( dint );
+        this.optionSet = new OptionSet();
+        this.optionSet.deSerialize( dint );*/
+        this.setValue( dint.readUTF() );
     }
     
     

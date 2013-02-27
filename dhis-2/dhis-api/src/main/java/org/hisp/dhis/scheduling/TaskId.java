@@ -38,6 +38,10 @@ public class TaskId
     
     private String id;
     
+    public TaskId()
+    {
+    }
+    
     public TaskId( TaskCategory category, User user )
     {
         this.id = category.toString() + SEPARATOR + user.getUserCredentials().getUsername();

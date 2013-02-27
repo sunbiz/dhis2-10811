@@ -246,38 +246,31 @@
     <property name="scheduler" ref="scheduler" />
     <property name="tasks">
       <map>
+        <entry key="resourceTableTask" value-ref="resourceTableTask" />
         <entry key="dataMartLast12MonthsTask" value-ref="dataMartLast12MonthsTask" />
 		<entry key="dataMartLast6MonthsTask" value-ref="dataMartLast6MonthsTask" />
 		<entry key="dataMartFrom6To12MonthsTask" value-ref="dataMartFrom6To12MonthsTask" />
+		<entry key="analyticsAllTask" value-ref="analyticsAllTask" />
+		<entry key="analyticsLast3YearsTask" value-ref="analyticsLast3YearsTask" />
       </map>
     </property>
   </bean>
 
-  <bean id="abstractDataMartTask" class="org.hisp.dhis.system.scheduling.DataMartTask" scope="prototype">
-    <constructor-arg ref="org.hisp.dhis.datamart.DataMartEngine" />
-    <constructor-arg ref="org.hisp.dhis.completeness.DataSetCompletenessEngine" />
-    <constructor-arg ref="org.hisp.dhis.dataelement.DataElementService" />
-    <constructor-arg ref="org.hisp.dhis.indicator.IndicatorService" />
-	<constructor-arg ref="org.hisp.dhis.period.PeriodService" />
-    <constructor-arg ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
-    <constructor-arg ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
-    <constructor-arg ref="org.hisp.dhis.dataset.DataSetService" />
-	<constructor-arg ref="org.hisp.dhis.setting.SystemSettingManager" />
-  </bean>
-  
-  <bean id="dataMartLast12MonthsTask" class="org.hisp.dhis.system.scheduling.DataMartTask" parent="abstractDataMartTask">
-	<property name="last6Months" value="true"/>
-	<property name="last6To12Months" value="true"/>
+  <!-- Scheduled tasks -->
+
+  <bean id="dataMartLast12MonthsTask" class="org.hisp.dhis.scheduling.DataMartTask">
+    <property name="last6Months" value="true"/>
+    <property name="last6To12Months" value="true"/>
   </bean>
     
-  <bean id="dataMartLast6MonthsTask" class="org.hisp.dhis.system.scheduling.DataMartTask" parent="abstractDataMartTask">
-	<property name="last6Months" value="true"/>
+  <bean id="dataMartLast6MonthsTask" class="org.hisp.dhis.scheduling.DataMartTask">
+    <property name="last6Months" value="true"/>
   </bean>
   
-  <bean id="dataMartFrom6To12MonthsTask" class="org.hisp.dhis.system.scheduling.DataMartTask" parent="abstractDataMartTask">
-	<property name="last6To12Months" value="true"/>
-  </bean>  
-
+  <bean id="dataMartFrom6To12MonthsTask" class="org.hisp.dhis.scheduling.DataMartTask">
+    <property name="last6To12Months" value="true"/>
+  </bean>      
+      
   <!-- DeletionHandler -->
 
   <bean id="org.hisp.dhis.report.ReportDeletionHandler" class="org.hisp.dhis.report.ReportDeletionHandler">

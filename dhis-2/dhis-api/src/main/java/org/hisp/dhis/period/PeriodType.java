@@ -363,6 +363,21 @@ public abstract class PeriodType
         return periodType.createPeriod( getMediumDate( id[1] ) );
     }
 
+    /**
+     * Return the potential number of periods of the given period type which is
+     * spanned by this period.
+     *
+     * @param type the period type.
+     * @return the potential number of periods of the given period type spanned
+     *         by this period.
+     */
+    public int getPeriodSpan( PeriodType type )
+    {
+        double no = (double) this.getFrequencyOrder() / type.getFrequencyOrder();
+
+        return (int) Math.floor( no );
+    }
+    
     // -------------------------------------------------------------------------
     // ISO format methods
     // -------------------------------------------------------------------------
@@ -383,6 +398,11 @@ public abstract class PeriodType
      */
     public abstract Period createPeriod( String isoDate );
 
+    /**
+     * Returns the iso8601 format as a string for this period type.
+     * 
+     * @return the iso8601 format.
+     */
     public abstract String getIsoFormat();
 
     // -------------------------------------------------------------------------

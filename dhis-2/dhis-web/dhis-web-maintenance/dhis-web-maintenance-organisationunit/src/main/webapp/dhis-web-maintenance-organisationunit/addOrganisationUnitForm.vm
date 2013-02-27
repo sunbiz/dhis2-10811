@@ -15,12 +15,16 @@
         checkValueIsExist("code", "validateOrganisationUnit.action");
         datePickerValid('openingDate', false);
 
+		jQuery( "div[id=dynamicAttributesContainer] table tr td:first-child" ).attr( "style", "width: 120px" );
+		jQuery( "div[id=dynamicAttributesContainer] table tr td:last-child *" ).attr( "style", "" );
+		
         jQuery("#name").focus();
 	});
 
 	var previousName = '';
 	var adding_the_org_unit_failed = '$encoder.jsEscape( $i18n.getString( "adding_the_org_unit_failed" ) , "'" )';
 </script>
+
 
 <h3>$i18n.getString( "create_new_org_unit" ) #openHelp( "ou_edit" )</h3>
 

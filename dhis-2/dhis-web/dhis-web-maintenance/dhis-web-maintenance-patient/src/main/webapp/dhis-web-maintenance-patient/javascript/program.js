@@ -32,6 +32,9 @@ function showProgramDetails( programId )
 		var ignoreOverdueEvents = ( json.program.ignoreOverdueEvents == 'true') ? i18n_yes : i18n_no;
 		setInnerHTML( 'ignoreOverdueEventsField', ignoreOverdueEvents );   	
 		
+		var onlyEnrollOnce = ( json.program.onlyEnrollOnce == 'true') ? i18n_yes : i18n_no;
+		setInnerHTML( 'onlyEnrollOnceField', onlyEnrollOnce );   	
+		
 		setInnerHTML( 'dateOfEnrollmentDescriptionField', json.program.dateOfEnrollmentDescription );   
 		setInnerHTML( 'dateOfIncidentDescriptionField', json.program.dateOfIncidentDescription );   		
 		setInnerHTML( 'programStageCountField',  json.program.programStageCount );
@@ -58,6 +61,7 @@ function programOnChange()
 	// anonymous
 	if(type == "3")
 	{
+		disable('onlyEnrollOnce');
 		disable('dateOfEnrollmentDescription');
 		disable("displayIncidentDate");
 		disable("dateOfIncidentDescription");
@@ -71,6 +75,7 @@ function programOnChange()
 		jQuery("[name=nonAnonymous]").hide();
 	}
 	else{
+		enable('onlyEnrollOnce');
 		jQuery("[name=displayed]").prop("disabled", false);
 		enable("availablePropertyIds");
 		showById("selectedList");
@@ -82,6 +87,7 @@ function programOnChange()
 		jQuery("[name=nonAnonymous]").show();
 		if( type == 2 ){
 			disable('ignoreOverdueEvents');
+			disable('onlyEnrollOnce');
 		}
 		
 		if(byId('displayIncidentDate').checked){

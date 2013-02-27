@@ -111,7 +111,7 @@ public class DefaultProgramDataEntryService
         // Inline Javascript to add to HTML before outputting
         // ---------------------------------------------------------------------
 
-        final String jQueryCalendar = "<script>datePicker(\"$PROGRAMSTAGEID-$DATAELEMENTID-val\", false);</script>";
+        final String jQueryCalendar = "<script>datePicker(\"$PROGRAMSTAGEID-$DATAELEMENTID-val\", false, false);</script>";
 
         StringBuffer sb = new StringBuffer();
 

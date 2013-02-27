@@ -216,6 +216,13 @@
       <param name="onExceptionReturn">plainTextError</param>
       <param name="requiredAuthorities">F_PATIENT_DATAVALUE_ADD,F_PATIENT_DATAVALUE_UPDATE,F_PATIENT_DATAVALUE_DELETE</param>
     </action>
+    
+     <action name="saveCoordinatesEvent"
+      class="org.hisp.dhis.caseentry.action.caseentry.SaveCoordinatesEventAction">
+      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+      <param name="onExceptionReturn">plainTextError</param>
+      <param name="requiredAuthorities">F_PATIENT_DATAVALUE_ADD,F_PATIENT_DATAVALUE_UPDATE,F_PATIENT_DATAVALUE_DELETE</param>
+    </action>
 
     <!-- save providing-facility -->
 
@@ -236,7 +243,13 @@
       <param name="page">/dhis-web-caseentry/multiDataEntrySelect.vm</param>
       <param name="menu">/dhis-web-caseentry/dataEntryMenu.vm</param>
       <param name="stylesheets">style/style.css</param>
-      <param name="javascripts">../dhis-web-commons/ouwt/ouwt.js,javascript/commons.js,javascript/multiDataEntry.js</param>
+      <param name="javascripts">
+      	../dhis-web-commons/ouwt/ouwt.js,
+      	javascript/commons.js,
+      	javascript/patient.js,
+        javascript/entry.js,
+        javascript/relationshipPatient.js,
+      	javascript/multiDataEntry.js</param>
       <param name="requiredAuthorities">F_NAME_BASED_DATA_ENTRY</param>
     </action>
 
@@ -630,8 +643,8 @@
       <param name="requiredAuthorities">F_PATIENT_UPDATE, F_PROGRAM_ENROLLMENT</param>
     </action>
 
-    <action name="removeEnrollment"
-      class="org.hisp.dhis.caseentry.action.patient.RemoveEnrollmentAction">
+    <action name="setProgramInstanceStatus"
+      class="org.hisp.dhis.caseentry.action.patient.SetProgramInstanceStatusAction">
       <result name="success" type="velocity-xml">status.vm</result>
       <param name="requiredAuthorities">F_PROGRAM_UNENROLLMENT</param>
     </action>
@@ -966,6 +979,7 @@
       <param name="javascripts">
         ../dhis-web-commons/ouwt/ouwt.js,
         javascript/commons.js,
+        javascript/patient.js,
         javascript/relationshipPatient.js,
         javascript/entry.js,
         javascript/smsReminder.js
@@ -1054,24 +1068,21 @@
         ../dhis-web-commons/ouwt/ouwt.js,
         javascript/commons.js,
         javascript/patient.js,
+        javascript/entry.js,
+        javascript/relationshipPatient.js,
         javascript/activityPlan.js
       </param>
       <param name="requiredAuthorities">F_ACTIVITY_PLAN</param>
     </action>
 
     <action name="getActivityPlanRecords"
-      class="org.hisp.dhis.caseentry.action.caseentry.GetDataRecordsAction">
+      class="org.hisp.dhis.caseentry.action.caseentry.GetActivityPlansAction">
       <result name="success" type="velocity">/content.vm</result>
       <param name="page">/dhis-web-caseentry/activityPlanRecords.vm</param>
       <param name="stylesheets">style/style.css</param>
-    </action>
-
-    <action name="exportActitityList"
-      class="org.hisp.dhis.caseentry.action.caseentry.GetDataRecordsAction">
       <result name="xls" type="gridXlsResult" />
       <result name="pdf" type="gridPdfResult" />
-      <param name="requiredAuthorities">F_ACTIVITY_PLAN_EXPORT</param>
     </action>
-
+	
   </package>
 </struts>

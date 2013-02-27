@@ -27,6 +27,8 @@
 
 package org.hisp.dhis.caseentry.action.caseentry;
 
+import static org.hisp.dhis.system.util.ValidationUtils.coordinateIsValid;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +57,7 @@ import org.hisp.dhis.program.ProgramStageSection;
 import org.hisp.dhis.program.ProgramStageSectionService;
 import org.hisp.dhis.program.comparator.ProgramStageDataElementSortOrderComparator;
 import org.hisp.dhis.program.comparator.ProgramStageSectionSortOrderComparator;
+import org.hisp.dhis.system.util.ValidationUtils;
 
 import com.opensymphony.xwork2.Action;
 
@@ -83,7 +86,7 @@ public class LoadDataEntryAction
     private PatientAttributeValueService patientAttributeValueService;
 
     private ProgramStageSectionService programStageSectionService;
-    
+
     private I18nFormat format;
 
     // -------------------------------------------------------------------------
@@ -225,6 +228,20 @@ public class LoadDataEntryAction
         return calAttributeValueMap;
     }
     
+    private String longitude;
+
+    public String getLongitude()
+    {
+        return longitude;
+    }
+
+    private String latitude;
+
+    public String getLatitude()
+    {
+        return latitude;
+    }
+
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
@@ -302,10 +319,18 @@ public class LoadDataEntryAction
             }
             else if ( programStage.getDataEntryType().equals( ProgramStage.TYPE_SECTION ) )
             {
-                sections = new ArrayList<ProgramStageSection>( programStageSectionService.getProgramStages( programStage ));
-                
+                sections = new ArrayList<ProgramStageSection>(
+                    programStageSectionService.getProgramStages( programStage ) );
+
                 Collections.sort( sections, new ProgramStageSectionSortOrderComparator() );
             }
+
+            // -----------------------------------------------------------------
+            // Allow update only if org unit does not have polygon coordinates
+            // -----------------------------------------------------------------
+
+            longitude = ValidationUtils.getLongitude( programStageInstance.getCoordinates() );
+            latitude = ValidationUtils.getLatitude( programStageInstance.getCoordinates() );
         }
 
         return SUCCESS;

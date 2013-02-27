@@ -45,6 +45,8 @@
     <property name="displayProvidedOtherFacility" />
 
     <property name="displayIncidentDate" />
+    
+    <property name="onlyEnrollOnce" />
 
     <list name="patientIdentifierTypes" table="program_patientIdentifierTypes">
       <key column="programid" foreign-key="fk_program_patientIdentifierTypes_programid" />

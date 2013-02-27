@@ -204,7 +204,14 @@ public class AddProgramStageAction
     {
         this.displayGenerateEventBox = displayGenerateEventBox;
     }
-
+    
+    private Boolean captureCoordinates;
+    
+    public void setCaptureCoordinates( Boolean captureCoordinates )
+    {
+        this.captureCoordinates = captureCoordinates;
+    }
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -217,7 +224,8 @@ public class AddProgramStageAction
         autoGenerateEvent = (autoGenerateEvent == null) ? false : autoGenerateEvent;
         validCompleteOnly = (validCompleteOnly == null) ? false : validCompleteOnly;
         displayGenerateEventBox = (displayGenerateEventBox == null) ? false : displayGenerateEventBox;
-
+        captureCoordinates =  (captureCoordinates == null) ? false : captureCoordinates;
+        
         ProgramStage programStage = new ProgramStage();
         Program program = programService.getProgram( id );
 
@@ -229,9 +237,9 @@ public class AddProgramStageAction
         programStage.setIrregular( irregular );
         programStage.setMinDaysFromStart( minDaysFromStart );
         programStage.setDisplayGenerateEventBox( displayGenerateEventBox );
-      
         programStage.setValidCompleteOnly( validCompleteOnly );
         programStage.setAutoGenerateEvent( autoGenerateEvent );
+        programStage.setCaptureCoordinates( captureCoordinates );
 
         Set<PatientReminder> patientReminders = new HashSet<PatientReminder>();
         for ( int i = 0; i < daysAllowedSendMessages.size(); i++ )

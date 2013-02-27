@@ -33,8 +33,8 @@
 	#foreach( $patientIdentifier in $partner.identifiers )
 	<tr>
 		<td>
-				#if($!patientIdentifier.identifierType)  $!patientIdentifier.identifierType.displayName
-				#else $i18n.getString( "patient_system_id") #end 
+			#if($!patientIdentifier.identifierType)  $!patientIdentifier.identifierType.displayName
+			#else $i18n.getString( "patient_system_id") #end 
 		</td>
 		<td>: $patientIdentifier.identifier</td>
 	</tr>
@@ -57,10 +57,10 @@
 	
 	<tr><td>&nbsp;</td></tr>
 	<tr>
-		<td><label class="bold">$i18n.getString( "enrolled_in_program" )</label></td>
+		<td valign='top'><label class="bold">$i18n.getString( "enrolled_in_program" )</label></td>
 		<td>: 
 		#foreach( $program in $partner.programs )
-			$encoder.htmlEncode($program.displayName)
+			- $encoder.htmlEncode($program.displayName)<br>
 		#end
 		</td>
 	</tr>

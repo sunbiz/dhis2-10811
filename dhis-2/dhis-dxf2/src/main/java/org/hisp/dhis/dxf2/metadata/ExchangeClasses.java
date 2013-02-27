@@ -1,7 +1,7 @@
 package org.hisp.dhis.dxf2.metadata;
 
 /*
- * Copyright (c) 2012, University of Oslo
+ * Copyright (c) 2012-2013, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -80,89 +80,102 @@ import java.util.Map;
  */
 final public class ExchangeClasses
 {
+    // all available classes for export, used for controllers etc
+    private static Map<Class<? extends IdentifiableObject>, String> allExportClasses;
+
+    // these are the ones that are available for dxf2 export
     private static Map<Class<? extends IdentifiableObject>, String> exportClasses;
 
+    // these are the ones that are available for dxf2 import
     private static Map<Class<? extends IdentifiableObject>, String> importClasses;
 
     static
     {
-        exportClasses = new LinkedHashMap<Class<? extends IdentifiableObject>, String>();
+        allExportClasses = new LinkedHashMap<Class<? extends IdentifiableObject>, String>();
 
-        exportClasses.put( SqlView.class, "sqlViews" );
-        exportClasses.put( Concept.class, "concepts" );
-        exportClasses.put( Constant.class, "constants" );
-        exportClasses.put( Document.class, "documents" );
-        exportClasses.put( OptionSet.class, "optionSets" );
-        exportClasses.put( Attribute.class, "attributeTypes" );
+        allExportClasses.put( SqlView.class, "sqlViews" );
+        allExportClasses.put( Concept.class, "concepts" );
+        allExportClasses.put( Constant.class, "constants" );
+        allExportClasses.put( Document.class, "documents" );
+        allExportClasses.put( OptionSet.class, "optionSets" );
+        allExportClasses.put( Attribute.class, "attributeTypes" );
 
-        exportClasses.put( OrganisationUnit.class, "organisationUnits" );
-        exportClasses.put( OrganisationUnitLevel.class, "organisationUnitLevels" );
-        exportClasses.put( OrganisationUnitGroup.class, "organisationUnitGroups" );
-        exportClasses.put( OrganisationUnitGroupSet.class, "organisationUnitGroupSets" );
+        allExportClasses.put( MapLegend.class, "mapLegends" );
+        allExportClasses.put( MapLegendSet.class, "mapLegendSets" );
+        allExportClasses.put( MapLayer.class, "mapLayers" );
 
-        exportClasses.put( DataElementCategoryOption.class, "categoryOptions" );
-        exportClasses.put( DataElementCategory.class, "categories" );
-        exportClasses.put( DataElementCategoryCombo.class, "categoryCombos" );
-        exportClasses.put( DataElementCategoryOptionCombo.class, "categoryOptionCombos" );
+        allExportClasses.put( OrganisationUnit.class, "organisationUnits" );
+        allExportClasses.put( OrganisationUnitLevel.class, "organisationUnitLevels" );
+        allExportClasses.put( OrganisationUnitGroup.class, "organisationUnitGroups" );
+        allExportClasses.put( OrganisationUnitGroupSet.class, "organisationUnitGroupSets" );
 
-        exportClasses.put( DataElement.class, "dataElements" );
-        exportClasses.put( DataElementGroup.class, "dataElementGroups" );
-        exportClasses.put( DataElementGroupSet.class, "dataElementGroupSets" );
+        allExportClasses.put( DataElementCategoryOption.class, "categoryOptions" );
+        allExportClasses.put( DataElementCategory.class, "categories" );
+        allExportClasses.put( DataElementCategoryCombo.class, "categoryCombos" );
+        allExportClasses.put( DataElementCategoryOptionCombo.class, "categoryOptionCombos" );
 
-        exportClasses.put( IndicatorType.class, "indicatorTypes" );
-        exportClasses.put( Indicator.class, "indicators" );
-        exportClasses.put( IndicatorGroup.class, "indicatorGroups" );
-        exportClasses.put( IndicatorGroupSet.class, "indicatorGroupSets" );
+        allExportClasses.put( DataElement.class, "dataElements" );
+        allExportClasses.put( DataElementGroup.class, "dataElementGroups" );
+        allExportClasses.put( DataElementGroupSet.class, "dataElementGroupSets" );
 
-        exportClasses.put( DataDictionary.class, "dataDictionaries" );
+        allExportClasses.put( IndicatorType.class, "indicatorTypes" );
+        allExportClasses.put( Indicator.class, "indicators" );
+        allExportClasses.put( IndicatorGroup.class, "indicatorGroups" );
+        allExportClasses.put( IndicatorGroupSet.class, "indicatorGroupSets" );
 
-        exportClasses.put( DataSet.class, "dataSets" );
-        exportClasses.put( Section.class, "sections" );
+        allExportClasses.put( DataDictionary.class, "dataDictionaries" );
 
-        exportClasses.put( ReportTable.class, "reportTables" );
-        exportClasses.put( Report.class, "reports" );
-        exportClasses.put( Chart.class, "charts" );
+        allExportClasses.put( DataSet.class, "dataSets" );
+        allExportClasses.put( Section.class, "sections" );
 
-        exportClasses.put( ValidationRule.class, "validationRules" );
-        exportClasses.put( ValidationRuleGroup.class, "validationRuleGroups" );
+        allExportClasses.put( ReportTable.class, "reportTables" );
+        allExportClasses.put( Report.class, "reports" );
+        allExportClasses.put( Chart.class, "charts" );
 
-        exportClasses.put( org.hisp.dhis.mapping.Map.class, "maps" );
-        exportClasses.put( MapView.class, "mapViews" );
-        exportClasses.put( MapLegend.class, "mapLegends" );
-        exportClasses.put( MapLegendSet.class, "mapLegendSets" );
-        exportClasses.put( MapLayer.class, "mapLayers" );
+        allExportClasses.put( ValidationRule.class, "validationRules" );
+        allExportClasses.put( ValidationRuleGroup.class, "validationRuleGroups" );
 
-        exportClasses.put( User.class, "users" );
-        exportClasses.put( UserGroup.class, "userGroups" );
-        exportClasses.put( UserAuthorityGroup.class, "userRoles" );
+        allExportClasses.put( MapView.class, "mapViews" );
+        allExportClasses.put( org.hisp.dhis.mapping.Map.class, "maps" );
 
-        exportClasses.put( MessageConversation.class, "messageConversations" );
-        exportClasses.put( Interpretation.class, "interpretations" );
+        allExportClasses.put( User.class, "users" );
+        allExportClasses.put( UserGroup.class, "userGroups" );
+        allExportClasses.put( UserAuthorityGroup.class, "userRoles" );
 
-        exportClasses.put( Program.class, "programs" );
-        exportClasses.put( ProgramStage.class, "programStages" );
+        allExportClasses.put( MessageConversation.class, "messageConversations" );
+        allExportClasses.put( Interpretation.class, "interpretations" );
 
-        importClasses = new LinkedHashMap<Class<? extends IdentifiableObject>, String>( exportClasses );
+        allExportClasses.put( Program.class, "programs" );
+        allExportClasses.put( ProgramStage.class, "programStages" );
 
+        exportClasses = new LinkedHashMap<Class<? extends IdentifiableObject>, String>( allExportClasses );
+        importClasses = new LinkedHashMap<Class<? extends IdentifiableObject>, String>( allExportClasses );
+
+        // for now, do not allow user to be imported
         importClasses.remove( User.class );
-        importClasses.remove( UserAuthorityGroup.class );
         importClasses.remove( UserGroup.class );
 
+        // this is considered data, and is not available for meta-data import
+        exportClasses.remove( MessageConversation.class );
+        exportClasses.remove( Interpretation.class );
         importClasses.remove( MessageConversation.class );
         importClasses.remove( Interpretation.class );
 
+        // tracker types are not enabled for meta-data import-export yet
+        exportClasses.remove( Program.class );
+        exportClasses.remove( ProgramStage.class );
         importClasses.remove( Program.class );
         importClasses.remove( ProgramStage.class );
+    }
+
+    public static Map<Class<? extends IdentifiableObject>, String> getAllExportMap()
+    {
+        return Collections.unmodifiableMap( allExportClasses );
     }
 
     public static Map<Class<? extends IdentifiableObject>, String> getExportMap()
     {
         return Collections.unmodifiableMap( exportClasses );
-    }
-
-    public static List<Class<? extends IdentifiableObject>> getExportClasses()
-    {
-        return new ArrayList<Class<? extends IdentifiableObject>>( exportClasses.keySet() );
     }
 
     public static Map<Class<? extends IdentifiableObject>, String> getImportMap()

@@ -1,47 +1,61 @@
 { "patientProperties": [
   {
 	"id": "fixedAttr_firstName",
-	"name": "$i18n.getString('first_name')"
+	"name": "$i18n.getString('first_name')",
+	"valueType": "string"
   },
   {
 	"id": "fixedAttr_middleName",
-	"name": "$i18n.getString('middle_name')"
+	"name": "$i18n.getString('middle_name')",
+	"valueType": "string"
   },
   {
 	"id": "fixedAttr_lastName",
-	"name": "$i18n.getString('last_name')"
+	"name": "$i18n.getString('last_name')",
+	"valueType": "string"
   },
   {
 	"id": "fixedAttr_gender",
-	"name": "$i18n.getString('gender')"
+	"name": "$i18n.getString('gender')",
+	"valueType": "string"
   },
   {
 	"id": "fixedAttr_birthDate",
-	"name": "$i18n.getString('date_of_birth')"
+	"name": "$i18n.getString('date_of_birth')",
+	"valueType": "date"
   },
   {
 	"id": "fixedAttr_dobType",
-	"name": "$i18n.getString('dob_type')"
+	"name": "$i18n.getString('dob_type')",
+	"valueType": "list"
   },
   {
 	"id": "fixedAttr_phoneNumber",
-	"name": "$i18n.getString('phone_number')"
+	"name": "$i18n.getString('phone_number')",
+	"valueType": "string"
   },
   {
 	"id": "fixedAttr_deathdate",
-	"name": "$i18n.getString('death_date')"
+	"name": "$i18n.getString('death_date')",
+	"valueType": "date"
   },
   #foreach( ${identifierType} in $!{identifierTypes} )
   {
 	"id": "iden_${identifierType.id}",
-	"name": "$!encoder.jsonEncode( ${identifierType.displayName} )"
+	"name": "$!encoder.jsonEncode( ${identifierType.displayName} )",
+	"valueType": "$identifierType.type"
   },
   #end
   #set( $size = $!{patientAttributes.size()} )
   #foreach( $patientAttribute in $!{patientAttributes} )
   {
     "id": "attr_${patientAttribute.id}",
-	"name": "$!encoder.jsonEncode( ${patientAttribute.displayName} )"
+	"name": "$!encoder.jsonEncode( ${patientAttribute.displayName} )",
+	"valueType": #if( $patientAttribute.valueType == 'combo')
+					"list"
+				 #else
+					"${patientAttribute.valueType}"
+				 #end
   }#if( $velocityCount < $size ),#end
   #end
   ]

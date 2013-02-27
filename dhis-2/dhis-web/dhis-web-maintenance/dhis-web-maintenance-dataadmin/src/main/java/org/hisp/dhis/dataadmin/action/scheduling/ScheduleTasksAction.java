@@ -27,21 +27,31 @@ package org.hisp.dhis.dataadmin.action.scheduling;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.scheduling.SchedulingManager.TASK_ANALYTICS_ALL;
+import static org.hisp.dhis.scheduling.SchedulingManager.TASK_ANALYTICS_LAST_3_YEARS;
+import static org.hisp.dhis.scheduling.SchedulingManager.TASK_DATAMART_FROM_6_TO_12_MONTS;
+import static org.hisp.dhis.scheduling.SchedulingManager.TASK_DATAMART_LAST_12_MONTHS;
+import static org.hisp.dhis.scheduling.SchedulingManager.TASK_DATAMART_LAST_6_MONTHS;
+import static org.hisp.dhis.scheduling.SchedulingManager.TASK_RESOURCE_TABLE;
+import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_ORGUNITGROUPSET_AGG_LEVEL;
 import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_SCHEDULED_PERIOD_TYPES;
 import static org.hisp.dhis.setting.SystemSettingManager.KEY_ORGUNITGROUPSET_AGG_LEVEL;
-import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_ORGUNITGROUPSET_AGG_LEVEL;
 import static org.hisp.dhis.setting.SystemSettingManager.KEY_SCHEDULED_PERIOD_TYPES;
+import static org.hisp.dhis.system.scheduling.Scheduler.CRON_DAILY_0AM_EXCEPT_SUNDAY;
+import static org.hisp.dhis.system.scheduling.Scheduler.CRON_WEEKLY_SUNDAY_0AM;
+import static org.hisp.dhis.system.scheduling.Scheduler.STATUS_RUNNING;
+import static org.hisp.dhis.system.util.CollectionUtils.emptyIfNull;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.hisp.dhis.setting.SystemSettingManager;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.scheduling.SchedulingManager;
+import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.scheduling.Scheduler;
 
 import com.opensymphony.xwork2.Action;
@@ -54,7 +64,9 @@ public class ScheduleTasksAction
 {
     private static final String STRATEGY_LAST_12_DAILY = "last12Daily";
     private static final String STRATEGY_LAST_6_DAILY_6_TO_12_WEEKLY = "last6Daily6To12Weekly";
-        
+    private static final String STRATEGY_ALL_DAILY = "allDaily";
+    private static final String STRATEGY_LAST_3_YEARS_DAILY = "last3YearsDaily";
+    
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -83,19 +95,36 @@ public class ScheduleTasksAction
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
-
-    private boolean execute;
-
-    public void setExecute( boolean execute )
-    {
-        this.execute = execute;
-    }
     
     private boolean schedule;
 
     public void setSchedule( boolean schedule )
     {
         this.schedule = schedule;
+    }
+
+    private String resourceTableStrategy;
+
+    public String getResourceTableStrategy()
+    {
+        return resourceTableStrategy;
+    }
+
+    public void setResourceTableStrategy( String resourceTableStrategy )
+    {
+        this.resourceTableStrategy = resourceTableStrategy;
+    }
+
+    private String analyticsStrategy;
+    
+    public String getAnalyticsStrategy()
+    {
+        return analyticsStrategy;
+    }
+
+    public void setAnalyticsStrategy( String analyticsStrategy )
+    {
+        this.analyticsStrategy = analyticsStrategy;
     }
 
     private Set<String> scheduledPeriodTypes = new HashSet<String>();
@@ -166,11 +195,7 @@ public class ScheduleTasksAction
     @SuppressWarnings("unchecked")
     public String execute()
     {
-        if ( execute )
-        {
-            schedulingManager.executeTasks();
-        }
-        else if ( schedule )
+        if ( schedule )
         {
             systemSettingManager.saveSystemSetting( KEY_SCHEDULED_PERIOD_TYPES, (HashSet<String>) scheduledPeriodTypes );
             systemSettingManager.saveSystemSetting( KEY_ORGUNITGROUPSET_AGG_LEVEL, orgUnitGroupSetAggLevel );
@@ -181,33 +206,98 @@ public class ScheduleTasksAction
             }
             else
             {
-                Map<String, String> keyCronMap = new HashMap<String, String>();
+                ListMap<String, String> cronKeyMap = new ListMap<String, String>();
+                
+                // -------------------------------------------------------------
+                // Resource tables
+                // -------------------------------------------------------------
+
+                if ( STRATEGY_ALL_DAILY.equals( resourceTableStrategy ) )
+                {
+                    cronKeyMap.putValue( CRON_DAILY_0AM_EXCEPT_SUNDAY, TASK_RESOURCE_TABLE );
+                    cronKeyMap.putValue( CRON_WEEKLY_SUNDAY_0AM, TASK_RESOURCE_TABLE );
+                }
+                
+                // -------------------------------------------------------------
+                // Analytics
+                // -------------------------------------------------------------
+
+                if ( STRATEGY_ALL_DAILY.equals( analyticsStrategy ) )
+                {
+                    cronKeyMap.putValue( CRON_DAILY_0AM_EXCEPT_SUNDAY, TASK_ANALYTICS_ALL );
+                    cronKeyMap.putValue( CRON_WEEKLY_SUNDAY_0AM, TASK_ANALYTICS_ALL );
+                }
+                else if ( STRATEGY_LAST_3_YEARS_DAILY.equals( analyticsStrategy ) )
+                {
+                    cronKeyMap.putValue( CRON_DAILY_0AM_EXCEPT_SUNDAY, TASK_ANALYTICS_LAST_3_YEARS );
+                    cronKeyMap.putValue( CRON_WEEKLY_SUNDAY_0AM, TASK_ANALYTICS_LAST_3_YEARS );
+                }
+                
+                // -------------------------------------------------------------
+                // Data mart
+                // -------------------------------------------------------------
                 
                 if ( STRATEGY_LAST_12_DAILY.equals( dataMartStrategy ) )
                 {
-                    keyCronMap.put( SchedulingManager.TASK_DATAMART_LAST_12_MONTHS, Scheduler.CRON_DAILY_0AM );
+                    cronKeyMap.putValue( CRON_DAILY_0AM_EXCEPT_SUNDAY, TASK_DATAMART_LAST_12_MONTHS );
+                    cronKeyMap.putValue( CRON_WEEKLY_SUNDAY_0AM, TASK_DATAMART_LAST_12_MONTHS );
                 }
                 else if ( STRATEGY_LAST_6_DAILY_6_TO_12_WEEKLY.equals( dataMartStrategy ) )
                 {
-                    keyCronMap.put( SchedulingManager.TASK_DATAMART_LAST_6_MONTS, Scheduler.CRON_DAILY_0AM_EXCEPT_SUNDAY );
-                    keyCronMap.put( SchedulingManager.TASK_DATAMART_FROM_6_TO_12_MONTS, Scheduler.CRON_WEEKLY_SUNDAY_0AM );
+                    cronKeyMap.putValue( CRON_DAILY_0AM_EXCEPT_SUNDAY, TASK_DATAMART_LAST_6_MONTHS );
+                    cronKeyMap.putValue( CRON_WEEKLY_SUNDAY_0AM, TASK_DATAMART_FROM_6_TO_12_MONTS );
                 }
                 
-                schedulingManager.scheduleTasks( keyCronMap );
+                schedulingManager.scheduleTasks( cronKeyMap );
             }
         }
         else
         {
-            scheduledPeriodTypes = (Set<String>) systemSettingManager.getSystemSetting( KEY_SCHEDULED_PERIOD_TYPES, DEFAULT_SCHEDULED_PERIOD_TYPES );
-            orgUnitGroupSetAggLevel = (Integer) systemSettingManager.getSystemSetting( KEY_ORGUNITGROUPSET_AGG_LEVEL, DEFAULT_ORGUNITGROUPSET_AGG_LEVEL );
-            dataMartStrategy = schedulingManager.getScheduledTasks().containsKey( SchedulingManager.TASK_DATAMART_LAST_12_MONTHS ) ? 
-                STRATEGY_LAST_12_DAILY : STRATEGY_LAST_6_DAILY_6_TO_12_WEEKLY;
-        }
+            Collection<String> keys = emptyIfNull( schedulingManager.getCronKeyMap().get( CRON_DAILY_0AM_EXCEPT_SUNDAY ) );
+            
+            // -----------------------------------------------------------------
+            // Resource tables
+            // -----------------------------------------------------------------
 
-        status = schedulingManager.getTaskStatus();        
-        running = Scheduler.STATUS_RUNNING.equals( status );
-        levels = organisationUnitService.getOrganisationUnitLevels();
+            if ( keys.contains( TASK_RESOURCE_TABLE ) )
+            {
+                resourceTableStrategy = STRATEGY_ALL_DAILY;
+            }
+            
+            // -----------------------------------------------------------------
+            // Analytics
+            // -----------------------------------------------------------------
+
+            if ( keys.contains( TASK_ANALYTICS_ALL ) )
+            {
+                analyticsStrategy = STRATEGY_ALL_DAILY;
+            }
+            else if ( keys.contains( TASK_ANALYTICS_LAST_3_YEARS ) )
+            {
+                analyticsStrategy = STRATEGY_LAST_3_YEARS_DAILY;
+            }
+            
+            // -----------------------------------------------------------------
+            // Data mart
+            // -----------------------------------------------------------------
+
+            if ( keys.contains( TASK_DATAMART_LAST_12_MONTHS ) )
+            {
+                dataMartStrategy = STRATEGY_LAST_12_DAILY;
+            }
+            else if ( keys.contains( TASK_DATAMART_LAST_6_MONTHS ) )
+            {
+                dataMartStrategy = STRATEGY_LAST_6_DAILY_6_TO_12_WEEKLY;
+            }            
+        }
         
+        scheduledPeriodTypes = (Set<String>) systemSettingManager.getSystemSetting( KEY_SCHEDULED_PERIOD_TYPES, DEFAULT_SCHEDULED_PERIOD_TYPES );
+        orgUnitGroupSetAggLevel = (Integer) systemSettingManager.getSystemSetting( KEY_ORGUNITGROUPSET_AGG_LEVEL, DEFAULT_ORGUNITGROUPSET_AGG_LEVEL );
+        
+        status = schedulingManager.getTaskStatus();        
+        running = STATUS_RUNNING.equals( status );
+        levels = organisationUnitService.getOrganisationUnitLevels();
+
         return SUCCESS;
     }
 }

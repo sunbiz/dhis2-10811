@@ -57,12 +57,20 @@
         foreign-key="fk_reporttable_periods_periodid" />
     </list>
 
-    <list name="units" table="reporttable_organisationunits">
+    <list name="organisationUnits" table="reporttable_organisationunits">
       <cache usage="read-write" />
       <key column="reporttableid" foreign-key="fk_reporttable_organisationunits_reporttableid" />
       <list-index column="sort_order" base="0" />
       <many-to-many column="organisationunitid" class="org.hisp.dhis.organisationunit.OrganisationUnit"
         foreign-key="fk_reporttable_organisationunits_organisationunitid" />
+    </list>
+
+    <list name="dataElementGroups" table="reporttable_dataelementgroups">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_dataelementgroups_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <many-to-many column="dataelementgroupid" class="org.hisp.dhis.dataelement.DataElementGroup"
+        foreign-key="fk_reporttable_dataelementgroups_dataelementgroupid" />
     </list>
 
     <list name="organisationUnitGroups" table="reporttable_orgunitgroups">
@@ -73,11 +81,26 @@
         foreign-key="fk_reporttable_orgunitgroups_orgunitgroupid" />
     </list>
 
-    <property name="doIndicators" />
+    <list name="columnDimensions" table="reporttable_columns">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_columns_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <element type="string" column="dimension" />
+    </list>
 
-    <property name="doPeriods" />
+    <list name="rowDimensions" table="reporttable_rows">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_rows_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <element type="string" column="dimension" />
+    </list>
 
-    <property name="doUnits" />
+    <list name="filterDimensions" table="reporttable_filters">
+      <cache usage="read-write" />
+      <key column="reporttableid" foreign-key="fk_reporttable_filters_reporttableid" />
+      <list-index column="sort_order" base="0" />
+      <element type="string" column="dimension" />
+    </list>
 
     <component name="relatives">
       <property name="reportingMonth" />
@@ -110,6 +133,12 @@
     <property name="sortOrder" />
 
     <property name="topLimit" />
+    
+    <property name="subtotals" />
+    
+    <property name="displayDensity" />
+    
+    <property name="fontSize" />
 
     <!-- Access properties -->
     <many-to-one name="user" class="org.hisp.dhis.user.User" column="userid" foreign-key="fk_reporttable_userid" />

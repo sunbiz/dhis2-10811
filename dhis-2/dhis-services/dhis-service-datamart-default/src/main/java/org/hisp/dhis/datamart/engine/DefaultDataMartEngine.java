@@ -193,6 +193,17 @@ public class DefaultDataMartEngine
     }
     
     @Transactional
+    public void export( Collection<Integer> periodIds, TaskId id )
+    {
+        Collection<Integer> dataElementIds = ConversionUtils.getIdentifiers( DataElement.class, dataElementService.getAllDataElements() );
+        Collection<Integer> indicatorIds = ConversionUtils.getIdentifiers( Indicator.class, indicatorService.getAllIndicators() );
+        Collection<Integer> organisationUnitIds = ConversionUtils.getIdentifiers( OrganisationUnit.class, organisationUnitService.getAllOrganisationUnits() );
+        Collection<Integer> organisationUnitGroupIds = ConversionUtils.getIdentifiers( OrganisationUnitGroup.class, organisationUnitGroupService.getOrganisationUnitGroupsWithGroupSets() );
+        
+        export( dataElementIds, indicatorIds, periodIds, organisationUnitIds, organisationUnitGroupIds, id );
+    }
+    
+    @Transactional
     public void export( Collection<Integer> dataElementIds, Collection<Integer> indicatorIds,
         Collection<Integer> periodIds, Collection<Integer> organisationUnitIds, Collection<Integer> organisationUnitGroupIds, TaskId id )
     {
@@ -200,7 +211,7 @@ public class DefaultDataMartEngine
         
         Clock clock = new Clock().startClock().logTime( "Data mart export process started, number of CPU cores: " + cpuCores + ", " + SystemUtils.getMemoryString() );
         notifier.clear( id, DATAMART ).notify( id, DATAMART, "Data mart export process started" );
-
+ 
         // ---------------------------------------------------------------------
         // Recreate temporary tables
         // ---------------------------------------------------------------------
@@ -235,7 +246,7 @@ public class DefaultDataMartEngine
         final Map<String, Integer> dataElementUidIdMap = dataElementService.getDataElementUidIdMap();
         final Map<String, Integer> categoryOptionComboUidIdMap = categoryService.getDataElementCategoryOptionComboUidIdMap();
         
-        clock.logTime( "Retrieved meta-data objects" );
+        clock.logTime( "Retrieved meta-data objects, using periods: " + periods );
         notifier.notify( id, DATAMART, "Filtering meta-data" );
 
         // ---------------------------------------------------------------------

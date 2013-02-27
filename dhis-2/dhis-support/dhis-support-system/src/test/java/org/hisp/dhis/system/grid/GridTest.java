@@ -34,7 +34,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.common.GridHeader;
@@ -58,8 +60,8 @@ public class GridTest
     {
         grid = new ListGrid();
         
-        headerA = new GridHeader( "ColA", "colA", String.class.getName(), false, false );
-        headerB = new GridHeader( "ColB", "colB", String.class.getName(), false, false );
+        headerA = new GridHeader( "ColA", "colA", String.class.getName(), false, true );
+        headerB = new GridHeader( "ColB", "colB", String.class.getName(), false, true );
         headerC = new GridHeader( "ColC", "colC", String.class.getName(), true, false );
         
         grid.addHeader( headerA );
@@ -85,6 +87,30 @@ public class GridTest
         grid.addValue( 41 );
         grid.addValue( 42 );
         grid.addValue( 43 );
+    }
+    
+    @Test
+    public void testSubstituteMetaData()
+    {
+        Map<Object, String> metaData = new HashMap<Object, String>();
+        metaData.put( 11, "Eleven" );
+        metaData.put( 12, "Twelve" );
+        metaData.put( 21, "TwentyOne" );
+        metaData.put( 22, "TwentyTwo" );
+        
+        grid.setMetaData( metaData );
+        
+        assertEquals( 11, grid.getValue( 0, 0 ) );
+        assertEquals( 12, grid.getValue( 0, 1 ) );
+        assertEquals( 21, grid.getValue( 1, 0 ) );
+        assertEquals( 22, grid.getValue( 1, 1 ) );
+        
+        grid.substituteMetaData();
+
+        assertEquals( "Eleven", grid.getValue( 0, 0 ) );
+        assertEquals( "Twelve", grid.getValue( 0, 1 ) );
+        assertEquals( "TwentyOne", grid.getValue( 1, 0 ) );
+        assertEquals( "TwentyTwo", grid.getValue( 1, 1 ) );
     }
     
     @Test

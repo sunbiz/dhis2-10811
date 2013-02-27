@@ -27,16 +27,23 @@ package org.hisp.dhis.reporttable;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
-import org.hisp.dhis.common.*;
+import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.BaseNameableObject;
+import org.hisp.dhis.common.CombinationGenerator;
+import org.hisp.dhis.common.DxfNamespaces;
+import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.ListMap;
+import org.hisp.dhis.common.NameableObject;
+import org.hisp.dhis.common.adapter.JacksonMapListIdentifiableObjectSerializer;
 import org.hisp.dhis.common.adapter.JacksonPeriodDeserializer;
 import org.hisp.dhis.common.adapter.JacksonPeriodSerializer;
 import org.hisp.dhis.common.annotation.Scanned;
@@ -46,6 +53,7 @@ import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
+import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.indicator.Indicator;
@@ -56,7 +64,14 @@ import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.period.comparator.AscendingPeriodComparator;
 
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * The ReportTable object represents a customizable database table. It has
@@ -64,7 +79,6 @@ import java.util.*;
  * columns.
  *
  * @author Lars Helge Overland
- * @version $Id$
  */
 @JacksonXmlRootElement( localName = "reportTable", namespace = DxfNamespaces.DXF_2_0)
 public class ReportTable
@@ -74,7 +88,11 @@ public class ReportTable
      * Determines if a de-serialized file is compatible with this class.
      */
     private static final long serialVersionUID = 5618655666320890565L;
-
+    
+    public static final String DATA_X_DIM_ID = "dx"; // IN, DE, DS
+    public static final String PERIOD_DIM_ID = "pe";
+    public static final String ORGUNIT_DIM_ID = "ou";
+    
     public static final String DATAELEMENT_ID = "dataelementid";
     public static final String CATEGORYCOMBO_ID = "categoryoptioncomboid";
     public static final String CATEGORYOPTION_ID = "categoryoptionid";
@@ -219,8 +237,14 @@ public class ReportTable
      * The list of OrganisationUnits the ReportTable contains.
      */
     @Scanned
-    private List<OrganisationUnit> units = new ArrayList<OrganisationUnit>();
+    private List<OrganisationUnit> organisationUnits = new ArrayList<OrganisationUnit>();
 
+    /**
+     * The list of DataElementGroups the ReportTable contains.
+     */
+    @Scanned
+    private List<DataElementGroup> dataElementGroups = new ArrayList<DataElementGroup>();
+    
     /**
      * The list of OrganisationUnitGroups the ReportTable contains.
      */
@@ -228,25 +252,24 @@ public class ReportTable
     private List<OrganisationUnitGroup> organisationUnitGroups = new ArrayList<OrganisationUnitGroup>();
 
     /**
+     * Dimensions to crosstabulate / use as columns.
+     */
+    private List<String> columnDimensions = new ArrayList<String>();
+    
+    /**
+     * Dimensions to use as rows.
+     */
+    private List<String> rowDimensions = new ArrayList<String>();
+    
+    /**
+     * Dimensions to use as filter.
+     */
+    private List<String> filterDimensions = new ArrayList<String>();
+    
+    /**
      * The DataElementCategoryCombo for the ReportTable.
      */
     private DataElementCategoryCombo categoryCombo;
-
-    /**
-     * Whether to crosstabulate on the Indicator dimension, which also
-     * represents DataElements and DataSets.
-     */
-    private boolean doIndicators;
-
-    /**
-     * Whether to crosstabulate on the Period dimension.
-     */
-    private boolean doPeriods;
-
-    /**
-     * Whether to crosstabulate on the OrganisationUnit dimension.
-     */
-    private boolean doUnits;
 
     /**
      * The RelativePeriods of the ReportTable.
@@ -264,10 +287,49 @@ public class ReportTable
     private Integer sortOrder;
 
     /**
-     * Inidicates whether the table should be limited from top by this value.
+     * Indicates whether the table should be limited from top by this value.
      */
     private Integer topLimit;
 
+    /**
+     * Indicates rendering of sub-totals for the table.
+     */
+    private boolean subtotals;
+    
+    /**
+     * The display density of the text in the table.
+     */
+    private String displayDensity;
+    
+    /**
+     * The font size of the text in the table.
+     */
+    private String fontSize;
+    
+    /**
+     * Indicates use of the organisation unit of the current user.
+     */
+    private boolean userOrganisationUnit;
+    
+    /**
+     * Indicates use of the organisation unit children of the current user.
+     */
+    private boolean userOrganisationUnitChildren;
+
+    // -------------------------------------------------------------------------
+    // Presentation properties
+    // -------------------------------------------------------------------------
+
+    /**
+     * Map of data element group set uids and data element groups.
+     */
+    private Map<String, List<DataElementGroup>> dataElementGroupSets = new HashMap<String, List<DataElementGroup>>();
+    
+    /**
+     * Map of organisation unit group uids and organisation unit groups.
+     */
+    private Map<String, List<OrganisationUnitGroup>> organisationUnitGroupSets = new HashMap<String, List<OrganisationUnitGroup>>();
+    
     // -------------------------------------------------------------------------
     // Transient properties
     // -------------------------------------------------------------------------
@@ -370,26 +432,23 @@ public class ReportTable
     /**
      * Default constructor.
      *
-     * @param name            the name.
-     * @param dataElements    the data elements.
-     * @param indicators      the indicators.
-     * @param dataSets        the datasets.
-     * @param periods         the periods. These periods cannot have the name property
-     *                        set.
+     * @param name the name.
+     * @param dataElements the data elements.
+     * @param indicators the indicators.
+     * @param dataSets the data sets.
+     * @param periods the periods. Cannot have the name property set.
      * @param relativePeriods the relative periods. These periods must have the
      *                        name property set. Not persisted.
-     * @param units           the organisation units.
-     * @param relativeUnits   the organisation units. Not persisted.
-     * @param doIndicators    indicating whether indicators should be
-     *                        crosstabulated.
-     * @param doPeriods       indicating whether periods should be crosstabulated.
-     * @param doUnits         indicating whether organisation units should be
-     *                        crosstabulated.
-     * @param relatives       the relative periods.
-     * @param i18nFormat      the i18n format. Not persisted.
+     * @param organisationUnits the organisation units.
+     * @param relativeUnits the organisation units. Not persisted.
+     * @param doIndicators indicating whether indicators should be crosstabulated.
+     * @param doPeriods indicating whether periods should be crosstabulated.
+     * @param doUnits indicating whether organisation units should be crosstabulated.
+     * @param relatives the relative periods.
+     * @param i18nFormat the i18n format. Not persisted.
      */
     public ReportTable( String name, List<DataElement> dataElements, List<Indicator> indicators,
-                        List<DataSet> dataSets, List<Period> periods, List<Period> relativePeriods, List<OrganisationUnit> units,
+                        List<DataSet> dataSets, List<Period> periods, List<Period> relativePeriods, List<OrganisationUnit> organisationUnits,
                         List<OrganisationUnit> relativeUnits, List<OrganisationUnitGroup> organisationUnitGroups,
                         DataElementCategoryCombo categoryCombo, boolean doIndicators,
                         boolean doPeriods, boolean doUnits, RelativePeriods relatives, ReportParams reportParams,
@@ -401,17 +460,29 @@ public class ReportTable
         this.dataSets = dataSets;
         this.periods = periods;
         this.relativePeriods = relativePeriods;
-        this.units = units;
+        this.organisationUnits = organisationUnits;
         this.relativeUnits = relativeUnits;
         this.organisationUnitGroups = organisationUnitGroups;
         this.categoryCombo = categoryCombo;
-        this.doIndicators = doIndicators;
-        this.doPeriods = doPeriods;
-        this.doUnits = doUnits;
         this.relatives = relatives;
         this.reportParams = reportParams;
         this.i18nFormat = i18nFormat;
         this.reportingPeriodName = reportingPeriodName;
+        
+        if ( doIndicators )
+        {
+            columnDimensions.add( DATA_X_DIM_ID );
+        }
+        
+        if ( doPeriods )
+        {
+            columnDimensions.add( PERIOD_DIM_ID );
+        }
+        
+        if ( doUnits )
+        {
+            columnDimensions.add( ORGUNIT_DIM_ID );
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -423,7 +494,7 @@ public class ReportTable
         verify( nonEmptyLists( dataElements, indicators, dataSets ) > 0,
             "Must contain dataelements, indicators or datasets" );
         verify( nonEmptyLists( periods, relativePeriods ) > 0, "Must contain periods or relative periods" );
-        verify( nonEmptyLists( units, relativeUnits, organisationUnitGroups ) > 0,
+        verify( nonEmptyLists( organisationUnits, relativeUnits, organisationUnitGroups ) > 0,
             "Must contain organisation units, relative organisation units or organisation unit groups" );
         verify( !(doTotal() && regression), "Cannot have regression columns with total columns" );
         verify( i18nFormat != null, "I18n format must be set" );
@@ -459,7 +530,7 @@ public class ReportTable
         }
         else
         {
-            allUnits.addAll( units );
+            allUnits.addAll( organisationUnits );
             allUnits.addAll( relativeUnits );
             allUnits = removeDuplicates( allUnits );
         }
@@ -470,31 +541,79 @@ public class ReportTable
         addIfEmpty( columns ); // Allow for all or none crosstab dimensions
         addIfEmpty( rows );
 
-        add( indexColumns, INDICATOR_ID, doIndicators );
-        add( indexColumns, PERIOD_ID, doPeriods );
-        add( indexColumns, ORGANISATIONUNIT_ID, doUnits );
+        add( indexColumns, INDICATOR_ID, isDoIndicators() );
+        add( indexColumns, PERIOD_ID, isDoPeriods() );
+        add( indexColumns, ORGANISATIONUNIT_ID, isDoUnits() );
 
-        add( indexUidColumns, INDICATOR_UID, doIndicators );
-        add( indexUidColumns, PERIOD_UID, doPeriods );
-        add( indexUidColumns, ORGANISATIONUNIT_UID, doUnits );
+        add( indexUidColumns, INDICATOR_UID, isDoIndicators() );
+        add( indexUidColumns, PERIOD_UID, isDoPeriods() );
+        add( indexUidColumns, ORGANISATIONUNIT_UID, isDoUnits() );
 
-        add( indexNameColumns, INDICATOR_NAME, doIndicators );
-        add( indexNameColumns, PERIOD_NAME, doPeriods );
-        add( indexNameColumns, ORGANISATIONUNIT_NAME, doUnits );
+        add( indexNameColumns, INDICATOR_NAME, isDoIndicators() );
+        add( indexNameColumns, PERIOD_NAME, isDoPeriods() );
+        add( indexNameColumns, ORGANISATIONUNIT_NAME, isDoUnits() );
 
-        add( indexCodeColumns, INDICATOR_CODE, doIndicators );
-        add( indexCodeColumns, PERIOD_CODE, doPeriods );
-        add( indexCodeColumns, ORGANISATIONUNIT_CODE, doUnits );
+        add( indexCodeColumns, INDICATOR_CODE, isDoIndicators() );
+        add( indexCodeColumns, PERIOD_CODE, isDoPeriods() );
+        add( indexCodeColumns, ORGANISATIONUNIT_CODE, isDoUnits() );
 
-        add( indexDescriptionColumns, INDICATOR_DESCRIPTION, doIndicators );
-        add( indexDescriptionColumns, PERIOD_DESCRIPTION, doPeriods );
-        add( indexDescriptionColumns, ORGANISATIONUNIT_DESCRIPTION, doUnits );
+        add( indexDescriptionColumns, INDICATOR_DESCRIPTION, isDoIndicators() );
+        add( indexDescriptionColumns, PERIOD_DESCRIPTION, isDoPeriods() );
+        add( indexDescriptionColumns, ORGANISATIONUNIT_DESCRIPTION, isDoUnits() );
     }
 
     // -------------------------------------------------------------------------
     // Public methods
     // -------------------------------------------------------------------------
-
+    
+    /**
+     * Populates the presentation properties based on the persisted properties.
+     */
+    public ReportTable populatePresentationProps()
+    {
+        ListMap<String, DataElementGroup> degs = new ListMap<String, DataElementGroup>();
+        
+        for ( DataElementGroup group : dataElementGroups )
+        {
+            degs.putValue( group.getGroupSet().getUid(), group );
+        }
+        
+        ListMap<String, OrganisationUnitGroup> ougs = new ListMap<String, OrganisationUnitGroup>();
+        
+        for ( OrganisationUnitGroup group : organisationUnitGroups )
+        {
+            ougs.putValue( group.getGroupSet().getUid(), group );
+        }
+        
+        dataElementGroupSets.clear();
+        dataElementGroupSets.putAll( degs );        
+        organisationUnitGroupSets.clear();
+        organisationUnitGroupSets.putAll( ougs );
+        
+        return this;
+    }
+    
+    /**
+     * Sets the persisted properties based on the presentation properties.
+     */
+    public ReportTable readPresentationProps()
+    {
+        dataElementGroups.clear();        
+        organisationUnitGroups.clear();
+        
+        for ( String groupSet : dataElementGroupSets.keySet() )
+        {
+            dataElementGroups.addAll( dataElementGroupSets.get( groupSet ) );
+        }
+        
+        for ( String groupSet : organisationUnitGroupSets.keySet() )
+        {
+            organisationUnitGroups.addAll( organisationUnitGroupSets.get( groupSet ) );
+        }
+        
+        return this;
+    }
+    
     /**
      * Creates a map which contains mappings between the organisation unit
      * identifier and the name of the group this organisation unit is a member
@@ -753,7 +872,49 @@ public class ReportTable
     {
         return relatives != null && !relatives.getRelativePeriods().isEmpty();
     }
+
+    public boolean isDoIndicators()
+    {
+        return columnDimensions.contains( DATA_X_DIM_ID );
+    }
+
+    public void setDoIndicators( boolean doIndicators )
+    {
+        if ( doIndicators )
+        {
+            this.columnDimensions.remove( DATA_X_DIM_ID );
+            this.columnDimensions.add( DATA_X_DIM_ID );
+        }
+    }
     
+    public boolean isDoPeriods()
+    {
+        return columnDimensions.contains( PERIOD_DIM_ID );
+    }
+
+    public void setDoPeriods( boolean doPeriods )
+    {
+        if ( doPeriods )
+        {
+            this.columnDimensions.remove( PERIOD_DIM_ID );
+            this.columnDimensions.add( PERIOD_DIM_ID );
+        }
+    }
+    
+    public boolean isDoUnits()
+    {
+        return columnDimensions.contains( ORGUNIT_DIM_ID );
+    }
+    
+    public void setDoUnits( boolean doUnits )
+    {
+        if ( doUnits )
+        {
+            this.columnDimensions.remove( ORGUNIT_DIM_ID );
+            this.columnDimensions.add( ORGUNIT_DIM_ID );
+        }
+    }
+
     public void removeAllDataElements()
     {
         dataElements.clear();
@@ -776,12 +937,32 @@ public class ReportTable
 
     public void removeAllOrganisationUnits()
     {
-        units.clear();
+        organisationUnits.clear();
     }
 
+    public void removeAllDataElementGroups()
+    {
+        dataElementGroups.clear();
+    }
+    
     public void removeAllOrganisationUnitGroups()
     {
         organisationUnitGroups.clear();
+    }
+    
+    public void removeAllColumnDimensions()
+    {
+        columnDimensions.clear();
+    }
+    
+    public void removeAllRowDimensions()
+    {
+        rowDimensions.clear();
+    }
+    
+    public void removeAllFilterDimensions()
+    {
+        filterDimensions.clear();
     }
 
     // -------------------------------------------------------------------------
@@ -792,17 +973,17 @@ public class ReportTable
     {
         List<NameableObject[]> arrays = new ArrayList<NameableObject[]>();
 
-        if ( (doIndicators && crosstab) || (!doIndicators && !crosstab) )
+        if ( (isDoIndicators() && crosstab) || (!isDoIndicators() && !crosstab) )
         {
             arrays.add( allIndicators.toArray( IRT ) );
         }
 
-        if ( (doPeriods && crosstab) || (!doPeriods && !crosstab) )
+        if ( (isDoPeriods() && crosstab) || (!isDoPeriods() && !crosstab) )
         {
             arrays.add( allPeriods.toArray( IRT ) );
         }
 
-        if ( (doUnits && crosstab) || (!doUnits && !crosstab) )
+        if ( (isDoUnits() && crosstab) || (!isDoUnits() && !crosstab) )
         {
             arrays.add( allUnits.toArray( IRT ) );
         }
@@ -925,33 +1106,6 @@ public class ReportTable
     }    
 
     // -------------------------------------------------------------------------
-    // Equals and hashCode
-    // -------------------------------------------------------------------------
-
-    @Override
-    public boolean equals( Object object )
-    {
-        if ( this == object )
-        {
-            return true;
-        }
-
-        if ( object == null )
-        {
-            return false;
-        }
-
-        if ( getClass() != object.getClass() )
-        {
-            return false;
-        }
-
-        final ReportTable other = (ReportTable) object;
-
-        return name.equals( other.getName() );
-    }
-
-    // -------------------------------------------------------------------------
     // Get- and set-methods for persisted properties
     // -------------------------------------------------------------------------
 
@@ -1053,14 +1207,29 @@ public class ReportTable
     @JsonView( {DetailedView.class, ExportView.class} )
     @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0)
     @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0)
-    public List<OrganisationUnit> getUnits()
+    public List<OrganisationUnit> getOrganisationUnits()
     {
-        return units;
+        return organisationUnits;
     }
 
-    public void setUnits( List<OrganisationUnit> units )
+    public void setOrganisationUnits( List<OrganisationUnit> units )
     {
-        this.units = units;
+        this.organisationUnits = units;
+    }
+
+    @JsonProperty
+    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "dataElementGroups", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "dataElementGroup", namespace = DxfNamespaces.DXF_2_0)
+    public List<DataElementGroup> getDataElementGroups()
+    {
+        return dataElementGroups;
+    }
+
+    public void setDataElementGroups( List<DataElementGroup> dataElementGroups )
+    {
+        this.dataElementGroups = dataElementGroups;
     }
 
     @JsonProperty
@@ -1079,6 +1248,48 @@ public class ReportTable
     }
 
     @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "columnDimensions", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "column", namespace = DxfNamespaces.DXF_2_0)
+    public List<String> getColumnDimensions()
+    {
+        return columnDimensions;
+    }
+
+    public void setColumnDimensions( List<String> columnDimensions )
+    {
+        this.columnDimensions = columnDimensions;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "rowDimensions", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "row", namespace = DxfNamespaces.DXF_2_0)
+    public List<String> getRowDimensions()
+    {
+        return rowDimensions;
+    }
+
+    public void setRowDimensions( List<String> rowDimensions )
+    {
+        this.rowDimensions = rowDimensions;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "filterDimensions", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "filter", namespace = DxfNamespaces.DXF_2_0)
+    public List<String> getFilterDimensions()
+    {
+        return filterDimensions;
+    }
+
+    public void setFilterDimensions( List<String> filterDimensions )
+    {
+        this.filterDimensions = filterDimensions;
+    }
+
+    @JsonProperty
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
@@ -1090,45 +1301,6 @@ public class ReportTable
     public void setCategoryCombo( DataElementCategoryCombo categoryCombo )
     {
         this.categoryCombo = categoryCombo;
-    }
-
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
-    public boolean isDoIndicators()
-    {
-        return doIndicators;
-    }
-
-    public void setDoIndicators( boolean doIndicators )
-    {
-        this.doIndicators = doIndicators;
-    }
-
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
-    public boolean isDoPeriods()
-    {
-        return doPeriods;
-    }
-
-    public void setDoPeriods( boolean doPeriods )
-    {
-        this.doPeriods = doPeriods;
-    }
-
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
-    public boolean isDoUnits()
-    {
-        return doUnits;
-    }
-
-    public void setDoUnits( boolean doUnits )
-    {
-        this.doUnits = doUnits;
     }
 
     @JsonProperty( value = "relativePeriods" )
@@ -1157,6 +1329,9 @@ public class ReportTable
         this.reportParams = reportParams;
     }
 
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Integer getSortOrder()
     {
         return sortOrder;
@@ -1178,6 +1353,103 @@ public class ReportTable
     public void setTopLimit( Integer topLimit )
     {
         this.topLimit = topLimit;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isSubtotals()
+    {
+        return subtotals;
+    }
+
+    public void setSubtotals( boolean subtotals )
+    {
+        this.subtotals = subtotals;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getDisplayDensity()
+    {
+        return displayDensity;
+    }
+
+    public void setDisplayDensity( String displayDensity )
+    {
+        this.displayDensity = displayDensity;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getFontSize()
+    {
+        return fontSize;
+    }
+
+    public void setFontSize( String fontSize )
+    {
+        this.fontSize = fontSize;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isUserOrganisationUnit()
+    {
+        return userOrganisationUnit;
+    }
+
+    public void setUserOrganisationUnit( boolean userOrganisationUnit )
+    {
+        this.userOrganisationUnit = userOrganisationUnit;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isUserOrganisationUnitChildren()
+    {
+        return userOrganisationUnitChildren;
+    }
+
+    public void setUserOrganisationUnitChildren( boolean userOrganisationUnitChildren )
+    {
+        this.userOrganisationUnitChildren = userOrganisationUnitChildren;
+    }
+
+    // -------------------------------------------------------------------------
+    // Get- and set-methods for presentation properties
+    // -------------------------------------------------------------------------
+
+    @JsonProperty
+    @JsonSerialize( using = JacksonMapListIdentifiableObjectSerializer.class )
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public Map<String, List<DataElementGroup>> getDataElementGroupSets()
+    {
+        return dataElementGroupSets;
+    }
+
+    public void setDataElementGroupSets( Map<String, List<DataElementGroup>> dataElementGroupSets )
+    {
+        this.dataElementGroupSets = dataElementGroupSets;
+    }
+
+    @JsonProperty
+    @JsonSerialize( using = JacksonMapListIdentifiableObjectSerializer.class )
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public Map<String, List<OrganisationUnitGroup>> getOrganisationUnitGroupSets()
+    {
+        return organisationUnitGroupSets;
+    }
+
+    public void setOrganisationUnitGroupSets( Map<String, List<OrganisationUnitGroup>> organisationUnitGroupSets )
+    {
+        this.organisationUnitGroupSets = organisationUnitGroupSets;
     }
 
     // -------------------------------------------------------------------------
@@ -1321,31 +1593,45 @@ public class ReportTable
             regression = reportTable.isRegression();
             cumulative = reportTable.isCumulative();
             categoryCombo = reportTable.getCategoryCombo() == null ? categoryCombo : reportTable.getCategoryCombo();
-            doIndicators = reportTable.isDoIndicators();
-            doPeriods = reportTable.isDoPeriods();
-            doUnits = reportTable.isDoUnits();
             relatives = reportTable.getRelatives() == null ? relatives : reportTable.getRelatives();
             reportParams = reportTable.getReportParams() == null ? reportParams : reportTable.getReportParams();
             sortOrder = reportTable.getSortOrder() == null ? sortOrder : reportTable.getSortOrder();
             topLimit = reportTable.getTopLimit() == null ? topLimit : reportTable.getTopLimit();
+            subtotals = reportTable.isSubtotals();
+            displayDensity = reportTable.getDisplayDensity();
+            fontSize = reportTable.getFontSize();
+            userOrganisationUnit = reportTable.isUserOrganisationUnit();
+            userOrganisationUnitChildren = reportTable.isUserOrganisationUnitChildren();
 
-            removeAllOrganisationUnitGroups();
-            organisationUnitGroups.addAll( reportTable.getOrganisationUnitGroups() );
-
-            removeAllOrganisationUnits();
-            units.addAll( reportTable.getUnits() );
-
-            removeAllPeriods();
-            periods.addAll( reportTable.getPeriods() );
-
-            removeAllDataSets();
-            dataSets.addAll( reportTable.getDataSets() );
+            removeAllDataElements();
+            dataElements.addAll( reportTable.getDataElements() );
 
             removeAllIndicators();
             indicators.addAll( reportTable.getIndicators() );
 
-            removeAllDataElements();
-            dataElements.addAll( reportTable.getDataElements() );
+            removeAllDataSets();
+            dataSets.addAll( reportTable.getDataSets() );
+
+            removeAllOrganisationUnits();
+            organisationUnits.addAll( reportTable.getOrganisationUnits() );
+
+            removeAllPeriods();
+            periods.addAll( reportTable.getPeriods() );
+
+            removeAllDataElementGroups();
+            dataElementGroups.addAll( reportTable.getDataElementGroups() );
+            
+            removeAllOrganisationUnitGroups();
+            organisationUnitGroups.addAll( reportTable.getOrganisationUnitGroups() );
+            
+            removeAllColumnDimensions();
+            columnDimensions.addAll( reportTable.getColumnDimensions() );
+            
+            removeAllRowDimensions();
+            rowDimensions.addAll( reportTable.getRowDimensions() );
+            
+            removeAllFilterDimensions();
+            filterDimensions.addAll( reportTable.getFilterDimensions() );
         }
     }
 }

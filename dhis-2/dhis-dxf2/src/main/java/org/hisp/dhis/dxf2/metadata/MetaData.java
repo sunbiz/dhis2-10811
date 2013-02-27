@@ -75,6 +75,7 @@ import org.hisp.dhis.validation.ValidationRule;
 import org.hisp.dhis.validation.ValidationRuleGroup;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,6 +84,8 @@ import java.util.List;
 @JacksonXmlRootElement( localName = "metaData", namespace = DxfNamespaces.DXF_2_0 )
 public class MetaData
 {
+    private Date created;
+
     private List<Attribute> attributeTypes = new ArrayList<Attribute>();
 
     private List<Document> documents = new ArrayList<Document>();
@@ -167,6 +170,18 @@ public class MetaData
 
     public MetaData()
     {
+    }
+
+    @JsonProperty
+    @JacksonXmlProperty( isAttribute = true )
+    public Date getCreated()
+    {
+        return created;
+    }
+
+    public void setCreated( Date created )
+    {
+        this.created = created;
     }
 
     @JsonProperty

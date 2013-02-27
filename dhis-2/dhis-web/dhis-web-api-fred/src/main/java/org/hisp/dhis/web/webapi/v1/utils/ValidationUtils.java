@@ -1,7 +1,7 @@
 package org.hisp.dhis.web.webapi.v1.utils;
 
 /*
- * Copyright (c) 2004-2012, University of Oslo
+ * Copyright (c) 2004-2013, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import java.util.Set;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-public class ValidationUtils
+public final class ValidationUtils
 {
     private static ObjectMapper objectMapper;
 
@@ -61,5 +61,9 @@ public class ValidationUtils
         }
 
         return objectMapper.writeValueAsString( constraintViolationsMap );
+    }
+
+    private ValidationUtils()
+    {
     }
 }

@@ -77,12 +77,12 @@ public interface Grid
     /**
      * Returns map of meta-data.
      */
-    Map<String, String> getMetaData();
+    Map<Object, String> getMetaData();
     
     /**
      * Sets map of meta-data.
      */
-    void setMetaData( Map<String, String> metaData );
+    void setMetaData( Map<Object, String> metaData );
     
     /**
      * Adds a key-value pair to meta-data.
@@ -242,6 +242,12 @@ public interface Grid
      * @param addHeader indicates whether to add a grid header for the regression column.
      */
     Grid addCumulativeColumn( int columnIndex, boolean addHeader );
+    
+    /**
+     * Substitutes the values in the meta columns with the mapped value in the
+     * meta-data map.
+     */
+    Grid substituteMetaData();
     
     /**
      * Adds a set of headers based on the column names of the given SQL result set.

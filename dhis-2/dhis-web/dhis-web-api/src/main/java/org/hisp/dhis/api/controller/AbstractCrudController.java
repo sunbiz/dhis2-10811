@@ -75,7 +75,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         WebMetaData metaData = new WebMetaData();
         List<T> entityList = getEntityList( metaData, options );
 
-        ReflectionUtils.invokeSetterMethod( ExchangeClasses.getExportMap().get( getEntityClass() ), metaData, entityList );
+        ReflectionUtils.invokeSetterMethod( ExchangeClasses.getAllExportMap().get( getEntityClass() ), metaData, entityList );
 
         if ( options.hasLinks() )
         {
@@ -98,7 +98,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         WebMetaData metaData = new WebMetaData();
         List<T> entityList = queryForEntityList( metaData, options, query );
 
-        ReflectionUtils.invokeSetterMethod( ExchangeClasses.getExportMap().get( getEntityClass() ), metaData, entityList );
+        ReflectionUtils.invokeSetterMethod( ExchangeClasses.getAllExportMap().get( getEntityClass() ), metaData, entityList );
 
         if ( options.hasLinks() )
         {

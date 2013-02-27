@@ -334,7 +334,7 @@ public class SaveTableAction
             reportTable.setIndicators( indicators );
             reportTable.setDataSets( dataSets );
             reportTable.setPeriods( periods );
-            reportTable.setUnits( units );
+            reportTable.setOrganisationUnits( units );
             reportTable.setOrganisationUnitGroups( organisationUnitGroups );
             reportTable.setCategoryCombo( categoryCombo );
             reportTable.setDoIndicators( doIndicators );

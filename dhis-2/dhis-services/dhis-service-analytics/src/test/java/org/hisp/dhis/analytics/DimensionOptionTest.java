@@ -48,7 +48,7 @@ public class DimensionOptionTest
     private Period peA;
     private OrganisationUnit ouA;
     
-    private List<DimensionOption> options;
+    private List<DimensionItem> options;
     
     @Before
     public void before()
@@ -57,10 +57,10 @@ public class DimensionOptionTest
         peA = createPeriod( "2000Q1" );
         ouA = createOrganisationUnit( 'A' );
         
-        options = new ArrayList<DimensionOption>();
-        options.add( new DimensionOption( DATAELEMENT_DIM_ID, deA ) );
-        options.add( new DimensionOption( PERIOD_DIM_ID, peA ) );
-        options.add( new DimensionOption( ORGUNIT_DIM_ID, ouA ) );
+        options = new ArrayList<DimensionItem>();
+        options.add( new DimensionItem( DATAELEMENT_DIM_ID, deA ) );
+        options.add( new DimensionItem( PERIOD_DIM_ID, peA ) );
+        options.add( new DimensionItem( ORGUNIT_DIM_ID, ouA ) );
     }
     
     @Test
@@ -68,8 +68,8 @@ public class DimensionOptionTest
     {
         String expected = deA.getUid() + DIMENSION_SEP + peA.getUid() + DIMENSION_SEP + ouA.getUid();
         
-        assertEquals( expected, DimensionOption.asOptionKey( options ) );
-        assertEquals( EMPTY, DimensionOption.asOptionKey( null ) );
+        assertEquals( expected, DimensionItem.asItemKey( options ) );
+        assertEquals( EMPTY, DimensionItem.asItemKey( null ) );
     }
     
     @Test
@@ -77,14 +77,14 @@ public class DimensionOptionTest
     {
         String[] expected = { deA.getUid(), peA.getUid(), ouA.getUid() };
         
-        assertArrayEquals( expected, DimensionOption.getOptionIdentifiers( options ) );
-        assertArrayEquals( new String[0], DimensionOption.getOptionIdentifiers( null ) );
+        assertArrayEquals( expected, DimensionItem.getItemIdentifiers( options ) );
+        assertArrayEquals( new String[0], DimensionItem.getItemIdentifiers( null ) );
     }
     
     @Test
     public void testGetPeriodOption()
     {
-        assertEquals( peA, DimensionOption.getPeriodOption( options ) );
-        assertEquals( null, DimensionOption.getPeriodOption( null ) );
+        assertEquals( peA, DimensionItem.getPeriodItem( options ) );
+        assertEquals( null, DimensionItem.getPeriodItem( null ) );
     }
 }

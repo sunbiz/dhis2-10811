@@ -51,13 +51,13 @@ public interface DataStreamSerializable
     public void deSerialize( DataInputStream dataInputStream )
         throws IOException;
     
-    public void serializeVerssion2_8( DataOutputStream dataOutputStream )
+    public void serializeVersion2_8( DataOutputStream dataOutputStream )
         throws IOException;
 
-    public void serializeVerssion2_9( DataOutputStream dataOutputStream )
+    public void serializeVersion2_9( DataOutputStream dataOutputStream )
         throws IOException;
     
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
     throws IOException;
 
 }

@@ -27,12 +27,13 @@ package org.hisp.dhis.oum.action.organisationunitgroup;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.opensymphony.xwork2.Action;
+import java.util.List;
+
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 
-import java.util.List;
+import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -78,6 +79,20 @@ public class ValidateOrganisationUnitGroupAction
         this.name = name;
     }
 
+    private String shortName;
+
+    public void setShortName( String shortName )
+    {
+        this.shortName = shortName;
+    }
+
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -101,7 +116,8 @@ public class ValidateOrganisationUnitGroupAction
 
         if ( name != null && !name.trim().isEmpty() )
         {
-            List<OrganisationUnitGroup> organisationUnitGroups = organisationUnitGroupService.getOrganisationUnitGroupByName( name );
+            List<OrganisationUnitGroup> organisationUnitGroups = organisationUnitGroupService
+                .getOrganisationUnitGroupByName( name );
 
             if ( !organisationUnitGroups.isEmpty() && (id == null || organisationUnitGroups.get( 0 ).getId() != id) )
             {
@@ -111,7 +127,35 @@ public class ValidateOrganisationUnitGroupAction
             }
         }
 
-        message = "OK";
+        if ( shortName != null )
+        {
+            OrganisationUnitGroup match = organisationUnitGroupService.getOrganisationUnitGroupByShortName( shortName );
+
+            if ( match != null && (id == null || match.getId() != id) )
+            {
+                message = i18n.getString( "short_name_in_use" );
+
+                return ERROR;
+            }
+        }
+
+        if ( code != null && !code.trim().isEmpty() )
+        {
+            OrganisationUnitGroup match = organisationUnitGroupService.getOrganisationUnitGroupByCode( code );
+
+            if ( match != null && (id == null || match.getId() != id) )
+            {
+                message = i18n.getString( "code_in_use" );
+
+                return ERROR;
+            }
+        }
+
+        // ---------------------------------------------------------------------
+        // Validation success
+        // ---------------------------------------------------------------------
+
+        message = "everything_is_ok";
 
         return SUCCESS;
     }

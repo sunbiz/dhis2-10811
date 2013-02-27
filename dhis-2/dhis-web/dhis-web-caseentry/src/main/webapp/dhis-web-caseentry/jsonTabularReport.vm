@@ -62,14 +62,6 @@
 			#if( $velocityCount < $size ),#end
 		#end
 	],
-	"fixedAttributes": [
-		#set( $size = ${tabularReport.fixedAttributes.size()} )
-		#set( $fixedAttributes = ${tabularReport.fixedAttributes} )
-		#foreach( ${fixedAttribute} in $!{fixedAttributes} )
-			"fixedAttr_${fixedAttribute}"
-			#if( $velocityCount < $size ),#end
-		#end
-	],
 	"dataElements": [
 		#set( $size = ${tabularReport.programStageDataElements.size()} )
 		#set( $programStageDataElements = ${tabularReport.programStageDataElements} )

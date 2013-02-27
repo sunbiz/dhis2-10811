@@ -27,21 +27,25 @@ package org.hisp.dhis.organisationunit;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.i18n.I18nUtils.getCountByName;
+import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetween;
+import static org.hisp.dhis.i18n.I18nUtils.getObjectsBetweenByName;
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static org.hisp.dhis.i18n.I18nUtils.*;
-
 /**
  * @author Torgeir Lorange Ostby
- * @version $Id: DefaultOrganisationUnitGroupService.java 5017 2008-04-25 09:19:19Z larshelg $
+ * @version $Id: DefaultOrganisationUnitGroupService.java 5017 2008-04-25
+ *          09:19:19Z larshelg $
  */
 @Transactional
 public class DefaultOrganisationUnitGroupService
@@ -60,7 +64,8 @@ public class DefaultOrganisationUnitGroupService
 
     private GenericIdentifiableObjectStore<OrganisationUnitGroupSet> organisationUnitGroupSetStore;
 
-    public void setOrganisationUnitGroupSetStore( GenericIdentifiableObjectStore<OrganisationUnitGroupSet> organisationUnitGroupSetStore )
+    public void setOrganisationUnitGroupSetStore(
+        GenericIdentifiableObjectStore<OrganisationUnitGroupSet> organisationUnitGroupSetStore )
     {
         this.organisationUnitGroupSetStore = organisationUnitGroupSetStore;
     }
@@ -121,7 +126,26 @@ public class DefaultOrganisationUnitGroupService
 
     public List<OrganisationUnitGroup> getOrganisationUnitGroupByName( String name )
     {
-        return new ArrayList<OrganisationUnitGroup>( i18n( i18nService, organisationUnitGroupStore.getAllEqName( name ) ) );
+        return new ArrayList<OrganisationUnitGroup>(
+            i18n( i18nService, organisationUnitGroupStore.getAllEqName( name ) ) );
+    }
+
+    public OrganisationUnitGroup getOrganisationUnitGroupByCode( String code )
+    {
+        return i18n( i18nService, organisationUnitGroupStore.getByCode( code ) );
+    }
+
+    public OrganisationUnitGroup getOrganisationUnitGroupByShortName( String shortName )
+    {
+        List<OrganisationUnitGroup> organisationUnitGroups = new ArrayList<OrganisationUnitGroup>(
+            organisationUnitGroupStore.getAllEqShortName( shortName ) );
+
+        if ( organisationUnitGroups.isEmpty() )
+        {
+            return null;
+        }
+
+        return i18n( i18nService, organisationUnitGroups.get( 0 ) );
     }
 
     public Collection<OrganisationUnitGroup> getAllOrganisationUnitGroups()
@@ -215,7 +239,8 @@ public class DefaultOrganisationUnitGroupService
 
     public List<OrganisationUnitGroupSet> getOrganisationUnitGroupSetByName( String name )
     {
-        return new ArrayList<OrganisationUnitGroupSet>( i18n( i18nService, organisationUnitGroupSetStore.getAllEqName( name ) ) );
+        return new ArrayList<OrganisationUnitGroupSet>( i18n( i18nService,
+            organisationUnitGroupSetStore.getAllEqName( name ) ) );
     }
 
     public Collection<OrganisationUnitGroupSet> getAllOrganisationUnitGroupSets()
@@ -262,7 +287,8 @@ public class DefaultOrganisationUnitGroupService
         return null;
     }
 
-    public Collection<OrganisationUnitGroupSet> getCompulsoryOrganisationUnitGroupSetsNotAssignedTo( OrganisationUnit organisationUnit )
+    public Collection<OrganisationUnitGroupSet> getCompulsoryOrganisationUnitGroupSetsNotAssignedTo(
+        OrganisationUnit organisationUnit )
     {
         Collection<OrganisationUnitGroupSet> groupSets = new ArrayList<OrganisationUnitGroupSet>();
 
@@ -292,7 +318,8 @@ public class DefaultOrganisationUnitGroupService
         return getObjectsBetween( i18nService, organisationUnitGroupSetStore, first, max );
     }
 
-    public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSetsBetweenByName( String name, int first, int max )
+    public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSetsBetweenByName( String name, int first,
+        int max )
     {
         return getObjectsBetweenByName( i18nService, organisationUnitGroupSetStore, name, first, max );
     }

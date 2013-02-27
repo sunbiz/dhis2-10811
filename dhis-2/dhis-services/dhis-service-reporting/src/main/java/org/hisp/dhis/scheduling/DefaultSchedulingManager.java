@@ -33,6 +33,7 @@ import static org.hisp.dhis.system.scheduling.Scheduler.STATUS_NOT_STARTED;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.scheduling.Scheduler;
 
@@ -72,24 +73,23 @@ public class DefaultSchedulingManager
     // -------------------------------------------------------------------------
 
     public void scheduleTasks()
-    {
-        Map<String, String> keyCronMap = getScheduledTasks();
+    {        
+        ListMap<String, String> cronKeyMap = getCronKeyMap();
         
-        for ( String key : keyCronMap.keySet() )
+        for ( String cron : cronKeyMap.keySet() )
         {
-            String cron = keyCronMap.get( key );
-            Runnable task = tasks.get( key );
+            ScheduledTasks scheduledTasks = getScheduledTasksForCron( cron, cronKeyMap );
             
-            if ( cron != null && task != null )
+            if ( !scheduledTasks.isEmpty() )
             {
-                scheduler.scheduleTask( key, task, cron );
+                scheduler.scheduleTask( cron, scheduledTasks, cron );
             }
         }
     }
     
-    public void scheduleTasks( Map<String, String> keyCronMap )
+    public void scheduleTasks( ListMap<String, String> cronKeyMap )
     {
-        systemSettingManager.saveSystemSetting( KEY_SCHEDULED_TASKS, new HashMap<String, String>( keyCronMap ) );
+        systemSettingManager.saveSystemSetting( KEY_SCHEDULED_TASKS, new ListMap<String, String>( cronKeyMap ) );
         
         scheduleTasks();
     }
@@ -101,36 +101,43 @@ public class DefaultSchedulingManager
         scheduler.stopAllTasks();
     }
     
-    public void executeTasks()
-    {
-        Map<String, String> keyCronMap = getScheduledTasks();
-        
-        for ( String key : keyCronMap.keySet() )
-        {
-            Runnable task = tasks.get( key );
-            
-            if ( task != null )
-            {
-                scheduler.executeTask( task );
-            }
-        }
-    }
-    
     @SuppressWarnings("unchecked")
-    public Map<String, String> getScheduledTasks()
+    public ListMap<String, String> getCronKeyMap()
     {
-        return (Map<String, String>) systemSettingManager.getSystemSetting( KEY_SCHEDULED_TASKS, new HashMap<String, String>() );
+        return (ListMap<String, String>) systemSettingManager.getSystemSetting( KEY_SCHEDULED_TASKS, new ListMap<String, String>() );
     }
     
     public String getTaskStatus()
     {
-        Map<String, String> keyCronMap = getScheduledTasks();
-                
-        if ( keyCronMap.size() == 0 )
+        ListMap<String, String> cronKeyMap = getCronKeyMap();
+
+        if ( cronKeyMap.size() == 0 )
         {
             return STATUS_NOT_STARTED;
         }
         
-        return scheduler.getTaskStatus( keyCronMap.keySet().iterator().next() );
+        String firstTask = cronKeyMap.keySet().iterator().next();
+        
+        return scheduler.getTaskStatus( firstTask );
+    }
+
+    // -------------------------------------------------------------------------
+    // Supportive methods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns a ScheduledTasks object for the given cron expression. The
+     * ScheduledTasks object contains a list of tasks.
+     */
+    private ScheduledTasks getScheduledTasksForCron( String cron, ListMap<String, String> cronKeyMap )
+    {
+        ScheduledTasks scheduledTasks = new ScheduledTasks();
+        
+        for ( String key : cronKeyMap.get( cron ) )
+        {
+            scheduledTasks.addTask( tasks.get( key ) );
+        }
+        
+        return scheduledTasks;
     }
 }

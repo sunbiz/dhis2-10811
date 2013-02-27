@@ -1,20 +1,25 @@
 
 <h3>$i18n.getString( "assign_validation_for_programs" ) </h3>
+<h4>$validationCriteria.name</h4>
 
 <form action='defineProgramsForValidationCriteria.action' method='post' onsubmit="selectAllById('programIds');">
 	<input type='hidden' id='criteriaId' name='criteriaId' value="$validationCriteria.id">
 	<table>
-		<tr>
-		  <th colspan="3">$i18n.getString('program')</th>
-		</tr>
-		<tr>
-		  <td><label>$i18n.getString('available_program')</label></td>
-		  <td>&nbsp;</td>
-		  <td><label>$i18n.getString('selected_program')</label></td>
-		</tr>
+		<colgroup>
+			<col style="width:400px;"/>
+			<col/>
+			<col style="width:400px;"/>
+		</colgroup>
+		<thead>
+			<tr>
+			  <th>$i18n.getString('available_program')</th>
+			  <th>$i18n.getString('filter')</th>
+			  <th>$i18n.getString('selected_program')</th>
+			</tr>
+		</thead>
 		<tr>
 			<td>
-				<select multiple id='avalableProgramIds' name='avalableProgramIds' size="8" style="width:30em " ondblclick="moveSelectedById('avalableProgramIds', 'programIds');">
+				<select multiple id='avalableProgramIds' name='avalableProgramIds' size="15" style="width:100%;" ondblclick="moveSelectedById('avalableProgramIds', 'programIds');">
 					#foreach($p in $availablePrograms)
 					<option value='$p.id'>$p.name</option>
 					#end
@@ -27,7 +32,7 @@
 				<input type="button" value="&lt;&lt;" onclick="moveAllById('programIds', 'avalableProgramIds');" style="width:42px">
 			</td>
 			<td>
-				<select multiple id='programIds' name='programIds' size="8" style="width:30em " ondblClick="moveSelectedById('programIds', 'avalableProgramIds');">
+				<select multiple id='programIds' name='programIds' size="15" style="width:100%;" ondblClick="moveSelectedById('programIds', 'avalableProgramIds');">
 					#foreach($p in $selectedPrograms)
 					<option value='$p.id'>$p.name</option>
 					#end

@@ -27,12 +27,11 @@ package org.hisp.dhis.user;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
@@ -44,15 +43,17 @@ import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * @author Nguyen Hong Duc
  */
-@JacksonXmlRootElement( localName = "user", namespace = DxfNamespaces.DXF_2_0)
+@JacksonXmlRootElement( localName = "user", namespace = DxfNamespaces.DXF_2_0 )
 public class User
     extends BaseIdentifiableObject
 {
@@ -151,23 +152,23 @@ public class User
     {
         return firstName + " " + surname;
     }
-    
+
     /**
      * Checks whether the profile has been filled, which is defined as three
      * not-null properties out of all optional properties.
      */
     public boolean isProfileFilled()
     {
-        Object[] props = { jobTitle, introduction, gender, birthday, 
+        Object[] props = { jobTitle, introduction, gender, birthday,
             nationality, employer, education, interests, languages };
-        
+
         int count = 0;
-        
+
         for ( Object prop : props )
         {
-            count = prop != null ? ( count + 1 ) : count;
+            count = prop != null ? (count + 1) : count;
         }
-        
+
         return count > 3;
     }
 
@@ -176,7 +177,7 @@ public class User
      * Null is returned if the user has no organisation units. Which
      * organisation unit to return is undefined if the user has multiple
      * organisation units.
-     * 
+     *
      * @return an organisation unit associated with the user.
      */
     public OrganisationUnit getOrganisationUnit()
@@ -215,7 +216,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getFirstName()
     {
         return firstName;
@@ -228,7 +229,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getSurname()
     {
         return surname;
@@ -241,7 +242,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getEmail()
     {
         return email;
@@ -254,7 +255,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getJobTitle()
     {
         return jobTitle;
@@ -267,7 +268,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getPhoneNumber()
     {
         return phoneNumber;
@@ -280,7 +281,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getIntroduction()
     {
         return introduction;
@@ -293,7 +294,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getGender()
     {
         return gender;
@@ -306,7 +307,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public Date getBirthday()
     {
         return birthday;
@@ -319,7 +320,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getNationality()
     {
         return nationality;
@@ -332,7 +333,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getEmployer()
     {
         return employer;
@@ -345,7 +346,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getEducation()
     {
         return education;
@@ -358,7 +359,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getInterests()
     {
         return interests;
@@ -371,7 +372,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getLanguages()
     {
         return languages;
@@ -394,7 +395,7 @@ public class User
 
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public UserCredentials getUserCredentials()
     {
         return userCredentials;
@@ -418,8 +419,8 @@ public class User
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0 )
     public Collection<OrganisationUnit> getOrganisationUnits()
     {
         return organisationUnits;
@@ -432,8 +433,8 @@ public class User
 
     @JsonProperty( value = "attributes" )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0 )
     public Set<AttributeValue> getAttributeValues()
     {
         return attributeValues;

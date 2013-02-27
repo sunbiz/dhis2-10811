@@ -99,7 +99,7 @@ public class StdDevOutlierAnalysisService
                         Double stdDev = standardDeviations.get( unit );
                         Double avg = averages.get( unit );
                         
-                        if ( stdDev != null && avg != null )
+                        if ( stdDev != null && stdDevFactor != null && avg != null )
                         {
                             lowBoundMap.put( unit, (int) MathUtils.getLowBound( stdDev, stdDevFactor, avg ) );
                             highBoundMap.put( unit, (int) MathUtils.getHighBound( stdDev, stdDevFactor, avg ) );                            

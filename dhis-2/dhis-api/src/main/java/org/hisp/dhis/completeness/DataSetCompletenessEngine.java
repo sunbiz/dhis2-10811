@@ -29,7 +29,6 @@ package org.hisp.dhis.completeness;
 
 import java.util.Collection;
 
-import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.scheduling.TaskId;
 
 /**
@@ -39,8 +38,7 @@ public interface DataSetCompletenessEngine
 {
     final String ID = DataSetCompletenessEngine.class.getName();
     
-    void exportDataSetCompleteness( Collection<Integer> dataSetIds, RelativePeriods relatives,
-        Collection<Integer> organisationUnitIds, TaskId id );
+    void exportDataSetCompleteness( Collection<Integer> periodIds, TaskId id );
     
     void exportDataSetCompleteness( Collection<Integer> dataSetIds, Collection<Integer> periodIds,
         Collection<Integer> organisationUnitIds, TaskId id );

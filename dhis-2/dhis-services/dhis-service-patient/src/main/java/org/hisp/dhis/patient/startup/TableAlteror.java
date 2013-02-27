@@ -167,6 +167,20 @@ public class TableAlteror
         executeSql( "ALTER TABLE dataset DROP CONSTRAINT program_name_key" );
         executeSql( "UPDATE userroleauthorities SET authority='F_PROGRAM_PUBLIC_ADD' WHERE authority='F_PROGRAM_ADD'" );
         
+        executeSql( "UPDATE patientaudit SET accessedModule='patient_dashboard' WHERE accessedModule is null" );
+        executeSql( "UPDATE patienttabularreport SET userOrganisationUnit=false WHERE userOrganisationUnit is null" );
+        executeSql( "UPDATE patienttabularreport SET userOrganisationUnitChildren=false WHERE userOrganisationUnitChildren is null" );
+        executeSql( "UPDATE patientattribute SET valueType='date' WHERE valueType='DATE'" );
+        executeSql( "UPDATE patientattribute SET valueType='string' WHERE valueType='TEXT'" );
+        executeSql( "UPDATE patientattribute SET valueType='number' WHERE valueType='NUMBER'" );
+        executeSql( "UPDATE patientattribute SET valueType='bool' WHERE valueType='YES/NO'" );
+        executeSql( "UPDATE patientattribute SET valueType='combo' WHERE valueType='COMBO'" );
+        executeSql( "UPDATE patientattribute SET valueType='calculated' WHERE valueType='CALCULATED'" );
+        executeSql( "UPDATE patientidentifiertype SET type='string' WHERE type='text'" );
+
+        executeSql( "UPDATE program SET onlyEnrollOnce='false' WHERE onlyEnrollOnce is null" );
+        executeSql( "UPDATE programStage SET captureCoordinates='false' WHERE captureCoordinates is null" );
+        
         updateUid();
     }
 

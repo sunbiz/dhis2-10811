@@ -1,6 +1,6 @@
 <script type="text/javascript">
     jQuery( document ).ready( function () {
-        datePickerInRange( 'startDate', 'endDate', false, false );
+        datePickerInRange( 'startDate', 'endDate', true, true );
         disableCriteriaDiv();
     } );
 </script>
@@ -66,12 +66,12 @@
 			<tr id='minimized-advanced-search' class="hidden">
 				<td align='right' colspan='5' height="50px">
 					$i18n.getString('you_have_active_filters')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<input type="button" class='large-button' value="$i18n.getString('show_all')" onclick='showFilterForm()'>
-					<input type="button" class='large-button' value="$i18n.getString('clear_all')" onclick='removeAllOption()'>&nbsp;
+					<input type="button" class='normal-button' value="$i18n.getString('show_all')" onclick='showFilterForm()'>
+					<input type="button" class='normal-button' value="$i18n.getString('clear_all')" onclick='removeAllOption()'>&nbsp;
 				</td>
 			</tr>
 		</table>
-		<table id='advanced-search' class='hidden'>
+		<table id='advanced-search' class='hidden advanced-search'>
 			<col/>
 			<col/>
 			<col/>
@@ -94,7 +94,7 @@
                     </td>
                     <td>
                         <input type="text" id="searchText" name="searchText" value="$!searchText">
-                        <input type="button" class='large-button' name="clearSearchBtn" value='$i18n.getString( "clear" )' onclick="removeAttributeOption('advSearchBox0');" disabled>
+                        <input type="button" class='normal-button' name="clearSearchBtn" value='$i18n.getString( "clear" )' onclick="removeAttributeOption('advSearchBox0');" disabled>
                     </td>
                 </tr>
 
@@ -102,8 +102,8 @@
             <tfoot>
             <tr>
                 <td colspan="2">
-                    <input type="button" class='large-button' id='addSearchOptionBtn' name='addSearchOptionBtn' value="$i18n.getString('add')" onclick='addAttributeOption()' />
-                    <input type="button" class='large-button' id='clearAllBtn' name='clearAllBtnaddSearchOptionBtn' value="$i18n.getString('clear_all')" onclick='removeAllOption()' />
+                    <input type="button" class='normal-button' id='addSearchOptionBtn' name='addSearchOptionBtn' value="$i18n.getString('add')" onclick='addAttributeOption()' />
+                    <input type="button" class='normal-button' id='clearAllBtn' name='clearAllBtnaddSearchOptionBtn' value="$i18n.getString('clear_all')" onclick='removeAllOption()' />
                 </td>
             </tr>
             </tfoot>
@@ -114,10 +114,10 @@
 <div id='listDiv'></div>
 
 <div id='dataEntryInfor' class='hidden'>
-	<table style="width:580px;" class="listTable">
+	<table style="width:600px;" class="listTable">
 			<tr>
-				<th><span id="reportDateDescriptionField2">$i18n.getString( "report_date" )</span> <em title="$i18n.getString( "required" )" class="required">*</em> </th>
-				<th><input type="text" id="executionDate" name="executionDate" onchange="addNewEvent();"></th>
+				<th class='coordinates1'><span id="reportDateDescriptionField2">$i18n.getString( "report_date" )</span> <em title="$i18n.getString( "required" )" class="required">*</em> </th>
+				<th colspan="3"><input type="text" id="executionDate" name="executionDate" onchange="addNewEvent();" style="margin-left:10px;" ></th>
 					<script type="text/javascript">
 					   datePickerValid( 'executionDate', false );
 					</script> 
@@ -150,7 +150,7 @@
     var i18n_saving_value_failed_error_code = '$encoder.jsEscape( $i18n.getString( "saving_value_failed_error_code" ) , "'")';
     var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")';
     var i18n_complete_confirm_message = '$encoder.jsEscape( $i18n.getString( "complete_confirm_message" ) , "'")';
-    var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
+	var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
     var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
 	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
 	var i18n_date_is_greater_then_or_equals_due_date = '$encoder.jsEscape( $i18n.getString( "date_is_greater_then_or_equals_due_date" ) , "'")';
@@ -178,6 +178,7 @@
 	var i18n_clear_filter = '$encoder.jsEscape( $i18n.getString( "clear_filter" ) , "'")';
 	var i18n_specify_a_date = '$encoder.jsEscape( $i18n.getString( "specify_a_date" ) , "'")';
 	var i18n_clear = '$encoder.jsEscape( $i18n.getString( "clear" ) , "'")';
+	var i18n_insert_a_report_date = '$encoder.jsEscape( $i18n.getString( "insert_a_report_date" ) , "'")';
 	
 	isAjax = true;
 	contentDiv = '';

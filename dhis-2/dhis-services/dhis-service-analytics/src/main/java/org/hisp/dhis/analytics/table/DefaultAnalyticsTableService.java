@@ -27,7 +27,10 @@ package org.hisp.dhis.analytics.table;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.scheduling.TaskCategory.DATAMART;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -43,11 +46,13 @@ import org.hisp.dhis.analytics.AnalyticsTableService;
 import org.hisp.dhis.common.IdentifiableObjectUtils;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.period.Cal;
+import org.hisp.dhis.scheduling.TaskId;
+import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.util.Clock;
 import org.hisp.dhis.system.util.ConcurrentUtils;
 import org.hisp.dhis.system.util.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 
 public class DefaultAnalyticsTableService
     implements AnalyticsTableService
@@ -66,52 +71,61 @@ public class DefaultAnalyticsTableService
     
     @Autowired
     private DataElementService dataElementService;
+    
+    @Autowired
+    private Notifier notifier;
 
     // -------------------------------------------------------------------------
     // Implementation
     // -------------------------------------------------------------------------
-
-    //TODO generateOrganisationUnitStructures
-    //     generateOrganisationUnitGroupSetTable
-    //     generatePeriodStructure
     
-    @Async
-    public Future<?> update()
+    public void update( boolean last3YearsOnly, TaskId taskId )
     {
-        Clock clock = new Clock().startClock().logTime( "Starting update..." );
+        Clock clock = new Clock().startClock().logTime( "Starting update" );
         
-        final Date earliest = tableManager.getEarliestData();
+        final Date threeYrsAgo = new Cal().subtract( Calendar.YEAR, 2 ).set( 1, 1 ).time();
+        final Date earliest = last3YearsOnly ? threeYrsAgo : tableManager.getEarliestData();
         final Date latest = tableManager.getLatestData();
         final String tableName = tableManager.getTableName();
         final List<String> tables = PartitionUtils.getTempTableNames( earliest, latest, tableName );        
         clock.logTime( "Got partition tables: " + tables + ", earliest: " + earliest + ", latest: " + latest );
         
-        //dropTables( tables );
+        notifier.notify( taskId, DATAMART, "Creating analytics tables" );
         
         createTables( tables );
+        
         clock.logTime( "Created analytics tables" );
+        notifier.notify( taskId, DATAMART, "Populating analytics tables" );
         
         populateTables( tables );
+        
         clock.logTime( "Populated analytics tables" );
-
+        notifier.notify( taskId, DATAMART, "Pruned analytics tables" );
+        
         pruneTables( tables );
+        
         clock.logTime( "Pruned analytics tables" );
+        notifier.notify( taskId, DATAMART, "Applying aggregation levels" );
         
         applyAggregationLevels( tables );
+        
         clock.logTime( "Applied aggregation levels" );
+        notifier.notify( taskId, DATAMART, "Creating indexes" );
         
         createIndexes( tables );
-        clock.logTime( "Created all indexes" );
+        
+        clock.logTime( "Created indexes" );
+        notifier.notify( taskId, DATAMART, "Vacuuming tables" );
         
         vacuumTables( tables );
+        
         clock.logTime( "Vacuumed tables" );
+        notifier.notify( taskId, DATAMART, "Swapping analytics tables" );
         
         swapTables( tables );
-        clock.logTime( "Swapped analytics tables" );
         
-        clock.logTime( "Analytics tables update done" );
-        
-        return null;
+        clock.logTime( "Table update done" );
+        notifier.notify( taskId, DATAMART, "Table update done" );
     }
 
     // -------------------------------------------------------------------------

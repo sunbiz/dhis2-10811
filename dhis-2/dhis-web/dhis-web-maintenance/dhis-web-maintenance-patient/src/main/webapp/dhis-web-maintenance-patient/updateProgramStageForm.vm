@@ -56,6 +56,11 @@
 			<tr><th colspan="2">$i18n.getString( "form_details" )</th></tr>
 	
 			<tr>
+				<td><label>$i18n.getString( "capture_coordinates" )</label></td>
+				<td><input type="checkbox" id="captureCoordinates" name="captureCoordinates" value='true' #if( $programStage.captureCoordinates && $programStage.captureCoordinates=='true' ) checked #end /></td>
+			</tr>
+			
+			<tr>
 				<td><label>$i18n.getString( "complete_allowed_only_if_validation_passes" )</label></td>
 				<td><input type="checkbox" id="validCompleteOnly" name="validCompleteOnly" value='true' #if( $programStage.validCompleteOnly && $programStage.validCompleteOnly=='true' ) checked #end /></td>
 			</tr>

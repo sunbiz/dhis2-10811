@@ -9,58 +9,7 @@
 		jQuery("#name").focus();
 		jQuery( "table.listTable tbody tr td[allowRename=true]" ).bind( "click", showRename );
 	});
-	
-	function showRename( event )
-	{
-		var jqsource = jQuery( "#" + this.id );
-		var name = jqsource.html();
-		_input = "<input type='text' style='width:" + name.length + "em'";
-		_input += " onkeypress='renameByEnter( event, " + '"' + this.id + '"' + ', "' + name + '"' + ", this.value )'";
-		_input += " onblur='renameByBlur( " + '"' + this.id + '"' + ', "' + name + '"' + ", this.value )'/>";
 
-		jqsource.html( _input );
-		jqsource.unbind( "click" );
-		jqsource.find( "input" ).focus();
-		jqsource.find( "input" ).val( name );
-	}
-	
-	function renameByEnter( event, id, _old, _new )
-	{
-		var key = event.keyCode || event.charCode || event.which;
-	
-		if ( key == 13 || key == 1 ) // Enter
-		{
-			var jqsource = jQuery( "#" + id );
-			jqsource.bind( "click", showRename );
-
-			if ( _old != _new )
-			{
-				jQuery.postUTF8( "renameOrganisationUnit.action",
-				{
-					id: id.substring(2, id.length),
-					name: _new
-				}, function( json )
-				{
-					if ( json.response == "success" )
-					{
-						jqsource.html( _new );
-					} else {
-						jqsource.html( _old );
-						showWarningMessage( json.message );
-					}
-				} );
-			}
-			else { jqsource.html( _old ); }
-		}
-	}
-	
-	function renameByBlur( id, _old, _new )
-	{
-		var jqsource = jQuery( "#" + id );
-		jqsource.bind( "click", showRename );
-		jqsource.html( _old );	
-	}
-	
 	var previousName = '';
 	var adding_the_org_unit_failed = '$encoder.jsEscape( $i18n.getString( "adding_the_org_unit_failed" ) , "'" )';
 	var none = '$encoder.jsEscape( $i18n.getString( "none" ) , "'" )';
@@ -93,15 +42,16 @@
     </tr>
 	#foreach ( $groupSet in $groupSets )
     <tr>
-		<td style="width:200px">$encoder.htmlEncode( $groupSet.name )</td>			
-		<td>
+		<td style="width:200px">$encoder.htmlEncode( $groupSet.displayName )</td>			
+		<td id="td${groupSet.id}">
 			<select id="selectedGroups" name="selectedGroups" style="min-width: 244px;">
 				<option value="-1">[ $i18n.getString( "select_group" ) ]</option>
 				#foreach ( $group in $groupSet.getSortedGroups() )
-				<option value="$group.id">$group.name</option>
+				<option value="$group.id">$group.displayName</option>
 				#end
 			</select>
 		</td>
+		<td><input type="hidden" name="orgUnitGroupSets" value="$groupSet.id"/></td>
 		<td>
 			<input type="submit" name="save" value="$i18n.getString( 'add' )" style="width: 10em;" />
 		</td>
@@ -139,8 +89,12 @@
                 </thead>
 				<tbody id="list">
 				#foreach( $organisationUnit in $organisationUnits )
-				<tr id="tr${organisationUnit.id}">
-					<td id="td${organisationUnit.id}" allowRename="true">$encoder.htmlEncode( $organisationUnit.name )</td>
+				#set( $unitId = ${organisationUnit.uuid} )
+				#if( !$unitId )
+					$unitId = ${organisationUnit.id}
+				#end
+				<tr id="tr${unitId}">
+					<td id="td${unitId}" allowRename="true">$encoder.htmlEncode( $organisationUnit.name )</td>
 					<td>
 						<select style="width:190px">
 							#foreach( $group in $organisationUnit.groups )
@@ -149,11 +103,11 @@
 						</select>
 					</td>
 					<td style="text-align:right">
-						<!--a href="showUpdateOrganisationUnitForm.action?id=$organisationUnit.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a-->
+						<a href="javascript:showUpdateOrganisationUnit( '$unitId' )" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
 						#if( $organisationUnit.children.size() == 0 && $auth.hasAccess( "dhis-web-maintenance-organisationunit", "removeOrganisationUnit" ) )
-						<a href="javascript:removeOrganisationUnit( $organisationUnit.id, '$encoder.jsEncode( $organisationUnit.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+						<a href="javascript:removeOrganisationUnit( '$unitId', '$encoder.jsEncode( $organisationUnit.name )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
 						#else <img src="../images/delete-denied.png" alt="$i18n.getString( 'remove' )"/> #end
-						<a href="javascript:showOrganisationUnitDetails( $organisationUnit.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
+						<a href="javascript:showOrganisationUnitDetails( '$unitId' )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
 					</td>
 				</tr>
 				#end

@@ -1,7 +1,7 @@
 package org.hisp.dhis.web.webapi.v1.controller;
 
 /*
- * Copyright (c) 2004-2012, University of Oslo
+ * Copyright (c) 2004-2013, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -90,9 +92,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@Controller(value = "facility-controller-" + FredController.PREFIX)
-@RequestMapping(FacilityController.RESOURCE_PATH)
-@PreAuthorize("hasRole('M_dhis-web-api-fred') or hasRole('ALL')")
+@Controller( value = "facility-controller-" + FredController.PREFIX )
+@RequestMapping( FacilityController.RESOURCE_PATH )
+@PreAuthorize( "hasRole('M_dhis-web-api-fred') or hasRole('ALL')" )
 public class FacilityController
 {
     public static final String RESOURCE_PATH = "/" + FredController.PREFIX + "/facilities";
@@ -171,7 +173,7 @@ public class FacilityController
         // simple field filtering
         if ( !strings.contains( "id" ) )
         {
-            facility.setId( null );
+            facility.setUuid( null );
         }
 
         if ( !strings.contains( "name" ) )
@@ -201,7 +203,7 @@ public class FacilityController
 
         if ( !strings.contains( "url" ) )
         {
-            facility.setUrl( null );
+            facility.setHref( null );
         }
 
         if ( !strings.contains( "identifiers" ) )
@@ -238,23 +240,40 @@ public class FacilityController
         return facility;
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public String readFacilities( Model model, @RequestParam(required = false) Boolean active,
-        @RequestParam(value = "updatedSince", required = false) Date lastUpdated,
-        @RequestParam(value = "allProperties", required = false, defaultValue = "true") Boolean allProperties,
-        @RequestParam(value = "fields", required = false) String fields,
-        @RequestParam(value = "limit", required = false) Integer limit,
-        @RequestParam(value = "offset", required = false, defaultValue = "0") Integer offset,
+    @RequestMapping( value = "", method = RequestMethod.GET )
+    public String readFacilities( Model model, @RequestParam( required = false ) Boolean active,
+        @RequestParam( value = "updatedSince", required = false ) Date lastUpdated,
+        @RequestParam( value = "allProperties", required = false, defaultValue = "true" ) Boolean allProperties,
+        @RequestParam( value = "fields", required = false ) String fields,
+        @RequestParam( value = "limit", required = false, defaultValue = "25" ) String limit,
+        @RequestParam( value = "offset", required = false, defaultValue = "0" ) Integer offset,
         HttpServletRequest request )
     {
         Facilities facilities = new Facilities();
         List<OrganisationUnit> allOrganisationUnits;
 
+        Integer limitValue = 25;
+
+        if ( limit.equalsIgnoreCase( "off" ) )
+        {
+            limitValue = null;
+        }
+        else
+        {
+            try
+            {
+                limitValue = Integer.parseInt( limit );
+            }
+            catch ( NumberFormatException ignored )
+            {
+            }
+        }
+
         if ( active == null && lastUpdated == null )
         {
-            if ( limit != null )
+            if ( limitValue != null )
             {
-                allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitsBetween( offset, limit ) );
+                allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitsBetween( offset, limitValue ) );
             }
             else
             {
@@ -263,10 +282,10 @@ public class FacilityController
         }
         else if ( active == null )
         {
-            if ( limit != null )
+            if ( limitValue != null )
             {
                 allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.
-                    getOrganisationUnitsBetweenByLastUpdated( lastUpdated, offset, limit ) );
+                    getOrganisationUnitsBetweenByLastUpdated( lastUpdated, offset, limitValue ) );
             }
             else
             {
@@ -275,9 +294,9 @@ public class FacilityController
         }
         else if ( lastUpdated == null )
         {
-            if ( limit != null )
+            if ( limitValue != null )
             {
-                allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitsBetweenByStatus( active, offset, limit ) );
+                allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitsBetweenByStatus( active, offset, limitValue ) );
             }
             else
             {
@@ -286,16 +305,20 @@ public class FacilityController
         }
         else
         {
-            if ( limit != null )
+            if ( limitValue != null )
             {
                 allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.
-                    getOrganisationUnitsBetweenByStatusLastUpdated( active, lastUpdated, offset, limit ) );
+                    getOrganisationUnitsBetweenByStatusLastUpdated( active, lastUpdated, offset, limitValue ) );
             }
             else
             {
                 allOrganisationUnits = new ArrayList<OrganisationUnit>( organisationUnitService.getAllOrganisationUnitsByStatusLastUpdated( active, lastUpdated ) );
             }
         }
+
+        facilities.getMeta().put( "limit", limitValue );
+        facilities.getMeta().put( "offset", offset );
+        facilities.getMeta().put( "total", organisationUnitService.getNumberOfOrganisationUnits() );
 
         Collections.sort( allOrganisationUnits, IdentifiableObjectNameComparator.INSTANCE );
         List<OrganisationUnitLevel> organisationUnitLevels = organisationUnitService.getOrganisationUnitLevels();
@@ -321,17 +344,26 @@ public class FacilityController
         return FredController.PREFIX + "/layout";
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping( value = "/{id}", method = RequestMethod.GET )
     public String readFacility( Model model, @PathVariable String id,
-        @RequestParam(value = "allProperties", required = false, defaultValue = "true") Boolean allProperties,
-        @RequestParam(value = "fields", required = false) String fields,
+        @RequestParam( value = "allProperties", required = false, defaultValue = "true" ) Boolean allProperties,
+        @RequestParam( value = "fields", required = false ) String fields,
         HttpServletRequest request )
     {
-        OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( id );
+        OrganisationUnit organisationUnit;
+
+        if ( id.length() == 11 )
+        {
+            organisationUnit = organisationUnitService.getOrganisationUnit( id );
+        }
+        else
+        {
+            organisationUnit = organisationUnitService.getOrganisationUnitByUuid( id );
+        }
 
         if ( organisationUnit == null )
         {
-            throw new HttpServerErrorException( HttpStatus.NOT_FOUND );
+            throw new HttpClientErrorException( HttpStatus.NOT_FOUND );
         }
 
         List<OrganisationUnitLevel> organisationUnitLevels = organisationUnitService.getOrganisationUnitLevels();
@@ -360,12 +392,23 @@ public class FacilityController
 
     private void setAccessRights( Model model )
     {
-        Set<String> authorities = currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities();
+        // TODO fix this, a proper mock currentuserservice should be implemented
+        if ( currentUserService != null && currentUserService.getCurrentUser() != null )
+        {
+            Set<String> authorities = currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities();
 
-        model.addAttribute( "canCreate", authorities.contains( "F_FRED_CREATE" ) || currentUserService.currentUserIsSuper() );
-        model.addAttribute( "canRead", authorities.contains( "M-dhis-web-api-fred" ) || currentUserService.currentUserIsSuper() );
-        model.addAttribute( "canUpdate", authorities.contains( "F_FRED_UPDATE" ) || currentUserService.currentUserIsSuper() );
-        model.addAttribute( "canDelete", authorities.contains( "F_FRED_DELETE" ) || currentUserService.currentUserIsSuper() );
+            model.addAttribute( "canCreate", authorities.contains( "F_FRED_CREATE" ) || currentUserService.currentUserIsSuper() );
+            model.addAttribute( "canRead", authorities.contains( "M-dhis-web-api-fred" ) || currentUserService.currentUserIsSuper() );
+            model.addAttribute( "canUpdate", authorities.contains( "F_FRED_UPDATE" ) || currentUserService.currentUserIsSuper() );
+            model.addAttribute( "canDelete", authorities.contains( "F_FRED_DELETE" ) || currentUserService.currentUserIsSuper() );
+        }
+        else
+        {
+            model.addAttribute( "canCreate", false );
+            model.addAttribute( "canRead", false );
+            model.addAttribute( "canUpdate", false );
+            model.addAttribute( "canDelete", false );
+        }
     }
 
     private void addHierarchyPropertyToFacility( List<OrganisationUnitLevel> organisationUnitLevels, OrganisationUnit organisationUnit, Facility facility )
@@ -400,13 +443,13 @@ public class FacilityController
     // POST JSON
     //--------------------------------------------------------------------------
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
-    @PreAuthorize("hasRole('F_FRED_CREATE') or hasRole('ALL')")
+    @RequestMapping( value = "", method = RequestMethod.POST )
+    @PreAuthorize( "hasRole('F_FRED_CREATE') or hasRole('ALL')" )
     public ResponseEntity<String> createFacility( @RequestBody Facility facility ) throws Exception
     {
-        if ( facility.getId() == null )
+        if ( facility.getUuid() == null )
         {
-            facility.setId( UUID.randomUUID().toString() );
+            facility.setUuid( UUID.randomUUID().toString() );
         }
 
         Set<ConstraintViolation<Facility>> constraintViolations = validator.validate( facility, Default.class, Create.class );
@@ -422,15 +465,18 @@ public class FacilityController
 
             if ( organisationUnitService.getOrganisationUnit( organisationUnit.getUuid() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "An object with that UUID already exists." ), headers, HttpStatus.CONFLICT );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                    "An object with that UUID already exists." ), headers, HttpStatus.CONFLICT );
             }
             if ( organisationUnitService.getOrganisationUnit( organisationUnit.getUid() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "An object with that UID already exists." ), headers, HttpStatus.CONFLICT );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                    "An object with that UID already exists." ), headers, HttpStatus.CONFLICT );
             }
             else if ( organisationUnit.getCode() != null && organisationUnitService.getOrganisationUnitByCode( organisationUnit.getCode() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "An object with that code already exists." ), headers, HttpStatus.CONFLICT );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                    "An object with that code already exists." ), headers, HttpStatus.CONFLICT );
             }
 
             organisationUnitService.addOrganisationUnit( organisationUnit );
@@ -468,7 +514,7 @@ public class FacilityController
         return builder.toString();
     }
 
-    protected void checkUidIdentifier( Facility facility, String id ) throws IOException
+    protected void checkIdentifier( Facility facility, String id ) throws IOException
     {
         Identifier identifier = new Identifier();
 
@@ -500,17 +546,34 @@ public class FacilityController
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('F_FRED_UPDATE') or hasRole('ALL')")
+    @RequestMapping( value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PreAuthorize( "hasRole('F_FRED_UPDATE') or hasRole('ALL')" )
     public ResponseEntity<String> updateFacility( @PathVariable String id, @RequestBody Facility facility, HttpServletRequest request ) throws Exception
     {
         HttpHeaders headers = new HttpHeaders();
         headers.add( "Content-Type", MediaType.APPLICATION_JSON_VALUE );
 
-        // getId == null is not legal, but will be catched by bean validation
-        if ( facility.getId() != null )
+        OrganisationUnit organisationUnit;
+
+        if ( id.length() == 11 )
         {
-            String uuid = facility.getId();
+            organisationUnit = organisationUnitService.getOrganisationUnit( id );
+        }
+        else
+        {
+            organisationUnit = organisationUnitService.getOrganisationUnitByUuid( id );
+        }
+
+        if ( organisationUnit == null )
+        {
+            return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.NOT_FOUND.toString(),
+                "Facility with that ID not found" ), headers, HttpStatus.NOT_FOUND );
+        }
+
+        // getId == null is not legal, but will be catched by bean validation
+        if ( facility.getUuid() != null )
+        {
+            String uuid = facility.getUuid();
 
             try
             {
@@ -518,12 +581,11 @@ public class FacilityController
             }
             catch ( IllegalArgumentException ignored )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "Bad id: (does not match expected UUID string format)" ),
-                    headers, HttpStatus.PRECONDITION_FAILED );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.PRECONDITION_FAILED.toString(),
+                    "Bad id: (does not match expected UUID string format)" ), headers, HttpStatus.PRECONDITION_FAILED );
             }
         }
 
-        checkUidIdentifier( facility, id );
         Set<ConstraintViolation<Facility>> constraintViolations = validator.validate( facility, Default.class, Update.class );
 
         String json = ValidationUtils.constraintViolationsToJson( constraintViolations );
@@ -531,9 +593,9 @@ public class FacilityController
         if ( constraintViolations.isEmpty() )
         {
             OrganisationUnit organisationUnitUpdate = conversionService.convert( facility, OrganisationUnit.class );
-            OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( organisationUnitUpdate.getUid() );
+            checkIdentifier( facility, organisationUnit.getUid() );
 
-            if ( request.getHeader( "ETag" ) != null )
+            if ( request.getHeader( "If-Match" ) != null )
             {
                 Facility old_facility = conversionService.convert( organisationUnit, Facility.class );
                 List<OrganisationUnitLevel> organisationUnitLevels = organisationUnitService.getOrganisationUnitLevels();
@@ -542,17 +604,17 @@ public class FacilityController
 
                 String ETag = generateETagHeaderValue( body.getBytes() );
 
-                if ( !ETag.equals( request.getHeader( "ETag" ) ) )
+                if ( !ETag.equals( request.getHeader( "If-Match" ) ) )
                 {
-                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "ETag provided does not match current ETag of facility" ),
-                        headers, HttpStatus.PRECONDITION_FAILED );
+                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.PRECONDITION_FAILED.toString(),
+                        "ETag provided does not match current ETag of facility" ), headers, HttpStatus.PRECONDITION_FAILED );
                 }
             }
 
             if ( organisationUnit == null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "No object with that identifier exists." ),
-                    headers, HttpStatus.NOT_FOUND );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.NOT_FOUND.toString(),
+                    "No object with that identifier exists." ), headers, HttpStatus.NOT_FOUND );
             }
             else if ( organisationUnitUpdate.getCode() != null )
             {
@@ -560,8 +622,8 @@ public class FacilityController
 
                 if ( ouByCode != null && !organisationUnit.getUid().equals( ouByCode.getUid() ) )
                 {
-                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "Another object with the same code already exists." ),
-                        headers, HttpStatus.CONFLICT );
+                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                        "Another object with the same code already exists." ), headers, HttpStatus.CONFLICT );
                 }
             }
 
@@ -599,8 +661,8 @@ public class FacilityController
     // DELETE JSON
     //--------------------------------------------------------------------------
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @PreAuthorize("hasRole('F_FRED_DELETE') or hasRole('ALL')")
+    @RequestMapping( value = "/{id}", method = RequestMethod.DELETE )
+    @PreAuthorize( "hasRole('F_FRED_DELETE') or hasRole('ALL')" )
     public ResponseEntity<Void> deleteFacility( @PathVariable String id ) throws HierarchyViolationException
     {
         OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( id );
@@ -619,8 +681,14 @@ public class FacilityController
     // EXCEPTION HANDLERS
     //--------------------------------------------------------------------------
 
-    @ExceptionHandler({ DeleteNotAllowedException.class, HierarchyViolationException.class })
-    public ResponseEntity<String> exceptionHandler( Exception ex )
+    @ExceptionHandler( { HttpClientErrorException.class, HttpServerErrorException.class } )
+    public ResponseEntity<String> statusCodeExceptionHandler( HttpStatusCodeException ex )
+    {
+        return new ResponseEntity<String>( ex.getMessage(), ex.getStatusCode() );
+    }
+
+    @ExceptionHandler( { DeleteNotAllowedException.class, HierarchyViolationException.class } )
+    public ResponseEntity<String> dhisExceptionHandler( Exception ex )
     {
         return new ResponseEntity<String>( ex.getMessage(), HttpStatus.FORBIDDEN );
     }

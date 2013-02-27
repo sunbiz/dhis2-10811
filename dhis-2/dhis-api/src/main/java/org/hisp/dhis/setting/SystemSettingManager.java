@@ -63,7 +63,7 @@ public interface SystemSettingManager
     final String KEY_EMAIL_USERNAME = "keyEmailUsername";
     final String KEY_EMAIL_PASSWORD = "keyEmailPassword";
     final String KEY_SCHEDULED_PERIOD_TYPES = "keyScheduledPeriodTypes";
-    final String KEY_SCHEDULED_TASKS = "keyScheduledTasks";
+    final String KEY_SCHEDULED_TASKS = "keySchedTasks";
     final String KEY_ORGUNITGROUPSET_AGG_LEVEL = "orgUnitGroupSetAggregationLevel";
     final String KEY_SMS_CONFIG = "SMS_CONFIG";
     final String KEY_CACHE_STRATEGY = "keyCacheStrategy";

@@ -38,6 +38,7 @@ import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeOption;
 import org.hisp.dhis.patient.PatientAttributeOptionService;
+import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientIdentifierService;
 import org.hisp.dhis.patient.PatientIdentifierType;
@@ -67,6 +68,8 @@ public class SaveIdentifierAndAttributeAction
 
     private PatientAttributeValueService patientAttributeValueService;
     
+    private PatientAttributeService patientAttributeService;
+    
     private PatientAttributeOptionService patientAttributeOptionService;
 
     private ProgramService programService;
@@ -88,6 +91,11 @@ public class SaveIdentifierAndAttributeAction
     public void setPatientService( PatientService patientService )
     {
         this.patientService = patientService;
+    }
+
+    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    {
+        this.patientAttributeService = patientAttributeService;
     }
 
     public void setPatientAttributeValueService( PatientAttributeValueService patientAttributeValueService )
@@ -209,7 +217,7 @@ public class SaveIdentifierAndAttributeAction
 
         String value = null;
 
-        Collection<PatientAttribute> attributes = program.getPatientAttributes();
+        Collection<PatientAttribute> attributes = patientAttributeService.getAllPatientAttributes();
 
         PatientAttributeValue attributeValue = null;
 

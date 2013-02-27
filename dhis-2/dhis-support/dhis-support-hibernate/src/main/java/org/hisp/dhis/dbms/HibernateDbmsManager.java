@@ -89,7 +89,11 @@ public class HibernateDbmsManager
         emptyTable( "reporttable_indicators" );
         emptyTable( "reporttable_periods" );
         emptyTable( "reporttable_organisationunits" );
+        emptyTable( "reporttable_dataelementgroups" );
         emptyTable( "reporttable_orgunitgroups" );
+        emptyTable( "reporttable_columns" );
+        emptyTable( "reporttable_rows" );
+        emptyTable( "reporttable_filters" );
         emptyTable( "reporttable" );
 
         emptyTable( "orgunitgroupsetmembers" );

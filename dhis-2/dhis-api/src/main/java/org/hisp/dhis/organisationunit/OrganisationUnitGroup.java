@@ -27,12 +27,9 @@ package org.hisp.dhis.organisationunit;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.BaseNameableObject;
@@ -41,14 +38,19 @@ import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
+import org.hisp.dhis.dataset.DataSet;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * @author Kristian Nordal
  */
-@JacksonXmlRootElement( localName = "organisationUnitGroup", namespace = DxfNamespaces.DXF_2_0)
+@JacksonXmlRootElement( localName = "organisationUnitGroup", namespace = DxfNamespaces.DXF_2_0 )
 public class OrganisationUnitGroup
     extends BaseNameableObject
 {
@@ -58,14 +60,17 @@ public class OrganisationUnitGroup
     private static final long serialVersionUID = -1131637847640209166L;
 
     private String symbol;
-    
+
     @Scanned
     private Set<OrganisationUnit> members = new HashSet<OrganisationUnit>();
+
+    private Set<DataSet> dataSets = new HashSet<DataSet>();
 
     private OrganisationUnitGroupSet groupSet;
 
     /**
-     * Set of the dynamic attributes values that belong to this organisationUnit group.
+     * Set of the dynamic attributes values that belong to this organisationUnit
+     * group.
      */
     private Set<AttributeValue> attributeValues = new HashSet<AttributeValue>();
 
@@ -85,18 +90,6 @@ public class OrganisationUnitGroup
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
-
-    @Override
-    public String getShortName()
-    {
-        return name;
-    }
-
-    @Override
-    public String getCode()
-    {
-        return (name != null && name.length() > 50) ? name.substring( 0, 50 ) : name;
-    }
 
     public void addOrganisationUnit( OrganisationUnit organisationUnit )
     {
@@ -136,6 +129,49 @@ public class OrganisationUnitGroup
         }
     }
 
+    public void addDataSet( DataSet dataSet )
+    {
+        dataSets.add( dataSet );
+        dataSet.getOrganisationUnitGroups().add( this );
+    }
+
+    public void removeDataSet( DataSet dataSet )
+    {
+        dataSets.remove( dataSet );
+        dataSet.getOrganisationUnitGroups().remove( this );
+    }
+    
+    public void removeAllDataSets()
+    {
+        for ( DataSet ds : dataSets )
+        {
+            ds.getOrganisationUnitGroups().remove( this );
+        }
+        
+        dataSets.clear();
+    }
+
+    public void updateDataSets( Set<DataSet> updates )
+    {
+        for ( DataSet ds : new HashSet<DataSet>( dataSets ) )
+        {
+            if ( !updates.contains( ds ) )
+            {
+                removeDataSet( ds );
+            }
+        }
+
+        for ( DataSet ds : updates )
+        {
+            addDataSet( ds );
+        }
+    }
+    
+    public boolean hasSymbol()
+    {
+        return symbol != null && !symbol.trim().isEmpty();
+    }
+
     // -------------------------------------------------------------------------
     // hashCode and equals
     // -------------------------------------------------------------------------
@@ -168,8 +204,8 @@ public class OrganisationUnitGroup
     // -------------------------------------------------------------------------
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public String getSymbol()
     {
         return symbol;
@@ -183,8 +219,8 @@ public class OrganisationUnitGroup
     @JsonProperty( value = "organisationUnits" )
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlElementWrapper( localName = "organisationUnits", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "organisationUnit", namespace = DxfNamespaces.DXF_2_0 )
     public Set<OrganisationUnit> getMembers()
     {
         return members;
@@ -198,7 +234,7 @@ public class OrganisationUnitGroup
     @JsonProperty( value = "organisationUnitGroupSet" )
     @JsonSerialize( as = BaseIdentifiableObject.class )
     @JsonView( { DetailedView.class } )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     public OrganisationUnitGroupSet getGroupSet()
     {
         return groupSet;
@@ -211,8 +247,8 @@ public class OrganisationUnitGroup
 
     @JsonProperty( value = "attributes" )
     @JsonView( { DetailedView.class, ExportView.class } )
-    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlElementWrapper( localName = "attributes", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "attribute", namespace = DxfNamespaces.DXF_2_0 )
     public Set<AttributeValue> getAttributeValues()
     {
         return attributeValues;
@@ -221,6 +257,20 @@ public class OrganisationUnitGroup
     public void setAttributeValues( Set<AttributeValue> attributeValues )
     {
         this.attributeValues = attributeValues;
+    }
+
+    @JsonProperty( value = "dataSets" )
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlElementWrapper( localName = "dataSets", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "dataSet", namespace = DxfNamespaces.DXF_2_0 )
+    public Set<DataSet> getDataSets()
+    {
+        return dataSets;
+    }
+
+    public void setDataSets( Set<DataSet> dataSets )
+    {
+        this.dataSets = dataSets;
     }
 
     @Override

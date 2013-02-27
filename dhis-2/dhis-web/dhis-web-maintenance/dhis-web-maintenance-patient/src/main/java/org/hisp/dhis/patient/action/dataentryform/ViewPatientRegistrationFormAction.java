@@ -40,6 +40,7 @@ import org.hisp.dhis.patient.PatientRegistrationForm;
 import org.hisp.dhis.patient.PatientRegistrationFormService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.setting.SystemSettingManager;
 
 import com.opensymphony.xwork2.Action;
 
@@ -81,6 +82,13 @@ public class ViewPatientRegistrationFormAction
     public void setPatientRegistrationFormService( PatientRegistrationFormService patientRegistrationFormService )
     {
         this.patientRegistrationFormService = patientRegistrationFormService;
+    }
+
+    private SystemSettingManager systemSettingManager;
+
+    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
+    {
+        this.systemSettingManager = systemSettingManager;
     }
 
     // -------------------------------------------------------------------------
@@ -134,6 +142,13 @@ public class ViewPatientRegistrationFormAction
         return program;
     }
 
+    private List<String> flags;
+
+    public List<String> getFlags()
+    {
+        return flags;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -171,6 +186,12 @@ public class ViewPatientRegistrationFormAction
                 attributes.removeAll( program.getPatientAttributes() );
             }
         }
+
+        // ---------------------------------------------------------------------
+        // Get images
+        // ---------------------------------------------------------------------
+
+        flags = systemSettingManager.getFlags();
 
         return SUCCESS;
     }

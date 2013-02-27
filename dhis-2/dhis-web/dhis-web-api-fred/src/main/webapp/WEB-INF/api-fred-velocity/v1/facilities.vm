@@ -7,8 +7,8 @@
     var facilities = [
         #foreach( $facility in $entity.facilities )
         {
-            id: "$facility.id",
-            url: "$facility.url",
+            id: "$facility.uuid",
+            href: "$facility.href",
             name: "$esc.escapeEcmaScript($facility.name)",
             coordinates: "$facility.coordinates"
         },
@@ -39,8 +39,8 @@
                 var coords = JSON.parse(item.coordinates);
                 var latlng = new google.maps.LatLng(coords[1], coords[0]);
                 var name = item.name;
-                var id = item.id;
-                var url = item.url;
+                var id = item.uuid;
+                var href = item.href;
 
                 lats += coords[1];
                 lngs += coords[0];
@@ -55,7 +55,7 @@
 
                 var infoWindow= new google.maps.InfoWindow({
                     content: "<div>" + "<b>" + name + "</b><br/>Latitude " + coords[1] + "<br/> Longitude " + coords[0] +
-                            "<br/><br/><a href='" + url + "'>More information</a></div>"
+                            "<br/><br/><a href='" + href + "'>More information</a></div>"
                 });
 
                 infoWindows.push(infoWindow);
@@ -176,8 +176,8 @@
 
     <tbody>
         #foreach( $facility in $entity.facilities )
-        <tr data-facility-id='$facility.id'>
-            <td class='facility-name'><a href='$facility.url'>$esc.escapeHtml4($facility.name)</a></td>
+        <tr data-facility-id='$facility.uuid'>
+            <td class='facility-name'><a href='$facility.href'>$esc.escapeHtml4($facility.name)</a></td>
 
             <td class='facility-actions' style='width: 1px;'>
                 <div class='btn-group'>

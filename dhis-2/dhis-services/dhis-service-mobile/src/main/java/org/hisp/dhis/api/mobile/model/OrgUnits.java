@@ -86,11 +86,18 @@ public class OrgUnits
         // }
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            this.serializeVerssion2_8( dataOutputStream );
+            this.serializeVersion2_8( dataOutputStream );
+            System.out.println("2.8");
+        }
+        else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
+        {
+            this.serializeVersion2_9( dataOutputStream );
+            System.out.println("2.9");
         }
         else
         {
-            this.serializeVerssion2_9( dataOutputStream );
+            this.serializeVersion2_10( dataOutputStream );
+            System.out.println("2.10");
         }
     }
 
@@ -111,18 +118,18 @@ public class OrgUnits
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dataOutputStream )
+    public void serializeVersion2_8( DataOutputStream dataOutputStream )
         throws IOException
     {
         dataOutputStream.writeInt( orgUnits.size() );
         for ( MobileOrgUnitLinks unit : orgUnits )
         {
-            unit.serializeVerssion2_8( dataOutputStream );
+            unit.serializeVersion2_8( dataOutputStream );
         }
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dataOutputStream )
+    public void serializeVersion2_9( DataOutputStream dataOutputStream )
         throws IOException
     {
         // send the current version to client for updating or not
@@ -130,16 +137,21 @@ public class OrgUnits
         dataOutputStream.writeInt( orgUnits.size() );
         for ( MobileOrgUnitLinks unit : orgUnits )
         {
-            unit.serializeVerssion2_9( dataOutputStream );
+            unit.serializeVersion2_9( dataOutputStream );
         }
 
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
-        // TODO Auto-generated method stub
+        dataOutputStream.writeDouble( MobileOrgUnitLinks.currentVersion );
+        dataOutputStream.writeInt( orgUnits.size() );
+        for ( MobileOrgUnitLinks unit : orgUnits )
+        {
+            unit.serializeVersion2_10( dataOutputStream );
+        }
         
     }
 

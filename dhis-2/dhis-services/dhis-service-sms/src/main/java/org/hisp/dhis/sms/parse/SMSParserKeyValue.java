@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Magnus Korvald
  */
@@ -33,7 +35,7 @@ public class SMSParserKeyValue
             String key = m.group( 1 );
             String value = m.group( 2 );
             System.out.println( "Key: " + key + " Value: " + value );
-            if ( key != null && value != null )
+            if ( !StringUtils.isEmpty( key ) && !StringUtils.isEmpty( value ) )
             {
                 output.put( key.toUpperCase(), value );
             }
@@ -44,8 +46,7 @@ public class SMSParserKeyValue
 
     public void setSeparator( String separator )
     {
-        String x = null;
-        x = "(\\w+)\\s*\\" + separator.trim() + "\\s*([\\w ]+)\\s*(\\" + separator.trim() + "|$)*\\s*";
+        String x = "(\\w+)\\s*\\" + separator.trim() + "\\s*([\\w ]+)\\s*(\\" + separator.trim() + "|$)*\\s*";
         pattern = Pattern.compile( x );
     }
 

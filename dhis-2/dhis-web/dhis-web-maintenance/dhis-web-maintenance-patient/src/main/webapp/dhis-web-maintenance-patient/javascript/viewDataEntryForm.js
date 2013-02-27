@@ -6,8 +6,8 @@ var existedDataEntry;
 jQuery(function(){
 	dataElementSelector = jQuery("#dataElementSelection").dialog({
 		title: i18n_dataelement,
-		height: 400,
-		width: jQuery("#dataElementSelection [id=dataElementIds]").outerWidth() + 30,
+		height: 420,
+		width: 480,
 		autoOpen: false,
 		zIndex:99999
 	});
@@ -27,6 +27,28 @@ jQuery(function(){
 		autoOpen: false,
 		zIndex:99999
 	});	
+	
+	$(":button").button();
+	$(":submit").button();
+	$("#saveButton").button("option", "icons", { primary: "ui-icon-disk" });
+	$("#cancelButton").button("option", "icons", { primary: "ui-icon-cancel" });
+	$("#deleteButton").button("option", "icons", { primary: "ui-icon-trash" });
+	$("#insertButton").button("option", "icons", { primary: "ui-icon-plusthick" });
+	$("#insertImagesButton").button("option", "icons", { primary: "ui-icon-newwin" });
+	$("#loadExistForms").button("option", "icons", { primary: "ui-icon-newwin" });
+	$("#insertDataElements").button("option", "icons", { primary: "ui-icon-newwin" });
+	$("#insertOtherDataElements").button("option", "icons", { primary: "ui-icon-newwin" });
+	
+	$("#imageDialog").bind("dialogopen", function(event, ui) {
+		$("#insertImagesButton").button("disable");
+	})
+	$("#imageDialog").bind("dialogclose", function(event, ui) {
+		$("#insertImagesButton").button("enable");
+	})
+	
+	$("#insertImagesButton").click(function() {
+		$("#imageDialog").dialog();
+	});
 });
 
 function openOtherProgramStageDataElements()
@@ -132,7 +154,6 @@ function filterDataElements( filter, container, list )
 
 function insertDataElement( source, programStageId )
 {
-	var oEditor = jQuery("#designTextarea").ckeditorGet();
 	var dataElement = JSON.parse( jQuery( source + ' #dataElementIds').val() );
 
 	if( dataElement == null )
@@ -177,12 +198,12 @@ function insertDataElement( source, programStageId )
 		jQuery( source + " #message_").html( "<span class='bold'>" + i18n_dataelement_is_inserted + "</span>" );
 		return;
 	}else{
+		var oEditor = jQuery("#designTextarea").ckeditorGet();
+		oEditor.insertHtml( htmlCode );
 		jQuery( source + " #message_").html("");
 	}
 
-	oEditor.insertHtml( htmlCode );
 }
-
 
 function displayNameOnChange( div, displayName )
 {
@@ -222,7 +243,6 @@ function displayNameOnChange( div, displayName )
 			item[0].text = "(" + item.attr('decode') + ") " + item.attr('dename');
 		});
 	}
-	jQuery('#' + div + ' [id=dataElementIds]').width(jQuery("#" + div).width() - 10 );	
 }
 
 function sortByOnChange( div, sortBy)
@@ -261,4 +281,11 @@ function sortByOnChange( div, sortBy)
 
 		});
 	} 
+}
+
+function insertImage() {
+	var image = $("#imageDialog :selected").val();
+	var html = "<img src=\"" + image + "\" title=\"" + $("#imageDialog :selected").text() + "\">";
+	var oEditor = $("#designTextarea").ckeditorGet();
+	oEditor.insertHtml( html );
 }

@@ -40,6 +40,6 @@ import org.hisp.dhis.common.GenericStore;
 public interface PatientAuditStore extends GenericStore<PatientAudit>
 {
     Collection<PatientAudit> get( Patient patient );
-
-    PatientAudit get( Patient patient, String visitor, Date date );
+    
+    PatientAudit get( Integer patientId, String visitor, Date date, String accessedModule );
 }

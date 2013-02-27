@@ -1,7 +1,7 @@
 package org.hisp.dhis.dxf2.metadata.importers;
 
 /*
- * Copyright (c) 2012, University of Oslo
+ * Copyright (c) 2012-2013, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,8 +38,15 @@ import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.NameableObject;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.DataElementOperandService;
+import org.hisp.dhis.dataentryform.DataEntryForm;
+import org.hisp.dhis.dataentryform.DataEntryFormService;
 import org.hisp.dhis.dxf2.importsummary.ImportConflict;
-import org.hisp.dhis.dxf2.metadata.*;
+import org.hisp.dhis.dxf2.metadata.ExchangeClasses;
+import org.hisp.dhis.dxf2.metadata.ImportOptions;
+import org.hisp.dhis.dxf2.metadata.ImportTypeSummary;
+import org.hisp.dhis.dxf2.metadata.ImportUtils;
+import org.hisp.dhis.dxf2.metadata.Importer;
+import org.hisp.dhis.dxf2.metadata.ObjectBridge;
 import org.hisp.dhis.dxf2.metadata.handlers.ObjectHandler;
 import org.hisp.dhis.dxf2.metadata.handlers.ObjectHandlerUtils;
 import org.hisp.dhis.expression.Expression;
@@ -54,7 +61,12 @@ import org.hisp.dhis.system.util.functional.Function1;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.hisp.dhis.system.util.PredicateUtils.idObjectCollectionsWithScanned;
 import static org.hisp.dhis.system.util.PredicateUtils.idObjects;
@@ -81,6 +93,9 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
 
     @Autowired
     private ExpressionService expressionService;
+
+    @Autowired
+    private DataEntryFormService dataEntryFormService;
 
     @Autowired
     private DataElementOperandService dataElementOperandService;
@@ -124,11 +139,14 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         private Set<DataElementOperand> compulsoryDataElementOperands = new HashSet<DataElementOperand>();
         private Set<DataElementOperand> greyedFields = new HashSet<DataElementOperand>();
 
+        private DataEntryForm dataEntryForm;
+
         public void extract( T object )
         {
             attributeValues = extractAttributeValues( object );
             leftSide = extractExpression( object, "leftSide" );
             rightSide = extractExpression( object, "rightSide" );
+            dataEntryForm = extractDataEntryForm( object, "dataEntryForm" );
             compulsoryDataElementOperands = extractDataElementOperands( object, "compulsoryDataElementOperands" );
             greyedFields = extractDataElementOperands( object, "greyedFields" );
         }
@@ -140,7 +158,8 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
                 deleteAttributeValues( object );
                 deleteExpression( object, "leftSide" );
                 deleteExpression( object, "rightSide" );
-                // deleteDataElementOperands( object, "compulsoryDataElementOperands" );
+                deleteDataEntryForm( object, "dataEntryForm" );
+                // deleteDataElementOperands( idObject, "compulsoryDataElementOperands" );
                 deleteDataElementOperands( object, "greyedFields" );
             }
         }
@@ -150,8 +169,51 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
             saveAttributeValues( object, attributeValues );
             saveExpression( object, "leftSide", leftSide );
             saveExpression( object, "rightSide", rightSide );
-            // saveDataElementOperands( object, "compulsoryDataElementOperands", compulsoryDataElementOperands );
+            saveDataEntryForm( object, "dataEntryForm", dataEntryForm );
+            // saveDataElementOperands( idObject, "compulsoryDataElementOperands", compulsoryDataElementOperands );
             saveDataElementOperands( object, "greyedFields", greyedFields );
+        }
+
+        private void saveDataEntryForm( T object, String fieldName, DataEntryForm dataEntryForm )
+        {
+            if ( dataEntryForm != null )
+            {
+                Map<Field, Collection<Object>> identifiableObjectCollections = detachCollectionFields( dataEntryForm );
+                reattachCollectionFields( dataEntryForm, identifiableObjectCollections );
+
+                dataEntryForm.setId( 0 );
+                dataEntryFormService.addDataEntryForm( dataEntryForm );
+
+                ReflectionUtils.invokeSetterMethod( fieldName, object, dataEntryForm );
+            }
+        }
+
+        private DataEntryForm extractDataEntryForm( T object, String fieldName )
+        {
+            DataEntryForm dataEntryForm = null;
+
+            if ( ReflectionUtils.findGetterMethod( fieldName, object ) != null )
+            {
+                dataEntryForm = ReflectionUtils.invokeGetterMethod( fieldName, object );
+
+                if ( dataEntryForm != null )
+                {
+                    ReflectionUtils.invokeSetterMethod( fieldName, object, new Object[]{ null } );
+                }
+            }
+
+            return dataEntryForm;
+        }
+
+        private void deleteDataEntryForm( T object, String fieldName )
+        {
+            DataEntryForm dataEntryForm = extractDataEntryForm( object, fieldName );
+
+            if ( dataEntryForm != null )
+            {
+                dataEntryFormService.deleteDataEntryForm( dataEntryForm );
+                sessionFactory.getCurrentSession().flush();
+            }
         }
 
         private Expression extractExpression( T object, String fieldName )
@@ -164,7 +226,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
 
                 if ( expression != null )
                 {
-                    ReflectionUtils.invokeSetterMethod( fieldName, object, new Object[] { null } );
+                    ReflectionUtils.invokeSetterMethod( fieldName, object, new Object[]{ null } );
                 }
             }
 
@@ -316,7 +378,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     //-------------------------------------------------------------------------------------------------------
 
     /**
-     * Called every time a new object is to be imported.
+     * Called every time a new idObject is to be imported.
      *
      * @param object Object to import
      * @return An ImportConflict instance if there was a conflict, otherwise null
@@ -344,9 +406,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
 
         if ( !options.isDryRun() )
         {
-            sessionFactory.getCurrentSession().flush();
             nonIdentifiableObjects.save( object );
-            sessionFactory.getCurrentSession().flush();
         }
 
         log.debug( "Save successful." );
@@ -355,10 +415,10 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     }
 
     /**
-     * Update object from old => new.
+     * Update idObject from old => new.
      *
      * @param object          Object to import
-     * @param persistedObject The current version of the object
+     * @param persistedObject The current version of the idObject
      * @return An ImportConflict instance if there was a conflict, otherwise null
      */
     protected boolean updateObject( T object, T persistedObject )
@@ -380,13 +440,16 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         log.debug( "Starting update of object " + ImportUtils.getDisplayName( persistedObject ) + " (" + persistedObject.getClass()
             .getSimpleName() + ")" );
 
+        if ( persistedObject.getName().contains( "java" ) )
+        {
+            System.err.println( "clazz: " + persistedObject.getClass().getName() + ", persistedObject: " + persistedObject );
+        }
+
         objectBridge.updateObject( persistedObject );
 
         if ( !options.isDryRun() )
         {
-            sessionFactory.getCurrentSession().flush();
             nonIdentifiableObjects.save( persistedObject );
-            sessionFactory.getCurrentSession().flush();
         }
 
         log.debug( "Update successful." );
@@ -427,9 +490,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         for ( T object : objects )
         {
             ObjectHandlerUtils.preObjectHandlers( object, objectHandlers );
-
             importObjectLocal( object );
-
             ObjectHandlerUtils.postObjectHandlers( object, objectHandlers );
         }
 
@@ -444,7 +505,9 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         this.options = options;
         this.summaryType = new ImportTypeSummary( importerClass.getSimpleName() );
 
+        ObjectHandlerUtils.preObjectHandlers( object, objectHandlers );
         importObjectLocal( object );
+        ObjectHandlerUtils.postObjectHandlers( object, objectHandlers );
 
         return summaryType;
     }
@@ -616,7 +679,9 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
             return period;
         }
 
-        return objectBridge.getObject( identifiableObject );
+        IdentifiableObject reference = objectBridge.getObject( identifiableObject );
+
+        return reference;
     }
 
     private Map<Field, Object> detachFields( final Object object )
@@ -634,7 +699,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
                 if ( ref != null )
                 {
                     fieldMap.put( field, ref );
-                    ReflectionUtils.invokeSetterMethod( field.getName(), object, new Object[] { null } );
+                    ReflectionUtils.invokeSetterMethod( field.getName(), object, new Object[]{ null } );
                 }
             }
         } );
@@ -647,9 +712,9 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         for ( Field field : fields.keySet() )
         {
             IdentifiableObject idObject = (IdentifiableObject) fields.get( field );
-            IdentifiableObject ref = findObjectByReference( idObject );
+            IdentifiableObject reference = findObjectByReference( idObject );
 
-            if ( ref == null )
+            if ( reference == null )
             {
                 if ( ExchangeClasses.getImportMap().get( idObject.getClass() ) != null )
                 {
@@ -659,7 +724,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
 
             if ( !options.isDryRun() )
             {
-                ReflectionUtils.invokeSetterMethod( field.getName(), object, ref );
+                ReflectionUtils.invokeSetterMethod( field.getName(), object, reference );
             }
         }
     }
@@ -688,7 +753,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         return collectionFields;
     }
 
-    private void reattachCollectionFields( final Object object, Map<Field, Collection<Object>> collectionFields )
+    private void reattachCollectionFields( final Object idObject, Map<Field, Collection<Object>> collectionFields )
     {
         for ( Field field : collectionFields.keySet() )
         {
@@ -708,9 +773,9 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
                     }
                     else
                     {
-                        if ( ExchangeClasses.getImportMap().get( object.getClass() ) != null )
+                        if ( ExchangeClasses.getImportMap().get( idObject.getClass() ) != null )
                         {
-                            reportReferenceError( object, object );
+                            reportReferenceError( idObject, object );
                         }
                     }
                 }
@@ -718,7 +783,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
 
             if ( !options.isDryRun() )
             {
-                ReflectionUtils.invokeSetterMethod( field.getName(), object, objects );
+                ReflectionUtils.invokeSetterMethod( field.getName(), idObject, objects );
             }
         }
     }
@@ -738,13 +803,32 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         return new ImportConflict( ImportUtils.getDisplayName( object ), "Object already exists." );
     }
 
-    private void reportReferenceError( Object object, Object idObject )
+    public String identifiableObjectToString( Object object )
     {
-        String referenceName = idObject != null ? idObject.getClass().getSimpleName() : "null";
-        String objectName = object != null ? object.getClass().getSimpleName() : "null";
+        if ( IdentifiableObject.class.isInstance( object ) )
+        {
+            IdentifiableObject identifiableObject = (IdentifiableObject) object;
 
-        String logMsg = "Unknown reference to " + idObject + " (" + referenceName + ")" +
-            " on object " + object + " (" + objectName + ").";
+            return "IdentifiableObject{" +
+                "id=" + identifiableObject.getId() +
+                ", uid='" + identifiableObject.getUid() + '\'' +
+                ", code='" + identifiableObject.getCode() + '\'' +
+                ", name='" + identifiableObject.getName() + '\'' +
+                ", created=" + identifiableObject.getCreated() +
+                ", lastUpdated=" + identifiableObject.getLastUpdated() +
+                '}';
+        }
+
+        return object.toString();
+    }
+
+    private void reportReferenceError( Object object, Object reference )
+    {
+        String objectName = object != null ? object.getClass().getSimpleName() : "null";
+        String referenceName = reference != null ? reference.getClass().getSimpleName() : "null";
+
+        String logMsg = "Unknown reference to " + identifiableObjectToString( reference ) + " (" + referenceName + ")" +
+            " on object " + identifiableObjectToString( object ) + " (" + objectName + ").";
 
         log.warn( logMsg );
 

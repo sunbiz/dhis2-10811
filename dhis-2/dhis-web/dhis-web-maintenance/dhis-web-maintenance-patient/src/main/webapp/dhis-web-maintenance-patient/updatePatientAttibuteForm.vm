@@ -44,12 +44,12 @@
         <td>$i18n.getString( "value_type" ) <em title="$i18n.getString( "required" )" class="required">*</em></td>
         <td>
             <select id="valueType" name="valueType" onchange="ATTRIBUTE_OPTION.selectValueType(this);">
-                <option value="NUMBER" #if( $patientAttribute.valueType == 'NUMBER' ) selected="selected" #end>$i18n.getString( "number" )</option>
-                <option value="TEXT" #if( $patientAttribute.valueType == 'TEXT' ) selected="selected" #end>$i18n.getString( "text" )</option>
-                <option value="YES/NO" #if( $patientAttribute.valueType == 'YES/NO' ) selected="selected" #end>$i18n.getString( "yes_no" )</option>
-                <option value="DATE" #if( $patientAttribute.valueType == 'DATE' ) selected="selected" #end>$i18n.getString( "date" )</option>
-                <option value="COMBO" #if( $patientAttribute.valueType == 'COMBO' ) selected="selected" #end>$i18n.getString( "attribute_combo_type" )</option>
-				<option value="CALCULATED" #if( $patientAttribute.valueType == 'CALCULATED' ) selected="selected" #end>$i18n.getString( "calculated" )</option>
+                <option value="number" #if( $patientAttribute.valueType == 'number' ) selected="selected" #end>$i18n.getString( "number" )</option>
+                <option value="string" #if( $patientAttribute.valueType == 'string' ) selected="selected" #end>$i18n.getString( "text" )</option>
+                <option value="bool" #if( $patientAttribute.valueType == 'bool' ) selected="selected" #end>$i18n.getString( "yes_no" )</option>
+                <option value="date" #if( $patientAttribute.valueType == 'date' ) selected="selected" #end>$i18n.getString( "date" )</option>
+                <option value="combo" #if( $patientAttribute.valueType == 'combo' ) selected="selected" #end>$i18n.getString( "attribute_combo_type" )</option>
+				<option value="calculated" #if( $patientAttribute.valueType == 'calculated' ) selected="selected" #end>$i18n.getString( "calculated" )</option>
             </select>
         </td>
     </tr>

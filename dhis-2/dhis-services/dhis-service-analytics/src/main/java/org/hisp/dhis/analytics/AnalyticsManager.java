@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.hisp.dhis.common.IdentifiableObject;
-import org.hisp.dhis.system.util.ListMap;
+import org.hisp.dhis.common.ListMap;
 
 public interface AnalyticsManager
 {

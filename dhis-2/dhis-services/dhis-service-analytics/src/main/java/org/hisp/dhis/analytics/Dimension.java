@@ -40,7 +40,7 @@ public class Dimension
 
     private String dimensionName;
 
-    private List<IdentifiableObject> options = new ArrayList<IdentifiableObject>();
+    private List<IdentifiableObject> items = new ArrayList<IdentifiableObject>();
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -57,11 +57,11 @@ public class Dimension
         this.type = type;
     }
 
-    public Dimension( String dimension, DimensionType type, List<IdentifiableObject> options )
+    public Dimension( String dimension, DimensionType type, List<IdentifiableObject> items )
     {
         this.dimension = dimension;
         this.type = type;
-        this.options = options;
+        this.items = items;
     }
 
     // -------------------------------------------------------------------------
@@ -74,7 +74,7 @@ public class Dimension
      */
     public boolean isAllOptions()
     {
-        return options != null && options.isEmpty();
+        return items != null && items.isEmpty();
     }
     
     // -------------------------------------------------------------------------
@@ -111,14 +111,14 @@ public class Dimension
         this.dimensionName = dimensionName;
     }
 
-    public List<IdentifiableObject> getOptions()
+    public List<IdentifiableObject> getItems()
     {
-        return options;
+        return items;
     }
 
-    public void setOptions( List<IdentifiableObject> options )
+    public void setItems( List<IdentifiableObject> items )
     {
-        this.options = options;
+        this.items = items;
     }
 
     // -------------------------------------------------------------------------
@@ -157,6 +157,6 @@ public class Dimension
     @Override
     public String toString()
     {
-        return "[Dimension: " + dimension + ", type: " + type + ", name: " + dimensionName + ", options: " + options + "]";
+        return "[Dimension: " + dimension + ", type: " + type + ", name: " + dimensionName + ", items: " + items + "]";
     }
 }

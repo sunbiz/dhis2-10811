@@ -4,6 +4,7 @@
 <input type="hidden" name="patientId" value="$patientId"/>	
 <input type="hidden" name="programId" value="$programId"/>	
 	<p style="text-align: left;">
+	
 		<label>$!encoder.htmlEncode( $program.dateOfEnrollmentDescription ) [yyyy-MM-dd] </label>
 		#if( $validationMap.get( "enrollmentDate" ) )
            	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "enrollmentDate" ))</span>

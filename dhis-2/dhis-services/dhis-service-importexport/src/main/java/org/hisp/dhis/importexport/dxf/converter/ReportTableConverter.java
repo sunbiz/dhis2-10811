@@ -214,7 +214,7 @@ public class ReportTableConverter
                 writer.closeElement();
                 
                 writer.openElement( FIELD_ORGANISATION_UNITS );
-                for ( OrganisationUnit unit : reportTable.getUnits() )
+                for ( OrganisationUnit unit : reportTable.getOrganisationUnits() )
                 {
                     writer.writeElement( FIELD_ID, String.valueOf( unit.getId() ) );
                 }
@@ -301,7 +301,7 @@ public class ReportTableConverter
             while ( reader.moveToStartElement( FIELD_ID, FIELD_ORGANISATION_UNITS ) )
             {
                 int id = Integer.parseInt( reader.getElementValue() );
-                reportTable.getUnits().add( organisationUnitService.getOrganisationUnit( organisationUnitMapping.get( id ) ) );
+                reportTable.getOrganisationUnits().add( organisationUnitService.getOrganisationUnit( organisationUnitMapping.get( id ) ) );
             }
             
             reader.moveToStartElement( FIELD_CATEGORY_COMBO );

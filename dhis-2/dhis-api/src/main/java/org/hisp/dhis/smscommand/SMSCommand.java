@@ -2,6 +2,7 @@ package org.hisp.dhis.smscommand;
 
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.sms.parse.ParserType;
 
@@ -26,7 +27,8 @@ public class SMSCommand
 
     private String defaultMessage;
 
-    
+    private boolean currentPeriodUsedForReporting = false; // default is
+                                                           // previous
 
     public SMSCommand( String name, String parser, ParserType parserType, String separator, DataSet dataset,
         Set<SMSCode> codes, String codeSeparator, String defaultMessage )
@@ -170,7 +172,8 @@ public class SMSCommand
 
     public ParserType getParserType()
     {
-        if(parserType == null){
+        if ( parserType == null )
+        {
             return ParserType.KEY_VALUE_PARSER;
         }
         return parserType;
@@ -181,4 +184,20 @@ public class SMSCommand
         this.parserType = parserType;
     }
 
+    public boolean isCurrentPeriodUsedForReporting()
+    {
+        return currentPeriodUsedForReporting;
+    }
+
+    public void setCurrentPeriodUsedForReporting( Boolean currentPeriodUsedForReporting )
+    {
+        if ( currentPeriodUsedForReporting == null )
+        {
+            this.currentPeriodUsedForReporting = false;
+        }
+        else
+        {
+            this.currentPeriodUsedForReporting = currentPeriodUsedForReporting;
+        }
+    }
 }

@@ -32,8 +32,6 @@ import java.util.Map;
 
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
-import org.hisp.dhis.patient.PatientIdentifier;
-import org.hisp.dhis.patient.PatientIdentifierService;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
@@ -58,13 +56,6 @@ public class GetPartnerAction
     public void setPatientService( PatientService patientService )
     {
         this.patientService = patientService;
-    }
-
-    private PatientIdentifierService patientIdentifierService;
-
-    public void setPatientIdentifierService( PatientIdentifierService patientIdentifierService )
-    {
-        this.patientIdentifierService = patientIdentifierService;
     }
 
     private ProgramService programService;
@@ -123,13 +114,6 @@ public class GetPartnerAction
         return partner;
     }
 
-    private PatientIdentifier patientIdentifier;
-
-    public PatientIdentifier getPatientIdentifier()
-    {
-        return patientIdentifier;
-    }
-
     private Collection<Program> programs;
 
     public Collection<Program> getPrograms()
@@ -163,8 +147,6 @@ public class GetPartnerAction
             }
         }
 
-        patientIdentifier = patientIdentifierService.getPatientIdentifier( partner );
-
         for ( PatientAttribute patientAttribute : partner.getAttributes() )
         {
             patientAttributeValueMap.put( patientAttribute.getId(), PatientAttributeValue.UNKNOWN );
@@ -175,8 +157,8 @@ public class GetPartnerAction
 
         for ( PatientAttributeValue patientAttributeValue : patientAttributeValues )
         {
-            patientAttributeValueMap.put( patientAttributeValue.getPatientAttribute().getId(), patientAttributeValue
-                .getValue() );
+            patientAttributeValueMap.put( patientAttributeValue.getPatientAttribute().getId(),
+                patientAttributeValue.getValue() );
         }
 
         programs = programService.getAllPrograms();

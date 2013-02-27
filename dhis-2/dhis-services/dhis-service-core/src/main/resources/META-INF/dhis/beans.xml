@@ -1030,13 +1030,13 @@
     </aop:aspect>
 
     <!-- <aop:aspect ref="i18nTranslationInterceptor"> <aop:after-returning pointcut="execution( * org.hisp.dhis.dataelement.DataElementService.get*(..) 
-      )" method="intercept" returning="object"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.dataelement.DataElementCategoryService.get*(..) 
-      )" method="intercept" returning="object"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.indicator.IndicatorService.get*(..) 
-      )" method="intercept" returning="object"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.datadictionary.DataDictionaryService.get*(..) 
-      )" method="intercept" returning="object"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.dataset.DataSetService.get*(..) 
-      )" method="intercept" returning="object"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.organisationunit.OrganisationUnitService.get*(..) 
-      )" method="intercept" returning="object"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.organisationunit.OrganisationUnitGroupService.get*(..) 
-      )" method="intercept" returning="object"/> </aop:aspect> -->
+      )" method="intercept" returning="idObject"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.dataelement.DataElementCategoryService.get*(..)
+      )" method="intercept" returning="idObject"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.indicator.IndicatorService.get*(..)
+      )" method="intercept" returning="idObject"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.datadictionary.DataDictionaryService.get*(..)
+      )" method="intercept" returning="idObject"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.dataset.DataSetService.get*(..)
+      )" method="intercept" returning="idObject"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.organisationunit.OrganisationUnitService.get*(..)
+      )" method="intercept" returning="idObject"/> <aop:after-returning pointcut="execution( * org.hisp.dhis.organisationunit.OrganisationUnitGroupService.get*(..)
+      )" method="intercept" returning="idObject"/> </aop:aspect> -->
   </aop:config>
 
   <!-- Security import -->

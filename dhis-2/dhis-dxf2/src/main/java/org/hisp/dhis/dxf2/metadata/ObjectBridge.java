@@ -28,6 +28,7 @@ package org.hisp.dhis.dxf2.metadata;
  */
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Acts as a bridge between the importer and the persistence/cache layer.
@@ -72,16 +73,16 @@ public interface ObjectBridge
      * @param object Object to match against
      * @return A collection of matched objects
      */
-    <T> Collection<T> getObjects( T object );
+    <T> Set<T> getObjects( T object );
 
     /**
-     * Get all objects for a specified class. These objects might not be a persisted object
+     * Get all objects for a specified class. These objects might not be persisted
      * depending on the flag {@code writeEnabled}.
      *
      * @param clazz Clazz to match against
      * @return Collection of matches
      */
-    <T> Collection<T> getAllObjects( Class<T> clazz );
+    <T> Set<T> getAllObjects( Class<T> clazz );
 
     /**
      * Enable or disable writing to the persistence store.

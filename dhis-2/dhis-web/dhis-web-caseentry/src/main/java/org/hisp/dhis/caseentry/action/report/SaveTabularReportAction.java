@@ -233,7 +233,7 @@ public class SaveTabularReportAction
         throws Exception
     {
         userOrganisationUnit = (userOrganisationUnit == null) ? false : userOrganisationUnit;
-        userOrganisationUnitChildren = (userOrganisationUnitChildren = null) ? false : userOrganisationUnitChildren;
+        userOrganisationUnitChildren = (userOrganisationUnitChildren == null) ? false : userOrganisationUnitChildren;
 
         Set<OrganisationUnit> orgunits = new HashSet<OrganisationUnit>(
             organisationUnitService.getOrganisationUnits( orgunitIds ) );

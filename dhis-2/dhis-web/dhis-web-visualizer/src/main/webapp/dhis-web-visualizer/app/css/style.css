@@ -598,7 +598,7 @@ body {
 }
 
 .dv-accordion .x-accordion-body { /* accordion item body */
-	padding: 8px 8px 2px 8px;
+	padding: 2px 2px 0px;
 	border-top: 1px solid #c5c5c5 !important;
 }
 

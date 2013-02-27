@@ -80,6 +80,8 @@
 					<a href="javascript:hideDetails()" title="$i18n.getString( 'hide_details' )"><img src="../images/hide.png" alt="$i18n.getString( 'hide_details' )"/></a>
 				</div>
 				<p><label>$i18n.getString( "name" ):</label><br/><span id="nameField"></span></p>
+				<p><label>$i18n.getString( "short_name" ):</label><br/><span id="shortNameField"></span></p>
+				<p><label>$i18n.getString( "code" ):</label><br/><span id="codeField"></span></p>
 				<p><label>$i18n.getString( "number_of_members" ):</label><br/><span id="memberCountField"></span></p>
 			</div>
 

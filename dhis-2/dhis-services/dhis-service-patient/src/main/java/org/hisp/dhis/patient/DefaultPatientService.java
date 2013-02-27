@@ -540,7 +540,7 @@ public class DefaultPatientService
         return patientStore.getPatientPhoneNumbers( searchKeys, orgunit, min, max );
     }
 
-    public Collection<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit,
+    public List<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit,
         Integer min, Integer max )
     {
         return patientStore.getProgramStageInstances( searchKeys, orgunit, min, max );
@@ -590,9 +590,9 @@ public class DefaultPatientService
     }
 
     @Override
-    public Collection<Patient> getPatientByFullname( String fullName )
+    public Collection<Patient> getPatientByFullname( String fullName, Integer orgunitId )
     {
-        return patientStore.getByFullName( fullName );
+        return patientStore.getByFullName( fullName, orgunitId );
     }
 
 }

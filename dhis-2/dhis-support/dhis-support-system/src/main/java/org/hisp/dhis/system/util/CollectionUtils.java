@@ -77,4 +77,9 @@ public class CollectionUtils
         set1.retainAll( new HashSet<T>( c2 ) );
         return set1;
     }
+    
+    public static <T> Collection<T> emptyIfNull( Collection<T> collection )
+    {
+        return collection != null ? collection : new HashSet<T>();
+    }
 }

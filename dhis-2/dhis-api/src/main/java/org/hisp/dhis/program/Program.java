@@ -109,6 +109,8 @@ public class Program
     private Boolean blockEntryForm = false;
 
     private Set<UserAuthorityGroup> userRoles = new HashSet<UserAuthorityGroup>();
+    
+    private Boolean onlyEnrollOnce = false;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -459,6 +461,16 @@ public class Program
     public void setUserRoles( Set<UserAuthorityGroup> userRoles )
     {
         this.userRoles = userRoles;
+    }
+
+    public Boolean getOnlyEnrollOnce()
+    {
+        return onlyEnrollOnce;
+    }
+
+    public void setOnlyEnrollOnce( Boolean onlyEnrollOnce )
+    {
+        this.onlyEnrollOnce = onlyEnrollOnce;
     }
 
 }

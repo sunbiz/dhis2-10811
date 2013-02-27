@@ -1,6 +1,6 @@
-<h3>$i18n.getString( "patient_registration_form_management" ) #openHelp( "program" )</h3>
+<h3>$i18n.getString( "patient_registration_form_management" ) #openHelp( "person_registration_form" )</h3>
 
-<table class="mainPageTable">
+<table width="70%">
 	#set($display = 'block')
 	#foreach( $registrationForm in $registrationForms )
 		#if( $!registrationForm.program )
@@ -13,7 +13,7 @@
 			<label>$i18n.getString('program')</label>
 			<select name="programId" id="programId" style="width:20em" >
 				#if( $display == 'block' )
-				<option value=''>[$i18n.getString('please_select')]</option>
+				<option value=''>[$i18n.getString('All')]</option>
 				#end
 				#foreach($program in $programs)
 					<option value='$program.id'>$encoder.htmlEncode($program.displayName)</option>

@@ -33,12 +33,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hisp.dhis.analytics.scheduling.AnalyticsTableTask;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.scheduling.DataMartTask;
+import org.hisp.dhis.scheduling.ScheduledTasks;
 import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
-import org.hisp.dhis.system.scheduling.DataMartTask;
 import org.hisp.dhis.system.scheduling.Scheduler;
 import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.user.CurrentUserService;
@@ -69,22 +71,29 @@ public class StartExportAction
         this.scheduler = scheduler;
     }
 
+    private AnalyticsTableTask analyticsTableTask;
+    
+    public void setAnalyticsTableTask( AnalyticsTableTask analyticsTableTask )
+    {
+        this.analyticsTableTask = analyticsTableTask;
+    }
+
     private DataMartTask dataMartTask;
 
     public void setDataMartTask( DataMartTask dataMartTask )
     {
         this.dataMartTask = dataMartTask;
     }
-    
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
 
-    private Set<String> periodType = new HashSet<String>();
+    private Set<String> periodTypes = new HashSet<String>();
     
-    public void setPeriodType( Set<String> periodType )
+    public void setPeriodTypes( Set<String> periodTypes )
     {
-        this.periodType = periodType;
+        this.periodTypes = periodTypes;
     }
 
     private String startDate;
@@ -100,6 +109,20 @@ public class StartExportAction
     {
         this.endDate = endDate;
     }
+    
+    private boolean analytics;
+
+    public void setAnalytics( boolean analytics )
+    {
+        this.analytics = analytics;
+    }
+
+    private boolean dataMart;
+
+    public void setDataMart( boolean dataMart )
+    {
+        this.dataMart = dataMart;
+    }
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -109,26 +132,51 @@ public class StartExportAction
     public String execute()
         throws Exception
     {
-        Date start = DateUtils.getMediumDate( startDate );
-        Date end = DateUtils.getMediumDate( endDate );
-        
-        List<Period> periods = new ArrayList<Period>();
-        
-        for ( String type : periodType )
-        {
-            CalendarPeriodType periodType = (CalendarPeriodType) PeriodType.getPeriodTypeByName( type );
-            
-            periods.addAll( periodType.generatePeriods( start, end ) );
-        }
+        ScheduledTasks tasks = new ScheduledTasks();
 
         TaskId taskId = new TaskId( TaskCategory.DATAMART, currentUserService.getCurrentUser() );
         
-        if ( periods.size() > 0 )
+        // ---------------------------------------------------------------------
+        // Analytics
+        // ---------------------------------------------------------------------
+
+        if ( analytics )
+        {        
+            analyticsTableTask.setTaskId( taskId );
+            
+            tasks.addTask( analyticsTableTask );
+        }        
+
+        // ---------------------------------------------------------------------
+        // Data mart
+        // ---------------------------------------------------------------------
+
+        if ( dataMart )
         {
-            dataMartTask.setPeriods( periods );
-            dataMartTask.setTaskId( taskId );
+            Date start = DateUtils.getMediumDate( startDate );
+            Date end = DateUtils.getMediumDate( endDate );
+            
+            List<Period> periods = new ArrayList<Period>();
+            
+            for ( String type : periodTypes )
+            {
+                CalendarPeriodType periodType = (CalendarPeriodType) PeriodType.getPeriodTypeByName( type );
+                
+                periods.addAll( periodType.generatePeriods( start, end ) );
+            }
+    
+            if ( periods.size() > 0 )
+            {
+                dataMartTask.setPeriods( periods );
+                dataMartTask.setTaskId( taskId );
+            
+                tasks.addTask( dataMartTask );
+            }
+        }
         
-            scheduler.executeTask( dataMartTask );
+        if ( !tasks.isEmpty() )
+        {
+            scheduler.executeTask( tasks );
         }
         
         return SUCCESS;

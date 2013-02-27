@@ -57,6 +57,14 @@ public interface DataMartEngine
      */
     void export( Collection<Integer> dataElementIds, Collection<Integer> indicatorIds,
         Collection<Integer> periodIds, Collection<Integer> organisationUnitIds );
+
+    /**
+     * Exports aggregated values to the data mart tables.
+     * 
+     * @param periodIds the period identifiers.
+     * @param id the task identifier.
+     */
+    void export( Collection<Integer> periodIds, TaskId id );
     
     /**
      * Exports aggregated values to the data mart tables.

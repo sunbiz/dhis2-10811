@@ -40,7 +40,7 @@ import static org.hisp.dhis.analytics.DataQueryParams.INDICATOR_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.ORGUNIT_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.PERIOD_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.getDimensionFromParam;
-import static org.hisp.dhis.analytics.DataQueryParams.getDimensionOptionsFromParam;
+import static org.hisp.dhis.analytics.DataQueryParams.getDimensionItemsFromParam;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asList;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asTypedList;
 
@@ -63,7 +63,7 @@ import org.hisp.dhis.analytics.AnalyticsManager;
 import org.hisp.dhis.analytics.AnalyticsService;
 import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.analytics.Dimension;
-import org.hisp.dhis.analytics.DimensionOption;
+import org.hisp.dhis.analytics.DimensionItem;
 import org.hisp.dhis.analytics.DimensionType;
 import org.hisp.dhis.analytics.IllegalQueryException;
 import org.hisp.dhis.analytics.QueryPlanner;
@@ -105,11 +105,11 @@ public class DefaultAnalyticsService
     private static final Log log = LogFactory.getLog( DefaultAnalyticsService.class );
     
     private static final String VALUE_HEADER_NAME = "Value";
-    private static final int MAX_QUERIES = 6; //TODO increase?
+    private static final int PERCENT = 100;
+    private static final int MAX_QUERIES = 8;
     
-    //TODO completeness
+    //TODO completeness on time
     //TODO make sure data x dims are successive
-    //TODO max value limit, 5000?
     
     @Autowired
     private AnalyticsManager analyticsManager;
@@ -177,7 +177,9 @@ public class DefaultAnalyticsService
         {   
             int indicatorIndex = params.getIndicatorDimensionIndex();
             List<Indicator> indicators = asTypedList( params.getIndicators() );
-                  
+            
+            expressionService.explodeAndSubstituteExpressions( indicators, null );
+            
             DataQueryParams dataSourceParams = new DataQueryParams( params );
             dataSourceParams.removeDimension( DATAELEMENT_DIM_ID );
             dataSourceParams.removeDimension( DATASET_DIM_ID );
@@ -188,32 +190,32 @@ public class DefaultAnalyticsService
 
             Map<String, Map<DataElementOperand, Double>> permutationOperandValueMap = dataSourceParams.getPermutationOperandValueMap( aggregatedDataMap );
             
-            List<List<DimensionOption>> dimensionOptionPermutations = dataSourceParams.getDimensionOptionPermutations();
+            List<List<DimensionItem>> dimensionItemPermutations = dataSourceParams.getDimensionItemPermutations();
 
             Map<String, Double> constantMap = constantService.getConstantMap();
 
             for ( Indicator indicator : indicators )
             {
-                for ( List<DimensionOption> options : dimensionOptionPermutations )
+                for ( List<DimensionItem> options : dimensionItemPermutations )
                 {
-                    String permKey = DimensionOption.asOptionKey( options );
+                    String permKey = DimensionItem.asItemKey( options );
 
                     Map<DataElementOperand, Double> valueMap = permutationOperandValueMap.get( permKey );
                     
                     if ( valueMap != null )
                     {
-                        Period period = (Period) DimensionOption.getPeriodOption( options );
+                        Period period = (Period) DimensionItem.getPeriodItem( options );
                         
                         Double value = expressionService.getIndicatorValue( indicator, period, valueMap, constantMap, null );
                         
                         if ( value != null )
                         {
-                            List<DimensionOption> row = new ArrayList<DimensionOption>( options );
+                            List<DimensionItem> row = new ArrayList<DimensionItem>( options );
                             
-                            row.add( indicatorIndex, new DimensionOption( INDICATOR_DIM_ID, indicator ) );
+                            row.add( indicatorIndex, new DimensionItem( INDICATOR_DIM_ID, indicator ) );
                                                         
                             grid.addRow();
-                            grid.addValues( DimensionOption.getOptionIdentifiers( row ) );
+                            grid.addValues( DimensionItem.getItemIdentifiers( row ) );
                             grid.addValue( MathUtils.getRounded( value, 1 ) );
                         }
                     }
@@ -260,28 +262,35 @@ public class DefaultAnalyticsService
             dataTargetParams.setAggregationType( AggregationType.COUNT );
             dataTargetParams.setSkipPartitioning( true );
 
-            Map<String, Double> targetMap = getAggregatedCompletenessTargetMap( dataTargetParams ); //TODO
+            Map<String, Double> targetMap = getAggregatedCompletenessTargetMap( dataTargetParams );
+            
+            Map<String, PeriodType> dsPtMap = dataSourceParams.getDataSetPeriodTypeMap();
             
             Integer periodIndex = dataSourceParams.getPeriodDimensionIndex();
             Integer dataSetIndex = dataSourceParams.getDataSetDimensionIndex();
             
-            //TODO time aggregation for completeness, use data set period type and period.getPeriodSpan
+            List<Integer> completenessDimIndexes = dataTargetParams.getCompletenessDimensionIndexes();
             
             for ( Map.Entry<String, Double> entry : aggregatedDataMap.entrySet() )
             {
                 List<String> row = new ArrayList<String>( Arrays.asList( entry.getKey().split( DIMENSION_SEP ) ) );
                 
-                List<String> targetRow = ListUtils.getAll( row, dataTargetParams.getCompletenessDimensionIndexes() );
+                List<String> targetRow = ListUtils.getAll( row, completenessDimIndexes );
                 String targetKey = StringUtils.join( targetRow, DIMENSION_SEP );
                 Double target = targetMap.get( targetKey );
                              
                 if ( target != null && entry.getValue() != null )
                 {
-                    double value = entry.getValue() / target;
+                    PeriodType queryPt = PeriodType.getPeriodTypeFromIsoString( row.get( periodIndex ) );
+                    PeriodType dataPt = dsPtMap.get( row.get( dataSetIndex ) );
+                    
+                    target = target * queryPt.getPeriodSpan( dataPt );
+                    
+                    double value = entry.getValue() * PERCENT / target;
                     
                     grid.addRow();
                     grid.addValues( row.toArray() );
-                    grid.addValue( value );
+                    grid.addValue( MathUtils.getRounded( value, 1 ) );
                 }
             }
         }
@@ -388,7 +397,7 @@ public class DefaultAnalyticsService
             for ( String param : dimensionParams )
             {
                 String dimension = getDimensionFromParam( param );
-                List<String> options = getDimensionOptionsFromParam( param );
+                List<String> options = getDimensionItemsFromParam( param );
                 
                 if ( dimension != null && options != null )
                 {
@@ -402,7 +411,7 @@ public class DefaultAnalyticsService
             for ( String param : filterParams )
             {
                 String dimension = DataQueryParams.getDimensionFromParam( param );
-                List<String> options = DataQueryParams.getDimensionOptionsFromParam( param );
+                List<String> options = DataQueryParams.getDimensionItemsFromParam( param );
                 
                 if ( dimension != null && options != null )
                 {
@@ -572,9 +581,9 @@ public class DefaultAnalyticsService
         return params;
     }
     
-    private Map<String, String> getUidNameMap( DataQueryParams params )
+    private Map<Object, String> getUidNameMap( DataQueryParams params )
     {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<Object, String> map = new HashMap<Object, String>();
         map.putAll( getUidNameMap( params.getDimensions() ) );
         map.putAll( getUidNameMap( params.getFilters() ) );        
         return map;
@@ -586,7 +595,7 @@ public class DefaultAnalyticsService
         
         for ( Dimension dimension : dimensions )
         {
-            List<IdentifiableObject> options = new ArrayList<IdentifiableObject>( dimension.getOptions() );
+            List<IdentifiableObject> options = new ArrayList<IdentifiableObject>( dimension.getItems() );
 
             // -----------------------------------------------------------------
             // If dimension is not fixed and has no options, insert all options

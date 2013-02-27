@@ -421,7 +421,7 @@ public class UserCredentials
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Date getLastLogin()
     {
         return lastLogin;
@@ -462,6 +462,9 @@ public class UserCredentials
         this.restoreExpiry = restoreExpiry;
     }
 
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isSelfRegistered()
     {
         return selfRegistered;
@@ -472,6 +475,9 @@ public class UserCredentials
         this.selfRegistered = selfRegistered;
     }
 
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isDisabled()
     {
         return disabled;

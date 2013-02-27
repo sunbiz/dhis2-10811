@@ -79,12 +79,6 @@ public class Constant
     // -------------------------------------------------------------------------
 
     @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
-    @Override
     public boolean equals( Object o )
     {
         if ( this == o )
@@ -105,12 +99,6 @@ public class Constant
         final Constant other = (Constant) o;
 
         return name.equals( other.getName() );
-    }
-
-    @Override
-    public String toString()
-    {
-        return "[" + name + "]";
     }
 
     // -------------------------------------------------------------------------

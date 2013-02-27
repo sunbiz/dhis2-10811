@@ -43,6 +43,8 @@ public interface PatientAttributeService
     void updatePatientAttribute( PatientAttribute patientAttribute );
 
     PatientAttribute getPatientAttribute( int id );
+    
+    PatientAttribute getPatientAttribute( String uid );
 
     PatientAttribute getPatientAttributeByName( String name );
 

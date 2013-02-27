@@ -196,6 +196,12 @@ function addPatient( isContinue )
 					}
 				});
 			}
+			else
+			{
+				$("#patientForm :input").attr("disabled", false);
+				$("#patientForm").find("select").attr("disabled", false);
+				showPatientDashboardForm( patientId );
+			}
 		}
       }
      });
@@ -235,14 +241,21 @@ function loadPatientList()
 	showById('mainLinkLbl');
 	showById('selectDiv');
 	showById('searchDiv');
-	
-	if( statusSearching == 0)
+	if(statusSearching==2)
+	{
+		return;
+	}
+	else if( statusSearching == 0)
 	{
 		listAllPatient();
 	}
 	else if( statusSearching == 1 )
 	{
 		validateAdvancedSearch();
+	}
+	else if( statusSearching == 3 )
+	{
+		showById('listPatientDiv');
 	}
 }
 
@@ -265,8 +278,7 @@ function loadDataEntry( programStageInstanceId )
 	$('#executionDate').change(function() {
 		saveExecutionDate( getFieldValue('programId'), programStageInstanceId, byId('executionDate') );
 	});
-		
-		
+	
 	jQuery(".stage-object-selected").removeClass('stage-object-selected');
 	var selectedProgramStageInstance = jQuery( '#' + prefixId + programStageInstanceId );
 	selectedProgramStageInstance.addClass('stage-object-selected');

@@ -79,7 +79,7 @@ public class MessageConversationController
     {
         Boolean markRead = Boolean.parseBoolean( parameters.get( "markRead" ) );
 
-        if( markRead  )
+        if ( markRead  )
         {
             entity.markRead( currentUserService.getCurrentUser() );
             manager.update( entity );

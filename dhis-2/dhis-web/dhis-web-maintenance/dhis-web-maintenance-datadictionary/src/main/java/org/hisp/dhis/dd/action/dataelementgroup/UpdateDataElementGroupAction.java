@@ -83,6 +83,20 @@ public class UpdateDataElementGroupAction
         this.name = name;
     }
 
+    private String shortName;
+
+    public void setShortName( String shortName )
+    {
+        this.shortName = shortName;
+    }
+
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
     private Set<String> groupMembers = new HashSet<String>();
 
     public void setGroupMembers( Set<String> groupMembers )
@@ -114,8 +128,12 @@ public class UpdateDataElementGroupAction
 
     public String execute()
     {
+        code = ( code != null && code.trim().length() == 0 ) ? null : code;
+        
         dataElementGroup = dataElementService.getDataElementGroup( id );
-
+        dataElementGroup.setShortName( shortName );
+        dataElementGroup.setCode( code );
+        
         if ( name != null && name.trim().length() > 0 )
         {
             dataElementGroup.setName( name );

@@ -42,7 +42,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -57,7 +63,7 @@ public class DefaultImportService
     // Dependencies
     //-------------------------------------------------------------------------------------------------------
 
-    @Autowired( required = false )
+    @Autowired(required = false)
     private Set<Importer> importerClasses = new HashSet<Importer>();
 
     @Autowired
@@ -141,6 +147,8 @@ public class DefaultImportService
                         }
 
                         ImportTypeSummary importTypeSummary = doImport( objects, importOptions );
+                        // TODO do we need this?
+                        sessionFactory.getCurrentSession().flush();
 
                         if ( importTypeSummary != null )
                         {

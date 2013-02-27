@@ -1,3 +1,4 @@
+isAjax = true;
 
 function orgunitSelected( orgUnits, orgUnitNames )
 {
@@ -6,10 +7,10 @@ function orgunitSelected( orgUnits, orgUnitNames )
 	$('#contentDataRecord').html('');
 	setFieldValue('orgunitName', orgUnitNames[0]);
 	setFieldValue('orgunitId', orgUnits[0]);
+	jQuery( '#programIdAddPatient').append( '<option value="">' + i18n_please_select + '</option>' );
 	jQuery.get("getPrograms.action",{}, 
 		function(json)
 		{
-			jQuery( '#programIdAddPatient').append( '<option value="">' + i18n_please_select + '</option>' );
 			for ( i in json.programs ) {
 				if(json.programs[i].type==1){
 					jQuery( '#programIdAddPatient').append( '<option value="' + json.programs[i].id +'" type="' + json.programs[i].type + '">' + json.programs[i].name + '</option>' );
@@ -28,7 +29,7 @@ function displayCadendar()
 		hideById('showEventUpTo');
 		showById('startDueDate');
 		showById('endDueDate');
-		datePickerInRange( 'startDueDate' , 'endDueDate' );
+		datePickerInRange( 'startDueDate' , 'endDueDate', false );
 	}
 	else
 	{
@@ -36,6 +37,8 @@ function displayCadendar()
 		showById('showEventUpTo');
 		hideById('startDueDate');
 		hideById('endDueDate');
+		jQuery('#delete_endDueDate').remove();
+		jQuery('#delete_startDueDate').remove();
 		jQuery('#startDueDate').datepicker("destroy");
 		jQuery('#endDueDate').datepicker("destroy");
 	}
@@ -43,51 +46,47 @@ function displayCadendar()
 
 function showActitityList()
 {
-	setFieldValue('listAll', "true");
 	hideById('listPatientDiv');
 	contentDiv = 'listPatientDiv';
+	
+	var statusList = "";
+	var statusEvent = getFieldValue('statusEvent').split('_');
+	for( var i in statusEvent){
+		statusList += "&statusList=" + statusEvent[i];
+	}
+
 	$('#contentDataRecord').html('');
-	var programId = getFieldValue('programIdAddPatient');
-	var searchTexts = "stat_" + programId
-					+ "_" + getFieldValue('startDueDate')
-					+ "_" + getFieldValue('endDueDate')
-					+ "_" + getFieldValue('orgunitId')
-					+ "_false"
-					+ "_" + getFieldValue('statusEvent');
 	
 	showLoader();
-	jQuery('#listPatientDiv').load('getActivityPlanRecords.action',
+	jQuery('#listPatientDiv').load('getActivityPlanRecords.action?' + statusList,
 		{
-			programId:programId,
-			listAll:false,
-			searchBySelectedOrgunit: false,
-			searchTexts: searchTexts
+			programId:getFieldValue('programIdAddPatient'),
+			startDate:getFieldValue('startDueDate'),
+			endDue:getFieldValue('endDueDate'),
+			facilityLB: $('input[name=facilityLB]:checked').val()
 		}, 
 		function()
 		{
 			showById('colorHelpLink');
 			showById('listPatientDiv');
-			resize();
+			setTableStyles();
 			hideLoader();
 		});
 }
 
 function exportActitityList( type )
 {
-	var programId = getFieldValue('programIdAddPatient');
-	var searchTexts = "stat_" + programId
-					+ "_" + getFieldValue('startDueDate')
-					+ "_" + getFieldValue('endDueDate')
-					+ "_" + getFieldValue('orgunitId')
-					+ "_false"
-					+ "_" + getFieldValue('statusEvent');
-	var params = "searchTexts=" + searchTexts;
-		params += "&listAll=fase";
-		params += "&type=" + type;
-		params += "&programId=" + getFieldValue('programIdAddPatient');
-		params += "&searchBySelectedOrgunit=false";
+	var params  = "programId=" + getFieldValue('programIdAddPatient');
+	params += "&startDate=" + getFieldValue('startDueDate');
+	params += "&endDue=" + getFieldValue('endDueDate');
+	params += "&type=xls";
+	params += "&facilityLB=" + $('input[name=facilityLB]:checked').val();
 	
-	var url = "exportActitityList.action?" + params;
+	var statusEvent = getFieldValue('statusEvent').split('_');
+	for( var i in statusEvent){
+		params += "&statusList=" + statusEvent[i];
+	}
+	var url = "getActivityPlanRecords.action?" + params;
 	window.location.href = url;
 }
 
@@ -95,18 +94,13 @@ function exportActitityList( type )
 // Patient program tracking
 // --------------------------------------------------------------------
 
-function loadDataEntry( programStageInstanceId ) 
+function loadDataEntryDialog( programStageInstanceId ) 
 {
-	jQuery("#patientList input[name='programStageBtn']").each(function(i,item){
-		jQuery(item).removeClass('stage-object-selected');
-	});
-	jQuery( '#' + prefixId + programStageInstanceId ).addClass('stage-object-selected');
-	setFieldValue('programStageInstanceId', programStageInstanceId);
-	
 	$('#contentDataRecord' ).load("viewProgramStageRecords.action",
 		{
 			programStageInstanceId: programStageInstanceId
-		}, function(){
+		}, function(){	
+			showById('reportDateDiv');
 			showById('patientInforTB');
 			showById('postCommentTbl');
 			showById('entryForm');
@@ -122,6 +116,7 @@ function loadDataEntry( programStageInstanceId )
 			height:500
 		});
 }
+
 
 function statusEventOnChange()
 {
@@ -239,81 +234,4 @@ function setDateRangeAll()
 	var y= date.getFullYear();
 }
 
-// --------------------------------------------------------------------
-// Cosmetic UI
-// --------------------------------------------------------------------
-
-function reloadRecordList()
-{
-	var startDate = getFieldValue('startDueDate');
-	var endDate = getFieldValue('endDueDate');
-	var arrStatus = getFieldValue('statusEvent').split('_');
-	var paddingIndex = 1;
-	
-	jQuery("#patientList .stage-object").each( function(){
-		var id = this.id.split('_')[1];
-		var dueDate = jQuery(this).attr('dueDate');
-		var statusEvent = jQuery(this).attr('status');
-		var programInstanceId = jQuery(this).attr('programInstanceId');
-		if( dueDate >= startDate && dueDate <= endDate 
-			&& jQuery.inArray(statusEvent, arrStatus) > -1)
-		{
-			if( jQuery("#tb_" + programInstanceId + " .searched").length == 0 )
-			{
-				jQuery("#arrow_" + id ).addClass("displayed");
-				var index = eval(jQuery("#ps_" + id ).attr("index"));
-				if( paddingIndex < index ){
-					 paddingIndex = index;
-				}
-			}
-			jQuery("#ps_" + id ).addClass("stage-object-selected searched");
-		}
-		hideById('arrow_' + id );
-		hideById('ps_' + id );
-	});
-	
-	jQuery(".table-flow").each( function(){
-		var scheduledEvent = jQuery(this).find("[status='3']:first");
-		scheduledEvent.addClass("stage-scheduled");
-		scheduledEvent.css('border-color', MARKED_VISIT_COLOR);
-		scheduledEvent.focus();
-		
-		var firstEvent = jQuery(this).find(".searched:first");
-		firstEvent.show();
-		var id = firstEvent.attr("id").split('_')[1];
-		showById('arrow_' + id );
-		var index = firstEvent.attr("index");
-		if( index<paddingIndex){
-			var paddingLeft = ( paddingIndex - index ) * 20;
-			jQuery('#arrow_' + id).css("padding-left", paddingLeft + "px");
-		}
-	});
-	
-	resize();
-}
-
-
-
-function eventFlowToggle( programInstanceId )
-{
-	jQuery("#tb_" + programInstanceId + " .stage-object").each( function(){
-			var programStageInstance = this.id.split('_')[1];
-			jQuery('#arrow_' + programStageInstance ).toggle();
-			jQuery('#ps_' + programStageInstance ).toggle();
-			jQuery(this).removeClass("stage-object-selected");
-		});
-	
-	if( jQuery("#tb_" + programInstanceId + " .searched").length>0)
-	{	
-		var id = jQuery("#tb_" + programInstanceId + " .searched").attr('id').split('_')[1];
-		showById("arrow_" + id);
-		showById("ps_" + id );
-	}
-	
-	jQuery("#tb_" + programInstanceId + " .table-flow").each( function(){
-		var scheduledEvent = jQuery(this).find("[status='3']:first");
-		scheduledEvent.focus();
-	});
-	
-	resize();
-}
+function entryFormContainerOnReady (){}

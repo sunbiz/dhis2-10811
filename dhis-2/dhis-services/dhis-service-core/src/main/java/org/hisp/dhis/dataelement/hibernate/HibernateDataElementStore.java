@@ -30,15 +30,14 @@ package org.hisp.dhis.dataelement.hibernate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryCombo;
@@ -224,13 +223,13 @@ public class HibernateDataElementStore
         return getQuery( hql ).setInteger( "aggregationLevel", aggregationLevel ).list();
     }
 
-    public Map<String, Set<String>> getDataElementCategoryOptionCombos()
+    public ListMap<String, String> getDataElementCategoryOptionComboMap()
     {
-        final String sql = "select de.uid, coc.uid " + "from dataelement de "
+        final String sql = "select de.uid, coc.uid from dataelement de "
             + "join categorycombos_optioncombos cc on de.categorycomboid = cc.categorycomboid "
             + "join categoryoptioncombo coc on cc.categoryoptioncomboid = coc.categoryoptioncomboid";
 
-        final Map<String, Set<String>> sets = new HashMap<String, Set<String>>();
+        final ListMap<String, String> map = new ListMap<String, String>();
 
         jdbcTemplate.query( sql, new RowCallbackHandler()
         {
@@ -238,17 +237,14 @@ public class HibernateDataElementStore
             public void processRow( ResultSet rs )
                 throws SQLException
             {
-                String dataElement = rs.getString( 1 );
-                String categoryOptionCombo = rs.getString( 2 );
+                String de = rs.getString( 1 );
+                String coc = rs.getString( 2 );
 
-                Set<String> set = sets.get( dataElement ) != null ? sets.get( dataElement ) : new HashSet<String>();
-
-                set.add( categoryOptionCombo );
-                sets.put( dataElement, set );
+                map.putValue( de, coc );
             }
         } );
 
-        return sets;
+        return map;
     }
 
     @SuppressWarnings( "unchecked" )

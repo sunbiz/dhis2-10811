@@ -477,6 +477,8 @@ public abstract class DhisConvenienceTest
 
         group.setUid( BASE_UID + uniqueCharacter );
         group.setName( "DataElementGroup" + uniqueCharacter );
+        group.setShortName( "DataElementGroup" + uniqueCharacter );
+        group.setCode( "DataElementCode" + uniqueCharacter );
 
         return group;
     }
@@ -629,6 +631,8 @@ public abstract class DhisConvenienceTest
 
         group.setUid( BASE_UID + uniqueCharacter );
         group.setName( "OrganisationUnitGroup" + uniqueCharacter );
+        group.setShortName( "OrganisationUnitGroupShort" + uniqueCharacter );
+        group.setCode( "OrganisationUnitGroupCode" + uniqueCharacter );
 
         return group;
     }

@@ -51,7 +51,7 @@
 			<td><label for="type">$i18n.getString( "type" )</label></td>
 			<td>
 				<select style="width: 336px;" id="type" name="type" class="{validate:{required:true}}">
-					<option value="text" selected="selected">$i18n.getString( "text" )</option>
+					<option value="string" selected="selected">$i18n.getString( "text" )</option>
 					<option value="number">$i18n.getString( "number" )</option>
 					<option value="letter">$i18n.getString( "letter_only" )</option>
 				</select>

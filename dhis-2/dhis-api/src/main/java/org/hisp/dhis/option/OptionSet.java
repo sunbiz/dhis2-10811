@@ -63,13 +63,6 @@ public class OptionSet
         this.name = name;
     }
 
-
-    @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
     @Override
     public boolean equals( Object o )
     {
@@ -133,7 +126,6 @@ public class OptionSet
             OptionSet optionSet = (OptionSet) other;
 
             removeAllOptions();
-
             options.addAll( optionSet.getOptions() );
         }
     }

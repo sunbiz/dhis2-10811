@@ -122,6 +122,19 @@ public class Cal
     }
 
     /**
+     * Sets the current month and day.
+     * 
+     * @param month the month starting at 1.
+     * @param day the day of the month starting at 1.
+     */
+    public Cal set( int month, int day )
+    {
+        calendar.set( Calendar.MONTH, month - 1 );
+        calendar.set( Calendar.DAY_OF_MONTH, day );
+        return this;
+    }    
+    
+    /**
      * Sets the current time.
      * 
      * @param date the date to base time on.

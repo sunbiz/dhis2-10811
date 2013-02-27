@@ -19,6 +19,7 @@
 	"autoGenerateEvent": "$!programStage.autoGenerateEvent",
 	"validCompleteOnly": "$!programStage.validCompleteOnly",
 	"displayGenerateEventBox": "$!programStage.displayGenerateEventBox",
+	"captureCoordinates": "$!programStage.captureCoordinates",
 	#set( $size = ${programStageDataElements.size()} )
 	"dataElement": [
 	#foreach($d in $programStageDataElements)

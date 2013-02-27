@@ -863,7 +863,7 @@ function removeItem( itemId, itemName, confirmation, action, success )
  * 
  * @param id the id of input field which you want enter date *
  */
-function datePicker( id )
+function datePicker( id, hideDel )
 {
 	$("#" + id).datepicker(
 	{
@@ -873,17 +873,20 @@ function datePicker( id )
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
 		showOn: 'both',
-		buttonImage: '../images/calendar.png',
-		buttonImageOnly: true,
+		createButton: false,
 		constrainInput: true,
         yearRange: '-100:+100'
 	});
 	jQuery( "#" + id ).attr("readonly", true );
+	jQuery( ".ui-datepicker-trigger").hide();
+	
+	addRemoveDateButton( id, hideDel );
+	
 	s = jQuery("#" + id );		
 	if( s.val()=='' ) s.val( getCurrentDate() );		
 }
 
-function datePicker( id, today )
+function datePicker( id, today, hideDel )
 {
 	$("#" + id).datepicker(
 	{
@@ -892,13 +895,13 @@ function datePicker( id, today )
 		changeYear: true,
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
-		showOn: 'both',
-		buttonImage: '../images/calendar.png',
-		buttonImageOnly: true,
+		createButton: false,
 		constrainInput: true,
         yearRange: '-100:+100'
 	});
 	jQuery( "#" + id ).attr("readonly", true );
+	jQuery( ".ui-datepicker-trigger").hide();
+	addRemoveDateButton( id, hideDel );
 	
 	if( today == undefined ) today = false;
 	
@@ -906,9 +909,11 @@ function datePicker( id, today )
 		s = jQuery("#" + id );
 		if( s.val()=='' ) s.val( getCurrentDate() );
 	}
+	
+	addRemoveDateButton( id, hideDel );
 }
 
-function datePickerjQuery( jQueryString )
+function datePickerjQuery( jQueryString, hideDel )
 {
 	jQuery( jQueryString ).datepicker(
 	{
@@ -917,13 +922,13 @@ function datePickerjQuery( jQueryString )
 		changeYear: true,
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
-		showOn: 'both',
-		buttonImage: '../images/calendar.png',
 		buttonImageOnly: true,
 		constrainInput: true,
         yearRange: '-100:+100'
 	});		
 	jQuery( "#" + id ).attr("readonly", true );
+	jQuery( ".ui-datepicker-trigger").hide();
+	addRemoveDateButton( id, hideDel );
 }
 
 /**
@@ -931,7 +936,7 @@ function datePickerjQuery( jQueryString )
  * 
  * @param id the id of input field which you want enter date *
  */
-function datePickerValid( id, today )
+function datePickerValid( id, today, hideDel )
 {
 	jQuery("#" + id).datepicker(
 	{
@@ -940,15 +945,15 @@ function datePickerValid( id, today )
 		changeYear: true,
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
-		showOn: 'both',
-		buttonImage: '../images/calendar.png',
-		buttonImageOnly: true,
+		createButton: false,
 		maxDate: '+0d +0w',
 		constrainInput: true,
         yearRange: '-100:+100'
 	});
 	jQuery( "#" + id ).attr("readonly", true );
-	
+	jQuery( ".ui-datepicker-trigger").hide();
+	addRemoveDateButton( id, hideDel );
+
 	if ( today == undefined )
 	{
 		today = false;
@@ -961,7 +966,7 @@ function datePickerValid( id, today )
 	}
 }
 
-function datePickerFuture( id, today )
+function datePickerFuture( id, today, hideDel )
 {
 	jQuery("#" + id).datepicker(
 	{
@@ -970,14 +975,14 @@ function datePickerFuture( id, today )
 		changeYear: true,
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
-		showOn: 'both',
-		buttonImage: '../images/calendar.png',
-		buttonImageOnly: true,
+		createButton: false,
 		minDate: '+0d +0w',
 		constrainInput: true,
         yearRange: '-100:+100'
 	});
 	jQuery( "#" + id ).attr("readonly", true );
+	jQuery( ".ui-datepicker-trigger").hide();
+	addRemoveDateButton( id, hideDel );
 	
 	if ( today == undefined )
 	{
@@ -997,7 +1002,7 @@ function datePickerFuture( id, today )
  * @param startdate the id of input field which you want enter start date *
  * @param enddate the id of input field which you want enter end date *
  */
-function datePickerInRange ( startdate, enddate, setCurrentStartDate, setCurrentEndDate )
+function datePickerInRange ( startdate, enddate, setCurrentStartDate, setCurrentEndDate, hideDel )
 {
 	if( setCurrentStartDate == undefined ) setCurrentStartDate = true;
 	if( setCurrentEndDate == undefined ) setCurrentEndDate = true;
@@ -1017,9 +1022,7 @@ function datePickerInRange ( startdate, enddate, setCurrentStartDate, setCurrent
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
 		showAnim: '',
-		showOn: 'both',
-		buttonImage: '../images/calendar.png',
-		buttonImageOnly: true,
+		createButton: false,
 		constrainInput: true,
         yearRange: '-100:+100',
 		onSelect: function(selectedDate)
@@ -1033,11 +1036,14 @@ function datePickerInRange ( startdate, enddate, setCurrentStartDate, setCurrent
 
 	jQuery( "#" + startdate ).attr("readonly", true );
 	jQuery( "#" + enddate ).attr("readonly", true );
-
+	jQuery( ".ui-datepicker-trigger").hide();
+	addRemoveDateButton( startdate, hideDel );
+	addRemoveDateButton( enddate, hideDel );
+	
     $("#ui-datepicker-div").hide();
 }
 
-function datePickerInRangeValid( startdate, enddate, setCurrentStartDate, setCurrentEndDate )
+function datePickerInRangeValid( startdate, enddate, setCurrentStartDate, setCurrentEndDate, hideDel )
 {
 	if( setCurrentStartDate == undefined ) setCurrentStartDate = true;
 	if( setCurrentEndDate == undefined ) setCurrentEndDate = true;
@@ -1054,14 +1060,11 @@ function datePickerInRangeValid( startdate, enddate, setCurrentStartDate, setCur
 		changeMonth: true,
 		changeYear: true,
 		numberOfMonths: 1,
-		
 		maxDate: '+0d +0w',
 		monthNamesShort: monthNames,
 		dayNamesMin: dayNamesMin,
 		showAnim: '',
-		showOn: 'both',
-		buttonImage: '../images/calendar.png',
-		buttonImageOnly: true,
+		createButton: false,
 		constrainInput: true,
         yearRange: '-100:+100',
 		onSelect: function(selectedDate)
@@ -1075,10 +1078,30 @@ function datePickerInRangeValid( startdate, enddate, setCurrentStartDate, setCur
 
 	jQuery( "#" + startdate ).attr("readonly", true );
 	jQuery( "#" + enddate ).attr("readonly", true );
-
-    $("#ui-datepicker-div").hide();
+	jQuery( ".ui-datepicker-trigger").hide();
+	addRemoveDateButton( startdate, hideDel );
+	addRemoveDateButton( enddate, hideDel );
 }
 
+function addRemoveDateButton( id, hideDel )
+{
+	if( hideDel == undefined ) hideDel = true;
+	if( !hideDel ){
+		var removeId = 'delete_' + id;
+		if( jQuery("#" + removeId).length == 0 )
+		{
+			jQuery("#" + id).after(function() {
+			  return ' <img src="../images/calendar-delete.png" align="justify" id="'+ removeId +'" onclick="jQuery( \'#' + id + '\').val(\'\');jQuery( \'#' + id + '\').change();"> ';
+			});
+		}
+	}
+	jQuery( "#" + id).click(function() {
+		$("#ui-datepicker-div").show();
+	});
+	jQuery( "#" + id).change(function() {
+		$("#ui-datepicker-div").hide();
+	});
+}
 
 function getCurrentDate()
 {	

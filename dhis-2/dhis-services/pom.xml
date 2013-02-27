@@ -15,18 +15,18 @@
   
   <modules>
     <module>dhis-service-core</module>
+    <module>dhis-service-integration</module>
     <module>dhis-service-i18n</module>
     <module>dhis-service-administration</module>
     <module>dhis-service-datamart-default</module>
     <module>dhis-service-importexport</module>
-    <module>dhis-service-reporting</module>
     <module>dhis-service-mapgeneration</module>
     <module>dhis-service-aggregationengine-default</module>
     <module>dhis-service-analytics</module>
     <module>dhis-service-sms</module>
     <module>dhis-service-patient</module>
     <module>dhis-service-mobile</module>
-    <module>dhis-service-integration</module>
+    <module>dhis-service-reporting</module>
   </modules>
   
   <dependencies>

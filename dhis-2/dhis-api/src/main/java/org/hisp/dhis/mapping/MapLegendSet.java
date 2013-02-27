@@ -73,12 +73,6 @@ public class MapLegendSet
     // -------------------------------------------------------------------------
 
     @Override
-    public int hashCode()
-    {
-        return name == null ? 0 : name.hashCode();
-    }
-
-    @Override
     public boolean equals( Object object )
     {
         if ( this == object )

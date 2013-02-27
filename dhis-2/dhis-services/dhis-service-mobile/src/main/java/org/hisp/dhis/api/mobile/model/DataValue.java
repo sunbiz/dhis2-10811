@@ -106,7 +106,7 @@ public class DataValue
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dataOutputStream )
+    public void serializeVersion2_8( DataOutputStream dataOutputStream )
         throws IOException
     {
         // TODO Auto-generated method stub
@@ -114,14 +114,14 @@ public class DataValue
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dataOutputStream )
+    public void serializeVersion2_9( DataOutputStream dataOutputStream )
         throws IOException
     {
         // TODO Auto-generated method stub
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
         // TODO Auto-generated method stub

@@ -27,16 +27,18 @@ package org.hisp.dhis.oum.action.organisationunitgroup;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.opensymphony.xwork2.ActionSupport;
+import java.util.Collection;
+import java.util.List;
+
 import org.hisp.dhis.attribute.AttributeService;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.system.util.AttributeUtils;
 
-import java.util.Collection;
-import java.util.List;
+import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author Torgeir Lorange Ostby
@@ -70,6 +72,13 @@ public class AddOrganisationUnitGroupAction
         this.attributeService = attributeService;
     }
 
+    private DataSetService dataSetService;
+
+    public void setDataSetService( DataSetService dataSetService )
+    {
+        this.dataSetService = dataSetService;
+    }
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -79,6 +88,20 @@ public class AddOrganisationUnitGroupAction
     public void setName( String name )
     {
         this.name = name;
+    }
+
+    private String shortName;
+
+    public void setShortName( String shortName )
+    {
+        this.shortName = shortName;
+    }
+
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
     }
 
     private String symbol;
@@ -95,6 +118,13 @@ public class AddOrganisationUnitGroupAction
         this.jsonAttributeValues = jsonAttributeValues;
     }
 
+    private Collection<String> selectedDataSetsList;
+
+    public void setSelectedDataSetsList( Collection<String> selectedDataSetsList )
+    {
+        this.selectedDataSetsList = selectedDataSetsList;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -102,8 +132,12 @@ public class AddOrganisationUnitGroupAction
     public String execute()
         throws Exception
     {
+        code = (code != null && code.trim().length() == 0) ? null : code;
+
         OrganisationUnitGroup organisationUnitGroup = new OrganisationUnitGroup();
         organisationUnitGroup.setName( name );
+        organisationUnitGroup.setShortName( shortName );
+        organisationUnitGroup.setCode( code );
         organisationUnitGroup.setSymbol( symbol );
 
         Collection<OrganisationUnit> selectedOrganisationUnits = selectionTreeManager
@@ -116,8 +150,16 @@ public class AddOrganisationUnitGroupAction
 
         if ( jsonAttributeValues != null )
         {
-            AttributeUtils.updateAttributeValuesFromJson( organisationUnitGroup.getAttributeValues(), jsonAttributeValues,
-                attributeService );
+            AttributeUtils.updateAttributeValuesFromJson( organisationUnitGroup.getAttributeValues(),
+                jsonAttributeValues, attributeService );
+        }
+
+        if ( selectedDataSetsList != null )
+        {
+            for ( String id : selectedDataSetsList )
+            {
+                organisationUnitGroup.addDataSet( dataSetService.getDataSet( Integer.parseInt( id ) ) );
+            }
         }
 
         organisationUnitGroupService.addOrganisationUnitGroup( organisationUnitGroup );

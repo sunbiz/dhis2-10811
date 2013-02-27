@@ -55,7 +55,7 @@
 	<tr>
 		<td></td>
 		<td>
-			<input type='submit' value="$i18n.getString( 'update' )" >
+			<input type='submit' value="$i18n.getString( 'save' )" >
 			<input type='button' value="$i18n.getString( 'cancel' )" onclick="window.location.href='programValidation.action?programId=$program.id'">
 		</td>
 	</tr>

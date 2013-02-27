@@ -7,6 +7,7 @@ attributes:'$encoder.jsEscape($i18n.getString( 'attributes' ) , "'")',
 start_date:'$encoder.jsEscape($i18n.getString( 'start_date' ) , "'")',
 end_date:'$encoder.jsEscape($i18n.getString( 'end_date' ) , "'")',
 et_no_program:'$encoder.jsEscape($i18n.getString( 'et_no_program' ) , "'")',
+em_no_data_element:'$encoder.jsEscape($i18n.getString( 'em_no_data_element' ) , "'")',
 data_elements:'$encoder.jsEscape($i18n.getString( 'data_elements' ) , "'")',
 program_stage:'$encoder.jsEscape($i18n.getString( 'program_stage' ) , "'")',
 please_select:'[' + '$encoder.jsEscape($i18n.getString( 'please_select' ) , "'")'  + ']',
@@ -162,5 +163,12 @@ select_a_dataelement_for_sum_avg_operator: '$encoder.jsEscape($i18n.getString( '
 multiple_periods_selected_as_filter: '$encoder.jsEscape($i18n.getString( 'multiple_periods_selected_as_filter' ) , "'")',
 multiple_orgunits_selected_as_filter: '$encoder.jsEscape($i18n.getString( 'multiple_orgunits_selected_as_filter' ) , "'")',
 please_select_one_position_for_row: '$encoder.jsEscape($i18n.getString( 'please_select_one_position_for_row' ) , "'")',
-please_select_one_position_for_filter: '$encoder.jsEscape($i18n.getString( 'please_select_one_position_for_filter' ) , "'")'
+please_select_one_position_for_filter: '$encoder.jsEscape($i18n.getString( 'please_select_one_position_for_filter' ) , "'")',
+male: '$encoder.jsEscape($i18n.getString( 'male' ) , "'")',
+female: '$encoder.jsEscape($i18n.getString( 'female' ) , "'")',
+transgender: '$encoder.jsEscape($i18n.getString( 'transgender' ) , "'")',
+verified: '$encoder.jsEscape($i18n.getString( 'verified' ) , "'")',
+declared: '$encoder.jsEscape($i18n.getString( 'declared' ) , "'")',
+approximated: '$encoder.jsEscape($i18n.getString( 'approximated' ) , "'")',
+remove: '$encoder.jsEscape($i18n.getString( 'remove' ) , "'")'
 };

@@ -27,13 +27,11 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Set;
-
 import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.concept.ConceptService;
-import org.hisp.dhis.dataelement.DataElementCategory;
-import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.system.deletion.DeletionHandler;
+
+import java.util.Set;
 
 /**
  * @author Dang Duy Hieu
@@ -112,7 +110,7 @@ public class DataElementCategoryDeletionHandler
     public void deleteDataElementCategoryOption( DataElementCategoryOption categoryOption )
     {
         Set<DataElementCategory> categories = categoryOption.getCategories();
-        
+
         for ( DataElementCategory category : categories )
         {
             category.removeDataElementCategoryOption( categoryOption );

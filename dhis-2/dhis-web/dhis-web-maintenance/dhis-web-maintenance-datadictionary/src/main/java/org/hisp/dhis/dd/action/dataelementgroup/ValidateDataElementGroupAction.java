@@ -77,6 +77,20 @@ public class ValidateDataElementGroupAction
         this.name = name;
     }
 
+    private String shortName;
+
+    public void setShortName( String shortName )
+    {
+        this.shortName = shortName;
+    }
+
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -106,6 +120,33 @@ public class ValidateDataElementGroupAction
                 return ERROR;
             }
         }
+        if ( shortName != null )
+        {
+            DataElementGroup match = dataElementService.getDataElementGroupByShortName( shortName );
+
+            if ( match != null && (id == null || match.getId() != id) )
+            {
+                message = i18n.getString( "short_name_in_use" );
+
+                return ERROR;
+            }
+        }
+
+        if ( code != null && !code.trim().isEmpty() )
+        {
+            DataElementGroup match = dataElementService.getDataElementGroupByCode( code );
+
+            if ( match != null && (id == null || match.getId() != id) )
+            {
+                message = i18n.getString( "code_in_use" );
+
+                return ERROR;
+            }
+        }
+        
+        // ---------------------------------------------------------------------
+        // Validation success
+        // ---------------------------------------------------------------------
 
         message = i18n.getString( "everything_is_ok" );
 

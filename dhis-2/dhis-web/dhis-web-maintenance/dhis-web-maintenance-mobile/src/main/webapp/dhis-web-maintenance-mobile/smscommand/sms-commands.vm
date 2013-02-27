@@ -30,6 +30,8 @@
     		<td><a href="deleteSMSCommand.action?deleteCommandId=$command.id">Delete</a></td>
     	  </tr>
         #end
+        
+      
 	 </tbody> 
 </table>
 </td>

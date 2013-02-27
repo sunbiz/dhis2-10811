@@ -46,6 +46,9 @@
 		</tr>
 		
 		<tr>
+	       <td>Use current period for reporting</td>
+		   <td><input type="checkbox" name="currentPeriodUsedForReporting" #if($SMSCommand.currentPeriodUsedForReporting) checked #end /></td>
+		<tr>
 		  <td>$i18n.getString( "dataset" )</td>
 		  <td>#if($SMSCommand.dataset.name) $SMSCommand.dataset.name #end</td>
 		<tr>

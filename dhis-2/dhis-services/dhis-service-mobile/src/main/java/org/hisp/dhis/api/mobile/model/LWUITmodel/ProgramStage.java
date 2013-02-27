@@ -29,6 +29,7 @@ package org.hisp.dhis.api.mobile.model.LWUITmodel;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hisp.dhis.api.mobile.model.DataElement;
@@ -49,7 +50,7 @@ public class ProgramStage extends Model
 
     private List<Section> sections;
     
-    private List<ProgramStageDataElement> dataElements;
+    private List<ProgramStageDataElement> dataElements = new ArrayList<ProgramStageDataElement>();
 
     public List<Section> getSections()
     {
@@ -123,9 +124,39 @@ public class ProgramStage extends Model
     }
 
     @Override
-    public void deSerialize( DataInputStream dataInputStream )
+    public void deSerialize( DataInputStream dint )
         throws IOException
     {
-        // FIXME: Get implementation from client
+        super.deSerialize( dint );
+        this.setRepeatable( dint.readBoolean() );
+        this.setCompleted( dint.readBoolean() );
+        int dataElementSize = dint.readInt();
+        if ( dataElementSize > 0 )
+        {
+            for ( int i = 0; i < dataElementSize; i++ )
+            {
+                ProgramStageDataElement de = new ProgramStageDataElement();
+                de.deSerialize( dint );
+                this.dataElements.add( de );
+            }
+        }
+        else
+        {
+        }
+        
+        int sectionSize = dint.readInt();
+        if ( sectionSize > 0 )
+        {
+            for ( int i = 0; i < sectionSize; i++ )
+            {
+                sections = new ArrayList<Section>();
+                Section se = new Section();
+                se.deSerialize( dint );
+                this.sections.add( se );
+            }
+        }
+        else
+        {
+        }
     }
 }

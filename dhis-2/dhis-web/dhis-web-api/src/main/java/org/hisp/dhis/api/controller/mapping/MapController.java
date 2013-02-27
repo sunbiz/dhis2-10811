@@ -92,6 +92,7 @@ public class MapController
     // CRUD
     //--------------------------------------------------------------------------
 
+    @Override
     @RequestMapping( method = RequestMethod.POST, consumes = "application/json" )
     @PreAuthorize( "hasRole('F_GIS_ADMIN') or hasRole('ALL')" )
     public void postJsonObject( HttpServletResponse response, HttpServletRequest request, InputStream input ) throws Exception
@@ -111,7 +112,8 @@ public class MapController
         
         ContextUtils.createdResponse( response, "Map created", RESOURCE_PATH + "/" + map.getUid() );
     }
-    
+
+    @Override
     @RequestMapping( value = "/{uid}", method = RequestMethod.PUT, consumes = "application/json" )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     @PreAuthorize( "hasRole('F_GIS_ADMIN') or hasRole('ALL')" )
@@ -154,7 +156,8 @@ public class MapController
         
         mappingService.updateMap( map );
     }
-    
+
+    @Override
     @RequestMapping( value = "/{uid}", method = RequestMethod.DELETE )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     @PreAuthorize( "hasRole('F_GIS_ADMIN') or hasRole('ALL')" )

@@ -4,12 +4,15 @@ $( document ).ready( function()
 	if ( $( '#isRunning' ).val() == 'true' )
 	{
 		$( '.scheduling' ).attr( 'disabled', 'disabled' );
-		$( '#executeButton' ).removeAttr( 'disabled' );
 	}
 	else
 	{
 		$( '.scheduling' ).removeAttr( 'disabled' );
-		$( '#executeButton' ).attr( 'disabled', 'disabled' );
+	}
+	
+	if ( $( '#dataMartStrategy' ).val() == 'never' )
+	{
+		$( '.dataMart' ).attr( 'disabled', 'disabled' );
 	}
 } );
 
@@ -19,12 +22,14 @@ function submitSchedulingForm()
 	$( '#schedulingForm' ).submit();
 }
 
-function executeTasks()
+function toggleDataMart()
 {
-	var ok = confirm( i18n_execute_tasks_confirmation );
-	
-	if ( ok )
+	if ( $( '#dataMartStrategy' ).val() == 'never' )
 	{
-		$.get( 'scheduleTasks.action?execute=true' );
+		$( '.dataMart' ).attr( 'disabled', 'disabled' );
+	}
+	else
+	{
+		$( '.dataMart' ).removeAttr( 'disabled' );
 	}
 }

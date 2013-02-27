@@ -3,7 +3,7 @@
 		<col id="deCol">
 		<col id="entryCol">
 		#if( $!programStageInstance.programStage.program.displayProvidedOtherFacility=='true')
-		<col width="18%" />
+		<col width="5%" />
 		#end
 	</colgroup>
 
@@ -54,14 +54,14 @@
 			#elseif( $programStageDataElement.dataElement.type == "trueOnly" )
 				<input name="entryfield" type="checkbox" data="{compulsory: $programStageDataElement.compulsory, deType:'$programStageDataElement.dataElement.getType()'}" id="$id" name="entryfield" #if($patientDataValue.value=="true") checked #end onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" >
 			#elseif( $programStageDataElement.dataElement.type == "date" )
-				<input name="entryfield" type="text" data="{compulsory: $programStageDataElement.compulsory }" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )" onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" class="date-field" />
+				<input name="entryfield" type="text" data="{compulsory: $programStageDataElement.compulsory }" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )" onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" class="date-field datefield" />
 				<script type="text/javascript">
-					datePicker($programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false);
+					datePicker($programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false, false);
 				</script> 
 			#elseif($hasOptionSet=='true')
-				<input name="entryfield" options='$hasOptionSet' dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" class="optionset" />
+				<input name="entryfield" options='$hasOptionSet' dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" class="auto-field optionset" />
 			#elseif($programStageDataElement.dataElement.type=='username')
-				<input name="entryfield" username='true' dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" />
+				<input name="entryfield" username='true' class="auto-field optionset" dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" />
 			#else
 				<input name="entryfield" dataElementId='$programStageDataElement.dataElement.id' 
 					data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" onkeypress="return keyPress(event, this)" tabindex="$tabIndex"

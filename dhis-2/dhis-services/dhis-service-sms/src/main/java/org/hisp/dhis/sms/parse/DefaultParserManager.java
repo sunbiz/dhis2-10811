@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataset.CompleteDataSetRegistration;
@@ -19,16 +20,15 @@ import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.sms.incoming.IncomingSms;
 import org.hisp.dhis.sms.outbound.OutboundSms;
 import org.hisp.dhis.sms.outbound.OutboundSmsService;
+import org.hisp.dhis.sms.outbound.OutboundSmsTransportService;
 import org.hisp.dhis.smscommand.SMSCode;
 import org.hisp.dhis.smscommand.SMSCommand;
 import org.hisp.dhis.smscommand.SMSCommandService;
-import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,17 +45,7 @@ public class DefaultParserManager
 
     private static final Log log = LogFactory.getLog( DefaultParserManager.class );
 
-    private CurrentUserService currentUserService;
-
-    @Autowired
-    private OrganisationUnitService organisationUnitService;
-
     private CompleteDataSetRegistrationService registrationService;
-
-    public void setRegistrationService( CompleteDataSetRegistrationService registrationService )
-    {
-        this.registrationService = registrationService;
-    }
 
     private DataValueService dataValueService;
 
@@ -67,33 +57,30 @@ public class DefaultParserManager
 
     @Autowired
     private DataElementCategoryService dataElementCategoryService;
+    
+    @Autowired
+    private OutboundSmsTransportService transportService;
 
     @Transactional
     public void parse( IncomingSms sms )
     {
         try
         {
-            /* Temporarily hack for Uganda.. will need to configure this at the gateway */
-            String text = sms.getText();
-            if(sms.getText() != null && sms.getText().startsWith( "dhis" )){
-                text = sms.getText().substring( 5 );
-            }
-            
-            parse( sms.getOriginator(), text );
+            parse( sms.getOriginator(), sms.getText() );
         }
         catch ( SMSParserException e )
         {
             sendSMS( e.getMessage(), sms.getOriginator() );
             return;
         }
-        sendSMS( "Your data report has been received", sms.getOriginator() );
     }
 
     private void sendSMS( String message, String sender )
     {
+        String gatewayId = transportService.getDefaultGateway();
         if ( outboundSmsService != null )
         {
-            outboundSmsService.sendMessage( new OutboundSms( message, sender ), null );
+            outboundSmsService.sendMessage( new OutboundSms( message, sender ), gatewayId );
         }
     }
 
@@ -179,7 +166,7 @@ public class DefaultParserManager
         {
             if ( parsedMessage.containsKey( code.getCode().toUpperCase() ) )
             {
-                storeDataValue( sender, orgUnit, parsedMessage, code, date, command.getDataset(),
+                storeDataValue( sender, orgUnit, parsedMessage, code, command, date, command.getDataset(),
                     completeForm( command, parsedMessage ) );
                 valueStored = true;
             }
@@ -253,14 +240,7 @@ public class DefaultParserManager
             DataElementCategoryOptionCombo optionCombo = dataElementCategoryService
                 .getDataElementCategoryOptionCombo( code.getOptionId() );
 
-            period = code.getDataElement().getPeriodType().createPeriod();
-            CalendarPeriodType cpt = (CalendarPeriodType) period.getPeriodType();
-            period = cpt.getPreviousPeriod( period );
-
-            if ( date != null )
-            {
-                period = cpt.createPeriod( date );
-            }
+            period = getPeriod( command, date );
 
             DataValue dv = dataValueService.getDataValue( orgunit, code.getDataElement(), period, optionCombo );
 
@@ -271,14 +251,19 @@ public class DefaultParserManager
             }
             else if ( dv != null )
             {
+
                 String value = dv.getValue();
-                if ( "true".equals( value ) )
+
+                if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
                 {
-                    value = "Yes";
-                }
-                else if ( "false".equals( value ) )
-                {
-                    value = "No";
+                    if ( "true".equals( value ) )
+                    {
+                        value = "Yes";
+                    }
+                    else if ( "false".equals( value ) )
+                    {
+                        value = "No";
+                    }
                 }
                 reportBack += code.getCode() + "=" + value + " ";
             }
@@ -294,6 +279,29 @@ public class DefaultParserManager
         {
             sendSMS( reportBack, sender );
         }
+    }
+
+    protected Period getPeriod( SMSCommand command, Date date )
+    {
+
+        Period period;
+        period = command.getDataset().getPeriodType().createPeriod();
+        CalendarPeriodType cpt = (CalendarPeriodType) period.getPeriodType();
+        if ( command.isCurrentPeriodUsedForReporting() )
+        {
+            period = cpt.createPeriod( new Date() );
+        }
+        else
+        {
+            period = cpt.getPreviousPeriod( period );
+        }
+
+        if ( date != null )
+        {
+            period = cpt.createPeriod( date );
+        }
+
+        return period;
     }
 
     private Date lookForDate( String message )
@@ -322,18 +330,16 @@ public class DefaultParserManager
                 cal.set( Calendar.YEAR, year - 1 );
             }
             date = cal.getTime();
-            System.out.println( "\nFound date in SMS:" + date.toString() + "\n" );
         }
         catch ( Exception e )
         {
             // no date found
-            System.out.println( "\nNo date found in SMS \n" );
         }
         return date;
     }
 
     private void storeDataValue( String sender, OrganisationUnit orgunit, Map<String, String> parsedMessage,
-        SMSCode code, Date date, DataSet dataSet, boolean completeForm )
+        SMSCode code, SMSCommand command, Date date, DataSet dataSet, boolean completeForm )
     {
         String upperCaseCode = code.getCode().toUpperCase();
 
@@ -347,22 +353,27 @@ public class DefaultParserManager
         DataElementCategoryOptionCombo optionCombo = dataElementCategoryService.getDataElementCategoryOptionCombo( code
             .getOptionId() );
 
-        Period period = code.getDataElement().getPeriodType().createPeriod();
-        CalendarPeriodType cpt = (CalendarPeriodType) period.getPeriodType();
-        period = cpt.getPreviousPeriod( period );
-
-        if ( date != null )
-        {
-            period = cpt.createPeriod( date );
-        }
+        Period period = getPeriod( command, date );
 
         DataValue dv = dataValueService.getDataValue( orgunit, code.getDataElement(), period, optionCombo );
 
         String value = parsedMessage.get( upperCaseCode );
 
+        boolean newDataValue = false;
+        if ( dv == null )
+        {
+            dv = new DataValue();
+            dv.setOptionCombo( optionCombo );
+            dv.setSource( orgunit );
+            dv.setDataElement( code.getDataElement() );
+            dv.setPeriod( period );
+            dv.setComment( "" );
+            dv.setTimestamp( new java.util.Date() );
+            dv.setStoredBy( storedBy );
+            newDataValue = true;
+        }
 
-        
-        if ( value != null)
+        if ( value != null && StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
         {
             if ( "Y".equals( value.toUpperCase() ) || "YES".equals( value.toUpperCase() ) )
             {
@@ -374,23 +385,14 @@ public class DefaultParserManager
             }
         }
 
-        if ( dv == null )
+        dv.setValue( value );
+
+        if ( newDataValue )
         {
-            // New data element
-            DataValue dataVal = new DataValue();
-            dataVal.setOptionCombo( optionCombo );
-            dataVal.setSource( orgunit );
-            dataVal.setDataElement( code.getDataElement() );
-            dataVal.setPeriod( period );
-            dataVal.setComment( "" );
-            dataVal.setTimestamp( new java.util.Date() );
-            dataVal.setStoredBy( storedBy );
-            dataVal.setValue( value );
-            dataValueService.addDataValue( dataVal );
+            dataValueService.addDataValue( dv );
         }
         else
         {
-            // Update data element
             dv.setValue( value );
             dv.setOptionCombo( optionCombo );
             dataValueService.updateDataValue( dv );
@@ -411,20 +413,12 @@ public class DefaultParserManager
             DataElementCategoryOptionCombo optionCombo = dataElementCategoryService
                 .getDataElementCategoryOptionCombo( code.getOptionId() );
 
-            period = code.getDataElement().getPeriodType().createPeriod();
-            CalendarPeriodType cpt = (CalendarPeriodType) period.getPeriodType();
-            period = cpt.getPreviousPeriod( period );
-
-            if ( date != null )
-            {
-                period = cpt.createPeriod( date );
-            }
+            period = getPeriod( command, date );
 
             DataValue dv = dataValueService.getDataValue( orgunit, code.getDataElement(), period, optionCombo );
 
             if ( dv == null && !StringUtils.isEmpty( code.getCode() ) )
             {
-
                 return; // not marked as complete
             }
         }
@@ -528,12 +522,6 @@ public class DefaultParserManager
     }
 
     @Required
-    public void setCurrentUserService( CurrentUserService currentUserService )
-    {
-        this.currentUserService = currentUserService;
-    }
-
-    @Required
     public void setDataValueService( DataValueService dataValueService )
     {
         this.dataValueService = dataValueService;
@@ -550,9 +538,8 @@ public class DefaultParserManager
         this.outboundSmsService = outboundSmsService;
     }
 
-    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
+    public void setRegistrationService( CompleteDataSetRegistrationService registrationService )
     {
-        this.organisationUnitService = organisationUnitService;
+        this.registrationService = registrationService;
     }
-
 }

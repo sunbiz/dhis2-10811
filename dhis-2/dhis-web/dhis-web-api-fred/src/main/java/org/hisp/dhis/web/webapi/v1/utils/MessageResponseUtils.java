@@ -1,7 +1,7 @@
 package org.hisp.dhis.web.webapi.v1.utils;
 
 /*
- * Copyright (c) 2004-2012, University of Oslo
+ * Copyright (c) 2004-2013, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ import java.io.IOException;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-public class MessageResponseUtils
+public final class MessageResponseUtils
 {
     private static ObjectMapper objectMapper;
 
@@ -50,16 +50,20 @@ public class MessageResponseUtils
 
     public static String jsonMessage( String message ) throws IOException
     {
-        return messageToJson( new MessageResponse( message, null ) );
+        return messageToJson( new MessageResponse( null, message ) );
     }
 
-    public static String jsonMessage( String message, String moreInfo ) throws IOException
+    public static String jsonMessage( String code, String message ) throws IOException
     {
-        return messageToJson( new MessageResponse( message, moreInfo ) );
+        return messageToJson( new MessageResponse( code, message ) );
     }
 
     public static String messageToJson( MessageResponse messageResponse ) throws IOException
     {
         return objectMapper.writeValueAsString( messageResponse );
+    }
+
+    private MessageResponseUtils()
+    {
     }
 }

@@ -62,9 +62,9 @@ public class RenameOrganisationUnitAction
     // Input & Output
     // -------------------------------------------------------------------------
 
-    private Integer id;
+    private String id;
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
     }
@@ -90,8 +90,13 @@ public class RenameOrganisationUnitAction
     public String execute()
         throws Exception
     {
-        OrganisationUnit unit = organisationUnitService.getOrganisationUnit( id );
+        OrganisationUnit unit = organisationUnitService.getOrganisationUnitByUuid( id );
 
+        if ( unit == null )
+        {
+            unit = organisationUnitService.getOrganisationUnit( Integer.parseInt( id ) );
+        }
+        
         if ( unit == null )
         {
             message = i18n.getString( "org_unit_not_available" );

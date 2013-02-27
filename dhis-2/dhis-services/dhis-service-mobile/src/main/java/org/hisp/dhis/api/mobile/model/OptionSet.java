@@ -12,7 +12,7 @@ public class OptionSet
 {
     private String clientVersion;
     
-    private List<String> options = new ArrayList<String>();
+    private List<String> options;
 
     public List<String> getOptions()
     {
@@ -51,7 +51,7 @@ public class OptionSet
     }
     
     @Override
-    public void serializeVerssion2_8( DataOutputStream dout )
+    public void serializeVersion2_8( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -65,7 +65,7 @@ public class OptionSet
     }
     
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );

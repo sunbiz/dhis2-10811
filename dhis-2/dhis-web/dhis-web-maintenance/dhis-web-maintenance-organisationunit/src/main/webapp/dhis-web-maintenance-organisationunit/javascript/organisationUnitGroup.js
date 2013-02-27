@@ -8,6 +8,8 @@ function showOrganisationUnitGroupDetails( unitId )
     jQuery.post( 'getOrganisationUnitGroup.action', { id: unitId },
 		function ( json ) {
 			setInnerHTML( 'nameField', json.organisationUnitGroup.name );
+			setInnerHTML( 'shortNameField', json.organisationUnitGroup.shortName );
+			setInnerHTML( 'codeField', json.organisationUnitGroup.code );
 			setInnerHTML( 'memberCountField', json.organisationUnitGroup.memberCount );
 			
 			showDetails();

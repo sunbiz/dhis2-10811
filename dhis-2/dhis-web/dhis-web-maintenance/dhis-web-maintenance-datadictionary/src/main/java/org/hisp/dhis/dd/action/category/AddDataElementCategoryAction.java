@@ -27,15 +27,14 @@ package org.hisp.dhis.dd.action.category;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.concept.ConceptService;
 import org.hisp.dhis.dataelement.DataElementCategory;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Selamawit
@@ -98,7 +97,7 @@ public class AddDataElementCategoryAction
         dataElementCategory.setConcept( conceptService.getConcept( conceptId ) );
 
         List<DataElementCategoryOption> options = new ArrayList<DataElementCategoryOption>();
-        
+
         for ( String id : selectedList )
         {
             DataElementCategoryOption categoryOption = dataElementCategoryService.getDataElementCategoryOption( Integer.parseInt( id ) );
@@ -106,7 +105,7 @@ public class AddDataElementCategoryAction
         }
 
         dataElementCategory.setCategoryOptions( options );
-        
+
         dataElementCategoryService.addDataElementCategory( dataElementCategory );
 
         return SUCCESS;

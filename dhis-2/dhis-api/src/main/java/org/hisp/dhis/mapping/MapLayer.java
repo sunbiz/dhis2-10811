@@ -83,12 +83,6 @@ public class MapLayer
     // -------------------------------------------------------------------------
 
     @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
-    @Override
     public boolean equals( Object object )
     {
         if ( this == object )

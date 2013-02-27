@@ -30,8 +30,8 @@ package org.hisp.dhis.dataelement;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.hierarchy.HierarchyViolationException;
 import org.hisp.dhis.period.PeriodType;
@@ -286,7 +286,13 @@ public interface DataElementService
 
     int getDataElementCountByName( String name );
 
-    Map<String, Set<String>> getDataElementCategoryOptionCombos();
+    /**
+     * Returns a mapping of data element uid and associated category option combo
+     * uids.
+     * 
+     * @return a ListMap.
+     */
+    ListMap<String, String> getDataElementCategoryOptionComboMap();
     
     Map<String, Integer> getDataElementUidIdMap();
 
@@ -347,7 +353,7 @@ public interface DataElementService
      * @param uids the uid collection.
      * @return the data element groups with the given uids.
      */
-    Collection<DataElementGroup> getDataElementGroupsByUid( Collection<String> uids );    
+    List<DataElementGroup> getDataElementGroupsByUid( Collection<String> uids );    
     
     /**
      * Returns the DataElementGroup with the given UID.
@@ -372,7 +378,25 @@ public interface DataElementService
      *         no DataElementGroups exist.
      */
     Collection<DataElementGroup> getAllDataElementGroups();
+    
+    
+    /**
+     * Returns a DataElementGroup with a given short name.
+     *
+     * @param shortName the short name of the DataElementGroup to return.
+     * @return the DataElementGroup with the given short name, or null if no match.
+     */
+    DataElementGroup getDataElementGroupByShortName( String shortName );
+    
+    /**
+     * Returns a DataElementGroup with a given code.
+     *
+     * @param code the shortName of the DataElementGroup to return.
+     * @return the DataElementGroup with the given code, or null if no match.
+     */
+    DataElementGroup getDataElementGroupByCode( String code );
 
+    
     /**
      * Returns all DataElementGroups which contain the given DataElement.
      *

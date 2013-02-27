@@ -52,16 +52,16 @@
             e.preventDefault();
             $('#facilitySubmit').attr('disabled', true).text('Saving');
 
-            $.get('$baseUrl/facilities/${entity.id}.json').success(function (data) {
+            $.get('$baseUrl/facilities/${entity.uuid}.json').success(function (data) {
                 delete data.createdAt;
                 delete data.updatedAt;
-                delete data.url;
+                delete data.href;
 
                 data.name = $('#facilityName').val();
                 data.active = JSON.parse($('#facilityActive').val());
 
-                var lat = $('#facilityLatitude').val();
                 var lng = $('#facilityLongitude').val();
+                var lat = $('#facilityLatitude').val();
 
                 data.coordinates = [ lng, lat ];
 
@@ -91,7 +91,7 @@
                 }
 
                 $.ajax({
-                    url: '$baseUrl/facilities/${entity.id}',
+                    url: '$baseUrl/facilities/${entity.uuid}',
                     contentType: 'application/json; charset=UTF-8',
                     type: 'PUT',
                     data: JSON.stringify(data),

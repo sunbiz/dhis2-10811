@@ -3,17 +3,18 @@
 	<table>
 		<tr>
 			<td class='text-column'>$programInstance.program.dateOfEnrollmentDescription:</td>
-			<td><input name="enrollmentDate" id="enrollmentDate" readonly value="$!format.formatDate( $programInstance.enrollmentDate )" style="width:256px;"></td>
+			<td><input name="enrollmentDate" id="enrollmentDate" readonly value="$!format.formatDate( $programInstance.enrollmentDate )" style="width:330px;"></td>
 		</tr>
 		<tr>
 			<td class='text-column'>$programInstance.program.dateOfIncidentDescription:</td>
-			<td><input name="dateOfIncident" id="dateOfIncident" readonly value="$!format.formatDate( $programInstance.dateOfIncident )" style="width:256px;"></td>
+			<td><input name="dateOfIncident" id="dateOfIncident" readonly value="$!format.formatDate( $programInstance.dateOfIncident )" style="width:330px;"></td>
 		</tr>
 		<tr>
 			<td></td>
 			<td>
-				<input type="button" class='button' value="$i18n.getString( 'update' )" onclick='updateEnrollment($programInstance.patient.id, $programInstance.program.id, $programInstance.id, "$programInstance.program.displayName")'/>
-				<input type="button" class='button' value="$i18n.getString( 'complete' )" onclick='unenrollmentForm($programInstance.id)'/>
+				<input type="button" class='large-button' value="$i18n.getString( 'update' )" onclick='updateEnrollment($programInstance.patient.id, $programInstance.program.id, $programInstance.id, "$programInstance.program.displayName")'/>
+				<input type="button" class='large-button' id='completeProgram' value="$i18n.getString( 'complete' )" onclick='unenrollmentForm($programInstance.id)' #if( $programInstance.completed=='true') disabled #end />
+				<input type="button" class='large-button' id='incompleteProgram' value="$i18n.getString( 'incomplete' )" onclick='reenrollmentForm($programInstance.id)' #if( $programInstance.completed=='false') disabled #end/>
 			</td>
 		</tr>
 	</table>
@@ -107,5 +108,11 @@
 	#end
 	#if( $programInstance.completed=='false')
 		datePickerInRangeValid( 'dateOfIncident' , 'enrollmentDate' );
+	#else
+		jQuery(":input").attr('disabled', true);
+		jQuery("#incompleteProgram").attr('disabled', false);
+		jQuery("img").removeAttr("onclick");
 	#end
+	
+	var i18n_insert_a_due_date = '$encoder.jsEscape( $i18n.getString( "insert_a_due_date" ) , "'")';
 </script>

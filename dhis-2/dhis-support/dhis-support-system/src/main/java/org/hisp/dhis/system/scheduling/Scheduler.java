@@ -33,7 +33,6 @@ package org.hisp.dhis.system.scheduling;
 public interface Scheduler
 {
     final String CRON_DAILY_0AM = "0 0 0 * * ?";
-    final String CRON_DAILY_1AM = "0 0 1 * * ?";
     final String CRON_DAILY_0AM_EXCEPT_SUNDAY = "0 0 0 ? * 1-6";
     final String CRON_WEEKLY_SUNDAY_0AM = "0 0 0 ? * 0";
     final String CRON_TEST = "0 * * * * ?";
@@ -43,13 +42,46 @@ public interface Scheduler
     final String STATUS_STOPPED  = "stopped";
     final String STATUS_NOT_STARTED = "not_started";
     
+    /**
+     * Execute the given task immediately.
+     * 
+     * @task the task to execute.
+     */
     void executeTask( Runnable task );
     
+    /**
+     * Schedule the given task for future execution. The task can be referenced
+     * later through the given task key. A task cannot be scheduled if another
+     * task with the same key is already scheduled. The task must be unique for
+     * the task but can have an arbitrary value.
+     * 
+     * @param key the task key, cannot be null.
+     * @param task the task to schedule.
+     * @param cronExpr the cron expression to use for the task scheduling.
+     * @return true if the task was scheduled for execution as a result of this
+     *         operation, false if not.
+     */
     boolean scheduleTask( String key, Runnable task, String cronExpr );
     
+    /**
+     * Deactivates scheduling of the task with the given key.
+     * 
+     * @param key the task key.
+     * @return true if the task was deactivated as a result of this operation,
+     *         false if not.
+     */
     boolean stopTask( String key );
     
+    /**
+     * Deactivates scheduling for all tasks.
+     */
     void stopAllTasks();
     
+    /**
+     * Gets the status for the task with the given key.
+     * 
+     * @param key the task key.
+     * @return the task status.
+     */
     String getTaskStatus( String key );
 }

@@ -17,6 +17,8 @@
 
     <property name="name" column="name" not-null="true" unique="true" length="230" />
 
+	<property name="shortName" column="shortname" unique="true" length="50" />
+
     <property name="symbol" />
 
     <set name="members" table="orgunitgroupmembers">
@@ -25,6 +27,13 @@
       <many-to-many class="org.hisp.dhis.organisationunit.OrganisationUnit" column="organisationunitid"
         foreign-key="fk_orgunitgroup_organisationunitid" />
     </set>
+	
+	<set name="dataSets" table="orgunitgroupdatasets">
+	  <cache usage="read-write" />
+	  <key column="orgunitgroupid" foreign-key="fk_orgunitgroupdatasets_orgunitgroupid" />
+	  <many-to-many class="org.hisp.dhis.dataset.DataSet" column="datasetid"
+	    foreign-key="fk_orgunitgroup_datasetid" />
+	</set>
 
     <!-- Dynamic attribute values -->
 

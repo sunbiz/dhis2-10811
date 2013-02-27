@@ -11,12 +11,12 @@
     <td style="vertical-align:top" colspan="2">
 		<table width="100%">
 			<tr>
-				<td>
+				<td valign='bottom'>
 					$i18n.getString( "filter_by_name" ): <input type="text" onkeyup="filterValues( this.value , 1)" style="width:250px"/>
 				</td>
 				<td align="right">
+					<input type="button" value="$i18n.getString( "add_new" )" onclick="window.location.href='showAddSingleProgramValidationForm.action?id=$program.id'" style="width:100px"><br>
 					<input type="button" value="$i18n.getString( "back" )" onclick="window.location.href='program.action'" style="width:100px">
-					<input type="button" value="$i18n.getString( "add_new" )" onclick="window.location.href='showAddSingleProgramValidationForm.action?id=$program.id'" style="width:100px">
 				</td>
 			</tr>
 		</table>

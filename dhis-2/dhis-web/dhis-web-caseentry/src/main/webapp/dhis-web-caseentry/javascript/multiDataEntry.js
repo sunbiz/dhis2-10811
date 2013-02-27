@@ -22,29 +22,100 @@ selection.setListenerFunction( multiDataEntryOrgunitSelected );
 
 function listAllPatient()
 {
+	var today = getCurrentDate();
+	var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
+				+ today + "_" + today + "_" 
+				+ getFieldValue('orgunitId') + "_false_4_3";
+	
+	getPatientList(searchTexts);
+}
+
+function scheduled7Days()
+{
+	var today = getCurrentDate();
+	var date = new Date();
+	var d = date.getDate();
+	var m = date.getMonth();
+	var y= date.getFullYear();
+	var last7day = jQuery.datepicker.formatDate( dateFormat, new Date(y, m, d-7) ) ;
+	
+	var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
+				+ last7day + "_" + today + "_" 
+				+ getFieldValue('orgunitId') + "_false_4_3";
+				
+	getPatientList(searchTexts);
+}
+
+function scheduled30Days()
+{
+	var today = getCurrentDate();
+	var date = new Date();
+	var d = date.getDate();
+	var m = date.getMonth();
+	var y= date.getFullYear();
+	var last30day = jQuery.datepicker.formatDate( dateFormat, new Date(y, m-1, d) ) ;
+	
+	var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
+				+ last30day + "_" + today + "_" 
+				+ getFieldValue('orgunitId') + "_false_4_3";
+				
+	getPatientList(searchTexts);
+}
+
+function getPatientList(searchTexts)
+{
 	hideById('listPatientDiv');
 	hideById('advanced-search');
-	
+	hideById('contentDataRecord');
 	contentDiv = 'listPatientDiv';
-	$('#contentDataRecord').html('');
+	setFieldValue('statusEvent', "4");
+	var startDate = jQuery.datepicker.formatDate( dateFormat, new Date() );
+	var endDate = jQuery.datepicker.formatDate( dateFormat, new Date() );
+	var programId = getFieldValue('programIdAddPatient');
+	
 	showLoader();
 	jQuery('#listPatientDiv').load('getDataRecords.action',
 		{
-			programId:getFieldValue('programIdAddPatient'),
-			listAll:true
+			programId:programId,
+			listAll:false,
+			searchBySelectedOrgunit: false,
+			searchTexts: searchTexts
 		}, 
 		function()
 		{
-			showById('colorHelpLink');
+			setInnerHTML('searchInforLbl',i18n_list_all_patients);
 			showById('listPatientDiv');
-			resize();
+			setTableStyles();
 			hideLoader();
 		});
 }
 
+// --------------------------------------------------------------------
+// Search events
+// --------------------------------------------------------------------
+
 function advancedSearch( params )
 {
-	$('#contentDataRecord').html('');
+	hideById('contentDataRecord');
+	hideById('listPatientDiv');
+	showLoader();
+	params += "&programId=" + getFieldValue('programIdAddPatient');
+	$.ajax({
+		url: 'getDataRecords.action',
+		type:"POST",
+		data: params,
+		success: function( html ){
+			setTableStyles();
+			jQuery('#listPatientDiv').html(html);
+			showById('listPatientDiv');
+			hideLoader();
+		}
+	});
+}
+
+
+function advancedSearch( params )
+{
 	params += "&searchTexts=prg_" + getFieldValue('programIdAddPatient');
 	params += "&programId=" + getFieldValue('programIdAddPatient');
 	$.ajax({
@@ -60,7 +131,7 @@ function advancedSearch( params )
 	});
 }
 
-function loadDataEntry( programStageInstanceId ) 
+function loadDataEntryDialog( programStageInstanceId ) 
 {
 	jQuery("#patientList input[name='programStageBtn']").each(function(i,item){
 		jQuery(item).removeClass('stage-object-selected');

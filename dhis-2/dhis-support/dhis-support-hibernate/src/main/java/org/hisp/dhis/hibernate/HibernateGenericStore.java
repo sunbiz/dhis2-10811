@@ -955,13 +955,13 @@ public class HibernateGenericStore<T>
     // Helpers
     //----------------------------------------------------------------------------------------------------------------
 
-    private boolean sharingEnabled()
+    protected boolean sharingEnabled()
     {
         return SharingUtils.isSupported( clazz ) && !(currentUserService.getCurrentUser() == null ||
             currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities().contains( SharingUtils.SHARING_OVERRIDE_AUTHORITY ));
     }
 
-    private boolean isReadAllowed( T object )
+    protected boolean isReadAllowed( T object )
     {
         if ( IdentifiableObject.class.isInstance( object ) )
         {
@@ -976,7 +976,7 @@ public class HibernateGenericStore<T>
         return true;
     }
 
-    private boolean isWriteAllowed( T object )
+    protected boolean isWriteAllowed( T object )
     {
         if ( IdentifiableObject.class.isInstance( object ) )
         {
@@ -991,7 +991,7 @@ public class HibernateGenericStore<T>
         return true;
     }
 
-    private boolean isUpdateAllowed( T object )
+    protected boolean isUpdateAllowed( T object )
     {
         if ( IdentifiableObject.class.isInstance( object ) )
         {
@@ -1006,7 +1006,7 @@ public class HibernateGenericStore<T>
         return true;
     }
 
-    private boolean isDeleteAllowed( T object )
+    protected boolean isDeleteAllowed( T object )
     {
         if ( IdentifiableObject.class.isInstance( object ) )
         {

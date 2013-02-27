@@ -30,7 +30,6 @@
 
     <property name="uuid" unique="true" length="36"/>
 
-
     <property name="description" type="text" />
 
     <property name="openingDate" column="openingdate" type="date" />

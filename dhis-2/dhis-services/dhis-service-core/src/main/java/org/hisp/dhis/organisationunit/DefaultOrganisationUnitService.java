@@ -227,7 +227,7 @@ public class DefaultOrganisationUnitService
 
     public OrganisationUnit getOrganisationUnitByUuid( String uuid )
     {
-        return organisationUnitStore.getByUid( uuid );
+        return organisationUnitStore.getByUuid( uuid );
     }
 
     public List<OrganisationUnit> getOrganisationUnitByName( String name )

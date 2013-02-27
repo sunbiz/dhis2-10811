@@ -45,7 +45,7 @@ import java.util.Map;
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.analytics.Dimension;
-import org.hisp.dhis.analytics.DimensionOption;
+import org.hisp.dhis.analytics.DimensionItem;
 import org.hisp.dhis.analytics.IllegalQueryException;
 import org.hisp.dhis.analytics.QueryPlanner;
 import org.hisp.dhis.common.IdentifiableObject;
@@ -63,7 +63,7 @@ import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.QuarterlyPeriodType;
 import org.hisp.dhis.period.YearlyPeriodType;
-import org.hisp.dhis.system.util.ListMap;
+import org.hisp.dhis.common.ListMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -278,12 +278,12 @@ public class QueryPlannerTest
         params.setOrganisationUnits( getList( ouA, ouB, ouC ) );
         params.setPeriods( getList( createPeriod( "2000Q1" ), createPeriod( "2000Q2" ) ) );
         
-        List<List<DimensionOption>> permutations = params.getDimensionOptionPermutations();
+        List<List<DimensionItem>> permutations = params.getDimensionItemPermutations();
         
         assertNotNull( permutations );
         assertEquals( 6, permutations.size() );
         
-        for ( List<DimensionOption> permutation : permutations )
+        for ( List<DimensionItem> permutation : permutations )
         {
             assertNotNull( permutation );
             assertEquals( 2, permutation.size() );

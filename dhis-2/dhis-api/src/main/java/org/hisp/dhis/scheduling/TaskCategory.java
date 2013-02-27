@@ -33,6 +33,7 @@ package org.hisp.dhis.scheduling;
 public enum TaskCategory
 {
     DATAMART,
+    RESOURCETABLE_UPDATE,
     DATAVALUE_IMPORT,
     METADATA_IMPORT,
     METADATA_EXPORT

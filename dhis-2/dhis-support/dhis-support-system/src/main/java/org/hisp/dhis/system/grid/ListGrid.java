@@ -79,7 +79,7 @@ public class ListGrid
     /**
      * A Map which can hold arbitrary meta-data.
      */
-    private Map<String, String> metaData;
+    private Map<Object, String> metaData;
 
     /**
      * A two dimensional List which simulates a grid where the first list
@@ -108,7 +108,7 @@ public class ListGrid
     public ListGrid()
     {
         headers = new ArrayList<GridHeader>();
-        metaData = new HashMap<String, String>();
+        metaData = new HashMap<Object, String>();
         grid = new ArrayList<List<Object>>();
     }
 
@@ -219,12 +219,12 @@ public class ListGrid
 
     @JsonProperty
     @JsonView( { DetailedView.class } )
-    public Map<String, String> getMetaData()
+    public Map<Object, String> getMetaData()
     {
         return metaData;
     }
     
-    public void setMetaData( Map<String, String> metaData )
+    public void setMetaData( Map<Object, String> metaData )
     {
         this.metaData = metaData;
     }
@@ -340,7 +340,7 @@ public class ListGrid
 
         return grid.get( rowIndex ).get( columnIndex );
     }
-
+    
     public Grid addColumn( List<Object> columnValues )
     {
         verifyGridState();
@@ -528,6 +528,36 @@ public class ListGrid
             }
         }
 
+        return this;
+    }
+    
+    public Grid substituteMetaData()
+    {
+        if ( metaData == null || headers == null || headers.isEmpty() )
+        {
+            return this;
+        }
+        
+        for ( int colIndex = 0; colIndex < headers.size(); colIndex++ )
+        {
+            if ( headers.get( colIndex ).isMeta() )
+            {
+                List<Object> col = getColumn( colIndex );
+                
+                for ( int rowIndex = 0; rowIndex < col.size(); rowIndex++ )
+                {
+                    Object object = col.get( rowIndex );
+                    
+                    Object meta = metaData.get( object );
+                    
+                    if ( meta != null )
+                    {
+                        grid.get( rowIndex ).set( colIndex, meta );
+                    }
+                }
+            }
+        }        
+        
         return this;
     }
 

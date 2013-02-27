@@ -16,5 +16,7 @@
 		<property name="date" />
 		
 		<property name="visitor" />
+		
+		<property name="accessedModule" />
 	</class>
 </hibernate-mapping>

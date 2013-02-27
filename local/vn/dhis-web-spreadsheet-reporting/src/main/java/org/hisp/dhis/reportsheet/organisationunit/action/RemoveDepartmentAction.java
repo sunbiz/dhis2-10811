@@ -1,5 +1,7 @@
+package org.hisp.dhis.reportsheet.organisationunit.action;
+
 /*
- * Copyright (c) 2004-2009, University of Oslo
+ * Copyright (c) 2004-2012, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,67 +27,60 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.caseentry.action.patient;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-
-import org.hisp.dhis.patient.Patient;
-import org.hisp.dhis.patient.PatientService;
-import org.hisp.dhis.program.Program;
-import org.hisp.dhis.program.ProgramInstance;
-import org.hisp.dhis.program.ProgramInstanceService;
+import org.hisp.dhis.common.DeleteNotAllowedException;
+import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
 
 import com.opensymphony.xwork2.Action;
 
 /**
- * @author Abyot Asalefew Gizaw
+ * @author Dang Duy Hieu
  * @version $Id$
  */
-public class RemoveEnrollmentAction
+public class RemoveDepartmentAction
     implements Action
 {
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private PatientService patientService;
+    private OrganisationUnitService organisationUnitService;
 
-    private ProgramInstanceService programInstanceService;
-
-    // -------------------------------------------------------------------------
-    // Input/Output
-    // -------------------------------------------------------------------------
-
-    private Integer programInstanceId;
-
-    private Collection<Program> programs = new ArrayList<Program>();
-
-    // -------------------------------------------------------------------------
-    // Getters && Setters
-    // -------------------------------------------------------------------------
-
-    public void setPatientService( PatientService patientService )
+    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
-        this.patientService = patientService;
+        this.organisationUnitService = organisationUnitService;
     }
 
-    public void setProgramInstanceService( ProgramInstanceService programInstanceService )
-    {
-        this.programInstanceService = programInstanceService;
-    }
+    private I18n i18n;
 
-    public Collection<Program> getPrograms()
+    public void setI18n( I18n i18n )
     {
-        return programs;
+        this.i18n = i18n;
     }
     
-    public void setProgramInstanceId( Integer programInstanceId )
+    // -------------------------------------------------------------------------
+    // Input
+    // -------------------------------------------------------------------------
+
+    private String id;
+
+    public void setId( String id )
     {
-        this.programInstanceId = programInstanceId;
+        this.id = id;
     }
 
+    // -------------------------------------------------------------------------
+    // Output
+    // -------------------------------------------------------------------------
+
+    private String message;
+
+    public String getMessage()
+    {
+        return message;
+    }
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -93,27 +88,27 @@ public class RemoveEnrollmentAction
     public String execute()
         throws Exception
     {
-        ProgramInstance programInstance = programInstanceService.getProgramInstance( programInstanceId );
-
-        Patient patient = programInstance.getPatient();
-
-        Program program = programInstance.getProgram();
-
-        // ---------------------------------------------------------------------
-        // Update Information of programInstance
-        // ---------------------------------------------------------------------
-
-        programInstance.setEndDate( new Date() );
-        programInstance.setCompleted( true );
-        programInstanceService.updateProgramInstance( programInstance );
-
-        // ---------------------------------------------------------------------
-        // Set Completed status all program-instaces of Death case
-        // ---------------------------------------------------------------------
-
-        patient.getPrograms().remove( program );
-        patientService.updatePatient( patient );
-
+        OrganisationUnit unit = organisationUnitService.getOrganisationUnitByUuid( id );
+        
+        if ( unit == null )
+        {
+            unit = organisationUnitService.getOrganisationUnit( Integer.parseInt( id ) );
+        }
+        
+        try
+        {
+            organisationUnitService.deleteOrganisationUnit( unit );
+        }
+        catch ( DeleteNotAllowedException ex )
+        {
+            if ( ex.getErrorCode().equals( DeleteNotAllowedException.ERROR_ASSOCIATED_BY_OTHER_OBJECTS ) )
+            {
+                message = i18n.getString( "object_not_deleted_associated_by_objects" ) + " " + ex.getMessage();
+                
+                return ERROR;
+            }
+        }        
+        
         return SUCCESS;
     }
 }

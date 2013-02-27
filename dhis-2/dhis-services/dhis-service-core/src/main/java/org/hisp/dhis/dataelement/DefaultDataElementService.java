@@ -28,6 +28,8 @@ package org.hisp.dhis.dataelement;
  */
 
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
+import org.hisp.dhis.common.GenericNameableObjectStore;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataelement.comparator.DataElementCategoryComboSizeComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.i18n.I18nService;
@@ -66,9 +68,9 @@ public class DefaultDataElementService
         this.dataElementStore = dataElementStore;
     }
 
-    private GenericIdentifiableObjectStore<DataElementGroup> dataElementGroupStore;
+    private GenericNameableObjectStore<DataElementGroup> dataElementGroupStore;
 
-    public void setDataElementGroupStore( GenericIdentifiableObjectStore<DataElementGroup> dataElementGroupStore )
+    public void setDataElementGroupStore( GenericNameableObjectStore<DataElementGroup> dataElementGroupStore )
     {
         this.dataElementGroupStore = dataElementGroupStore;
     }
@@ -340,11 +342,11 @@ public class DefaultDataElementService
         return i18n( i18nService, dataElementStore.getDataElementsByAggregationLevel( aggregationLevel ) );
     }
 
-    public Map<String, Set<String>> getDataElementCategoryOptionCombos()
+    public ListMap<String, String> getDataElementCategoryOptionComboMap()
     {
-        return dataElementStore.getDataElementCategoryOptionCombos();
+        return dataElementStore.getDataElementCategoryOptionComboMap();
     }
-
+    
     public Map<String, Integer> getDataElementUidIdMap()
     {
         Map<String, Integer> map = new HashMap<String, Integer>();
@@ -413,7 +415,7 @@ public class DefaultDataElementService
         } );
     }
 
-    public Collection<DataElementGroup> getDataElementGroupsByUid( Collection<String> uids )
+    public List<DataElementGroup> getDataElementGroupsByUid( Collection<String> uids )
     {
         return dataElementGroupStore.getByUid( uids );
     }
@@ -430,7 +432,8 @@ public class DefaultDataElementService
 
     public DataElementGroup getDataElementGroupByName( String name )
     {
-        List<DataElementGroup> dataElementGroups = new ArrayList<DataElementGroup>( dataElementGroupStore.getAllEqName( name ) );
+        List<DataElementGroup> dataElementGroups = new ArrayList<DataElementGroup>(
+            dataElementGroupStore.getAllEqName( name ) );
 
         if ( dataElementGroups.isEmpty() )
         {
@@ -438,6 +441,23 @@ public class DefaultDataElementService
         }
 
         return i18n( i18nService, dataElementGroups.get( 0 ) );
+    }
+
+    public DataElementGroup getDataElementGroupByShortName( String shortName )
+    {
+        List<DataElementGroup> dataElementGroups = new ArrayList<DataElementGroup>( dataElementGroupStore.getAllEqShortName( shortName ) );
+
+        if ( dataElementGroups.isEmpty() )
+        {
+            return null;
+        }
+
+        return i18n( i18nService, dataElementGroups.get( 0 ) );
+    }
+
+    public DataElementGroup getDataElementGroupByCode( String code )
+    {
+        return i18n( i18nService, dataElementGroupStore.getByCode( code ) );
     }
 
     public Collection<DataElementGroup> getGroupsContainingDataElement( DataElement dataElement )
@@ -525,7 +545,8 @@ public class DefaultDataElementService
 
     public DataElementGroupSet getDataElementGroupSetByName( String name )
     {
-        List<DataElementGroupSet> dataElementGroupSets = new ArrayList<DataElementGroupSet>( dataElementGroupSetStore.getAllEqName( name ) );
+        List<DataElementGroupSet> dataElementGroupSets = new ArrayList<DataElementGroupSet>(
+            dataElementGroupSetStore.getAllEqName( name ) );
 
         if ( dataElementGroupSets.isEmpty() )
         {

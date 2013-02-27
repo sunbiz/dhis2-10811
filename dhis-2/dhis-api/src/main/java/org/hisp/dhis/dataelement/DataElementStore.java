@@ -28,10 +28,9 @@ package org.hisp.dhis.dataelement;
  */
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 import org.hisp.dhis.common.GenericNameableObjectStore;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataset.DataSet;
 
 /**
@@ -168,7 +167,13 @@ public interface DataElementStore
      */
     Collection<DataElement> getDataElementsByAggregationLevel( int aggregationLevel );
 
-    Map<String, Set<String>> getDataElementCategoryOptionCombos();
+    /**
+     * Returns a mapping of data element uid and associated category option combo
+     * uids.
+     * 
+     * @return a ListMap.
+     */
+    ListMap<String, String> getDataElementCategoryOptionComboMap();
     
     Collection<DataElement> get( DataSet dataSet, String key, Integer max );
 }

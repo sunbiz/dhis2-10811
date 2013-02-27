@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JacksonXmlRootElement( localName = "section", namespace = DxfNamespaces.DXF_2_0)
+@JacksonXmlRootElement(localName = "section", namespace = DxfNamespaces.DXF_2_0)
 public class Section
     extends BaseIdentifiableObject
 {
@@ -151,52 +151,13 @@ public class Section
     }
 
     // -------------------------------------------------------------------------
-    // hashCode, equals and toString
-    // -------------------------------------------------------------------------
-
-    @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
-    @Override
-    public boolean equals( Object object )
-    {
-        if ( this == object )
-        {
-            return true;
-        }
-
-        if ( object == null )
-        {
-            return false;
-        }
-
-        if ( getClass() != object.getClass() )
-        {
-            return false;
-        }
-
-        final Section other = (Section) object;
-
-        return name.equals( other.getName() );
-    }
-
-    @Override
-    public String toString()
-    {
-        return "[" + name + "]";
-    }
-
-    // -------------------------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------------------------
 
     @JsonProperty
-    @JsonSerialize( as = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JsonSerialize(as = BaseIdentifiableObject.class)
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlProperty(namespace = DxfNamespaces.DXF_2_0)
     public DataSet getDataSet()
     {
         return dataSet;
@@ -208,10 +169,10 @@ public class Section
     }
 
     @JsonProperty
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "dataElements", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "dataElement", namespace = DxfNamespaces.DXF_2_0)
+    @JsonSerialize(contentAs = BaseIdentifiableObject.class)
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "dataElements", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "dataElement", namespace = DxfNamespaces.DXF_2_0)
     public List<DataElement> getDataElements()
     {
         return dataElements;
@@ -233,9 +194,9 @@ public class Section
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "greyedFields", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "greyedField", namespace = DxfNamespaces.DXF_2_0)
+    @JsonView({ DetailedView.class, ExportView.class })
+    @JacksonXmlElementWrapper(localName = "greyedFields", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty(localName = "greyedField", namespace = DxfNamespaces.DXF_2_0)
     public Set<DataElementOperand> getGreyedFields()
     {
         return greyedFields;
@@ -255,7 +216,7 @@ public class Section
         {
             Section section = (Section) other;
 
-            dataSet = section.getDataSet();
+            dataSet = section.getDataSet() == null ? dataSet : section.getDataSet();
 
             removeAllDataElements();
 

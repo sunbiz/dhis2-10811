@@ -41,12 +41,12 @@
         <td><label for="valueType">$i18n.getString( "value_type" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
         <td>
             <select id="valueType" name="valueType" onchange="ATTRIBUTE_OPTION.selectValueType(this);">
-                <option value="NUMBER" selected="selected">$i18n.getString( "number" )</option>
-                <option value="TEXT">$i18n.getString( "text" )</option>
-                <option value="YES/NO">$i18n.getString( "yes_no" )</option>
-                <option value="DATE">$i18n.getString( "date" )</option>
-                <option value="COMBO">$i18n.getString( "attribute_combo_type" )</option>
-				<option value="CALCULATED">$i18n.getString( "calculated" )</option>
+                <option value="number" selected="selected">$i18n.getString( "number" )</option>
+                <option value="string">$i18n.getString( "text" )</option>
+                <option value="bool">$i18n.getString( "yes_no" )</option>
+                <option value="date">$i18n.getString( "date" )</option>
+                <option value="combo">$i18n.getString( "attribute_combo_type" )</option>
+				<option value="calculated">$i18n.getString( "calculated" )</option>
             </select>
         </td>
         <td></td>

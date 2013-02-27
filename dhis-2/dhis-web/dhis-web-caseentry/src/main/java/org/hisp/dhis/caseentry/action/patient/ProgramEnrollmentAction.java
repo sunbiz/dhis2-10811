@@ -28,6 +28,7 @@ package org.hisp.dhis.caseentry.action.patient;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.comparator.ProgramStageInstanceVisitDateComparator;
 
 import com.opensymphony.xwork2.Action;
 
@@ -75,9 +77,7 @@ public class ProgramEnrollmentAction
 
     private Map<Integer, String> identiferMap;
 
-    private ProgramInstance programInstance;
-
-    private Collection<ProgramStageInstance> programStageInstances = new ArrayList<ProgramStageInstance>();
+    private List<ProgramStageInstance> programStageInstances = new ArrayList<ProgramStageInstance>();
 
     private List<PatientIdentifierType> identifierTypes;
 
@@ -90,6 +90,8 @@ public class ProgramEnrollmentAction
     private Boolean hasDataEntry;
 
     private List<PatientAttribute> patientAttributes;
+
+    private ProgramInstance programInstance;
 
     // -------------------------------------------------------------------------
     // Getters/Setters
@@ -134,7 +136,7 @@ public class ProgramEnrollmentAction
     {
         this.programInstanceService = programInstanceService;
     }
-    
+
     public void setProgramInstanceId( Integer programInstanceId )
     {
         this.programInstanceId = programInstanceId;
@@ -145,12 +147,7 @@ public class ProgramEnrollmentAction
         return identifierTypes;
     }
 
-    public ProgramInstance getProgramInstance()
-    {
-        return programInstance;
-    }
-
-    public Collection<ProgramStageInstance> getProgramStageInstances()
+    public List<ProgramStageInstance> getProgramStageInstances()
     {
         return programStageInstances;
     }
@@ -163,6 +160,11 @@ public class ProgramEnrollmentAction
     public List<PatientAttribute> getPatientAttributes()
     {
         return patientAttributes;
+    }
+
+    public ProgramInstance getProgramInstance()
+    {
+        return programInstance;
     }
 
     // -------------------------------------------------------------------------
@@ -179,6 +181,10 @@ public class ProgramEnrollmentAction
         // ---------------------------------------------------------------------
 
         programInstance = programInstanceService.getProgramInstance( programInstanceId );
+
+        programStageInstances = new ArrayList<ProgramStageInstance>( programInstance.getProgramStageInstances() );
+
+        Collections.sort( programStageInstances, new ProgramStageInstanceVisitDateComparator() );
 
         loadIdentifierTypes( programInstance );
 

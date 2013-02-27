@@ -97,7 +97,7 @@ public class ModelList
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dataOutputStream )
+    public void serializeVersion2_8( DataOutputStream dataOutputStream )
         throws IOException
     {
         if ( models == null )
@@ -115,7 +115,7 @@ public class ModelList
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dataOutputStream )
+    public void serializeVersion2_9( DataOutputStream dataOutputStream )
         throws IOException
     {
         if ( models == null )
@@ -127,12 +127,12 @@ public class ModelList
 
         for ( int i = 0; i < models.size(); i++ )
         {
-            models.get( i ).serializeVerssion2_9( dataOutputStream );
+            models.get( i ).serializeVersion2_9( dataOutputStream );
         }
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
         // TODO Auto-generated method stub

@@ -31,6 +31,7 @@ import static org.hisp.dhis.system.util.ListUtils.getCollection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataanalysis.DataAnalysisService;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
@@ -134,6 +136,18 @@ public class ValidationAction
         this.organisationUnitId = organisationUnitId;
     }
 
+    private boolean multiOrganisationUnit;
+
+    public void setMultiOrganisationUnit( boolean multiOrganisationUnit )
+    {
+        this.multiOrganisationUnit = multiOrganisationUnit;
+    }
+
+    public boolean isMultiOrganisationUnit()
+    {
+        return multiOrganisationUnit;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -175,28 +189,68 @@ public class ValidationAction
     {
         OrganisationUnit orgUnit = organisationUnitService.getOrganisationUnit( organisationUnitId );
 
+        DataSet dataSet = dataSetService.getDataSet( dataSetId );
+
         Period selectedPeriod = PeriodType.createPeriodExternalId( periodId );
 
-        if ( orgUnit != null && selectedPeriod != null )
+        Period period = null;
+
+        if ( selectedPeriod != null )
         {
-            Period period = periodService.getPeriod( selectedPeriod.getStartDate(), selectedPeriod.getEndDate(),
+            period = periodService.getPeriod( selectedPeriod.getStartDate(), selectedPeriod.getEndDate(),
                 selectedPeriod.getPeriodType() );
 
-            DataSet dataSet = dataSetService.getDataSet( dataSetId );
+            if ( validationCheck( orgUnit, dataSet, period ).equals( INPUT ) )
+            {
+                return INPUT;
+            }
+        }
 
+        if ( multiOrganisationUnit && selectedPeriod != null )
+        {
+            List<OrganisationUnit> children = new ArrayList<OrganisationUnit>( orgUnit.getChildren() );
+
+            Collections.sort( children, IdentifiableObjectNameComparator.INSTANCE );
+
+            for ( OrganisationUnit child : children )
+            {
+                if ( validationCheck( child, dataSet, period ).equals( INPUT ) )
+                {
+                    return INPUT;
+                }
+            }
+        }
+
+        return dataValues.size() == 0 && results.size() == 0 ? SUCCESS : INPUT;
+    }
+
+    // -------------------------------------------------------------------------
+    // Supportive methods
+    // -------------------------------------------------------------------------
+
+    private String validationCheck( OrganisationUnit unit, DataSet dataSet, Period period )
+    {
+        if ( unit != null )
+        {
             // ---------------------------------------------------------------------
             // Min-max and outlier analysis
             // ---------------------------------------------------------------------
 
-            dataValues = minMaxOutlierAnalysisService.analyse( getCollection( orgUnit ), dataSet.getDataElements(), getCollection( period ), null );
-            
+            dataValues = minMaxOutlierAnalysisService.analyse( getCollection( unit ), dataSet.getDataElements(),
+                getCollection( period ), null );
+
             log.debug( "Number of outlier values: " + dataValues.size() );
+
+            if ( dataValues.size() > 0 )
+            {
+                return INPUT;
+            }
 
             // ---------------------------------------------------------------------
             // Validation rule analysis
             // ---------------------------------------------------------------------
 
-            results = new ArrayList<ValidationResult>( validationRuleService.validate( dataSet, period, orgUnit ) );
+            results = new ArrayList<ValidationResult>( validationRuleService.validate( dataSet, period, unit ) );
 
             log.debug( "Number of validation violations: " + results.size() );
 
@@ -209,15 +263,18 @@ public class ValidationAction
                 {
                     ValidationRule rule = result.getValidationRule();
 
-                    leftsideFormulaMap.put( rule.getId(),
-                        expressionService.getExpressionDescription( rule.getLeftSide().getExpression() ) );
+                    leftsideFormulaMap.put( rule.getId(), expressionService.getExpressionDescription( rule
+                        .getLeftSide().getExpression() ) );
 
-                    rightsideFormulaMap.put( rule.getId(),
-                        expressionService.getExpressionDescription( rule.getRightSide().getExpression() ) );
+                    rightsideFormulaMap.put( rule.getId(), expressionService.getExpressionDescription( rule
+                        .getRightSide().getExpression() ) );
                 }
+
+                return INPUT;
             }
         }
 
-        return dataValues.size() == 0 && results.size() == 0 ? SUCCESS : INPUT;
+        return NONE;
     }
+
 }

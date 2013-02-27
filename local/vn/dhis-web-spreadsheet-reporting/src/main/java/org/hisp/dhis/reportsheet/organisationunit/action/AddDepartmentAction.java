@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
+import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
@@ -164,6 +165,12 @@ public class AddDepartmentAction
             if ( group != null )
             {
                 group.addOrganisationUnit( organisationUnit );
+
+                for ( DataSet ds : group.getDataSets() )
+                {
+                    organisationUnit.addDataSet( ds );
+                }
+
                 organisationUnitGroupService.updateOrganisationUnitGroup( group );
             }
         }

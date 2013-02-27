@@ -89,6 +89,7 @@ public class OrganisationUnitGroupBatchHandler
         statementBuilder.setColumn( "uid" );
         statementBuilder.setColumn( "code" );
         statementBuilder.setColumn( "name" );
+        statementBuilder.setColumn( "shortname" );
     }
     
     protected void setValues( OrganisationUnitGroup group )
@@ -96,5 +97,6 @@ public class OrganisationUnitGroupBatchHandler
         statementBuilder.setValue( group.getUid() );
         statementBuilder.setValue( group.getCode() );
         statementBuilder.setValue( group.getName() );
+        statementBuilder.setValue( group.getShortName() );
     }
 }

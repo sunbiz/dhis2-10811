@@ -153,6 +153,12 @@ public class MapView
     // -------------------------------------------------------------------------
 
     @Override
+    public boolean haveUniqueNames()
+    {
+        return false;
+    }
+
+    @Override
     public String getName()
     {
         return indicator != null ? indicator.getName() : dataElement != null ? dataElement.getName() : uid;

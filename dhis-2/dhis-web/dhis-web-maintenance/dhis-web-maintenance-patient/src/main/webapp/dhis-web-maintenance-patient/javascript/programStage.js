@@ -68,6 +68,9 @@ function showProgramStageDetails( programStageId )
 		var validCompleteOnly = (json.programStage.validCompleteOnly=='true') ? i18n_yes : i18n_no;
 		setInnerHTML( 'validCompleteOnlyField', validCompleteOnly );  
 		
+		var captureCoordinates = (json.programStage.captureCoordinates=='true') ? i18n_yes : i18n_no;
+		setInnerHTML( 'captureCoordinatesField', captureCoordinates );
+		
 		setInnerHTML( 'standardIntervalField', json.programStage.standardInterval );  
 		setInnerHTML( 'dataElementCountField', json.programStage.dataElementCount );   
 		setInnerHTML( 'reportDateDescriptionField', json.programStage.reportDateDescription );

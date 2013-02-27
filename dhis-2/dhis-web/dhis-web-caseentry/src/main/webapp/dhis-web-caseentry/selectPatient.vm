@@ -27,6 +27,7 @@
 	var i18n_list_all_patient = '$encoder.jsEscape( $i18n.getString( "list_all_patient" ) , "'")';
 	var i18n_enrol_success = '$encoder.jsEscape( $i18n.getString( "enrol_success" ) , "'")';
 	var i18n_unenrol_success = '$encoder.jsEscape( $i18n.getString( "unenrol_success" ) , "'")';
+	var i18n_reenrol_success = '$encoder.jsEscape( $i18n.getString( "reenrol_success" ) , "'")';
 	var i18n_list_patients_by_program = '$encoder.jsEscape( $i18n.getString( "list_patients_by_program" ) , "'" )';
 	var i18n_confirm_delete = '$encoder.jsEscape( $i18n.getString( "confirm_delete_patient" ) , "'" )';
 	var i18n_adding_patient_failed = '$encoder.jsEscape( $i18n.getString( "adding_patient_failed" ), "'")';
@@ -37,6 +38,7 @@
     var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")'; 
 	var i18n_date_invalid = '$encoder.jsEscape( $i18n.getString( "date_invalid" ) , "'")';
 	var i18n_date_less_incident = '$encoder.jsEscape( $i18n.getString( "date_less_incident" ) , "'")';
+	var i18n_scheduled_in_future = '$encoder.jsEscape( $i18n.getString( "scheduled_in_future" ) , "'")';
 	var i18n_enroll = '$encoder.jsEscape( $i18n.getString( "enroll" ) , "'")';
 	var i18n_update = '$encoder.jsEscape( $i18n.getString( "update" ) , "'")';
 	var i18n_oucode_must_have_9_digits = '$encoder.jsEscape( $i18n.getString( "oucode_must_be_valid" ) , "'")';
@@ -77,8 +79,8 @@
     var i18n_saving_value_failed_error_code = '$encoder.jsEscape( $i18n.getString( "saving_value_failed_error_code" ) , "'")';
     var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")';
     var i18n_complete_confirm_message = '$encoder.jsEscape( $i18n.getString( "complete_confirm_message" ) , "'")';
-    var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
-	var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
+	var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
+    var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
 	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
 	var i18n_date_is_greater_then_or_equals_due_date = '$encoder.jsEscape( $i18n.getString( "date_is_greater_then_or_equals_due_date" ) , "'")';
 	var i18n_add_person_successfully = '$encoder.jsEscape( $i18n.getString( "add_person_successfully" ) , "'")';
@@ -95,6 +97,7 @@
 	var i18n_main_form_link = '$encoder.jsEscape( $i18n.getString( "patient_management" ) , "'")';
 	var i18n_comment_added = '$encoder.jsEscape( $i18n.getString( "comment_added" ) , "'")';
 	var i18n_update = '$encoder.jsEscape( $i18n.getString( "update" ) , "'")';
+	var i18n_insert_a_report_date = '$encoder.jsEscape( $i18n.getString( "insert_a_report_date" ) , "'")';
 	
 	var checkedDuplicate = false;
 	// -1: no search anything
@@ -129,4 +132,7 @@
 		disable('addPatientBtn');
 		disable('advancedSearchBtn');
 	#end
+	setFieldValue('startDueDate','');
+	setFieldValue('endDueDate','');
+	
 </script>

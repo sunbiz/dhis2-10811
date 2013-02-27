@@ -37,7 +37,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Lars Helge Overland
@@ -50,7 +57,7 @@ public class DefaultIdentifiableObjectManager
 
     @Autowired
     private CurrentUserService currentUserService;
-    
+
     @Autowired
     private Set<GenericIdentifiableObjectStore<IdentifiableObject>> identifiableObjectStores;
 
@@ -117,7 +124,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> T get( Class<T> clazz, String uid )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -131,7 +138,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> T getByCode( Class<T> clazz, String code )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -145,7 +152,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> T getByName( Class<T> clazz, String name )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -177,7 +184,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getAll( Class<T> clazz )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -191,7 +198,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getAllSorted( Class<T> clazz )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -205,7 +212,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getLikeName( Class<T> clazz, String name )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -219,7 +226,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getBetween( Class<T> clazz, int first, int max )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -233,7 +240,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getBetweenByName( Class<T> clazz, String name, int first, int max )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -247,7 +254,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getByLastUpdated( Class<T> clazz, Date lastUpdated )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -261,7 +268,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getByLastUpdatedSorted( Class<T> clazz, Date lastUpdated )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -278,24 +285,24 @@ public class DefaultIdentifiableObjectManager
     public <T extends IdentifiableObject> Set<Integer> convertToId( Class<T> clazz, Collection<String> uids )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-        
+
         Set<Integer> ids = new HashSet<Integer>();
-        
+
         for ( String uid : uids )
         {
             IdentifiableObject object = store.getByUid( uid );
-            
+
             if ( object != null )
             {
                 ids.add( object.getId() );
             }
         }
-        
+
         return ids;
     }
-    
+
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Map<String, T> getIdMap( Class<T> clazz, IdentifiableProperty property )
     {
         Map<String, T> map = new HashMap<String, T>();
@@ -325,18 +332,18 @@ public class DefaultIdentifiableObjectManager
                     map.put( object.getUid(), object );
                 }
             }
-            else if ( IdentifiableProperty.NAME.equals( property ) )
-            {
-                if ( object.getName() != null )
-                {
-                    map.put( object.getName(), object );
-                }
-            }
             else if ( IdentifiableProperty.CODE.equals( property ) )
             {
                 if ( object.getCode() != null )
                 {
                     map.put( object.getCode(), object );
+                }
+            }
+            else if ( IdentifiableProperty.NAME.equals( property ) )
+            {
+                if ( object.getName() != null )
+                {
+                    map.put( object.getName(), object );
                 }
             }
         }
@@ -345,7 +352,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends NameableObject> Map<String, T> getIdMap( Class<T> clazz, NameableProperty property )
     {
         Map<String, T> map = new HashMap<String, T>();
@@ -369,7 +376,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> T getObject( Class<T> clazz, IdentifiableProperty property, String id )
     {
         GenericIdentifiableObjectStore<T> store = (GenericIdentifiableObjectStore<T>) getIdentifiableObjectStore( clazz );
@@ -447,9 +454,12 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No IdentifiableObjectStore found for class: " + clazz );
-            
             store = identifiableObjectStoreMap.get( clazz.getSuperclass() );
+
+            if ( store == null )
+            {
+                log.warn( "No IdentifiableObjectStore found for class: " + clazz );
+            }
         }
 
         return store;
@@ -461,9 +471,12 @@ public class DefaultIdentifiableObjectManager
 
         if ( store == null )
         {
-            log.warn( "No NameableObjectStore found for class: " + clazz );
-            
             store = nameableObjectStoreMap.get( clazz.getSuperclass() );
+
+            if ( store == null )
+            {
+                log.warn( "No NameableObjectStore found for class: " + clazz );
+            }
         }
 
         return store;
@@ -474,11 +487,11 @@ public class DefaultIdentifiableObjectManager
     //--------------------------------------------------------------------------
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> List<T> getAllAccessible( Class<T> clazz )
     {
         User user = currentUserService.getCurrentUser();
-        
+
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
 
         if ( user == null || store == null )
@@ -490,11 +503,11 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> List<T> getAccessibleLikeName( Class<T> clazz, String name )
     {
         User user = currentUserService.getCurrentUser();
-        
+
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
 
         if ( user == null || store == null )
@@ -506,11 +519,11 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> List<T> getAccessibleBetween( Class<T> clazz, int first, int max )
     {
         User user = currentUserService.getCurrentUser();
-        
+
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
 
         if ( user == null || store == null )
@@ -522,11 +535,11 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> List<T> getAccessibleBetweenLikeName( Class<T> clazz, String name, int first, int max )
     {
         User user = currentUserService.getCurrentUser();
-        
+
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
 
         if ( user == null || store == null )
@@ -538,11 +551,11 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> List<T> getAccessibleByLastUpdated( Class<T> clazz, Date lastUpdated )
     {
         User user = currentUserService.getCurrentUser();
-        
+
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
 
         if ( store == null )

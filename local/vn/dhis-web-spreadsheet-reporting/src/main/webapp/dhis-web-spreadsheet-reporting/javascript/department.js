@@ -14,6 +14,57 @@ function organisationUnitSelected( orgUnitIds )
     window.location.href = 'department.action';
 }
 
+function showRename( event )
+{
+	var jqsource = jQuery( "#" + this.id );
+	var name = jqsource.html();
+	_input = "<input type='text' style='width:" + name.length + "em'";
+	_input += " onkeypress='renameByEnter( event, " + '"' + this.id + '"' + ', "' + name + '"' + ", this.value )'";
+	_input += " onblur='renameByBlur( " + '"' + this.id + '"' + ', "' + name + '"' + ", this.value )'/>";
+
+	jqsource.html( _input );
+	jqsource.unbind( "click" );
+	jqsource.find( "input" ).focus();
+	jqsource.find( "input" ).val( name );
+}
+
+function renameByEnter( event, id, _old, _new )
+{
+	var key = event.keyCode || event.charCode || event.which;
+
+	if ( key == 13 || key == 1 ) // Enter
+	{
+		var jqsource = jQuery( "#" + id );
+		jqsource.bind( "click", showRename );
+
+		if ( _old != _new )
+		{
+			jQuery.postUTF8( "renameDepartment.action",
+			{
+				id: id.substring(2, id.length),
+				name: _new
+			}, function( json )
+			{
+				if ( json.response == "success" )
+				{
+					jqsource.html( _new );
+				} else {
+					jqsource.html( _old );
+					showWarningMessage( json.message );
+				}
+			} );
+		}
+		else { jqsource.html( _old ); }
+	}
+}
+
+function renameByBlur( id, _old, _new )
+{
+	var jqsource = jQuery( "#" + id );
+	jqsource.bind( "click", showRename );
+	jqsource.html( _old );	
+}
+
 // -----------------------------------------------------------------------------
 // Export to PDF
 // -----------------------------------------------------------------------------
@@ -31,7 +82,7 @@ function exportPDF( type )
 
 function showOrganisationUnitDetails( unitId )
 {
-    jQuery.post( '../dhis-web-commons-ajax-json/getOrganisationUnit.action',
+    jQuery.post( 'getDepartment.action',
 		{ id: unitId }, function ( json ) {
 		setInnerHTML( 'nameField', json.organisationUnit.name );
 		setInnerHTML( 'shortNameField', json.organisationUnit.shortName );
@@ -60,13 +111,35 @@ function showOrganisationUnitDetails( unitId )
 	});
 }
 
+function showUpdateOrganisationUnit( unitId )
+{
+	jQuery.get( 'getDepartment.action', { id : unitId }, function( json )
+	{
+		setFieldValue( 'name', json.organisationUnit.name );
+		setFieldValue( 'shortName', json.organisationUnit.shortName );
+		
+		var groups = json.organisationUnit.groups;
+
+		if ( groups.length == 0 )
+		{
+			jQuery( "select[name=selectedGroups] option:first-child" ).attr( "selected", "selected" );
+		}
+		else {
+			for ( var i in groups )
+			{
+				jQuery( "td#td" + groups[i].groupSetId + " select:first" ).val( groups[i].id );
+			}
+		}
+	} );
+}
+
 // -----------------------------------------------------------------------------
 // Remove organisation unit
 // -----------------------------------------------------------------------------
 
 function removeOrganisationUnit( unitId, unitName )
 {
-    removeItem( unitId, unitName, confirm_to_delete_org_unit, '../dhis-web-maintenance-organisationunit/removeOrganisationUnit.action', subtree.refreshTree );
+    removeItem( unitId, unitName, confirm_to_delete_org_unit, 'removeDepartment.action', subtree.refreshTree );
 }
 
 function nameChanged()

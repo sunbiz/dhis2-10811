@@ -19,7 +19,10 @@
 		datePickerInRange( 'openingDate', 'closedDate', false, false );
 		#else
 		datePickerValid( 'openingDate', false );
-		#end			
+		#end
+
+		jQuery( "div[id=dynamicAttributesContainer] table tr td:first-child" ).attr( "style", "width: 120px" );
+		jQuery( "div[id=dynamicAttributesContainer] table tr td:last-child *" ).attr( "style", "" );
 	});
 	
 	var previousName = '$encoder.jsEscape( $organisationUnit.name, "'" )';

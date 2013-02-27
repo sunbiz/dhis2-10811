@@ -19,7 +19,7 @@ public class SMSCode
     public void serialize( DataOutputStream dataOutputStream )
         throws IOException
     {
-        this.serializeVerssion2_10( dataOutputStream );
+        this.serializeVersion2_10( dataOutputStream );
     }
 
     @Override
@@ -33,14 +33,14 @@ public class SMSCode
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dataOutputStream )
+    public void serializeVersion2_8( DataOutputStream dataOutputStream )
         throws IOException
     {
         // does not exist in version 2.8
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dataOutputStream )
+    public void serializeVersion2_9( DataOutputStream dataOutputStream )
         throws IOException
     {
      // does not exist in version 2.9
@@ -88,7 +88,7 @@ public class SMSCode
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
         dataOutputStream.writeUTF( this.code );

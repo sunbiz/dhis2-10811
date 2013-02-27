@@ -130,15 +130,15 @@ public class MobileModel
     {
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            this.serializeVerssion2_8( dout );
+            this.serializeVersion2_8( dout );
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            this.serializeVerssion2_9( dout );
+            this.serializeVersion2_9( dout );
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
         {
-            this.serializeVerssion2_10( dout );
+            this.serializeVersion2_10( dout );
         }
     }
 
@@ -150,7 +150,7 @@ public class MobileModel
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dout )
+    public void serializeVersion2_8( DataOutputStream dout )
         throws IOException
     {
         if ( programs == null )
@@ -213,7 +213,7 @@ public class MobileModel
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         if ( programs == null )
@@ -276,9 +276,10 @@ public class MobileModel
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dout )
+    public void serializeVersion2_10( DataOutputStream dout )
         throws IOException
     {
+       
         if ( programs == null )
         {
             dout.writeInt( 0 );

@@ -140,15 +140,18 @@ public class FacilityServiceController
 
             if ( organisationUnitService.getOrganisationUnit( organisationUnit.getUid() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "An object with that ID already exists." ), headers, HttpStatus.CONFLICT );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                    "An object with that ID already exists." ), headers, HttpStatus.CONFLICT );
             }
             else if ( organisationUnitService.getOrganisationUnitByName( organisationUnit.getName() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "An object with that name already exists." ), headers, HttpStatus.CONFLICT );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                    "An object with that name already exists." ), headers, HttpStatus.CONFLICT );
             }
             else if ( organisationUnit.getCode() != null && organisationUnitService.getOrganisationUnitByCode( organisationUnit.getCode() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "An object with that code already exists." ), headers, HttpStatus.CONFLICT );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                    "An object with that code already exists." ), headers, HttpStatus.CONFLICT );
             }
 
             return new ResponseEntity<String>( json, headers, HttpStatus.OK );
@@ -172,12 +175,12 @@ public class FacilityServiceController
         if ( constraintViolations.isEmpty() )
         {
             OrganisationUnit organisationUnit = conversionService.convert( facility, OrganisationUnit.class );
-            OrganisationUnit ou = organisationUnitService.getOrganisationUnit( facility.getId() );
+            OrganisationUnit ou = organisationUnitService.getOrganisationUnit( facility.getUuid() );
 
             if ( ou == null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "No object with that identifier exists." ),
-                    headers, HttpStatus.NOT_FOUND );
+                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.NOT_FOUND.toString(),
+                    "No object with that identifier exists." ), headers, HttpStatus.NOT_FOUND );
             }
             else if ( organisationUnit.getCode() != null )
             {
@@ -185,8 +188,8 @@ public class FacilityServiceController
 
                 if ( ouByCode != null && !ou.getUid().equals( ouByCode.getUid() ) )
                 {
-                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( "Another object with the same code already exists." ),
-                        headers, HttpStatus.CONFLICT );
+                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
+                        "Another object with the same code already exists." ), headers, HttpStatus.CONFLICT );
                 }
             }
 

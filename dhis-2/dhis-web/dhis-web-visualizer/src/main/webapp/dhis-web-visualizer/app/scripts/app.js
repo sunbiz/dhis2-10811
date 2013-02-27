@@ -232,22 +232,22 @@ DV.conf = {
 	},
     layout: {
         west_width: 424,
-        west_fieldset_width: 410,
-        west_width_padding: 18,
-        west_fill: 117,
-        west_fill_accordion_indicator: 77,
-        west_fill_accordion_dataelement: 77,
-        west_fill_accordion_dataset: 45,
-        west_fill_accordion_fixedperiod: 77,
-        west_fill_accordion_organisationunit: 103,
-        west_maxheight_accordion_indicator: 478,
-        west_maxheight_accordion_dataelement: 478,
-        west_maxheight_accordion_dataset: 478,
-        west_maxheight_accordion_relativeperiod: 423,
-        west_maxheight_accordion_fixedperiod: 478,
-        west_maxheight_accordion_organisationunit: 756,
-        west_maxheight_accordion_organisationunitgroup: 298,
-        west_maxheight_accordion_options: 449,
+        west_fieldset_width: 416,
+        west_width_padding: 4,
+        west_fill: 101,
+        west_fill_accordion_indicator: 63,
+        west_fill_accordion_dataelement: 63,
+        west_fill_accordion_dataset: 33,
+        west_fill_accordion_fixedperiod: 63,
+        west_fill_accordion_organisationunit: 97,
+        west_maxheight_accordion_indicator: 500,
+        west_maxheight_accordion_dataelement: 500,
+        west_maxheight_accordion_dataset: 500,
+        west_maxheight_accordion_relativeperiod: 402,
+        west_maxheight_accordion_fixedperiod: 500,
+        west_maxheight_accordion_organisationunit: 900,
+        west_maxheight_accordion_organisationunitgroup: 281,
+        west_maxheight_accordion_options: 431,
         east_tbar_height: 31,
         east_gridcolumn_height: 30,
         form_label_width: 55,
@@ -319,6 +319,10 @@ Ext.onReady( function() {
     DV.init = DV.conf.init.ajax.jsonfy(r);
     DV.init.initialize = function() {
 		DV.cmp.dimension.indicator.panel.expand();
+
+		DV.cmp.region.west.on('resize', function() {
+			DV.util.viewport.resizeDimensions();
+		});
 
 		DV.c = DV.chart.model;
         DV.util.combobox.filter.category();
@@ -2532,7 +2536,6 @@ Ext.onReady( function() {
 
     DV.viewport = Ext.create('Ext.container.Viewport', {
         layout: 'border',
-        renderTo: Ext.getBody(),
         items: [
             {
                 region: 'west',
@@ -2566,7 +2569,7 @@ Ext.onReady( function() {
                             {
                                 xtype: 'label',
                                 text: DV.i18n.chart_type,
-                                style: 'font-size:11px; font-weight:bold; padding:13px 10px 0 8px'
+                                style: 'font-size:11px; font-weight:bold; padding:13px 8px 0 7px'
                             },
                             {
 								xtype: 'button',
@@ -2616,17 +2619,17 @@ Ext.onReady( function() {
                     {
                         xtype: 'toolbar',
                         id: 'chartsettings_tb',
-                        style: 'padding-left: 6px;',
+                        style: 'padding-left: 2px;',
                         height: 48,
                         items: [
                             {
                                 xtype: 'panel',
-                                bodyStyle: 'border-style:none; background-color:transparent; padding:0; padding-right: 3px',
+                                bodyStyle: 'border-style:none; background-color:transparent; padding:0',
                                 items: [
                                     {
                                         xtype: 'label',
                                         text: DV.i18n.series,
-                                        style: 'font-size:11px; font-weight:bold; padding:0 3px'
+                                        style: 'font-size:11px; font-weight:bold; padding:0 4px'
                                     },
                                     { bodyStyle: 'padding:1px 0; border-style:none;	background-color:transparent' },
                                     {
@@ -2639,7 +2642,7 @@ Ext.onReady( function() {
                                         editable: false,
                                         valueField: 'id',
                                         displayField: 'name',
-                                        width: (DV.conf.layout.west_fieldset_width / 3) - 3,
+                                        width: (DV.conf.layout.west_fieldset_width / 3) - 1,
                                         store: DV.store.dimension(),
                                         value: DV.conf.finals.dimension.data.value,
                                         listeners: {
@@ -2655,12 +2658,12 @@ Ext.onReady( function() {
                             },
                             {
                                 xtype: 'panel',
-                                bodyStyle: 'border-style:none; background-color:transparent; padding:0; padding-right: 3px',
+                                bodyStyle: 'border-style:none; background-color:transparent; padding:0',
                                 items: [
                                     {
                                         xtype: 'label',
                                         text: DV.i18n.category,
-                                        style: 'font-size:11px; font-weight:bold; padding:0 3px'
+                                        style: 'font-size:11px; font-weight:bold; padding:0 4px'
                                     },
                                     { bodyStyle: 'padding:1px 0; border-style:none;	background-color:transparent' },
                                     {
@@ -2674,7 +2677,7 @@ Ext.onReady( function() {
                                         lastQuery: '',
                                         valueField: 'id',
                                         displayField: 'name',
-                                        width: (DV.conf.layout.west_fieldset_width / 3) - 4,
+                                        width: (DV.conf.layout.west_fieldset_width / 3) - 1,
                                         store: DV.store.dimension(),
                                         value: DV.conf.finals.dimension.period.value,
                                         listeners: {
@@ -2695,7 +2698,7 @@ Ext.onReady( function() {
                                     {
                                         xtype: 'label',
                                         text: 'Filter',
-                                        style: 'font-size:11px; font-weight:bold; padding:0 3px'
+                                        style: 'font-size:11px; font-weight:bold; padding:0 4px'
                                     },
                                     { bodyStyle: 'padding:1px 0; border-style:none;	background-color:transparent' },
                                     {
@@ -2709,7 +2712,7 @@ Ext.onReady( function() {
                                         lastQuery: '',
                                         valueField: 'id',
                                         displayField: 'name',
-                                        width: (DV.conf.layout.west_fieldset_width / 3) - 4,
+                                        width: (DV.conf.layout.west_fieldset_width / 3) - 1,
                                         store: DV.store.dimension(),
                                         value: DV.conf.finals.dimension.organisationunit.value,
                                         listeners: {
@@ -2724,7 +2727,7 @@ Ext.onReady( function() {
                     },
                     {
                         xtype: 'panel',
-                        bodyStyle: 'border-style:none; border-top:2px groove #eee; padding:6px;',
+                        bodyStyle: 'border-style:none; border-top:2px groove #eee; padding:2px;',
                         layout: 'fit',
                         items: [
 							{
@@ -2742,13 +2745,12 @@ Ext.onReady( function() {
 											{
 												xtype: 'combobox',
 												cls: 'dv-combo',
-												style: 'margin-bottom:8px',
+												style: 'margin-bottom:4px; margin-top:2px',
 												width: DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding,
 												valueField: 'id',
 												displayField: 'name',
 												fieldLabel: DV.i18n.select_group,
-												labelStyle: 'padding-left:7px;',
-												labelWidth: 90,
+												labelStyle: 'padding-left:8px;',
 												editable: false,
 												queryMode: 'remote',
 												store: Ext.create('Ext.data.Store', {
@@ -2913,13 +2915,12 @@ Ext.onReady( function() {
 											{
 												xtype: 'combobox',
 												cls: 'dv-combo',
-												style: 'margin-bottom:8px',
+												style: 'margin-bottom:4px; margin-top:2px',
 												width: DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding,
 												valueField: 'id',
 												displayField: 'name',
 												fieldLabel: DV.i18n.select_group,
-												labelStyle: 'padding-left:7px;',
-												labelWidth: 90,
+												labelStyle: 'padding-left:8px',
 												editable: false,
 												queryMode: 'remote',
 												store: Ext.create('Ext.data.Store', {
@@ -3209,9 +3210,10 @@ Ext.onReady( function() {
 													{
 														xtype: 'panel',
 														layout: 'anchor',
-														bodyStyle: 'border-style:none; padding:0 0 0 10px',
+														bodyStyle: 'border-style:none; padding:2px 0 0 10px',
 														defaults: {
 															labelSeparator: '',
+															style: 'margin-bottom:2px',
 															listeners: {
 																added: function(chb) {
 																	if (chb.xtype === 'checkbox') {
@@ -3250,9 +3252,10 @@ Ext.onReady( function() {
 													{
 														xtype: 'panel',
 														layout: 'anchor',
-														bodyStyle: 'border-style:none; padding:0 0 0 32px',
+														bodyStyle: 'border-style:none; padding:2px 0 0 32px',
 														defaults: {
 															labelSeparator: '',
+															style: 'margin-bottom:2px',
 															listeners: {
 																added: function(chb) {
 																	if (chb.xtype === 'checkbox') {
@@ -3285,9 +3288,10 @@ Ext.onReady( function() {
 													{
 														xtype: 'panel',
 														layout: 'anchor',
-														bodyStyle: 'border-style:none; padding:0 0 0 32px',
+														bodyStyle: 'border-style:none; padding:2px 0 0 32px',
 														defaults: {
 															labelSeparator: '',
+															style: 'margin-bottom:2px',
 															listeners: {
 																added: function(chb) {
 																	if (chb.xtype === 'checkbox') {
@@ -3330,6 +3334,7 @@ Ext.onReady( function() {
 														bodyStyle: 'border-style:none; padding:5px 0 0 10px',
 														defaults: {
 															labelSeparator: '',
+															style: 'margin-bottom:2px',
 															listeners: {
 																added: function(chb) {
 																	if (chb.xtype === 'checkbox') {
@@ -3369,7 +3374,8 @@ Ext.onReady( function() {
 														layout: 'anchor',
 														bodyStyle: 'border-style:none; padding:5px 0 0 46px',
 														defaults: {
-															labelSeparator: ''
+															labelSeparator: '',
+															style: 'margin-bottom:2px',
 														},
 														items: [
 															{
@@ -3412,17 +3418,17 @@ Ext.onReady( function() {
 												xtype: 'panel',
 												layout: 'column',
 												bodyStyle: 'border-style:none',
+												style: 'margin-top:2px',
 												items: [
 													{
 														xtype: 'combobox',
 														cls: 'dv-combo',
-														style: 'margin-bottom:8px',
-														width: 261,
+														style: 'margin-bottom:4px',
+														width: DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding - 62 - 62 - 7,
 														valueField: 'id',
 														displayField: 'name',
 														fieldLabel: DV.i18n.select_type,
-														labelStyle: 'padding-left:7px;',
-														labelWidth: 80,
+														labelStyle: 'padding-left:8px;',
 														editable: false,
 														queryMode: 'remote',
 														store: DV.store.periodtype,
@@ -3448,7 +3454,7 @@ Ext.onReady( function() {
 													{
 														xtype: 'button',
 														text: 'Prev year',
-														style: 'margin-left:4px',
+														style: 'margin-left:4px; border-radius:2px',
 														height: 24,
 														handler: function() {
 															var cb = this.up('panel').down('combobox');
@@ -3461,7 +3467,7 @@ Ext.onReady( function() {
 													{
 														xtype: 'button',
 														text: 'Next year',
-														style: 'margin-left:3px',
+														style: 'margin-left:3px; border-radius:2px',
 														height: 24,
 														handler: function() {
 															var cb = this.up('panel').down('combobox');
@@ -3588,12 +3594,13 @@ Ext.onReady( function() {
 									},
 									{
 										title: '<div style="height:17px; background-image:url(images/organisationunit.png); background-repeat:no-repeat; padding-left:20px">' + DV.i18n.organisation_units + '</div>',
+										bodyStyle: 'padding-top:5px',
 										hideCollapseTool: true,
 										collapsed: false,
 										items: [
 											{
 												layout: 'column',
-												bodyStyle: 'border:0 none; padding-bottom:4px',
+												bodyStyle: 'border:0 none; padding-bottom:3px; padding-left:7px',
 												items: [
 													{
 														xtype: 'checkbox',
@@ -3631,7 +3638,7 @@ Ext.onReady( function() {
 												id: 'organisationunit_t',
 												xtype: 'toolbar',
 												style: 'margin-bottom: 5px',
-												width: DV.conf.layout.west_fieldset_width - 18,
+												width: DV.conf.layout.west_fieldset_width - 4,
 												xable: function(checked, value) {
 													if (checked || value) {
 														this.disable();
@@ -3868,22 +3875,22 @@ Ext.onReady( function() {
 									{
 										title: '<div style="height:17px; background-image:url(images/organisationunit.png); background-repeat:no-repeat; padding-left:20px">' + DV.i18n.organisation_unit_groups + '</div>',
 										hideCollapseTool: true,
-										bodyStyle: 'padding-bottom: 0px',
+										bodyStyle: 'padding-top:8px; padding-bottom: 0px',
 										items: [
 											{
 												xtype: 'label',
-												style: 'font-style:italic; font-size:11px; color:#666',
+												style: 'font-style:italic; font-size:11px; color:#666; padding-top:2px',
 												margin: '0 0 0 7',
 												text: DV.i18n.groups_replace_orgunits
 											},
 											{
 												xtype: 'combobox',
 												cls: 'dv-combo',
-												style: 'margin-top:10px; margin-bottom: 0',
+												style: 'margin-top:8px; margin-bottom: 0',
 												width: DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding,
 												valueField: 'id',
 												displayField: 'name',
-												fieldLabel: 'By group set',
+												fieldLabel: 'Group set', //i18n
 												labelWidth: 85,
 												labelStyle: 'padding-left:7px;',
 												editable: false,
@@ -3914,79 +3921,86 @@ Ext.onReady( function() {
 											{
 												xtype: 'panel',
 												layout: 'column',
-												bodyStyle: 'padding-bottom:3px',
+												bodyStyle: 'border:0 none',
 												items: [
 													{
-														xtype: 'checkbox',
-														style: 'margin-right:6px',
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
-														boxLabel: DV.i18n.show_data,
-														labelWidth: DV.conf.layout.form_label_width,
-														listeners: {
-															added: function() {
-																DV.cmp.favorite.showdata = this;
+														xtype: 'panel',
+														bodyStyle: 'padding-top:2px; padding-left:6px',
+														columnWidth: 0.5,
+														items: [
+															{
+																xtype: 'checkbox',
+																//style: 'margin-right:6px',
+																//columnWidth: 0.5,
+																boxLabel: DV.i18n.show_data,
+																//labelWidth: DV.conf.layout.form_label_width,
+																listeners: {
+																	added: function() {
+																		DV.cmp.favorite.showdata = this;
+																	}
+																}
+															},
+															{
+																xtype: 'checkbox',
+																//style: 'margin-right:6px',
+																//columnWidth: 0.5,
+																boxLabel: DV.i18n.trend_line,
+																//labelWidth: DV.conf.layout.form_label_width,
+																listeners: {
+																	added: function() {
+																		DV.cmp.favorite.trendline = this;
+																	}
+																}
 															}
-														}
+														]
 													},
 													{
-														xtype: 'checkbox',
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
-														boxLabel: DV.i18n.hide_subtitle,
-														labelWidth: DV.conf.layout.form_label_width,
-														listeners: {
-															added: function() {
-																DV.cmp.favorite.hidesubtitle = this;
+														xtype: 'panel',
+														bodyStyle: 'padding-top:2px; padding-left:8px',
+														columnWidth: 0.5,
+														items: [
+															{
+																xtype: 'checkbox',
+																//width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+																boxLabel: DV.i18n.hide_legend,
+																//labelWidth: DV.conf.layout.form_label_width,
+																listeners: {
+																	added: function() {
+																		DV.cmp.favorite.hidelegend = this;
+																	}
+																}
+															},
+															{
+																xtype: 'checkbox',
+																//width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
+																boxLabel: DV.i18n.hide_subtitle,
+																//labelWidth: DV.conf.layout.form_label_width,
+																listeners: {
+																	added: function() {
+																		DV.cmp.favorite.hidesubtitle = this;
+																	}
+																}
 															}
-														}
+														]
 													}
 												]
 											},
 											{
 												xtype: 'panel',
 												layout: 'column',
-												bodyStyle: 'padding-bottom:15px',
-												items: [
-													{
-														xtype: 'checkbox',
-														style: 'margin-right:6px',
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
-														boxLabel: DV.i18n.trend_line,
-														labelWidth: DV.conf.layout.form_label_width,
-														listeners: {
-															added: function() {
-																DV.cmp.favorite.trendline = this;
-															}
-														}
-													},
-													{
-														xtype: 'checkbox',
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
-														boxLabel: DV.i18n.hide_legend,
-														labelWidth: DV.conf.layout.form_label_width,
-														listeners: {
-															added: function() {
-																DV.cmp.favorite.hidelegend = this;
-															}
-														}
-													}
-												]
-											},
-											{
-												xtype: 'panel',
-												layout: 'column',
-												bodyStyle: 'padding-bottom:8px',
+												bodyStyle: 'padding-top:10px',
 												items: [
 													{
 														xtype: 'textfield',
 														cls: 'dv-textfield-alt1',
-														style: 'margin-right:6px',
+														style: 'margin-right:2px',
 														fieldLabel: DV.i18n.domain_axis_label,
 														labelAlign: 'top',
 														labelSeparator: '',
 														maxLength: 100,
 														enforceMaxLength: true,
 														labelWidth: DV.conf.layout.form_label_width,
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
 														listeners: {
 															added: function() {
 																DV.cmp.favorite.domainaxislabel = this;
@@ -4002,7 +4016,7 @@ Ext.onReady( function() {
 														maxLength: 100,
 														enforceMaxLength: true,
 														labelWidth: DV.conf.layout.form_label_width,
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
 														listeners: {
 															added: function() {
 																DV.cmp.favorite.rangeaxislabel = this;
@@ -4014,19 +4028,19 @@ Ext.onReady( function() {
 											{
 												xtype: 'panel',
 												layout: 'column',
-												bodyStyle: 'padding-bottom:8px',
+												bodyStyle: 'padding-top:8px',
 												items: [
 													{
 														xtype: 'numberfield',
 														cls: 'dv-textfield-alt1',
-														style: 'margin-right:6px',
+														style: 'margin-right:2px',
 														hideTrigger: true,
 														fieldLabel: DV.i18n.target_line_value,
 														labelAlign: 'top',
 														labelSeparator: '',
 														maxLength: 100,
 														enforceMaxLength: true,
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
 														spinUpEnabled: true,
 														spinDownEnabled: true,
 														listeners: {
@@ -4046,7 +4060,7 @@ Ext.onReady( function() {
 														labelSeparator: '',
 														maxLength: 100,
 														enforceMaxLength: true,
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
 														disabled: true,
 														xable: function() {
 															if (DV.cmp.favorite.targetlinevalue.getValue()) {
@@ -4067,19 +4081,19 @@ Ext.onReady( function() {
 											{
 												xtype: 'panel',
 												layout: 'column',
-												bodyStyle: 'padding-bottom:5px',
+												bodyStyle: 'padding-top:8px',
 												items: [
 													{
 														xtype: 'numberfield',
 														cls: 'dv-textfield-alt1',
-														style: 'margin-right:6px',
+														style: 'margin-right:2px',
 														hideTrigger: true,
 														fieldLabel: DV.i18n.base_line_value,
 														labelAlign: 'top',
 														labelSeparator: '',
 														maxLength: 100,
 														enforceMaxLength: true,
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
 														spinUpEnabled: true,
 														spinDownEnabled: true,
 														listeners: {
@@ -4099,7 +4113,7 @@ Ext.onReady( function() {
 														labelSeparator: '',
 														maxLength: 100,
 														enforceMaxLength: true,
-														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 3,
+														width: ((DV.conf.layout.west_fieldset_width - DV.conf.layout.west_width_padding) / 2) - 1,
 														disabled: true,
 														xable: function() {
 															if (DV.cmp.favorite.baselinevalue.getValue()) {
@@ -5061,8 +5075,6 @@ Ext.onReady( function() {
             },
             resize: function(vp) {
                 DV.cmp.region.west.setWidth(DV.conf.layout.west_width);
-
-				DV.util.viewport.resizeDimensions();
 
                 if (DV.datatable.datatable) {
                     DV.datatable.datatable.setHeight(DV.util.viewport.getSize().y - DV.conf.layout.east_tbar_height);

@@ -33,6 +33,8 @@ import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.dataelement.DataElementGroupSet;
+import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
@@ -67,6 +69,13 @@ public class InitializeAction
     public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
     {
         this.organisationUnitGroupService = organisationUnitGroupService;
+    }
+    
+    private DataElementService dataElementService;
+
+    public void setDataElementService( DataElementService dataElementService )
+    {
+        this.dataElementService = dataElementService;
     }
 
     private PeriodService periodService;
@@ -106,6 +115,13 @@ public class InitializeAction
     public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSets()
     {
         return organisationUnitGroupSets;
+    }
+
+    private Collection<DataElementGroupSet> dataElementGroupSets;
+
+    public Collection<DataElementGroupSet> getDataElementGroupSets()
+    {
+        return dataElementGroupSets;
     }
 
     private List<Period> lastMonth;
@@ -195,6 +211,8 @@ public class InitializeAction
         }
 
         organisationUnitGroupSets = organisationUnitGroupService.getAllOrganisationUnitGroupSets();
+        
+        dataElementGroupSets = dataElementService.getAllDataElementGroupSets();
 
         RelativePeriods rp = new RelativePeriods();
 

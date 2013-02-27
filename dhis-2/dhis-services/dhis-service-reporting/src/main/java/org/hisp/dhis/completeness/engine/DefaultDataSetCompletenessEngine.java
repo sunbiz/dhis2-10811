@@ -27,10 +27,10 @@ package org.hisp.dhis.completeness.engine;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.scheduling.TaskCategory.DATAMART;
 import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_COMPLETENESS_OFFSET;
 import static org.hisp.dhis.setting.SystemSettingManager.KEY_COMPLETENESS_OFFSET;
 import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
-import static org.hisp.dhis.scheduling.TaskCategory.DATAMART;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +46,6 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
-import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.filter.DataSetWithOrganisationUnitsFilter;
@@ -123,18 +122,14 @@ public class DefaultDataSetCompletenessEngine
     // -------------------------------------------------------------------------
 
     @Transactional
-    public void exportDataSetCompleteness( Collection<Integer> dataSetIds, RelativePeriods relatives,
-        Collection<Integer> organisationUnitIds, TaskId id )
+    public void exportDataSetCompleteness( Collection<Integer> periodIds, TaskId id )
     {
-        if ( relatives != null )
-        {
-            Collection<Integer> periodIds = ConversionUtils.getIdentifiers( Period.class,
-                periodService.reloadPeriods( relatives.getRelativePeriods() ) );
-
-            exportDataSetCompleteness( dataSetIds, periodIds, organisationUnitIds, id );
-        }
+        Collection<Integer> dataSetIds = ConversionUtils.getIdentifiers( DataSet.class, dataSetService.getAllDataSets() );
+        Collection<Integer> organisationUnitIds = ConversionUtils.getIdentifiers( OrganisationUnit.class, organisationUnitService.getAllOrganisationUnits() );
+        
+        exportDataSetCompleteness( dataSetIds, periodIds, organisationUnitIds, id );
     }
-
+    
     @Transactional
     public void exportDataSetCompleteness( Collection<Integer> dataSetIds, Collection<Integer> periodIds,
         Collection<Integer> organisationUnitIds, TaskId id )

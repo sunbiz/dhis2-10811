@@ -96,11 +96,18 @@ public class Program
         super.serialize( dout );
         dout.writeBoolean( this.isCompleted() );
         dout.writeInt( this.getVersion() );
-        dout.writeInt( programStages.size() );
-        for ( int i = 0; i < programStages.size(); i++ )
+        if( programStages == null )
         {
-            ProgramStage ps = (ProgramStage) programStages.get( i );
-            ps.serialize( dout );
+            dout.writeInt( 0 );
+        }
+        else
+        {
+            dout.writeInt( programStages.size() );
+            for ( int i = 0; i < programStages.size(); i++ )
+            {
+                ProgramStage ps = (ProgramStage) programStages.get( i );
+                ps.serialize( dout );
+            }
         }
     }
 

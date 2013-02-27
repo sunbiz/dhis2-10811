@@ -178,6 +178,16 @@ public class Indicator
     {
         attributeValues.clear();
     }
+    
+    public String getExplodedNumeratorFallback()
+    {
+        return explodedNumerator != null ? explodedNumerator : numerator;
+    }
+    
+    public String getExplodedDenominatorFallback()
+    {
+        return explodedDenominator != null ? explodedDenominator : denominator;
+    }
 
     // -------------------------------------------------------------------------
     // Getters and setters

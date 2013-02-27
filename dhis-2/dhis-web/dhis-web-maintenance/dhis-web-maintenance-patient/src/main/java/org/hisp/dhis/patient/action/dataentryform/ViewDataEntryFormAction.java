@@ -40,6 +40,7 @@ import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElementService;
 import org.hisp.dhis.program.ProgramStageService;
 import org.hisp.dhis.program.comparator.ProgramStageNameComparator;
+import org.hisp.dhis.setting.SystemSettingManager;
 
 import com.opensymphony.xwork2.Action;
 
@@ -82,6 +83,13 @@ public class ViewDataEntryFormAction
     public void setProgramStageDataElementService( ProgramStageDataElementService programStageDataElementService )
     {
         this.programStageDataElementService = programStageDataElementService;
+    }
+
+    private SystemSettingManager systemSettingManager;
+
+    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
+    {
+        this.systemSettingManager = systemSettingManager;
     }
 
     // -------------------------------------------------------------------------
@@ -135,6 +143,13 @@ public class ViewDataEntryFormAction
     public List<DataElement> getDataElements()
     {
         return dataElements;
+    }
+
+    private List<String> flags;
+
+    public List<String> getFlags()
+    {
+        return flags;
     }
 
     // -------------------------------------------------------------------------
@@ -195,6 +210,8 @@ public class ViewDataEntryFormAction
 
         Collections.sort( dataElements, new IdentifiableObjectNameComparator() );
 
+        flags = systemSettingManager.getFlags();
+        
         return SUCCESS;
     }
 }

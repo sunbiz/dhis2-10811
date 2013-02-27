@@ -178,7 +178,15 @@ public class UpdateProgramAction
     {
         this.blockEntryForm = blockEntryForm;
     }
-
+    
+    private Boolean onlyEnrollOnce = false;
+    
+    public void setOnlyEnrollOnce( Boolean onlyEnrollOnce )
+    {
+        this.onlyEnrollOnce = onlyEnrollOnce;
+    }
+    
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -202,6 +210,8 @@ public class UpdateProgramAction
         program.setDisplayProvidedOtherFacility( displayProvidedOtherFacility );
         program.setDisplayIncidentDate( displayIncidentDate );
         program.setBlockEntryForm( blockEntryForm );
+        program.setOnlyEnrollOnce( onlyEnrollOnce );
+        
         if ( type == Program.MULTIPLE_EVENTS_WITH_REGISTRATION )
         {
             program.setGeneratedByEnrollmentDate( generateBydEnrollmentDate );

@@ -86,7 +86,7 @@ public class Resources
         mediaTypes.add( MediaType.APPLICATION_XML.toString() );
         mediaTypes.add( new MediaType( "application", "javascript" ).toString() );
 
-        for ( Map.Entry<Class<? extends IdentifiableObject>, String> entry : ExchangeClasses.getExportMap().entrySet() )
+        for ( Map.Entry<Class<? extends IdentifiableObject>, String> entry : ExchangeClasses.getAllExportMap().entrySet() )
         {
             resources.add( new Resource( StringUtils.capitalize( entry.getValue() ), entry.getKey(), requestMethods, mediaTypes ) );
         }

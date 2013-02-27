@@ -51,7 +51,7 @@ import java.util.Set;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-public class SharingUtils
+public final class SharingUtils
 {
     public static Map<Class<? extends IdentifiableObject>, String> PUBLIC_AUTHORITIES = new HashMap<Class<? extends IdentifiableObject>, String>();
 
@@ -282,5 +282,9 @@ public class SharingUtils
     private static boolean sharingOverrideAuthority( User user )
     {
         return user != null && user.getUserCredentials().getAllAuthorities().contains( SHARING_OVERRIDE_AUTHORITY );
+    }
+
+    private SharingUtils()
+    {
     }
 }

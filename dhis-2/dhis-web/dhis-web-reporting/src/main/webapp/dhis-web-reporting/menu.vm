@@ -11,8 +11,8 @@
 </ul>
 
 #if( $auth.hasAccess( "dhis-web-reporting", "displayDataMartForm" ) )
-<h2>$i18n.getString( "data_mart" )&nbsp;</h2>
+<h2>$i18n.getString( "analytics_and_data_mart" )&nbsp;</h2>
 <ul>
-	<li><a href="displayDataMartForm.action">$i18n.getString( "data_mart" )&nbsp;</a></li>
+	<li><a href="displayDataMartForm.action">$i18n.getString( "analytics_and_data_mart" )&nbsp;</a></li>
 </ul>
 #end

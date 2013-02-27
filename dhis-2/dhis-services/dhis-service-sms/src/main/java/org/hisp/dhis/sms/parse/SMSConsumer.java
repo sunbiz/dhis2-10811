@@ -7,6 +7,8 @@ import org.hisp.dhis.sms.queue.MessageQueue;
 public class SMSConsumer
 {
 
+    
+    
     private ParserManager parserManager;
 
     private MessageQueue messageQueue;
@@ -60,7 +62,6 @@ public class SMSConsumer
         private void fetchAndParseSMS()
         {
             IncomingSms message = messageQueue.get();
-            System.out.println("starter å spise meldinger..");
             while ( message != null )
             {
                 try{

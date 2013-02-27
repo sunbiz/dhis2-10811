@@ -35,6 +35,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.BaseNameableObject;
 import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
@@ -50,7 +51,7 @@ import java.util.Set;
  */
 @JacksonXmlRootElement( localName = "dataElementGroup", namespace = DxfNamespaces.DXF_2_0)
 public class DataElementGroup
-    extends BaseIdentifiableObject
+    extends BaseNameableObject
 {
     /**
      * Determines if a de-serialized file is compatible with this class.
@@ -147,45 +148,6 @@ public class DataElementGroup
     public PeriodType getPeriodType()
     {
         return members != null && !members.isEmpty() ? members.iterator().next().getPeriodType() : null;
-    }
-
-    // -------------------------------------------------------------------------
-    // hashCode and equals
-    // -------------------------------------------------------------------------
-
-    @Override
-    public int hashCode()
-    {
-        return name.hashCode();
-    }
-
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-
-        if ( o == null )
-        {
-            return false;
-        }
-
-        if ( !(o instanceof DataElementGroup) )
-        {
-            return false;
-        }
-
-        final DataElementGroup other = (DataElementGroup) o;
-
-        return name.equals( other.getName() );
-    }
-
-    @Override
-    public String toString()
-    {
-        return "[" + name + "]";
     }
 
     // -------------------------------------------------------------------------

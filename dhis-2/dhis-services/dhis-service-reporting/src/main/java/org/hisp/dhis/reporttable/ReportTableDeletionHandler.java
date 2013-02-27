@@ -125,7 +125,7 @@ public class ReportTableDeletionHandler
     {
         for ( ReportTable reportTable : reportTableService.getAllReportTables() )
         {
-            if ( reportTable.getUnits().remove( unit ) )
+            if ( reportTable.getOrganisationUnits().remove( unit ) )
             {
                 reportTableService.updateReportTable( reportTable );
             }

@@ -47,6 +47,15 @@ public interface ResourceTableStore
     final String TABLE_NAME_PERIOD_STRUCTURE = "_periodstructure";
     final String TABLE_NAME_PERIOD_NO_DISAGGREGATION_STRUCTURE = "_period_no_disagg_structure";
     
+    /**
+     * Performs a batch update.
+     * 
+     * @param columns the number of columns in the table to update.
+     * @param tableName the name of the table to update.
+     * @param batchArgs the arguments to use for the update statement.
+     */
+    void batchUpdate( int columns, String tableName, List<Object[]> batchArgs );
+    
     // -------------------------------------------------------------------------
     // OrganisationUnitStructure
     // -------------------------------------------------------------------------

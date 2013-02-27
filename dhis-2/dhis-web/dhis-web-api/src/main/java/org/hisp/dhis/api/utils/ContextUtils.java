@@ -210,7 +210,7 @@ public class ContextUtils
             clazz = clazz.getSuperclass();
         }
 
-        String resourcePath = ExchangeClasses.getExportMap().get( clazz );
+        String resourcePath = ExchangeClasses.getAllExportMap().get( clazz );
 
         return getRootPath( getRequest() ) + "/" + resourcePath;
     }

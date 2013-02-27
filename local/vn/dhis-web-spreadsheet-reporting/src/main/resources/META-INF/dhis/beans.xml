@@ -1792,8 +1792,18 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<!-- OrganisationUnit -->
 
 	<bean
-		id="org.hisp.dhis.reportsheet.organisationunit.action.ShowAddDepartmentFormAction"
-		class="org.hisp.dhis.reportsheet.organisationunit.action.ShowAddDepartmentFormAction"
+		id="org.hisp.dhis.reportsheet.organisationunit.action.GetDepartmentAction"
+		class="org.hisp.dhis.reportsheet.organisationunit.action.GetDepartmentAction"
+		scope="prototype">
+		<property name="organisationUnitService">
+			<ref
+				bean="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+		</property>
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.reportsheet.organisationunit.action.GetDepartmentListAction"
+		class="org.hisp.dhis.reportsheet.organisationunit.action.GetDepartmentListAction"
 		scope="prototype">
 		<property name="organisationUnitService">
 			<ref
@@ -1830,6 +1840,16 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<bean
 		id="org.hisp.dhis.reportsheet.organisationunit.action.RenameOrganisationUnitAction"
 		class="org.hisp.dhis.reportsheet.organisationunit.action.RenameOrganisationUnitAction"
+		scope="prototype">
+		<property name="organisationUnitService">
+			<ref
+				bean="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+		</property>
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.reportsheet.organisationunit.action.RemoveDepartmentAction"
+		class="org.hisp.dhis.reportsheet.organisationunit.action.RemoveDepartmentAction"
 		scope="prototype">
 		<property name="organisationUnitService">
 			<ref

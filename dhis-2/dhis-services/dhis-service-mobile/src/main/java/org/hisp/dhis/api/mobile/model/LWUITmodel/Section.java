@@ -29,6 +29,7 @@ package org.hisp.dhis.api.mobile.model.LWUITmodel;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -90,10 +91,25 @@ public class Section
     }
 
     @Override
-    public void deSerialize( DataInputStream dataInputStream )
+    public void deSerialize( DataInputStream dint )
         throws IOException
     {
-        // FIXME: Get implementation from client
+        this.setId( dint.readInt() );
+        this.setName( dint.readUTF() );
+
+        int numbOfDataElement = dint.readInt();
+        
+        if ( numbOfDataElement > 0 )
+        {
+            dataElementIds = new ArrayList<Integer>();
+            for ( int i = 0; i < numbOfDataElement; i++ )
+            {
+                dataElementIds.add( dint.readInt() );
+            }
+        }
+        else
+        {
+        }
     }
 
 }

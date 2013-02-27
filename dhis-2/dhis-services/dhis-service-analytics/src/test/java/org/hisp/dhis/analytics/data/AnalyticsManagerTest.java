@@ -41,7 +41,7 @@ import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.YearlyPeriodType;
-import org.hisp.dhis.system.util.ListMap;
+import org.hisp.dhis.common.ListMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

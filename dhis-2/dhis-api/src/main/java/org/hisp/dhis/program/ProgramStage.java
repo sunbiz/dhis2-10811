@@ -96,6 +96,8 @@ public class ProgramStage
     private Boolean validCompleteOnly = false;
 
     private Boolean displayGenerateEventBox = true;
+    
+    private Boolean captureCoordinates = false;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -339,4 +341,15 @@ public class ProgramStage
     {
         return "Dear {person-name}, please come to your appointment on {program-stage-name} at {due-date}";
     }
+
+    public Boolean getCaptureCoordinates()
+    {
+        return captureCoordinates;
+    }
+
+    public void setCaptureCoordinates( Boolean captureCoordinates )
+    {
+        this.captureCoordinates = captureCoordinates;
+    }
+    
 }

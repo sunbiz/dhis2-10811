@@ -153,11 +153,10 @@ public class GetPatientAction
         throws Exception
     {
         relationshipTypes = relationshipTypeService.getAllRelationshipTypes();
-
         patient = patientService.getPatient( id );
-
         healthWorkers = patient.getOrganisationUnit().getUsers();
-
+        Program program = null;
+        
         if ( programId == null )
         {
             PatientRegistrationForm patientRegistrationForm = patientRegistrationFormService
@@ -172,7 +171,7 @@ public class GetPatientAction
         }
         else
         {
-            Program program = programService.getProgram( programId );
+            program = programService.getProgram( programId );
             Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient,
                 program, false );
 
@@ -211,10 +210,11 @@ public class GetPatientAction
             Collection<PatientAttribute> patientAttributesInProgram = new HashSet<PatientAttribute>();
             
             Collection<Program> programs = programService.getAllPrograms();
-            for ( Program program : programs )
+            programs.remove(program);
+            for ( Program _program : programs )
             {
-                identifierTypes.removeAll( program.getPatientIdentifierTypes() );
-                patientAttributesInProgram.removeAll( program.getPatientAttributes() );
+                identifierTypes.removeAll( _program.getPatientIdentifierTypes() );
+                patientAttributesInProgram.removeAll( _program.getPatientAttributes() );
             }
 
             attributeGroups = new ArrayList<PatientAttributeGroup>(

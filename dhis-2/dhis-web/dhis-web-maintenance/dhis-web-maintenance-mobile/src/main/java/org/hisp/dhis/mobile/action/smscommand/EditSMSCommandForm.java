@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.DataSet;
@@ -26,9 +27,9 @@ public class EditSMSCommandForm
 
     private DataElementService dataElementService;
 
-    private String name; 
+    private String name;
 
-    private int selectedDataSetID; 
+    private int selectedDataSetID;
 
     private String codeDataelementOption;
 
@@ -37,8 +38,10 @@ public class EditSMSCommandForm
     private String codeSeparator;
 
     private String defaultMessage;
-    
+
     private int selectedCommandID = -1;
+
+    private boolean currentPeriodUsedForReporting = false;
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -69,11 +72,10 @@ public class EditSMSCommandForm
         SMSCommand c = getSMSCommand();
         if ( selectedDataSetID > -1 && c != null )
         {
-           // c.setDataset( getDataSetService().getDataSet( getSelectedDataSetID() ) );
+            c.setCurrentPeriodUsedForReporting( currentPeriodUsedForReporting );
             c.setName( name );
             c.setSeparator( separator );
             c.setCodes( codeSet );
-           // c.setCodeSeparator( codeSeparator );
             c.setDefaultMessage( defaultMessage );
             smsCommandService.save( c );
         }
@@ -180,7 +182,6 @@ public class EditSMSCommandForm
     {
         this.dataElementService = dataElementService;
     }
-    
 
     public String getCodeSeparator()
     {
@@ -192,12 +193,31 @@ public class EditSMSCommandForm
         this.codeSeparator = codeSeparator;
     }
 
-    public String getDefaultMessage() {
+    public String getDefaultMessage()
+    {
         return defaultMessage;
     }
 
-    public void setDefaultMessage(String defaultMessage) {
+    public void setDefaultMessage( String defaultMessage )
+    {
         this.defaultMessage = defaultMessage;
+    }
+
+    public boolean isCurrentPeriodUsedForReporting()
+    {
+        return currentPeriodUsedForReporting;
+    }
+
+    public void setCurrentPeriodUsedForReporting( String currentPeriodUsedForReporting )
+    {
+        if ( !StringUtils.isEmpty( currentPeriodUsedForReporting ) )
+        {
+            this.currentPeriodUsedForReporting = true;
+        }
+        else
+        {
+            this.currentPeriodUsedForReporting = false;
+        }
     }
 
 }

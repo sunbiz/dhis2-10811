@@ -350,7 +350,7 @@ public class ReportTableTest
         List<NameableObject> a3 = getList( groupA, indicatorA );
         
         assertNotNull( getColumnName( a3 ) );
-        assertEquals( "organisationunitgroupa_indicatorshorta", getColumnName( a3 ) );
+        assertEquals( "organisationunitgroupshorta_indicatorshorta", getColumnName( a3 ) );
     }
 
     @Test
@@ -449,10 +449,10 @@ public class ReportTableTest
         assertNotNull( columnNames );
         assertEquals( 4, columnNames.size() );
         
-        assertTrue( columnNames.contains( "indicatorshorta_organisationunitgroupa" ) );
-        assertTrue( columnNames.contains( "indicatorshorta_organisationunitgroupb" ) );
-        assertTrue( columnNames.contains( "indicatorshortb_organisationunitgroupa" ) );
-        assertTrue( columnNames.contains( "indicatorshortb_organisationunitgroupb" ) );
+        assertTrue( columnNames.contains( "indicatorshorta_organisationunitgroupshorta" ) );
+        assertTrue( columnNames.contains( "indicatorshorta_organisationunitgroupshortb" ) );
+        assertTrue( columnNames.contains( "indicatorshortb_organisationunitgroupshorta" ) );
+        assertTrue( columnNames.contains( "indicatorshortb_organisationunitgroupshortb" ) );
         
         List<List<NameableObject>> rows = reportTable.getRows();
         

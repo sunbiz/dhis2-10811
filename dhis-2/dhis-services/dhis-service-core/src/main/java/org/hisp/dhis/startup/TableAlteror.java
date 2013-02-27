@@ -27,19 +27,19 @@ package org.hisp.dhis.startup;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.amplecode.quick.StatementHolder;
-import org.amplecode.quick.StatementManager;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.system.startup.AbstractStartupRoutine;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.amplecode.quick.StatementHolder;
+import org.amplecode.quick.StatementManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.system.startup.AbstractStartupRoutine;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Lars Helge Overland
@@ -175,10 +175,6 @@ public class TableAlteror
         executeSql( "ALTER TABLE organisationunit DROP COLUMN hasPatients" );
 
         executeSql( "update dataelement set texttype='text' where valuetype='string' and texttype is null" );
-
-        // ---------------------------------------------------------------------
-        // Update tables for dimensional model
-        // ---------------------------------------------------------------------
 
         // categories_categoryoptions
         // set to 0 temporarily
@@ -425,6 +421,9 @@ public class TableAlteror
         executeSql( "update reporttable set lastfinancialyear = false where lastfinancialyear is null" );
         executeSql( "update reporttable set last5financialyears = false where last5financialyears is null" );
         executeSql( "update reporttable set cumulative = false where cumulative is null" );
+        executeSql( "update reporttable set subtotals = false where subtotals is null" );
+        executeSql( "update reporttable set userOrganisationUnit = false where userOrganisationUnit is null" );
+        executeSql( "update reporttable set userOrganisationUnitChildren = false where userOrganisationUnitChildren is null" );
 
         executeSql( "update chart set reportingmonth = false where reportingmonth is null" );
         executeSql( "update chart set reportingbimonth = false where reportingbimonth is null" );
@@ -451,6 +450,9 @@ public class TableAlteror
         executeSql( "update users set disabled = false where disabled is null" );
         executeSql( "update dataentryform set format = 1 where format is null" );
 
+        executeSql( "update dataelementgroup set shortname=name where shortname is null and length(name)<=50" );
+        executeSql( "update orgunitgroup set shortname=name where shortname is null and length(name)<=50" );
+        
         // report, reporttable, chart groups
 
         executeSql( "DROP TABLE reportgroupmembers" );
@@ -521,9 +523,56 @@ public class TableAlteror
         executeSql( "ALTER TABLE usergroup DROP CONSTRAINT usergroup_name_key" );
         executeSql( "ALTER TABLE datadictionary DROP CONSTRAINT datadictionary_name_key" );
 
+        upgradeReportTableColumns();
+        
         log.info( "Tables updated" );
     }
 
+    private void upgradeReportTableColumns()
+    {
+        try
+        {
+            String sql = "select reporttableid, doindicators, doperiods, dounits from reporttable";
+            
+            ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
+            
+            while ( rs.next() )
+            {
+                int id = rs.getInt( "reporttableid" );
+                boolean doIndicators = rs.getBoolean( "doindicators" );
+                boolean doPeriods = rs.getBoolean( "doperiods" );
+                boolean doUnits = rs.getBoolean( "dounits" );
+                
+                int sortOrder = 0;
+                
+                if ( doIndicators )
+                {
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + sortOrder + ");" );
+                    sortOrder++;
+                }
+                
+                if ( doPeriods )
+                {
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + sortOrder + ");" );
+                    sortOrder++;
+                }
+                
+                if ( doUnits )
+                {
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + sortOrder + ");" );
+                }
+            }
+            
+            executeSql( "alter table reporttable drop column doindicators" );
+            executeSql( "alter table reporttable drop column doperiods" );
+            executeSql( "alter table reporttable drop column dounits" );   
+        }
+        catch ( Exception ex )
+        {
+            log.debug( ex );
+        }
+    }
+    
     private List<Integer> getDistinctIdList( String table, String col1 )
     {
         StatementHolder holder = statementManager.getHolder();
@@ -683,7 +732,6 @@ public class TableAlteror
 
             if ( isUpdated.next() )
             {
-
                 ResultSet resultSet = statement
                     .executeQuery( "SELECT associationid, dataentryformid FROM dataentryformassociation WHERE associationtablename = 'programstage'" );
 
@@ -704,7 +752,5 @@ public class TableAlteror
         {
             holder.close();
         }
-
     }
-
 }

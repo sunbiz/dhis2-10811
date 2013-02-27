@@ -486,8 +486,15 @@ div.inputCriteria
 /* Settings                                                                   */
 /*----------------------------------------------------------------------------*/
 
-.settingLabel
+.settingHeader
 {
+  padding: 6px 2px;
+  font-size: 12pt;
+  color: #373737;
+}
+
+.settingLabel
+{	
   padding: 2px;
   font-size: 10pt;
 }

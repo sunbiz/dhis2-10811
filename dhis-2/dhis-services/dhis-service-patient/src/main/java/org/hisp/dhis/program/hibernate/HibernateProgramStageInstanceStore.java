@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -55,9 +56,13 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientAudit;
+import org.hisp.dhis.patient.PatientAuditService;
+import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientreport.PatientAggregateReport;
 import org.hisp.dhis.patientreport.TabularReportColumn;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstance;
@@ -68,6 +73,7 @@ import org.hisp.dhis.system.grid.GridUtils;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.system.util.TextUtils;
+import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -109,6 +115,27 @@ public class HibernateProgramStageInstanceStore
     public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
         this.organisationUnitService = organisationUnitService;
+    }
+
+    private PatientAuditService patientAuditService;
+
+    public void setPatientAuditService( PatientAuditService patientAuditService )
+    {
+        this.patientAuditService = patientAuditService;
+    }
+
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
+    }
+
+    private PatientService patientService;
+
+    public void setPatientService( PatientService patientService )
+    {
+        this.patientService = patientService;
     }
 
     // -------------------------------------------------------------------------
@@ -221,7 +248,8 @@ public class HibernateProgramStageInstanceStore
 
     public Grid getTabularReport( ProgramStage programStage, Map<Integer, OrganisationUnitLevel> orgUnitLevelMap,
         Collection<Integer> orgUnits, List<TabularReportColumn> columns, int level, int maxLevel, Date startDate,
-        Date endDate, boolean descOrder, Boolean completed, Integer min, Integer max, I18n i18n )
+        Date endDate, boolean descOrder, Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max,
+        I18n i18n )
     {
         // ---------------------------------------------------------------------
         // Headers cols
@@ -256,17 +284,48 @@ public class HibernateProgramStageInstanceStore
         }
 
         grid.addHeader( new GridHeader( "Complete", true, true ) );
+        grid.addHeader( new GridHeader( "PatientId", true, true ) );
 
         // ---------------------------------------------------------------------
         // Get SQL and build grid
         // ---------------------------------------------------------------------
 
         String sql = getTabularReportSql( false, programStage, columns, orgUnits, level, maxLevel, startDate, endDate,
-            descOrder, completed, min, max );
+            descOrder, completed, accessPrivateInfo, min, max );
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
 
         GridUtils.addRows( grid, rowSet );
+
+        // Save PatientAudit
+
+        if ( accessPrivateInfo != null && accessPrivateInfo )
+        {
+            long millisInDay = 60 * 60 * 24 * 1000;
+            long currentTime = new Date().getTime();
+            long dateOnly = (currentTime / millisInDay) * millisInDay;
+            Date date = new Date( dateOnly );
+            String visitor = currentUserService.getCurrentUsername();
+
+            List<Map<String, Object>> rows = jdbcTemplate.queryForList( sql );
+
+            if ( rows != null && !rows.isEmpty() )
+            {
+                for ( Map<String, Object> row : rows )
+                {
+                    Integer patientId = (Integer) row.get( "patientid" );
+
+                    PatientAudit patientAudit = patientAuditService.getPatientAudit( patientId, visitor, date,
+                        PatientAudit.MODULE_TABULAR_REPORT );
+                    if ( patientAudit == null )
+                    {
+                        Patient patient = patientService.getPatient( patientId );
+                        patientAudit = new PatientAudit( patient, visitor, date, PatientAudit.MODULE_TABULAR_REPORT );
+                        patientAuditService.savePatientAudit( patientAudit );
+                    }
+                }
+            }
+        }
 
         return grid;
     }
@@ -275,7 +334,7 @@ public class HibernateProgramStageInstanceStore
         Collection<Integer> organisationUnits, int level, int maxLevel, Date startDate, Date endDate, Boolean completed )
     {
         String sql = getTabularReportSql( true, programStage, columns, organisationUnits, level, maxLevel, startDate,
-            endDate, false, completed, null, null );
+            endDate, false, completed, null, null, null );
 
         return jdbcTemplate.queryForInt( sql );
     }
@@ -626,13 +685,31 @@ public class HibernateProgramStageInstanceStore
         return grid;
     }
 
+    @SuppressWarnings( "unchecked" )
+    public List<ProgramStageInstance> getActiveInstance( Program program, Collection<Integer> orgunitIds,
+        Date startDate, Date endDate, Collection<Integer> statusList, Integer max, Integer min )
+    {
+        return getActiveInstanceCriteria( program, orgunitIds, startDate, endDate, statusList, max, min ).list();
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList )
+    {
+        Criteria criteria = getActiveInstanceCriteria( program, orgunitIds, startDate, endDate, statusList, null, null );
+
+        List<ProgramStageInstance> list = criteria.list();
+
+        return list != null ? list.size() : 0;
+    }
+
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
 
     private String getTabularReportSql( boolean count, ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> orgUnits, int level, int maxLevel, Date startDate, Date endDate, boolean descOrder,
-        Boolean completed, Integer min, Integer max )
+        Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max )
     {
         Set<String> deKeys = new HashSet<String>();
         String selector = count ? "count(*) " : "* ";
@@ -726,6 +803,11 @@ public class HibernateProgramStageInstanceStore
         }
 
         sql += " psi.completed ";
+        if ( accessPrivateInfo != null && accessPrivateInfo )
+        {
+            sql += ", p.patientid ";
+        }
+
         sql += "from programstageinstance psi ";
         sql += "left join programinstance pi on (psi.programinstanceid=pi.programinstanceid) ";
         sql += "left join patient p on (pi.patientid=p.patientid) ";
@@ -850,8 +932,9 @@ public class HibernateProgramStageInstanceStore
                 {
                     sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                         + statementBuilder.getDoubleColumnType() + " ))";
-                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid="
-                        + deSum + " ) ";
+                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                        + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
+                        + " ) ";
                 }
                 sql += "FROM programstageinstance psi_1 ";
                 sql += "        JOIN patientdatavalue pdv_1 ";
@@ -888,7 +971,7 @@ public class HibernateProgramStageInstanceStore
         {
             sql += "LIMIT " + limit;
         }
-
+        
         return sql;
     }
 
@@ -932,8 +1015,9 @@ public class HibernateProgramStageInstanceStore
                 {
                     sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                         + statementBuilder.getDoubleColumnType() + " ))";
-                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid="
-                        + deSum + " ) ";
+                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                        + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
+                        + " ) ";
                 }
                 sql += "FROM ";
                 sql += "   patientdatavalue pdv_1 JOIN programstageinstance psi_1 ";
@@ -1008,8 +1092,9 @@ public class HibernateProgramStageInstanceStore
                 {
                     sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                         + statementBuilder.getDoubleColumnType() + " ))";
-                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid="
-                        + deSum + " ) ";
+                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                        + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
+                        + " ) ";
                 }
                 sql += "FROM ";
                 sql += "   patientdatavalue pdv_1 JOIN programstageinstance psi_1 ";
@@ -1071,7 +1156,8 @@ public class HibernateProgramStageInstanceStore
             {
                 sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                     + statementBuilder.getDoubleColumnType() + " ))";
-                sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid=" + deSum
+                sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                    + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
                     + " ) ";
             }
             sql += "FROM ";
@@ -1175,7 +1261,8 @@ public class HibernateProgramStageInstanceStore
                     {
                         sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                             + statementBuilder.getDoubleColumnType() + " ))";
-                        sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid="
+                        sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                            + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid="
                             + deSum + " ) ";
                     }
                     sql += "FROM programstageinstance psi_1 JOIN patientdatavalue pdv_1 ";
@@ -1255,7 +1342,8 @@ public class HibernateProgramStageInstanceStore
             {
                 sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                     + statementBuilder.getDoubleColumnType() + " ))";
-                sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid=" + deSum
+                sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                    + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
                     + " ) ";
             }
             sql += "FROM programstageinstance psi_1 JOIN patientdatavalue pdv_1 ";
@@ -1317,8 +1405,9 @@ public class HibernateProgramStageInstanceStore
                 {
                     sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                         + statementBuilder.getDoubleColumnType() + " ))";
-                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid="
-                        + deSum + " ) ";
+                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                        + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
+                        + " ) ";
                 }
                 sql += "FROM patientdatavalue pdv_1 ";
                 sql += "        inner join programstageinstance psi_1 ";
@@ -1380,7 +1469,8 @@ public class HibernateProgramStageInstanceStore
             {
                 sql += "(SELECT ( SELECT " + aggregateType + "( cast( value as "
                     + statementBuilder.getDoubleColumnType() + " ))";
-                sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid=" + deSum
+                sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                    + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum
                     + " ) ";
             }
 
@@ -1529,8 +1619,8 @@ public class HibernateProgramStageInstanceStore
                 {
                     sql += "( SELECT " + aggregateType + "( cast( value as " + statementBuilder.getDoubleColumnType()
                         + " ))";
-                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and dataelementid="
-                        + deSum + " ";
+                    sql += "    FROM patientdatavalue where dataelementid=pdv_1.dataelementid and "
+                        + "          programstageinstanceid=psi_1.programstageinstanceid and dataelementid=" + deSum + " ";
                 }
 
                 sql += "FROM programstageinstance psi_1 JOIN patientdatavalue pdv_1 ";
@@ -1690,7 +1780,7 @@ public class HibernateProgramStageInstanceStore
         return orgunitIds;
     }
 
-    public void fillDataInGrid( Grid grid, SqlRowSet rs, I18n i18n )
+    private void fillDataInGrid( Grid grid, SqlRowSet rs, I18n i18n )
     {
         int cols = rs.getMetaData().getColumnCount();
         int dataCols = 0;
@@ -1716,21 +1806,28 @@ public class HibernateProgramStageInstanceStore
         {
             grid.addRow();
 
-            int total = 0;
+            double total = 0;
             for ( int i = 1; i <= cols; i++ )
             {
-                // values
+                // meta column
                 if ( rs.getMetaData().getColumnType( i ) == Types.VARCHAR )
                 {
                     grid.addValue( rs.getObject( i ) );
                 }
-                // meta column
-                else
+                // values
+                else if ( rs.getMetaData().getColumnType( i ) == Types.INTEGER )
                 {
                     Integer value = rs.getInt( i );
                     sumRow[i] += value;
                     grid.addValue( value );
-                    total += rs.getInt( i );
+                    total += value;
+                }
+                else
+                {
+                    double value = rs.getDouble( i );
+                    sumRow[i] += value;
+                    grid.addValue( value );
+                    total += value;
                 }
             }
 
@@ -1765,7 +1862,7 @@ public class HibernateProgramStageInstanceStore
         {
             int cols = rowSet.getMetaData().getColumnCount();
             int rows = 0;
-            int total = 0;
+            double total = 0;
             Map<Integer, List<Object>> columnValues = new HashMap<Integer, List<Object>>();
             int index = 2;
 
@@ -1786,8 +1883,17 @@ public class HibernateProgramStageInstanceStore
                     // Total value of the column
                     if ( rowSet.getMetaData().getColumnType( i ) != Types.VARCHAR )
                     {
-                        total += rowSet.getInt( i );
+                        // values
+                        if ( rowSet.getMetaData().getColumnType( i ) == Types.INTEGER )
+                        {
+                            total += rowSet.getInt( i );
+                        }
+                        else
+                        {
+                            total += rowSet.getDouble( i );
+                        }
                     }
+
                 }
 
                 // Add total value of the column
@@ -1839,7 +1945,7 @@ public class HibernateProgramStageInstanceStore
                     {
                         if ( rowSet.getMetaData().getColumnType( j + 2 ) != Types.VARCHAR )
                         {
-                            total += (Long) columnValues.get( i ).get( j );
+                            total += (Double) columnValues.get( i ).get( j );
                         }
                     }
                     column.add( total );
@@ -1858,4 +1964,60 @@ public class HibernateProgramStageInstanceStore
         }
     }
 
+    private Criteria getActiveInstanceCriteria( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Collection<Integer> statusList, Integer max, Integer min )
+    {
+        Criteria criteria = getCriteria();
+        criteria.createAlias( "programInstance", "programInstance" );
+        criteria.createAlias( "programStage", "programStage" );
+        criteria.createAlias( "programInstance.patient", "patient" );
+        criteria.createAlias( "patient.organisationUnit", "regOrgunit" );
+        criteria.add( Restrictions.eq( "programInstance.program", program ) );
+        criteria.add( Restrictions.isNull( "programInstance.endDate" ) );
+
+        Disjunction disjunction = Restrictions.disjunction();
+
+        for ( Integer status : statusList )
+        {
+            switch ( status )
+            {
+            case ProgramStageInstance.COMPLETED_STATUS:
+                disjunction.add( Restrictions.and( Restrictions.eq( "completed", true ),
+                    Restrictions.between( "executionDate", startDate, endDate ),
+                    Restrictions.in( "organisationUnit.id", orgunitIds ) ) );
+                break;
+            case ProgramStageInstance.VISITED_STATUS:
+                disjunction.add( Restrictions.and( Restrictions.eq( "completed", false ),
+                    Restrictions.between( "executionDate", startDate, endDate ),
+                    Restrictions.in( "organisationUnit.id", orgunitIds ) ) );
+                break;
+            case ProgramStageInstance.FUTURE_VISIT_STATUS:
+                disjunction.add( Restrictions.and( Restrictions.isNull( "executionDate" ),
+                    Restrictions.between( "dueDate", new Date(), endDate ),
+                    Restrictions.in( "regOrgunit.id", orgunitIds ) ) );
+                break;
+            case ProgramStageInstance.LATE_VISIT_STATUS:
+                disjunction.add( Restrictions.and( Restrictions.isNull( "executionDate" ),
+                    Restrictions.between( "dueDate", startDate, new Date() ),
+                    Restrictions.in( "regOrgunit.id", orgunitIds ) ) );
+                break;
+            default:
+                break;
+            }
+        }
+
+        criteria.add( disjunction );
+
+        if ( min != null && max != null )
+        {
+            criteria.setFirstResult( min );
+            criteria.setMaxResults( max );
+        }
+
+        criteria.addOrder( Order.asc( "executionDate" ) );
+        criteria.addOrder( Order.asc( "dueDate" ) );
+        criteria.addOrder( Order.asc( "programStage.minDaysFromStart" ) );
+
+        return criteria;
+    }
 }

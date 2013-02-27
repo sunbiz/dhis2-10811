@@ -38,5 +38,7 @@
     
     <property name="status" column="status" />
     
+    <property name="coordinates" type="text" />
+    
   </class>
 </hibernate-mapping>

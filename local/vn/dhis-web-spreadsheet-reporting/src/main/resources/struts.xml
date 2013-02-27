@@ -2559,8 +2559,15 @@
 
 		<!-- OrganisationUnit -->
 
+		<action name="getDepartment"
+			class="org.hisp.dhis.reportsheet.organisationunit.action.GetDepartmentAction">
+			<result name="success" type="velocity-json">
+				/dhis-web-spreadsheet-reporting/jsonOrganisationUnit.vm
+			</result>
+		</action>
+
 		<action name="department"
-			class="org.hisp.dhis.reportsheet.organisationunit.action.ShowAddDepartmentFormAction">
+			class="org.hisp.dhis.reportsheet.organisationunit.action.GetDepartmentListAction">
 			<result name="success" type="velocity">/main.vm</result>
 			<param name="page">
 				/dhis-web-spreadsheet-reporting/department.vm
@@ -2584,7 +2591,7 @@
 			</param>
 		</action>
 		
-		<action name="renameOrganisationUnit"
+		<action name="renameDepartment"
 			class="org.hisp.dhis.reportsheet.organisationunit.action.RenameOrganisationUnitAction">
 			<result name="success" type="velocity-json">
 				../dhis-web-commons/ajax/jsonResponseSuccess.vm
@@ -2594,6 +2601,18 @@
 			</result>
 			<param name="onExceptionReturn">plainTextError</param>
 			<param name="requiredAuthorities">F_ORGANISATIONUNIT_UPDATE</param>
+		</action>
+		
+		<action name="removeDepartment"
+			class="org.hisp.dhis.reportsheet.organisationunit.action.RemoveDepartmentAction">
+			<result name="success" type="velocity-json">
+				../dhis-web-commons/ajax/jsonResponseSuccess.vm
+			</result>
+			<result name="error" type="velocity-json">
+				../dhis-web-commons/ajax/jsonResponseError.vm
+			</result>
+			<param name="onExceptionReturn">plainTextError</param>
+			<param name="requiredAuthorities">F_ORGANISATIONUNIT_DELETE</param>
 		</action>
 
 		<!-- Data Entry module -->

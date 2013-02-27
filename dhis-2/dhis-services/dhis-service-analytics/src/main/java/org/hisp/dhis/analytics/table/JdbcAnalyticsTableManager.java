@@ -113,7 +113,9 @@ public class JdbcAnalyticsTableManager
             Date startDate = period.getStartDate();
             Date endDate = period.getEndDate();
             
-            populateTable( table, startDate, endDate, "cast(dv.value as double precision)", "int", "dv.value != ''" );
+            String intClause = "dv.value != '' and dv.value != 'true' and dv.value != 'false' and dv.value not like '%-%'";
+            
+            populateTable( table, startDate, endDate, "cast(dv.value as double precision)", "int", intClause );
             
             populateTable( table, startDate, endDate, "1" , "bool", "dv.value = 'true'" );
     
@@ -152,7 +154,7 @@ public class JdbcAnalyticsTableManager
             "left join _orgunitstructure ous on dv.sourceid=ous.organisationunitid " +
             "left join _periodstructure ps on dv.periodid=ps.periodid " +
             "left join dataelement de on dv.dataelementid=de.dataelementid " +
-            "left join categoryoptioncombo coc on dv.categoryoptioncomboid=coc.categoryoptioncomboid " +
+            "left join categoryoptioncombo co on dv.categoryoptioncomboid=co.categoryoptioncomboid " +
             "left join period pe on dv.periodid=pe.periodid " +
             "where de.valuetype='" + valueType + "' " +
             "and pe.startdate >= '" + start + "' " +
@@ -170,10 +172,10 @@ public class JdbcAnalyticsTableManager
         List<String[]> columns = new ArrayList<String[]>();
 
         Collection<DataElementGroupSet> dataElementGroupSets =
-            dataElementService.getCompulsoryDataElementGroupSets();
+            dataElementService.getAllDataElementGroupSets();
         
         Collection<OrganisationUnitGroupSet> orgUnitGroupSets = 
-            organisationUnitGroupService.getCompulsoryOrganisationUnitGroupSets();
+            organisationUnitGroupService.getAllOrganisationUnitGroupSets();
         
         Collection<OrganisationUnitLevel> levels =
             organisationUnitService.getOrganisationUnitLevels();
@@ -205,10 +207,10 @@ public class JdbcAnalyticsTableManager
         }
         
         String[] de = { "de", "character(11) not null", "de.uid" };
-        String[] coc = { "coc", "character(11) not null", "coc.uid" };
+        String[] co = { "co", "character(11) not null", "co.uid" };
         String[] level = { "level", "integer", "ous.level" };
         
-        columns.addAll( Arrays.asList( de, coc, level ) );
+        columns.addAll( Arrays.asList( de, co, level ) );
         
         return columns;
     }

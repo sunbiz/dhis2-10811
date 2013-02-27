@@ -33,20 +33,20 @@ import java.util.List;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.system.util.CollectionUtils;
 
-public class DimensionOption
+public class DimensionItem
 {
     private String dimension;
     
-    private IdentifiableObject option;
+    private IdentifiableObject item;
 
     // -------------------------------------------------------------------------
     // Constructor
     // -------------------------------------------------------------------------
 
-    public DimensionOption( String dimension, IdentifiableObject option )
+    public DimensionItem( String dimension, IdentifiableObject item )
     {
         this.dimension = dimension;
-        this.option = option;
+        this.item = item;
     }
 
     // -------------------------------------------------------------------------
@@ -63,14 +63,14 @@ public class DimensionOption
         this.dimension = dimension;
     }
 
-    public IdentifiableObject getOption()
+    public IdentifiableObject getItem()
     {
-        return option;
+        return item;
     }
 
-    public void setOption( IdentifiableObject option )
+    public void setItem( IdentifiableObject item )
     {
-        this.option = option;
+        this.item = item;
     }
 
     // -------------------------------------------------------------------------
@@ -78,19 +78,19 @@ public class DimensionOption
     // -------------------------------------------------------------------------
 
     /**
-     * Returns a string key for dimension options in the given list. The key is 
-     * a concatenation of the dimension options separated by the dimension separator.
-     * If no options are given or options is null, an empty string is returned.
+     * Returns a string key for dimension items in the given list. The key is 
+     * a concatenation of the dimension items separated by the dimension separator.
+     * If no items are given or items is null, an empty string is returned.
      */
-    public static String asOptionKey( List<DimensionOption> options )
+    public static String asItemKey( List<DimensionItem> items )
     {
         StringBuilder builder = new StringBuilder();
         
-        if ( options != null && !options.isEmpty() )
+        if ( items != null && !items.isEmpty() )
         {
-            for ( DimensionOption option : options )
+            for ( DimensionItem item : items )
             {
-                builder.append( option.getOption().getUid() ).append( DataQueryParams.DIMENSION_SEP );
+                builder.append( item.getItem().getUid() ).append( DataQueryParams.DIMENSION_SEP );
             }
             
             builder.deleteCharAt( builder.length() - 1 );
@@ -100,38 +100,38 @@ public class DimensionOption
     }
 
     /**
-     * Returns an array of identifiers of the dimension options in the given list.
-     * If no options are given or options is null, an empty array is returned.
+     * Returns an array of identifiers of the dimension items in the given list.
+     * If no items are given or items are null, an empty array is returned.
      */
-    public static String[] getOptionIdentifiers( List<DimensionOption> options )
+    public static String[] getItemIdentifiers( List<DimensionItem> items )
     {
-        List<String> optionUids = new ArrayList<String>();
+        List<String> itemUids = new ArrayList<String>();
         
-        if ( options != null && !options.isEmpty() )
+        if ( items != null && !items.isEmpty() )
         {
-            for ( DimensionOption option : options )
+            for ( DimensionItem item : items )
             {
-                optionUids.add( option != null ? option.getOption().getUid() : null );
+                itemUids.add( item != null ? item.getItem().getUid() : null );
             }
         }
         
-        return optionUids.toArray( CollectionUtils.STRING_ARR );
+        return itemUids.toArray( CollectionUtils.STRING_ARR );
     }
 
     /**
-     * Returns the period dimension option object from the given list of
-     * dimension options. If no options are given, options is null or there is 
+     * Returns the period dimension item object from the given list of
+     * dimension items. If no items are given, items are null or there are 
      * no period dimension, null is returned.
      */
-    public static IdentifiableObject getPeriodOption( List<DimensionOption> options )
+    public static IdentifiableObject getPeriodItem( List<DimensionItem> items )
     {
-        if ( options != null && !options.isEmpty() )
+        if ( items != null && !items.isEmpty() )
         {
-            for ( DimensionOption option : options )
+            for ( DimensionItem item : items )
             {
-                if ( DataQueryParams.PERIOD_DIM_ID.equals( option.getDimension() ) )
+                if ( DataQueryParams.PERIOD_DIM_ID.equals( item.getDimension() ) )
                 {
-                    return option.getOption();
+                    return item.getItem();
                 }
             }
         }
@@ -149,7 +149,7 @@ public class DimensionOption
         final int prime = 31;
         int result = 1;
         result = prime * result + ( ( dimension == null ) ? 0 : dimension.hashCode() );
-        result = prime * result + ( ( option == null ) ? 0 : option.hashCode() );
+        result = prime * result + ( ( item == null ) ? 0 : item.hashCode() );
         return result;
     }
 
@@ -171,7 +171,7 @@ public class DimensionOption
             return false;
         }
         
-        DimensionOption other = (DimensionOption) object;
+        DimensionItem other = (DimensionItem) object;
         
         if ( dimension == null )
         {
@@ -185,14 +185,14 @@ public class DimensionOption
             return false;
         }
         
-        if ( option == null )
+        if ( item == null )
         {
-            if ( other.option != null )
+            if ( other.item != null )
             {
                 return false;
             }
         }
-        else if ( !option.equals( other.option ) )
+        else if ( !item.equals( other.item ) )
         {
             return false;
         }
@@ -203,6 +203,6 @@ public class DimensionOption
     @Override
     public String toString()
     {
-        return "[" + dimension + ", " + option + "]";
+        return "[" + dimension + ", " + item + "]";
     }
 }

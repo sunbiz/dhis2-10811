@@ -17,6 +17,8 @@
 
     <property name="name" column="name" not-null="true" unique="true" length="230" />
 
+    <property name="shortName" column="shortname" unique="true" length="50" />
+
     <set name="members" table="dataelementgroupmembers">
       <cache usage="read-write" />
       <key column="dataelementgroupid" foreign-key="fk_dataelementgroupmembers_dataelementgroupid" />

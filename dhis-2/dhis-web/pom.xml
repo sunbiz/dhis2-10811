@@ -14,6 +14,9 @@
   <modules>
     <module>dhis-web-commons</module>
     <module>dhis-web-commons-resources</module>
+    <module>dhis-web-api-mobile</module>
+    <module>dhis-web-api</module>
+    <module>dhis-web-api-fred</module>
     <module>dhis-web-maintenance</module>
     <module>dhis-web-dataentry</module>
     <module>dhis-web-importexport</module>
@@ -24,13 +27,10 @@
     <module>dhis-web-pivot</module>
     <module>dhis-web-dashboard-integration</module>
     <module>dhis-web-caseentry</module>
-    <module>dhis-web-api</module>
-    <module>dhis-web-api-fred</module>
-    <module>dhis-web-api-mobile</module>
     <module>dhis-web-light</module>
     <module>dhis-web-mobile</module>
-    <module>dhis-web-portal</module>
     <module>dhis-web-sms</module>
+    <module>dhis-web-portal</module>
   </modules>
   <build>
     <plugins>

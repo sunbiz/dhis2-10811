@@ -30,10 +30,11 @@ package org.hisp.dhis.api.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hisp.dhis.analytics.AnalyticsTableService;
+import org.hisp.dhis.analytics.scheduling.AnalyticsTableTask;
 import org.hisp.dhis.api.utils.ContextUtils;
-import org.hisp.dhis.resourcetable.ResourceTableService;
-import org.hisp.dhis.sqlview.SqlViewService;
+import org.hisp.dhis.resourcetable.scheduling.ResourceTableTask;
+import org.hisp.dhis.scheduling.DataMartTask;
+import org.hisp.dhis.system.scheduling.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -49,65 +50,42 @@ public class ResourceTableController
 {
     public static final String RESOURCE_PATH = "/resourceTables";
     
-    @Resource(name="org.hisp.dhis.analytics.AnalyticsTableService")
-    private AnalyticsTableService analyticsTableService;
-
-    @Resource(name="org.hisp.dhis.analytics.CompletenessTableService")
-    private AnalyticsTableService completenessTableService;
+    @Resource(name="analyticsAllTask")
+    private AnalyticsTableTask analyticsTableTask;
     
-    @Resource(name="org.hisp.dhis.analytics.CompletenessTargetTableService")
-    private AnalyticsTableService completenessTargetTableService;
+    @Resource(name="dataMartLast12MonthsTask")
+    private DataMartTask dataMartTask;
     
     @Autowired
-    private ResourceTableService resourceTableService;
-        
+    private ResourceTableTask resourceTableTask;
+    
     @Autowired
-    private SqlViewService sqlViewService;
+    private Scheduler scheduler;
     
     @RequestMapping( value = "/analytics", method = RequestMethod.PUT )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_DATA_MART_ADMIN')" )
     public void analytics( HttpServletResponse response )
     {
-        analyticsTableService.update();
+        scheduler.executeTask( analyticsTableTask );
         
         ContextUtils.okResponse( response, "Initiated analytics table update" );
     }
 
-    @RequestMapping( value = "/completeness", method = RequestMethod.PUT )
+    @RequestMapping( value = "/dataMart", method = RequestMethod.PUT )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_DATA_MART_ADMIN')" )
-    public void completeness( HttpServletResponse response )
+    public void data( HttpServletResponse response )
     {
-        completenessTableService.update();
+        scheduler.executeTask( dataMartTask );
         
-        ContextUtils.okResponse( response, "Initiated completeness table update" );
-    }
-
-    @RequestMapping( value = "/completenessTarget", method = RequestMethod.PUT )
-    @PreAuthorize( "hasRole('ALL') or hasRole('F_DATA_MART_ADMIN')" )
-    public void completenessTarget( HttpServletResponse response )
-    {
-        completenessTargetTableService.update();
-        
-        ContextUtils.okResponse( response, "Initiated completeness target table update" );
+        ContextUtils.okResponse( response, "Initiated data mart update" );
     }
     
     @RequestMapping( method = RequestMethod.PUT )
     @PreAuthorize( "hasRole('ALL') or hasRole('F_PERFORM_MAINTENANCE')" )
     public void resourceTables( HttpServletResponse response )
     {
-        sqlViewService.dropAllSqlViewTables();
+        scheduler.executeTask( resourceTableTask );
         
-        resourceTableService.generateCategoryOptionComboNames();
-        resourceTableService.generateCategoryTable();
-        resourceTableService.generateDataElementGroupSetTable();
-        resourceTableService.generateDataElementTable();
-        resourceTableService.generateIndicatorGroupSetTable();
-        resourceTableService.generateOrganisationUnitGroupSetTable();
-        resourceTableService.generateOrganisationUnitStructures();
-        resourceTableService.generatePeriodTable();
-        
-        sqlViewService.createAllViewTables();
-        
-        ContextUtils.okResponse( response, "All resource tables updated" );
+        ContextUtils.okResponse( response, "Initiated resource table update" );
     }
 }

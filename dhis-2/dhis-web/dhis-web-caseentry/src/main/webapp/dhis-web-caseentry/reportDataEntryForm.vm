@@ -4,8 +4,8 @@
 </div>
 
 <div id='patientInforTB' name="patientInforTB" style="display:none;">
-	<table>
-		#if( $patient )
+	#if( $patient )
+		<table>
 			<tr>            
 				<td>
 					<span class='bold' id="patientName">$i18n.getString( "full_name" ):</span>
@@ -33,28 +33,31 @@
 			</tr>
 			#end
 			<tr><td>&nbsp;</td></tr>
-		#end
+		</table>
+	#end
 		
-		#if( $programStageInstance )
-			<tr>
-				<th><label for="executionDate">$programStageInstance.programStage.reportDateDescription <em title="$i18n.getString( "required" )" class="required">*</em>&nbsp;&nbsp;&nbsp;</label></th>
-				<th><input type="text" id="executionDate" name="executionDate" value="$!format.formatDate( $programStageInstance.executionDate )" onchange="saveExecutionDate( $programStageInstance.programInstance.program.id, $programStageInstance.id, byId('executionDate') )" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-					<script type="text/javascript">
-					   datePickerValid( 'executionDate', false );
-					</script>  
-				<th id="dueDateLbl"><label for="dueDate"> $i18n.getString( "due_date" ) &nbsp;&nbsp;&nbsp;</label></th>
-				<th id="dueDateField"><input type="text" id="dueDate" name="dueDate" value="$!format.formatDate( $programStageInstance.dueDate )" disabled="disabled">&nbsp;&nbsp;&nbsp;</th>
-			</tr>
-		#end
+	#if( $programStageInstance )
+	<table style="width:600px;" class="listTable">
+		<tr>
+			<th class='coordinates1'><label for="executionDate">$programStageInstance.programStage.reportDateDescription <em title="$i18n.getString( "required" )" class="required">*</em> </label></th>
+			<th class='coordinates2'><input type="text" class='criteria' id="executionDate" name="executionDate" value="$!format.formatDate( $programStageInstance.executionDate )" onchange="saveExecutionDate( $programStageInstance.programInstance.program.id, $programStageInstance.id, byId('executionDate') )" > </th>
+				<script type="text/javascript">
+				   datePickerValid( 'executionDate', false );
+				</script>  
+			<th class='coordinates1' id="dueDateLbl"><label for="dueDate"> $i18n.getString( "due_date" )</label> </th>
+			<th class='coordinates2' id="dueDateField"><input type="text" class='criteria' id="dueDate" name="dueDate" value="$!format.formatDate( $programStageInstance.dueDate )" disabled="disabled"> </th>
+		</tr>
 	</table>
+	#end
 </div>
 
 <input type='hidden' id="programId" name="programId" type="text" readonly="readonly" value="$encoder.htmlEncode( $program.displayName )" style="min-width:350px">		
 <input id="programStageId" name="programStageId" type="hidden" value="$programStage.id" style="min-width:350px">            
+<input id="programStageInstanceId" name="programStageInstanceId" type="hidden" value="$programStageInstance.id" style="min-width:350px">            
 
 <p></p>
 #parse( "dhis-web-commons/loader/loader.vm" )
-<form id='dataEntryFormDiv' name='dataEntryFormDiv' >
+<form id='dataEntryFormDiv' name='dataEntryFormDiv' #if($!programStageInstance.executionDate) #else class='hidden' #end >
 	#parse( "dhis-web-caseentry/dataEntryForm.vm" )
 </form>
 
@@ -82,9 +85,10 @@
     var i18n_saving_value_failed_error_code = '$encoder.jsEscape( $i18n.getString( "saving_value_failed_error_code" ) , "'")';
     var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")';
     var i18n_complete_confirm_message = '$encoder.jsEscape( $i18n.getString( "complete_confirm_message" ) , "'")';
-    var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
-	var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
+	var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
+    var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
 	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
 	var i18n_date_is_greater_then_or_equals_due_date = '$encoder.jsEscape( $i18n.getString( "date_is_greater_then_or_equals_due_date" ) , "'")';
 	var i18n_show_all_items = '$encoder.jsEscape( $i18n.getString( "show_all_items" ) , "'")';
+	var i18n_insert_a_report_date = '$encoder.jsEscape( $i18n.getString( "insert_a_report_date" ) , "'")';
 </script>

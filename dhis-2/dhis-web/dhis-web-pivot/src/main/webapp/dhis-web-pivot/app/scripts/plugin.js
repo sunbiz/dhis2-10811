@@ -3,7 +3,7 @@
 settings = {
 	col: [
 		{name: 'dx', items: ['Uvn6LCg7dVU', 'OdiHJayrsKo', 'sB79w2hiLp8']},
-		{name: 'coc'}
+		{name: 'co'}
 	],
 	row: [
 		{name: 'pe', items: ['201201', '201202', '201203']},
@@ -11,13 +11,18 @@ settings = {
 	],
 	filter: [
 		{name: 'ou', items: ['ImspTQPwCqd']}
-	]
+	],
+	options: {
+		showSubTotals: false,
+		cellPadding: 'normal',
+		fontSize: 'normal'
+	}
 };
 
 xSettings = {
 	col: [
 		{name: 'dx', items: ['Uvn6LCg7dVU', 'OdiHJayrsKo', 'sB79w2hiLp8']},
-		{name: 'coc'}
+		{name: 'co'}
 	],
 	row: [
 		{name: 'pe', items: ['201201', '201202', '201203']},
@@ -28,15 +33,15 @@ xSettings = {
 	],
 	dimensions: [
 		{name: 'dx', items: ['Uvn6LCg7dVU', 'OdiHJayrsKo', 'sB79w2hiLp8']},
-		{name: 'coc'},
+		{name: 'co'},
 		{name: 'pe', items: ['201201', '201202', '201203']},
 		{name: 'Bpx0589u8y0', items: ['MAs88nJc9nL', 'PVLOW4bCshG']},
 		{name: 'ou', items: ['ImspTQPwCqd']}
 	],
-	dimensionNames: ['dx', 'coc', 'pe', 'Bpx0589u8y0', 'ou'],
+	dimensionNames: ['dx', 'co', 'pe', 'Bpx0589u8y0', 'ou'],
 	sortedDimensions: [
 		{name: 'Bpx0589u8y0', items: ['MAs88nJc9nL', 'PVLOW4bCshG']},
-		{name: 'coc'},
+		{name: 'co'},
 		{name: 'dx', items: ['OdiHJayrsKo', 'Uvn6LCg7dVU', 'sB79w2hiLp8']},
 		{name: 'ou', items: ['ImspTQPwCqd']},
 		{name: 'pe', items: ['201201', '201202', '201203']}
@@ -46,10 +51,15 @@ xSettings = {
 	],
 	nameItemsMap: {
 		'dx': ['Uvn6LCg7dVU', 'OdiHJayrsKo', 'sB79w2hiLp8'],
-		'coc': [],
+		'co': [],
 		'pe': ['201201', '201202', '201203'],
 		'Bpx0589u8y0': ['MAs88nJc9nL', 'PVLOW4bCshG'],
 		'ou': ['ImspTQPwCqd']
+	},
+	options: {
+		showSubTotals: false,
+		cellPadding: 'normal',
+		fontSize: 'normal'
 	}
 };
 

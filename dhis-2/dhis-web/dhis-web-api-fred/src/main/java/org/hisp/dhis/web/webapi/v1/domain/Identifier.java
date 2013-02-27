@@ -27,13 +27,18 @@ package org.hisp.dhis.web.webapi.v1.domain;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
+@JsonPropertyOrder( value = { "agency", "context", "id" } )
 public class Identifier
 {
     public static final String DHIS2_AGENCY = "DHIS2";
+
     public static final String DHIS2_CODE_CONTEXT = "DHIS2_CODE";
+
     public static final String DHIS2_UID_CONTEXT = "DHIS2_UID";
 
     private String id;

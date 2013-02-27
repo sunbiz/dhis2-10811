@@ -116,6 +116,16 @@ var validationRules = {
         "name" : {
             "required" : true,
             "rangelength" : [ 2, 160 ]
+        },
+        "shortName" : {
+            "required" : true,
+            "alphanumericwithbasicpuncspaces" : true,
+            "rangelength" : [ 2, 40 ]
+        },
+        "code" : {
+            "alphanumericwithbasicpuncspaces" : true,
+            "notOnlyDigits" : false,
+            "rangelength" : [ 0, 25 ]
         }
     },
     "organisationUnitGroupSet" : {
@@ -265,6 +275,17 @@ var validationRules = {
             "alphanumericwithbasicpuncspaces" : true,
             "notOnlyDigits" : true,
             "rangelength" : [ 2, 160 ]
+        },
+        "shortName" : {
+            "required" : true,
+            "rangelength" : [ 2, 40 ],
+            "alphanumericwithbasicpuncspaces" : true,
+            "notOnlyDigits" : true
+        },
+        "code" : {
+            "alphanumericwithbasicpuncspaces" : true,
+            "notOnlyDigits" : false,
+            "rangelength" : [ 0, 25 ]
         }
     },
     "dataElementGroupSet" : {

@@ -18,7 +18,7 @@
 				<thead>	
 				 <tr>
 				  <th>$i18n.getString('name')</th>
-				  <th style="width:10em " class="{sorter: false}">$i18n.getString('operator')</th>
+				  <th style="width:140px;" class="{sorter: false}">$i18n.getString('operator')</th>
 				</tr>
 				</thead>
 				<tbody id="list">

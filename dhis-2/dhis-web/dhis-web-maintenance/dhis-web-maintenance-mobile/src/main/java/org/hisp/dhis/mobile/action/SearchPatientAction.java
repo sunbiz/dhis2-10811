@@ -37,7 +37,10 @@ import org.hisp.dhis.mobile.caseentry.state.SelectedStateManager;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.paging.ActionPagingSupport;
 import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -56,6 +59,9 @@ public class SearchPatientAction
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private ProgramService programService;
 
     // -------------------------------------------------------------------------
     // Input/output
@@ -78,16 +84,6 @@ public class SearchPatientAction
         this.searchBySelectedOrgunit = searchBySelectedOrgunit;
     }
 
-    public void setSelectedStateManager( SelectedStateManager selectedStateManager )
-    {
-        this.selectedStateManager = selectedStateManager;
-    }
-
-    public void setPatientService( PatientService patientService )
-    {
-        this.patientService = patientService;
-    }
-
     public void setSearchTexts( List<String> searchTexts )
     {
         this.searchTexts = searchTexts;
@@ -96,6 +92,13 @@ public class SearchPatientAction
     public void setListAll( boolean listAll )
     {
         this.listAll = listAll;
+    }
+
+    private List<Integer> programIds;
+
+    public void setProgramIds( List<Integer> programIds )
+    {
+        this.programIds = programIds;
     }
 
     public Collection<Patient> getPatients()
@@ -115,6 +118,13 @@ public class SearchPatientAction
     public Map<Integer, String> getMapPatientOrgunit()
     {
         return mapPatientOrgunit;
+    }
+
+    private List<PatientIdentifierType> identifierTypes = new ArrayList<PatientIdentifierType>();
+
+    public List<PatientIdentifierType> getIdentifierTypes()
+    {
+        return identifierTypes;
     }
 
     // -------------------------------------------------------------------------
@@ -143,12 +153,24 @@ public class SearchPatientAction
 
             total = patientService.countSearchPatients( searchTexts, organisationUnit );
             this.paging = createPaging( total );
-            patients = patientService.searchPatients( searchTexts, organisationUnit, paging.getStartPos(),
-                paging.getPageSize() );
+            patients = patientService.searchPatients( searchTexts, organisationUnit, paging.getStartPos(), paging
+                .getPageSize() );
 
-            for ( Patient patient : patients )
+            if ( !searchBySelectedOrgunit )
             {
-                mapPatientOrgunit.put( patient.getId(), getHierarchyOrgunit( patient.getOrganisationUnit() ) );
+                for ( Patient patient : patients )
+                {
+                    mapPatientOrgunit.put( patient.getId(), getHierarchyOrgunit( patient.getOrganisationUnit() ) );
+                }
+            }
+
+            if ( programIds != null )
+            {
+                for ( Integer programId : programIds )
+                {
+                    Program program = programService.getProgram( programId );
+                    identifierTypes.addAll( program.getPatientIdentifierTypes() );
+                }
             }
         }
 

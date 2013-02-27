@@ -75,13 +75,13 @@ public interface PatientStore
     Collection<String> getPatientPhoneNumbers( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
         Integer max );
 
-    Collection<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+    List<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
         Integer max );
 
     Grid getPatientEventReport( Grid grid, List<String> searchKeys, OrganisationUnit orgunit );
     
     Collection<Patient> getByPhoneNumber( String phoneNumber, Integer min, Integer max);
     
-    Collection<Patient> getByFullName( String fullName );
+    Collection<Patient> getByFullName( String fullName, Integer orgunitId );
     
 }

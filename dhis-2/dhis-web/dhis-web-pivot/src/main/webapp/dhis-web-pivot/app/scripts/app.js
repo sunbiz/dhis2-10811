@@ -50,6 +50,7 @@ Ext.onReady( function() {
 			panel: {
 				setHeight: function(mx) {
 					var h = pt.viewport.westRegion.getHeight() - pt.conf.layout.west_fill;
+					mx = mx + (pt.cmp.dimension.panels.length * 28);
 					pt.cmp.dimension.panel.setHeight(h > mx ? mx : h);
 				},
 
@@ -72,10 +73,10 @@ Ext.onReady( function() {
 				var vpw = pt.viewport.getWidth(),
 					targetx = target ? target.getPosition()[0] : 4,
 					winw = w.getWidth(),
-					y = target ? target.getPosition()[1] + target.getHeight() + 6 : 35;
+					y = target ? target.getPosition()[1] + target.getHeight() + 4 : 33;
 
 				if ((targetx + winw) > vpw) {
-					w.setPosition((vpw - winw - 4), y);
+					w.setPosition((vpw - winw - 2), y);
 				}
 				else {
 					w.setPosition(targetx, y);
@@ -104,7 +105,7 @@ Ext.onReady( function() {
 					dim = panels[i].getData();
 
 					if (dim) {
-						if (dim.name === pt.conf.finals.dimension.data.paramname) {
+						if (dim.name === pt.conf.finals.dimension.data.paramName) {
 							dxItems = dxItems.concat(dim.items);
 						}
 						else {
@@ -114,7 +115,7 @@ Ext.onReady( function() {
 				}
 
 				if (dxItems.length) {
-					data[pt.conf.finals.dimension.data.paramname] = dxItems;
+					data[pt.conf.finals.dimension.data.paramName] = dxItems;
 				}
 			}();
 
@@ -143,6 +144,8 @@ Ext.onReady( function() {
 					});
 				}
 			}();
+
+			config.options = pt.viewport.optionsWindow.getOptions();
 
 			return config;
 		};
@@ -224,10 +227,10 @@ Ext.onReady( function() {
 			sortStore: function() {
 				this.sort('name', 'ASC');
 			},
-			isloaded: false,
+			isLoaded: false,
 			listeners: {
 				load: function(s) {
-					this.isloaded = true;
+					this.isLoaded = true;
 					s.each( function(r) {
 						r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
 					});
@@ -288,7 +291,7 @@ Ext.onReady( function() {
 		return cmp;
 	};
 
-	PT.app.SettingsWindow = function(pt) {
+	PT.app.SettingsWindow = function() {
 		var dimension,
 			dimensionStore,
 			dimensionOrder,
@@ -313,10 +316,12 @@ Ext.onReady( function() {
 			margin = 2,
 			defaultWidth = 160,
 			defaultHeight = 158,
-			maxHeight = (pt.viewport.getHeight() - 100) / 2;
+			maxHeight = (pt.viewport.getHeight() - 100) / 2,
+
+			dimConf = pt.conf.finals.dimension;
 
 		dimensionOrder = function() {
-			var order = ['dx', 'coc', 'pe', 'ou'],
+			var order = [dimConf.data.paramName, dimConf.category.paramName, dimConf.period.paramName, dimConf.organisationUnit.paramName],
 				ougsOrder = [];
 
 			for (var i = 0; i < pt.init.ougs.length; i++) {
@@ -327,9 +332,9 @@ Ext.onReady( function() {
 		}();
 
 		getData = function() {
-			var data = [{id: 'coc', name: 'Categories'}];
+			var data = [{id: dimConf.category.paramName, name: dimConf.category.rawValue}];
 
-			return data.concat(pt.init.ougs);
+			return data.concat(pt.init.ougs, pt.init.degs);
 		};
 
 		getStore = function(data) {
@@ -360,13 +365,13 @@ Ext.onReady( function() {
 		dimensionStore = getStore(getData());
 
 		rowStore = getStore();
-		rowStore.add({id: 'pe', name: 'Periods'}); //i18n
+		rowStore.add({id: dimConf.period.paramName, name: dimConf.period.rawValue}); //i18n
 
 		colStore = getStore();
-		colStore.add({id: 'dx', name: 'Data'}); //i18n
+		colStore.add({id: dimConf.data.paramName, name: dimConf.data.rawValue}); //i18n
 
 		filterStore = getStore();
-		filterStore.add({id: 'ou', name: 'Organisation units'}); //i18n
+		filterStore.add({id: dimConf.organisationUnit.paramName, name: dimConf.organisationUnit.rawValue}); //i18n
 
 		getCmpHeight = function() {
 			var size = dimensionStore.totalCount,
@@ -581,10 +586,20 @@ Ext.onReady( function() {
 					}
 				}
 			],
+			hasBlurHandler: false,
 			listeners: {
 				show: function(w) {
 					pt.util.window.setAnchorPosition(w, pt.viewport.layoutButton);
-					nissa = w;
+
+					if (!w.hasBlurHandler) {
+						var el = Ext.get(document.getElementsByClassName('x-mask')[0]);
+
+						el.on('click', function() {
+							w.hide();
+						});
+
+						w.hasBlurHandler = true;
+					}
 				}
 			}
 		});
@@ -592,16 +607,692 @@ Ext.onReady( function() {
 		return window;
 	};
 
+	PT.app.OptionsWindow = function() {
+		var showSubTotals,
+			hideEmptyRows,
+			cellPadding,
+			fontSize,
+
+			data,
+			style,
+			window;
+
+		showSubTotals = Ext.create('Ext.form.field.Checkbox', {
+			boxLabel: 'Show sub totals', //i18n
+			checked: true
+		});
+
+		hideEmptyRows = Ext.create('Ext.form.field.Checkbox', {
+			boxLabel: 'Hide empty rows' //i18n
+		});
+
+		cellPadding = Ext.create('Ext.form.field.ComboBox', {
+			fieldLabel: 'Display density',
+			labelStyle: 'color:#333',
+			cls: 'pt-combo',
+			width: 230,
+			queryMode: 'local',
+			valueField: 'id',
+			editable: false,
+			value: 'normal',
+			store: Ext.create('Ext.data.Store', {
+				fields: ['id', 'text'],
+				data: [
+					{id: 'comfortable', text: 'Comfortable'},
+					{id: 'normal', text: 'Normal'},
+					{id: 'compact', text: 'Compact'}
+				]
+			})
+		});
+
+		fontSize = Ext.create('Ext.form.field.ComboBox', {
+			xtype: 'combobox',
+			fieldLabel: 'Font size',
+			labelStyle: 'color:#333',
+			cls: 'pt-combo',
+			width: 230,
+			queryMode: 'local',
+			valueField: 'id',
+			editable: false,
+			value: 'normal',
+			store: Ext.create('Ext.data.Store', {
+				fields: ['id', 'text'],
+				data: [
+					{id: 'large', text: 'Large'},
+					{id: 'normal', text: 'Normal'},
+					{id: 'small', text: 'Small'}
+				]
+			})
+		});
+
+		data = {
+			bodyStyle: 'border:0 none',
+			style: 'margin-left:14px',
+			items: [
+				showSubTotals,
+				hideEmptyRows
+			]
+		};
+
+		style = {
+			bodyStyle: 'border:0 none',
+			style: 'margin-left:14px',
+			items: [
+				cellPadding,
+				fontSize
+			]
+		};
+
+		window = Ext.create('Ext.window.Window', {
+			title: 'Table options', //i18n
+			bodyStyle: 'background-color:#fff; padding:8px 8px 3px',
+			closeAction: 'hide',
+			autoShow: true,
+			modal: true,
+			resizable: false,
+			getOptions: function() {
+				return {
+					showSubTotals: showSubTotals.getValue(),
+					hideEmptyRows: hideEmptyRows.getValue(),
+					cellPadding: cellPadding.getValue(),
+					fontSize: fontSize.getValue()
+				};
+			},
+			items: [
+				{
+					bodyStyle: 'border:0 none; color:#444; font-size:12px; font-weight:bold',
+					style: 'margin-bottom:6px',
+					html: 'Data'
+				},
+				data,
+				{
+					bodyStyle: 'border:0 none; padding:7px'
+				},
+				{
+					bodyStyle: 'border:0 none; color:#444; font-size:12px; font-weight:bold',
+					style: 'margin-bottom:6px',
+					html: 'Style'
+				},
+				style
+			],
+			bbar: [
+				'->',
+				{
+					text: 'Hide',
+					handler: function() {
+						window.hide();
+					}
+				},
+				{
+					text: '<b>Update</b>',
+					handler: function() {
+						pt.viewport.updateViewport();
+						window.hide();
+					}
+				}
+			],
+			hasBlurHandler: false,
+			listeners: {
+				show: function(w) {
+					pt.util.window.setAnchorPosition(w, pt.viewport.optionsButton);
+
+					if (!w.hasBlurHandler) {
+						var el = Ext.get(document.getElementsByClassName('x-mask')[0]);
+
+						el.on('click', function() {
+							w.hide();
+						});
+
+						w.hasBlurHandler = true;
+					}
+				}
+			}
+		});
+
+		return window;
+	};
+
+	PT.app.FavoriteWindow = function() {
+
+		// Objects
+		var NameWindow,
+
+		// Instances
+			nameWindow,
+
+		// Components
+			addButton,
+			searchTextfield,
+			grid,
+			prevButton,
+			nextButton,
+			tbar,
+			bbar,
+			info,
+
+			nameTextfield,
+			systemCheckbox,
+			createButton,
+			updateButton,
+			cancelButton,
+
+			mapWindow;
+
+		pt.store.maps.on('load', function(store, records) {
+			info.setText(records.length + ' favorite' + (records.length !== 1 ? 's' : '') + ' available');
+		});
+
+		NameWindow = function(id) {
+			var window,
+				record = gis.store.maps.getById(id);
+
+			nameTextfield = Ext.create('Ext.form.field.Text', {
+				height: 26,
+				width: 300,
+				labelWidth: 70,
+				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb',
+				fieldLabel: 'Name', //i18n
+				value: id ? record.data.name : '',
+				listeners: {
+					afterrender: function() {
+						this.focus();
+					}
+				}
+			});
+
+			systemCheckbox = Ext.create('Ext.form.field.Checkbox', {
+				labelWidth: 70,
+				fieldLabel: 'System', //i18n
+				style: 'margin-bottom: 0',
+				disabled: !gis.init.security.isAdmin,
+				checked: !id ? false : (record.data.user ? false : true)
+			});
+
+			createButton = Ext.create('Ext.button.Button', {
+				text: 'Create', //i18n
+				handler: function() {
+					var name = nameTextfield.getValue(),
+						system = systemCheckbox.getValue(),
+						layers = gis.util.map.getVisibleVectorLayers(),
+						layer,
+						lonlat = gis.olmap.getCenter(),
+						views = [],
+						view,
+						map;
+
+					if (layers.length) {
+						if (name) {
+							for (var i = 0; i < layers.length; i++) {
+								layer = layers[i];
+								view = layer.widget.getView();
+
+								// add
+								view.layer = layer.id;
+
+								// remove
+								delete view.periodType;
+								views.push(view);
+							}
+
+							map = {
+								name: name,
+								longitude: lonlat.lon,
+								latitude: lonlat.lat,
+								zoom: gis.olmap.getZoom(),
+								mapViews: views
+							};
+
+							if (!system) {
+								map.user = {
+									id: 'currentUser'
+								};
+							}
+
+							Ext.Ajax.request({
+								url: gis.baseUrl + gis.conf.url.path_api + 'maps/',
+								method: 'POST',
+								headers: {'Content-Type': 'application/json'},
+								params: Ext.encode(map),
+								success: function(r) {
+									var id = r.getAllResponseHeaders().location.split('/').pop();
+
+									gis.store.maps.loadStore();
+
+									gis.viewport.interpretationButton.enable();
+
+									window.destroy();
+								}
+							});
+						}
+						else {
+							alert('Please enter a name');
+						}
+					}
+					else {
+						alert('Please create a map first');
+					}
+				}
+			});
+
+			updateButton = Ext.create('Ext.button.Button', {
+				text: 'Update', //i18n
+				handler: function() {
+					var name = nameTextfield.getValue(),
+						system = systemCheckbox.getValue();
+
+					Ext.Ajax.request({
+						url: gis.baseUrl + gis.conf.url.path_gis + 'renameMap.action?id=' + id + '&name=' + name + '&user=' + !system,
+						success: function() {
+							gis.store.maps.loadStore();
+
+							window.destroy();
+						}
+					});
+				}
+			});
+
+			cancelButton = Ext.create('Ext.button.Button', {
+				text: 'Cancel', //i18n
+				handler: function() {
+					window.destroy();
+				}
+			});
+
+			window = Ext.create('Ext.window.Window', {
+				title: id ? 'Rename favorite' : 'Create new favorite',
+				iconCls: 'gis-window-title-icon-favorite',
+				cls: 'gis-container-default',
+				resizable: false,
+				modal: true,
+				items: [
+					nameTextfield,
+					systemCheckbox
+				],
+				bbar: [
+					cancelButton,
+					'->',
+					id ? updateButton : createButton
+				],
+				listeners: {
+					show: function() {
+						this.setPosition(mapWindow.x + 14, mapWindow.y + 67);
+					}
+				}
+			});
+
+			return window;
+		};
+
+		addButton = Ext.create('Ext.button.Button', {
+			text: 'Add new', //i18n
+			width: 67,
+			height: 26,
+			style: 'border-radius: 1px;',
+			menu: {},
+			handler: function() {
+				nameWindow = new NameWindow(null, 'create');
+				nameWindow.show();
+			}
+		});
+
+		searchTextfield = Ext.create('Ext.form.field.Text', {
+			width: 340,
+			height: 26,
+			fieldStyle: 'padding-right: 0; padding-left: 6px; border-radius: 1px; border-color: #bbb',
+			emptyText: 'Search for favorites', //i18n
+			enableKeyEvents: true,
+			currentValue: '',
+			listeners: {
+				keyup: function() {
+					if (this.getValue() !== this.currentValue) {
+						this.currentValue = this.getValue();
+
+						var value = this.getValue(),
+							url = value ? gis.baseUrl + gis.conf.url.path_api +  'maps/query/' + value + '.json?links=false' : null,
+							store = gis.store.maps;
+
+						store.page = 1;
+						store.loadStore(url);
+					}
+				}
+			}
+		});
+
+		prevButton = Ext.create('Ext.button.Button', {
+			text: 'Prev', //i18n
+			handler: function() {
+				var value = searchTextfield.getValue(),
+					url = value ? gis.baseUrl + gis.conf.url.path_api +  'maps/query/' + value + '.json?links=false' : null,
+					store = gis.store.maps;
+
+				store.page = store.page <= 1 ? 1 : store.page - 1;
+				store.loadStore(url);
+			}
+		});
+
+		nextButton = Ext.create('Ext.button.Button', {
+			text: 'Next', //i18n
+			handler: function() {
+				var value = searchTextfield.getValue(),
+					url = value ? gis.baseUrl + gis.conf.url.path_api +  'maps/query/' + value + '.json?links=false' : null,
+					store = gis.store.maps;
+
+				store.page = store.page + 1;
+				store.loadStore(url);
+			}
+		});
+
+		info = Ext.create('Ext.form.Label', {
+			cls: 'gis-label-info',
+			width: 300,
+			height: 22
+		});
+
+		grid = Ext.create('Ext.grid.Panel', {
+			cls: 'gis-grid',
+			scroll: false,
+			hideHeaders: true,
+			columns: [
+				{
+					dataIndex: 'name',
+					sortable: false,
+					width: 334,
+					renderer: function(value, metaData, record) {
+						var fn = function() {
+							var el = Ext.get(record.data.id);
+							if (el) {
+								el = el.parent('td');
+								el.addClsOnOver('link');
+								el.gis = gis;
+								el.map = {id: record.data.id};
+								el.dom.setAttribute('onclick', 'Ext.get(this).gis.map = Ext.get(this).map; GIS.core.MapLoader(Ext.get(this).gis).load();');
+							}
+						};
+
+						Ext.defer(fn, 100);
+
+						return '<div id="' + record.data.id + '">' + value + '</div>';
+					}
+				},
+				{
+					xtype: 'actioncolumn',
+					sortable: false,
+					width: 80,
+					items: [
+						{
+							iconCls: 'gis-grid-row-icon-edit',
+							getClass: function(value, metaData, record) {
+								var system = !record.data.user,
+									isAdmin = gis.init.security.isAdmin;
+
+								if (isAdmin || (!isAdmin && !system)) {
+									return 'tooltip-map-edit';
+								}
+							},
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex),
+									id = record.data.id,
+									system = !record.data.user,
+									isAdmin = gis.init.security.isAdmin;
+
+								if (isAdmin || (!isAdmin && !system)) {
+									var id = this.up('grid').store.getAt(rowIndex).data.id;
+									nameWindow = new NameWindow(id);
+									nameWindow.show();
+								}
+							}
+						},
+						{
+							iconCls: 'gis-grid-row-icon-overwrite',
+							getClass: function(value, metaData, record) {
+								var system = !record.data.user,
+									isAdmin = gis.init.security.isAdmin;
+
+								if (isAdmin || (!isAdmin && !system)) {
+									return 'tooltip-map-overwrite';
+								}
+							},
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex),
+									id = record.data.id,
+									name = record.data.name,
+									layers = gis.util.map.getVisibleVectorLayers(),
+									layer,
+									lonlat = gis.olmap.getCenter(),
+									views = [],
+									view,
+									map,
+									message = 'Overwrite favorite?\n\n' + name;
+
+								if (layers.length) {
+									if (confirm(message)) {
+										for (var i = 0; i < layers.length; i++) {
+											layer = layers[i];
+											view = layer.core.view;
+
+											// add
+											view.layer = layer.id;
+
+											// remove
+											delete view.periodType;
+
+											views.push(view);
+										}
+
+										map = {
+											longitude: lonlat.lon,
+											latitude: lonlat.lat,
+											zoom: gis.olmap.getZoom(),
+											mapViews: views
+										};
+
+										Ext.Ajax.request({
+											url: gis.baseUrl + gis.conf.url.path_api + 'maps/' + id,
+											method: 'PUT',
+											headers: {'Content-Type': 'application/json'},
+											params: Ext.encode(map),
+											success: function() {
+												gis.map = map;
+												gis.viewport.interpretationButton.enable();
+
+												gis.store.maps.loadStore();
+											}
+										});
+									}
+								}
+								else {
+									alert('No layers to save'); //i18n
+								}
+							}
+						},
+						{
+							iconCls: 'gis-grid-row-icon-dashboard',
+							getClass: function() {
+								return 'tooltip-map-dashboard';
+							},
+							handler: function(grid, rowIndex) {
+								var record = this.up('grid').store.getAt(rowIndex),
+									id = record.data.id,
+									name = record.data.name,
+									message = 'Add to dashboard?\n\n' + name;
+
+								if (confirm(message)) {
+									Ext.Ajax.request({
+										url: gis.baseUrl + gis.conf.url.path_gis + 'addMapViewToDashboard.action',
+										params: {
+											id: id
+										}
+									});
+								}
+							}
+						},
+						{
+							iconCls: 'gis-grid-row-icon-delete',
+							getClass: function(value, metaData, record) {
+								var system = !record.data.user,
+									isAdmin = gis.init.security.isAdmin;
+
+								if (isAdmin || (!isAdmin && !system)) {
+									return 'tooltip-map-delete';
+								}
+							},
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex),
+									id = record.data.id,
+									name = record.data.name,
+									message = 'Delete favorite?\n\n' + name;
+
+								if (confirm(message)) {
+									Ext.Ajax.request({
+										url: gis.baseUrl + gis.conf.url.path_api + 'maps/' + id,
+										method: 'DELETE',
+										success: function() {
+											gis.store.maps.loadStore();
+										}
+									});
+								}
+							}
+						}
+					],
+					renderer: function(value, metaData, record) {
+						if (!gis.init.security.isAdmin && !record.data.user) {
+							metaData.tdCls = 'gis-grid-row-icon-disabled';
+						}
+					}
+				},
+				{
+					sortable: false,
+					width: 6
+				}
+			],
+			store: gis.store.maps,
+			bbar: [
+				info,
+				'->',
+				prevButton,
+				nextButton
+			],
+			listeners: {
+				added: function() {
+					gis.viewport.mapGrid = this;
+				},
+				render: function() {
+					var size = Math.floor((gis.viewport.centerRegion.getHeight() - 155) / gis.conf.layout.grid.row_height);
+					this.store.pageSize = size;
+					this.store.page = 1;
+					this.store.loadStore();
+
+					gis.store.maps.on('load', function() {
+						if (this.isVisible()) {
+							this.fireEvent('afterrender');
+						}
+					}, this);
+				},
+				afterrender: function() {
+					var fn = function() {
+						var editArray = document.getElementsByClassName('tooltip-map-edit'),
+							overwriteArray = document.getElementsByClassName('tooltip-map-overwrite'),
+							dashboardArray = document.getElementsByClassName('tooltip-map-dashboard'),
+							deleteArray = document.getElementsByClassName('tooltip-map-delete'),
+							el;
+
+						for (var i = 0; i < deleteArray.length; i++) {
+							el = editArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Rename',
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+
+							el = overwriteArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Overwrite',
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+
+							el = deleteArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Delete',
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+
+						for (var i = 0; i < dashboardArray.length; i++) {
+							el = dashboardArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Add to dashboard',
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+					};
+
+					Ext.defer(fn, 100);
+				},
+				itemmouseenter: function(grid, record, item) {
+					this.currentItem = Ext.get(item);
+					this.currentItem.removeCls('x-grid-row-over');
+				},
+				select: function() {
+					this.currentItem.removeCls('x-grid-row-selected');
+				},
+				selectionchange: function() {
+					this.currentItem.removeCls('x-grid-row-focused');
+				}
+			}
+		});
+
+		mapWindow = Ext.create('Ext.window.Window', {
+			title: 'Manage favorites',
+			iconCls: 'gis-window-title-icon-favorite',
+			cls: 'gis-container-default',
+			resizable: false,
+			modal: true,
+			width: 450,
+			items: [
+				{
+					xtype: 'panel',
+					layout: 'hbox',
+					width: 422,
+					cls: 'gis-container-inner',
+					items: [
+						addButton,
+						{
+							height: 24,
+							width: 1,
+							style: 'width: 1px; margin-left: 7px; margin-right: 7px; margin-top: 1px',
+							bodyStyle: 'border-left: 1px solid #aaa'
+						},
+						searchTextfield
+					]
+				},
+				grid
+			],
+			listeners: {
+				show: function() {
+					this.setPosition(115, 37);
+				}
+			}
+		});
+
+		return mapWindow;
+	};
+
 	PT.app.init.onInitialize = function(r) {
 		var createViewport;
 
 		createViewport = function() {
-			var viewport,
-				westRegion,
-				centerRegion,
-				accordion,
-
-				indicatorAvailable,
+			var indicatorAvailable,
 				indicatorSelected,
 				indicator,
 				dataElementAvailable,
@@ -614,10 +1305,20 @@ Ext.onReady( function() {
 				relativePeriod,
 				fixedPeriodAvailable,
 				fixedPeriodSelected,
-				fixedPeriod,
+				period,
 				organisationUnit,
-				getOrganisationUnitGroupSetPanels,
+				getGroupSetPanels,
+				validateSpecialCases,
 				update,
+
+				layoutButton,
+				optionsButton,
+				downloadButton,
+
+				accordion,
+				westRegion,
+				centerRegion,
+				viewport,
 
 				addListeners;
 
@@ -707,7 +1408,7 @@ Ext.onReady( function() {
 				hideCollapseTool: true,
 				getData: function() {
 					var data = {
-						name: pt.conf.finals.dimension.indicator.paramname,
+						name: pt.conf.finals.dimension.indicator.paramName,
 						items: []
 					};
 
@@ -732,12 +1433,12 @@ Ext.onReady( function() {
 						{
 							xtype: 'combobox',
 							cls: 'pt-combo',
-							style: 'margin-bottom:4px',
+							style: 'margin-bottom:4px; margin-top:2px',
 							width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
 							valueField: 'id',
 							displayField: 'name',
 							fieldLabel: 'Select group', //i18n pt.i18n.select_group
-							labelStyle: 'padding-left:6px',
+							labelStyle: 'padding-left:8px',
 							editable: false,
 							store: {
 								xtype: 'store',
@@ -898,7 +1599,7 @@ Ext.onReady( function() {
 				hideCollapseTool: true,
 				getData: function() {
 					var data = {
-						name: pt.conf.finals.dimension.indicator.paramname,
+						name: pt.conf.finals.dimension.indicator.paramName,
 						items: []
 					};
 
@@ -920,12 +1621,12 @@ Ext.onReady( function() {
 					{
 						xtype: 'combobox',
 						cls: 'pt-combo',
-						style: 'margin-bottom:4px',
+						style: 'margin-bottom:4px; margin-top:2px',
 						width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
 						valueField: 'id',
 						displayField: 'name',
 						fieldLabel: 'Select group', //i18n pt.i18n.select_group
-						labelStyle: 'padding-left:6px',
+						labelStyle: 'padding-left:8px',
 						editable: false,
 						store: {
 							xtype: 'store',
@@ -1082,11 +1783,10 @@ Ext.onReady( function() {
 			dataSet = {
 				xtype: 'panel',
 				title: '<div class="pt-panel-title-data">Reporting rates</div>', //i18n
-				bodyStyle: 'padding-top:3px',
 				hideCollapseTool: true,
 				getData: function() {
 					var data = {
-						name: pt.conf.finals.dimension.indicator.paramname,
+						name: pt.conf.finals.dimension.indicator.paramName,
 						items: []
 					};
 
@@ -1103,6 +1803,10 @@ Ext.onReady( function() {
 						this,
 						pt.conf.layout.west_fill_accordion_dataset
 					);
+
+					if (!pt.store.dataSetAvailable.isLoaded) {
+						pt.store.dataSetAvailable.load();
+					}
 				},
 				items: [
 					{
@@ -1150,6 +1854,7 @@ Ext.onReady( function() {
 								bodyStyle: 'border-style:none; padding:0 0 0 10px',
 								defaults: {
 									labelSeparator: '',
+									style: 'margin-bottom:2px',
 									listeners: {
 										added: function(chb) {
 											if (chb.xtype === 'checkbox') {
@@ -1191,6 +1896,7 @@ Ext.onReady( function() {
 								bodyStyle: 'border-style:none; padding:0 0 0 32px',
 								defaults: {
 									labelSeparator: '',
+									style: 'margin-bottom:2px',
 									listeners: {
 										added: function(chb) {
 											if (chb.xtype === 'checkbox') {
@@ -1226,6 +1932,7 @@ Ext.onReady( function() {
 								bodyStyle: 'border-style:none; padding:0 0 0 32px',
 								defaults: {
 									labelSeparator: '',
+									style: 'margin-bottom:2px',
 									listeners: {
 										added: function(chb) {
 											if (chb.xtype === 'checkbox') {
@@ -1268,6 +1975,7 @@ Ext.onReady( function() {
 								bodyStyle: 'border-style:none; padding:5px 0 0 10px',
 								defaults: {
 									labelSeparator: '',
+									style: 'margin-bottom:2px',
 									listeners: {
 										added: function(chb) {
 											if (chb.xtype === 'checkbox') {
@@ -1307,7 +2015,8 @@ Ext.onReady( function() {
 								layout: 'anchor',
 								bodyStyle: 'border-style:none; padding:5px 0 0 46px',
 								defaults: {
-									labelSeparator: ''
+									labelSeparator: '',
+									style: 'margin-bottom:2px',
 								},
 								items: [
 									{
@@ -1412,7 +2121,7 @@ Ext.onReady( function() {
 				hideCollapseTool: true,
 				getData: function() {
 					var data = {
-						name: pt.conf.finals.dimension.period.paramname,
+						name: pt.conf.finals.dimension.period.paramName,
 							items: []
 						},
 						chb = pt.cmp.dimension.relativePeriod.checkbox;
@@ -1442,6 +2151,7 @@ Ext.onReady( function() {
 						xtype: 'panel',
 						layout: 'column',
 						bodyStyle: 'border-style:none',
+						style: 'margin-top:2px',
 						items: [
 							{
 								xtype: 'combobox',
@@ -1451,7 +2161,7 @@ Ext.onReady( function() {
 								valueField: 'id',
 								displayField: 'name',
 								fieldLabel: 'Select type', //i18n pt.i18n.select_type,
-								labelStyle: 'padding-left:6px',
+								labelStyle: 'padding-left:8px',
 								editable: false,
 								queryMode: 'remote',
 								store: pt.store.periodType,
@@ -1523,10 +2233,9 @@ Ext.onReady( function() {
 			};
 
 			organisationUnit = {
-				//id: 'organisationunit_t',
 				xtype: 'panel',
 				title: '<div class="pt-panel-title-organisationunit">Organisation units</div>', //i18n pt.i18n.organisation_units
-				bodyStyle: 'padding-top:6px',
+				bodyStyle: 'padding-top:5px',
 				hideCollapseTool: true,
 				collapsed: false,
 				getData: function() {
@@ -1557,7 +2266,7 @@ Ext.onReady( function() {
 								boxLabel: 'User organisation unit', //i18n pt.i18n.user_orgunit,
 								labelWidth: pt.conf.layout.form_label_width,
 								handler: function(chb, checked) {
-									pt.cmp.dimension.organisationUnit.toolbar.xable(checked, pt.cmp.favorite.userOrganisationUnitChildren.getValue());
+									//pt.cmp.dimension.organisationUnit.toolbar.xable(checked, pt.cmp.favorite.userOrganisationUnitChildren.getValue());
 									pt.cmp.dimension.organisationUnit.treepanel.xable(checked, pt.cmp.favorite.userOrganisationUnitChildren.getValue());
 								},
 								listeners: {
@@ -1572,7 +2281,7 @@ Ext.onReady( function() {
 								boxLabel: 'User organisation unit children', //i18n pt.i18n.user_orgunit_children,
 								labelWidth: pt.conf.layout.form_label_width,
 								handler: function(chb, checked) {
-									pt.cmp.dimension.organisationUnit.toolbar.xable(checked, pt.cmp.favorite.userOrganisationUnit.getValue());
+									//pt.cmp.dimension.organisationUnit.toolbar.xable(checked, pt.cmp.favorite.userOrganisationUnit.getValue());
 									pt.cmp.dimension.organisationUnit.treepanel.xable(checked, pt.cmp.favorite.userOrganisationUnit.getValue());
 								},
 								listeners: {
@@ -1583,96 +2292,97 @@ Ext.onReady( function() {
 							}
 						]
 					},
-					{
-						id: 'organisationunit_t',
-						xtype: 'toolbar',
-						style: 'margin-bottom: 4px',
-						width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
-						xable: function(checked, value) {
-							if (checked || value) {
-								this.disable();
-							}
-							else {
-								this.enable();
-							}
-						},
-						defaults: {
-							height: 22
-						},
-						items: [
-							{
-								xtype: 'label',
-								text: 'Auto-select organisation units by', //i18n
-								style: 'padding-left:8px; color:#666; line-height:23px'
-							},
-							'->',
-							{
-								text: 'Group..',
-								handler: function() {},
-								listeners: {
-									added: function() {
-										this.menu = Ext.create('Ext.menu.Menu', {
-											shadow: false,
-											showSeparator: false,
-											width: pt.conf.layout.treepanel_toolbar_menu_width_group,
-											items: [
-												{
-													xtype: 'grid',
-													cls: 'pt-menugrid',
-													width: pt.conf.layout.treepanel_toolbar_menu_width_group,
-													scroll: 'vertical',
-													columns: [
-														{
-															dataIndex: 'name',
-															width: pt.conf.layout.treepanel_toolbar_menu_width_group,
-															style: 'display:none'
-														}
-													],
-													setHeightInMenu: function(store) {
-														var h = store.getCount() * 24,
-															sh = pt.util.viewport.getSize().y * 0.6;
-														this.setHeight(h > sh ? sh : h);
-														this.doLayout();
-														this.up('menu').doLayout();
-													},
-													store: pt.store.group,
-													listeners: {
-														itemclick: function(g, r) {
-															g.getSelectionModel().select([], false);
-															this.up('menu').hide();
-															pt.cmp.dimension.organisationUnit.treepanel.selectByGroup(r.data.id);
-														}
-													}
-												}
-											],
-											listeners: {
-												show: function() {
-													var store = pt.store.group;
+					//{
+						//id: 'organisationunit_t',
+						//xtype: 'toolbar',
+						//style: 'margin-bottom: 4px',
+						//width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
+						//xable: function(checked, value) {
+							//if (checked || value) {
+								//this.disable();
+							//}
+							//else {
+								//this.enable();
+							//}
+						//},
+						//defaults: {
+							//height: 22
+						//},
+						//items: [
+							//{
+								//xtype: 'label',
+								//text: 'Auto-select organisation units by', //i18n
+								//style: 'padding-left:8px; color:#666; line-height:23px'
+							//},
+							//'->',
+							//{
+								//text: 'Group..',
+								//handler: function() {},
+								//listeners: {
+									//added: function() {
+										//this.menu = Ext.create('Ext.menu.Menu', {
+											//shadow: false,
+											//showSeparator: false,
+											//width: pt.conf.layout.treepanel_toolbar_menu_width_group,
+											//items: [
+												//{
+													//xtype: 'grid',
+													//cls: 'pt-menugrid',
+													//width: pt.conf.layout.treepanel_toolbar_menu_width_group,
+													//scroll: 'vertical',
+													//columns: [
+														//{
+															//dataIndex: 'name',
+															//width: pt.conf.layout.treepanel_toolbar_menu_width_group,
+															//style: 'display:none'
+														//}
+													//],
+													//setHeightInMenu: function(store) {
+														//var h = store.getCount() * 24,
+															//sh = pt.util.viewport.getSize().y * 0.6;
+														//this.setHeight(h > sh ? sh : h);
+														//this.doLayout();
+														//this.up('menu').doLayout();
+													//},
+													//store: pt.store.group,
+													//listeners: {
+														//itemclick: function(g, r) {
+															//g.getSelectionModel().select([], false);
+															//this.up('menu').hide();
+															//pt.cmp.dimension.organisationUnit.treepanel.selectByGroup(r.data.id);
+														//}
+													//}
+												//}
+											//],
+											//listeners: {
+												//show: function() {
+													//var store = pt.store.group;
 
-													if (!store.isLoaded) {
-														store.load({scope: this, callback: function() {
-															this.down('grid').setHeightInMenu(store);
-														}});
-													}
-													else {
-														this.down('grid').setHeightInMenu(store);
-													}
-												}
-											}
-										});
-									}
-								}
-							}
-						],
-						listeners: {
-							added: function() {
-								pt.cmp.dimension.organisationUnit.toolbar = this;
-							}
-						}
-					},
+													//if (!store.isLoaded) {
+														//store.load({scope: this, callback: function() {
+															//this.down('grid').setHeightInMenu(store);
+														//}});
+													//}
+													//else {
+														//this.down('grid').setHeightInMenu(store);
+													//}
+												//}
+											//}
+										//});
+									//}
+								//}
+							//}
+						//],
+						//listeners: {
+							//added: function() {
+								//pt.cmp.dimension.organisationUnit.toolbar = this;
+							//}
+						//}
+					//},
 					{
 						xtype: 'treepanel',
 						cls: 'pt-tree',
+						style: 'border-top: 1px solid #ddd; padding-top: 1px',
 						width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
 						rootVisible: false,
 						autoScroll: true,
@@ -1826,24 +2536,17 @@ Ext.onReady( function() {
 				}
 			};
 
-			getOrganisationUnitGroupSetPanels = function() {
+			getGroupSetPanels = function(groupSets, iconCls) {
 				var	getAvailableStore,
 					getSelectedStore,
 
 					createPanel,
 					getPanels;
 
-				getAvailableStore = function(groupSetId) {
+				getAvailableStore = function(groupSet) {
 					return Ext.create('Ext.data.Store', {
 						fields: ['id', 'name'],
-						proxy: {
-							type: 'ajax',
-							url: pt.conf.finals.ajax.path_api + 'organisationUnitGroupSets/' + groupSetId + '.json?links=false&paging=false',
-							reader: {
-								type: 'json',
-								root: 'organisationUnitGroups'
-							}
-						},
+						data: groupSet.items,
 						isLoaded: false,
 						storage: {},
 						sortStore: function() {
@@ -1962,7 +2665,7 @@ Ext.onReady( function() {
 						});
 					};
 
-					availableStore = getAvailableStore(groupSet.id);
+					availableStore = getAvailableStore(groupSet);
 					selectedStore = getSelectedStore();
 
 					available = getAvailable(availableStore);
@@ -1974,8 +2677,7 @@ Ext.onReady( function() {
 
 					panel = {
 						xtype: 'panel',
-						title: '<div class="pt-panel-title-organisationunit">' + groupSet.name + '</div>', //i18n
-						bodyStyle: 'padding-top:3px',
+						title: '<div class="' + iconCls + '">' + groupSet.name + '</div>', //i18n
 						hideCollapseTool: true,
 						getData: function() {
 							var data = {
@@ -2027,21 +2729,17 @@ Ext.onReady( function() {
 				};
 
 				getPanels = function() {
-					var ougs = pt.init.ougs,
-						panels = [],
+					var panels = [],
 						groupSet,
 						last;
 
-					for (var i = 0, panel; i < ougs.length; i++) {
-						groupSet = ougs[i];
+					for (var i = 0, panel; i < groupSets.length; i++) {
+						groupSet = groupSets[i];
 
 						panel = createPanel(groupSet);
 
 						panels.push(panel);
 					}
-
-					last = panels[panels.length - 1];
-					last.cls = 'pt-accordion-last';
 
 					return panels;
 				};
@@ -2050,20 +2748,39 @@ Ext.onReady( function() {
 			};
 
 			validateSpecialCases = function(settings) {
+				var dimConf = pt.conf.finals.dimension,
+					settingsNames = [],
+					settingsObjects = [].concat(Ext.clone(settings.col || []), Ext.clone(settings.row || []), Ext.clone(settings.filter || []));
 
-				// indicator as filter
+				// Settings names
+				for (var i = 0; i < settingsObjects.length; i++) {
+					settingsNames.push(settingsObjects[i].name);
+				}
+
+				// Indicator as filter
 				if (settings.filter && pt.store.indicatorSelected.data.length) {
 					for (var i = 0; i < settings.filter.length; i++) {
-						if (settings.filter[i].name === 'dx') {
-							alert('Indicators cannot be specified as filter');
+						if (settings.filter[i].name === dimConf.data.paramName) {
+							alert('Indicators cannot be specified as filter'); //i18n
 							return;
 						}
 					}
 				}
 
-				if (settings.filter && pt.viewport.settingsWindow.filterStore.getById('coc')) {
+				// Categories as filter
+				if (settings.filter && pt.viewport.settingsWindow.filterStore.getById(dimConf.category.paramName)) {
 					alert('Categories cannot be specified as filter');
 					return;
+				}
+
+				// Degs and datasets in the same query
+				if (Ext.Array.contains(settingsNames, dimConf.data.paramName) && pt.store.dataSetSelected.data.length) {
+					for (var i = 0; i < pt.init.degs.length; i++) {
+						if (Ext.Array.contains(settingsNames, pt.init.degs[i].id)) {
+							alert('Data element group sets cannot be specified together with data sets');
+							return;
+						}
+					}
 				}
 
 				return true;
@@ -2081,7 +2798,7 @@ Ext.onReady( function() {
 				}
 
 				if (settings) {
-					pt.util.pivot.getTable(settings, pt, centerRegion);
+					pt.util.pivot.getTable(settings, pt);
 				}
 			};
 
@@ -2104,9 +2821,18 @@ Ext.onReady( function() {
 								dataSet,
 								period,
 								organisationUnit
-							];
+							],
+							ougs = Ext.clone(pt.init.ougs),
+							degs = Ext.clone(pt.init.degs);
 
-							panels = panels.concat(getOrganisationUnitGroupSetPanels());
+							pt.util.array.sortObjectsByString(ougs);
+							pt.util.array.sortObjectsByString(degs);
+
+							panels = panels.concat(getGroupSetPanels(ougs, 'pt-panel-title-organisationunitgroupset'));
+							panels = panels.concat(getGroupSetPanels(degs, 'pt-panel-title-dataelementgroupset'));
+
+							last = panels[panels.length - 1];
+							last.cls = 'pt-accordion-last';
 
 							return panels;
 						}(),
@@ -2135,6 +2861,7 @@ Ext.onReady( function() {
 
 			layoutButton = Ext.create('Ext.button.Button', {
 				text: 'Layout',
+				menu: {},
 				handler: function() {
 					if (!pt.viewport.settingsWindow) {
 						pt.viewport.settingsWindow = PT.app.SettingsWindow(pt);
@@ -2146,12 +2873,49 @@ Ext.onReady( function() {
 
 			optionsButton = Ext.create('Ext.button.Button', {
 				text: 'Options',
+				menu: {},
 				handler: function() {
 					if (!pt.viewport.optionsWindow) {
-						pt.viewport.optionsWindow = PT.app.OptionsWindow(pt);
+						pt.viewport.optionsWindow = PT.app.OptionsWindow();
 					}
 
 					pt.viewport.optionsWindow.show();
+				}
+			});
+
+			downloadButton = Ext.create('Ext.button.Button', {
+				text: 'Download',
+				disabled: true,
+				menu: {
+					cls: 'pt-menu',
+					width: 105,
+					shadow: false,
+					showSeparator: false,
+					items: [
+						{
+							text: 'Excel (XLS)',
+							iconCls: 'pt-menu-item-xls',
+							handler: function() {
+								if (pt.baseUrl && pt.paramString) {
+									window.location.href = pt.baseUrl + '/api/analytics.xls' + pt.paramString;
+								}
+							}
+						},
+						{
+							text: 'CSV',
+							iconCls: 'pt-menu-item-csv',
+							handler: function() {
+								if (pt.baseUrl && pt.paramString) {
+									window.location.href = pt.baseUrl + '/api/analytics.csv' + pt.paramString;
+								}
+							}
+						}
+					],
+					listeners: {
+						afterrender: function() {
+							this.getEl().addCls('pt-toolbar-btn-menu');
+						}
+					}
 				}
 			});
 
@@ -2192,7 +2956,7 @@ Ext.onReady( function() {
 							handler: function() {
 							}
 						},
-
+						downloadButton,
                         '->',
                         {
                             xtype: 'button',
@@ -2205,59 +2969,21 @@ Ext.onReady( function() {
 				},
 				listeners: {
 					afterrender: function(p) {
-						//var top,
-							//left,
-							//width,
-							//height,
-							//fixedElStyle,
-							//setFixed = function(item, i) {
-								//if (!item.hasCls('fixed')) {
-									//item.addCls('fixed');
-									//item.setTop(fixedElStyle[i].top + 'px');
-									//item.setLeft(fixedElStyle[i].left + 'px');
-									//item.setWidth(fixedElStyle[i].width + 'px');
-									//item.setHeight(fixedElStyle[i].height + 'px');
+						var liStyle = 'padding:3px 10px; color:#333',
+							html = '';
 
-									//if (i > 0) {
-										//item.setStyle('border-left', 0);
-									//}
+						html += '<div style="padding:20px">';
+						html += '<div style="font-size:14px; padding-bottom:8px">Creating a table</div>';
+						html += '<div style="' + liStyle + '">- Select items from any of the dimensions in the left menu</div>';
+						html += '<div style="' + liStyle + '">- Click "Layout" to arrange your dimensions on table rows and columns</div>';
+						html += '<div style="' + liStyle + '">- Click "<b>Update</b>" to create your table</div>';
+						html += '<div style="font-size:14px; padding-top:20px; padding-bottom:8px">Working with a table</div>';
+						html += '<div style="' + liStyle + '">- Click "Options" to hide sub-totals or empty rows, adjust font size and more</div>';
+						html += '<div style="' + liStyle + '">- Click "Favorites" to save your table for later use</div>';
+						html += '<div style="' + liStyle + '">- Click "Download" to save table data to your computer</div>';
+						html += '</div>';
 
-								//}
-							//};
-
-						//p.body.dom.addEventListener('scroll', function() {
-							//var fixedEl = document.getElementsByClassName('scroll-fixed-tr'),
-								//relativeEl = document.getElementsByClassName('scroll-relative'),
-								//relativeElStyle	= [],
-								//el;
-
-							//fixedElStyle = [];
-
-							//for (var i = 0; i < fixedEl.length; i++) {
-								////alert(Ext.get(relativeEl[i]).getWidth());
-								//el = Ext.get(fixedEl[i]);
-								//fixedElStyle.push({
-									//top: el.getTop() + 1,
-									//left: el.getLeft(),
-									//width: el.getWidth(),
-									//height: el.getHeight()
-								//});
-							//}
-
-							//for (var i = 0; i < relativeEl.length; i++) {
-								////alert(Ext.get(relativeEl[i]).getWidth());
-								//relativeElStyle.push(Ext.get(relativeEl[i]).getWidth());
-							//}
-
-							//for (var i = 0; i < fixedEl.length; i++) {
-								//setFixed(Ext.get(fixedEl[i]), i);
-							//}
-
-							//for (var i = 0; i < relativeEl.length; i++) {
-								////alert(Ext.get(relativeEl[i]).getWidth());
-								//Ext.get(relativeEl[i]).setWidth(relativeElStyle[i]);
-							//}
-						//});
+						p.update(html);
 					}
 				}
 			});
@@ -2269,6 +2995,7 @@ Ext.onReady( function() {
 				updateViewport: update,
 				layoutButton: layoutButton,
 				optionsButton: optionsButton,
+				downloadButton: downloadButton,
 				items: [
 					westRegion,
 					centerRegion
@@ -2298,17 +3025,27 @@ Ext.onReady( function() {
 				});
 			}();
 
+			pt.container = centerRegion;
+
 			return viewport;
 		};
 
 		pt.init = PT.app.getInits(r);
+		pt.baseUrl = pt.init.contextPath;
+
 		pt.util = PT.app.getUtils();
+
 		pt.store = PT.app.getStores();
+
 		pt.cmp = PT.app.getCmp();
+
 		pt.viewport = createViewport();
 
-		pt.viewport.settingsWindow = PT.app.SettingsWindow(pt);
+		pt.viewport.settingsWindow = PT.app.SettingsWindow();
 		pt.viewport.settingsWindow.hide();
+
+		pt.viewport.optionsWindow = PT.app.OptionsWindow();
+		pt.viewport.optionsWindow.hide();
 	};
 
 	Ext.Ajax.request({

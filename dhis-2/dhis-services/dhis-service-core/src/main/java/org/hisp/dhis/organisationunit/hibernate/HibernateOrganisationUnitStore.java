@@ -35,7 +35,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.common.AuditLogUtil;
-import org.hisp.dhis.common.SharingUtils;
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
@@ -79,7 +78,7 @@ public class HibernateOrganisationUnitStore
     {
         OrganisationUnit object = getObject( Restrictions.eq( "uuid", uuid ) );
 
-        if ( !SharingUtils.canRead( currentUserService.getCurrentUser(), object ) )
+        if ( !isReadAllowed( object ) )
         {
             AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
             throw new AccessDeniedException( "You do not have read access to object with uuid " + uuid );
@@ -89,7 +88,7 @@ public class HibernateOrganisationUnitStore
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getAllOrganisationUnitsByStatus( boolean active )
     {
         Query query = getQuery( "from OrganisationUnit o where o.active is :active" );
@@ -105,7 +104,7 @@ public class HibernateOrganisationUnitStore
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getAllOrganisationUnitsByStatusLastUpdated( boolean active, Date lastUpdated )
     {
         return getCriteria().add( Restrictions.ge( "lastUpdated", lastUpdated ) ).add( Restrictions.eq( "active", active ) ).list();
@@ -118,21 +117,21 @@ public class HibernateOrganisationUnitStore
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getRootOrganisationUnits()
     {
         return getQuery( "from OrganisationUnit o where o.parent is null" ).list();
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getOrganisationUnitsWithoutGroups()
     {
         return getQuery( "from OrganisationUnit o where o.groups.size = 0" ).list();
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getOrganisationUnitsByNameAndGroups( String query,
         Collection<OrganisationUnitGroup> groups, boolean limit )
     {
@@ -235,7 +234,7 @@ public class HibernateOrganisationUnitStore
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getBetweenByStatus( boolean status, int first, int max )
     {
         Criteria criteria = getCriteria().add( Restrictions.eq( "active", status ) );
@@ -246,7 +245,7 @@ public class HibernateOrganisationUnitStore
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getBetweenByLastUpdated( Date lastUpdated, int first, int max )
     {
         Criteria criteria = getCriteria().add( Restrictions.ge( "lastUpdated", lastUpdated ) );
@@ -257,7 +256,7 @@ public class HibernateOrganisationUnitStore
     }
 
     @Override
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Collection<OrganisationUnit> getBetweenByStatusLastUpdated( boolean status, Date lastUpdated, int first, int max )
     {
         Criteria criteria = getCriteria().add( Restrictions.ge( "lastUpdated", lastUpdated ) ).add( Restrictions.eq( "active", status ) );

@@ -107,20 +107,20 @@ public class DataSetList
     {
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            serializeVerssion2_8( dout );
+            serializeVersion2_8( dout );
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            serializeVerssion2_9( dout );
+            serializeVersion2_9( dout );
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
         {
-            serializeVerssion2_10( dout );
+            serializeVersion2_10( dout );
         }
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dout )
+    public void serializeVersion2_8( DataOutputStream dout )
         throws IOException
     {
         if ( addedDataSets != null )
@@ -128,7 +128,7 @@ public class DataSetList
             dout.writeInt( addedDataSets.size() );
             for ( DataSet dataSet : addedDataSets )
             {
-                dataSet.serializeVerssion2_8( dout );
+                dataSet.serializeVersion2_8( dout );
             }
         }
         else
@@ -140,7 +140,7 @@ public class DataSetList
             dout.writeInt( deletedDataSets.size() );
             for ( DataSet dataSet : deletedDataSets )
             {
-                dataSet.serializeVerssion2_8( dout );
+                dataSet.serializeVersion2_8( dout );
             }
         }
         else
@@ -152,7 +152,7 @@ public class DataSetList
             dout.writeInt( modifiedDataSets.size() );
             for ( DataSet dataSet : modifiedDataSets )
             {
-                dataSet.serializeVerssion2_8( dout );
+                dataSet.serializeVersion2_8( dout );
             }
         }
         else
@@ -164,7 +164,7 @@ public class DataSetList
             dout.writeInt( currentDataSets.size() );
             for ( DataSet dataSet : currentDataSets )
             {
-                dataSet.serializeVerssion2_8( dout );
+                dataSet.serializeVersion2_8( dout );
             }
         }
         else
@@ -174,7 +174,7 @@ public class DataSetList
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         if ( addedDataSets != null )
@@ -182,7 +182,7 @@ public class DataSetList
             dout.writeInt( addedDataSets.size() );
             for ( DataSet dataSet : addedDataSets )
             {
-                dataSet.serializeVerssion2_9( dout );
+                dataSet.serializeVersion2_9( dout );
             }
         }
         else
@@ -194,7 +194,7 @@ public class DataSetList
             dout.writeInt( deletedDataSets.size() );
             for ( DataSet dataSet : deletedDataSets )
             {
-                dataSet.serializeVerssion2_9( dout );
+                dataSet.serializeVersion2_9( dout );
             }
         }
         else
@@ -206,7 +206,7 @@ public class DataSetList
             dout.writeInt( modifiedDataSets.size() );
             for ( DataSet dataSet : modifiedDataSets )
             {
-                dataSet.serializeVerssion2_9( dout );
+                dataSet.serializeVersion2_9( dout );
             }
         }
         else
@@ -218,7 +218,7 @@ public class DataSetList
             dout.writeInt( currentDataSets.size() );
             for ( DataSet dataSet : currentDataSets )
             {
-                dataSet.serializeVerssion2_9( dout );
+                dataSet.serializeVersion2_9( dout );
             }
         }
         else
@@ -228,7 +228,7 @@ public class DataSetList
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dout )
+    public void serializeVersion2_10( DataOutputStream dout )
         throws IOException
     {
 
@@ -237,7 +237,7 @@ public class DataSetList
             dout.writeInt( addedDataSets.size() );
             for ( DataSet dataSet : addedDataSets )
             {
-                dataSet.serializeVerssion2_10( dout );
+                dataSet.serializeVersion2_10( dout );
             }
         }
         else
@@ -249,7 +249,7 @@ public class DataSetList
             dout.writeInt( deletedDataSets.size() );
             for ( DataSet dataSet : deletedDataSets )
             {
-                dataSet.serializeVerssion2_10( dout );
+                dataSet.serializeVersion2_10( dout );
             }
         }
         else
@@ -261,7 +261,7 @@ public class DataSetList
             dout.writeInt( modifiedDataSets.size() );
             for ( DataSet dataSet : modifiedDataSets )
             {
-                dataSet.serializeVerssion2_10( dout );
+                dataSet.serializeVersion2_10( dout );
             }
         }
         else
@@ -273,7 +273,7 @@ public class DataSetList
             dout.writeInt( currentDataSets.size() );
             for ( DataSet dataSet : currentDataSets )
             {
-                dataSet.serializeVerssion2_10( dout );
+                dataSet.serializeVersion2_10( dout );
             }
         }
         else

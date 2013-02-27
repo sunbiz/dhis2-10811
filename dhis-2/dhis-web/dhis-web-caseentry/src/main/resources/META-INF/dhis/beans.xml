@@ -116,6 +116,7 @@
 		<property name="programStageInstanceService"
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
+		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
 	</bean>
 
 	<bean
@@ -151,6 +152,14 @@
 		<property name="userService" ref="org.hisp.dhis.user.UserService" />
 	</bean>
 
+	<bean
+		id="org.hisp.dhis.caseentry.action.caseentry.SaveCoordinatesEventAction"
+		class="org.hisp.dhis.caseentry.action.caseentry.SaveCoordinatesEventAction"
+		scope="prototype">
+		<property name="programStageInstanceService"
+			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+	</bean>
+	
 	<!-- Multi DataEntry -->
 
 	<bean
@@ -179,8 +188,8 @@
 		<property name="selectedStateManager"
 			ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
+		<property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
-		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
 	</bean>
 
 	<!-- Single-event DataEntry -->
@@ -537,6 +546,8 @@
 		id="org.hisp.dhis.caseentry.action.patient.ShowAddRepresentativeAction"
 		class="org.hisp.dhis.caseentry.action.patient.ShowAddRepresentativeAction"
 		scope="prototype">
+		<property name="selectionManager"
+			ref="org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager" />
 		<property name="relationshipTypeService"
 			ref="org.hisp.dhis.relationship.RelationshipTypeService" />
 		<property name="patientIdentifierTypeService"
@@ -659,10 +670,11 @@
 		<property name="patientAttributeOptionService"
 			ref="org.hisp.dhis.patient.PatientAttributeOptionService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="patientAttributeService" ref="org.hisp.dhis.patient.PatientAttributeService" />
 	</bean>
 
-	<bean id="org.hisp.dhis.caseentry.action.patient.RemoveEnrollmentAction"
-		class="org.hisp.dhis.caseentry.action.patient.RemoveEnrollmentAction"
+	<bean id="org.hisp.dhis.caseentry.action.patient.SetProgramInstanceStatusAction"
+		class="org.hisp.dhis.caseentry.action.patient.SetProgramInstanceStatusAction"
 		scope="prototype">
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
@@ -701,8 +713,6 @@
 	<bean id="org.hisp.dhis.caseentry.action.patient.GetPartnerAction"
 		class="org.hisp.dhis.caseentry.action.patient.GetPartnerAction" scope="prototype">
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
-		<property name="patientIdentifierService"
-			ref="org.hisp.dhis.patient.PatientIdentifierService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 		<property name="patientAttributeValueService"
 			ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueService" />
@@ -880,6 +890,10 @@
 			ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
 		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+		<property name="patientAttributeService"
+			ref="org.hisp.dhis.patient.PatientAttributeService" />
+		<property name="patientIdentifierTypeService"
+			ref="org.hisp.dhis.patient.PatientIdentifierTypeService" />
 	</bean>
 
 	<bean
@@ -1063,11 +1077,6 @@
 		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 		<property name="patientAttributeService"
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
-		<property name="identifierTypeService"
-			ref="org.hisp.dhis.patient.PatientIdentifierTypeService" />
-		<property name="relationshipTypeService"
-			ref="org.hisp.dhis.relationship.RelationshipTypeService" />
-		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
 
 	<!-- Comment -->
@@ -1088,6 +1097,20 @@
 			ref="org.hisp.dhis.patientcomment.PatientCommentService" />
 		<property name="programStageInstanceService"
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+	</bean>
+	
+	<!-- Activity plans -->
+	
+	<bean id="org.hisp.dhis.caseentry.action.caseentry.GetActivityPlansAction"
+		class="org.hisp.dhis.caseentry.action.caseentry.GetActivityPlansAction"
+		scope="prototype">
+		<property name="selectedStateManager"
+			ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
+		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="programStageInstanceService"
+			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+		<property name="organisationUnitService"
+			ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
 	</bean>
 
 </beans>

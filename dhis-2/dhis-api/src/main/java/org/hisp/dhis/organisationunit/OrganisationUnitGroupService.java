@@ -110,6 +110,23 @@ public interface OrganisationUnitGroupService
     List<OrganisationUnitGroup> getOrganisationUnitGroupByName( String name );
 
     /**
+     * Returns the OrganisationUnitGroup with the given code.
+     *
+     * @param code the code.
+     * @return the OrganisationUnitGroup with the given code, or null if no match.
+     */
+    OrganisationUnitGroup getOrganisationUnitGroupByCode( String code );
+
+    /**
+     * Returns the OrganisationUnitGroup with the given short name.
+     *
+     * @param short name the short name.
+     * @return the OrganisationUnitGroup with the given short name, or null if no match.
+     */
+    OrganisationUnitGroup getOrganisationUnitGroupByShortName( String shortName );
+
+    
+    /**
      * Returns all OrganisationUnitGroups.
      * 
      * @return a collection of all the OrganisationUnitGroups, or an empty

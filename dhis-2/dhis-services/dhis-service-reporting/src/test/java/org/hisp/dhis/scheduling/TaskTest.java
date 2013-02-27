@@ -1,4 +1,4 @@
-package org.hisp.dhis.system.scheduling;
+package org.hisp.dhis.scheduling;
 
 /*
  * Copyright (c) 2004-2012, University of Oslo
@@ -80,7 +80,7 @@ public class TaskTest
         dataMartTask.setLast6To12Months( true );
 
         periods = dataMartTask.getPeriods( periodTypes );
-        System.out.println( periods );
+        
         assertNotNull( periods );
         assertEquals( 14, periods.size() ); // 6 + 3 + 2 + 1 + 1 + 1
     }

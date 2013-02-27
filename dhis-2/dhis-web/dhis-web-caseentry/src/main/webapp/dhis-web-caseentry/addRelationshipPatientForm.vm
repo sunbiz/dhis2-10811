@@ -30,7 +30,11 @@
 		jQuery('#patientForm [id^="iden"]').val("");
 		hideById('patientForm [id=age]');
 
+		#if($!customRegistrationForm)
+		#else
 		datePickerValid( 'patientForm [id=birthDate]' );
+		#end
+		
 		addEventForPatientForm('patientForm');
 		jQuery('[name=mainPagelink]').html(i18n_main_form_link);
 	});		

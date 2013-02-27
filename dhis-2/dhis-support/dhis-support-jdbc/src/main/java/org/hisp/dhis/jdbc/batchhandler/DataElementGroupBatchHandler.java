@@ -89,12 +89,14 @@ public class DataElementGroupBatchHandler
         statementBuilder.setColumn( "uid" );
         statementBuilder.setColumn( "code" );
         statementBuilder.setColumn( "name" );
+        statementBuilder.setColumn( "shortname" );
     }
     
     protected void setValues( DataElementGroup group )
     {
         statementBuilder.setValue( group.getUid() );        
         statementBuilder.setValue( group.getCode() );        
-        statementBuilder.setValue( group.getName() );        
+        statementBuilder.setValue( group.getName() );
+        statementBuilder.setValue( group.getShortName() );
     }
 }

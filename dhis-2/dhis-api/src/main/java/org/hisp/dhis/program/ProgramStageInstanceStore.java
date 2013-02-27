@@ -84,7 +84,7 @@ public interface ProgramStageInstanceStore
 
     Grid getTabularReport( ProgramStage programStage, Map<Integer, OrganisationUnitLevel> orgUnitLevelMap,
         Collection<Integer> orgUnits, List<TabularReportColumn> columns, int level, int maxLevel, Date startDate,
-        Date endDate, boolean descOrder, Boolean completed, Integer min, Integer max, I18n i18n );
+        Date endDate, boolean descOrder, Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max, I18n i18n );
 
     int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, int maxLevel, Date startDate, Date endDate, Boolean completed );
@@ -105,4 +105,14 @@ public interface ProgramStageInstanceStore
         String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>> deFilters, List<Period> periods,
         String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format, I18n i18n );
 
+    // -------------------------------------------------------------------------
+    // Activity plans
+    // -------------------------------------------------------------------------
+
+    List<ProgramStageInstance> getActiveInstance( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Collection<Integer> statusList, Integer max, Integer min );
+    
+   int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Collection<Integer> statusList );
+   
 }

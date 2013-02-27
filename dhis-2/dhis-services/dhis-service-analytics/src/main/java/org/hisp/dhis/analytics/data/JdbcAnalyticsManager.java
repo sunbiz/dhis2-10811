@@ -54,7 +54,7 @@ import org.hisp.dhis.analytics.MeasureFilter;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.system.util.ListMap;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.system.util.MathUtils;
 import org.hisp.dhis.system.util.SqlHelper;
 import org.hisp.dhis.system.util.TextUtils;
@@ -126,7 +126,7 @@ public class JdbcAnalyticsManager
         {
             if ( !dim.isAllOptions() )
             {
-                sql += sqlHelper.whereAnd() + " " + dim.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( dim.getOptions() ) ) + " ) ";
+                sql += sqlHelper.whereAnd() + " " + dim.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( dim.getItems() ) ) + " ) ";
             }
         }
 
@@ -134,7 +134,7 @@ public class JdbcAnalyticsManager
         {
             if ( !filter.isAllOptions() )
             {
-                sql += sqlHelper.whereAnd() + " " + filter.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( filter.getOptions() ) ) + " ) ";
+                sql += sqlHelper.whereAnd() + " " + filter.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( filter.getItems() ) ) + " ) ";
             }
         }
         

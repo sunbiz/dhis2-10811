@@ -65,7 +65,7 @@
 				
 				<!-- birthDate -->
 				<div id="birthDateDiv" style="display:none ">
-					<input type="text" id="birthDateValue" name="birthDateValue" onChange="fillValue(this.value);"style="width: 14em"/>			
+					<input type="text" id="birthDateValue" name="birthDateValue" onChange="fillValue(this.value);" style="width:215px"/>			
 					<script type="text/javascript">
 						datePickerValid( 'birthDateValue' );
 					</script> 

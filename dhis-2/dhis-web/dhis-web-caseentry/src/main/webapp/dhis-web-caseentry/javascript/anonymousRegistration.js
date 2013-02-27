@@ -7,25 +7,25 @@ $( document ).ready( function () {
     } );
 
     // initialize the stores, and then try and add the data
-    DAO.programs = new dhis2.storage.Store( {name: 'programs', adapter: 'dom-ss' }, function ( store ) {
-        DAO.programAssociations = new dhis2.storage.Store( {name: 'programAssociations', adapter: 'dom-ss' }, function ( store ) {
-        jQuery.getJSON( "getProgramMetaData.action", {},function ( data ) {
-            var keys = _.keys( data.metaData.programs );
-            var objs = _.values( data.metaData.programs );
+    DAO.programs = new dhis2.storage.Store( {name: 'programs'}, function ( store ) {
+        DAO.programAssociations = new dhis2.storage.Store( {name: 'programAssociations'}, function ( store ) {
+            jQuery.getJSON( "getProgramMetaData.action", {}, function ( data ) {
+                var keys = _.keys( data.metaData.programs );
+                var objs = _.values( data.metaData.programs );
 
-            DAO.programs.addAll( keys, objs, function ( store ) {
-                var keys = _.keys( data.metaData.programAssociations );
-                var objs = _.values( data.metaData.programAssociations );
+                DAO.programs.addAll( keys, objs, function ( store ) {
+                    var keys = _.keys( data.metaData.programAssociations );
+                    var objs = _.values( data.metaData.programAssociations );
 
-                DAO.programAssociations.addAll( keys, objs, function ( store ) {
-                    selection.setListenerFunction( organisationUnitSelected );
+                    DAO.programAssociations.addAll( keys, objs, function ( store ) {
+                        selection.setListenerFunction( organisationUnitSelected );
+                    } );
                 } );
-            } );
-        } ).fail( function () {
+            } ).fail(function() {
                 selection.setListenerFunction( organisationUnitSelected );
-            } );
-        } );
-    } );
+            });
+        });
+    });
 } );
 
 function organisationUnitSelected( orgUnits, orgUnitNames )

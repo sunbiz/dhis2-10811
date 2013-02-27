@@ -1,7 +1,7 @@
 package org.hisp.dhis.reportsheet.organisationunit.action;
 
 /*
- * Copyright (c) 2004-2012, University of Oslo
+ * Copyright (c) 2004-2013, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import org.hisp.dhis.paging.ActionPagingSupport;
  * @author Dang Duy Hieu
  * @version $Id$
  */
-public class ShowAddDepartmentFormAction
+public class GetDepartmentListAction
     extends ActionPagingSupport<OrganisationUnit>
 {
     // -------------------------------------------------------------------------
@@ -115,8 +115,6 @@ public class ShowAddDepartmentFormAction
 
         Collections.sort( groupSets, IdentifiableObjectNameComparator.INSTANCE );
 
-        //
-        
         Collection<OrganisationUnit> selectedUnits = selectionManager.getSelectedOrganisationUnits();
 
         if ( selectedUnits.isEmpty() )

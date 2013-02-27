@@ -29,6 +29,7 @@ package org.hisp.dhis.organisationunit;
 
 import java.util.Iterator;
 
+import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.system.deletion.DeletionHandler;
 
 /**
@@ -68,6 +69,19 @@ public class OrganisationUnitGroupDeletionHandler
         {
             OrganisationUnitGroup group = iterator.next();
             group.getMembers().remove( unit );
+            organisationUnitGroupService.updateOrganisationUnitGroup( group );
+        }
+    }
+    
+    @Override
+    public void deleteDataSet( DataSet dataSet )
+    {
+        Iterator<OrganisationUnitGroup> iterator = dataSet.getOrganisationUnitGroups().iterator();
+        
+        while ( iterator.hasNext() )
+        {
+            OrganisationUnitGroup group = iterator.next();
+            group.getDataSets().remove( dataSet );
             organisationUnitGroupService.updateOrganisationUnitGroup( group );
         }
     }

@@ -47,8 +47,6 @@ public class DataSet
 
     private int version;
 
-    private SMSCommand smsCommand;
-
     public DataSet()
     {
     }
@@ -110,20 +108,20 @@ public class DataSet
     {
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            this.serializeVerssion2_8( dout );
+            this.serializeVersion2_8( dout );
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            this.serializeVerssion2_9( dout );
+            this.serializeVersion2_9( dout );
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_TEN ) )
         {
-            this.serializeVerssion2_10( dout );
+            this.serializeVersion2_10( dout );
         }
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dout )
+    public void serializeVersion2_8( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -147,7 +145,7 @@ public class DataSet
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -190,7 +188,7 @@ public class DataSet
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dout )
+    public void serializeVersion2_10( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -210,16 +208,6 @@ public class DataSet
                 section.setClientVersion( TWO_POINT_TEN );
                 section.serialize( dout );
             }
-        }
-
-        if ( this.smsCommand != null )
-        {
-            dout.writeInt( 1 );
-            smsCommand.serialize( dout );
-        }
-        else
-        {
-            dout.writeInt( 0 );
         }
     }
 

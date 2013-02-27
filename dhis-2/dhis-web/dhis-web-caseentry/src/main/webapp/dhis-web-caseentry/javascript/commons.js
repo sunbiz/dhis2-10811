@@ -68,18 +68,22 @@ function addAttributeOption()
 	var rowId = 'advSearchBox' + jQuery('#advancedSearchTB select[name=searchObjectId]').length + 1;
 	var contend  = '<td>' + getInnerHTML('searchingAttributeIdTD') + '</td>';
 		contend += '<td>' + searchTextBox ;
-		contend += '&nbsp;<input type="button" name="clearSearchBtn" class="large-button" value="' + i18n_clear + '" onclick="removeAttributeOption(' + "'" + rowId + "'" + ');"></td>';
+		contend += '&nbsp;<input type="button" name="clearSearchBtn" class="normal-button" value="' + i18n_clear + '" onclick="removeAttributeOption(' + "'" + rowId + "'" + ');"></td>';
 		contend = '<tr id="' + rowId + '">' + contend + '</tr>';
 
 	jQuery('#advancedSearchTB').append( contend );
+	var rowspan = eval( jQuery('[name=addAndSearchBtn]').attr('rowspan') );
+	jQuery('[name=addAndSearchBtn]').attr('rowspan', rowspan + 1);
 }	
 
 function removeAttributeOption( rowId )
 {
 	jQuery( '#' + rowId ).remove();
-	if( jQuery( '#advancedSearchTB tr' ).length == 3 ){
+	if( jQuery( '#advancedSearchTB tr' ).length == 2 ){
 		jQuery('#advancedSearchTB [name=clearSearchBtn]').attr('disabled', true);
-	}	
+	}
+	var rowspan = eval( jQuery('[name=addAndSearchBtn]').attr('rowspan') );
+	jQuery('[name=addAndSearchBtn]').attr('rowspan', rowspan - 1);
 }	
 
 //------------------------------------------------------------------------------
@@ -94,8 +98,9 @@ function searchObjectOnChange( this_ )
 	var valueType = jQuery('#' + container+ ' [id=searchObjectId] option:selected').attr('valueType');
 	
 	jQuery('#searchText_' + container).removeAttr('readonly', false);
+	jQuery('#dateOperator_' + container).remove();
 	jQuery('#searchText_' + container).val("");
-	if( attributeId == 'fixedAttr_birthDate' )
+	if( attributeId == 'fixedAttr_birthDate' || valueType=='date')
 	{
 		element.replaceWith( getDateField( container ) );
 		datePickerValid( 'searchText_' + container );
@@ -116,7 +121,7 @@ function searchObjectOnChange( this_ )
 	{
 		element.replaceWith( getAgeTextBox() );
 	}
-	else if ( valueType=='YES/NO' )
+	else if ( valueType=='bool' )
 	{
 		element.replaceWith( getTrueFalseBox() );
 	}
@@ -137,7 +142,7 @@ function getTrueFalseBox()
 	
 function getGenderSelector()
 {
-	var genderSelector = '<select id="searchText" name="searchText">';
+	var genderSelector = '<select id="searchText" name="searchText" style="width:200px;">';
 		genderSelector += '<option value="M">' + i18n_male + '</option>';
 		genderSelector += '<option value="F">' + i18n_female + '</option>';
 		genderSelector += '<option value="T">' + i18n_transgender + '</option>';
@@ -148,14 +153,14 @@ function getGenderSelector()
 function getAgeTextBox( container )
 {
 	var ageField = '<select id="dateOperator" name="dateOperator" style="width:40px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
-	ageField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:220px;">';
+	ageField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:160px;">';
 	return ageField;
 }
 
 function getDateField( container )
 {
-	var dateField = '<select id="dateOperator" name="dateOperator" style="width:40px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
-	dateField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:200px;" onkeyup="searchPatientsOnKeyUp( event );">';
+	var dateField = '<select id="dateOperator_' + container + '" name="dateOperator" style="width:40px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
+	dateField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:160px;" onkeyup="searchPatientsOnKeyUp( event );">';
 	return dateField;
 }
 
@@ -186,18 +191,20 @@ function validateAdvancedSearch()
 	var flag = true;
 	var dateOperator = '';
 	
-	if (getFieldValue('searchByProgramStage') == "false" 
-		|| ( getFieldValue('searchByProgramStage') == "true"  
-			&& jQuery( '#advancedSearchTB tr' ).length > 2) ){
-		jQuery("#searchDiv :input").each( function( i, item )
-		{
-			var elementName = $(this).attr('name');
-			if( elementName=='searchText' && jQuery( item ).val() == '')
+	if( getFieldValue('startDueDate')=='' && getFieldValue('endDueDate')=='' ){
+		if (getFieldValue('searchByProgramStage') == "false" 
+			|| ( getFieldValue('searchByProgramStage') == "true"  
+				&& jQuery( '#advancedSearchTB tr' ).length > 1) ){
+			jQuery("#searchDiv :input").each( function( i, item )
 			{
-				showWarningMessage( i18n_specify_search_criteria );
-				flag = false;
-			}
-		});
+				var elementName = $(this).attr('name');
+				if( elementName=='searchText' && jQuery( item ).val() == '')
+				{
+					showWarningMessage( i18n_specify_search_criteria );
+					flag = false;
+				}
+			});
+		}
 	}
 	
 	if(flag){
@@ -215,10 +222,14 @@ function getSearchParams()
 	if( getFieldValue('searchByProgramStage') == "true" ){
 		var statusEvent = jQuery('#programStageAddPatientTR [id=statusEvent]').val();
 		var startDueDate = getFieldValue('startDueDate');
+		var orgunitid = getFieldValue('orgunitId');
+		if( byId('searchInAllFacility').checked ){
+			orgunitid = 0;
+		}
 		var endDueDate = getFieldValue('endDueDate');
 		params = '&searchTexts=stat_' + getFieldValue('programIdAddPatient') 
 			   + '_' + startDueDate + '_' + endDueDate
-			   + "_" + getFieldValue('orgunitId')
+			   + "_" + orgunitid
 			   + '_false_' + statusEvent;
 	}
 	
@@ -514,7 +525,7 @@ function showColorHelp()
 		closable: true,
 		modal:false,
 		width: 380,
-		height: 270
+		height: 290
 	}).show('fast');
 }
 
@@ -674,7 +685,7 @@ function disableCompletedButton( disabled )
 
 function saveDueDate( programInstanceId, programStageInstanceId, programStageInstanceName )
 {
-	var field = document.getElementById( 'value_' + programStageInstanceId + '_date' );
+	var field = byId( 'value_' + programStageInstanceId + '_date' );
 	var dateOfIncident = new Date( byId('dateOfIncident').value );
 	var dueDate = new Date(field.value);
 	
@@ -868,9 +879,7 @@ function resetActiveEvent( programInstanceId )
 		jQuery('#tr2_' + programInstanceId).html("");
 		jQuery('#tr2_' + programInstanceId).attr("onClick", "");
 		
-		//hideById('entryForm');
 		hideById('executionDateTB');
-		hideById('inputCriteriaDiv');
 	}
 }
 
@@ -1391,23 +1400,77 @@ function unenrollmentForm( programInstanceId )
 	{
 		$.ajax({
 			type: "POST",
-			url: 'removeEnrollment.action',
-			data: "programInstanceId=" + programInstanceId,
+			url: 'setProgramInstanceStatus.action',
+			data: "programInstanceId=" + programInstanceId + "&completed=false",
 			success: function( json ) 
 			{
-				var completed  = "<tr onclick='javascript:loadActiveProgramStageRecords(" + programInstanceId + ");' >";
-					completed += "<td><a><span id='infor_" + programInstanceId + "'>" + jQuery('#tr1_' + programInstanceId + " span" ).html() + "</span></a></td></tr>";
+				var type=jQuery("#tr1_" + programInstanceId ).attr('type');
+				var programStageInstanceId=jQuery("#tr1_" + programInstanceId ).attr('programStageInstanceId');
+				
+				var completed  = "<tr id='tr1_" + programInstanceId + "' type='" + type + "' programStageInstanceId='" + programStageInstanceId + "' onclick='javascript:loadActiveProgramStageRecords(" + programInstanceId + ");' >";
+					completed += jQuery('#td_' + programInstanceId).parent().html() + "</tr>";
+				
+				var activeEvent2 = jQuery("#tr2_" + programInstanceId );
+				if( activeEvent2.length>0 )
+				{
+					completed += "<tr class='hidden'>" + activeEvent2.parent().html() + "</tr>";
+				}
 				jQuery('#completedTB' ).prepend( completed );
-				jQuery('#tr1_' + programInstanceId ).remove();
-				jQuery('#tr2_' + programInstanceId ).remove();
+				
+				jQuery('#activeTB [id=tr1_' + programInstanceId + ']').remove();
+				jQuery('#activeTB [id=tr2_' + programInstanceId + ']').remove();
 				
 				jQuery("[id=tab-2] :input").prop('disabled', true);
 				jQuery("[id=tab-3] :input").prop('disabled', true);
 				jQuery("[id=tab-4] :input").prop('disabled', true);
 				jQuery("[id=tab-5] :input").prop('disabled', true);
 				jQuery("[id=tab-3] :input").datepicker("destroy");
+				jQuery("#completeProgram").attr('disabled', true);
+				jQuery("#incompleteProgram").attr('disabled', false);
 				
 				showSuccessMessage( i18n_unenrol_success );
+			}
+		});
+	
+	}
+	
+}
+
+function reenrollmentForm( programInstanceId )
+{	
+	if( confirm(i18n_incomplete_confirm_message) )
+	{
+		$.ajax({
+			type: "POST",
+			url: 'setProgramInstanceStatus.action',
+			data: "programInstanceId=" + programInstanceId + "&completed=true",
+			success: function( json ) 
+			{
+				var type=jQuery("#tr1_" + programInstanceId ).attr('type');
+				var programStageInstanceId=jQuery("#tr1_" + programInstanceId ).attr('programStageInstanceId');
+				
+				var completed  = "<tr type='" + type + "' programStageInstanceId='" + programStageInstanceId + "' onclick='javascript:loadActiveProgramStageRecords(" + programInstanceId + ");' >";
+					completed += jQuery('#td_' + programInstanceId).parent().html() + "</tr>";
+				
+				var activeEvent = jQuery("#tr2_" + programInstanceId );
+				if( activeEvent.length>0 )
+				{
+					completed += "<tr>" + activeEvent.parent().html() + "</tr>";
+				}
+				jQuery('#activeTB' ).prepend( completed );
+				
+				jQuery('#completedTB [id=tr1_' + programInstanceId + ']').remove();
+				jQuery('#completedTB [id=tr2_' + programInstanceId + ']').remove();
+				
+				jQuery("[id=tab-2] :input").prop('disabled', false);
+				jQuery("[id=tab-3] :input").prop('disabled', false);
+				jQuery("[id=tab-4] :input").prop('disabled', false);
+				jQuery("[id=tab-5] :input").prop('disabled', false);
+				jQuery("#completeProgram").attr('disabled', false);
+				jQuery("#incompleteProgram").attr('disabled', true);
+				jQuery("[id=tab-3] :input").datepicker("destroy");
+				
+				showSuccessMessage( i18n_reenrol_success );
 			}
 		});
 	
@@ -1855,4 +1918,63 @@ function refreshZebraStripes( $tbody )
 {
      $tbody.find( 'tr:visible:even' ).removeClass( 'listRow' ).removeClass( 'listAlternateRow' ).addClass( 'listRow' );
      $tbody.find( 'tr:visible:odd' ).removeClass( 'listRow' ).removeClass( 'listAlternateRow' ).addClass( 'listAlternateRow' );
+}
+
+function saveCoordinatesEvent(programStageInstanceId)
+{
+	var longitude = jQuery.trim(getFieldValue('longitude'));
+	var latitude = jQuery.trim(getFieldValue('latitude'));
+	var isValid = true;
+	
+	if(longitude=='' && latitude==''){
+		isValid = true;
+	}
+	else if(longitude=='' || latitude==''){
+		alert(i18n_enter_values_for_longitude_and_latitude_fields);
+		isValid = false;
+	}	
+	else if(!isInt(longitude)){
+		byId('longitude').style.backgroundColor = '#ffcc00';
+		alert(i18n_enter_a_valid_number);
+		isValid = false;
+	}
+	else if(!isInt(latitude)){
+		byId('latitude').style.backgroundColor = '#ffcc00';
+		alert(i18n_enter_a_valid_number);
+		isValid = false;
+	}
+	else if(eval(longitude)>180){
+		byId('longitude').style.backgroundColor = '#ffcc00';
+		alert(i18n_enter_a_value_less_than_or_equal_to_180);
+		isValid = false;
+	}
+	else if(eval(longitude)<-180){
+		byId('longitude').style.backgroundColor = '#ffcc00';
+		alert(i18n_enter_a_value_greater_than_or_equal_to_nagetive_180);
+		isValid = false;
+	}
+	else if(eval(latitude)>90){
+		byId('latitude').style.backgroundColor = '#ffcc00';
+		alert(i18n_enter_a_value_less_than_or_equal_to_90);
+		isValid = false;
+	}
+	else if(eval(latitude)<-90){
+		byId('latitude').style.backgroundColor = '#ffcc00';
+		alert(i18n_enter_a_value_greater_than_or_equal_to_nagetive_90);
+		isValid = false;
+	}
+	
+	if( isValid ){
+		jQuery.postJSON( "saveCoordinatesEvent.action",
+			{ 
+				programStageInstanceId:programStageInstanceId,
+				longitude: longitude,
+				latitude: latitude
+			}, 
+			function( json ) 
+			{   
+				 byId('longitude').style.backgroundColor = SUCCESS_COLOR;
+				 byId('latitude').style.backgroundColor = SUCCESS_COLOR;
+			});
+	}
 }

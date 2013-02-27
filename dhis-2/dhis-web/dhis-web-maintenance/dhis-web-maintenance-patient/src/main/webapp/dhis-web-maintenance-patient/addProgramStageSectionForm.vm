@@ -34,7 +34,12 @@ jQuery( document ).ready( function()
 </table>
 
 <table id="programStageMembersArea">    
-    <thead>
+    <colgroup>
+        <col style="width:400px;"/>
+		<col/>
+		<col style="width:400px;"/>
+    </colgroup>
+	<thead>
       <tr>        
         <th>$i18n.getString( "available_data_elements" )</th>
         <th></th>
@@ -48,7 +53,7 @@ jQuery( document ).ready( function()
     <tbody>
       <tr>
         <td>
-            <select size="15" id="availableList" name='availableList' multiple="multiple" ondblclick="moveSelectedById( 'availableList', 'dataElementIds' );">
+            <select id="availableList" name='availableList' size="15" style="width:100%;" multiple="multiple" ondblclick="moveSelectedById( 'availableList', 'dataElementIds' );">
 				#foreach( $psPataElement in $availableDataElements )
 					<option value='$psPataElement.dataElement.id'>$psPataElement.dataElement.name</option>
 				#end
@@ -63,7 +68,7 @@ jQuery( document ).ready( function()
 		</td>
 		
 		<td>
-			<select size="15" id="dataElementIds" name='dataElementIds' multiple="multiple"  ondblclick="moveSelectedById( 'dataElementIds', 'availableList' );"></select>
+			<select id="dataElementIds" name='dataElementIds' size="15" style="width:100%;" multiple="multiple"  ondblclick="moveSelectedById( 'dataElementIds', 'availableList' );"></select>
 		</td>
 			
 		<td>

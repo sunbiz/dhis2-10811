@@ -211,11 +211,11 @@ public interface PatientService
     
     Collection<String> getPatientPhoneNumbers( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
 
-    Collection<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
+    List<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
     
     Grid getScheduledEventsReport( List<String> searchKeys, OrganisationUnit orgunit, I18n i18n );
 
     Collection<Patient> getPatientsByPhone( String phoneNumber, Integer min, Integer max );
     
-    Collection<Patient> getPatientByFullname( String fullName );
+    Collection<Patient> getPatientByFullname( String fullName, Integer orgunitId );
 }

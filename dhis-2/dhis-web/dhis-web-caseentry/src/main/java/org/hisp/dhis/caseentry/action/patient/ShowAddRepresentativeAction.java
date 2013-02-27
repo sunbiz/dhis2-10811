@@ -31,12 +31,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.relationship.RelationshipTypeService;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 
@@ -46,6 +49,8 @@ public class ShowAddRepresentativeAction
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
+
+    private OrganisationUnitSelectionManager selectionManager;
 
     private RelationshipTypeService relationshipTypeService;
 
@@ -63,6 +68,8 @@ public class ShowAddRepresentativeAction
 
     private Collection<PatientAttribute> attributes;
 
+    private Collection<User> healthWorkers;
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -70,10 +77,13 @@ public class ShowAddRepresentativeAction
     public String execute()
     {
         relationshipTypes = new ArrayList<RelationshipType>( relationshipTypeService.getAllRelationshipTypes() );
-        
+
         identifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
-        
+
         attributes = patientAttributeService.getAllPatientAttributes();
+
+        OrganisationUnit organisationUnit = selectionManager.getSelectedOrganisationUnit();
+        healthWorkers = organisationUnit.getUsers();
 
         return SUCCESS;
     }
@@ -81,6 +91,11 @@ public class ShowAddRepresentativeAction
     // -----------------------------------------------------------------------------
     // Getter/Setter
     // -----------------------------------------------------------------------------
+   
+    public void setSelectionManager( OrganisationUnitSelectionManager selectionManager )
+    {
+        this.selectionManager = selectionManager;
+    }
 
     public void setRelationshipTypeService( RelationshipTypeService relationshipTypeService )
     {
@@ -110,5 +125,10 @@ public class ShowAddRepresentativeAction
     public Collection<PatientAttribute> getAttributes()
     {
         return attributes;
+    }
+
+    public Collection<User> getHealthWorkers()
+    {
+        return healthWorkers;
     }
 }

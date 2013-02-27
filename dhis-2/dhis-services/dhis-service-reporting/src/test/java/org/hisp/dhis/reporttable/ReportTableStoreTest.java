@@ -203,7 +203,7 @@ public class ReportTableStoreTest
         assertEquals( indicators, reportTableA.getIndicators() );
         assertEquals( periods, reportTableA.getPeriods() );
         assertEquals( relativePeriods, reportTableA.getRelativePeriods() );
-        assertEquals( units, reportTableA.getUnits() );
+        assertEquals( units, reportTableA.getOrganisationUnits() );
         assertEquals( true, reportTableA.isDoIndicators() );
         assertEquals( true, reportTableA.isDoPeriods() );
         assertEquals( false, reportTableA.isDoUnits() );
@@ -213,7 +213,7 @@ public class ReportTableStoreTest
         assertEquals( dataElements, reportTableB.getDataElements() );
         assertEquals( periods, reportTableB.getPeriods() );
         assertEquals( relativePeriods, reportTableB.getRelativePeriods() );
-        assertEquals( units, reportTableB.getUnits() );
+        assertEquals( units, reportTableB.getOrganisationUnits() );
         assertEquals( false, reportTableB.isDoIndicators() );
         assertEquals( false, reportTableB.isDoPeriods() );
         assertEquals( true, reportTableB.isDoUnits() );
@@ -223,7 +223,7 @@ public class ReportTableStoreTest
         assertEquals( dataSets, reportTableC.getDataSets() );
         assertEquals( periods, reportTableC.getPeriods() );
         assertEquals( relativePeriods, reportTableC.getRelativePeriods() );
-        assertEquals( units, reportTableC.getUnits() );
+        assertEquals( units, reportTableC.getOrganisationUnits() );
         assertEquals( false, reportTableC.isDoIndicators() );
         assertEquals( false, reportTableC.isDoPeriods() );
         assertEquals( true, reportTableC.isDoUnits() );

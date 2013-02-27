@@ -54,13 +54,16 @@ body,
 
 body {
     font-size: 10px;
-
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+body.x-windows {
+	-webkit-text-stroke: 0.2px #888;
 }
 
 .pt-accordion-options .x-panel-body-default {
@@ -81,8 +84,16 @@ body {
 	position: fixed;
 }
 
-.nobreak {
+.td-nobreak {
 	white-space: nowrap;
+}
+
+.td-hidden {
+	display: none;
+}
+
+.td-collapsed {
+	display: none;
 }
 
 /*----------------------------------------------------------------------------
@@ -104,45 +115,54 @@ table.pivot {
 .pivot td {
 	padding: 5px;
 	border: 1px solid #b2b2b2;
-	text-align: center;
 }
 
 .pivot-dim {
 	background-color: #dae6f8;
+	text-align: center;
 }
 .pivot-dim-subtotal {
 	background-color: #cad6e8;
+	text-align: center;
 }
 .pivot-dim-total {
 	background-color: #bac6d8;
+	text-align: center;
 }
 .pivot-dim-empty {
 	background-color: #dae6f8;
+	text-align: center;
 }
 
 .pivot-value {
 	background-color: #fff;
 	white-space: nowrap;
+	text-align: right;
 }
 .pivot-value-subtotal {
-	background-color: #f5f5f5;
+	background-color: #f4f4f4;
 	white-space: nowrap;
+	text-align: right;
 }
 .pivot-value-subtotal-total {
-	background-color: #e8e8e8;
+	background-color: #e7e7e7;
 	white-space: nowrap;
+	text-align: right;
 }
 .pivot-value-total {
 	background-color: #e4e4e4;
 	white-space: nowrap;
+	text-align: right;
 }
 .pivot-value-total-subgrandtotal {
-	background-color: #d9d9d9;
+	background-color: #d8d8d8;
 	white-space: nowrap;
+	text-align: right;
 }
 .pivot-value-grandtotal {
 	background-color: #c8c8c8;
 	white-space: nowrap;
+	text-align: right;
 }
 
 td .good div {
@@ -178,7 +198,7 @@ td .bad div {
 .pt-panel-title-period,
 .pt-panel-title-organisationunit,
 .pt-panel-title-organisationunitgroupset,
-.pt-panel-title-options {
+.pt-panel-title-dataelementgroupset {
 	height: 17px;
 	background-repeat: no-repeat;
 	padding-left: 20px
@@ -196,8 +216,8 @@ td .bad div {
 .pt-panel-title-organisationunitgroupset {
 	background-image: url(../images/organisationunitgroupset.png);
 }
-.pt-panel-title-options {
-	background-image: url(../images/options.png);
+.pt-panel-title-dataelementgroupset {
+	background-image: url(../images/dataelementgroupset.png);
 }
 
 
@@ -322,6 +342,7 @@ td .bad div {
 .x-form-cb-label-after {
     padding-left: 1px;
     font-size: 11px;
+    color: #333;
 }
 
 	/* Icons */
@@ -384,7 +405,7 @@ td .bad div {
 
 	/* Align menu */
 .pt-toolbar-btn-menu {
-	margin-top: 5px;
+	margin-top: 4px;
 }
 
 /*----------------------------------------------------------------------------
@@ -420,16 +441,12 @@ td .bad div {
  *--------------------------------------------------------------------------*/
 
 	/* Menu item icon */
-.pt-menu-item-png {
-    background-image:url('../images/png.png');
-    padding-left: 18px;
-}
-.pt-menu-item-pdf {
+.pt-menu-item-xls {
     background-image:url('../images/pdf.png');
     padding-left: 18px;
 }
-.pt-menu-item-edit {
-    background-image:url('../images/edit.png');
+.pt-menu-item-csv {
+    background-image:url('../images/pdf.png');
     padding-left: 18px;
 }
 
@@ -787,7 +804,7 @@ td .bad div {
 
 	/* accordion item body */
 .pt-accordion .x-accordion-body {
-	padding: 5px 3px 0px;
+	padding: 2px 2px 0px;
 	border-top: 1px solid #c5c5c5 !important;
 }
 

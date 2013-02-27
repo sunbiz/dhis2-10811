@@ -69,6 +69,12 @@
 		</tr>
 		
 		<tr name='nonAnonymous'>
+			<td><label>$i18n.getString( "only_enroll_once" )</label></td>
+			<td><input type="checkbox" id="onlyEnrollOnce" name="onlyEnrollOnce" value='true'></td>
+			<td></td>
+		</tr>
+		
+		<tr name='nonAnonymous'>
 			<td><label>$i18n.getString( "show_incident_date" )</label></td>
 			<td><input type="checkbox" id="displayIncidentDate" name="displayIncidentDate" value='true' checked onchange='programOnChange();'></td>
 			<td></td>

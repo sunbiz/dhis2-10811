@@ -65,6 +65,29 @@ public class JdbcResourceTableStore
     }
 
     // -------------------------------------------------------------------------
+    // ResourceTableStore implementation
+    // -------------------------------------------------------------------------
+
+    public void batchUpdate( int columns, String tableName, List<Object[]> batchArgs )
+    {
+        if ( columns == 0 || tableName == null )
+        {
+            return;
+        }
+        
+        StringBuilder builder = new StringBuilder( "insert into " + tableName + " values (" );
+        
+        for ( int i = 0; i < columns; i++ )
+        {
+            builder.append( "?," );
+        }
+        
+        builder.deleteCharAt( builder.length() - 1 ).append( ")" );
+        
+        jdbcTemplate.batchUpdate( builder.toString(), batchArgs );
+    }
+    
+    // -------------------------------------------------------------------------
     // OrganisationUnitStructure
     // -------------------------------------------------------------------------
 
@@ -72,7 +95,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + TABLE_NAME_ORGANISATION_UNIT_STRUCTURE );            
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + TABLE_NAME_ORGANISATION_UNIT_STRUCTURE );            
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -105,7 +128,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + TABLE_NAME_CATEGORY_OPTION_COMBO_NAME );            
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + TABLE_NAME_CATEGORY_OPTION_COMBO_NAME );            
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -128,7 +151,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + CreateDataElementGroupSetTableStatement.TABLE_NAME );
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + CreateDataElementGroupSetTableStatement.TABLE_NAME );
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -148,7 +171,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + CreateIndicatorGroupSetTableStatement.TABLE_NAME );
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + CreateIndicatorGroupSetTableStatement.TABLE_NAME );
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -168,7 +191,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + CreateOrganisationUnitGroupSetTableStatement.TABLE_NAME );
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + CreateOrganisationUnitGroupSetTableStatement.TABLE_NAME );
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -188,7 +211,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + CreateCategoryTableStatement.TABLE_NAME );
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + CreateCategoryTableStatement.TABLE_NAME );
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -208,7 +231,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + TABLE_NAME_DATA_ELEMENT_STRUCTURE );            
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + TABLE_NAME_DATA_ELEMENT_STRUCTURE );            
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -231,7 +254,7 @@ public class JdbcResourceTableStore
     {
         try
         {
-            jdbcTemplate.update( "DROP TABLE " + TABLE_NAME_PERIOD_STRUCTURE );            
+            jdbcTemplate.update( "DROP TABLE IF EXISTS " + TABLE_NAME_PERIOD_STRUCTURE );            
         }
         catch ( BadSqlGrammarException ex )
         {
@@ -246,6 +269,8 @@ public class JdbcResourceTableStore
         }
         
         sql += ")";
+        
+        log.info( "Create period structure SQL: " + sql );
         
         jdbcTemplate.update( sql );
     }

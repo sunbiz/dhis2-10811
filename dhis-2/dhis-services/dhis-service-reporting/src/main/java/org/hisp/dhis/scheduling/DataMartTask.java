@@ -1,4 +1,4 @@
-package org.hisp.dhis.system.scheduling;
+package org.hisp.dhis.scheduling;
 
 /*
  * Copyright (c) 2004-2012, University of Oslo
@@ -38,23 +38,13 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.completeness.DataSetCompletenessEngine;
-import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.datamart.DataMartEngine;
-import org.hisp.dhis.dataset.DataSet;
-import org.hisp.dhis.dataset.DataSetService;
-import org.hisp.dhis.indicator.Indicator;
-import org.hisp.dhis.indicator.IndicatorService;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
-import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.RelativePeriods;
-import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.util.ConversionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Lars Helge Overland
@@ -64,35 +54,18 @@ public class DataMartTask
 {
     private static final Log log = LogFactory.getLog( DataMartTask.class );
     
+    @Autowired
     private DataMartEngine dataMartEngine;
 
+    @Autowired
     private DataSetCompletenessEngine completenessEngine;
-    
-    private DataElementService dataElementService;
-    
-    private IndicatorService indicatorService;
 
+    @Autowired
     private PeriodService periodService;
-    
-    private OrganisationUnitService organisationUnitService;
-    
-    private OrganisationUnitGroupService organisationUnitGroupService;
 
-    private DataSetService dataSetService;
-    
+    @Autowired
     private SystemSettingManager systemSettingManager;
     
-    // -------------------------------------------------------------------------
-    // Params
-    // -------------------------------------------------------------------------
-
-    private TaskId taskId;
-
-    public void setTaskId( TaskId taskId )
-    {
-        this.taskId = taskId;
-    }
-
     private List<Period> periods;
     
     public void setPeriods( List<Period> periods )
@@ -114,44 +87,21 @@ public class DataMartTask
         this.last6To12Months = last6To12Months;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
+    private TaskId taskId;
 
-    public DataMartTask()
+    public void setTaskId( TaskId taskId )
     {
-    }
-    
-    public DataMartTask( DataMartEngine dataMartEngine, DataSetCompletenessEngine completenessEngine, 
-        DataElementService dataElementService, IndicatorService indicatorService, PeriodService periodService,
-        OrganisationUnitService organisationUnitService, OrganisationUnitGroupService organisationUnitGroupService,
-        DataSetService dataSetService, SystemSettingManager systemSettingManager )
-    {
-        this.dataMartEngine = dataMartEngine;
-        this.completenessEngine = completenessEngine;
-        this.dataElementService = dataElementService;
-        this.indicatorService = indicatorService;
-        this.periodService = periodService;
-        this.organisationUnitService = organisationUnitService;
-        this.organisationUnitGroupService = organisationUnitGroupService;
-        this.dataSetService = dataSetService;
-        this.systemSettingManager = systemSettingManager;
+        this.taskId = taskId;
     }
 
     // -------------------------------------------------------------------------
     // Runnable implementation
     // -------------------------------------------------------------------------
 
-    @Override  
+    @Override
     @SuppressWarnings("unchecked")  
     public void run()
     {
-        Collection<Integer> dataElementIds = ConversionUtils.getIdentifiers( DataElement.class, dataElementService.getAllDataElements() );
-        Collection<Integer> indicatorIds = ConversionUtils.getIdentifiers( Indicator.class, indicatorService.getAllIndicators() );
-        Collection<Integer> dataSetIds = ConversionUtils.getIdentifiers( DataSet.class, dataSetService.getAllDataSets() );
-        Collection<Integer> organisationUnitIds = ConversionUtils.getIdentifiers( OrganisationUnit.class, organisationUnitService.getAllOrganisationUnits() );
-        Collection<Integer> organisationUnitGroupIds = ConversionUtils.getIdentifiers( OrganisationUnitGroup.class, organisationUnitGroupService.getOrganisationUnitGroupsWithGroupSets() );
-        
         Set<String> periodTypes = (Set<String>) systemSettingManager.getSystemSetting( KEY_SCHEDULED_PERIOD_TYPES, DEFAULT_SCHEDULED_PERIOD_TYPES );
         
         List<Period> periods = getPeriods( periodTypes );
@@ -160,8 +110,8 @@ public class DataMartTask
         
         Collection<Integer> periodIds = ConversionUtils.getIdentifiers( Period.class, periodService.reloadPeriods( periods ) );
         
-        dataMartEngine.export( dataElementIds, indicatorIds, periodIds, organisationUnitIds, organisationUnitGroupIds, taskId );
-        completenessEngine.exportDataSetCompleteness( dataSetIds, periodIds, organisationUnitIds, taskId ); 
+        dataMartEngine.export( periodIds, taskId );
+        completenessEngine.exportDataSetCompleteness( periodIds, taskId ); 
     }
 
     // -------------------------------------------------------------------------

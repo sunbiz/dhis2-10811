@@ -67,24 +67,15 @@
 
 <form id="saveDataEntryForm" name="saveDataEntryForm" action="saveDataEntryForm.action" method="post">
 <input type="hidden" name="programStageId" id="programStageId" value="$!programStage.id"/>
+<h3>$i18n.getString( "dataentryform_management_for_program_stage" )</h3>
+<h4>$programStage.displayName</h4>
+
 <input type="hidden" name="dataEntryFormId" id="dataEntryFormId" value="$!programStage.dataEntryForm.id"/>
-<h3>$i18n.getString( "dataentryform_management_for_program_stage" ): $programStage.displayName </h3>
 <div class="container" >
 	<table id="detailsList" width="100%">
 		<col/>
 		<tr>
 			<th>$i18n.getString( "dataentryform_details" )</th>			
-			<td align="right" rowspan="2">
-				#if( !$existingDataEntryForms.isEmpty() )
-				<input type="button" style="width:250px" value="$i18n.getString( 'load_existed_form' )" onclick="openloadExistedForm()"/><br>
-				#end
-				#if(!$dataElements.isEmpty())
-				<input type="button" style="width:250px" value="$i18n.getString( 'dataelement' )" onclick="openDataElementSelector()"/><br>
-				#end
-				#if(!$programStages.isEmpty())
-				<input type="button" style="width:250px" value="$i18n.getString( 'dataelement_of_orther_program_stage' )" onclick="openOtherProgramStageDataElements()"/>
-				#end
-			</td>			
 		</tr>	
 		<tr>
 			<td>
@@ -110,10 +101,23 @@
 <table width="100%">	
     <tr>
         <td>
-            <input type="submit" name="save" value="$i18n.getString( 'save' )" style="width:120px"/>
-            <input type="button" name="cancel" value="$i18n.getString( 'cancel' )" style="width:120px" onclick="window.location='programStage.action?id=$!programStage.program.id'">            
+            <button type="submit" id="saveButton">$i18n.getString( 'save' )</button>
+            <button type="button" id="cancelButton" onclick="window.location='programStage.action?id=$!programStage.program.id'">$i18n.getString( 'cancel' )</button>          
+			&nbsp;&nbsp;<span style="color:#606060">|</span>&nbsp;
+			#if( !$existingDataEntryForms.isEmpty() )
+			<button type="button" id='loadExistForms' onclick="openloadExistedForm()">$i18n.getString( 'load_existed_form' )</button>
+			#end
+			#if(!$dataElements.isEmpty())
+			<button type="button" id='insertDataElements' onclick="openDataElementSelector()"/>$i18n.getString( 'insert_data_elements' )</button>
+			#end
+			#if(!$programStages.isEmpty())
+			<button type="button" id='insertOtherDataElements' value="$i18n.getString( 'dataelement_of_orther_program_stage' )" onclick="openOtherProgramStageDataElements()"></button>
+			#end
+			<button type="button" id="insertImagesButton">$i18n.getString( 'insert_images' )</button>
+			
 			#if( $!dataEntryForm )
-			<input type="button" name="delete" value="$i18n.getString( 'delete' )" style="width:120px" onclick="deleteDataEntryForm( $programStage.dataEntryForm.id, $programStage.id )" />
+			&nbsp;&nbsp;<span style="color:#606060">|</span>&nbsp;
+		    <button type="button" id="deleteButton" onclick="deleteDataEntryForm( $programStage.dataEntryForm.id, $programStage.id )">$i18n.getString( 'delete' )</button>
 			#end
         </td>		
     </tr>
@@ -127,7 +131,7 @@
 			<td class="bold">$i18n.getString("display_name")</td>
 			<td>
 				<select id='displayNameOption' onchange='displayNameOnChange( "dataElementSelection",this.value )'>
-					<option selected value='1'>$i18n.getString("name")</option>
+					<option value='1'>$i18n.getString("name")</option>
 					<option value='2'>$i18n.getString("code")</option>
 					<option value='3'>$i18n.getString("code_and_name")</option>
 				</select>
@@ -136,10 +140,8 @@
 		<tr>
 			<td class="bold">$i18n.getString("sort_by")</td>
 			<td>
-				<select id='sortBy' onchange="sortByOnChange('dataElementSelection', this.value)">
-					<option value='1' selected>$i18n.getString("name")</option>
-					<option value='2' >$i18n.getString("code")</option>
-				</select>
+				<input type='radio' name='sortBy' value='1' onchange="sortByOnChange('dataElementSelection', '1')" checked >$i18n.getString("name")
+				<input type='radio' name='sortBy' value='2' onchange="sortByOnChange('dataElementSelection', '2')">$i18n.getString("code")
 			</td>
 		</tr>
 		<tr>
@@ -149,7 +151,8 @@
 		</tr>
 		<tr>
 			<td  colspan='2'>	
-				<input type="text" style="width:100%" onkeyup="filterDataElements( this.value, '#dataElementSelection', '#dataElementIds')"/>
+				<input type="text" id='dataElementFilter' style="width:350px" onkeyup="filterDataElements( this.value, '#dataElementSelection', '#dataElementIds')"/>
+				<input type='button' value="$i18n.getString('clear')" style="width:80px;" onclick="setFieldValue('dataElementFilter','');">
 			</td>
 		</tr>
 		<tr>
@@ -170,10 +173,8 @@
 		</tr>
 		<tr>
 			<td>
-				<input type="button" value="Insert" id="insert" name="insert" onclick="insertDataElement( '#dataElementSelection', '$programStage.id')" style="width:100px">
+				<input type="button" id="insertButton" value="$i18n.getString('insert')" onclick="insertDataElement( '#dataElementSelection', '$programStage.id')" style="width:100px">
 			</td>
-		</tr>
-		<tr>
 			<td>
 				<span id="message_"></span>
 			</td>
@@ -244,7 +245,6 @@
 	</table>	
 </div>
 
-
 <div id="existedDataEntry">	
 	<select id="existedDataEntryId" style="width:300px;float:left">		
 		#foreach( $dataEntry in $existingDataEntryForms )
@@ -252,6 +252,19 @@
 		#end
 	</select>
 	<input type="button" value="$i18n.getString( 'load' )" style="float:left" onclick="loadExistedForm()"/>	
+</div>
+
+<div id="imageDialog" title="$i18n.getString( 'insert_images' )" style='display:none;'>
+	<div style="margin:4px">
+		<div>
+			<select id="imageSelector" multiple="multiple" style="height: 200px; width:100%;" ondblclick='insertImage();'>
+			#foreach( $flag in $flags )
+			<option value="../dhis-web-commons/flags/${flag}.png">$i18n.getString( ${flag} )</option>
+			#end
+			</select>
+		</div>
+		<div style="margin-top:6px"><button type="button" id="insertImageButton">$i18n.getString( "insert" )</button></div>
+	</div>
 </div>
 
 <script>

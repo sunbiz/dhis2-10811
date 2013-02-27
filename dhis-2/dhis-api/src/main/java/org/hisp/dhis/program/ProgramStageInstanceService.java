@@ -91,7 +91,7 @@ public interface ProgramStageInstanceService
 
     Grid getTabularReport( ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, Date startDate, Date endDate, boolean descOrder,
-        Boolean completed, Integer min, Integer max, I18n i18n );
+        Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max, I18n i18n );
 
     int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, Boolean completed, Date startDate, Date endDate );
@@ -111,7 +111,21 @@ public interface ProgramStageInstanceService
         Collection<Integer> orgunitIds, Date startDate, Date endDate, int status, Integer max, Integer min );
 
     Grid getAggregateReport( int position, ProgramStage programStage, Collection<Integer> orgunitIds,
-        String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>>  deFilters, List<Period> periods,
-        String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format, I18n i18n );
+        String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>> deFilters,
+        List<Period> periods, String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format,
+        I18n i18n );
 
+    // -------------------------------------------------------------------------
+    // Activity plans
+    // -------------------------------------------------------------------------
+
+    List<ProgramStageInstance> activityPlanList( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList, Integer min, Integer max );
+
+    Grid activityPlans( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList, Integer min, Integer max, I18n i18n );
+
+    int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList );
+    
 }

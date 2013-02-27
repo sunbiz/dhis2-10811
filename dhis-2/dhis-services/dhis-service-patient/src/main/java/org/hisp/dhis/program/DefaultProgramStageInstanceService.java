@@ -42,12 +42,15 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientIdentifier;
+import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.patientreport.TabularReportColumn;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.sms.outbound.OutboundSms;
 import org.hisp.dhis.system.grid.ListGrid;
+import org.hisp.dhis.system.util.DateUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -178,14 +181,14 @@ public class DefaultProgramStageInstanceService
 
     public Grid getTabularReport( ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, Date startDate, Date endDate, boolean descOrder,
-        Boolean completed, Integer min, Integer max, I18n i18n )
+        Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max, I18n i18n )
     {
         int maxLevel = organisationUnitService.getMaxOfOrganisationUnitLevels();
 
         Map<Integer, OrganisationUnitLevel> orgUnitLevelMap = organisationUnitService.getOrganisationUnitLevelMap();
 
         return programStageInstanceStore.getTabularReport( programStage, orgUnitLevelMap, organisationUnits, columns,
-            level, maxLevel, startDate, endDate, descOrder, completed, min, max, i18n );
+            level, maxLevel, startDate, endDate, descOrder, completed, accessPrivateInfo, min, max, i18n );
     }
 
     public int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
@@ -355,4 +358,74 @@ public class DefaultProgramStageInstanceService
             deSum, deFilters, periods, aggregateType, limit, useCompletedEvents, format, i18n );
     }
 
+    public List<ProgramStageInstance> activityPlanList( Program program, Collection<Integer> orgunitIds,
+        Date startDate, Date endDate, Collection<Integer> statusList, Integer min, Integer max )
+    {
+        return programStageInstanceStore.getActiveInstance( program, orgunitIds, startDate, endDate, statusList, max,
+            min );
+    }
+
+    @Override
+    public Grid activityPlans( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList, Integer min, Integer max, I18n i18n )
+    {
+        List<ProgramStageInstance> stageInstances = programStageInstanceStore.getActiveInstance( program, orgunitIds,
+            startDate, endDate, statusList, max, min );
+
+        Grid grid = new ListGrid();
+        grid.setTitle( program.getDisplayName() );
+        grid.setSubtitle( i18n.getString( "from" ) + " : " + DateUtils.getMediumDateString( startDate ) + " "
+            + i18n.getString( "to" ) + " : " + DateUtils.getMediumDateString( endDate ) );
+
+        List<PatientIdentifierType> identifierTypes = program.getPatientIdentifierTypes();
+
+        // Header
+        grid.addHeader( new GridHeader( i18n.getString( "date_scheduled" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "orgunit" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "full_name" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "phone_number" ), false, false ) );
+        grid.addHeader( new GridHeader( i18n.getString( "program_stage" ), false, false ) );
+
+        for ( ProgramStageInstance stageInstance : stageInstances )
+        {
+            Patient patient = stageInstance.getProgramInstance().getPatient();
+            String displayPatientName = patient.getFullName();
+            for ( PatientIdentifierType identifierType : identifierTypes )
+            {
+                for ( PatientIdentifier identifier : patient.getIdentifiers() )
+                {
+                    if ( identifier.getIdentifierType() != null
+                        && identifier.getIdentifierType().getId() == identifierType.getId() )
+                    {
+                        displayPatientName = identifier.getIdentifier();
+                        break;
+                    }
+                }
+            }
+
+            grid.addRow();
+            grid.addValue( DateUtils.getMediumDateString( stageInstance.getDueDate() ) );
+            if( stageInstance.getExecutionDate() != null )
+            {
+                grid.addValue( stageInstance.getOrganisationUnit().getName() );
+            }
+            else
+            {
+                grid.addValue( patient.getOrganisationUnit().getName() );
+            }
+            grid.addValue( displayPatientName );
+            grid.addValue( patient.getPhoneNumber() );
+            grid.addValue( stageInstance.getProgramStage().getDisplayName() );
+        }
+
+        return grid;
+    }
+
+    @Override
+    public int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList )
+    {
+        return programStageInstanceStore.getActiveInstanceCount( program, orgunitIds, startDate, endDate, statusList );
+    }
+    
 }

@@ -7,7 +7,11 @@
 			<div id='flow_$!programInstance.id' class="stage-flow">
 				<table class="table-flow">											
 					<tr id='programStageIdTR_$!programInstance.id'>
-						#foreach( $programStageInstance in $programInstance.programStageInstances )
+						#if( $programStageInstances)
+						#else
+							#set( $programStageInstances = $programInstance.programStageInstances)
+						#end
+						#foreach( $programStageInstance in $programStageInstances )
 						<td id='arrow_$programStageInstance.id' style='font-size:25px;'>&rarr;</td>
 						<td>
 							#set($valueDate=$format.formatDate( $programStageInstance.dueDate ))
@@ -27,7 +31,7 @@
 								reportDateDes="$programStageInstance.programStage.reportDateDescription"
 								dueDate="$format.formatDate( $programStageInstance.dueDate )"
 								class="stage-object" 
-								value="$programStageInstance.programStage.displayName&#13;&#10;$valueDate" 
+								value="$programStageInstance.programStage.displayName&#13;&#10;&nbsp;$valueDate" 
 								onclick="javascript:loadDataEntry( $programStageInstance.id );">
 							<script>	
 								var status = $programStageInstance.getEventStatus();
@@ -75,9 +79,9 @@
 		</tr>
 		<tr>
 			<td>$i18n.getString( 'due_date' )</td>
-			<td><input id='dueDateNewEncounter_$programInstance.id' name='dueDateNewEncounter_$!programInstance.id' style='width:260px;'></td>
+			<td><input id='dueDateNewEncounter_$!programInstance.id' name='dueDateNewEncounter_$!programInstance.id' style='width:260px;'></td>
 			<script type="text/javascript">
-			   datePickerFuture( 'dueDateNewEncounter_$programInstance.id', false );
+			   datePickerFuture( 'dueDateNewEncounter_$!programInstance.id', false );
 			</script>
 		</tr>
 		<tr>

@@ -32,21 +32,31 @@ import org.codehaus.jackson.annotate.JsonPropertyOrder;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@JsonPropertyOrder( value = { "message", "moreInfo" } )
+@JsonPropertyOrder( value = { "code", "message" } )
 public class MessageResponse
 {
-    private String message;
+    private String code;
 
-    private String moreInfo;
+    private String message;
 
     public MessageResponse()
     {
     }
 
-    public MessageResponse( String message, String moreInfo )
+    public MessageResponse( String code, String message )
     {
+        this.code = code;
         this.message = message;
-        this.moreInfo = moreInfo;
+    }
+
+    public String getCode()
+    {
+        return code;
+    }
+
+    public void setCode( String code )
+    {
+        this.code = code;
     }
 
     public String getMessage()
@@ -57,15 +67,5 @@ public class MessageResponse
     public void setMessage( String message )
     {
         this.message = message;
-    }
-
-    public String getMoreInfo()
-    {
-        return moreInfo;
-    }
-
-    public void setMoreInfo( String moreInfo )
-    {
-        this.moreInfo = moreInfo;
     }
 }

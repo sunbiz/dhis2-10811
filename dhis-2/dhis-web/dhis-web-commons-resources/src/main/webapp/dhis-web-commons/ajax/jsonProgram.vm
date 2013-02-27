@@ -13,6 +13,7 @@
 	"programStageCount": "${program.programStages.size()}",
 	"noAttributes": "$!program.patientAttributes.size()",
 	"noIdentifierTypes": "$!program.patientIdentifierTypes.size()",
-	"blockEntryForm": "$!program.blockEntryForm"
+	"blockEntryForm": "$!program.blockEntryForm",
+	"onlyEnrollOnce": "$!program.onlyEnrollOnce"
   }
 }

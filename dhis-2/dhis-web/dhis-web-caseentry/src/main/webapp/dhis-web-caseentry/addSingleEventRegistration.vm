@@ -28,9 +28,11 @@
 						}
 					}
 			});
-		
-		datePickerValid( 'patientForm [id=registrationDate]' );
-		datePickerValid( 'patientForm [id=birthDate]' );
+		#if($!customRegistrationForm)
+		#else
+			datePickerValid( 'patientForm [id=registrationDate]', true );
+			datePickerValid( 'patientForm [id=birthDate]' );
+		#end
 		addEventForPatientForm( 'patientForm' );
 	});	
 	

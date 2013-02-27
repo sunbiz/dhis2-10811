@@ -29,9 +29,12 @@
 					}
 			});
 		
-		datePickerValid( 'patientForm [id=registrationDate]' );
-		datePickerValid( 'patientForm [id=birthDate]' );
-		datePickerValid( 'patientForm [id=deathDate]' );
+		#if($!customRegistrationForm)
+		#else
+			datePickerValid( 'patientForm [id=registrationDate]', true );
+			datePickerValid( 'patientForm [id=birthDate]' );
+			datePickerValid( 'patientForm [id=deathDate]', false );
+		#end
 		addEventForPatientForm( 'patientForm' );
 	});	
 	hideById('patientForm [id=age]');

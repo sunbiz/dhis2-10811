@@ -118,4 +118,9 @@ public class DefaultPatientAttributeService
         return i18n( i18nService, patientAttributeStore.getWithoutGroup() );
     }
 
+    public PatientAttribute getPatientAttribute( String uid )
+    {
+        return i18n( i18nService, patientAttributeStore.getByUid( uid ) );
+    }
+
 }

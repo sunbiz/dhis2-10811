@@ -1463,6 +1463,8 @@ function validate( ignoreSuccessfulValidation, successCallback )
 	var validCompleteOnly = dataSets[currentDataSetId].validCompleteOnly;
 
     var params = storageManager.getCurrentCompleteDataSetParams();
+	    params['organisationUnitId'] = selection.getSelected();
+        params['multiOrganisationUnit'] = multiOrganisationUnit;
     
     $( '#validationDiv' ).load( 'validate.action', params, 
     function( response, status, xhr )

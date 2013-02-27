@@ -79,9 +79,9 @@ public class DefaultPatientAuditService
     }
 
     @Override
-    public PatientAudit getPatientAudit( Patient patient, String visitor, Date date )
+    public PatientAudit getPatientAudit( Integer patientId, String visitor, Date date, String accessedModule )
     {
-        return patientAuditStore.get( patient, visitor, date );
+        return patientAuditStore.get( patientId, visitor, date, accessedModule );
     }
 
 }

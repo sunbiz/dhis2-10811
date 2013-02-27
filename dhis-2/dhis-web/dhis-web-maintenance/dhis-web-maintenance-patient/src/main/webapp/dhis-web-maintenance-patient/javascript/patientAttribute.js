@@ -44,7 +44,7 @@ ATTRIBUTE_OPTION =
 				ATTRIBUTE_OPTION.addOption();
 			}
 		}
-		else if (jQuery(this_).val() == "CALCULATED"){
+		else if (jQuery(this_).val() == "calculated"){
 			if( jQuery("#availableAttribute option").length == 0 )
 			{
 				jQuery.getJSON( 'getCalPatientAttributeParams.action', { },
@@ -84,7 +84,7 @@ ATTRIBUTE_OPTION =
 	},
 	checkOnSubmit : function ()
 	{
-		if( jQuery("#valueType").val() != "COMBO" ) 
+		if( jQuery("#valueType").val() != "combo" ) 
 		{
 			jQuery("#attrOptionContainer").children().remove();
 			return true;

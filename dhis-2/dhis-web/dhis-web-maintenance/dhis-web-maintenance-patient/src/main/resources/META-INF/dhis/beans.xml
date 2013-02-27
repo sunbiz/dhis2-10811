@@ -172,6 +172,8 @@
 			ref="org.hisp.dhis.patient.PatientIdentifierTypeService" />
 		<property name="patientAttributeService"
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
+		<property name="currentUserService"
+			ref="org.hisp.dhis.user.CurrentUserService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.action.program.GetProgramListAction"
@@ -422,6 +424,9 @@
 			ref="org.hisp.dhis.program.ProgramDataEntryService" />
 		<property name="programStageDataElementService"
 			ref="org.hisp.dhis.program.ProgramStageDataElementService" />
+		<property name="systemSettingManager">
+			<ref bean="org.hisp.dhis.setting.SystemSettingManager" />
+		</property>
 	</bean>
 
 	<bean
@@ -550,6 +555,9 @@
 		</property>
 		<property name="patientRegistrationFormService">
 			<ref bean="org.hisp.dhis.patient.PatientRegistrationFormService" />
+		</property>
+		<property name="systemSettingManager">
+			<ref bean="org.hisp.dhis.setting.SystemSettingManager" />
 		</property>
 	</bean>
 

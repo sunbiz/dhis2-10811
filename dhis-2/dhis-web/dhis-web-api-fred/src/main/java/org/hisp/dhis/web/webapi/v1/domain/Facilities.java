@@ -27,18 +27,35 @@ package org.hisp.dhis.web.webapi.v1.domain;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
+@JsonPropertyOrder( value = { "meta", "facilities" } )
 public class Facilities
 {
+    private Map<String, Object> meta = new HashMap<String, Object>();
+
     private List<Facility> facilities = new ArrayList<Facility>();
 
     public Facilities()
     {
+    }
+
+    public Map<String, Object> getMeta()
+    {
+        return meta;
+    }
+
+    public void setMeta( Map<String, Object> meta )
+    {
+        this.meta = meta;
     }
 
     public List<Facility> getFacilities()
@@ -56,6 +73,7 @@ public class Facilities
     {
         return "Facilities{" +
             "facilities=" + facilities +
+            ", meta=" + meta +
             '}';
     }
 }

@@ -91,7 +91,7 @@ public class Model
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dout )
+    public void serializeVersion2_8( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.id );
@@ -99,7 +99,7 @@ public class Model
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.id );
@@ -107,11 +107,11 @@ public class Model
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
         // No change from 2.9 to 2.10
-        this.serializeVerssion2_9( dataOutputStream );
+        this.serializeVersion2_9( dataOutputStream );
     }
 
 }

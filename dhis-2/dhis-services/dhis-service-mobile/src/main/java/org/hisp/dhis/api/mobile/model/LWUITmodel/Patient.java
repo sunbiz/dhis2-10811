@@ -77,6 +77,8 @@ public class Patient
     private List<Program> programs;
 
     private List<Relationship> relationships;
+    
+    private List<Program> enrollmentPrograms;
 
     public List<PatientIdentifier> getIdentifiers()
     {
@@ -106,6 +108,16 @@ public class Patient
     public void setRelationships( List<Relationship> relationships )
     {
         this.relationships = relationships;
+    }
+
+    public List<Program> getEnrollmentPrograms()
+    {
+        return enrollmentPrograms;
+    }
+
+    public void setEnrollmentPrograms( List<Program> enrollmentPrograms )
+    {
+        this.enrollmentPrograms = enrollmentPrograms;
     }
 
     public String getFullName()
@@ -344,7 +356,7 @@ public class Patient
         {
             each.serialize( dout );
         }
-
+        
         // Write Relationships
         dout.writeInt( relationships.size() );
         for ( Relationship each : relationships )
@@ -352,6 +364,13 @@ public class Patient
             each.serialize( dout );
         }
 
+        // Write Available Program To Enroll
+        dout.writeInt( enrollmentPrograms.size() );
+        for ( Program each : enrollmentPrograms )
+        {
+            each.serialize( dout );
+        }
+        
         bout.flush();
         bout.writeTo( out );
     }
@@ -371,7 +390,7 @@ public class Patient
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream out )
+    public void serializeVersion2_8( DataOutputStream out )
         throws IOException
     {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -450,7 +469,7 @@ public class Patient
         dout.writeInt( identifiers.size() );
         for ( PatientIdentifier each : identifiers )
         {
-            each.serializeVerssion2_8( dout );
+            each.serializeVersion2_8( dout );
         }
 
         bout.flush();
@@ -458,7 +477,7 @@ public class Patient
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -534,15 +553,12 @@ public class Patient
         dout.writeInt( identifiers.size() );
         for ( PatientIdentifier each : identifiers )
         {
-            each.serializeVerssion2_9( dout );
+            each.serializeVersion2_9( dout );
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.hisp.dhis.api.mobile.model.DataStreamSerializable#serializeVerssion2_10(java.io.DataOutputStream)
-     */
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
         // TODO Auto-generated method stub

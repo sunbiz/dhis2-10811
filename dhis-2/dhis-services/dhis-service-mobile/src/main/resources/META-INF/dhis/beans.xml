@@ -28,6 +28,10 @@
 	<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
 	<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
 	<property name="relationshipService" ref="org.hisp.dhis.relationship.RelationshipService" />
+	<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
+	<property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
+	<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+	<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService"></property>
 	<property name="modelMapping" ref="org.hisp.dhis.mobile.service.ModelMapping" />
 	
   </bean>

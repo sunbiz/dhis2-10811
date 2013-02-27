@@ -77,15 +77,15 @@ public class Program
     {
         if ( this.clientVersion.equalsIgnoreCase( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
-            this.serializeVerssion2_8( dout );
+            this.serializeVersion2_8( dout );
         }
         else if ( this.clientVersion.equalsIgnoreCase( DataStreamSerializable.TWO_POINT_NINE ) )
         {
-            this.serializeVerssion2_9( dout );
+            this.serializeVersion2_9( dout );
         }
         else if ( this.clientVersion.equalsIgnoreCase( DataStreamSerializable.TWO_POINT_TEN ) )
         {
-            this.serializeVerssion2_10( dout );
+            this.serializeVersion2_10( dout );
         }
         // dout.writeInt( this.getId() );
         // dout.writeUTF( this.getName() );
@@ -99,7 +99,7 @@ public class Program
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dout )
+    public void serializeVersion2_8( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -115,7 +115,7 @@ public class Program
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dout )
+    public void serializeVersion2_9( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );
@@ -131,7 +131,7 @@ public class Program
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dout )
+    public void serializeVersion2_10( DataOutputStream dout )
         throws IOException
     {
         dout.writeInt( this.getId() );

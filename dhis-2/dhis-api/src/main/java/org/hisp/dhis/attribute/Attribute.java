@@ -87,53 +87,6 @@ public class Attribute
         this.valueType = valueType;
     }
 
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o ) return true;
-        if ( o == null || getClass() != o.getClass() ) return false;
-        if ( !super.equals( o ) ) return false;
-
-        Attribute attribute = (Attribute) o;
-
-        if ( dataElementAttribute != attribute.dataElementAttribute ) return false;
-        if ( indicatorAttribute != attribute.indicatorAttribute ) return false;
-        if ( mandatory != attribute.mandatory ) return false;
-        if ( organisationUnitAttribute != attribute.organisationUnitAttribute ) return false;
-        if ( userAttribute != attribute.userAttribute ) return false;
-        if ( dataElementGroupAttribute != null ? !dataElementGroupAttribute.equals( attribute.dataElementGroupAttribute ) : attribute.dataElementGroupAttribute != null )
-            return false;
-        if ( indicatorGroupAttribute != null ? !indicatorGroupAttribute.equals( attribute.indicatorGroupAttribute ) : attribute.indicatorGroupAttribute != null )
-            return false;
-        if ( organisationUnitGroupAttribute != null ? !organisationUnitGroupAttribute.equals( attribute.organisationUnitGroupAttribute ) : attribute.organisationUnitGroupAttribute != null )
-            return false;
-        if ( sortOrder != null ? !sortOrder.equals( attribute.sortOrder ) : attribute.sortOrder != null ) return false;
-        if ( userGroupAttribute != null ? !userGroupAttribute.equals( attribute.userGroupAttribute ) : attribute.userGroupAttribute != null )
-            return false;
-        if ( valueType != null ? !valueType.equals( attribute.valueType ) : attribute.valueType != null ) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = super.hashCode();
-        result = 31 * result + (valueType != null ? valueType.hashCode() : 0);
-        result = 31 * result + (dataElementAttribute ? 1 : 0);
-        result = 31 * result + (dataElementGroupAttribute != null ? dataElementGroupAttribute.hashCode() : 0);
-        result = 31 * result + (indicatorAttribute ? 1 : 0);
-        result = 31 * result + (indicatorGroupAttribute != null ? indicatorGroupAttribute.hashCode() : 0);
-        result = 31 * result + (organisationUnitAttribute ? 1 : 0);
-        result = 31 * result + (organisationUnitGroupAttribute != null ? organisationUnitGroupAttribute.hashCode() : 0);
-        result = 31 * result + (userAttribute ? 1 : 0);
-        result = 31 * result + (userGroupAttribute != null ? userGroupAttribute.hashCode() : 0);
-        result = 31 * result + (mandatory ? 1 : 0);
-        result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
-
-        return result;
-    }
-
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )

@@ -46,6 +46,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.GenericStore;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.constant.Constant;
 import org.hisp.dhis.constant.ConstantService;
 import org.hisp.dhis.dataelement.DataElement;
@@ -144,16 +145,16 @@ public class DefaultExpressionService
     public Double getIndicatorValue( Indicator indicator, Period period, Map<DataElementOperand, Double> valueMap, 
         Map<String, Double> constantMap, Integer days )
     {
-        if ( indicator == null || indicator.getNumerator() == null || indicator.getDenominator() == null )
+        if ( indicator == null || indicator.getExplodedNumeratorFallback() == null || indicator.getExplodedDenominatorFallback() == null )
         {
             return null;
         }
         
-        final double denominatorValue = calculateExpression( generateExpression( indicator.getDenominator(), valueMap, constantMap, days, false ) );
+        final double denominatorValue = calculateExpression( generateExpression( indicator.getExplodedDenominatorFallback(), valueMap, constantMap, days, false ) );
         
         if ( !isEqual( denominatorValue, 0d ) )
         {
-            final double numeratorValue = calculateExpression( generateExpression( indicator.getNumerator(), valueMap, constantMap, days, false ) );
+            final double numeratorValue = calculateExpression( generateExpression( indicator.getExplodedNumeratorFallback(), valueMap, constantMap, days, false ) );
             
             final double annualizationFactor = period != null ? DateUtils.getAnnualizationFactor( indicator, period.getStartDate(), period.getEndDate() ) : 1d;
             final double factor = indicator.getIndicatorType().getFactor();
@@ -448,7 +449,7 @@ public class DefaultExpressionService
                 indicator.setExplodedDenominator( substituteExpression( indicator.getDenominator(), days ) );
             }
 
-            final Map<String, Set<String>> dataElementMap = dataElementService.getDataElementCategoryOptionCombos();
+            final ListMap<String, String> dataElementMap = dataElementService.getDataElementCategoryOptionComboMap();
             
             for ( Indicator indicator : indicators )
             {
@@ -458,7 +459,7 @@ public class DefaultExpressionService
         }
     }
     
-    private String explodeExpression( String expression, Map<String, Set<String>> dataElementMap )
+    private String explodeExpression( String expression, ListMap<String, String> dataElementMap )
     {
         if ( expression == null || expression.isEmpty() )
         {

@@ -27,28 +27,28 @@ package org.hisp.dhis.web.webapi.v1.domain;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.hibernate.validator.constraints.Length;
 import org.hisp.dhis.web.webapi.v1.validation.constraint.annotation.ValidProperties;
-import org.hisp.dhis.web.webapi.v1.validation.group.Create;
 import org.hisp.dhis.web.webapi.v1.validation.group.Update;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
+@JsonPropertyOrder( value = { "uuid", "name", "active", "href", "createdAt", "updatedAt", "coordinates", "identifiers", "properties" } )
 public class Facility
 {
     // Internal system identifier
-    @NotNull(groups = Update.class)
-    @Length(min = 36, max = 36)
-    private String id;
+    @NotNull( groups = Update.class )
+    @Length( min = 36, max = 36 )
+    private String uuid;
 
     // Name of the facility
     @NotNull
@@ -56,11 +56,10 @@ public class Facility
     private String name;
 
     // Active = true/false indicates whether the facility is active or not
-    @NotNull
-    private Boolean active;
+    private Boolean active = true;
 
     // URL link to the unique ID API resource for the facility
-    private String url;
+    private String href;
 
     // ISO 8601 timestamp, including timezone, of when the facility was created
     private Date createdAt;
@@ -77,20 +76,38 @@ public class Facility
 
     // Implementation specific custom properties
     @ValidProperties
-    private Map<String, Object> properties = new HashMap<String, Object>();
+    private Map<String, Object> properties = new TreeMap<String, Object>();
 
     public Facility()
     {
     }
 
-    public String getId()
+    public Facility( String name )
     {
-        return id;
+        this.name = name;
     }
 
-    public void setId( String id )
+    public Facility( String name, Boolean active )
     {
-        this.id = id;
+        this.name = name;
+        this.active = active;
+    }
+
+    public Facility( String name, Boolean active, List<Double> coordinates )
+    {
+        this.name = name;
+        this.active = active;
+        this.coordinates = coordinates;
+    }
+
+    public String getUuid()
+    {
+        return uuid;
+    }
+
+    public void setUuid( String uuid )
+    {
+        this.uuid = uuid;
     }
 
     public String getName()
@@ -113,14 +130,14 @@ public class Facility
         this.active = active;
     }
 
-    public String getUrl()
+    public String getHref()
     {
-        return url;
+        return href;
     }
 
-    public void setUrl( String url )
+    public void setHref( String href )
     {
-        this.url = url;
+        this.href = href;
     }
 
     public Date getCreatedAt()
@@ -177,10 +194,10 @@ public class Facility
     public String toString()
     {
         return "Facility{" +
-            "id='" + id + '\'' +
+            "id='" + uuid + '\'' +
             ", name='" + name + '\'' +
             ", active=" + active +
-            ", url='" + url + '\'' +
+            ", url='" + href + '\'' +
             ", createdAt=" + createdAt +
             ", updatedAt=" + updatedAt +
             ", coordinates=" + coordinates +

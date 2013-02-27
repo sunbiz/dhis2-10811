@@ -230,7 +230,7 @@ public class SaveAggregateReportAction
         throws Exception
     {
         userOrganisationUnit = (userOrganisationUnit == null) ? false : userOrganisationUnit;
-        userOrganisationUnitChildren = (userOrganisationUnitChildren = null) ? false : userOrganisationUnitChildren;
+        userOrganisationUnitChildren = (userOrganisationUnitChildren == null) ? false : userOrganisationUnitChildren;
 
         PatientAggregateReport aggregateReport = new PatientAggregateReport();
 

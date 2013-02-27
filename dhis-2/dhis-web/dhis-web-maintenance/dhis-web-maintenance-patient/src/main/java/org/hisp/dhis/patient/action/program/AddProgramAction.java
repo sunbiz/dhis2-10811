@@ -42,6 +42,7 @@ import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageService;
+import org.hisp.dhis.user.CurrentUserService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -93,6 +94,13 @@ public class AddProgramAction
     public void setPatientAttributeService( PatientAttributeService patientAttributeService )
     {
         this.patientAttributeService = patientAttributeService;
+    }
+
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
     }
 
     // -------------------------------------------------------------------------
@@ -183,6 +191,13 @@ public class AddProgramAction
         this.blockEntryForm = blockEntryForm;
     }
 
+    private Boolean onlyEnrollOnce = false;
+
+    public void setOnlyEnrollOnce( Boolean onlyEnrollOnce )
+    {
+        this.onlyEnrollOnce = onlyEnrollOnce;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -195,6 +210,7 @@ public class AddProgramAction
         generateBydEnrollmentDate = (generateBydEnrollmentDate == null) ? false : generateBydEnrollmentDate;
         ignoreOverdueEvents = (ignoreOverdueEvents == null) ? false : ignoreOverdueEvents;
         blockEntryForm = (blockEntryForm == null) ? false : blockEntryForm;
+        onlyEnrollOnce = (onlyEnrollOnce == null) ? false : onlyEnrollOnce;
 
         Program program = new Program();
 
@@ -207,6 +223,8 @@ public class AddProgramAction
         program.setDisplayProvidedOtherFacility( displayProvidedOtherFacility );
         program.setDisplayIncidentDate( displayIncidentDate );
         program.setBlockEntryForm( blockEntryForm );
+        program.setOnlyEnrollOnce( onlyEnrollOnce );
+        
         if ( type == Program.MULTIPLE_EVENTS_WITH_REGISTRATION )
         {
             program.setGeneratedByEnrollmentDate( generateBydEnrollmentDate );
@@ -250,6 +268,10 @@ public class AddProgramAction
 
         programService.saveProgram( program );
 
+        program.setPublicAccess( "rw------" );
+        program.setUser( currentUserService.getCurrentUser() );
+        programService.updateProgram( program );
+        
         if ( program.getType().equals( Program.SINGLE_EVENT_WITH_REGISTRATION )
             || program.getType().equals( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) )
         {

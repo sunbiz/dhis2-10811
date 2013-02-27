@@ -75,6 +75,20 @@ public class AddDataElementGroupAction
         this.name = name;
     }
 
+    private String shortName;
+
+    public void setShortName( String shortName )
+    {
+        this.shortName = shortName;
+    }
+
+    private String code;
+
+    public void setCode( String code )
+    {
+        this.code = code;
+    }
+
     private Set<String> groupMembers = new HashSet<String>();
 
     public void setGroupMembers( Set<String> groupMembers )
@@ -106,8 +120,12 @@ public class AddDataElementGroupAction
 
     public String execute()
     {
+        code = ( code != null && code.trim().length() == 0 ) ? null : code;
+        
         dataElementGroup = new DataElementGroup( name );
-
+        dataElementGroup.setShortName( shortName );
+        dataElementGroup.setCode( code );
+        
         for ( String id : groupMembers )
         {
             dataElementGroup.addDataElement( dataElementService.getDataElement( Integer.parseInt( id ) ) );

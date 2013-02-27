@@ -15,16 +15,16 @@ public class SMSCommand
     private String codeSeparator;
 
     private List<SMSCode> smsCodes;
-    
+
     private String clientVersion;
-    
+
     private int dataSetId;
 
     @Override
     public void serialize( DataOutputStream dataOutputStream )
         throws IOException
     {
-        this.serializeVerssion2_10( dataOutputStream );
+        this.serializeVersion2_10( dataOutputStream );
     }
 
     @Override
@@ -35,14 +35,14 @@ public class SMSCommand
     }
 
     @Override
-    public void serializeVerssion2_8( DataOutputStream dataOutputStream )
+    public void serializeVersion2_8( DataOutputStream dataOutputStream )
         throws IOException
     {
         // does not exist in version 2.8
     }
 
     @Override
-    public void serializeVerssion2_9( DataOutputStream dataOutputStream )
+    public void serializeVersion2_9( DataOutputStream dataOutputStream )
         throws IOException
     {
         // does not exist in version 2.9
@@ -87,7 +87,7 @@ public class SMSCommand
     {
         this.smsCodes = smsCodes;
     }
-    
+
     public String getClientVersion()
     {
         return clientVersion;
@@ -97,7 +97,7 @@ public class SMSCommand
     {
         this.clientVersion = clientVersion;
     }
-    
+
     public int getDataSetId()
     {
         return dataSetId;
@@ -109,12 +109,28 @@ public class SMSCommand
     }
 
     @Override
-    public void serializeVerssion2_10( DataOutputStream dataOutputStream )
+    public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
         dataOutputStream.writeUTF( this.parserType );
-        dataOutputStream.writeUTF( this.separator );
-        dataOutputStream.writeUTF( this.codeSeparator );
+        if ( this.separator != null )
+        {
+            dataOutputStream.writeUTF( this.separator );
+        }
+        else
+        {
+            dataOutputStream.writeUTF( "" );
+        }
+
+        if ( this.codeSeparator != null )
+        {
+            dataOutputStream.writeUTF( this.codeSeparator );
+        }
+        else
+        {
+            dataOutputStream.writeUTF( "" );
+        }
+        
         dataOutputStream.writeInt( this.dataSetId );
 
         if ( this.smsCodes == null )
@@ -124,11 +140,10 @@ public class SMSCommand
         else
         {
             dataOutputStream.writeInt( smsCodes.size() );
-        }
-
-        for ( SMSCode smsCode : smsCodes )
-        {
-            smsCode.serialize( dataOutputStream );
+            for ( SMSCode smsCode : smsCodes )
+            {
+                smsCode.serialize( dataOutputStream );
+            }
         }
     }
 

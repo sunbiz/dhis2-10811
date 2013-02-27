@@ -245,13 +245,14 @@
     scope="prototype">
     <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
   </bean>
-
+  
   <!-- Data mart -->
 
   <bean id="org.hisp.dhis.reporting.datamart.action.StartExportAction" class="org.hisp.dhis.reporting.datamart.action.StartExportAction"
 	scope="prototype">
 	<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService"/>
 	<property name="scheduler" ref="scheduler"/>
+	<property name="analyticsTableTask" ref="analyticsAllTask" />
 	<property name="dataMartTask" ref="dataMartLast12MonthsTask"/>
   </bean>
 
