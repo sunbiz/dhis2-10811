@@ -1,40 +1,27 @@
-<h6>
-	<a href="javascript:showCriteriaForm();">$i18n.getString("start")</a>
-	&raquo; <a href="javascript:showStatisticalReport();">$!encoder.htmlEncode( $grid.title )</a>
-	<a href="javascript:detailsReport();"><span id="programStageTitleLbl"></span></a>
-	<span id="patientNameLbl"></span>
-</h6>
-<p id="totalLbl" class="hidden"></p>
+<h3>$!encoder.htmlEncode( $grid.title )</h3>
+<h5>$grid.subtitle</h5>
 
-<div id="reportTbl" name="reportTbl">
-	<p id="totalLbl">$!encoder.htmlEncode( $grid.subtitle )</p>
-	<table class="listTable gridTable" width="150px;">
-		<thead>
-			<tr>
-				#foreach( $header in $grid.getVisibleHeaders() )
-					<th #if( !$header.meta )style="text-align:center"#end>$!encoder.htmlEncode( $header.name )</th>
-				#end
-			</tr>
-		</thead>
+	<table class="listTable gridTable">
 		<tbody>
+			#set( $mark = false )
 			#foreach( $row in $grid.getRows() )
-			<tr>
+			#set($rowIdx = $velocityCount)
+			<tr #if($rowIdx > 7) #alternate( $mark ) #end >
+				#if($rowIdx > 7)
+					#set( $mark = !$mark )
+				#end
 				#foreach( $col in $row )
-					#set( $index = ( $velocityCount - 1 ) )
-					#if($index==0)
-						#set( $programStageId = $col )
-					#elseif( $grid.getHeaders().get( $index ).meta )
-						<td>$!encoder.htmlEncode( $col )</td>
-					#else
-						#if($index==2 || $index==4 || $index==6 || $index==8)
-							#set($status = $index/2)
-							#if($col==0)
-								<td style="text-align:center">$!format.formatValue( $col )</td>
-							#else
-								<td style="text-align:center"><a href="javascript:statisticalProgramDetailsReport($programStageId,$status, $col)">$!format.formatValue( $col )</a></td>
-							#end
+					#if($rowIdx<6 && $col!='') 
+						<td colspan='3'>$col</td>
+					#elseif($rowIdx == 6 && $col!='')
+						<td colspan='3'><h4>$col</h4></td>
+					#elseif($rowIdx == 7)
+						<th>$col</th>
+					#elseif($rowIdx>7)
+						#if($velocityCount==1)
+						<td>$col</td>
 						#else
-							<td style="text-align:center">$!format.formatValue( $col )</td>
+						<td align='center'>$col</td>
 						#end
 					#end
 				#end
@@ -46,4 +33,3 @@
 
 <div id='detailsDiv'></div>
 <div id="viewRecordsDiv"></div>
-

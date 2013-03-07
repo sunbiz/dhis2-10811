@@ -9,7 +9,6 @@
 #end
 				
 #foreach($attribute in $program.patientAttributes )
-	#if( $attribute.valueType!='calculated')
 	#set( $attributeValue = '')
 	<tr>
 		<td class='text-column'><label>$attribute.displayName #if($attribute.mandatory)<em title="$i18n.getString( "required" )" class="required">*</em> #end</label></td>
@@ -37,5 +36,4 @@
 			#end
 		</td>		
 	</tr>
-	#end
 #end

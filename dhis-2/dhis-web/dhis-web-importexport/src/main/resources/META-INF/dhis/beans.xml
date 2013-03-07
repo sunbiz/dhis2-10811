@@ -200,10 +200,11 @@
 
   <!-- DXF2 MetaData import/export -->
 
-  <bean id="org.hisp.dhis.importexport.action.dxf2.MetaDataImportFormAction"
-      class="org.hisp.dhis.importexport.action.dxf2.MetaDataImportFormAction" scope="prototype" />
   <bean id="org.hisp.dhis.importexport.action.dxf2.MetaDataExportFormAction"
-      class="org.hisp.dhis.importexport.action.dxf2.MetaDataExportFormAction" scope="prototype" />
+      class="org.hisp.dhis.importexport.action.dxf2.MetaDataExportFormAction" />
+  
+  <bean id="org.hisp.dhis.importexport.action.dxf2.MetaDataImportAction"
+      class="org.hisp.dhis.importexport.action.dxf2.MetaDataImportAction" />
 
   <bean id="org.hisp.dhis.importexport.action.dxf2.GetImportSummaryAction"
       class="org.hisp.dhis.importexport.action.dxf2.GetImportSummaryAction" scope="prototype">

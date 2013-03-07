@@ -2,8 +2,7 @@
 <h2>$i18n.getString( "import" )&nbsp;</h2>
 
 <ul>
-    <li><a href="dxf2MetaDataImport.action">$i18n.getString( "dxf2_metadata_import" )&nbsp;</a></li>
-  <li><a href="setImportFormat.action?importFormat=DXF">$i18n.getString( "import" )&nbsp;</a></li>
+  <li><a href="dxf2MetaDataImport.action">$i18n.getString( "metadata_import" )&nbsp;</a></li>
   <li><a href="displayImportDataValueForm.action?importFormat=xml">$i18n.getString( "xml_data_import" )&nbsp;</a></li>
   <li><a href="displayImportDataValueForm.action?importFormat=csv">$i18n.getString( "csv_data_import" )&nbsp;</a></li>
   <li><a href="displayExternalImportMenu.action">$i18n.getString( "dhis14_import" )&nbsp;</a></li>
@@ -12,10 +11,8 @@
 <h2>$i18n.getString( "export" )&nbsp;</h2>
 
 <ul>
-    <li><a href="dxf2MetaDataExport.action">$i18n.getString( "dxf2_metadata_export" )&nbsp;</a></li>
+  <li><a href="dxf2MetaDataExport.action">$i18n.getString( "metadata_export" )&nbsp;</a></li>
   <li><a href="displayDataValueExportForm.action">$i18n.getString( "data_export" )&nbsp;</a></li>
-  <li><a href="displayMetaDataExportForm.action?exportFormat=DXF">$i18n.getString( "metadata_export" )&nbsp;</a></li>
-  <li><a href="displayDetailedMetaDataExportForm.action?exportFormat=DXF">$i18n.getString( "detailed_metadata_export" )&nbsp;</a></li> 
   <li><a href="displayExternalExportMenu.action">$i18n.getString( "export_to_other_systems" )&nbsp;</a></li>
 </ul>
 

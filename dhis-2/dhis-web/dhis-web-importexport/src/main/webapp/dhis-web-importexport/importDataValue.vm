@@ -60,22 +60,11 @@
 </form>
 </div>
 
-#if( $running )
-
 <div id="notificationDiv">
-<table id="notificationTable" class="notificationTable" style="width:422px">
+<table id="notificationTable" class="notificationTable" style="display:none">
 <col width="120">
 <col width="380">
 </table>
 </div>
-
-<script type="text/javascript">
-$( document ).ready( function() {
-	$( "#notificationTable" ).empty();
-	pingNotificationsTimeout();
-} );
-</script>
-
-#end
 
 <div id="importSummaryDiv" class="page formSection" style="display:none; width:400px; padding-bottom:20px;"></div>

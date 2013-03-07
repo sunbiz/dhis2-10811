@@ -27,33 +27,45 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.chart.ChartService;
+import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.dxf2.utils.JacksonUtils;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.i18n.I18nManager;
 import org.hisp.dhis.i18n.I18nManagerException;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.system.util.CodecUtils;
+import org.hisp.dhis.user.UserService;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -70,16 +82,90 @@ public class ChartController
     private ChartService chartService;
 
     @Autowired
+    private DataElementService dataElementService;
+
+    @Autowired
+    private DataSetService dataSetService;
+
+    @Autowired
+    private PeriodService periodService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
     private IndicatorService indicatorService;
 
     @Autowired
     private OrganisationUnitService organisationUnitService;
 
     @Autowired
+    private OrganisationUnitGroupService organisationUnitGroupService;
+    
+    @Autowired
     private I18nManager i18nManager;
 
     @Autowired
     private ContextUtils contextUtils;
+
+    //--------------------------------------------------------------------------
+    // CRUD
+    //--------------------------------------------------------------------------
+
+    @Override
+    @RequestMapping( method = RequestMethod.POST, consumes = "application/json" )
+    public void postJsonObject( HttpServletResponse response, HttpServletRequest request, InputStream input ) throws Exception
+    {
+        Chart chart = JacksonUtils.fromJson( input, Chart.class );
+        
+        mergeChart( chart );
+        
+        chartService.addChart( chart );
+        
+        ContextUtils.createdResponse( response, "Chart created", RESOURCE_PATH + "/" + chart.getUid() );
+    }
+
+    @Override
+    @RequestMapping( value = "/{uid}", method = RequestMethod.PUT, consumes = "application/json" )
+    @ResponseStatus( value = HttpStatus.NO_CONTENT )
+    public void putJsonObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid, InputStream input ) throws Exception
+    {
+        Chart chart = chartService.getChart( uid );
+        
+        if ( chart == null )
+        {
+            ContextUtils.notFoundResponse( response, "Chart does not exist: " + uid );
+            return;
+        }
+        
+        Chart newChart = JacksonUtils.fromJson( input, Chart.class );
+        
+        mergeChart( newChart );
+        
+        chart.mergeWith( newChart );
+        
+        chartService.updateChart( chart );
+    }
+
+    @Override
+    @RequestMapping( value = "/{uid}", method = RequestMethod.DELETE )
+    @ResponseStatus( value = HttpStatus.NO_CONTENT )
+    public void deleteObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid ) throws Exception
+    {
+        Chart chart = chartService.getChart( uid );
+        
+        if ( chart == null )
+        {
+            ContextUtils.notFoundResponse( response, "Chart does not exist: " + uid );
+            return;
+        }
+        
+        chartService.deleteChart( chart );
+    }
+    
+    //--------------------------------------------------------------------------
+    // Get data
+    //--------------------------------------------------------------------------
 
     @RequestMapping( value = { "/{uid}/data", "/{uid}/data.png" }, method = RequestMethod.GET )
     public void getChart( @PathVariable( "uid" ) String uid,
@@ -141,6 +227,29 @@ public class ChartController
             {
                 period.setName( format.formatPeriod( period ) );
             }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Supportive methods
+    //--------------------------------------------------------------------------
+
+    private void mergeChart( Chart chart )
+    {
+        chart.setDataElements( dataElementService.getDataElementsByUid( getUids( chart.getDataElements() ) ) );
+        chart.setIndicators( indicatorService.getIndicatorsByUid( getUids( chart.getIndicators() ) ) );
+        chart.setDataSets( dataSetService.getDataSetsByUid( getUids( chart.getDataSets() ) ) );
+        chart.setOrganisationUnits( organisationUnitService.getOrganisationUnitsByUid( getUids( chart.getOrganisationUnits() ) ) );
+        chart.setPeriods( periodService.reloadPeriods( chart.getPeriods() ) );
+
+        if ( chart.getOrganisationUnitGroupSet() != null )
+        {
+            chart.setOrganisationUnitGroupSet( organisationUnitGroupService.getOrganisationUnitGroupSet( chart.getOrganisationUnitGroupSet().getUid() ) );
+        }
+        
+        if ( chart.getUser() != null )
+        {
+            chart.setUser( userService.getUser( chart.getUser().getUid() ) );
         }
     }
 }

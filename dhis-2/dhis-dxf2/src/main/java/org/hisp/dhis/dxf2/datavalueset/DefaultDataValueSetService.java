@@ -27,7 +27,25 @@ package org.hisp.dhis.dxf2.datavalueset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import au.com.bytecode.opencsv.CSVReader;
+import static org.hisp.dhis.importexport.ImportStrategy.NEW;
+import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
+import static org.hisp.dhis.importexport.ImportStrategy.UPDATES;
+import static org.hisp.dhis.system.notification.NotificationLevel.ERROR;
+import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
+import static org.hisp.dhis.system.util.ConversionUtils.wrap;
+import static org.hisp.dhis.system.util.DateUtils.getDefaultDate;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.amplecode.quick.BatchHandler;
 import org.amplecode.quick.BatchHandlerFactory;
 import org.amplecode.staxwax.factory.XMLFactory;
@@ -63,22 +81,7 @@ import org.hisp.dhis.system.util.DebugUtils;
 import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static org.hisp.dhis.importexport.ImportStrategy.*;
-import static org.hisp.dhis.scheduling.TaskCategory.DATAVALUE_IMPORT;
-import static org.hisp.dhis.system.notification.NotificationLevel.ERROR;
-import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
-import static org.hisp.dhis.system.util.ConversionUtils.wrap;
-import static org.hisp.dhis.system.util.DateUtils.getDefaultDate;
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author Lars Helge Overland
@@ -201,7 +204,7 @@ public class DefaultDataValueSetService
         catch ( RuntimeException ex )
         {
             log.error( DebugUtils.getStackTrace( ex ) );
-            notifier.notify( id, DATAVALUE_IMPORT, ERROR, "Unfortunately the process failed, check the logs", true );
+            notifier.notify( id, ERROR, "Unfortunately the process failed, check the logs", true );
             return new ImportSummary( ImportStatus.ERROR, "The import process failed: " + ex.getMessage() );
         }
     }
@@ -216,7 +219,7 @@ public class DefaultDataValueSetService
         catch ( Exception ex )
         {
             log.error( DebugUtils.getStackTrace( ex ) );
-            notifier.notify( id, DATAVALUE_IMPORT, ERROR, "Unfortunately the process failed, check the logs", true );
+            notifier.notify( id, ERROR, "Unfortunately the process failed, check the logs", true );
             return new ImportSummary( ImportStatus.ERROR, "The import process failed: " + ex.getMessage() );
         }
     }
@@ -231,14 +234,14 @@ public class DefaultDataValueSetService
         catch ( RuntimeException ex )
         {
             log.error( DebugUtils.getStackTrace( ex ) );
-            notifier.clear( id, DATAVALUE_IMPORT ).notify( id, DATAVALUE_IMPORT, ERROR, "Unfortunately the process failed, check the logs", true );
+            notifier.clear( id ).notify( id, ERROR, "Unfortunately the process failed, check the logs", true );
             return new ImportSummary( ImportStatus.ERROR, "The import process failed: " + ex.getMessage() );
         }
     }
 
     private ImportSummary saveDataValueSet( ImportOptions importOptions, TaskId id, DataValueSet dataValueSet )
     {
-        notifier.clear( id, DATAVALUE_IMPORT ).notify( id, DATAVALUE_IMPORT, "Process started" );
+        notifier.clear( id ).notify( id, "Process started" );
 
         ImportSummary summary = new ImportSummary();
 
@@ -251,7 +254,23 @@ public class DefaultDataValueSetService
         boolean skipExistingCheck = importOptions.isSkipExistingCheck();
 
         Map<String, DataElement> dataElementMap = identifiableObjectManager.getIdMap( DataElement.class, dataElementIdScheme );
-        Map<String, OrganisationUnit> orgUnitMap = identifiableObjectManager.getIdMap( OrganisationUnit.class, orgUnitIdScheme );
+
+        Map<String, OrganisationUnit> orgUnitMap = new HashMap<String, OrganisationUnit>();
+
+        if ( orgUnitIdScheme == IdentifiableProperty.UUID )
+        {
+            Collection<OrganisationUnit> allOrganisationUnits = organisationUnitService.getAllOrganisationUnits();
+
+            for ( OrganisationUnit organisationUnit : allOrganisationUnits )
+            {
+                orgUnitMap.put( organisationUnit.getUuid(), organisationUnit );
+            }
+        }
+        else
+        {
+            orgUnitMap = identifiableObjectManager.getIdMap( OrganisationUnit.class, orgUnitIdScheme );
+        }
+
         Map<String, DataElementCategoryOptionCombo> categoryOptionComboMap = identifiableObjectManager.getIdMap( DataElementCategoryOptionCombo.class, IdentifiableProperty.UID );
         Map<String, Period> periodMap = new HashMap<String, Period>();
 
@@ -273,7 +292,7 @@ public class DefaultDataValueSetService
 
         if ( dataSet != null && completeDate != null )
         {
-            notifier.notify( id, DATAVALUE_IMPORT, "Completing data set" );
+            notifier.notify( id, "Completing data set" );
             handleComplete( dataSet, completeDate, outerOrgUnit, outerPeriod, summary );
         }
         else
@@ -289,7 +308,7 @@ public class DefaultDataValueSetService
         int updateCount = 0;
         int totalCount = 0;
 
-        notifier.notify( id, DATAVALUE_IMPORT, "Importing data values" );
+        notifier.notify( id, "Importing data values" );
         log.info( "importing data values" );
 
         while ( dataValueSet.hasNextDataValue() )
@@ -396,7 +415,7 @@ public class DefaultDataValueSetService
         summary.setStatus( ImportStatus.SUCCESS );
         summary.setDescription( "Import process completed successfully" );
 
-        notifier.notify( id, DATAVALUE_IMPORT, INFO, "Import done", true ).addTaskSummary( id, DATAVALUE_IMPORT, summary );
+        notifier.notify( id, INFO, "Import done", true ).addTaskSummary( id, summary );
 
         return summary;
     }

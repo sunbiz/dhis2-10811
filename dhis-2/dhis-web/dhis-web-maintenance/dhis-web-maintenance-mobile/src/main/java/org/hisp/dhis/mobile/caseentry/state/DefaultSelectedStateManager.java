@@ -42,7 +42,6 @@ import com.opensymphony.xwork2.ActionContext;
 
 /**
  * @author Abyot Asalefew
- * @version $Id$
  */
 public class DefaultSelectedStateManager
     implements SelectedStateManager

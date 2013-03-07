@@ -47,6 +47,8 @@
 
 <h3>$i18n.getString( "create_new_data_dictionary" )</h3>
 
+#sharingCreateNotification( "dataDictionary" )
+
 <form id="addDataDictionaryForm" action="addDataDictionary.action" method="post" class="inputForm">
 
 <table>	

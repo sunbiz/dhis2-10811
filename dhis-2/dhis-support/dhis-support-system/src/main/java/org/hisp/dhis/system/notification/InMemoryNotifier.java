@@ -29,7 +29,6 @@ package org.hisp.dhis.system.notification;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -49,7 +48,7 @@ public class InMemoryNotifier
 {
     private static final Log log = LogFactory.getLog( InMemoryNotifier.class );
     
-    private int MAX_SIZE = 100;
+    private int MAX_SIZE = 75;
     
     private TaskLocalList<Notification> notifications;
     
@@ -67,37 +66,37 @@ public class InMemoryNotifier
     // -------------------------------------------------------------------------
 
     @Override
-    public Notifier notify( TaskId id, TaskCategory category, String message )
+    public Notifier notify( TaskId id, String message )
     {
-        return notify( id, category, NotificationLevel.INFO, message, false );
+        return notify( id, NotificationLevel.INFO, message, false );
     }
     
     @Override
-    public Notifier notify( TaskId id, TaskCategory category, NotificationLevel level, String message, boolean completed )
+    public Notifier notify( TaskId id, NotificationLevel level, String message, boolean completed )
     {
-        Notification notification = new Notification( level, category, new Date(), message, completed );
-        
         if ( id != null )
         {
+            Notification notification = new Notification( level, id.getCategory(), new Date(), message, completed );
+        
             notifications.get( id ).add( 0, notification );
             
             if ( notifications.get( id ).size() > MAX_SIZE )
             {
                 notifications.get( id ).remove( MAX_SIZE );
             }
+            
+            log.info( notification );
         }
-
-        log.info( notification );
         
         return this;
     }
 
     @Override
-    public List<Notification> getNotifications( TaskId id, TaskCategory category, String lastUid )
+    public List<Notification> getNotifications( TaskId id, String lastUid )
     {
         List<Notification> list = new ArrayList<Notification>();
         
-        if ( id != null && category != null )
+        if ( id != null )
         {
             for ( Notification notification : notifications.get( id ) )
             {
@@ -106,10 +105,7 @@ public class InMemoryNotifier
                     break;
                 }
                 
-                if ( category.equals( notification.getCategory() ) )
-                {
-                    list.add( notification );
-                }
+                list.add( notification );
             }
         }
         
@@ -117,36 +113,36 @@ public class InMemoryNotifier
     }
     
     @Override
-    public Notifier clear( TaskId id, TaskCategory category )
+    public Notifier clear( TaskId id )
     {
-        if ( id != null && category != null )
+        if ( id != null )
         {
-            Iterator<Notification> iter = notifications.get( id ).iterator();
-            
-            while ( iter.hasNext() )
-            {
-                if ( category.equals( iter.next().getCategory() ) )
-                {
-                    iter.remove();
-                }
-            }
+            notifications.clear( id );
+            taskSummaries.get( id ).remove( id.getCategory() );
         }
-        
-        taskSummaries.get( id ).remove( category );
         
         return this;
     }
     
     @Override
-    public Notifier addTaskSummary( TaskId id, TaskCategory category, Object taskSummary )
+    public Notifier addTaskSummary( TaskId id, Object taskSummary )
     {
-        taskSummaries.get( id ).put( category, taskSummary );
+        if ( id != null )
+        {
+            taskSummaries.get( id ).put( id.getCategory(), taskSummary );
+        }
+        
         return this;
     }
 
     @Override
-    public Object getTaskSummary( TaskId id, TaskCategory category )
+    public Object getTaskSummary( TaskId id )
     {
-        return taskSummaries.get( id ).get( category );
+        if ( id != null )
+        {
+            return taskSummaries.get( id ).get( id.getCategory() );
+        }
+        
+        return null;
     }
 }

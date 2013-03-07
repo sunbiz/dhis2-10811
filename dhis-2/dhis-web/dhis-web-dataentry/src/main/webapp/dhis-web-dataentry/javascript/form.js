@@ -1207,6 +1207,10 @@ function displayEntryFormCompleted()
 {
     addEventListeners();
 
+    $( '#validationButton' ).removeAttr( 'disabled' );
+    $( '#validateButton' ).removeAttr( 'disabled' );
+
+    /*
     if ( !multiOrganisationUnit )
     {
         $( '#validationButton' ).removeAttr( 'disabled' );
@@ -1217,6 +1221,7 @@ function displayEntryFormCompleted()
         $( '#validationButton' ).attr( 'disabled', true );
         $( '#validateButton' ).attr( 'disabled', true );
     }
+    */
 
     dataEntryFormIsLoaded = true;
     hideLoader();
@@ -1465,10 +1470,8 @@ function validate( ignoreSuccessfulValidation, successCallback )
     var params = storageManager.getCurrentCompleteDataSetParams();
 	    params['organisationUnitId'] = selection.getSelected();
         params['multiOrganisationUnit'] = multiOrganisationUnit;
-    
-    $( '#validationDiv' ).load( 'validate.action', params, 
-    function( response, status, xhr )
-    {
+
+    $( '#validationDiv' ).load( 'validate.action', params, function( response, status, xhr ) {
     	var success = null;
     	
         if ( status == 'error' && !ignoreSuccessfulValidation )

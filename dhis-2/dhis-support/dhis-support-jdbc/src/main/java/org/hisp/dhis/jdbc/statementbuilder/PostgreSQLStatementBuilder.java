@@ -38,7 +38,7 @@ public class PostgreSQLStatementBuilder
     @Override
     public String getDoubleColumnType()
     {
-        return "DOUBLE PRECISION";
+        return "double precision";
     }
 
     @Override

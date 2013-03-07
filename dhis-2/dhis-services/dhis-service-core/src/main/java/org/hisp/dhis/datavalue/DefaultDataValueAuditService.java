@@ -36,9 +36,7 @@ import org.hisp.dhis.period.Period;
 
 /**
  * @author Quang Nguyen
- * @version Mar 30, 2010 9:45:56 PM
  */
-
 public class DefaultDataValueAuditService
     implements DataValueAuditService
 {
@@ -55,10 +53,7 @@ public class DefaultDataValueAuditService
 
     public void addDataValueAudit( DataValueAudit dataValueAudit )
     {
-        if ( dataValueAudit != null )
-        {
-            dataValueAuditStore.addDataValueAudit( dataValueAudit );
-        }
+        dataValueAuditStore.addDataValueAudit( dataValueAudit );
     }
 
     public void deleteDataValueAudit( DataValueAudit dataValueAudit )

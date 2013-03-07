@@ -38,7 +38,7 @@ public class H2StatementBuilder
     @Override
     public String getDoubleColumnType()
     {
-        return "DOUBLE";
+        return "double";
     }
 
     @Override

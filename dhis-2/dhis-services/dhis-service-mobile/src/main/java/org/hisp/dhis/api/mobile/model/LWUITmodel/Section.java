@@ -32,15 +32,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-
-import org.hisp.dhis.api.mobile.model.DataElement;
 import org.hisp.dhis.api.mobile.model.Model;
 
 /**
  * @author Nguyen Kim Lai
- * 
- * @version Section.java 1:11:03 PM Jan 22, 2013 $
  */
 public class Section
     extends Model

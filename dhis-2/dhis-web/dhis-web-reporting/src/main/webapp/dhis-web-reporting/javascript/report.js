@@ -1,23 +1,18 @@
 function addReport()
 {
-	if ( $( "#id" ).val().length == 0 && !hasText( "upload" ) )
-	{
-		setMessage( i18n_please_specify_file );
-		return false;
-	}
-	
-	$.postJSON( "validateReport.action", { id:$( "#id" ).val(), "name":$( "#name" ).val() }, function( json )
-	{
-		if ( json.response == "input" )
-		{
-			setMessage( json.message );
-			return false;
-		}
-		else if ( json.response == "success" )
-		{
-        	$( "#reportForm" ).submit();
-		}
-	} );
+    if ( $( "#reportForm #name" ).val().trim().length == 0  )
+   	{
+   		setMessage( i18n_specify_name );
+   		return false;
+   	}
+
+    if ( $( "#reportForm #id" ).val().trim().length == 0 && !hasText( "upload" ) )
+   	{
+   		setMessage( i18n_please_specify_file );
+   		return false;
+   	}
+
+    $( "#reportForm" ).submit();
 }
 
 function removeReport( id )

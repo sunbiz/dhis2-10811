@@ -28,7 +28,6 @@ package org.hisp.dhis.resourcetable.scheduling;
  */
 
 import org.hisp.dhis.resourcetable.ResourceTableService;
-import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.system.notification.NotificationLevel;
 import org.hisp.dhis.system.notification.Notifier;
@@ -60,10 +59,10 @@ public class ResourceTableTask
     @Override
     public void run()
     {
-        notifier.notify( taskId, TaskCategory.RESOURCETABLE_UPDATE, "Generating resource tables" );
+        notifier.notify( taskId, "Generating resource tables" );
         
         resourceTableService.generateAll();
         
-        notifier.notify( taskId, TaskCategory.RESOURCETABLE_UPDATE, NotificationLevel.INFO, "Resource tables generated", true );
+        notifier.notify( taskId, NotificationLevel.INFO, "Resource tables generated", true );
     }
 }

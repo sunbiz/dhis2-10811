@@ -54,8 +54,6 @@ public class PatientAttribute
 
     public static final String TYPE_COMBO = "combo";
 
-    public static final String TYPE_CALCULATED = "calculated";
-
     private String description;
 
     private String valueType;

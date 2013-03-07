@@ -31,6 +31,12 @@ body,
 
 body {
     font-size: 10px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .dv-accordion-options .x-panel-body-default {
@@ -79,28 +85,90 @@ body {
     color: #111;
 }
 
-/* Grid */
 
-.x-grid-row .x-grid-cell {
-    color: #222;
-    background-color: transparent;
-    border: 1px solid transparent;
+/*----------------------------------------------------------------------------
+ * PT Grid
+ *--------------------------------------------------------------------------*/
+
+.dv-grid-row-icon-edit,
+.dv-grid-row-icon-overwrite,
+.dv-grid-row-icon-sharing,
+.dv-grid-row-icon-dashboard,
+.dv-grid-row-icon-delete {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.dv-grid-row-icon-edit {
+	background: url('../images/grid-edit_16.png') no-repeat;
+}
+.dv-grid-row-icon-overwrite {
+	background: url('../images/grid-save_16.png') no-repeat;
+	margin-left: 4px;
+}
+.dv-grid-row-icon-sharing {
+	background: url('../images/grid-sharing_16.png') no-repeat;
+	margin-left: 4px;
+}
+.dv-grid-row-icon-dashboard {
+	background: url('../images/grid-dashboard_16.png') no-repeat;
+	margin-left: 4px;
+}
+.dv-grid-row-icon-delete {
+	background: url('../images/grid-delete_16.png') no-repeat;
+	margin-left: 4px;
+}
+.dv-grid-row-icon-disabled img.dv-grid-row-icon-edit,
+.dv-grid-row-icon-disabled img.dv-grid-row-icon-overwrite,
+.dv-grid-row-icon-disabled img.dv-grid-row-icon-delete {
+	opacity: 0;
+	filter:Alpha(opacity=0);
+}
+.dv-grid-row-icon-disabled * {
+	cursor: default !important;
+}
+.dv-grid-row-icon-disabled img.dv-grid-row-icon-sharing,
+.dv-grid-row-icon-disabled img.dv-grid-row-icon-dashboard {
+	cursor: pointer !important;
 }
 
-.x-grid-row-selected .x-grid-cell {
-    border: 1px solid transparent;
+.dv-grid .x-grid-cell-inner,
+.dv-grid .x-grid-cell-inner * {
+	font-size: 10px !important;
+}
+.dv-grid .x-grid-cell-inner {
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 
-.x-grid-row-over {
-    background-color: #f1f1f1;
+.dv-grid .x-column-header-text {
+	color: #333;
+}
+.dv-grid .x-grid-header-ct {
+	border-bottom-width: 1px !important;
+	border-bottom-color: #d0d0d0;
+}
+.dv-grid .x-grid-body {
+	border: 1px solid #d0d0d0;
+	border-top: 0 none !important;
 }
 
-.x-grid-row-over .x-grid-cell-first, .x-grid-row-selected .x-grid-cell-first {
-    border-radius: 2px 0 0 2px;
+.dv-grid .x-grid-dirty-cell { /* hide red "dirty" icon */
+	background-image: none;
+}
+.dv-grid .x-grid-row { /* middle align text in row with image */
+	vertical-align: middle;
+}
+.dv-grid .x-grid-row .x-grid-cell { /* remove blurry borders */
+	border-top: 0 none;
 }
 
-.x-grid-row-over .x-grid-cell-last, .x-grid-row-selected .x-grid-cell-last {
-    border-radius: 0 2px 2px 0;
+.dv-grid .link,
+.dv-grid .link * {
+	cursor: pointer;
+	cursor: hand;
+	color: blue;
+	text-decoration: underline;
 }
 
 /* DV menu grid */
@@ -135,8 +203,9 @@ body {
 
 /* Tree panel */
 
-.dv-tree .x-tree-panel .x-grid-row .x-grid-cell-inner { /* node height */
+.dv-tree.x-tree-panel .x-grid-row .x-grid-cell-inner { /* node height, font size */
     height: 17px;
+    font-size: 10px;
 }
 
 .dv-tree .x-grid-row-selected .x-grid-cell,
@@ -252,7 +321,7 @@ body {
 }
 
 .dv-toolbar-btn-menu { /* Align menu */
-	margin-top: 5px;
+	margin-top: 4px;
 }
 
 /* Button */
@@ -307,7 +376,7 @@ body {
 }
 
 .x-tip-anchor {
-	border-bottom-color: #111;
+	border-top-color: #111;
 }
 
 /* Chart tips (tooltip) */
@@ -318,14 +387,6 @@ body {
 /* Grid datatable column header */
 .x-column-header-inner .x-column-header-text {
 	font-size: 11px;
-}
-
-/* Grid row/cell text position */
-.x-grid-cell-inner {
-    line-height: 15px;
-    font-size: 10px;
-    cursor: pointer;
-    cursor: hand;
 }
 
 /* Grid datatable column chooser */
@@ -447,14 +508,28 @@ body {
     border-radius: 2px
 }
 
-/* Grid datatable columns */
-.x-grid-header-ct {
-    border-style: none;
+	/* Window bbar info */
+.dv-label-info {
+	font-size: 10px !important;
+	color: #666;
+	padding-left: 4px;
+	height: 22px;
+	line-height: 21px;
 }
 
 /* Grid datatable first row border top */
 .dv-datatable .x-fit-item {
     border-top: 1px solid #d0d0d0;
+}
+
+.dv-datatable .x-grid-header-ct {
+	border-top: 0 none;
+	border-right: 0 none;
+	border-left: 0 none;
+}
+
+.dv-datatable .x-grid-cell-inner {
+	font-size: 10px;
 }
 
 /* Menu item icon */

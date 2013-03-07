@@ -72,7 +72,7 @@ public class SystemController
     //--------------------------------------------------------------------------
 
     @RequestMapping(value = "/uid", method = RequestMethod.GET)
-    public void getUid( @RequestParam( required = false ) Integer n, HttpServletResponse response ) throws IOException
+    public void getUid( @RequestParam(required = false) Integer n, HttpServletResponse response ) throws IOException
     {
         response.setContentType( ContextUtils.CONTENT_TYPE_JSON );
 
@@ -98,8 +98,8 @@ public class SystemController
         JacksonUtils.toJson( response.getOutputStream(), codes );
     }
 
-    @RequestMapping( value = "/tasks/{category}", method = RequestMethod.GET, produces = { "*/*", "application/json" } )
-    public void getTaskJson( HttpServletResponse response, @PathVariable( "category" ) String category ) throws IOException
+    @RequestMapping(value = "/tasks/{category}", method = RequestMethod.GET, produces = { "*/*", "application/json" })
+    public void getTaskJson( HttpServletResponse response, @PathVariable("category") String category ) throws IOException
     {
         List<Notification> notifications = new ArrayList<Notification>();
 
@@ -109,14 +109,14 @@ public class SystemController
 
             TaskId taskId = new TaskId( taskCategory, currentUserService.getCurrentUser() );
 
-            notifications = notifier.getNotifications( taskId, taskCategory, null );
+            notifications = notifier.getNotifications( taskId, null );
         }
 
         JacksonUtils.toJson( response.getOutputStream(), notifications );
     }
 
-    @RequestMapping( value = "/taskSummaries/{category}", method = RequestMethod.GET, produces = { "*/*", "application/json" } )
-    public void getTaskSummaryJson( HttpServletResponse response, @PathVariable( "category" ) String category ) throws IOException
+    @RequestMapping(value = "/taskSummaries/{category}", method = RequestMethod.GET, produces = { "*/*", "application/json" })
+    public void getTaskSummaryJson( HttpServletResponse response, @PathVariable("category") String category ) throws IOException
     {
         ImportSummary importSummary = new ImportSummary();
 
@@ -126,9 +126,9 @@ public class SystemController
 
             TaskId taskId = new TaskId( taskCategory, currentUserService.getCurrentUser() );
 
-            importSummary = (ImportSummary) notifier.getTaskSummary( taskId, taskCategory );
+            importSummary = (ImportSummary) notifier.getTaskSummary( taskId );
 
-            notifier.clear( taskId, taskCategory );
+            notifier.clear( taskId );
         }
 
         JacksonUtils.toJson( response.getOutputStream(), importSummary );

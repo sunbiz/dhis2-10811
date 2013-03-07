@@ -27,49 +27,54 @@ package org.hisp.dhis.integration.components;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.Map;
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.hisp.dhis.dxf2.datavalueset.DataValueSetService;
 import org.hisp.dhis.dxf2.metadata.ImportService;
+import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 /**
  * A DHIS 2 specific camel component for creating dhis2 endpoints
- * 
+ * <p/>
  * Two forms of uri are supported for the endpoints:
- * 1.  uri="dhis2:metadata?<options>" creates a metadata endpoint for importing metadata 
+ * 1.  uri="dhis2:metadata?<options>" creates a metadata endpoint for importing metadata
  * 2.  uri="dhis2:data?<options>" creates a datavalueset endpoint for importing data
- * 
+ * <p/>
  * See the respective endpoint classes for details of the options supported on each
- * 
+ *
  * @author bobj
  */
-public class Dxf2Component 
+public class Dxf2Component
     extends DefaultComponent
 {
     public static final String DATA = "data";
 
     public static final String METADATA = "metadata";
-    
+
     @Autowired
     private ImportService importService;
-    
+
     @Autowired
     private DataValueSetService dataValueSetService;
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @Override
     protected Endpoint createEndpoint( String uri, String remaining, Map<String, Object> parameters ) throws Exception
     {
-        if ( !remaining.equals( DATA ) && !remaining.equals( METADATA ) ) 
+        if ( !remaining.equals( DATA ) && !remaining.equals( METADATA ) )
         {
-            throw new UnsupportedOperationException( "Invalid dhis2 uri part " + remaining);
+            throw new UnsupportedOperationException( "Invalid dhis2 uri part " + remaining );
         }
-        
-        Endpoint endpoint = remaining.equals( DATA ) ? 
-            new Dxf2DataEndpoint( uri, this, dataValueSetService ) : new Dxf2MetaDataEndpoint( uri, this, importService );
-  
+
+        Endpoint endpoint = remaining.equals( DATA ) ?
+            new Dxf2DataEndpoint( currentUserService.getCurrentUser(), uri, this, dataValueSetService ) :
+            new Dxf2MetaDataEndpoint( currentUserService.getCurrentUser(), uri, this, importService );
+
         setProperties( endpoint, parameters );
         return endpoint;
     }

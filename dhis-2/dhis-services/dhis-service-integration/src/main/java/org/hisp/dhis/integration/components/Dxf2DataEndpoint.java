@@ -34,29 +34,32 @@ import org.apache.camel.impl.DefaultEndpoint;
 import org.hisp.dhis.dxf2.datavalueset.DataValueSetService;
 import org.hisp.dhis.dxf2.metadata.ImportOptions;
 import org.hisp.dhis.importexport.ImportStrategy;
+import org.hisp.dhis.user.User;
 
 /**
  * dataendpoint is created using a uri of the form:
  * dhis2:metadata?dryRun=true|false&importStrategy=NEW|NEW_AND_UPDATES|UPDATES
- * 
+ *
  * @author bobj
  */
-public class Dxf2DataEndpoint 
+public class Dxf2DataEndpoint
     extends DefaultEndpoint
 {
     protected DataValueSetService dataValueSetService;
+
+    protected User user;
 
     public DataValueSetService getDataValueSetService()
     {
         return dataValueSetService;
     }
-    
+
     // -------------------------------------------------------------------------
     // Parameters supported by this endpoint 
     // -------------------------------------------------------------------------
-    
+
     protected ImportOptions importOptions;
-    
+
     public ImportOptions getImportOptions()
     {
         return importOptions;
@@ -64,9 +67,9 @@ public class Dxf2DataEndpoint
 
     public void setImportStrategy( ImportStrategy importStrategy )
     {
-        importOptions.setImportStrategy(importStrategy.toString());
+        importOptions.setImportStrategy( importStrategy.toString() );
     }
-    
+
     public void setDryRun( Boolean dryRun )
     {
         importOptions.setDryRun( dryRun );
@@ -81,12 +84,13 @@ public class Dxf2DataEndpoint
     {
         importOptions.setOrgUnitIdScheme( orgUnitIdScheme );
     }
-    
-    public Dxf2DataEndpoint( String uri, Dxf2Component component, DataValueSetService dataValueSetService )
+
+    public Dxf2DataEndpoint( User user, String uri, Dxf2Component component, DataValueSetService dataValueSetService )
     {
         super( uri, component );
-        importOptions = new ImportOptions();
+        this.importOptions = new ImportOptions();
         this.dataValueSetService = dataValueSetService;
+        this.user = user;
     }
 
     @Override

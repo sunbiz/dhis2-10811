@@ -27,6 +27,13 @@
 
 package org.hisp.dhis.patient.scheduling;
 
+import static org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER_LAST_12_MONTH;
+import static org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER_LAST_3_MONTH;
+import static org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER_LAST_6_MONTH;
+import static org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER_LAST_MONTH;
+import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
+import static org.hisp.dhis.setting.SystemSettingManager.KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -43,6 +50,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.setting.SystemSettingManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -68,13 +76,16 @@ public class CaseAggregateConditionTask
 
     private DataElementCategoryService categoryService;
 
+    private SystemSettingManager systemSettingManager;
+
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
 
     public CaseAggregateConditionTask( OrganisationUnitService organisationUnitService,
         CaseAggregationConditionService aggregationConditionService, DataValueService dataValueService,
-        JdbcTemplate jdbcTemplate, DataElementService dataElementService, DataElementCategoryService categoryService )
+        JdbcTemplate jdbcTemplate, DataElementService dataElementService, DataElementCategoryService categoryService,
+        SystemSettingManager systemSettingManager )
     {
         this.organisationUnitService = organisationUnitService;
         this.aggregationConditionService = aggregationConditionService;
@@ -82,6 +93,7 @@ public class CaseAggregateConditionTask
         this.jdbcTemplate = jdbcTemplate;
         this.dataElementService = dataElementService;
         this.categoryService = categoryService;
+        this.systemSettingManager = systemSettingManager;
     }
 
     // -------------------------------------------------------------------------
@@ -91,6 +103,9 @@ public class CaseAggregateConditionTask
     @Override
     public void run()
     {
+        String taskStrategy = (String) systemSettingManager.getSystemSetting(
+            KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY, DEFAULT_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY );
+
         Collection<OrganisationUnit> orgunits = organisationUnitService.getAllOrganisationUnits();
 
         String datasetSQL = "select dm.datasetid as datasetid, pt.name as periodname";
@@ -104,9 +119,9 @@ public class CaseAggregateConditionTask
         {
             int datasetId = rsDataset.getInt( "datasetid" );
 
-            Period period = getPeriod( rsDataset.getString( "periodname" ) );
+            Collection<Period> periods = getPeriod( rsDataset.getString( "periodname" ), taskStrategy );
 
-            if ( period != null )
+            for( Period period : periods )
             {
                 String sql = "select caseaggregationconditionid, aggregationdataelementid, optioncomboid "
                     + "     from caseaggregationcondition cagg inner join datasetmembers dm "
@@ -148,6 +163,7 @@ public class CaseAggregateConditionTask
                             // -----------------------------------------------------
                             // Add dataValue
                             // -----------------------------------------------------
+                            
                             if ( dataValue == null )
                             {
                                 dataValue = new DataValue( dElement, period, orgUnit, "" + resultValue, "", new Date(),
@@ -189,16 +205,35 @@ public class CaseAggregateConditionTask
     // Supportive methods
     // -------------------------------------------------------------------------
 
-    private Period getPeriod( String periodTypeName )
-    {
-        Calendar today = Calendar.getInstance();
+    private Collection<Period> getPeriod( String periodTypeName, String taskStrategy )
+    {   
+        Calendar calStartDate = Calendar.getInstance();
+        
+        if ( TASK_AGGREGATE_QUERY_BUILDER_LAST_MONTH.equals( taskStrategy ) )
+        {
+            calStartDate.add( Calendar.MONTH, -1 );
+        }
+        else  if ( TASK_AGGREGATE_QUERY_BUILDER_LAST_3_MONTH.equals( taskStrategy ) )
+        {
+            calStartDate.add( Calendar.MONTH, -3 );
+        }
+        else  if ( TASK_AGGREGATE_QUERY_BUILDER_LAST_6_MONTH.equals( taskStrategy ) )
+        {
+            calStartDate.add( Calendar.MONTH, -6 );
+        }
+        else  if ( TASK_AGGREGATE_QUERY_BUILDER_LAST_12_MONTH.equals( taskStrategy ) )
+        {
+            calStartDate.add( Calendar.MONTH, -12 );
+        }
 
-        today.add( Calendar.DATE, -1 );
+        Date startDate = calStartDate.getTime();
+        
+        Calendar calEndDate = Calendar.getInstance();
+        
+        Date endDate = calEndDate.getTime();
 
         CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( periodTypeName );
 
-        Period period = periodType.createPeriod( today );
-
-        return (period.getEndDate().before( today.getTime() )) ? period : null;
+        return periodType.generatePeriods( startDate , endDate ) ;
     }
 }

@@ -25,7 +25,7 @@
     </action>
 
     <action name="importDataValue" class="org.hisp.dhis.importexport.action.datavalue.ImportDataValueAction">
-      <result name="success" type="redirect">displayImportDataValueForm.action?running=true&amp;importFormat=${importFormat}</result>
+      <result name="success" type="redirect">displayImportDataValueForm.action?importFormat=${importFormat}</result>
       <interceptor-ref name="fileUploadStack" />
       <param name="requiredAuthorities">F_IMPORT_DATA</param>
     </action>
@@ -254,7 +254,7 @@
 
     <!-- DXF2 MetaData import/export -->
 
-    <action name="dxf2MetaDataImport" class="org.hisp.dhis.importexport.action.dxf2.MetaDataImportFormAction">
+    <action name="dxf2MetaDataImport" class="org.hisp.dhis.importexport.action.NoAction">
       <result name="success" type="velocity">/main.vm</result>
       <param name="menu">/dhis-web-importexport/mainMenu.vm</param>
       <param name="page">/dhis-web-importexport/dxf2MetaDataImport.vm</param>
@@ -269,7 +269,7 @@
     </action>
 
     <action name="importMetaData" class="org.hisp.dhis.importexport.action.dxf2.MetaDataImportAction">
-      <result name="success" type="redirect">dxf2MetaDataImport.action?running=true</result>
+      <result name="success" type="redirect">dxf2MetaDataImport.action</result>
       <interceptor-ref name="fileUploadStack" />
     </action>
 

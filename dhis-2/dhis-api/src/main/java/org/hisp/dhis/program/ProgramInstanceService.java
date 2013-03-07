@@ -36,7 +36,6 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.Patient;
 
-
 /**
  * @author Abyot Asalefew
  * @version $Id$
@@ -74,19 +73,32 @@ public interface ProgramInstanceService
     Collection<ProgramInstance> getProgramInstances( Patient patient, Program program, boolean completed );
 
     Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit );
-    
-    Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit, int min, int max );
-    
-    Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit, Date startDate, Date endDate );
 
-    Collection<ProgramInstance> getProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        int min, int max );
+    Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit, int min,
+        int max );
+
+    Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit,
+        Date startDate, Date endDate );
+
+    Collection<ProgramInstance> getProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, int min, int max );
 
     int countProgramInstances( Program program, OrganisationUnit organisationUnit );
-    
+
     int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
-    
+
+    int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        boolean completed );
+
     List<Grid> getProgramInstanceReport( Patient patient, I18n i18n, I18nFormat format );
-    
+
     Grid getProgramInstanceReport( ProgramInstance programInstance, I18n i18n, I18nFormat format );
+    
+    Collection<ProgramInstance> getUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate );
+
+    int countUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
+    
+    void removeProgramEnrollment( ProgramInstance programInstance );
+
 }

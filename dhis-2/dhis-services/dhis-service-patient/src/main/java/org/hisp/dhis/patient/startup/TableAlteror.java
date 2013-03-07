@@ -175,11 +175,12 @@ public class TableAlteror
         executeSql( "UPDATE patientattribute SET valueType='number' WHERE valueType='NUMBER'" );
         executeSql( "UPDATE patientattribute SET valueType='bool' WHERE valueType='YES/NO'" );
         executeSql( "UPDATE patientattribute SET valueType='combo' WHERE valueType='COMBO'" );
-        executeSql( "UPDATE patientattribute SET valueType='calculated' WHERE valueType='CALCULATED'" );
         executeSql( "UPDATE patientidentifiertype SET type='string' WHERE type='text'" );
 
         executeSql( "UPDATE program SET onlyEnrollOnce='false' WHERE onlyEnrollOnce is null" );
         executeSql( "UPDATE programStage SET captureCoordinates='false' WHERE captureCoordinates is null" );
+        
+        executeSql( "update caseaggregationcondition set \"operator\"='times' where \"operator\"='SUM'" );
         
         updateUid();
     }
@@ -208,9 +209,7 @@ public class TableAlteror
 
             executeSql( "ALTER TABLE patientdatavalue DROP COLUMN organisationUnitid" );
             executeSql( "ALTER TABLE patientdatavalue DROP COLUMN providedByAnotherFacility" );
-            executeSql( "ALTER TABLE patientdatavalue ADD PRIMARY KEY ( programstageinstanceid, dataelementid )" );
-            
-            executeSql( "update caseaggregationcondition set \"operator\"='times' where \"operator\"='SUM'" );
+            executeSql( "ALTER TABLE patientdatavalue ADD PRIMARY KEY ( programstageinstanceid, dataelementid )" );            
         }
         catch ( Exception ex )
         {

@@ -35,6 +35,10 @@ import static org.hisp.dhis.analytics.DataQueryParams.DATAELEMENT_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.DATASET_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.DATA_X_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.DIMENSION_SEP;
+import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_DATA_X;
+import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_CATEGORYOPTIONCOMBO;
+import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_ORGUNIT;
+import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_PERIOD;
 import static org.hisp.dhis.analytics.DataQueryParams.FIXED_DIMS;
 import static org.hisp.dhis.analytics.DataQueryParams.INDICATOR_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.ORGUNIT_DIM_ID;
@@ -43,6 +47,8 @@ import static org.hisp.dhis.analytics.DataQueryParams.getDimensionFromParam;
 import static org.hisp.dhis.analytics.DataQueryParams.getDimensionItemsFromParam;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asList;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asTypedList;
+import static org.hisp.dhis.organisationunit.OrganisationUnit.KEY_USER_ORGUNIT;
+import static org.hisp.dhis.organisationunit.OrganisationUnit.KEY_USER_ORGUNIT_CHILDREN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,6 +89,7 @@ import org.hisp.dhis.expression.ExpressionService;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
@@ -93,10 +100,13 @@ import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.period.comparator.PeriodComparator;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.hisp.dhis.system.util.ConversionUtils;
+import org.hisp.dhis.system.util.DebugUtils;
 import org.hisp.dhis.system.util.ListUtils;
 import org.hisp.dhis.system.util.MathUtils;
 import org.hisp.dhis.system.util.SystemUtils;
 import org.hisp.dhis.system.util.Timer;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DefaultAnalyticsService
@@ -108,8 +118,10 @@ public class DefaultAnalyticsService
     private static final int PERCENT = 100;
     private static final int MAX_QUERIES = 8;
     
+    //TODO filter values must be merged if split
     //TODO completeness on time
     //TODO make sure data x dims are successive
+    //TODO optimize when in and de are specified, and in-de is part of de
     
     @Autowired
     private AnalyticsManager analyticsManager;
@@ -140,16 +152,16 @@ public class DefaultAnalyticsService
     
     @Autowired
     private ConstantService constantService;
+    
+    @Autowired
+    private CurrentUserService currentUserService;
 
     // -------------------------------------------------------------------------
     // Implementation
     // -------------------------------------------------------------------------
 
-    public Grid getAggregatedDataValues( DataQueryParams params )
-        throws IllegalQueryException, Exception
+    public Grid getAggregatedDataValues( DataQueryParams params )        
     {
-        log.info( "Query: " + params );
-        
         queryPlanner.validate( params );
         
         params.conform();
@@ -164,7 +176,7 @@ public class DefaultAnalyticsService
         
         for ( Dimension col : params.getHeaderDimensions() )
         {
-            grid.addHeader( new GridHeader( col.getDimensionName(), col.getDimension(), String.class.getName(), false, true ) );
+            grid.addHeader( new GridHeader( col.getDimension(), col.getDisplayName(), String.class.getName(), false, true ) );
         }
         
         grid.addHeader( new GridHeader( DataQueryParams.VALUE_ID, VALUE_HEADER_NAME, Double.class.getName(), false, false ) );
@@ -326,20 +338,23 @@ public class DefaultAnalyticsService
     }
     
     public Map<String, Double> getAggregatedDataValueMap( DataQueryParams params )
-        throws IllegalQueryException, Exception
     {
+        queryPlanner.validate( params );
+        
         return getAggregatedValueMap( params, ANALYTICS_TABLE_NAME );
     }
     
     public Map<String, Double> getAggregatedCompletenessValueMap( DataQueryParams params )
-        throws IllegalQueryException, Exception
     {
+        queryPlanner.validate( params );
+        
         return getAggregatedValueMap( params, COMPLETENESS_TABLE_NAME );
     }
 
     private Map<String, Double> getAggregatedCompletenessTargetMap( DataQueryParams params )
-        throws IllegalQueryException, Exception
     {
+        queryPlanner.validate( params );
+        
         return getAggregatedValueMap( params, COMPLETENESS_TARGET_TABLE_NAME );
     }
     
@@ -348,11 +363,8 @@ public class DefaultAnalyticsService
      * dimension key is a concatenation of the identifiers in for the dimensions
      * separated by "-".
      */
-    private Map<String, Double> getAggregatedValueMap( DataQueryParams params, String tableName )
-        throws IllegalQueryException, Exception
+    private Map<String, Double> getAggregatedValueMap( DataQueryParams params, String tableName )        
     {
-        queryPlanner.validate( params );
-        
         Timer t = new Timer().start();
 
         int optimalQueries = MathUtils.getWithin( SystemUtils.getCpuCores(), 1, MAX_QUERIES );
@@ -372,11 +384,21 @@ public class DefaultAnalyticsService
         
         for ( Future<Map<String, Double>> future : futures )
         {
-            Map<String, Double> taskValues = future.get();
-            
-            if ( taskValues != null )
+            try
             {
-                map.putAll( taskValues );
+                Map<String, Double> taskValues = future.get();
+                
+                if ( taskValues != null )
+                {
+                    map.putAll( taskValues );
+                }
+            }
+            catch ( Exception ex )
+            {
+                log.error( DebugUtils.getStackTrace( ex ) );
+                log.error( DebugUtils.getStackTrace( ex.getCause() ) );
+                
+                throw new RuntimeException( "Error during execution of aggregation query task", ex );
             }
         }
         
@@ -500,41 +522,64 @@ public class DefaultAnalyticsService
         
         if ( CATEGORYOPTIONCOMBO_DIM_ID.equals( dimension ) )
         {
-            return Arrays.asList( new Dimension( dimension, DimensionType.CATEGORY_OPTION_COMBO, new ArrayList<IdentifiableObject>() ) );
+            return Arrays.asList( new Dimension( dimension, DimensionType.CATEGORY_OPTION_COMBO, null, DISPLAY_NAME_CATEGORYOPTIONCOMBO, new ArrayList<IdentifiableObject>() ) );
         }
         
         if ( ORGUNIT_DIM_ID.equals( dimension ) )
         {
-            List<IdentifiableObject> ous = asList( organisationUnitService.getOrganisationUnitsByUid( options ) );
+            User user = currentUserService.getCurrentUser();
             
-            if ( ous == null || ous.isEmpty() )
+            List<IdentifiableObject> ous = new ArrayList<IdentifiableObject>();
+            
+            for ( String ou : options )
+            {
+                if ( KEY_USER_ORGUNIT.equals( ou ) && user != null && user.getOrganisationUnit() != null )
+                {
+                    ous.add( user.getOrganisationUnit() );
+                }
+                else if ( KEY_USER_ORGUNIT_CHILDREN.equals( ou ) && user != null && user.getOrganisationUnit() != null )
+                {
+                    ous.addAll( user.getOrganisationUnit().getSortedChildren() );
+                }
+                else
+                {
+                    OrganisationUnit unit = organisationUnitService.getOrganisationUnit( ou );
+                    
+                    if ( unit != null )
+                    {
+                        ous.add( unit );
+                    }
+                }
+            }
+            
+            if ( ous.isEmpty() )
             {
                 throw new IllegalQueryException( "Dimension ou is present in query without any valid dimension options" );
             }
             
-            return Arrays.asList( new Dimension( dimension, DimensionType.ORGANISATIONUNIT, ous ) );
+            return Arrays.asList( new Dimension( dimension, DimensionType.ORGANISATIONUNIT, null, DISPLAY_NAME_ORGUNIT, ous ) );
         }
         
         if ( PERIOD_DIM_ID.equals( dimension ) )
         {
             List<Period> periods = new ArrayList<Period>();
             
-            periods : for ( String isoPeriod : options )
+            for ( String isoPeriod : options )
             {
-                Period period = PeriodType.getPeriodFromIsoString( isoPeriod );
-                
-                if ( period != null )
-                {
-                    period.setName( format != null ? format.formatPeriod( period ) : null );
-                    periods.add( period );
-                    continue periods;
-                }
-                
                 if ( RelativePeriodEnum.contains( isoPeriod ) )
                 {
                     RelativePeriodEnum relativePeriod = RelativePeriodEnum.valueOf( isoPeriod );
                     periods.addAll( RelativePeriods.getRelativePeriodsFromEnum( relativePeriod, format, true ) );
-                    continue periods;
+                }
+                else
+                {
+                    Period period = PeriodType.getPeriodFromIsoString( isoPeriod );
+                
+                    if ( period != null )
+                    {
+                        period.setName( format != null ? format.formatPeriod( period ) : null );
+                        periods.add( period );
+                    }
                 }
             }
             
@@ -546,30 +591,30 @@ public class DefaultAnalyticsService
             List<Period> periodList = new ArrayList<Period>( periods );
             Collections.sort( periodList, PeriodComparator.INSTANCE );
             
-            return Arrays.asList( new Dimension( dimension, DimensionType.PERIOD, asList( periodList ) ) );
+            return Arrays.asList( new Dimension( dimension, DimensionType.PERIOD, null, DISPLAY_NAME_PERIOD, asList( periodList ) ) );
         }
         
-        OrganisationUnitGroupSet orgUnitGroupSet = organisationUnitGroupService.getOrganisationUnitGroupSet( dimension );
+        OrganisationUnitGroupSet ougs = organisationUnitGroupService.getOrganisationUnitGroupSet( dimension );
             
-        if ( orgUnitGroupSet != null )
+        if ( ougs != null )
         {
             List<IdentifiableObject> ous = asList( organisationUnitGroupService.getOrganisationUnitGroupsByUid( options ) );
             
-            return Arrays.asList( new Dimension( dimension, DimensionType.ORGANISATIONUNIT_GROUPSET, ous ) );
+            return Arrays.asList( new Dimension( dimension, DimensionType.ORGANISATIONUNIT_GROUPSET, null, ougs.getDisplayName(), ous ) );
         }
         
-        DataElementGroupSet dataElementGroupSet = dataElementService.getDataElementGroupSet( dimension );
+        DataElementGroupSet degs = dataElementService.getDataElementGroupSet( dimension );
         
-        if ( dataElementGroupSet != null )
+        if ( degs != null )
         {
             List<IdentifiableObject> des = asList( dataElementService.getDataElementGroupsByUid( options ) );
             
-            return Arrays.asList( new Dimension( dimension, DimensionType.DATAELEMENT_GROUPSET, des ) );
+            return Arrays.asList( new Dimension( dimension, DimensionType.DATAELEMENT_GROUPSET, null, degs.getDisplayName(), des ) );
         }
         
         throw new IllegalQueryException( "Dimension identifier does not reference any dimension: " + dimension );
     }
-    
+        
     private DataQueryParams replaceIndicatorsWithDataElements( DataQueryParams params, int indicatorIndex )
     {
         List<Indicator> indicators = asTypedList( params.getIndicators() );        
@@ -585,7 +630,9 @@ public class DefaultAnalyticsService
     {
         Map<Object, String> map = new HashMap<Object, String>();
         map.putAll( getUidNameMap( params.getDimensions() ) );
-        map.putAll( getUidNameMap( params.getFilters() ) );        
+        map.putAll( getUidNameMap( params.getFilters() ) );
+        map.put( DATA_X_DIM_ID, DISPLAY_NAME_DATA_X );
+        
         return map;
     }
     
@@ -620,6 +667,11 @@ public class DefaultAnalyticsService
             for ( IdentifiableObject idObject : options )
             {
                 map.put( idObject.getUid(), idObject.getDisplayName() );
+            }
+            
+            if ( dimension.getDisplayName() != null )
+            {
+                map.put( dimension.getDimension(), dimension.getDisplayName() );
             }
         }
         

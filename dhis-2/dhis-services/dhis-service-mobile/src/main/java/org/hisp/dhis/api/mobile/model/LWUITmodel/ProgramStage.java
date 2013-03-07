@@ -32,13 +32,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hisp.dhis.api.mobile.model.DataElement;
 import org.hisp.dhis.api.mobile.model.Model;
 
  /**
  * @author Nguyen Kim Lai
- *
- * @version ProgramStage.java 1:04:07 PM Jan 22, 2013 $
  */
 public class ProgramStage extends Model
 {

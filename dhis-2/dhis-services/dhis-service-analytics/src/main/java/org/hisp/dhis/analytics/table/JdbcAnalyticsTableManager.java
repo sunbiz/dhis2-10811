@@ -69,7 +69,10 @@ public class JdbcAnalyticsTableManager
     // Implementation
     // -------------------------------------------------------------------------
     
-    //TODO use statement builder for double column type
+    public boolean validState()
+    {
+        return jdbcTemplate.queryForRowSet( "select dataelementid from datavalue limit 1" ).next();
+    }
     
     public String getTableName()
     {
@@ -78,6 +81,8 @@ public class JdbcAnalyticsTableManager
         
     public void createTable( String tableName )
     {
+        final String dbl = statementBuilder.getDoubleColumnType();
+        
         final String sqlDrop = "drop table " + tableName;
         
         executeSilently( sqlDrop );
@@ -89,7 +94,7 @@ public class JdbcAnalyticsTableManager
             sqlCreate += col[0] + " " + col[1] + ",";
         }
         
-        sqlCreate += "daysxvalue double precision, daysno integer not null, value double precision)";
+        sqlCreate += "daysxvalue " + dbl + ", daysno integer not null, value " + dbl + ")";
         
         log.info( "Create SQL: " + sqlCreate );
         
@@ -99,6 +104,8 @@ public class JdbcAnalyticsTableManager
     @Async
     public Future<?> populateTableAsync( ConcurrentLinkedQueue<String> tables )
     {
+        final String dbl = statementBuilder.getDoubleColumnType();
+        
         taskLoop : while ( true )
         {
             String table = tables.poll();
@@ -115,7 +122,7 @@ public class JdbcAnalyticsTableManager
             
             String intClause = "dv.value != '' and dv.value != 'true' and dv.value != 'false' and dv.value not like '%-%'";
             
-            populateTable( table, startDate, endDate, "cast(dv.value as double precision)", "int", intClause );
+            populateTable( table, startDate, endDate, "cast(dv.value as " + dbl + ")", "int", intClause );
             
             populateTable( table, startDate, endDate, "1" , "bool", "dv.value = 'true'" );
     

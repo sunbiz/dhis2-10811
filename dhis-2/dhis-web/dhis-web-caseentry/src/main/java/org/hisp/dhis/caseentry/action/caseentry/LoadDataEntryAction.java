@@ -27,8 +27,6 @@
 
 package org.hisp.dhis.caseentry.action.caseentry;
 
-import static org.hisp.dhis.system.util.ValidationUtils.coordinateIsValid;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +40,6 @@ import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.Patient;
-import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
@@ -81,13 +78,7 @@ public class LoadDataEntryAction
 
     private SelectedStateManager selectedStateManager;
 
-    private PatientAttributeService patientAttributeService;
-
-    private PatientAttributeValueService patientAttributeValueService;
-
     private ProgramStageSectionService programStageSectionService;
-
-    private I18nFormat format;
 
     // -------------------------------------------------------------------------
     // Input && Output
@@ -128,22 +119,7 @@ public class LoadDataEntryAction
     {
         this.programStageSectionService = programStageSectionService;
     }
-
-    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
-    {
-        this.patientAttributeService = patientAttributeService;
-    }
-
-    public void setPatientAttributeValueService( PatientAttributeValueService patientAttributeValueService )
-    {
-        this.patientAttributeValueService = patientAttributeValueService;
-    }
-
-    public void setFormat( I18nFormat format )
-    {
-        this.format = format;
-    }
-
+    
     public void setProgramStageInstanceId( Integer programStageInstanceId )
     {
         this.programStageInstanceId = programStageInstanceId;
@@ -268,19 +244,6 @@ public class LoadDataEntryAction
             if ( program.isRegistration() )
             {
                 patient = programStageInstance.getProgramInstance().getPatient();
-
-                Collection<PatientAttribute> calAttributes = patientAttributeService
-                    .getPatientAttributesByValueType( PatientAttribute.TYPE_CALCULATED );
-
-                for ( PatientAttribute calAttribute : calAttributes )
-                {
-                    Double value = patientAttributeValueService.getCalculatedPatientAttributeValue( patient,
-                        calAttribute, format );
-                    if ( value != null )
-                    {
-                        calAttributeValueMap.put( calAttribute.getName(), value );
-                    }
-                }
             }
 
             // ---------------------------------------------------------------------

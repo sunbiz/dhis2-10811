@@ -1,5 +1,6 @@
 package org.hisp.dhis.sms.parse;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,11 +17,18 @@ import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataset.CompleteDataSetRegistration;
 import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
 import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.period.CalendarPeriodType;
+import org.hisp.dhis.period.DailyPeriodType;
+import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.period.QuarterlyPeriodType;
+import org.hisp.dhis.period.WeeklyPeriodType;
+import org.hisp.dhis.period.YearlyPeriodType;
 import org.hisp.dhis.sms.incoming.IncomingSms;
 import org.hisp.dhis.sms.outbound.OutboundSms;
 import org.hisp.dhis.sms.outbound.OutboundSmsService;
@@ -57,9 +64,12 @@ public class DefaultParserManager
 
     @Autowired
     private DataElementCategoryService dataElementCategoryService;
-    
+
     @Autowired
     private OutboundSmsTransportService transportService;
+
+    @Autowired
+    private DataSetService dataSetService;
 
     @Transactional
     public void parse( IncomingSms sms )
@@ -94,10 +104,12 @@ public class DefaultParserManager
             return;
         }
 
-        Collection<OrganisationUnit> orgUnits = getOrganisationUnitsByPhoneNumber( sender );
+        sender = StringUtils.replace( sender, "+", "" );
 
+        Collection<OrganisationUnit> orgUnits = getOrganisationUnitsByPhoneNumber( sender );
         if ( orgUnits == null || orgUnits.size() == 0 )
         {
+            log.info( "No user found for phone number: " + sender );
             throw new SMSParserException( "No user associated with this phone number. Please contact your supervisor." );
         }
 
@@ -106,8 +118,16 @@ public class DefaultParserManager
             throw new SMSParserException( "No command in SMS" );
         }
 
-        String commandString = message.substring( 0, message.indexOf( " " ) );
-        message = message.substring( commandString.length() );
+        String commandString = null;
+        if ( message.indexOf( " " ) > 0 )
+        {
+            commandString = message.substring( 0, message.indexOf( " " ) );
+            message = message.substring( commandString.length() );
+        }
+        else
+        {
+            commandString = message;
+        }
 
         boolean foundCommand = false;
 
@@ -119,6 +139,11 @@ public class DefaultParserManager
                 if ( ParserType.KEY_VALUE_PARSER.equals( command.getParserType() ) )
                 {
                     runKeyValueParser( sender, message, orgUnits, command );
+                    break;
+                }
+                else
+                {
+                    runJ2MEParser( sender, message, orgUnits, command );
                     break;
                 }
             }
@@ -133,7 +158,6 @@ public class DefaultParserManager
     {
         Collection<OrganisationUnit> orgUnits = new ArrayList<OrganisationUnit>();
         Collection<User> users = userService.getUsersByPhoneNumber( sender );
-
         for ( User u : users )
         {
             if ( u.getOrganisationUnits() != null )
@@ -155,19 +179,24 @@ public class DefaultParserManager
         }
 
         Map<String, String> parsedMessage = p.parse( message );
-
         Date date = lookForDate( message );
+        OrganisationUnit orgUnit = selectOrganisationUnit( orgUnits, parsedMessage );
+        Period period = getPeriod( command, date );
+
+        // Check if Data Set is locked
+        if ( dataSetService.isLocked( command.getDataset(), period, orgUnit, null ) )
+        {
+            throw new SMSParserException( "Dataset is locked for the period " + period.getStartDate() + " - "
+                + period.getEndDate() );
+        }
 
         boolean valueStored = false;
-
-        OrganisationUnit orgUnit = selectOrganisationUnit( orgUnits, parsedMessage );
-
         for ( SMSCode code : command.getCodes() )
         {
             if ( parsedMessage.containsKey( code.getCode().toUpperCase() ) )
             {
                 storeDataValue( sender, orgUnit, parsedMessage, code, command, date, command.getDataset(),
-                    completeForm( command, parsedMessage ) );
+                    formIsComplete( command, parsedMessage ) );
                 valueStored = true;
             }
         }
@@ -251,9 +280,7 @@ public class DefaultParserManager
             }
             else if ( dv != null )
             {
-
                 String value = dv.getValue();
-
                 if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
                 {
                     if ( "true".equals( value ) )
@@ -358,44 +385,44 @@ public class DefaultParserManager
         DataValue dv = dataValueService.getDataValue( orgunit, code.getDataElement(), period, optionCombo );
 
         String value = parsedMessage.get( upperCaseCode );
-
-        boolean newDataValue = false;
-        if ( dv == null )
+        if ( !StringUtils.isEmpty( value ) )
         {
-            dv = new DataValue();
-            dv.setOptionCombo( optionCombo );
-            dv.setSource( orgunit );
-            dv.setDataElement( code.getDataElement() );
-            dv.setPeriod( period );
-            dv.setComment( "" );
+            boolean newDataValue = false;
+            if ( dv == null )
+            {
+                dv = new DataValue();
+                dv.setOptionCombo( optionCombo );
+                dv.setSource( orgunit );
+                dv.setDataElement( code.getDataElement() );
+                dv.setPeriod( period );
+                dv.setComment( "" );
+                newDataValue = true;
+            }
+
+            if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
+            {
+                if ( "Y".equals( value.toUpperCase() ) || "YES".equals( value.toUpperCase() ) )
+                {
+                    value = "true";
+                }
+                else if ( "N".equals( value.toUpperCase() ) || "NO".equals( value.toUpperCase() ) )
+                {
+                    value = "false";
+                }
+            }
+
+            dv.setValue( value );
             dv.setTimestamp( new java.util.Date() );
             dv.setStoredBy( storedBy );
-            newDataValue = true;
-        }
 
-        if ( value != null && StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
-        {
-            if ( "Y".equals( value.toUpperCase() ) || "YES".equals( value.toUpperCase() ) )
+            if ( newDataValue )
             {
-                value = "true";
+                dataValueService.addDataValue( dv );
             }
-            else if ( "N".equals( value.toUpperCase() ) || "NO".equals( value.toUpperCase() ) )
+            else
             {
-                value = "false";
+                dataValueService.updateDataValue( dv );
             }
-        }
-
-        dv.setValue( value );
-
-        if ( newDataValue )
-        {
-            dataValueService.addDataValue( dv );
-        }
-        else
-        {
-            dv.setValue( value );
-            dv.setOptionCombo( optionCombo );
-            dataValueService.updateDataValue( dv );
         }
 
     }
@@ -436,7 +463,7 @@ public class DefaultParserManager
 
     }
 
-    private boolean completeForm( SMSCommand command, Map<String, String> parsedMessage )
+    private boolean formIsComplete( SMSCommand command, Map<String, String> parsedMessage )
     {
         for ( SMSCode code : command.getCodes() )
         {
@@ -508,6 +535,267 @@ public class DefaultParserManager
             user = u;
         }
         return user;
+    }
+
+    // Run the J2ME parser for mobile
+
+    private void runJ2MEParser( String sender, String message, Collection<OrganisationUnit> orgUnits, SMSCommand command )
+    {
+        J2MEDataEntryParser j2meParser = new J2MEDataEntryParser();
+        j2meParser.setSmsCommand( command );
+        message = message.trim();
+
+        if ( !StringUtils.isBlank( command.getSeparator() ) )
+        {
+            j2meParser.setSeparator( command.getSeparator() );
+        }
+        String token[] = message.split( "!" );
+        Period period = getPeriod( token[0].trim(), command.getDataset().getPeriodType() );
+        Map<String, String> parsedMessage = j2meParser.parse( token[1] );
+        OrganisationUnit orgUnit = selectOrganisationUnit( orgUnits, parsedMessage );
+
+        boolean valueStored = false;
+        for ( SMSCode code : command.getCodes() )
+        {
+            if ( parsedMessage.containsKey( code.getCode().toUpperCase() ) )
+            {
+                storeDataValue( sender, orgUnit, parsedMessage, code, command, period, command.getDataset(),
+                    formIsComplete( command, parsedMessage ) );
+                valueStored = true;
+            }
+        }
+
+        if ( parsedMessage.isEmpty() || !valueStored )
+        {
+            if ( StringUtils.isEmpty( command.getDefaultMessage() ) )
+            {
+                throw new SMSParserException( "No values reported for command '" + command.getName() + "'" );
+            }
+            else
+            {
+                throw new SMSParserException( command.getDefaultMessage() );
+            }
+        }
+
+        registerCompleteDataSet( command.getDataset(), period, orgUnit, "mobile" );
+
+        sendSuccessFeedback( sender, command, parsedMessage, period, orgUnit );
+
+    }
+
+    private void sendSuccessFeedback( String sender, SMSCommand command, Map<String, String> parsedMessage,
+        Period period, OrganisationUnit orgUnit )
+    {
+        String reportBack = "Thank you! Values entered: ";
+        String notInReport = "Missing values for: ";
+        boolean missingElements = false;
+
+        for ( SMSCode code : command.getCodes() )
+        {
+
+            DataElementCategoryOptionCombo optionCombo = dataElementCategoryService
+                .getDataElementCategoryOptionCombo( code.getOptionId() );
+
+            DataValue dv = dataValueService.getDataValue( orgUnit, code.getDataElement(), period, optionCombo );
+
+            if ( dv == null && !StringUtils.isEmpty( code.getCode() ) )
+            {
+                notInReport += code.getCode() + ",";
+                missingElements = true;
+            }
+            else if ( dv != null )
+            {
+                String value = dv.getValue();
+                if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
+                {
+                    if ( "true".equals( value ) )
+                    {
+                        value = "Yes";
+                    }
+                    else if ( "false".equals( value ) )
+                    {
+                        value = "No";
+                    }
+                }
+                reportBack += code.getCode() + "=" + value + " ";
+            }
+        }
+
+        notInReport = notInReport.substring( 0, notInReport.length() - 1 );
+
+        if ( missingElements )
+        {
+            sendSMS( reportBack + notInReport, sender );
+        }
+        else
+        {
+            sendSMS( reportBack, sender );
+        }
+
+    }
+
+    private void storeDataValue( String sender, OrganisationUnit orgUnit, Map<String, String> parsedMessage,
+        SMSCode code, SMSCommand command, Period period, DataSet dataset, boolean formIsComplete )
+    {
+        String upperCaseCode = code.getCode().toUpperCase();
+
+        String storedBy = getUser( sender ).getUsername();
+
+        if ( StringUtils.isBlank( storedBy ) )
+        {
+            storedBy = "[unknown] from [" + sender + "]";
+        }
+
+        DataElementCategoryOptionCombo optionCombo = dataElementCategoryService.getDataElementCategoryOptionCombo( code
+            .getOptionId() );
+
+        DataValue dv = dataValueService.getDataValue( orgUnit, code.getDataElement(), period, optionCombo );
+
+        String value = parsedMessage.get( upperCaseCode );
+        if ( !StringUtils.isEmpty( value ) )
+        {
+            boolean newDataValue = false;
+            if ( dv == null )
+            {
+                dv = new DataValue();
+                dv.setOptionCombo( optionCombo );
+                dv.setSource( orgUnit );
+                dv.setDataElement( code.getDataElement() );
+                dv.setPeriod( period );
+                dv.setComment( "" );
+                newDataValue = true;
+            }
+
+            if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
+            {
+                if ( "Y".equals( value.toUpperCase() ) || "YES".equals( value.toUpperCase() ) )
+                {
+                    value = "true";
+                }
+                else if ( "N".equals( value.toUpperCase() ) || "NO".equals( value.toUpperCase() ) )
+                {
+                    value = "false";
+                }
+            }
+
+            dv.setValue( value );
+            dv.setTimestamp( new java.util.Date() );
+            dv.setStoredBy( storedBy );
+
+            if ( newDataValue )
+            {
+                dataValueService.addDataValue( dv );
+            }
+            else
+            {
+                dataValueService.updateDataValue( dv );
+            }
+        }
+
+    }
+
+    public static Period getPeriod( String periodName, PeriodType periodType )
+        throws IllegalArgumentException
+    {
+
+        if ( periodType instanceof DailyPeriodType )
+        {
+            String pattern = "yyyy-MM-dd";
+            SimpleDateFormat formatter = new SimpleDateFormat( pattern );
+            Date date;
+            try
+            {
+                date = formatter.parse( periodName );
+            }
+            catch ( ParseException e )
+            {
+                throw new IllegalArgumentException( "Couldn't make a period of type " + periodType.getName()
+                    + " and name " + periodName, e );
+            }
+            return periodType.createPeriod( date );
+
+        }
+
+        if ( periodType instanceof WeeklyPeriodType )
+        {
+            String pattern = "yyyy-MM-dd";
+            SimpleDateFormat formatter = new SimpleDateFormat( pattern );
+            Date date;
+            try
+            {
+                date = formatter.parse( periodName );
+            }
+            catch ( ParseException e )
+            {
+                throw new IllegalArgumentException( "Couldn't make a period of type " + periodType.getName()
+                    + " and name " + periodName, e );
+            }
+            return periodType.createPeriod( date );
+        }
+
+        if ( periodType instanceof MonthlyPeriodType )
+        {
+            int dashIndex = periodName.indexOf( '-' );
+
+            if ( dashIndex < 0 )
+            {
+                return null;
+            }
+
+            int month = Integer.parseInt( periodName.substring( 0, dashIndex ) );
+            int year = Integer.parseInt( periodName.substring( dashIndex + 1, periodName.length() ) );
+
+            Calendar cal = Calendar.getInstance();
+            cal.set( Calendar.YEAR, year );
+            cal.set( Calendar.MONTH, month );
+
+            return periodType.createPeriod( cal.getTime() );
+        }
+
+        if ( periodType instanceof YearlyPeriodType )
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.set( Calendar.YEAR, Integer.parseInt( periodName ) );
+
+            return periodType.createPeriod( cal.getTime() );
+        }
+
+        if ( periodType instanceof QuarterlyPeriodType )
+        {
+            Calendar cal = Calendar.getInstance();
+
+            int month = 0;
+            if ( periodName.substring( 0, periodName.indexOf( " " ) ).equals( "Jan" ) )
+            {
+                month = 1;
+            }
+            else if ( periodName.substring( 0, periodName.indexOf( " " ) ).equals( "Apr" ) )
+            {
+                month = 4;
+            }
+            else if ( periodName.substring( 0, periodName.indexOf( " " ) ).equals( "Jul" ) )
+            {
+                month = 6;
+            }
+            else if ( periodName.substring( 0, periodName.indexOf( " " ) ).equals( "Oct" ) )
+            {
+                month = 10;
+            }
+
+            int year = Integer.parseInt( periodName.substring( periodName.lastIndexOf( " " ) + 1 ) );
+
+            cal.set( Calendar.MONTH, month );
+            cal.set( Calendar.YEAR, year );
+
+            if ( month != 0 )
+            {
+                return periodType.createPeriod( cal.getTime() );
+            }
+
+        }
+
+        throw new IllegalArgumentException( "Couldn't make a period of type " + periodType.getName() + " and name "
+            + periodName );
     }
 
     public void setDataElementCategoryService( DataElementCategoryService dataElementCategoryService )

@@ -27,14 +27,13 @@
 
 package org.hisp.dhis.program;
 
-import java.util.Collection;
-
 import org.hisp.dhis.common.GenericNameableObjectStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 
+import java.util.Collection;
+
 /**
  * @author Chau Thu Tran
- * 
  * @version $Id: ProgramStore.java Dec 14, 2011 9:22:17 AM $
  */
 public interface ProgramStore
@@ -43,8 +42,10 @@ public interface ProgramStore
     String ID = ProgramStore.class.getName();
 
     Collection<Program> getByType( int type );
-    
+
     Collection<Program> get( int type, OrganisationUnit orgunit );
-    
+
     Collection<Program> getByCurrentUser();
+
+    Collection<Program> getByCurrentUser( int type );
 }

@@ -17,7 +17,7 @@
   {
 	"id": "fixedAttr_gender",
 	"name": "$i18n.getString('gender')",
-	"valueType": "string"
+	"valueType": "list"
   },
   {
 	"id": "fixedAttr_birthDate",

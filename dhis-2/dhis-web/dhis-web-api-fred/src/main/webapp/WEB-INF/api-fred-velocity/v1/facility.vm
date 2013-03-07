@@ -120,8 +120,8 @@
             <fieldset>
                 <legend>Facility</legend>
 
-                <label for="facilityID">ID</label>
-                <input id="facilityID" disabled="disabled" type="text" class="$inputSize" value="$entity.id"/>
+                <label for="facilityID">UUID</label>
+                <input id="facilityID" disabled="disabled" type="text" class="$inputSize" value="$entity.uuid"/>
 
                 <label for="facilityName">Name</label>
                 <input #if(!$canUpdate)disabled#end id="facilityName" type="text" class="$inputSize" value="$esc.escapeHtml4($entity.name)"/>
@@ -145,7 +145,13 @@
                         #if( $identifier.context == "DHIS2_CODE" )
                             #set( $dhis2Code = $identifier.id )
                         #end
+                        #if( $identifier.context == "DHIS2_UID" )
+                            #set( $dhis2Uid = $identifier.id )
+                        #end
                     #end
+
+                    <label for="facilityDhis2Uid">UID</label>
+                    <input disabled id="facilityDhis2Uid" type="text" class="$inputSize" value="$!esc.escapeHtml4($dhis2Uid)"/>
 
                     <label for="facilityDhis2Code">Code</label>
                     <input #if(!$canUpdate)disabled#end id="facilityDhis2Code" type="text" class="$inputSize" value="$!esc.escapeHtml4($dhis2Code)"/>
@@ -168,6 +174,7 @@
             </fieldset>
 
             <button #if(!$canUpdate)disabled#end type="submit" id="facilitySubmit" class="btn btn-info">Save</button>
+            <a id="back-button" class="btn btn-inverse pull-right" href="../facilities">Back</a>
         </form>
     </div>
 

@@ -39,12 +39,12 @@ public class DeleteNotAllowedException
     private static final long serialVersionUID = -4102764536406530234L;
 
     public static final String ERROR_ASSOCIATED_BY_OTHER_OBJECTS = "Object associated by other objects";
-    
+
     private String errorCode;
-    
+
     public DeleteNotAllowedException( String errorCode, String message )
     {
-        super( message );        
+        super( message );
         this.errorCode = errorCode;
     }
 

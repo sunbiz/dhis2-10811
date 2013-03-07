@@ -55,6 +55,7 @@ public class FacilityToOrganisationUnitConverter implements Converter<Facility, 
     private DataSetService dataSetService;
 
     @Override
+    @SuppressWarnings("unchecked")
     public OrganisationUnit convert( Facility facility )
     {
         OrganisationUnit organisationUnit = new OrganisationUnit();

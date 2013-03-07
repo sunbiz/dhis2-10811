@@ -44,6 +44,11 @@ import org.springframework.scheduling.annotation.Async;
 public class JdbcCompletenessTableManager
     extends AbstractJdbcTableManager
 {
+    public boolean validState()
+    {
+        return jdbcTemplate.queryForRowSet( "select datasetid from completedatasetregistration limit 1" ).next();
+    }
+    
     public String getTableName()
     {
         return "completeness";

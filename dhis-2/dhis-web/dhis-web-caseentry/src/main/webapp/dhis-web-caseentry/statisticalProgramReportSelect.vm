@@ -3,17 +3,20 @@
 		validation( 'reportForm', function(form){
 			generatedStatisticalProgramReport();
 		}); 
-		datePickerInRange( 'startDate' , 'endDate' );
+		datePickerInRange( 'startDateField' , 'endDateField' );
 	});		
 </script>
 
-<h3>$i18n.getString( "statistical_program_report" )</h3>
+<h3>$i18n.getString( "statistical_program_report" ) #openHelp( "program_statistics" )</h3>
 
 <form id="reportForm" name="reportForm" action="generateStatisticalProgramReport.action" method="post">
 	<input type="hidden" id="status" name="status">
 	<input type="hidden" id="type" name="type">
 	<input type="hidden" id="total" name="total">
-	<div class="inputCriteria" style="width:600px;height:180px;margin-bottom:20px;">
+	<input type="hidden" id="startDate" name="startDate">
+	<input type="hidden" id="endDate" name="endDate">
+	<input type="button" id='showDataBtn' value="$i18n.getString('data')" onclick="showById('inputCriteria');hideById('showDataBtn')" class="hidden">
+	<div class="inputCriteria" id='inputCriteria' style="width:600px;height:180px;margin-bottom:20px;">
 		<table>	
 			<tr>
 			  <td><label>$i18n.getString( "orgunit_boundary" )</label></td>
@@ -33,21 +36,21 @@
 			<tr>
 				<td><label>$i18n.getString( "start_date" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 				<td>
-					<input type="text" id="startDate" name="startDate" />
+					<input type="text" id="startDateField" name="startDateField" />
 				</td>
 			</tr>
 			<tr>
 				<td><label>$i18n.getString( "end_date" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 				<td>
-					<input type="text" id="endDate" name="endDate" />
+					<input type="text" id="endDateField" name="endDateField" />
 				</td>      
 			</tr>
 			<tr>
 				<td>$i18n.getString('use_data_from_level')</td>
 				<td>
-					<input type="radio" id='facilityLB1' name="facilityLB" value="selected" checked> $i18n.getString('selected')
+					<input type="radio" id='facilityLB1' name="facilityLB" value="selected"> $i18n.getString('selected')
 					<input type="radio" id='facilityLB2' name="facilityLB" value="childrenOnly"> $i18n.getString('children_only')
-					<input type="radio" id='facilityLB3' name="facilityLB" value="all"> $i18n.getString('all')
+					<input type="radio" id='facilityLB3' name="facilityLB" value="all" checked> $i18n.getString('all')
 				</td>
 			</tr>
 			<tr>
@@ -55,7 +58,7 @@
 				<td>
 					<input type="submit" id='generateBtn' name='generateBtn' #if($!programs) #else disabled #end value="$i18n.getString( 'generate' )" onclick='setFieldValue("type","")' style="width:7em" />
 					<input type="submit" id='exportBtn' name='exportBtn' #if($!programs) #else disabled #end value="$i18n.getString( 'export_xls' )" onclick='setFieldValue("type","xls")' style="width:7em" />
-					<input type="button" value="$i18n.getString( 'cancel' )" onclick="hideById('reportForm');" style="width:7em"/>
+					<input type="button" value="$i18n.getString( 'cancel' )" onclick="hideById('inputCriteria');showById('showDataBtn');" style="width:7em"/>
 				</td>
 			</tr>	                		
 		</table>

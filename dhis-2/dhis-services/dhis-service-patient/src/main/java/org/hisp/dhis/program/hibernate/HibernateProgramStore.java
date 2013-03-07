@@ -27,10 +27,7 @@
 
 package org.hisp.dhis.program.hibernate;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -41,9 +38,12 @@ import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserAuthorityGroup;
 import org.hisp.dhis.user.UserService;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Chau Thu Tran
- * 
  * @version $Id: HibernateProgramStore.java Dec 14, 2011 9:24:21 AM $
  */
 public class HibernateProgramStore
@@ -72,20 +72,22 @@ public class HibernateProgramStore
     // Implemented methods
     // -------------------------------------------------------------------------
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<Program> getByType( int type )
     {
         return getCriteria( Restrictions.eq( "type", type ) ).list();
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<Program> get( int type, OrganisationUnit organisationUnit )
     {
-        final String hql = "from Program p where p.type = :type and :organisationUnit in elements(p.organisationUnits)";
-
-        return getQuery( hql ).setInteger( "type", type ).setEntity( "organisationUnit", organisationUnit ).list();
+        Criteria criteria = getCriteria();
+        criteria.createAlias( "organisationUnits", "orgunit" );
+        criteria.add( Restrictions.eq( "type", type ) );
+        criteria.add( Restrictions.eq( "orgunit.id", organisationUnit.getId() ) );
+        return criteria.list();
     }
 
     @Override
@@ -97,8 +99,33 @@ public class HibernateProgramStore
         {
             Set<UserAuthorityGroup> userRoles = userService.getUserCredentials( currentUserService.getCurrentUser() )
                 .getUserAuthorityGroups();
-            
+
             for ( Program program : getAll() )
+            {
+                if ( CollectionUtils.intersection( program.getUserRoles(), userRoles ).size() > 0 )
+                {
+                    programs.add( program );
+                }
+            }
+        }
+        else
+        {
+            programs = getAll();
+        }
+        return programs;
+    }
+
+    @Override
+    public Collection<Program> getByCurrentUser( int type )
+    {
+        Collection<Program> programs = new HashSet<Program>();
+
+        if ( !currentUserService.currentUserIsSuper() )
+        {
+            Set<UserAuthorityGroup> userRoles = userService.getUserCredentials( currentUserService.getCurrentUser() )
+                .getUserAuthorityGroups();
+
+            for ( Program program : getByType( type ) )
             {
                 if ( CollectionUtils.intersection( program.getUserRoles(), userRoles ).size() > 0 )
                 {

@@ -1,4 +1,8 @@
 
+$( document ).ready( function() {
+	pingNotificationsTimeout();
+} );
+
 var pingTimeout = null;
 
 function importMetaData()
@@ -9,18 +13,18 @@ function importMetaData()
 		return false;
 	}
 	
+	$( "#notificationTable" ).empty();
 	$( "#importForm" ).submit();
 }
 
 function pingNotificationsTimeout()
 {
 	pingNotifications( 'METADATA_IMPORT', 'notificationTable', displaySummaryLink );
-	pingTimeout = setTimeout( "pingNotificationsTimeout()", 1500 );
+	pingTimeout = setTimeout( "pingNotificationsTimeout()", 2500 );
 }
 
 function displaySummaryLink()
 {
-	window.clearTimeout( pingTimeout );
 	var html = '<tr><td></td><td><a href="javascript:displaySummary()">Display import summary</a></td></tr>';
 	$( '#notificationTable' ).prepend( html );
 }

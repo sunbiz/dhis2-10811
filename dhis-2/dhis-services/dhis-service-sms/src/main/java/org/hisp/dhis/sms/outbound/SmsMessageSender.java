@@ -27,11 +27,7 @@ package org.hisp.dhis.sms.outbound;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.user.UserSettingService.KEY_MESSAGE_SMS_NOTIFICATION;
-
-import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -39,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.sms.MessageSender;
 import org.hisp.dhis.sms.SmsServiceException;
 import org.hisp.dhis.user.User;
-import org.hisp.dhis.user.UserService;
 import org.springframework.scheduling.annotation.Async;
 
 public class SmsMessageSender
@@ -50,13 +45,6 @@ public class SmsMessageSender
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
-
-    private UserService userService;
-
-    public void setUserService( UserService userService )
-    {
-        this.userService = userService;
-    }
 
     private OutboundSmsService outboundSmsService;
 
@@ -107,27 +95,6 @@ public class SmsMessageSender
         }
 
         return message;
-    }
-
-    private Set<String> getRecipients( Set<User> users )
-    {
-        Set<String> recipients = new HashSet<String>();
-
-        Map<User, Serializable> settings = userService.getUserSettings( KEY_MESSAGE_SMS_NOTIFICATION, false );
-
-        for ( User user : users )
-        {
-            boolean smsNotification = settings.get( user ) != null && (Boolean) settings.get( user );
-
-            String phoneNumber = user.getPhoneNumber();
-
-            if ( smsNotification && phoneNumber != null && !phoneNumber.trim().isEmpty() )
-            {
-                recipients.add( phoneNumber );
-            }
-        }
-
-        return recipients;
     }
 
     private Set<String> getRecipientsWithoutNotification( Set<User> users )

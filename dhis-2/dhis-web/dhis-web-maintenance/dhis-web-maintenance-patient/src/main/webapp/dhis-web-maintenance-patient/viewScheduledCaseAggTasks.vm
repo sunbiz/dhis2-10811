@@ -19,6 +19,19 @@
 <table>
 
 <tr>
+	<th>$i18n.getString("task_stragely")</th>
+</tr>
+<tr>
+	<td>
+		<select id='taskStrategy' name='taskStrategy'>
+			<option value='lastMonth' #if($taskStrategy=='lastMonth') selected #end>$i18n.getString("last_month")</option>
+			<option value='last3Month' #if($taskStrategy=='last3Month') selected #end>$i18n.getString("last_3_month")</option>
+			<option value='last6Month' #if($taskStrategy=='last6Month') selected #end>$i18n.getString("last_6_month")</option>
+			<option value='last12Month' #if($taskStrategy=='last12Month') selected #end>$i18n.getString("last_12_month")</option>
+		</select>
+	</td>
+</tr>
+<tr>
 	<td>
 		<input type="button" style="width:140px" onclick="schedulingAggCondTasks();" id="scheduledBtn" name="scheduledBtn"
 		#if ( $running )

@@ -27,11 +27,15 @@ package org.hisp.dhis.dxf2.metadata;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
-import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.system.notification.NotificationLevel;
 import org.hisp.dhis.system.notification.Notifier;
@@ -40,11 +44,6 @@ import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -90,7 +89,7 @@ public class DefaultExportService
 
         if ( taskId != null )
         {
-            notifier.notify( taskId, TaskCategory.METADATA_EXPORT, "Exporting meta-data" );
+            notifier.notify( taskId, "Exporting meta-data" );
         }
 
         for ( Map.Entry<Class<? extends IdentifiableObject>, String> entry : ExchangeClasses.getExportMap().entrySet() )
@@ -124,7 +123,7 @@ public class DefaultExportService
 
             if ( taskId != null )
             {
-                notifier.notify( taskId, TaskCategory.METADATA_EXPORT, message );
+                notifier.notify( taskId, message );
             }
 
             ReflectionUtils.invokeSetterMethod( entry.getValue(), metaData, new ArrayList<IdentifiableObject>( idObjects ) );
@@ -134,7 +133,7 @@ public class DefaultExportService
 
         if ( taskId != null )
         {
-            notifier.notify( taskId, TaskCategory.METADATA_IMPORT, NotificationLevel.INFO, "Export done", true );
+            notifier.notify( taskId, NotificationLevel.INFO, "Export done", true );
         }
 
         return metaData;

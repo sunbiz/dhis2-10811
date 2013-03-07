@@ -18,6 +18,8 @@ public class TabularReportColumn
     private String query;
     
     private String name;
+    
+    private boolean dateType = false;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -132,5 +134,15 @@ public class TabularReportColumn
     public void setName( String name )
     {
         this.name = name;
+    }
+
+    public boolean isDateType()
+    {
+        return dateType;
+    }
+
+    public void setDateType( boolean dateType )
+    {
+        this.dateType = dateType;
     }
 }

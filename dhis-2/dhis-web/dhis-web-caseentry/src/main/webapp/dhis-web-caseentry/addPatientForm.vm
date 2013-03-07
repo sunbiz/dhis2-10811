@@ -53,10 +53,10 @@
 	#parse( "/dhis-web-caseentry/patientForm.vm" )
 	<tr>
 		<td></td>
-		<td>
-			<input type="submit" class="button" value="$i18n.getString( 'add' )" onclick="isContinue=false;" style="width:80px;" />
-			<input type="submit" class="button" value="$i18n.getString( 'add_and_register_new' )" style="width:160px;" onclick="isContinue=true;"/>
-			<input type='button' class="button" value="$i18n.getString( 'cancel' )" onclick="loadPatientList();" style="width:80px;" />
+		<td colspan='2'>
+			<input type="submit" class="button" value="$i18n.getString( 'add' )" onclick="isContinue=false;" style="width:70px;" />
+			<input type="submit" class="button" value="$i18n.getString( 'add_and_register_new' )" style="width:140px;" onclick="isContinue=true;"/>
+			<input type='button' class="button" value="$i18n.getString( 'cancel' )" onclick="loadPatientList();" style="width:70px;" />
 		</td>
 	</tr>
 </table>

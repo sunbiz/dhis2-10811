@@ -490,6 +490,8 @@ function enableBtn(){
 			enable('listPatientBtn');
 			enable('addPatientBtn');
 			enable('advancedSearchBtn');
+			enable('scheduled7DaysBtn');
+			enable('scheduled30DaysBtn');
 			jQuery('#advanced-search :input').each( function( idx, item ){
 				enable(this.id);
 			});
@@ -499,6 +501,8 @@ function enableBtn(){
 			disable('listPatientBtn');
 			disable('addPatientBtn');
 			disable('advancedSearchBtn');
+			disable('scheduled7DaysBtn');
+			disable('scheduled30DaysBtn');
 			jQuery('#advanced-search :input').each( function( idx, item ){
 				disable(this.id);
 			});
@@ -564,6 +568,9 @@ function setSuggestedDueDate( programInstanceId )
 			lastVisit = reportDate;
 		}
 	});
+	if( lastVisit == ''){
+		lastVisit = getCurrentDate();
+	}
 	
 	var standardInterval = jQuery('#repeatableProgramStage_' + programInstanceId + ' option:selected').attr('standardInterval');
 	var date = $.datepicker.parseDate( dateFormat, lastVisit );
@@ -1401,7 +1408,7 @@ function unenrollmentForm( programInstanceId )
 		$.ajax({
 			type: "POST",
 			url: 'setProgramInstanceStatus.action',
-			data: "programInstanceId=" + programInstanceId + "&completed=false",
+			data: "programInstanceId=" + programInstanceId + "&completed=true",
 			success: function( json ) 
 			{
 				var type=jQuery("#tr1_" + programInstanceId ).attr('type');
@@ -1427,7 +1434,10 @@ function unenrollmentForm( programInstanceId )
 				jQuery("[id=tab-3] :input").datepicker("destroy");
 				jQuery("#completeProgram").attr('disabled', true);
 				jQuery("#incompleteProgram").attr('disabled', false);
-				
+								
+				// disable remove event icons
+				$('[id=tab-3]').find('img').parent().removeAttr("href");
+			
 				showSuccessMessage( i18n_unenrol_success );
 			}
 		});
@@ -1443,7 +1453,7 @@ function reenrollmentForm( programInstanceId )
 		$.ajax({
 			type: "POST",
 			url: 'setProgramInstanceStatus.action',
-			data: "programInstanceId=" + programInstanceId + "&completed=true",
+			data: "programInstanceId=" + programInstanceId + "&completed=false",
 			success: function( json ) 
 			{
 				var type=jQuery("#tr1_" + programInstanceId ).attr('type');
@@ -1462,6 +1472,9 @@ function reenrollmentForm( programInstanceId )
 				jQuery('#completedTB [id=tr1_' + programInstanceId + ']').remove();
 				jQuery('#completedTB [id=tr2_' + programInstanceId + ']').remove();
 				
+				jQuery("[id=tab-1] :input").prop('disabled', false);
+				// Disable skipped events
+				jQuery("[id=tab-1] [status=5]").prop('disabled', true);
 				jQuery("[id=tab-2] :input").prop('disabled', false);
 				jQuery("[id=tab-3] :input").prop('disabled', false);
 				jQuery("[id=tab-4] :input").prop('disabled', false);
@@ -1470,12 +1483,34 @@ function reenrollmentForm( programInstanceId )
 				jQuery("#incompleteProgram").attr('disabled', true);
 				jQuery("[id=tab-3] :input").datepicker("destroy");
 				
+				// enable remove event icons
+				jQuery('[id=tab-3]').find('img').parent().each(function(){
+					var e = jQuery(this);
+					e.attr( 'href',e.attr("link") );
+				});
+				
 				showSuccessMessage( i18n_reenrol_success );
 			}
 		});
 	
 	}
 	
+}
+
+function removeProgramInstance( programInstanceId )
+{	
+	if( confirm(i18n_remove_confirm_message) )
+	{
+		$.postJSON( 'removeProgramInstance.action', 
+		{
+			id: programInstanceId
+		}, function( json )
+		{
+			jQuery('#activeTB [id=tr1_' + programInstanceId + ']').remove();
+			jQuery('#activeTB [id=tr2_' + programInstanceId + ']').remove();
+			hideById('programEnrollmentDiv');
+		});
+	}
 }
 
 // ----------------------------------------------------------------

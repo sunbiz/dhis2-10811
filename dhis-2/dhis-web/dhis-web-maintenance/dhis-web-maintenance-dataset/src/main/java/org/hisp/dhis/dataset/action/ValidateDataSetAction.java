@@ -136,38 +136,6 @@ public class ValidateDataSetAction
         throws Exception
     {
         // ---------------------------------------------------------------------
-        // Name
-        // ---------------------------------------------------------------------
-
-        if ( name != null )
-        {
-            DataSet match = dataSetService.getDataSetByName( name ).get( 0 );
-
-            if ( match != null && (dataSetId == null || match.getId() != dataSetId) )
-            {
-                message = i18n.getString( "duplicate_names" );
-
-                return ERROR;
-            }
-        }
-
-        // ---------------------------------------------------------------------
-        // Short name
-        // ---------------------------------------------------------------------
-
-        if ( shortName != null )
-        {
-            DataSet match = dataSetService.getDataSetByShortName( shortName ).get( 0 );
-
-            if ( match != null && (dataSetId == null || match.getId() != dataSetId) )
-            {
-                message = i18n.getString( "duplicate_short_names" );
-
-                return ERROR;
-            }
-        }
-
-        // ---------------------------------------------------------------------
         // Code
         // ---------------------------------------------------------------------
 

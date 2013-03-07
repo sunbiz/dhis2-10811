@@ -373,7 +373,7 @@ function searchEvents( listAll )
 		var input = jQuery( item );
 		params += '&searchingValues=de_' + input.val() + '_false_';
 	});
-
+	
 	if(listAll){
 		params += '&startDate=';
 		params += '&endDate=';
@@ -404,8 +404,8 @@ function searchEvents( listAll )
 
 				if( value !=''){
 					searchingValue += getValueFormula(value);
+					params += '&searchingValues=' + searchingValue;
 				}
-				params += '&searchingValues=' + searchingValue;
 				searchingValue = '';
 				value = '';
 			}

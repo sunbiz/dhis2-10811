@@ -29,7 +29,6 @@ package org.hisp.dhis.patientattributevalue;
 import java.util.Collection;
 import java.util.Map;
 
-import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeOption;
@@ -76,5 +75,4 @@ public interface PatientAttributeValueService
     
     void updatePatientAttributeValues( PatientAttributeOption patientAttributeOption);
     
-    Double getCalculatedPatientAttributeValue( Patient patient, PatientAttribute patientAttribute, I18nFormat format);
 }

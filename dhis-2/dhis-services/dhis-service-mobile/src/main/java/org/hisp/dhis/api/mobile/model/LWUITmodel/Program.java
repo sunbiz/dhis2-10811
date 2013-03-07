@@ -35,8 +35,6 @@ import org.hisp.dhis.api.mobile.model.Model;
 
 /**
  * @author Nguyen Kim Lai
- * 
- * @version Program.java 11:35:39 AM Jan 22, 2013 $
  */
 public class Program
     extends Model

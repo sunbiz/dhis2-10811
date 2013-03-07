@@ -249,6 +249,12 @@ function insertOperator( value )
 	getConditionDescription();
 }
 
+function insertBoolValue( value )
+{
+	insertTextCommon("aggregationCondition", " ='" + value + "' " );
+	getConditionDescription();
+}
+
 // -----------------------------------------------------------------------------
 // Remove Case Aggregation Condition
 // -----------------------------------------------------------------------------

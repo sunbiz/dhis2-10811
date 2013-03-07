@@ -77,7 +77,7 @@ public class GetDataElementsAction implements Action
     public String execute()
         throws Exception
     {
-        DataSet dataSet = dataSetService.getDataSetByName( dataSetName );
+        DataSet dataSet = (DataSet) dataSetService.getDataSetByName( dataSetName );
         dataElements = dataSet.getDataElements();
         return SUCCESS;
     }

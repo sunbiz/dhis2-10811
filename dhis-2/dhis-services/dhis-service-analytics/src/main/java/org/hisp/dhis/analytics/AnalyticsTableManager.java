@@ -41,6 +41,11 @@ public interface AnalyticsTableManager
     public static final String COMPLETENESS_TARGET_TABLE_NAME = "completenesstarget";
     
     /**
+     * Checks if the database content is in valid state for analytics table generation.
+     */
+    boolean validState();
+    
+    /**
      * Returns the base table name.
      */
     String getTableName();

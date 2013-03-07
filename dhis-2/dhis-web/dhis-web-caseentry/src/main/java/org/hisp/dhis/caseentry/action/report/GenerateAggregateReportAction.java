@@ -29,6 +29,7 @@ package org.hisp.dhis.caseentry.action.report;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +44,7 @@ import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.RelativePeriods;
+import org.hisp.dhis.period.comparator.AscendingPeriodComparator;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.program.ProgramStageService;
@@ -294,14 +296,18 @@ public class GenerateAggregateReportAction
         }
 
         // Fixed periods
+        List<Period> fixedPeriodList = new ArrayList<Period>(); 
         for ( String periodId : fixedPeriods )
         {
-            periods.add( PeriodType.getPeriodFromIsoString( periodId ) );
+            Period p = PeriodType.getPeriodFromIsoString( periodId );
+            fixedPeriodList.add( p );
         }
-
+        Collections.sort( fixedPeriodList, new AscendingPeriodComparator() );      
+        periods.addAll( fixedPeriodList );
+        
         // Relative periods
         periods.addAll( getRelativePeriod() );
-
+        
         // ---------------------------------------------------------------------
         // Generate report
         // ---------------------------------------------------------------------
@@ -329,7 +335,7 @@ public class GenerateAggregateReportAction
                 }
             }
         }
-
+        
         grid = programStageInstanceService.getAggregateReport( position, programStage, orgunitIds, facilityLB,
             deGroupBy, deSum, deFilterMap, periods, aggregateType, limitRecords, useCompletedEvents, format, i18n );
 

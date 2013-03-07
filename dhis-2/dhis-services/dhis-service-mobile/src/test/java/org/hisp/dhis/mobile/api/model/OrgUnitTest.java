@@ -49,10 +49,10 @@ public class OrgUnitTest
         
         unit.setId( 1 );
         unit.setName( "name" );
-        unit.setUpdateActivityPlanUrl("updateActivityPlanUrl");
         unit.setDownloadAllUrl( "downloadAllUrl" );
-        unit.setUploadActivityReportUrl( "uploadActivityReportUrl" );
+        unit.setUpdateActivityPlanUrl("updateActivityPlanUrl");
         unit.setUploadFacilityReportUrl( "uploadFacilityReportUrl" );
+        unit.setUploadActivityReportUrl( "uploadActivityReportUrl" );
         unit.setUpdateDataSetUrl( "updateDataSetUrl" );
         unit.setChangeUpdateDataSetLangUrl( "changeUpdateDataSetLangUrl" );
         unit.setSearchUrl( "search" );
@@ -61,6 +61,7 @@ public class OrgUnitTest
         unit.setFindPatientUrl( "findPatientUrl" );
         unit.setUploadProgramStageUrl( "uploadProgramStageUrl" );
         unit.setEnrollProgramUrl( "enrollProgramUrl" );
+        unit.setRegisterPersonUrl( "registerPersonUrl" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream( baos );

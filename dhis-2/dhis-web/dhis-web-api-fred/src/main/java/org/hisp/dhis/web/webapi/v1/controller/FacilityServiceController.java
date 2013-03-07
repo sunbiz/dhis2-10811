@@ -33,7 +33,10 @@ import org.geotools.filter.text.cql2.CQLException;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.web.webapi.v1.domain.Facility;
-import org.hisp.dhis.web.webapi.v1.utils.MessageResponseUtils;
+import org.hisp.dhis.web.webapi.v1.exception.DuplicateCodeException;
+import org.hisp.dhis.web.webapi.v1.exception.DuplicateUidException;
+import org.hisp.dhis.web.webapi.v1.exception.DuplicateUuidException;
+import org.hisp.dhis.web.webapi.v1.exception.FacilityNotFoundException;
 import org.hisp.dhis.web.webapi.v1.utils.ValidationUtils;
 import org.hisp.dhis.web.webapi.v1.validation.group.Create;
 import org.hisp.dhis.web.webapi.v1.validation.group.Update;
@@ -66,9 +69,9 @@ import java.util.Set;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-@Controller( value = "facility-service-controller-" + FredController.PREFIX )
-@RequestMapping( FacilityServiceController.RESOURCE_PATH )
-@PreAuthorize( "hasRole('M_dhis-web-api-fred') or hasRole('ALL')" )
+@Controller(value = "facility-service-controller-" + FredController.PREFIX)
+@RequestMapping(FacilityServiceController.RESOURCE_PATH)
+@PreAuthorize("hasRole('M_dhis-web-api-fred') or hasRole('ALL')")
 public class FacilityServiceController
 {
     public static final String RESOURCE_PATH = "/" + FredController.PREFIX + "/facility-service";
@@ -83,49 +86,49 @@ public class FacilityServiceController
     private ConversionService conversionService;
 
     @Autowired
-    @Qualifier( "objectMapperFactoryBean" )
+    @Qualifier("objectMapperFactoryBean")
     private ObjectMapper objectMapper;
 
     //--------------------------------------------------------------------------
     // EXTRA WEB METHODS
     //--------------------------------------------------------------------------
 
-    @RequestMapping( value = "/{id}/activate", method = RequestMethod.POST )
-    @PreAuthorize( "hasRole('F_FRED_UPDATE') or hasRole('ALL')" )
-    public ResponseEntity<Void> activateFacility( @PathVariable String id )
+    @RequestMapping(value = "/{id}/activate", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('F_FRED_UPDATE') or hasRole('ALL')")
+    public ResponseEntity<Void> activateFacility( @PathVariable String id ) throws FacilityNotFoundException
     {
-        OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( id );
+        OrganisationUnit organisationUnit = getOrganisationUnit( id );
 
-        if ( organisationUnit != null )
+        if ( organisationUnit == null )
         {
-            organisationUnit.setActive( true );
-            organisationUnitService.updateOrganisationUnit( organisationUnit );
-
-            return new ResponseEntity<Void>( HttpStatus.OK );
+            throw new FacilityNotFoundException();
         }
 
-        return new ResponseEntity<Void>( HttpStatus.NOT_FOUND );
+        organisationUnit.setActive( true );
+        organisationUnitService.updateOrganisationUnit( organisationUnit );
+
+        return new ResponseEntity<Void>( HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/{id}/deactivate", method = RequestMethod.POST )
-    @PreAuthorize( "hasRole('F_FRED_UPDATE') or hasRole('ALL')" )
-    public ResponseEntity<Void> deactivateFacility( @PathVariable String id )
+    @RequestMapping(value = "/{id}/deactivate", method = RequestMethod.POST)
+    @PreAuthorize("hasRole('F_FRED_UPDATE') or hasRole('ALL')")
+    public ResponseEntity<Void> deactivateFacility( @PathVariable String id ) throws FacilityNotFoundException
     {
-        OrganisationUnit organisationUnit = organisationUnitService.getOrganisationUnit( id );
+        OrganisationUnit organisationUnit = getOrganisationUnit( id );
 
-        if ( organisationUnit != null )
+        if ( organisationUnit == null )
         {
-            organisationUnit.setActive( false );
-            organisationUnitService.updateOrganisationUnit( organisationUnit );
-
-            return new ResponseEntity<Void>( HttpStatus.OK );
+            throw new FacilityNotFoundException();
         }
 
-        return new ResponseEntity<Void>( HttpStatus.NOT_FOUND );
+        organisationUnit.setActive( false );
+        organisationUnitService.updateOrganisationUnit( organisationUnit );
+
+        return new ResponseEntity<Void>( HttpStatus.OK );
     }
 
-    @RequestMapping( value = "/validate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE )
-    public ResponseEntity<String> validateFacilityForCreate( @RequestBody Facility facility ) throws IOException
+    @RequestMapping(value = "/validate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> validateFacilityForCreate( @RequestBody Facility facility ) throws Exception
     {
         Set<ConstraintViolation<Facility>> constraintViolations = validator.validate( facility, Default.class, Create.class );
 
@@ -138,20 +141,17 @@ public class FacilityServiceController
         {
             OrganisationUnit organisationUnit = conversionService.convert( facility, OrganisationUnit.class );
 
+            if ( organisationUnitService.getOrganisationUnit( organisationUnit.getUuid() ) != null )
+            {
+                throw new DuplicateUuidException();
+            }
             if ( organisationUnitService.getOrganisationUnit( organisationUnit.getUid() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
-                    "An object with that ID already exists." ), headers, HttpStatus.CONFLICT );
-            }
-            else if ( organisationUnitService.getOrganisationUnitByName( organisationUnit.getName() ) != null )
-            {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
-                    "An object with that name already exists." ), headers, HttpStatus.CONFLICT );
+                throw new DuplicateUidException();
             }
             else if ( organisationUnit.getCode() != null && organisationUnitService.getOrganisationUnitByCode( organisationUnit.getCode() ) != null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
-                    "An object with that code already exists." ), headers, HttpStatus.CONFLICT );
+                throw new DuplicateCodeException();
             }
 
             return new ResponseEntity<String>( json, headers, HttpStatus.OK );
@@ -162,8 +162,8 @@ public class FacilityServiceController
         }
     }
 
-    @RequestMapping( value = "/validate", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE )
-    public ResponseEntity<String> validateFacilityForUpdate( @RequestBody Facility facility ) throws IOException
+    @RequestMapping(value = "/validate", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> validateFacilityForUpdate( @RequestBody Facility facility ) throws Exception
     {
         Set<ConstraintViolation<Facility>> constraintViolations = validator.validate( facility, Default.class, Update.class );
 
@@ -179,8 +179,7 @@ public class FacilityServiceController
 
             if ( ou == null )
             {
-                return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.NOT_FOUND.toString(),
-                    "No object with that identifier exists." ), headers, HttpStatus.NOT_FOUND );
+                throw new FacilityNotFoundException();
             }
             else if ( organisationUnit.getCode() != null )
             {
@@ -188,8 +187,7 @@ public class FacilityServiceController
 
                 if ( ouByCode != null && !ou.getUid().equals( ouByCode.getUid() ) )
                 {
-                    return new ResponseEntity<String>( MessageResponseUtils.jsonMessage( HttpStatus.CONFLICT.toString(),
-                        "Another object with the same code already exists." ), headers, HttpStatus.CONFLICT );
+                    throw new DuplicateCodeException();
                 }
             }
 
@@ -240,4 +238,25 @@ public class FacilityServiceController
 
         return new ResponseEntity<String>( json, headers, HttpStatus.OK );
     }
+
+    //--------------------------------------------------------------------------
+    // UTILS
+    //--------------------------------------------------------------------------
+
+    private OrganisationUnit getOrganisationUnit( String id )
+    {
+        OrganisationUnit organisationUnit;
+
+        if ( id.length() == 11 )
+        {
+            organisationUnit = organisationUnitService.getOrganisationUnit( id );
+        }
+        else
+        {
+            organisationUnit = organisationUnitService.getOrganisationUnitByUuid( id );
+        }
+
+        return organisationUnit;
+    }
 }
+

@@ -15,13 +15,13 @@ function generatedStatisticalProgramReport()
 		jQuery( "#statisticalReportDiv" ).load( "generateStatisticalProgramReport.action",
 		{
 			programId: getFieldValue('programId'),
-			startDate: getFieldValue('startDate'),
-			endDate: getFieldValue( 'endDate' ),
+			startDate: getFieldValue('startDateField') + ' 00:00',
+			endDate: getFieldValue( 'endDateField' ) + ' 23:59',
 			facilityLB: $('input[name=facilityLB]:checked').val(),
 		}, function() 
 		{ 
-			setTableStyles();
-			hideById('reportForm');
+			hideById('inputCriteria');
+			showById('showDataBtn');
 			showById('statisticalReportDiv');
 			showById('reportTbl');
 			hideLoader();
@@ -29,83 +29,11 @@ function generatedStatisticalProgramReport()
 	}
 	else
 	{
+		setFieldValue('startDate', getFieldValue('startDateField') + ' 00:00');
+		setFieldValue('endDate', getFieldValue( 'endDateField' ) + ' 23:59');
 		byId('reportForm').submit();
 	}
 	
-}
-
-function statisticalProgramDetailsReport( programStageId, status, total )
-{
-	showLoader();
-	hideById( 'reportTbl' );
-	hideById( 'detailsDiv' );
-	contentDiv = 'detailsDiv';
-	jQuery( "#detailsDiv" ).load( "statisticalProgramDetailsReport.action",
-	{
-		programStageId: programStageId,
-		startDate: getFieldValue( 'startDate' ),
-		endDate: getFieldValue( 'endDate' ),
-		status:status,
-		total: total,
-		facilityLB: $('input[name=facilityLB]:checked').val()
-	}, function() 
-	{ 
-		setFieldValue('status',status);
-		setFieldValue('total',total);
-		var programStageTitle = "&raquo; " + getStatusString( status ) 
-			+ " - " + getFieldValue("programStageName");
-		setInnerHTML('programStageTitleLbl', programStageTitle );
-		setInnerHTML('totalLbl', i18n_total_result + ": " + total );
-		showById('totalLbl');
-		showById('programStageTitleLbl');
-		showById( 'detailsDiv');
-		hideLoader();
-	});
-}
-
-function getStatusString( status )
-{
-	switch(status){
-		case 1: return i18n_completed;
-		case 2: return i18n_incomplete;
-		case 3: return i18n_scheduled;
-		case 4: return i18n_overdue;
-		default: return "";
-	}
-}
-
-function loadDataEntry( programStageInstanceId ) 
-{
-	hideById("detailsDiv");
-	jQuery('#viewRecordsDiv' )
-		.load( 'viewProgramStageRecords.action?programStageInstanceId=' + programStageInstanceId
-		,function(){
-			showById('reportTitle');
-			jQuery("#viewRecordsDiv :input" ).attr("disabled", true);
-			jQuery("#viewRecordsDiv :input" ).datepicker("destroy");
-			jQuery(".ui-combobox" ).hide();
-			showById("viewRecordsDiv");
-			hideById('inputCriteriaDiv');
-			hideById('totalLbl');
-		});
-}
-
-function entryFormContainerOnReady(){}
-
-function showCriteriaForm()
-{
-	showById('reportForm');
-}
-
-function showStatisticalReport()
-{
-	showById('reportTbl');
-	hideById('detailsDiv');
-	hideById('totalLbl');
-	hideById('viewRecordsDiv');
-	hideById('programStageTitleLbl');
-	hideById('patientNameLbl');
-	hideById('totalLbl');
 }
 
 function detailsReport()

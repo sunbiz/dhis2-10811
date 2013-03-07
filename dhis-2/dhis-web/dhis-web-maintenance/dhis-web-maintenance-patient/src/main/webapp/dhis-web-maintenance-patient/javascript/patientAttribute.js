@@ -13,7 +13,6 @@ function showPatientAttributeDetails( patientAttributeId )
 			var inherit = ( json.patientAttribute.inherit == 'true') ? i18n_yes : i18n_no;
 			setInnerHTML( 'inheritField', inherit );
 			setInnerHTML( 'valueTypeField', json.patientAttribute.valueType );    
-			setInnerHTML( 'expressionField', json.patientAttribute.expression ); 
 			
 			showDetails();
 	});
@@ -32,11 +31,8 @@ ATTRIBUTE_OPTION =
 {
 	selectValueType : 	function (this_)
 	{
-		if ( jQuery(this_).val() == "COMBO" )
+		if ( jQuery(this_).val() == "combo" )
 		{
-			hideById("calculatedAttrTR");
-			hideById("expressionTR");
-			hideById("operatorTR");
 			showById("attributeComboRow");
 			if( jQuery("#attrOptionContainer").find("input").length ==0 ) 
 			{
@@ -67,18 +63,10 @@ ATTRIBUTE_OPTION =
 				});
 			}
 			hideById("attributeComboRow");
-			showById("calculatedAttrTR");
-			showById("operatorTR");
-			showById("expressionTR");
-			showById("descriptionTR");
 		}
 		else
 		{
 			hideById("attributeComboRow");
-			hideById("calculatedAttrTR");
-			hideById("operatorTR");
-			hideById("expressionTR");
-			hideById("descriptionTR");
 		}
 		
 	},
@@ -132,21 +120,4 @@ ATTRIBUTE_OPTION =
 	{
 		return "<tr><td><input type='text' name='attrOptions' /><a href='#' style='text-decoration: none; margin-left:0.5em;' title='"+i18n_remove_option+"'  onClick='ATTRIBUTE_OPTION.remove(this,null)'>[ - ]</a></td></tr>";
 	}
-}
-
-function getConditionDescription()
-{
-	$.postUTF8( 'getCaseAggregationDescription.action', 
-		{ 
-			condition:getFieldValue('expression') 
-		},function(html)
-		{
-			setInnerHTML('expDescription', html);
-		});
-}
-
-function insertOperator( value )
-{
-	insertTextCommon('expression', ' ' + value + ' ' );
-	getConditionDescription();
 }

@@ -38,7 +38,24 @@ function viewResultDetails( orgunitId, periodTypeName, startDate, aggregationCon
 
 function caseAggregationResult()
 {
+	var autoSave = getFieldValue('autoSave');
+	if(autoSave=='true')
+	{
+		if( confirm(i18n_confirm_data_values_aggregated_saved_into_database_directly) )
+		{
+			runAggregate(autoSave);
+		}
+	}
+	else
+	{
+		previewAggregate(autoSave);
+	}
+}
+
+function runAggregate(autoSave)
+{
 	hideById('caseAggregationForm');
+	hideById('caseAggregationResult');
 	showLoader();
 	
 	$('#caseAggregationResult').load("caseAggregationResult.action", 
@@ -46,7 +63,28 @@ function caseAggregationResult()
 			facilityLB: getFieldValue('facilityLB'),
 			dataSetId: getFieldValue('dataSetId'),
 			startDate: getFieldValue('startDate'),
-			endDate: getFieldValue('endDate')
+			endDate: getFieldValue('endDate'),
+			autoSave: getFieldValue('autoSave')
+		}
+		, function(){
+			$( "#loaderDiv" ).hide();
+			showById('caseAggregationForm');
+			setMessage(i18n_aggregate_successfully);
+		});
+}
+
+function previewAggregate(autoSave)
+{
+	hideById('caseAggregationForm');
+	hideById('message');
+	showLoader();
+	$('#caseAggregationResult').load("caseAggregationResult.action", 
+		{
+			facilityLB: getFieldValue('facilityLB'),
+			dataSetId: getFieldValue('dataSetId'),
+			startDate: getFieldValue('startDate'),
+			endDate: getFieldValue('endDate'),
+			autoSave: getFieldValue('autoSave')
 		}
 		, function(){
 			$( "#loaderDiv" ).hide();

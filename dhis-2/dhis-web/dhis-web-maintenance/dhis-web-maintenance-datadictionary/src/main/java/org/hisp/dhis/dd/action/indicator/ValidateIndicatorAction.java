@@ -105,32 +105,6 @@ public class ValidateIndicatorAction
 
     public String execute()
     {
-        if ( name != null )
-        {
-            // TODO compile fix, this should be removed
-            Indicator match = indicatorService.getIndicatorByName( name ).get( 0 );
-
-            if ( match != null && (id == null || match.getId() != id) )
-            {
-                message = i18n.getString( "name_in_use" );
-
-                return ERROR;
-            }
-        }
-
-        if ( shortName != null )
-        {
-            // TODO compile fix, this should be removed
-            Indicator match = indicatorService.getIndicatorByShortName( shortName ).get( 0 );
-
-            if ( match != null && (id == null || match.getId() != id) )
-            {
-                message = i18n.getString( "short_name_in_use" );
-
-                return ERROR;
-            }
-        }
-
         if ( code != null && !code.trim().isEmpty() )
         {
             Indicator match = indicatorService.getIndicatorByCode( code );
@@ -143,7 +117,7 @@ public class ValidateIndicatorAction
             }
         }
 
-        message = i18n.getString( "everything_is_ok" );
+        message = i18n.getString( "ok" );
 
         return SUCCESS;
     }

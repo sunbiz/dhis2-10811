@@ -5,5 +5,4 @@
 	<li><a href="alluser.action?selfRegistered=true">$i18n.getString( "self_registered_user" )&nbsp;</a></li>
 	<li><a href="allRole.action" title="$i18n.getString( "user_role" )">$i18n.getString( "user_role" )&nbsp;</a></li>
     <li><a href="deleteCurrentUser.action" title="$i18n.getString( "delete_current_user" )">$i18n.getString( "delete_current_user" )</a></li>
-	<li><a href="getAllUserGroups.action" title="$i18n.getString( "user_group" )" >$i18n.getString( "user_group" )</a></li>
 </ul>

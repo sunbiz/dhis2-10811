@@ -1,5 +1,5 @@
 #set( $size = $notifications.size() )
-{ "notifications": [
+[
 #foreach( $notification in $notifications )
   {
     "uid": "${notification.uid}",
@@ -10,4 +10,4 @@
     "completed": "${notification.completed}"    
   }#if( $velocityCount < $size ),#end
 #end
-] }
+]

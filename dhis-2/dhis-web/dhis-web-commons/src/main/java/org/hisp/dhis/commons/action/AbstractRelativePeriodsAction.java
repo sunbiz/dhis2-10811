@@ -162,6 +162,13 @@ public abstract class AbstractRelativePeriodsAction
         this.last5FinancialYears = last5FinancialYears;
     }
 
+    protected boolean lastWeek;
+    
+    public void setLastWeek( boolean lastWeek )
+    {
+        this.lastWeek = lastWeek;
+    }
+
     protected boolean last4Weeks;
     
     public void setLast4Weeks( boolean last4Weeks )
@@ -190,7 +197,7 @@ public abstract class AbstractRelativePeriodsAction
             monthsLastYear, quartersLastYear, lastYear, 
             last5Years, last12Months, last3Months, false, last4Quarters, last2SixMonths,
             thisFinancialYear, lastFinancialYear, last5FinancialYears, 
-            last4Weeks, last12Weeks, last52Weeks );
+            lastWeek, last4Weeks, last12Weeks, last52Weeks );
         
         return relatives;
     }

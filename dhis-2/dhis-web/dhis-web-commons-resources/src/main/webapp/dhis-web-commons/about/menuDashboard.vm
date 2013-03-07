@@ -11,6 +11,7 @@
     <li><a href="../dhis-web-dashboard-integration/profile.action?id=${currentUser.uid}">$i18n.getString( "profile" )&nbsp;</a></li>
     <li><a href="../dhis-web-dashboard-integration/message.action">$i18n.getString( "messages" )&nbsp;</a></li>
     <li><a href="../dhis-web-dashboard-integration/interpretation.action">$i18n.getString( "interpretations" )&nbsp;</a></li>
+    <li><a href="../dhis-web-dashboard-integration/getAllUserGroups.action">$i18n.getString( "user_groups" )&nbsp;</a></li>
 </ul>
 
 <h2>$i18n.getString( "dhis2_online" )&nbsp;</h2>

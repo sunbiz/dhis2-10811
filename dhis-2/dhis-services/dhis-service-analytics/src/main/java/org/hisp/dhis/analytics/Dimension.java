@@ -40,6 +40,8 @@ public class Dimension
 
     private String dimensionName;
 
+    private String displayName;
+    
     private List<IdentifiableObject> items = new ArrayList<IdentifiableObject>();
 
     // -------------------------------------------------------------------------
@@ -64,17 +66,50 @@ public class Dimension
         this.items = items;
     }
 
+    public Dimension( String dimension, DimensionType type, String dimensionName, List<IdentifiableObject> items )
+    {
+        this.dimension = dimension;
+        this.type = type;
+        this.dimensionName = dimensionName;
+        this.items = items;
+    }
+
+    public Dimension( String dimension, DimensionType type, String dimensionName, String displayName, List<IdentifiableObject> items )
+    {
+        this.dimension = dimension;
+        this.type = type;
+        this.dimensionName = dimensionName;
+        this.displayName = displayName;
+        this.items = items;
+    }
+
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
     
     /**
-     * Indicates whether this dimension should use all dimension options. All
+     * Indicates whether this dimension should use all dimension items. All
      * dimension options is represented as an option list of zero elements.
      */
-    public boolean isAllOptions()
+    public boolean isAllItems()
     {
         return items != null && items.isEmpty();
+    }
+
+    /**
+     * Indicates whether this dimension has any dimension items.
+     */
+    public boolean hasItems()
+    {
+        return items != null && !items.isEmpty();
+    }
+    
+    /**
+     * Returns dimension name with fall back to dimension.
+     */
+    public String getDimensionName()
+    {
+        return dimensionName != null ? dimensionName : dimension;
     }
     
     // -------------------------------------------------------------------------
@@ -101,14 +136,14 @@ public class Dimension
         this.type = type;
     }
 
-    public String getDimensionName()
+    public String getDisplayName()
     {
-        return dimensionName != null ? dimensionName : dimension;
+        return displayName;
     }
 
-    public void setDimensionName( String dimensionName )
+    public void setDisplayName( String displayName )
     {
-        this.dimensionName = dimensionName;
+        this.displayName = displayName;
     }
 
     public List<IdentifiableObject> getItems()

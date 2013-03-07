@@ -13,13 +13,18 @@ settings = {
 		{name: 'ou', items: ['ImspTQPwCqd']}
 	],
 	options: {
-		showSubTotals: false,
-		cellPadding: 'normal',
-		fontSize: 'normal'
+		showTotals: true,
+		showSubTotals: true,
+		hideEmptyRows: false,
+		displayDensity: 'normal',
+		fontSize: 'normal',
+		digitGroupSeparator: 'space',
+		userOrganisationUnit: true,
+		userOrganisationUnitChildren: false
 	}
 };
 
-xSettings = {
+xLayout = {
 	col: [
 		{name: 'dx', items: ['Uvn6LCg7dVU', 'OdiHJayrsKo', 'sB79w2hiLp8']},
 		{name: 'co'}
@@ -57,9 +62,12 @@ xSettings = {
 		'ou': ['ImspTQPwCqd']
 	},
 	options: {
-		showSubTotals: false,
-		cellPadding: 'normal',
-		fontSize: 'normal'
+		showTotals: true,
+		showSubTotals: true,
+		hideEmptyRows: false,
+		displayDensity: 'normal',
+		fontSize: 'normal',
+		digitGroupSeparator: 'space'
 	}
 };
 

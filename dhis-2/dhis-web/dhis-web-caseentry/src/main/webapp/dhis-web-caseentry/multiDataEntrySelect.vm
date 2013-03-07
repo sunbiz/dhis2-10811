@@ -2,7 +2,7 @@
 	jQuery(document).ready(	function(){
 		jQuery("#programIdAddPatient option").each(function(){
 			var item = jQuery(this);
-			if( item.attr('type')!=1 || item.val()=='' ){
+			if( item.attr('type')!=1 && item.val()!='' ){
 				item.remove();
 			}
 		});
@@ -11,10 +11,6 @@
 		hideById('addPatientBtn');
 		jQuery("#searchObjectId [value=prg]").remove();
 		registration = false;
-		if(jQuery("#programIdAddPatient option").length > 0){
-			enable('listPatientBtn');
-			enable('advancedSearchBtn');
-		}
 		var i18n_scheduled_today = '$encoder.jsEscape( $i18n.getString( "scheduled_today" ) , "'")';
 		setFieldValue('listPatientBtn', i18n_scheduled_today);
 		showById('scheduled7DaysBtn');

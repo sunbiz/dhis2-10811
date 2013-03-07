@@ -54,11 +54,14 @@ import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Cal;
+import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.QuarterlyPeriodType;
@@ -75,6 +78,9 @@ public class QueryPlannerTest
     
     @Autowired
     private DataElementService dataElementService;
+    
+    @Autowired
+    private DataSetService dataSetService;
     
     @Autowired
     private DataElementCategoryService categoryService;
@@ -96,6 +102,11 @@ public class QueryPlannerTest
     private DataElement deC;
     private DataElement deD;
     
+    private DataSet dsA;
+    private DataSet dsB;
+    private DataSet dsC;
+    private DataSet dsD;
+        
     private DataElementCategoryOptionCombo coc;
     
     private OrganisationUnit ouA;
@@ -109,6 +120,8 @@ public class QueryPlannerTest
     @Override
     public void setUpTest()
     {
+        PeriodType pt = new MonthlyPeriodType();
+        
         inA = createIndicator( 'A', null );
         
         indicatorService.addIndicator( inA );
@@ -122,6 +135,16 @@ public class QueryPlannerTest
         dataElementService.addDataElement( deB );
         dataElementService.addDataElement( deC );
         dataElementService.addDataElement( deD );
+        
+        dsA = createDataSet( 'A', pt );
+        dsB = createDataSet( 'B', pt );
+        dsC = createDataSet( 'C', pt );
+        dsD = createDataSet( 'D', pt );
+        
+        dataSetService.addDataSet( dsA );
+        dataSetService.addDataSet( dsB );
+        dataSetService.addDataSet( dsC );
+        dataSetService.addDataSet( dsD );
         
         coc = categoryService.getDefaultDataElementCategoryOptionCombo();
         
@@ -290,6 +313,29 @@ public class QueryPlannerTest
             assertEquals( ORGUNIT_DIM_ID, permutation.get( 0 ).getDimension() );
             assertEquals( PERIOD_DIM_ID, permutation.get( 1 ).getDimension() );
         }
+    }
+
+    /**
+     * First, combines data elements and data sets into one data dimension and 
+     * returns (2 + 3) * 3 * 2 = 30. Second, ignores any data dimension and
+     * returns 3 * 2 = 6.
+     */
+    @Test
+    public void testGetNumberOfDimensionOptionPermutations()
+    {
+        DataQueryParams params = new DataQueryParams();
+        params.setDataElements( getList( deA, deB ) );
+        params.setDataSets( getList( dsA, dsB, dsC ) );
+        params.setOrganisationUnits( getList( ouA, ouB, ouC ) );
+        params.setPeriods( getList( createPeriod( "2000Q1" ), createPeriod( "2000Q2" ) ) );
+        
+        assertEquals( 30, params.getNumberOfDimensionOptionPermutations() );
+
+        params = new DataQueryParams();
+        params.setOrganisationUnits( getList( ouA, ouB, ouC ) );
+        params.setPeriods( getList( createPeriod( "2000Q1" ), createPeriod( "2000Q2" ) ) );
+
+        assertEquals( 6, params.getNumberOfDimensionOptionPermutations() );
     }
     
     @Test
@@ -494,9 +540,8 @@ public class QueryPlannerTest
     }
 
     /**
-     * Query filters span 2 partitions. Splits in 2 queries for each partition, 
-     * then splits in 2 queries on data elements to satisfy optimal for a 
-     * total of 4 queries.
+     * Query filters span 2 partitions. Splits in 4 queries on data elements to 
+     * satisfy optimal for a total of 4 queries.
      */
     @Test
     public void planQueryH()
@@ -512,9 +557,11 @@ public class QueryPlannerTest
 
         for ( DataQueryParams query : queries )
         {
-            assertTrue( samePeriodType( query.getFilterPeriods() ) );
-            assertTrue( samePartition( query.getFilterPeriods() ) );
             assertDimensionNameNotNull( query );
+
+            assertTrue( query.filterSpansMultiplePartitions() );
+            assertEquals( 2, query.getTableNamePeriodMap().size() );
+            assertEquals( 2, query.getPartitionFilterParams().size() );
         }
     }
 
@@ -554,6 +601,31 @@ public class QueryPlannerTest
         params.setOrganisationUnits( getList( ouA, ouB, ouC, ouD, ouE ) );
         
         queryPlanner.planQuery( params, 4, ANALYTICS_TABLE_NAME );
+    }
+
+    /**
+     * Query spans 2 partitions. Splits in 2 queries for each partition, then
+     * splits in 2 queries on data sets to satisfy optimal for a total 
+     * of 4 queries.
+     */
+    @Test
+    public void planQueryK()
+    {
+        DataQueryParams params = new DataQueryParams();
+        params.setDataSets( getList( dsA, dsB, dsC, dsD ) );
+        params.setOrganisationUnits( getList( ouA, ouB, ouC, ouD, ouE ) );
+        params.setPeriods( getList( createPeriod( "2000Q1" ), createPeriod( "2000Q2" ), createPeriod( "2000Q3" ), createPeriod( "2000Q4" ), createPeriod(  "2001Q1" ), createPeriod( "2001Q2" ) ) );
+        
+        List<DataQueryParams> queries = queryPlanner.planQuery( params, 4, ANALYTICS_TABLE_NAME );
+        
+        assertEquals( 4, queries.size() );
+        
+        for ( DataQueryParams query : queries )
+        {
+            assertTrue( samePeriodType( query.getPeriods() ) );
+            assertTrue( samePartition( query.getPeriods() ) );
+            assertDimensionNameNotNull( query );
+        }
     }
     
     // -------------------------------------------------------------------------

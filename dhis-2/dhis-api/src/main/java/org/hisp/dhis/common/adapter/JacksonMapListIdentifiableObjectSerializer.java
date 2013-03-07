@@ -59,6 +59,8 @@ public class JacksonMapListIdentifiableObjectSerializer
                 {
                     jgen.writeStartObject();
                     jgen.writeStringField( "id", object.getUid() );
+                    jgen.writeStringField( "name", object.getName() );
+                    jgen.writeStringField( "code", object.getCode() );
                     jgen.writeEndObject();
                 }
                 

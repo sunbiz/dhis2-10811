@@ -318,11 +318,11 @@ jQuery.each(attributes, function(i, item) {
     <table style="width: 100%;">
         <tbody>
             <tr>
-                <td colspan="2"><h5 style="border-bottom: 1px solid #606060;" id="sharingName"></h5></td>
+                <td colspan="2" style="height: 40px"><span class="settingHeader" id="sharingName"></span></td>
             </tr>
 
             <tr>
-                <td><input style="width: 100%;" id="sharingFindUserGroup" placeholder="Search for user groups"/></td>
+                <td><input style="width: 100%;" id="sharingFindUserGroup" placeholder="$i18n.getString( 'search_for_user_groups' )"/></td>
                 <td style="width: 24px;"><button id="addUserGroupAccess" disabled="disabled" style="width: 24px; text-align: center;">+</button></td>
             </tr>
         </tbody>
@@ -335,8 +335,8 @@ jQuery.each(attributes, function(i, item) {
                 <td>
                     <select id="sharingPublicAccess" style="width: 150px;">
                         <option selected="selected" value="--------">$i18n.getString( "none" )</option>
-                        <option value="r-------">$i18n.getString( "read_only" )</option>
-                        <option value="rw------">$i18n.getString( "read_write" )</option>
+                        <option value="r-------">$i18n.getString( "can_view" )</option>
+                        <option value="rw------">$i18n.getString( "can_edit_and_view" )</option>
                     </select>
                 </td>
                 <td style="width: 25px; text-align: center;"></td>
@@ -350,11 +350,21 @@ jQuery.each(attributes, function(i, item) {
     <td class="sharingGroupName" style="width: 300px;"><%= label %></td>
     <td>
         <select class="sharingGroupAccess" style="width: 150px;">
-            <option value="r-------" <% if(access == 'r-------') { %>selected<% } %>>$i18n.getString( "read_only" )</option>
-            <option value="rw------" <% if(access == 'rw------') { %>selected<% } %>>$i18n.getString( "read_write" )</option>
+            <option value="r-------" <% if(access == 'r-------') { %>selected<% } %>>$i18n.getString( "can_view" )</option>
+            <option value="rw------" <% if(access == 'rw------') { %>selected<% } %>>$i18n.getString( "can_edit_and_view" )</option>
         </select>
     </td>
     <td style="width: 25px; text-align: center;"><a href="" class="removeUserGroupAccess">X</a></td>
 </tr>
 </script>
+#end
+
+#macro( sharingCreateNotification $type )
+<div class="message message-info">
+    #if( $security.canCreatePublic( $type ) )
+    <p><img src="../icons/function-about-dhis2.png" width="18" height="18" style="float: left; padding-right: 3px;"/> $i18n.getString("object_will_created_public")</p>
+    #elseif( $security.canCreatePrivate( $type ) )
+    <p><img src="../icons/function-about-dhis2.png" width="18" height="18" style="float: left; padding-right: 3px;"/> $i18n.getString("object_will_created_private")</p>
+    #end
+</div>
 #end

@@ -139,12 +139,53 @@ html * {
 
 /* GIS */
 
+/*----------------------------------------------------------------------------
+ * Combobox
+ *--------------------------------------------------------------------------*/
+
+	/* Combobox text position*/
+.x-webkit .x-form-empty-field {
+    line-height: 14px;
+}
+
+	/* Combobox font size */
+.x-form-text, textarea.x-form-field {
+    font-size: 10px;
+}
+
+	/* Combobox field label font */
+.x-form-item-label {
+    font-size: 11px;
+    color: #111;
+}
+
+
+/*----------------------------------------------------------------------------
+ * GIS Combobox
+ *--------------------------------------------------------------------------*/
+
+	/* Combobox text position*/
+.gis-combo .x-form-text {
+    padding-left: 5px;
+}
+.gis-combo .small .x-form-field {
+	padding-top: 2px;
+}
+
+	/* Combobox border-radius */
+.gis-combo input {
+    border-radius: 2px 0px 0px 0px;
+    font-size: 10px !important;
+}
+
+
 /* Panel */
 
 .x-panel-header	{ /* Panel header */
 	height: 30px;
 	padding: 7px 4px 4px 7px;
 }
+
 
 /* Form */
 
@@ -431,6 +472,7 @@ html * {
 
 .gis-grid-row-icon-edit,
 .gis-grid-row-icon-overwrite,
+.gis-grid-row-icon-sharing,
 .gis-grid-row-icon-dashboard,
 .gis-grid-row-icon-delete {
 	width: 16px;
@@ -442,6 +484,10 @@ html * {
 }
 .gis-grid-row-icon-overwrite {
 	background: url('../images/grid-save_16.png') no-repeat;
+	margin-left: 4px;
+}
+.gis-grid-row-icon-sharing {
+	background: url('../images/grid-sharing_16.png') no-repeat;
 	margin-left: 4px;
 }
 .gis-grid-row-icon-dashboard {
@@ -461,6 +507,7 @@ html * {
 .gis-grid-row-icon-disabled * {
 	cursor: default !important;
 }
+.gis-grid-row-icon-disabled img.gis-grid-row-icon-sharing,
 .gis-grid-row-icon-disabled img.gis-grid-row-icon-dashboard {
 	cursor: pointer !important;
 }
@@ -490,6 +537,9 @@ html * {
 }
 .gis-grid .x-grid-row { /* middle align text in row with image */
 	vertical-align: middle;
+}
+.gis-grid .x-grid-row .x-grid-cell { /* remove blurry borders */
+	border-top: 0 none;
 }
 
 .gis-grid .link,
@@ -541,8 +591,6 @@ label.x-form-cb-label {
 }
 
 /* Tooltip */
-
-/* Tooltip */
 .x-tip {
     border-radius: 2px;
     padding: 1px 4px;
@@ -553,6 +601,7 @@ label.x-form-cb-label {
 .x-tip .x-tip-body {
 	font-size: 10px;
 	color: #fff;
+	-webkit-text-stroke: 0.2px #fff;
 }
 
 .x-tip-anchor {

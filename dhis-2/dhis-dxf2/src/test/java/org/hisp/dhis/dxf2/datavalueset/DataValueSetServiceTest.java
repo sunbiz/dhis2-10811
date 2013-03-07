@@ -27,9 +27,9 @@ package org.hisp.dhis.dxf2.datavalueset;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.CODE;
 import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.UID;
 import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;

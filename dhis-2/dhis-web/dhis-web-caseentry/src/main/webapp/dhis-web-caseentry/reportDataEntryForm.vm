@@ -26,12 +26,6 @@
 				<td class='bold text-column' style="vertical-align:top">$i18n.getString('program_stage'): </td>
 				<td style="vertical-align:right">$programStageInstance.programStage.displayName</td>
 			</tr>
-			#foreach( $attributeName in $calAttributeValueMap.keySet() )
-			<tr>
-				<td class='bold text-column'>$attributeName</td>
-				<td>$calAttributeValueMap.get($attributeName)</td>
-			</tr>
-			#end
 			<tr><td>&nbsp;</td></tr>
 		</table>
 	#end

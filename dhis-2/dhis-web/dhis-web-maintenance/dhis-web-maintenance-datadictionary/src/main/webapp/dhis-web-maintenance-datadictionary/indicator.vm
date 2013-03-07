@@ -60,7 +60,7 @@
 					<td style="text-align:right">
 
                     #if ( $security.canManage( $indicator ) )
-                    <a href="javascript:showSharingDialog('indicator', '$indicator.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
+                    <a href="javascript:showSharingDialog('indicator', '$indicator.uid');" title="$i18n.getString( 'sharing_settings' )"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
                     #else
                     <img src="../images/relationship-denied.png">
                     #end

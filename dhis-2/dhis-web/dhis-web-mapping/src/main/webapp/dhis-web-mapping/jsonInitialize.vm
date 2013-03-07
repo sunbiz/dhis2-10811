@@ -25,7 +25,9 @@
     }#if( $velocityCount < $overlaysSize ),#end
 #end
   ],
-  "security": {
+  "user": {
+  	"id":"$!currentUser.uid",
+  	"name":"$currentUser.name",
     "isAdmin": $auth.hasAccess( "dhis-web-mapping", "deleteMapLegendSet" )
   },
   "rootNodes": [

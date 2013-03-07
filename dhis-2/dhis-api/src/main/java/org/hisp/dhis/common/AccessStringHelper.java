@@ -28,6 +28,8 @@ package org.hisp.dhis.common;
  */
 
 /**
+ * Currently only the two first positions in the access string are used - rw.
+ * 
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 public class AccessStringHelper

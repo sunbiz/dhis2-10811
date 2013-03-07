@@ -314,6 +314,7 @@ public class SaveSingleEventAction
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String execute()
         throws Exception
     {

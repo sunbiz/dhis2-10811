@@ -101,6 +101,20 @@
                 <param name="allowedTypes">image/png</param>
             </interceptor-ref>
         </action>
+        
+	<action name="testSendSMSPage"
+            class="org.hisp.dhis.mobile.action.MobileHomePageAction">
+            <result name="success" type="velocity">/main.vm</result>
+            <param name="page">/dhis-web-mobile/testPage.vm</param>
+            <param name="menu">/dhis-web-mobile/menu.vm</param>
+        </action>
+        
+        <action name="testSMSData"
+            class="org.hisp.dhis.mobile.action.TestSMSDataAction">
+            <result name="success" type="velocity">/main.vm</result>
+            <param name="page">/dhis-web-mobile/testPage.vm</param>
+            <param name="menu">/dhis-web-mobile/menu.vm</param>
+        </action>
 		
         <action name="jarGenerator"
 			class="org.hisp.dhis.mobile.app.action.JarGeneratorAction">

@@ -11,8 +11,6 @@
 	        'rules' : getValidationRules( "indicator" )
 	    } );
 
-	    // checkValueIsExist( "name", "validateIndicator.action" );
-	    // checkValueIsExist( "shortName", "validateIndicator.action" );
 	    checkValueIsExist( "code", "validateIndicator.action" );
 	} );
 
@@ -20,6 +18,8 @@
 </script>
 
 <h3>$i18n.getString( "create_new_indicator" )</h3>
+
+#sharingCreateNotification( "indicator" )
 
 <form id="addIndicatorForm" action="addIndicator.action" method="post" class="inputForm">
 

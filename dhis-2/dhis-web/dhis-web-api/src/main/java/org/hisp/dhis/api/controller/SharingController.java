@@ -58,7 +58,7 @@ import java.util.Iterator;
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Controller
-@RequestMapping(value = SharingController.RESOURCE_PATH, method = RequestMethod.GET)
+@RequestMapping( value = SharingController.RESOURCE_PATH, method = RequestMethod.GET )
 public class SharingController
 {
     public static final String RESOURCE_PATH = "/sharing";
@@ -78,7 +78,7 @@ public class SharingController
     @Autowired
     private UserGroupAccessService userGroupAccessService;
 
-    @RequestMapping(value = "", produces = { "application/json", "text/*" })
+    @RequestMapping( value = "", produces = { "application/json", "text/*" } )
     public void getSharing( @RequestParam String type, @RequestParam String id, HttpServletResponse response ) throws IOException
     {
         if ( !SharingUtils.isSupported( type ) )
@@ -127,7 +127,7 @@ public class SharingController
         JacksonUtils.toJson( response.getOutputStream(), sharing );
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping( value = "", method = { RequestMethod.POST, RequestMethod.PUT }, consumes = "application/json" )
     public void setSharing( @RequestParam String type, @RequestParam String id, HttpServletResponse response, HttpServletRequest request ) throws IOException
     {
         BaseIdentifiableObject object = (BaseIdentifiableObject) manager.get( SharingUtils.classForType( type ), id );
@@ -145,8 +145,8 @@ public class SharingController
 
         Sharing sharing = JacksonUtils.fromJson( request.getInputStream(), Sharing.class );
 
-        // just ignore publicAccess if user is not allowed to make objects public, this should be hidden
-        // in the UI.
+        // Ignore publicAccess if user is not allowed to make objects public
+
         if ( SharingUtils.canCreatePublic( currentUserService.getCurrentUser(), object ) )
         {
             object.setPublicAccess( sharing.getObject().getPublicAccess() );
@@ -184,6 +184,8 @@ public class SharingController
         }
 
         manager.update( object );
+
+        ContextUtils.okResponse( response, "Access control set" );
     }
 
     @RequestMapping( value = "/search", produces = { "application/json", "text/*" } )

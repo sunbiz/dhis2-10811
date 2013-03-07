@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dxf2.metadata.ImportSummary;
 import org.hisp.dhis.dxf2.metadata.MetaData;
 import org.hisp.dhis.dxf2.utils.JacksonUtils;
+import org.hisp.dhis.user.User;
 
 import java.io.InputStream;
 
@@ -45,9 +46,12 @@ public class Dxf2MetaDataProducer
 {
     private static final Log log = LogFactory.getLog( Dxf2MetaDataProducer.class );
 
-    public Dxf2MetaDataProducer( Dxf2MetaDataEndpoint endpoint )
+    private User user;
+
+    public Dxf2MetaDataProducer( User user, Dxf2MetaDataEndpoint endpoint )
     {
         super( endpoint );
+        this.user = user;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class Dxf2MetaDataProducer
         Dxf2MetaDataEndpoint endpoint = (Dxf2MetaDataEndpoint) this.getEndpoint();
         MetaData metadata = JacksonUtils.fromXml( (InputStream) exchange.getIn().getBody(), MetaData.class );
 
-        ImportSummary summary = endpoint.getImportService().importMetaData( metadata, endpoint.getImportOptions() );
+        ImportSummary summary = endpoint.getImportService().importMetaData( user, metadata, endpoint.getImportOptions() );
         exchange.getOut().setBody( JacksonUtils.toXmlAsString( summary ) );
     }
 }

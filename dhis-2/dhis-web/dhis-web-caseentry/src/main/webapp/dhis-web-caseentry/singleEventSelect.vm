@@ -2,7 +2,7 @@
 	jQuery(document).ready(	function(){
 		jQuery("#programIdAddPatient option").each(function(){
 			var item = jQuery(this);
-			if(item.attr('type')!=2 || item.val()==''){
+			if(item.attr('type')!=2 ){
 				item.remove();
 			}
 		});
@@ -11,11 +11,6 @@
 		setFieldValue('isSearchByProgram', true);
 		registration = false;
 		$("#searchObjectId option[value='prg']").remove();
-		if(jQuery("#programIdAddPatient option").length > 0){
-			enable('listPatientBtn');
-			enable('addPatientBtn');
-			enable('advancedSearchBtn');
-		}
 		setFieldValue('startDueDate','');
 		setFieldValue('endDueDate','');
 	});

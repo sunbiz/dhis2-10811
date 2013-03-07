@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -307,7 +308,12 @@ public class GetPatientProgramListAction
         {
             if ( (program.isSingleEvent() && program.isRegistration()) || !program.isSingleEvent() )
             {
-                if ( programInstanceService.getProgramInstances( patient, program ).size() == 0 )
+                if ( programInstanceService.getProgramInstances( patient, program, false ).size() == 0 )
+                {
+                    programs.add( program );
+                }
+                else if ( programInstanceService.getProgramInstances( patient, program, true ).size() > 0
+                    && !program.getOnlyEnrollOnce() )
                 {
                     programs.add( program );
                 }

@@ -13,8 +13,8 @@
 		</td>
 		<td rowspan='2' valign='bottom'>
 			<input type="button" style='width:130px' id='listPatientBtn' style='260px;' value="$i18n.getString( 'list_all_patients' )" onclick="javascript:listAllPatient();" disabled >
-			<input type="button" style='width:130px' class='hidden' id='scheduled7DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_7_days' )" onclick="javascript:scheduled7Days();" >
-			<input type="button" style='width:130px' class='hidden' id='scheduled30DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_30_days' )" onclick="javascript:scheduled30Days();" >
+			<input type="button" style='width:130px' class='hidden' id='scheduled7DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_7_days' )" onclick="javascript:scheduled7Days();" disabled >
+			<input type="button" style='width:130px' class='hidden' id='scheduled30DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_30_days' )" onclick="javascript:scheduled30Days();" disabled >
 			<input type="button" style='width:130px' id='addPatientBtn' name='addPatientBtn' class='large-button' value='$i18n.getString( "add_new" )' onclick="showAddPatientForm();" disabled >
 			<input type="button" style='width:130px' id='advancedSearchBtn' value='$i18n.getString( "advanced_search" )' onclick="jQuery('#advanced-search').toggle();" disabled>
 		</td>
@@ -23,7 +23,7 @@
 		<td>$i18n.getString('program')</td>
 		<td>
 			<select id='programIdAddPatient' name='programIdAddPatient' onchange='enableBtn();'>
-				<option value='' type='2'>[$i18n.getString("view_all")]</option>
+				<option value='' type='2' id='emptyProgramOption'>[$i18n.getString("please_select")]</option>
 				#foreach($program in $programs)
 					<option value="$program.id" type='$program.type'>$program.displayName</option>
 				#end
@@ -73,9 +73,7 @@
 				<option value="fixedAttr_gender">$i18n.getString( "gender" )</option>
 				<option value="fixedAttr_phoneNumber">$i18n.getString( "phone_number" )</option>
 				#foreach( $attribute in $patientAttributes )
-					#if($attribute.valueType!='calculated')
 					<option value="attr_$attribute.id" valueType='$attribute.valueType'>$encoder.htmlEncode( $attribute.displayName )</option>
-					#end
 				#end
 			  </select>
 			  <em title="$i18n.getString( 'required' )" class="required">*</em></label>

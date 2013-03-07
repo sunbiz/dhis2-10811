@@ -20,15 +20,14 @@
  * Menu
  * PT Menu
  *
- * Grid
  * Button
  * Tooltip
  * LoadMask
  *
+ * PT Grid
  * PT Window
  * PT Label
  * PT Textfield
- * PT Menugrid
  * PT Treepanel
  * PT Radiogroup
  * PT Messagebox
@@ -82,6 +81,10 @@ body.x-windows {
 
 .fixed {
 	position: fixed;
+}
+
+.pointer {
+	cursor: pointer;
 }
 
 .td-nobreak {
@@ -452,33 +455,6 @@ td .bad div {
 
 
 /*----------------------------------------------------------------------------
- * Grid
- *--------------------------------------------------------------------------*/
-
-.x-grid-row .x-grid-cell {
-    color: #222;
-    background-color: transparent;
-    border: 1px solid transparent;
-}
-
-.x-grid-row-selected .x-grid-cell {
-    border: 1px solid transparent;
-}
-
-.x-grid-row-over {
-    background-color: #f1f1f1;
-}
-
-.x-grid-row-over .x-grid-cell-first, .x-grid-row-selected .x-grid-cell-first {
-    border-radius: 2px 0 0 2px;
-}
-
-.x-grid-row-over .x-grid-cell-last, .x-grid-row-selected .x-grid-cell-last {
-    border-radius: 0 2px 2px 0;
-}
-
-
-/*----------------------------------------------------------------------------
  * Button
  *--------------------------------------------------------------------------*/
 
@@ -536,7 +512,7 @@ td .bad div {
 }
 
 .x-tip-anchor {
-	border-bottom-color: #111;
+	border-top-color: #111;
 }
 
 
@@ -557,6 +533,92 @@ td .bad div {
 	border-radius: 2px;
 	padding: 10px 9px 10px 25px;
 	opacity: 0.65;
+}
+
+
+/*----------------------------------------------------------------------------
+ * PT Grid
+ *--------------------------------------------------------------------------*/
+
+.pt-grid-row-icon-edit,
+.pt-grid-row-icon-overwrite,
+.pt-grid-row-icon-sharing,
+.pt-grid-row-icon-dashboard,
+.pt-grid-row-icon-delete {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.pt-grid-row-icon-edit {
+	background: url('../images/grid-edit_16.png') no-repeat;
+}
+.pt-grid-row-icon-overwrite {
+	background: url('../images/grid-save_16.png') no-repeat;
+	margin-left: 4px;
+}
+.pt-grid-row-icon-sharing {
+	background: url('../images/grid-sharing_16.png') no-repeat;
+	margin-left: 4px;
+}
+.pt-grid-row-icon-dashboard {
+	background: url('../images/grid-dashboard_16.png') no-repeat;
+	margin-left: 4px;
+}
+.pt-grid-row-icon-delete {
+	background: url('../images/grid-delete_16.png') no-repeat;
+	margin-left: 4px;
+}
+.pt-grid-row-icon-disabled img.pt-grid-row-icon-edit,
+.pt-grid-row-icon-disabled img.pt-grid-row-icon-overwrite,
+.pt-grid-row-icon-disabled img.pt-grid-row-icon-delete {
+	opacity: 0;
+	filter:Alpha(opacity=0);
+}
+.pt-grid-row-icon-disabled * {
+	cursor: default !important;
+}
+.pt-grid-row-icon-disabled img.pt-grid-row-icon-sharing,
+.pt-grid-row-icon-disabled img.pt-grid-row-icon-dashboard {
+	cursor: pointer !important;
+}
+
+.pt-grid .x-grid-cell-inner,
+.pt-grid .x-grid-cell-inner * {
+	font-size: 10px !important;
+}
+.pt-grid .x-grid-cell-inner {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.pt-grid .x-column-header-text {
+	color: #333;
+}
+.pt-grid .x-grid-header-ct {
+	border-bottom-width: 1px !important;
+	border-bottom-color: #d0d0d0;
+}
+.pt-grid .x-grid-body {
+	border: 1px solid #d0d0d0;
+	border-top: 0 none !important;
+}
+
+.pt-grid .x-grid-dirty-cell { /* hide red "dirty" icon */
+	background-image: none;
+}
+.pt-grid .x-grid-row { /* middle align text in row with image */
+	vertical-align: middle;
+}
+.pt-grid .x-grid-row .x-grid-cell { /* remove blurry borders */
+	border-top: 0 none;
+}
+
+.pt-grid .link,
+.pt-grid .link * {
+	cursor: pointer;
+	cursor: hand;
+	color: blue;
+	text-decoration: underline;
 }
 
 
@@ -608,6 +670,14 @@ td .bad div {
     border-radius: 2px
 }
 
+	/* Window bbar info */
+.pt-label-info {
+	font-size: 10px !important;
+	color: #666;
+	padding-left: 4px;
+	height: 22px;
+	line-height: 21px;
+}
 
 /*----------------------------------------------------------------------------
  * PT Textfield
@@ -627,53 +697,6 @@ td .bad div {
 .pt-textfield-alt1 .x-form-item-label {
     padding-left: 5px;
     line-height: 8px;
-}
-
-
-/*----------------------------------------------------------------------------
- * PT Menugrid
- *--------------------------------------------------------------------------*/
-
-.pt-menugrid .x-grid-row .x-grid-cell, .pt-menugrid .x-grid-row-selected .x-grid-cell {
-    border: 0 none;
-    background: #f5f5f5;
-}
-.pt-menugrid .x-grid-row .x-grid-cell-first,
-.pt-menugrid .x-grid-row-selected .x-grid-cell-first,
-.pt-menugrid .x-grid-row .x-grid-cell-last,
-.pt-menugrid .x-grid-row-selected .x-grid-cell-last {
-	border: 0 none;
-}
-
-.pt-menugrid .x-grid-row-over .x-grid-cell {
-    border: 0 none;
-    background-color: #e4e4e4;
-    background-image: none;
-}
-.pt-menugrid .x-grid-row-over .x-grid-cell-first,
-.pt-menugrid .x-grid-row-over .x-grid-cell-last {
-	border: 0 none;
-}
-
-.pt-menugrid .x-grid-row-focused .x-grid-cell-inner {
-	background-color: #f1f1f1;
-}
-.pt-menugrid .x-grid-row-focused .x-grid-cell {
-	border-color: #f1f1f1;
-}
-
-	/* DV menu grid icon/text position aligned with menuitem */
-.pt-menugrid .x-grid-cell-inner {
-    padding: 4px 3px 4px 6px;
-    font-size: 10px;
-    color: #444;
-    line-height: 16px;
-    height: 23px;
-}
-
-	/* DV menu grid background now looks like a menu */
-.pt-menugrid .x-grid-view {
-    background-color: #f1f1f1;
 }
 
 

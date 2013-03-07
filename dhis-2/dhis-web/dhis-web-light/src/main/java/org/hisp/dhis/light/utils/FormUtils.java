@@ -27,13 +27,6 @@
 
 package org.hisp.dhis.light.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.Validate;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
@@ -64,6 +57,14 @@ import org.hisp.dhis.validation.ValidationRule;
 import org.hisp.dhis.validation.ValidationRuleService;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -181,9 +182,9 @@ public class FormUtils
         {
             ValidationRule rule = result.getValidationRule();
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append( expressionService.getExpressionDescription( rule.getLeftSide().getExpression() ) );
-            sb.append( " " + rule.getOperator().getMathematicalOperator() + " " );
+            sb.append( " " ).append( rule.getOperator().getMathematicalOperator() ).append( " " );
             sb.append( expressionService.getExpressionDescription( rule.getRightSide().getExpression() ) );
 
             validationRuleViolations.add( sb.toString() );
@@ -259,37 +260,36 @@ public class FormUtils
         Validate.notNull( dataSetId );
 
         DataSet dataSet = dataSetService.getDataSet( dataSetId );
-        
-        CalendarPeriodType periodType = null;
+
+        CalendarPeriodType periodType;
 
         if ( dataSet.getPeriodType().getName().equalsIgnoreCase( "Yearly" ) )
         {
-            periodType = (CalendarPeriodType) new YearlyPeriodType();
+            periodType = new YearlyPeriodType();
         }
         else
         {
             periodType = (CalendarPeriodType) dataSet.getPeriodType();
         }
-        
+
         if ( dataSet.isAllowFuturePeriods() )
         {
-            List<Period> periods = new ArrayList<Period>();
-            periods = periodType.generatePeriods( new Date() );
+            List<Period> periods = periodType.generatePeriods( new Date() );
             Collections.reverse( periods );
             return periods;
         }
         else
         {
-            
+
             List<Period> periods = periodType.generateLast5Years( new Date() );
             FilterUtils.filter( periods, new PastAndCurrentPeriodFilter() );
             Collections.reverse( periods );
-    
+
             if ( periods.size() > (first + max) )
             {
                 periods = periods.subList( first, max );
             }
-    
+
             return periods;
         }
     }
@@ -349,7 +349,7 @@ public class FormUtils
                 return true;
             }
         }
-        catch ( NumberFormatException e )
+        catch ( NumberFormatException ignored )
         {
         }
 
@@ -369,7 +369,7 @@ public class FormUtils
                 return true;
             }
         }
-        catch ( NumberFormatException e )
+        catch ( NumberFormatException ignored )
         {
         }
 
@@ -390,7 +390,7 @@ public class FormUtils
             sdf.parseDateTime( value );
             return true;
         }
-        catch ( IllegalArgumentException e )
+        catch ( IllegalArgumentException ignored )
         {
         }
 

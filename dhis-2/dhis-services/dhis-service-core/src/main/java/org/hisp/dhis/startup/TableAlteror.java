@@ -34,11 +34,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.amplecode.quick.BatchHandler;
+import org.amplecode.quick.BatchHandlerFactory;
 import org.amplecode.quick.StatementHolder;
 import org.amplecode.quick.StatementManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.jdbc.StatementBuilder;
+import org.hisp.dhis.jdbc.batchhandler.RelativePeriodsBatchHandler;
+import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.system.startup.AbstractStartupRoutine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -53,12 +59,14 @@ public class TableAlteror
     // Dependencies
     // -------------------------------------------------------------------------
 
+    @Autowired
     private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
+    
+    @Autowired
+    private StatementBuilder statementBuilder;
+    
+    @Autowired
+    private BatchHandlerFactory batchHandlerFactory;
 
     // -------------------------------------------------------------------------
     // Execute
@@ -421,9 +429,14 @@ public class TableAlteror
         executeSql( "update reporttable set lastfinancialyear = false where lastfinancialyear is null" );
         executeSql( "update reporttable set last5financialyears = false where last5financialyears is null" );
         executeSql( "update reporttable set cumulative = false where cumulative is null" );
-        executeSql( "update reporttable set subtotals = false where subtotals is null" );
-        executeSql( "update reporttable set userOrganisationUnit = false where userOrganisationUnit is null" );
-        executeSql( "update reporttable set userOrganisationUnitChildren = false where userOrganisationUnitChildren is null" );
+        executeSql( "update reporttable set userorganisationunit = false where userorganisationunit is null" );
+        executeSql( "update reporttable set userorganisationunitchildren = false where userorganisationunitchildren is null" );
+        executeSql( "update reporttable set totals = true where totals is null" );
+        executeSql( "update reporttable set subtotals = true where subtotals is null" );
+        executeSql( "update reporttable set hideemptyrows = false where hideemptyrows is null" );
+        executeSql( "update reporttable set displaydensity = 'normal' where displaydensity is null" );
+        executeSql( "update reporttable set fontsize = 'normal' where fontsize is null" );
+        executeSql( "update reporttable set digitgroupseparator = 'space' where digitgroupseparator is null" );
 
         executeSql( "update chart set reportingmonth = false where reportingmonth is null" );
         executeSql( "update chart set reportingbimonth = false where reportingbimonth is null" );
@@ -523,11 +536,172 @@ public class TableAlteror
         executeSql( "ALTER TABLE usergroup DROP CONSTRAINT usergroup_name_key" );
         executeSql( "ALTER TABLE datadictionary DROP CONSTRAINT datadictionary_name_key" );
 
-        upgradeReportTableColumns();
+        executeSql( "update relativeperiods set lastweek = false where lastweek is null" );
+        executeSql( "update relativeperiods set last4weeks = false where last4weeks is null" );
+        executeSql( "update relativeperiods set last12weeks = false where last12weeks is null" );
         
+        upgradeChartRelativePeriods();
+        upgradeReportTableRelativePeriods();
+        upgradeReportTableColumns();
+
+        // clear out sharing of de-group/de-group-set for now
+        executeSql( "UPDATE dataelementgroup SET userid=NULL WHERE userid IS NOT NULL" );
+        executeSql( "UPDATE dataelementgroup SET publicaccess=NULL WHERE userid IS NOT NULL" );
+        executeSql( "UPDATE dataelementgroupset SET userid=NULL WHERE userid IS NOT NULL" );
+        executeSql( "UPDATE dataelementgroupset SET publicaccess=NULL WHERE userid IS NOT NULL" );
+
+        // upgrade system charts/maps to public read-only sharing
+        executeSql( "UPDATE chart SET publicaccess='r-------' WHERE user IS NOT NULL;" );
+        executeSql( "UPDATE map SET publicaccess='r-------' WHERE user IS NOT NULL;" );
+
         log.info( "Tables updated" );
     }
 
+    private void upgradeChartRelativePeriods()
+    {
+        BatchHandler<RelativePeriods> batchHandler = batchHandlerFactory.createBatchHandler( RelativePeriodsBatchHandler.class ).init();
+        
+        try
+        {
+            String sql = "select reportingmonth, * from chart";
+
+            ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
+            
+            while ( rs.next() )
+            {
+                RelativePeriods r = new RelativePeriods( 
+                    rs.getBoolean( "reportingmonth" ), 
+                    false,
+                    rs.getBoolean( "reportingquarter" ), 
+                    rs.getBoolean( "lastsixmonth" ), 
+                    rs.getBoolean( "monthsthisyear" ), 
+                    rs.getBoolean( "quartersthisyear" ), 
+                    rs.getBoolean( "thisyear" ), 
+                    false, false,
+                    rs.getBoolean( "lastyear" ), 
+                    rs.getBoolean( "last5years" ), 
+                    rs.getBoolean( "last12months" ), 
+                    rs.getBoolean( "last3months" ), 
+                    false, 
+                    rs.getBoolean( "last4quarters" ), 
+                    rs.getBoolean( "last2sixmonths" ), 
+                    false, false, false,
+                    false, false, false, false );
+                
+                int chartId = rs.getInt( "chartid" );
+
+                if ( !r.isEmpty() )
+                {
+                    int relativePeriodsId = batchHandler.insertObject( r, true );
+                    
+                    String update = "update chart set relativeperiodsid=" + relativePeriodsId + " where chartid=" + chartId;
+
+                    executeSql( update );
+                    
+                    log.info( "Updated relative periods for chart with id: " + chartId );
+                }    
+            }
+
+            executeSql( "alter table chart drop column reportingmonth" );
+            executeSql( "alter table chart drop column reportingquarter" );
+            executeSql( "alter table chart drop column lastsixmonth" );
+            executeSql( "alter table chart drop column monthsthisyear" );
+            executeSql( "alter table chart drop column quartersthisyear" );
+            executeSql( "alter table chart drop column thisyear" );
+            executeSql( "alter table chart drop column lastyear" );
+            executeSql( "alter table chart drop column last5years" );
+            executeSql( "alter table chart drop column last12months" );
+            executeSql( "alter table chart drop column last3months" );
+            executeSql( "alter table chart drop column last4quarters" );
+            executeSql( "alter table chart drop column last2sixmonths" );
+        }
+        catch ( Exception ex )
+        {
+            log.warn( ex );
+        }
+        finally
+        {
+            batchHandler.flush();
+        }
+    }
+    
+    private void upgradeReportTableRelativePeriods()
+    {
+        BatchHandler<RelativePeriods> batchHandler = batchHandlerFactory.createBatchHandler( RelativePeriodsBatchHandler.class ).init();
+        
+        try
+        {            
+            String sql = "select reportingmonth, * from reporttable";
+
+            ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
+
+            while ( rs.next() )
+            {
+                RelativePeriods r = new RelativePeriods( 
+                    rs.getBoolean( "reportingmonth" ), 
+                    rs.getBoolean( "reportingbimonth" ), 
+                    rs.getBoolean( "reportingquarter" ), 
+                    rs.getBoolean( "lastsixmonth" ), 
+                    rs.getBoolean( "monthsthisyear" ), 
+                    rs.getBoolean( "quartersthisyear" ), 
+                    rs.getBoolean( "thisyear" ), 
+                    rs.getBoolean( "monthslastyear" ), 
+                    rs.getBoolean( "quarterslastyear" ), 
+                    rs.getBoolean( "lastyear" ), 
+                    rs.getBoolean( "last5years" ), 
+                    rs.getBoolean( "last12months" ), 
+                    rs.getBoolean( "last3months" ), 
+                    false, 
+                    rs.getBoolean( "last4quarters" ), 
+                    rs.getBoolean( "last2sixmonths" ), 
+                    rs.getBoolean( "thisfinancialyear" ), 
+                    rs.getBoolean( "lastfinancialyear" ), 
+                    rs.getBoolean( "last5financialyears" ), 
+                    false, false, false, false );
+                
+                int reportTableId = rs.getInt( "reporttableid" );
+                
+                if ( !r.isEmpty() )
+                {
+                    int relativePeriodsId = batchHandler.insertObject( r, true );
+                    
+                    String update = "update reporttable set relativeperiodsid=" + relativePeriodsId + " where reporttableid=" + reportTableId;
+                    
+                    executeSql( update );
+                    
+                    log.info( "Updated relative periods for report table with id: " + reportTableId );
+                }                
+            }
+            
+            executeSql( "alter table reporttable drop column reportingmonth" );
+            executeSql( "alter table reporttable drop column reportingbimonth" );
+            executeSql( "alter table reporttable drop column reportingquarter" );
+            executeSql( "alter table reporttable drop column lastsixmonth" );
+            executeSql( "alter table reporttable drop column monthsthisyear" );
+            executeSql( "alter table reporttable drop column quartersthisyear" );
+            executeSql( "alter table reporttable drop column thisyear" );
+            executeSql( "alter table reporttable drop column monthslastyear" );
+            executeSql( "alter table reporttable drop column quarterslastyear" );
+            executeSql( "alter table reporttable drop column lastyear" );
+            executeSql( "alter table reporttable drop column last5years" );
+            executeSql( "alter table reporttable drop column last12months" );
+            executeSql( "alter table reporttable drop column last3months" );
+            executeSql( "alter table reporttable drop column last4quarters" );
+            executeSql( "alter table reporttable drop column last2sixmonths" );
+            executeSql( "alter table reporttable drop column thisfinancialyear" );
+            executeSql( "alter table reporttable drop column lastfinancialyear" );
+            executeSql( "alter table reporttable drop column last5financialyears" );
+        }
+        catch ( Exception ex )
+        {
+            log.warn( ex );
+        }
+        finally
+        {
+            batchHandler.flush();
+        }
+    }
+    
     private void upgradeReportTableColumns()
     {
         try

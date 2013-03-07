@@ -540,8 +540,21 @@ public class ListGrid
         
         for ( int colIndex = 0; colIndex < headers.size(); colIndex++ )
         {
-            if ( headers.get( colIndex ).isMeta() )
+            GridHeader header = headers.get( colIndex );
+            
+            if ( header.isMeta() )
             {
+                // Header
+                
+                String headerMetaName = metaData.get( header.getName() );
+                
+                if ( headerMetaName != null )
+                {
+                    header.setName( headerMetaName );
+                }
+                
+                // Column cells
+                
                 List<Object> col = getColumn( colIndex );
                 
                 for ( int rowIndex = 0; rowIndex < col.size(); rowIndex++ )

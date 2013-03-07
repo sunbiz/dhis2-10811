@@ -57,4 +57,9 @@ public interface MobileImportService
     public void readAllMessages();
     
     public void importInteractionMessage( String smsText, String sender, Date sendTime );
+
+	public String registerData(String unCompressedText, String sender, Date sendTime );
+
+	public void registerDataByUID(String unCompressedText, String sender,
+			Date sendTime);
 }

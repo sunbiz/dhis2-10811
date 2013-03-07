@@ -148,6 +148,18 @@ public class CaseAggregationResultAction
         this.endDate = endDate;
     }
 
+    private boolean autoSave;
+
+    public void setAutoSave( boolean autoSave )
+    {
+        this.autoSave = autoSave;
+    }
+
+    public boolean isAutoSave()
+    {
+        return autoSave;
+    }
+
     private Map<String, String> mapStatusValues = new HashMap<String, String>();
 
     public Map<String, String> getMapStatusValues()
@@ -232,7 +244,8 @@ public class CaseAggregationResultAction
         // Get selected periods list
         // ---------------------------------------------------------------------
 
-        CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( selectedDataSet.getPeriodType().getName() );
+        CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( selectedDataSet
+            .getPeriodType().getName() );
 
         periods.addAll( periodType.generatePeriods( format.parseDate( startDate ), format.parseDate( endDate ) ) );
 
@@ -263,18 +276,30 @@ public class CaseAggregationResultAction
                             dataValue = new DataValue( dElement, period, orgUnit, "" + resultValue, "", new Date(),
                                 null, optionCombo );
                             mapStatusValues.put( keyStatus, i18n.getString( ADD_STATUS ) );
+                            if ( autoSave )
+                            {
+                                dataValueService.addDataValue( dataValue );
+                            }
                         }
                         else
                         {
                             dataValue.setValue( "" + resultValue );
                             dataValue.setTimestamp( new Date() );
                             mapStatusValues.put( keyStatus, i18n.getString( UPDATE_STATUS ) );
+                            if ( autoSave )
+                            {
+                                dataValueService.updateDataValue( dataValue );
+                            }
                         }
                         mapCaseAggCondition.put( dataValue, condition );
                     }
                     else if ( dataValue != null )
                     {
                         mapStatusValues.put( keyStatus, i18n.getString( DELETE_STATUS ) );
+                        if ( autoSave )
+                        {
+                            dataValueService.deleteDataValue( dataValue );
+                        }
                     }
 
                     if ( dataValue != null )

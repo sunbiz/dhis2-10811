@@ -5,7 +5,8 @@ PT.core = {};
 Ext.onReady( function() {
 
 PT.core.getConfigs = function() {
-	var conf = {};
+	var conf = {},
+		dim;
 
 	conf.finals = {
         ajax: {
@@ -42,49 +43,69 @@ PT.core.getConfigs = function() {
         dimension: {
             data: {
                 value: 'data',
-                rawValue: 'Data', //i18n PT.i18n.data,
-                paramName: 'dx',
+                name: 'Data', //i18n PT.i18n.data,
+                dimensionName: 'dx',
+                objectName: 'dx',
                 warning: {
 					filter: '...'//PT.i18n.wm_multiple_filter_ind_de
 				}
             },
             category: {
-				paramName: 'co',
-				rawValue: 'Categories'
+				name: 'Categories',
+				dimensionName: 'co',
+                objectName: 'co',
 			},
             indicator: {
-                value: 'indicator',
-                rawValue: 'Indicators', //i18n PT.i18n.indicator,
-                paramName: 'dx'
+                value: 'indicators',
+                name: 'Indicators', //i18n PT.i18n.indicator,
+                dimensionName: 'dx',
+                objectName: 'in'
             },
             dataElement: {
-                value: 'dataelement',
-                rawValue: 'Data elements', //i18n PT.i18n.data_element,
-                paramName: 'dx'
+                value: 'dataElements',
+                name: 'Data elements', //i18n PT.i18n.data_element,
+                dimensionName: 'dx',
+                objectName: 'de'
             },
             dataSet: {
-				value: 'dataset',
-                rawValue: 'Data sets', //i18n PT.i18n.dataset,
-                paramName: 'dx'
+				value: 'dataSets',
+                name: 'Data sets', //i18n PT.i18n.dataset,
+                dimensionName: 'dx',
+                objectName: 'ds'
 			},
             period: {
                 value: 'period',
-                rawValue: 'Periods', //i18n PT.i18n.period,
-                paramName: 'pe',
+                name: 'Periods', //i18n PT.i18n.period,
+                dimensionName: 'pe',
+                objectName: 'pe',
                 warning: {
 					filter: '...'//PT.i18n.wm_multiple_filter_period
 				}
             },
+            fixedPeriod: {
+				value: 'periods'
+			},
+			relativePeriod: {
+				value: 'relativePeriods'
+			},
             organisationUnit: {
-                value: 'organisationunit',
-                rawValue: 'Organisation units', //i18n PT.i18n.organisation_unit,
-                paramName: 'ou',
+                value: 'organisationUnits',
+                name: 'Organisation units', //i18n PT.i18n.organisation_unit,
+                dimensionName: 'ou',
+                objectName: 'ou',
+                userOrganisationUnit: 'USER_ORGUNIT',
+                userOrganisationUnitChildren: 'USER_ORGUNIT_CHILDREN',
                 warning: {
 					filter: '...'//PT.i18n.wm_multiple_filter_orgunit
 				}
             },
-            organisationUnitGroup: {
-				value: 'organisationunitgroup'
+            organisationUnitGroupSet: {
+				value: 'organisationUnitGroupSets',
+				objectName: 'ougs'
+			},
+            dataElementGroupSet: {
+				value: 'dataElementGroupSets',
+				objectName: 'degs'
 			},
 			value: {
 				value: 'value'
@@ -95,18 +116,64 @@ PT.core.getConfigs = function() {
 		}
 	};
 
+	dim = conf.finals.dimension;
+
+	dim.objectNameMap = {};
+	dim.objectNameMap[dim.data.objectName] = dim.data;
+	dim.objectNameMap[dim.indicator.objectName] = dim.indicator;
+	dim.objectNameMap[dim.dataElement.objectName] = dim.dataElement;
+	dim.objectNameMap[dim.dataSet.objectName] = dim.dataSet;
+	dim.objectNameMap[dim.category.objectName] = dim.category;
+	dim.objectNameMap[dim.period.objectName] = dim.period;
+	dim.objectNameMap[dim.organisationUnit.objectName] = dim.organisationUnit;
+	dim.objectNameMap[dim.organisationUnitGroupSet.objectName] = dim.organisationUnitGroupSet;
+	dim.objectNameMap[dim.dataElementGroupSet.objectName] = dim.dataElementGroupSet;
+
 	conf.period = {
 		relativePeriods: {
-			LAST_MONTH: 1,
-			LAST_3_MONTHS: 3,
-			LAST_12_MONTHS: 12,
-			LAST_QUARTER: 1,
-			LAST_4_QUARTERS: 4,
-			LAST_SIX_MONTH: 1,
-			LAST_2_SIXMONTHS: 2,
-			THIS_YEAR: 1,
-			LAST_YEAR: 1,
-			LAST_5_YEARS: 5
+			'LAST_WEEK': 1,
+			'LAST_4_WEEKS': 4,
+			'LAST_12_WEEKS': 12,
+			'LAST_MONTH': 1,
+			'LAST_3_MONTHS': 3,
+			'LAST_12_MONTHS': 12,
+			'LAST_QUARTER': 1,
+			'LAST_4_QUARTERS': 4,
+			'LAST_SIX_MONTH': 1,
+			'LAST_2_SIXMONTHS': 2,
+			'THIS_YEAR': 1,
+			'LAST_YEAR': 1,
+			'LAST_5_YEARS': 5
+		},
+		relativePeriodValueKeys: {
+			'LAST_WEEK': 'lastWeek',
+			'LAST_4_WEEKS': 'last4Weeks',
+			'LAST_12_WEEKS': 'last12Weeks',
+			'LAST_MONTH': 'reportingMonth',
+			'LAST_3_MONTHS': 'last3Months',
+			'LAST_12_MONTHS': 'last12Months',
+			'LAST_QUARTER': 'reportingQuarter',
+			'LAST_4_QUARTERS': 'last4Quarters',
+			'LAST_SIX_MONTH': 'lastSixMonth',
+			'LAST_2_SIXMONTHS': 'last2SixMonths',
+			'THIS_YEAR': 'thisYear',
+			'LAST_YEAR': 'lastYear',
+			'LAST_5_YEARS': 'last5Years'
+		},
+		relativePeriodParamKeys: {
+			'lastWeek': 'LAST_WEEK',
+			'last4Weeks': 'LAST_4_WEEKS',
+			'last12Weeks': 'LAST_12_WEEKS',
+			'reportingMonth': 'LAST_MONTH',
+			'last3Months': 'LAST_3_MONTHS',
+			'last12Months': 'LAST_12_MONTHS',
+			'reportingQuarter': 'LAST_QUARTER',
+			'last4Quarters': 'LAST_4_QUARTERS',
+			'lastSixMonth': 'LAST_SIX_MONTH',
+			'last2SixMonths': 'LAST_2_SIXMONTHS',
+			'thisYear': 'THIS_YEAR',
+			'lastYear': 'LAST_YEAR',
+			'last5Years': 'LAST_5_YEARS'
 		},
 		periodTypes: [
 			{id: 'Daily', name: 'Daily'},
@@ -130,7 +197,7 @@ PT.core.getConfigs = function() {
         west_fill_accordion_indicator: 63,
         west_fill_accordion_dataelement: 63,
         west_fill_accordion_dataset: 33,
-        west_fill_accordion_period: 256,
+        west_fill_accordion_period: 240,
         west_fill_accordion_organisationunit: 62,
         west_maxheight_accordion_indicator: 400,
         west_maxheight_accordion_dataelement: 400,
@@ -146,6 +213,7 @@ PT.core.getConfigs = function() {
         window_confirm_width: 250,
         window_share_width: 500,
         grid_favorite_width: 420,
+        grid_row_height: 27,
         treepanel_minheight: 135,
         treepanel_maxheight: 400,
         treepanel_fill_default: 310,
@@ -158,7 +226,11 @@ PT.core.getConfigs = function() {
     };
 
 	conf.pivot = {
-		cellPadding: {
+		digitGroupSeparator: {
+			'comma': ',',
+			'space': ' '
+		},
+		displayDensity: {
 			'compact': '3px',
 			'normal': '5px',
 			'comfortable': '10px'
@@ -355,7 +427,7 @@ PT.core.getUtils = function(pt) {
 		setRelativePeriods: function(rp) {
 			if (rp) {
 				for (var r in rp) {
-					var cmp = pt.util.getCmp('checkbox[paramName="' + r + '"]');
+					var cmp = pt.util.getCmp('checkbox[relativePeriodId="' + r + '"]');
 					if (cmp) {
 						cmp.setValue(rp[r]);
 					}
@@ -383,14 +455,15 @@ PT.core.getUtils = function(pt) {
 	};
 
 	util.array = {
-		sortDimensions: function(dimensions) {
+		sortDimensions: function(dimensions, key) {
+			key = key || 'dimensionName';
 
 			// Sort object order
 			Ext.Array.sort(dimensions, function(a,b) {
-				if (a.name < b.name) {
+				if (a[key] < b[key]) {
 					return -1;
 				}
-				if (a.name > b.name) {
+				if (a[key] > b[key]) {
 					return 1;
 				}
 				return 0;
@@ -433,105 +506,94 @@ PT.core.getUtils = function(pt) {
 		},
 
 		roundIf: function(x, fix) {
-			var dec = pt.util.number.getNumberOfDecimals(x);
-			return parseFloat(dec > fix ? x.toFixed(fix) : x);
+			if (Ext.isString(x)) {
+				x = parseFloat(x);
+			}
+
+			if (Ext.isNumber(x) && Ext.isNumber(fix)) {
+				var dec = pt.util.number.getNumberOfDecimals(x);
+				return parseFloat(dec > fix ? x.toFixed(fix) : x);
+			}
+			return x;
 		},
 
-		pp: function(x) {
-			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+		pp: function(x, nf) {
+			nf = nf || 'space';
+
+			if (nf === 'none') {
+				return x;
+			}
+
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, pt.conf.pivot.digitGroupSeparator[nf]);
 		}
 	};
 
 	util.pivot = {
-		getTdHtml: function(options, config) {
-			var cls,
-				colSpan,
-				rowSpan,
-				htmlValue,
-				cellPadding,
-				fontSize;
-
-			if (!(config && Ext.isObject(config))) {
-				return '';
-			}
-
-			cls = config.cls ? config.cls : '';
-			cls += config.hidden ? ' td-hidden' : '';
-			cls += config.collapsed ? ' td-collapsed' : '';
-			colSpan = config.colSpan ? 'colspan="' + config.colSpan + '"' : '';
-			rowSpan = config.rowSpan ? 'rowspan="' + config.rowSpan + '"' : '';
-			htmlValue = config.collapsed ? '&nbsp;' : config.htmlValue || config.value || '&nbsp;';
-			htmlValue = config.type !== 'dimension' ? pt.util.number.pp(htmlValue) : htmlValue;
-			cellPadding = pt.conf.pivot.cellPadding[config.cellPadding] || pt.conf.pivot.cellPadding[options.cellPadding];
-			fontSize = pt.conf.pivot.fontSize[config.fontSize] || pt.conf.pivot.fontSize[options.fontSize];
-
-			return '<td class="' + cls + '" ' + colSpan + ' ' + rowSpan + ' style="padding:' + cellPadding + '; font-size:' + fontSize + ';">' + htmlValue + '</td>';
-		},
-
 		getTable: function(settings, pt) {
 			var options = settings.options,
-				getParamStringFromDimensions,
-				extendSettings,
+				extendLayout,
+				getSyncronizedXLayout,
+				getParamString,
 				validateResponse,
 				extendResponse,
 				extendAxis,
-				extendRowAxis,
-				getTableHtmlArrays,
+				validateUrl,
+				getTableHtml,
 				initialize,
 
 				dimConf = pt.conf.finals.dimension;
 
-			extendSettings = function(settings) {
-				var xSettings = Ext.clone(settings),
+			extendLayout = function(settings) {
+				var xLayout = Ext.clone(settings),
 					addDimensions,
 					addDimensionNames,
 					addSortedDimensions,
 					addSortedFilterDimensions;
 
 				addDimensions = function() {
-					xSettings.dimensions = [].concat(Ext.clone(xSettings.col) || [], Ext.clone(xSettings.row) || []);
+					xLayout.dimensions = [].concat(Ext.clone(xLayout.col) || [], Ext.clone(xLayout.row) || []);
 				}();
 
 				addDimensionNames = function() {
 					var a = [],
-						dimensions = Ext.clone(xSettings.dimensions) || [];
+						dimensions = Ext.clone(xLayout.dimensions) || [];
 
 					for (var i = 0; i < dimensions.length; i++) {
-						a.push(dimensions[i].name);
+						a.push(dimensions[i].dimensionName);
 					}
 
-					xSettings.dimensionNames = a;
+					xLayout.dimensionNames = a;
 				}();
 
 				addSortedDimensions = function() {
-					xSettings.sortedDimensions = pt.util.array.sortDimensions(Ext.clone(xSettings.dimensions) || []);
+					xLayout.sortedDimensions = pt.util.array.sortDimensions(Ext.clone(xLayout.dimensions) || []);
 				}();
 
 				addSortedFilterDimensions = function() {
-						xSettings.sortedFilterDimensions = pt.util.array.sortDimensions(Ext.clone(xSettings.filter) || []);
+						xLayout.sortedFilterDimensions = pt.util.array.sortDimensions(Ext.clone(xLayout.filter) || []);
 				}();
 
 				addNameItemsMap = function() {
 					var map = {},
-						dimensions = Ext.clone(xSettings.dimensions) || [];
+						dimensions = Ext.clone(xLayout.dimensions) || [];
 
 					for (var i = 0, dim; i < dimensions.length; i++) {
 						dim = dimensions[i];
 
-						map[dim.name] = dim.items || [];
+						map[dim.dimensionName] = dim.items || [];
 					}
 
-					xSettings.nameItemsMap = map;
+					xLayout.nameItemsMap = map;
 				}();
 
-				return xSettings;
+				return xLayout;
 			};
 
-			getSyncronizedXSettings = function(xSettings, response) {
+			getSyncronizedXLayout = function(xLayout, response) {
 				var getHeaderNames,
 
 					headerNames,
-					newSettings;
+					newLayout;
 
 				getHeaderNames = function() {
 					var a = [];
@@ -543,7 +605,7 @@ PT.core.getUtils = function(pt) {
 					return a;
 				};
 
-				removeDimensionFromSettings = function(dimensionName) {
+				removeDimensionFromLayout = function(dimensionName) {
 					var getCleanAxis;
 
 					getAxis = function(axis) {
@@ -551,7 +613,7 @@ PT.core.getUtils = function(pt) {
 							dimension;
 
 						for (var i = 0; i < axis.length; i++) {
-							if (axis[i].name === dimensionName) {
+							if (axis[i].dimensionName === dimensionName) {
 								dimension = axis[i];
 							}
 						}
@@ -577,33 +639,33 @@ PT.core.getUtils = function(pt) {
 				headerNames = getHeaderNames();
 
 				// remove co from settings if it does not exist in response
-				if (Ext.Array.contains(xSettings.dimensionNames, dimConf.category.paramName) && !(Ext.Array.contains(headerNames, dimConf.category.paramName))) {
-					removeDimensionFromSettings(dimConf.category.paramName);
+				if (Ext.Array.contains(xLayout.dimensionNames, dimConf.category.dimensionName) && !(Ext.Array.contains(headerNames, dimConf.category.dimensionName))) {
+					removeDimensionFromLayout(dimConf.category.dimensionName);
 
-					newSettings = pt.api.Settings(settings);
+					newLayout = pt.api.Layout(settings);
 
-					if (!newSettings) {
+					if (!newLayout) {
 						return;
 					}
 
-					return extendSettings(newSettings);
+					return extendLayout(newLayout);
 				}
 				else {
-					return xSettings;
+					return xLayout;
 				}
 			};
 
-			getParamString = function(xSettings) {
-				var sortedDimensions = xSettings.sortedDimensions,
-					sortedFilterDimensions = xSettings.sortedFilterDimensions,
+			getParamString = function(xLayout) {
+				var sortedDimensions = xLayout.sortedDimensions,
+					sortedFilterDimensions = xLayout.sortedFilterDimensions,
 					paramString = '?';
 
 				for (var i = 0, sortedDim; i < sortedDimensions.length; i++) {
 					sortedDim = sortedDimensions[i];
 
-					paramString += 'dimension=' + sortedDim.name;
+					paramString += 'dimension=' + sortedDim.dimensionName;
 
-					if (sortedDim.name !== pt.conf.finals.dimension.category.paramName) {
+					if (sortedDim.dimensionName !== pt.conf.finals.dimension.category.dimensionName) {
 						paramString += ':' + sortedDim.items.join(';');
 					}
 
@@ -616,7 +678,7 @@ PT.core.getUtils = function(pt) {
 					for (var i = 0, sortedFilterDim; i < sortedFilterDimensions.length; i++) {
 						sortedFilterDim = sortedFilterDimensions[i];
 
-						paramString += '&filter=' + sortedFilterDim.name + ':' + sortedFilterDim.items.join(';');
+						paramString += '&filter=' + sortedFilterDim.dimensionName + ':' + sortedFilterDim.items.join(';');
 					}
 				}
 
@@ -649,7 +711,7 @@ PT.core.getUtils = function(pt) {
 				return true;
 			};
 
-			extendResponse = function(response, xSettings) {
+			extendResponse = function(response, xLayout) {
 				var headers = response.headers,
 					metaData = response.metaData,
 					rows = response.rows;
@@ -662,7 +724,7 @@ PT.core.getUtils = function(pt) {
 					// Extend headers: index, items (ordered), size
 					for (var i = 0, header, settingsItems, responseItems, orderedResponseItems; i < headers.length; i++) {
 						header = headers[i];
-						settingsItems = xSettings.nameItemsMap[header.name],
+						settingsItems = xLayout.nameItemsMap[header.name],
 						responseItems = [];
 						orderedResponseItems = [];
 
@@ -682,7 +744,7 @@ PT.core.getUtils = function(pt) {
 								for (var j = 0, item; j < settingsItems.length; j++) {
 									item = settingsItems[j];
 
-									if (header.name === dimConf.period.paramName && pt.conf.period.relativePeriods[item]) {
+									if (header.name === dimConf.period.dimensionName && pt.conf.period.relativePeriods[item]) {
 										orderedResponseItems = responseItems;
 										orderedResponseItems.sort();
 									}
@@ -714,7 +776,7 @@ PT.core.getUtils = function(pt) {
 
 				var createValueIds = function() {
 					var valueHeaderIndex = response.nameHeaderMap[pt.conf.finals.dimension.value.value].index,
-						dimensionNames = xSettings.dimensionNames,
+						dimensionNames = xLayout.dimensionNames,
 						idIndexOrder = [];
 
 					// idIndexOrder
@@ -761,7 +823,7 @@ PT.core.getUtils = function(pt) {
 					for (var i = 0, dim; i < axis.length; i++) {
 						dim = axis[i];
 
-						a.push(xResponse.nameHeaderMap[dim.name].items);
+						a.push(xResponse.nameHeaderMap[dim.dimensionName].items);
 					}
 
 					return a;
@@ -919,8 +981,20 @@ PT.core.getUtils = function(pt) {
 				};
 			};
 
+			validateUrl = function(url) {
+				if (!Ext.isString(url) || url.length > 2000) {
+					var percent = ((url.length - 2000) / url.length) * 100;
+					alert('Too many parameters selected. Please reduce the number of parameters by minimum ' + percent.toFixed(0) + '%.');
+					return;
+				}
+
+				return true;
+			};
+
 			getTableHtml = function(xColAxis, xRowAxis, xResponse) {
-				var doSubTotals,
+				var getTdHtml,
+					doSubTotals,
+					doTotals,
 					getColAxisHtmlArray,
 					getRowHtmlArray,
 					rowAxisHtmlArray,
@@ -955,6 +1029,31 @@ PT.core.getUtils = function(pt) {
 					totalColItems = [],
 					htmlArray;
 
+				getTdHtml = function(options, config) {
+					var cls,
+						colSpan,
+						rowSpan,
+						htmlValue,
+						displayDensity,
+						fontSize;
+
+					if (!(config && Ext.isObject(config))) {
+						return '';
+					}
+
+					cls = config.cls ? config.cls : '';
+					cls += config.hidden ? ' td-hidden' : '';
+					cls += config.collapsed ? ' td-collapsed' : '';
+					colSpan = config.colSpan ? 'colspan="' + config.colSpan + '"' : '';
+					rowSpan = config.rowSpan ? 'rowspan="' + config.rowSpan + '"' : '';
+					htmlValue = config.collapsed ? '&nbsp;' : config.htmlValue || config.value || '&nbsp;';
+					htmlValue = config.type !== 'dimension' ? pt.util.number.pp(htmlValue, options.digitGroupSeparator) : htmlValue;
+					displayDensity = pt.conf.pivot.displayDensity[config.displayDensity] || pt.conf.pivot.displayDensity[options.displayDensity];
+					fontSize = pt.conf.pivot.fontSize[config.fontSize] || pt.conf.pivot.fontSize[options.fontSize];
+
+					return '<td class="' + cls + '" ' + colSpan + ' ' + rowSpan + ' style="padding:' + displayDensity + '; font-size:' + fontSize + ';">' + htmlValue + '</td>';
+				};
+
 				doSubTotals = function(xAxis) {
 					return !!options.showSubTotals && xAxis && xAxis.dims > 1;
 
@@ -976,13 +1075,16 @@ PT.core.getUtils = function(pt) {
 					//return (multiItemDimension > 1);
 				};
 
+				doTotals = function() {
+					return !!options.showTotals;
+				};
+
 				getColAxisHtmlArray = function() {
 					var a = [],
 						getEmptyHtmlArray;
 
 					getEmptyHtmlArray = function() {
-						return (xColAxis && xRowAxis) ?
-							pt.util.pivot.getTdHtml(options, {cls: 'pivot-dim-empty', colSpan: xRowAxis.dims, rowSpan: xColAxis.dims}) : '';
+						return (xColAxis && xRowAxis) ? getTdHtml(options, {cls: 'pivot-dim-empty', colSpan: xRowAxis.dims, rowSpan: xColAxis.dims}) : '';
 					};
 
 					if (!(xColAxis && Ext.isObject(xColAxis))) {
@@ -1000,7 +1102,7 @@ PT.core.getUtils = function(pt) {
 
 						for (var j = 0, id; j < dimItems.length; j++) {
 							id = dimItems[j];
-							dimHtml.push(pt.util.pivot.getTdHtml(options, {
+							dimHtml.push(getTdHtml(options, {
 								type: 'dimension',
 								cls: 'pivot-dim',
 								colSpan: colSpan,
@@ -1008,20 +1110,22 @@ PT.core.getUtils = function(pt) {
 							}));
 
 							if (doSubTotals(xColAxis) && i === 0) {
-								dimHtml.push(pt.util.pivot.getTdHtml(options, {
+								dimHtml.push(getTdHtml(options, {
 									type: 'dimensionSubtotal',
 									cls: 'pivot-dim-subtotal',
 									rowSpan: xColAxis.dims
 								}));
 							}
 
-							if (i === 0 && j === (dimItems.length - 1)) {
-								dimHtml.push(pt.util.pivot.getTdHtml(options, {
-									type: 'dimensionTotal',
-									cls: 'pivot-dim-total',
-									rowSpan: xColAxis.dims,
-									htmlValue: 'Total'
-								}));
+							if (doTotals()) {
+								if (i === 0 && j === (dimItems.length - 1)) {
+									dimHtml.push(getTdHtml(options, {
+										type: 'dimensionTotal',
+										cls: 'pivot-dim-total',
+										rowSpan: xColAxis.dims,
+										htmlValue: 'Total'
+									}));
+								}
 							}
 						}
 
@@ -1111,7 +1215,7 @@ PT.core.getUtils = function(pt) {
 					}
 
 					// Value total objects
-					if (xColAxis) {
+					if (xColAxis && doTotals()) {
 						for (var i = 0, empty, total; i < valueObjects.length; i++) {
 							empty = [];
 							total = 0;
@@ -1151,7 +1255,9 @@ PT.core.getUtils = function(pt) {
 									}
 
 									// Hide total
-									totalValueObjects[i].collapsed = true;
+									if (doTotals()) {
+										totalValueObjects[i].collapsed = true;
+									}
 
 									// Hide/reduce parent dim span
 									parent = axisObjects[i][xRowAxis.dims-1];
@@ -1325,7 +1431,7 @@ PT.core.getUtils = function(pt) {
 						row = [];
 
 						for (var j = 0; j < mergedObjects[i].length; j++) {
-							row.push(pt.util.pivot.getTdHtml(options, mergedObjects[i][j]));
+							row.push(getTdHtml(options, mergedObjects[i][j]));
 						}
 
 						a.push(row);
@@ -1337,7 +1443,7 @@ PT.core.getUtils = function(pt) {
 				getColTotalHtmlArray = function() {
 					var a = [];
 
-					if (xRowAxis) {
+					if (xRowAxis && doTotals()) {
 
 						// Total col items
 						for (var i = 0, colSum; i < valueItems[0].length; i++) {
@@ -1385,7 +1491,7 @@ PT.core.getUtils = function(pt) {
 							item = totalColItems[i];
 							item.htmlValue = pt.util.number.roundIf(item.htmlValue, 1).toString();
 
-							a.push(pt.util.pivot.getTdHtml(options, {
+							a.push(getTdHtml(options, {
 								cls: item.cls,
 								htmlValue: item.htmlValue
 							}));
@@ -1400,17 +1506,19 @@ PT.core.getUtils = function(pt) {
 						values = [],
 						a = [];
 
-					for (var i = 0; i < totalColItems.length; i++) {
-						values.push(totalColItems[i].value);
-					}
+					if (doTotals()) {
+						for (var i = 0; i < totalColItems.length; i++) {
+							values.push(totalColItems[i].value);
+						}
 
-					if (xColAxis && xRowAxis) {
-						grandTotalSum = Ext.Array.sum(values);
+						if (xColAxis && xRowAxis) {
+							grandTotalSum = Ext.Array.sum(values);
 
-						a.push(pt.util.pivot.getTdHtml(options, {
-							cls: 'pivot-value-grandtotal',
-							htmlValue: pt.util.number.roundIf(grandTotalSum, 1).toString()
-						}));
+							a.push(getTdHtml(options, {
+								cls: 'pivot-value-grandtotal',
+								htmlValue: pt.util.number.roundIf(grandTotalSum, 1).toString()
+							}));
+						}
 					}
 
 					return a;
@@ -1423,17 +1531,19 @@ PT.core.getUtils = function(pt) {
 						row,
 						a = [];
 
-					if (xRowAxis) {
-						dimTotalArray = [pt.util.pivot.getTdHtml(options, {
-							cls: 'pivot-dim-total',
-							colSpan: xRowAxis.dims,
-							htmlValue: 'Total'
-						})];
+					if (doTotals()) {
+						if (xRowAxis) {
+							dimTotalArray = [getTdHtml(options, {
+								cls: 'pivot-dim-total',
+								colSpan: xRowAxis.dims,
+								htmlValue: 'Total'
+							})];
+						}
+
+						row = [].concat(dimTotalArray || [], Ext.clone(colTotal) || [], Ext.clone(grandTotal) || []);
+
+						a.push(row);
 					}
-
-					row = [].concat(dimTotalArray || [], Ext.clone(colTotal) || [], Ext.clone(grandTotal) || []);
-
-					a.push(row);
 
 					return a;
 				};
@@ -1456,26 +1566,23 @@ PT.core.getUtils = function(pt) {
 
 			initialize = function() {
 				var url,
-					xSettings,
+					xLayout,
 					xResponse,
 					xColAxis,
 					xRowAxis;
 
-				xSettings = extendSettings(settings);
+				xLayout = extendLayout(settings);
 
-				pt.paramString = getParamString(xSettings);
-				url = pt.init.contextPath + '/api/analytics.jsonp' + pt.paramString;
+				pt.paramString = getParamString(xLayout);
+				url = pt.init.contextPath + '/api/analytics.json' + pt.paramString;
 
-				if (url.length > 2000) {
-					var percent = ((url.length - 2000) / url.length) * 100;
-
-					alert('Too many parameters selected. Please reduce the number of parameters by minimum ' + percent.toFixed(0) + '%');
+				if (!validateUrl(url)) {
 					return;
 				}
 
 				pt.util.mask.showMask(pt.viewport);
 
-				Ext.data.JsonP.request({
+				Ext.Ajax.request({
 					method: 'GET',
 					url: url,
 					callbackName: 'analytics',
@@ -1485,35 +1592,35 @@ PT.core.getUtils = function(pt) {
 						'Accept': 'application/json'
 					},
 					disableCaching: false,
-					failure: function() {
+					failure: function(r) {
 						pt.util.mask.hideMask();
-						alert('Data request failed');
+						alert(r.responseText);
 					},
-					success: function(response) {
-						var html;
+					success: function(r) {
+						var html,
+							response = Ext.decode(r.responseText);
 
 						if (!validateResponse(response)) {
 							pt.util.mask.hideMask();
-							console.log(response);
 							return;
 						}
 
-						xSettings = getSyncronizedXSettings(xSettings, response);
+						xLayout = getSyncronizedXLayout(xLayout, response);
 
-						if (!xSettings) {
+						if (!xLayout) {
 							pt.util.mask.hideMask();
 							return;
 						}
 
-						xResponse = extendResponse(response, xSettings);
+						xResponse = extendResponse(response, xLayout);
 
-						xColAxis = extendAxis('col', xSettings.col, xResponse);
-						xRowAxis = extendAxis('row', xSettings.row, xResponse);
+						xColAxis = extendAxis('col', xLayout.col, xResponse);
+						xRowAxis = extendAxis('row', xLayout.row, xResponse);
 
 						html = getTableHtml(xColAxis, xRowAxis, xResponse);
 
-						pt.container.removeAll(true);
-						pt.container.update(html);
+						pt.viewport.centerRegion.removeAll(true);
+						pt.viewport.centerRegion.update(html);
 
 						// After table success
 						pt.util.mask.hideMask();
@@ -1521,10 +1628,33 @@ PT.core.getUtils = function(pt) {
 						if (pt.viewport.downloadButton) {
 							pt.viewport.downloadButton.enable();
 						}
+
+						pt.xLayout = xLayout;
+						pt.xResponse = xResponse;
 					}
 				});
 
 			}();
+		},
+
+		loadTable: function(id) {
+			if (!Ext.isString(id)) {
+				alert('Invalid id');
+				return;
+			}
+
+			Ext.Ajax.request({
+				url: pt.baseUrl + '/api/reportTables/' + id + '.json?links=false',
+				method: 'GET',
+				failure: function(r) {
+					pt.util.mask.hideMask();
+					alert(r.responseText);
+				},
+				success: function(r) {
+					var response = Ext.decode(r.responseText);
+					pt.viewport.setFavorite(response);
+				}
+			});
 		}
 	};
 
@@ -1534,19 +1664,22 @@ PT.core.getUtils = function(pt) {
 PT.core.getAPI = function(pt) {
 	var api = {};
 
-	api.Settings = function(config) {
+	api.Layout = function(config) {
 		var col,
 			row,
 			filter,
 
 			removeEmptyDimensions,
 			getValidatedAxis,
-			validateSettings,
+			validateLayout,
 
 			defaultOptions = {
+				showTotals: true,
 				showSubTotals: true,
-				cellPadding: 'normal',
-				fontSize: 'normal'
+				hideEmptyRows: false,
+				displayDensity: 'normal',
+				fontSize: 'normal',
+				digitGroupSeparator: 'space'
 			};
 
 		removeEmptyDimensions = function(axis) {
@@ -1558,7 +1691,7 @@ PT.core.getAPI = function(pt) {
 				remove = false;
 				dimension = axis[i];
 
-				if (dimension.name !== pt.conf.finals.dimension.category.paramName) {
+				if (dimension.dimensionName !== pt.conf.finals.dimension.category.dimensionName) {
 					if (!(Ext.isArray(dimension.items) && dimension.items.length)) {
 						remove = true;
 					}
@@ -1581,6 +1714,7 @@ PT.core.getAPI = function(pt) {
 		};
 
 		getValidatedAxis = function(axis) {
+
 			if (!(axis && Ext.isArray(axis) && axis.length)) {
 				return;
 			}
@@ -1588,7 +1722,7 @@ PT.core.getAPI = function(pt) {
 			for (var i = 0, dimension; i < axis.length; i++) {
 				dimension = axis[i];
 
-				if (!(Ext.isObject(dimension) && Ext.isString(dimension.name))) {
+				if (!(Ext.isObject(dimension) && Ext.isString(dimension.dimensionName))) {
 					return;
 				}
 			}
@@ -1603,16 +1737,19 @@ PT.core.getAPI = function(pt) {
 				return defaultOptions;
 			}
 
+			options.showTotals = Ext.isDefined(options.showTotals) ? options.showTotals : defaultOptions.showTotals;
 			options.showSubTotals = Ext.isDefined(options.showSubTotals) ? options.showSubTotals : defaultOptions.showSubTotals;
-			options.cellPadding = options.cellPadding || defaultOptions.cellPadding;
+			options.hideEmptyRows = Ext.isDefined(options.hideEmptyRows) ? options.hideEmptyRows : defaultOptions.hideEmptyRows;
+			options.displayDensity = options.displayDensity || defaultOptions.displayDensity;
 			options.fontSize = options.fontSize || defaultOptions.fontSize;
+			options.digitGroupSeparator = Ext.isDefined(options.digitGroupSeparator) ? options.digitGroupSeparator : defaultOptions.digitGroupSeparator;
 
 			return options;
 		};
 
-		validateSettings = function() {
+		validateLayout = function() {
 			var a = [].concat(Ext.clone(col), Ext.clone(row), Ext.clone(filter)),
-				names = [],
+				dimensionNames = [],
 				dimConf = pt.conf.finals.dimension;
 
 			if (!(col || row)) {
@@ -1620,19 +1757,14 @@ PT.core.getAPI = function(pt) {
 				return;
 			}
 
-			// Selected dimensions
+			// Selected dimension names
 			for (var i = 0; i < a.length; i++) {
 				if (a[i]) {
-					names.push(a[i].name);
+					dimensionNames.push(a[i].dimensionName);
 				}
 			}
 
-			//if (!Ext.Array.contains(names, dimConf.data.paramName)) {
-				//alert('At least one indicator, data element or dataset must be specified as column, row or filter');
-				//return;
-			//}
-
-			if (!Ext.Array.contains(names, dimConf.period.paramName)) {
+			if (!Ext.Array.contains(dimensionNames, dimConf.period.dimensionName)) {
 				alert('At least one period must be specified as column, row or filter');
 				return;
 			}
@@ -1644,7 +1776,7 @@ PT.core.getAPI = function(pt) {
 			var obj = {};
 
 			if (!(config && Ext.isObject(config))) {
-				alert('Settings config is not an object'); //i18n
+				alert('Layout config is not an object'); //i18n
 				return;
 			}
 
@@ -1652,7 +1784,7 @@ PT.core.getAPI = function(pt) {
 			row = getValidatedAxis(config.row);
 			filter = getValidatedAxis(config.filter);
 
-			if (!validateSettings()) {
+			if (!validateLayout()) {
 				return;
 			}
 
@@ -1665,6 +1797,8 @@ PT.core.getAPI = function(pt) {
 			if (filter) {
 				obj.filter = filter;
 			}
+
+			obj.objects = config.objects;
 
 			obj.options = getValidatedOptions(config.options);
 

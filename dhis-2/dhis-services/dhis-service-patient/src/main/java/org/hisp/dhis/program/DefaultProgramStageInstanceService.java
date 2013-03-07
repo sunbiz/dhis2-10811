@@ -285,57 +285,190 @@ public class DefaultProgramStageInstanceService
         return programStageInstanceStore.getSendMesssageEvents();
     }
 
+    public Collection<ProgramStageInstance> getProgramStageInstances( Program program, Collection<Integer> orgunitIds,
+        Date startDate, Date endDate, Boolean completed )
+    {
+        return programStageInstanceStore.get( program, orgunitIds, startDate, endDate, completed );
+    }
+
+    public int getProgramStageInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Boolean completed )
+    {
+        return programStageInstanceStore.count( program, orgunitIds, startDate, endDate, completed );
+    }
+
+    public int getProgramStageInstanceCount( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Boolean completed )
+    {
+        return programStageInstanceStore.count( programStage, orgunitIds, startDate, endDate, completed );
+    }
+
     @Override
     public Grid getStatisticalReport( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
         I18n i18n, I18nFormat format )
     {
-
         Grid grid = new ListGrid();
-        grid.setTitle( program.getDisplayName() + " ( " + format.formatDate( startDate ) + " - "
-            + format.formatDate( endDate ) + " )" );
+        grid.setTitle( i18n.getString( "program_overview" ) + " - " + program.getDisplayName() );
+        grid.setSubtitle( i18n.getString( "from" ) + " " + format.formatDate( startDate ) + "  "
+            + i18n.getString( "to" ) + " " + format.formatDate( endDate ) );
+
+        grid.addHeader( new GridHeader( "", false, true ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+        grid.addHeader( new GridHeader( "", false, false ) );
+
+        // Total new enrollments in the period
 
         int total = programInstanceService.countProgramInstances( program, orgunitIds, startDate, endDate );
-        grid.setSubtitle( i18n.getString( "total_persons_enrolled" ) + ": " + total );
+        grid.addRow();
+        grid.addValue( i18n.getString( "total_new_enrollments_in_this_period" ) );
+        grid.addValue( total );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
 
-        if ( total > 0 )
+        // Total programs completed in this period
+
+        int totalDiscontinued = programInstanceService.countUnenrollment( program, orgunitIds, startDate, endDate );
+        int totalCompleted = programInstanceService.countProgramInstances( program, orgunitIds, startDate, endDate,
+            true );
+        grid.addRow();
+        grid.addValue( i18n.getString( "total_programs_completed_in_this_period" ) );
+        grid.addValue( totalCompleted - totalDiscontinued );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+
+        // Total programs discontinued (un-enrollments)
+
+        grid.addRow();
+        grid.addValue( i18n.getString( "total_programs_discontinued_unenrollments" ) );
+        grid.addValue( totalDiscontinued );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+
+        // Average number of stages for complete programs
+
+        grid.addRow();
+        grid.addValue( i18n.getString( "average_number_of_stages_for_complete_programs" ) );
+        double percent = 0.0;
+        if ( totalCompleted != 0 )
         {
-            grid.addHeader( new GridHeader( i18n.getString( "id" ), true, true ) );
-            grid.addHeader( new GridHeader( i18n.getString( "program_stage" ), false, true ) );
-            grid.addHeader( new GridHeader( i18n.getString( "completed" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "percent_completed" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "incomplete" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "percent_incomplete" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "scheduled" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "percent_Scheduled" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "overdue" ), false, false ) );
-            grid.addHeader( new GridHeader( i18n.getString( "percent_overdue" ), false, false ) );
+            int stageCompleted = averageNumberCompletedProgramInstance( program, orgunitIds, startDate, endDate, true );
+            percent = (stageCompleted + 0.0) / ( totalCompleted - totalDiscontinued );
+        }
+        grid.addValue( format.formatValue( percent ) );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
 
-            for ( ProgramStage programStage : program.getProgramStages() )
+        // Add empty row
+
+        grid.addRow();
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+
+        // Summary by stage
+
+        grid.addRow();
+        grid.addValue( i18n.getString( "summary_by_stage" ) );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+        grid.addValue( "" );
+
+        // Add titles for stage details
+
+        grid.addRow();
+        grid.addValue( i18n.getString( "program_stages" ) );
+        grid.addValue( i18n.getString( "visits_scheduled_all" ) );
+        grid.addValue( i18n.getString( "visits_done" ) );
+        grid.addValue( i18n.getString( "visits_done_percent" ) );
+        grid.addValue( i18n.getString( "forms_completed" ) );
+        grid.addValue( i18n.getString( "forms_completed_percent" ) );
+        grid.addValue( i18n.getString( "visits_overdue" ) );
+        grid.addValue( i18n.getString( "visits_overdue_percent" ) );
+
+        // Add values for stage details
+
+        for ( ProgramStage programStage : program.getProgramStages() )
+        {
+            grid.addRow();
+            grid.addValue( programStage.getDisplayName() );
+
+            // Visits scheduled (All)
+
+            int totalAll = this.getProgramStageInstanceCount( programStage, orgunitIds, startDate, endDate, null );
+            grid.addValue( totalAll );
+
+            // Visits done (#) = Incomplete + Complete stages.
+
+            int totalCompletedEvent = this.getProgramStageInstanceCount( programStage, orgunitIds, startDate, endDate,
+                true );
+            int totalVisit = totalCompletedEvent
+                + this.getProgramStageInstanceCount( programStage, orgunitIds, startDate, endDate, false );
+            grid.addValue( totalVisit );
+
+            // Visits done (%)
+
+            percent = 0.0;
+            if ( totalAll != 0 )
             {
-                grid.addRow();
-                grid.addValue( programStage.getId() );
-                grid.addValue( programStage.getDisplayName() );
-
-                int completed = programStageInstanceStore.getStatisticalProgramStageReport( programStage, orgunitIds,
-                    startDate, endDate, ProgramStageInstance.COMPLETED_STATUS );
-                grid.addValue( completed );
-                grid.addValue( (completed + 0.0) / total );
-
-                int incomplete = programStageInstanceStore.getStatisticalProgramStageReport( programStage, orgunitIds,
-                    startDate, endDate, ProgramStageInstance.VISITED_STATUS );
-                grid.addValue( incomplete );
-                grid.addValue( (incomplete + 0.0) / total );
-
-                int Scheduled = programStageInstanceStore.getStatisticalProgramStageReport( programStage, orgunitIds,
-                    startDate, endDate, ProgramStageInstance.FUTURE_VISIT_STATUS );
-                grid.addValue( Scheduled );
-                grid.addValue( (Scheduled + 0.0) / total );
-
-                int overdue = programStageInstanceStore.getStatisticalProgramStageReport( programStage, orgunitIds,
-                    startDate, endDate, ProgramStageInstance.LATE_VISIT_STATUS );
-                grid.addValue( overdue );
-                grid.addValue( (overdue + 0.0) / total );
+                percent = (totalVisit + 0.0) * 100 / totalAll;
             }
+            grid.addValue( format.formatValue( percent ) + "%" );
+
+            // Forms completed (#) = Program stage instances where the user has
+            // clicked complete.
+
+            grid.addValue( totalCompletedEvent );
+
+            // Forms completed (%)
+            if ( totalAll != 0 )
+            {
+                percent = (totalCompletedEvent + 0.0) * 100 / totalAll;
+            }
+            grid.addValue( format.formatValue( percent ) + "%" );
+
+            // Visits overdue (#)
+
+            int overdue = this.getOverDueEventCount( programStage, orgunitIds, startDate, endDate );
+            grid.addValue( overdue );
+
+            // Visits overdue (%)
+
+            percent = 0.0;
+            if ( totalAll != 0 )
+            {
+                percent = (overdue + 0.0) * 100 / totalAll;
+            }
+            grid.addValue( format.formatValue( percent ) + "%" );
         }
 
         return grid;
@@ -405,7 +538,7 @@ public class DefaultProgramStageInstanceService
 
             grid.addRow();
             grid.addValue( DateUtils.getMediumDateString( stageInstance.getDueDate() ) );
-            if( stageInstance.getExecutionDate() != null )
+            if ( stageInstance.getExecutionDate() != null )
             {
                 grid.addValue( stageInstance.getOrganisationUnit().getName() );
             }
@@ -427,5 +560,18 @@ public class DefaultProgramStageInstanceService
     {
         return programStageInstanceStore.getActiveInstanceCount( program, orgunitIds, startDate, endDate, statusList );
     }
-    
+
+    @Override
+    public int getOverDueEventCount( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate )
+    {
+        return programStageInstanceStore.getOverDueCount( programStage, orgunitIds, startDate, endDate );
+    }
+
+    @Override
+    public int averageNumberCompletedProgramInstance( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Boolean completed )
+    {
+        return programStageInstanceStore.averageNumberCompleted( program, orgunitIds, startDate, endDate, completed );
+    }
 }

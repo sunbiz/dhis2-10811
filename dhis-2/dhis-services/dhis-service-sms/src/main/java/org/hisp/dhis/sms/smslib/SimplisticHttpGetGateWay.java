@@ -27,7 +27,12 @@ package org.hisp.dhis.sms.smslib;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +43,6 @@ import org.smslib.GatewayException;
 import org.smslib.OutboundMessage;
 import org.smslib.TimeoutException;
 import org.smslib.helper.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -120,6 +122,7 @@ public class SimplisticHttpGetGateWay
         Map<String, String> requestParameters = new HashMap<String, String>( parameters );
 
         requestParameters.put( RECIPIENT, msg.getRecipient() );
+        requestParameters.put( MESSAGE, msg.getText() );
 
         String sender = msg.getFrom();
         if ( sender != null )
@@ -129,18 +132,36 @@ public class SimplisticHttpGetGateWay
         }
         try
         {
-            String requestURL = urlTemplate;
-            String urlEncodedMessage = URLEncoder.encode( msg.getText(), "UTF-8" );
-            requestURL = StringUtils.replace( requestURL, "{" + MESSAGE + "}", urlEncodedMessage );
+            String urlString = urlTemplate;
+            for ( String key : requestParameters.keySet() )
+            {
+                if ( requestParameters.get( key ) != null )
+                {
+                    urlString = StringUtils.replace( urlString, "{" + key + "}",
+                        URLEncoder.encode( requestParameters.get( key ), "UTF-8" ) );
+                }
+            }
+            Logger.getInstance().logInfo( "RequestURL: " + urlString, null, getGatewayId() );
+            URL requestURL = new URL( urlString );
+            URLConnection conn = requestURL.openConnection();
+            BufferedReader reader = new BufferedReader( new InputStreamReader( conn.getInputStream() ) );
+            String line, response = "";
+            while ( (line = reader.readLine()) != null )
+            {
+                response += line;
+            }
 
-            ResponseEntity<String> response = restTemplate.getForEntity( requestURL, String.class, requestParameters );
-            if ( response.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL )
+            HttpURLConnection httpConnection = (HttpURLConnection) conn;
+            if ( httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK )
             {
                 Logger.getInstance().logWarn( "Couldn't send message, got response " + response, null, getGatewayId() );
                 return false;
             }
+
+            reader.close();
+
         }
-        catch ( RestClientException e )
+        catch ( Exception e )
         {
             Logger.getInstance().logWarn( "Couldn't send message " + msg, e, getGatewayId() );
             return false;

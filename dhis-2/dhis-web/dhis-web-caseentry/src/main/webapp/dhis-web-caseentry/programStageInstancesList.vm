@@ -1,3 +1,4 @@
+
 #if($message)
 	<span id='message' style="display:block;">$message</span>
 #else
@@ -23,15 +24,12 @@
 			<table class="listTable">
 				<thead>
 					<tr>
-						<th>#</th>
-						#set($noCols = $grid.getHeaders().size() )
-						#set($metaData = $noCols - $valueTypes.size() - 1)
+						<th># </th>
 						#set($index = 0)
+						#set( $noHeader = $grid.getHeaders().size() )
 						#foreach( $col in $grid.getHeaders() )
-							#if($index < $noCols - 1 )
-								#if( $index==1 || $index > $metaData )
-									<th>$col.name</th>
-								#end
+							#if( $index == 1 || ( $index > 2 && $index < $noHeader - 2 ))
+								<th>$col.name</th>
 							#end
 							#set($index = $index + 1)
 						#end
@@ -41,25 +39,26 @@
 		
 				<tbody id="list">
 					#foreach( $row in $grid.getRows() )
-						#set($index = 0)
 						<tr id="row">
 							<td>
 								#set( $nr = ( ( $paging.getCurrentPage() - 1  ) * $paging.pageSize ) + $velocityCount )
 								$nr
 							</td>
 							#set($completed = "")
+							#set($index = 0)
 							#foreach( $col in $row )
 								#if( $index == 0 )
 									#set($psid = $col)
-								#elseif($index == $noCols - 1)
+								#elseif($velocityCount == $noHeader - 1 )
 									#set($completed = $col)
-								#elseif( $index==1 || $index > $metaData )
+								#elseif( $index == 1 
+									|| ( $index > 2 && $index < $noHeader - 2 ))
 									<td>$!col</td>
 								#end
 								#set($index = $index + 1)
 							#end
 							
-							<td align='right'>
+							<td align='right' style='padding-right:20px;'>
 								#if($completed=='false')<span class="incomplete-record" title="$i18n.getString('incomplete')">&nbsp;!&nbsp;</span>#end
 								<a href="javascript:showUpdateEvent( $psid )" title='$i18n.getString( "data_entry" )'><img src="images/data_entry.png" alt='$i18n.getString( "data_entry" )'></a>
 								<a href="javascript:removeEvent( $psid )" title='$i18n.getString( "remove" )'><img src="../images/delete.png" alt='$i18n.getString( "remove" )'></a>

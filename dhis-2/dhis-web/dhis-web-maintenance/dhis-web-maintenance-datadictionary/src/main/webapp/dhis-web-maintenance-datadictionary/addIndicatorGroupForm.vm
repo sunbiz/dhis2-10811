@@ -12,8 +12,6 @@
             'rules' : getValidationRules( "indicatorGroup" )
         } );
 
-        // checkValueIsExist( "name", "validateIndicatorGroup.action" );
-
         var nameField = document.getElementById( 'name' );
         nameField.select();
         nameField.focus();
@@ -34,6 +32,8 @@
 </script>
 
 <h3>$i18n.getString( "create_new_indicator_group" )</h3>
+
+#sharingCreateNotification( "indicatorGroup" )
 
 <form id="addIndicatorGroupForm" action="addIndicatorGroup.action" method="post" class="inputForm">
 

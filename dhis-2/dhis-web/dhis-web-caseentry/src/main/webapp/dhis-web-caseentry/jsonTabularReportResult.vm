@@ -27,11 +27,7 @@
   #foreach( $row in $grid.getRows() )
   [
   #foreach( $col in $row )
-	#if( $velocityCount < 3)
-		"$!col"
-	#else
-		"$!encoder.jsonEncode($!col)"
-	#end
+	"$!col"
   #if( $velocityCount < $noHeader ),#end
   #end
   ]#if( $velocityCount < $noRows ),#end

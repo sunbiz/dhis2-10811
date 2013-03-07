@@ -45,6 +45,7 @@ import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.importexport.action.util.ImportDataValueTask;
 import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
+import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.scheduling.Scheduler;
 import org.hisp.dhis.system.util.StreamUtils;
 import org.hisp.dhis.user.CurrentUserService;
@@ -68,6 +69,9 @@ public class ImportDataValueAction
     
     @Autowired
     private Scheduler scheduler;
+
+    @Autowired
+    private Notifier notifier;
 
     // -------------------------------------------------------------------------
     // Input
@@ -137,14 +141,16 @@ public class ImportDataValueAction
         strategy = strategy != null ? strategy : ImportStrategy.NEW_AND_UPDATES;
         dataElementIdScheme = dataElementIdScheme != null ? dataElementIdScheme : IdentifiableProperty.UID;        
         orgUnitIdScheme = orgUnitIdScheme != null ? orgUnitIdScheme : IdentifiableProperty.UID;
+
+        TaskId taskId = new TaskId( TaskCategory.DATAVALUE_IMPORT, currentUserService.getCurrentUser() );
+
+        notifier.clear( taskId );
         
         InputStream in = new FileInputStream( upload );
         
         in = StreamUtils.wrapAndCheckCompressionFormat( in );
         
         Reader reader = FORMAT_CSV.equals( importFormat ) ? new BufferedReader( new InputStreamReader( in ) ) : null;
-
-        TaskId taskId = new TaskId( TaskCategory.DATAVALUE_IMPORT, currentUserService.getCurrentUser() );
 
         ImportOptions options = new ImportOptions( dataElementIdScheme, orgUnitIdScheme, dryRun, strategy, skipExistingCheck );
         

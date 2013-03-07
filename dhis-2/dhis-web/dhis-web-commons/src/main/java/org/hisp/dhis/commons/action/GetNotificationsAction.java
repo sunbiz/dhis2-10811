@@ -94,7 +94,7 @@ public class GetNotificationsAction
 
             TaskId taskId = new TaskId( taskCategory, currentUserService.getCurrentUser() );
             
-            notifications = notifier.getNotifications( taskId, taskCategory, lastUid );
+            notifications = notifier.getNotifications( taskId, lastUid );
         }
         
         return SUCCESS;

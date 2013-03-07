@@ -27,10 +27,13 @@
 
 package org.hisp.dhis.patient.action.schedule;
 
+import static org.hisp.dhis.setting.SystemSettingManager.KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager;
+import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.scheduling.Scheduler;
 
 import com.opensymphony.xwork2.Action;
@@ -52,6 +55,13 @@ public class ScheduleCaseAggregateConditionAction
     public void setSchedulingManager( CaseAggregateConditionSchedulingManager schedulingManager )
     {
         this.schedulingManager = schedulingManager;
+    }
+
+    private SystemSettingManager systemSettingManager;
+
+    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
+    {
+        this.systemSettingManager = systemSettingManager;
     }
 
     // -------------------------------------------------------------------------
@@ -83,6 +93,13 @@ public class ScheduleCaseAggregateConditionAction
         return running;
     }
 
+    private String taskStrategy;
+
+    public void setTaskStrategy( String taskStrategy )
+    {
+        this.taskStrategy = taskStrategy;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -103,6 +120,9 @@ public class ScheduleCaseAggregateConditionAction
             }
             else
             {
+                systemSettingManager.saveSystemSetting( KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY,
+                    taskStrategy );
+                
                 Map<String, String> keyCronMap = new HashMap<String, String>();
 
                 keyCronMap.put( CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER,

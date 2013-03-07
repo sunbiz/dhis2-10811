@@ -1,5 +1,5 @@
 
-<h3>$i18n.getString( "meta_data_import" )</h3>
+<h3>$i18n.getString( "metadata_import" )</h3>
 
 <div id="inputCriteria" class="inputCriteria" style="height:144px">
 <form id="importForm" name="importForm" method="post" enctype="multipart/form-data" action="importMetaData.action">
@@ -33,22 +33,11 @@
 </form>
 </div>
 
-#if( $running )
-
 <div id="notificationDiv">
-<table id="notificationTable" class="notificationTable" style="width:422px">
+<table id="notificationTable" class="notificationTable" style="display:none">
 <col width="120">
 <col width="380">
 </table>
 </div>
-
-<script type="text/javascript">
-$( document ).ready( function() {
-	$( "#notificationTable" ).empty();
-	pingNotificationsTimeout();
-} );
-</script>
-
-#end
 
 <div id="importSummaryDiv" class="page formSection" style="display:none; width:400px; padding-bottom:20px;"></div>

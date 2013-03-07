@@ -120,7 +120,7 @@
 				#end
 				
 				<td>
-				  <a href="javascript:isDashboard=true;showPatientDashboardForm( '$patient.id' )" title='$i18n.getString( "patient_dashboard" )'><img src="../images/enroll.png" alt='$i18n.getString( "edit_profile" )'></a>
+				  <a href="javascript:isDashboard=true;showPatientDashboardForm( '$patient.id' )" title='$i18n.getString( "patient_dashboard" )'><img src="../images/enroll.png" alt='$i18n.getString( "patient_dashboard" )'></a>
 				  <a href="javascript:isDashboard=false;showUpdatePatientForm( '$patient.id' )" title='$i18n.getString( "edit_profile" )'><img src="../images/edit.png" alt='$i18n.getString( "edit_profile" )'></a>
 				  <a href="javascript:setFieldValue( 'isShowPatientList', 'false' ); showRelationshipList('$patient.id')" title='$i18n.getString( "manage_relationship" )'><img src="../images/relationship.png" alt='$i18n.getString( "manage_relationship" )'></a>
                   #if( $auth.hasAccess( "dhis-web-caseentry", "getPatientLocation" ) )

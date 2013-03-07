@@ -183,7 +183,8 @@ function addPatient( isContinue )
 						jQuery("#patientForm :input").each( function(){
 							if( $(this).attr('id') != "registrationDate" 
 								&& $(this).attr('type') != 'button'
-								&& $(this).attr('type') != 'submit' )
+								&& $(this).attr('type') != 'submit' 
+								&& $(this).attr('id') !='enrollmentDate' )
 							{
 								$(this).val("");
 							}
@@ -195,6 +196,18 @@ function addPatient( isContinue )
 						showPatientDashboardForm( patientId );
 					}
 				});
+			}
+			else if(isContinue){
+					jQuery("#patientForm :input").each( function(){
+						if( $(this).attr('id') != "registrationDate" 
+							&& $(this).attr('type') != 'button'
+							&& $(this).attr('type') != 'submit'  )
+						{
+							$(this).val("");
+						}
+					});
+					$("#patientForm :input").attr("disabled", false);
+					$("#patientForm").find("select").attr("disabled", false);
 			}
 			else
 			{

@@ -390,12 +390,6 @@
       <param name="requiredAuthorities">F_INDICATORGROUP_UPDATE</param>
     </action>
 
-    <action name="validateIndicatorGroup" class="org.hisp.dhis.dd.action.indicatorgroup.ValidateIndicatorGroupAction">
-      <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity-json">../dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="onExceptionReturn">plainTextError</param>
-    </action>
-
     <!-- Indicator Group Set -->
 
     <action name="indicatorGroupSet" class="org.hisp.dhis.dd.action.indicatorgroupset.ListIndicatorGroupSetAction">
@@ -428,12 +422,6 @@
     <action name="updateIndicatorGroupSet" class="org.hisp.dhis.dd.action.indicatorgroupset.UpdateIndicatorGroupSetAction">
       <result name="success" type="redirect">indicatorGroupSet.action?currentPage=${keyCurrentPage}</result>
       <param name="requiredAuthorities">F_INDICATORGROUPSET_UPDATE</param>
-    </action>
-
-    <action name="validateIndicatorGroupSet" class="org.hisp.dhis.dd.action.indicatorgroupset.ValidateIndicatorGroupSetAction">
-      <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity-json">../dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="onExceptionReturn">plainTextError</param>
     </action>
 
     <action name="deleteIndicatorGroupSet" class="org.hisp.dhis.dd.action.indicatorgroupset.DeleteIndicatorGroupSetAction">
@@ -550,12 +538,6 @@
     <action name="updateDataDictionary" class="org.hisp.dhis.dd.action.datadictionary.UpdateDataDictionaryAction">
       <result name="success" type="redirect">dataDictionary.action?currentPage=${keyCurrentPage}</result>
       <param name="requiredAuthorities">F_DATADICTIONARY_UPDATE</param>
-    </action>
-
-    <action name="validateDataDictionary" class="org.hisp.dhis.dd.action.datadictionary.ValidateDataDictionaryAction">
-      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity-json">/dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="onExceptionReturn">plainTextError</param>
     </action>
 
     <!-- Category -->

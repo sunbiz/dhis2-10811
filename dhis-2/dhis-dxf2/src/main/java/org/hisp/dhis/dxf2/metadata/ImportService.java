@@ -28,6 +28,7 @@ package org.hisp.dhis.dxf2.metadata;
  */
 
 import org.hisp.dhis.scheduling.TaskId;
+import org.hisp.dhis.user.User;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,11 +37,11 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ImportService
 {
-    ImportSummary importMetaData( MetaData metaData );
+    ImportSummary importMetaData( User user, MetaData metaData );
 
-    ImportSummary importMetaData( MetaData metaData, TaskId taskId );
+    ImportSummary importMetaData( User user, MetaData metaData, TaskId taskId );
 
-    ImportSummary importMetaData( MetaData metaData, ImportOptions importOptions );
+    ImportSummary importMetaData( User user, MetaData metaData, ImportOptions importOptions );
 
-    ImportSummary importMetaData( MetaData metaData, ImportOptions importOptions, TaskId taskId );
+    ImportSummary importMetaData( User user, MetaData metaData, ImportOptions importOptions, TaskId taskId );
 }

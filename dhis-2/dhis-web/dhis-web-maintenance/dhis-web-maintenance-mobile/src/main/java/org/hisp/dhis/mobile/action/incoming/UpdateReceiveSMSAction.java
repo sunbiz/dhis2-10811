@@ -34,9 +34,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Nguyen Kim Lai
- * @version $Id$
  */
-
 public class UpdateReceiveSMSAction
     implements Action
 {

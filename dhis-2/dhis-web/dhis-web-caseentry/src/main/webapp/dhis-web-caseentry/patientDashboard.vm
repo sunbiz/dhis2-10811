@@ -99,7 +99,7 @@
 			&#8226; <a href='javascript:showProgramEnrollmentForm( "$patient.id" )'>$i18n.getString("enroll")</a>
 		</p>
 		<div class="contentProviderTable">
-			<table id='activeTB' name='activeTB'>
+			<table id='activeTB' name='activeTB' style='cursor:pointer;'>
 				#foreach( $programInstance in $activeProgramInstances )
 					#set($programStageInstanceId = '')
 					#if($programInstance.program.type==1)
@@ -150,7 +150,7 @@
 			&#8226; <a href='javascript:showProgramEnrollmentForm( "$patient.id" )'>$i18n.getString("enroll")</a>
 		</p>
 		<div class="contentProviderTable">
-			<table id='completedTB' name='completedTB'>
+			<table id='completedTB' name='completedTB' style='cursor:pointer;'>
 				#foreach($programInstance in $completedProgramInstances)
 					#set($programStageInstanceId = '')
 					#if($programInstance.program.type==2)
@@ -207,7 +207,9 @@
 		<tr>
 			<th>$i18n.getString("date")</th>
 			<th>$i18n.getString("visitor")</th>
-			<th>$i18n.getString("accessed_module")</th>
+			<th>$i18n.getString("accessed_module") 
+				<a href="javascript:dashboardHistoryToggle();" class='bold'><img src='../images/cross.png' style="float:right; padding-right:2px;"></a>
+			</th>
 		</tr>
 	</table>
 	<div style="height:200px;width:450px;overflow:auto">

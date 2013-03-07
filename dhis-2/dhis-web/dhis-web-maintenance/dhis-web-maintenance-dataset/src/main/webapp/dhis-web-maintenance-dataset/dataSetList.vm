@@ -50,7 +50,7 @@
                   #end
 
                   #if ( $security.canManage( $dataSet ) )
-                  <a href="javascript:showSharingDialog('dataSet', '$dataSet.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
+                  <a href="javascript:showSharingDialog('dataSet', '$dataSet.uid');" title="$i18n.getString( 'sharing_settings' )"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
                   #else
                   <img src="../images/relationship-denied.png">
                   #end

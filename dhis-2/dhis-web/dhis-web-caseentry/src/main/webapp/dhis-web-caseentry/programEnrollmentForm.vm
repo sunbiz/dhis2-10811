@@ -71,7 +71,6 @@
 					
 					<!-- ATTRIBUTES IN GROUPS -->
 					#foreach($attribute in $patientAttributes )
-						#if( $attribute.valueType!='calculated')
 							#set( $attributeValue = '')
 							#set( $attributeValue = $!patientAttributeValueMap.get( $attribute.id ) )
 							<tr #alternate( $mark )>
@@ -100,7 +99,6 @@
 									#end
 								</td>		
 							</tr>
-						#end
 						#set( $mark = !$mark  )
 					#end
 					<tr><td>&nbsp;</td></tr>
@@ -127,8 +125,8 @@
 
 	<div id='tab-5'>
 		<p>
-			<input type="button" onclick="exportProgramReports( '$programInstance.id', 'xls' )" value="$i18n.getString('get_report_as_xls')">
-			<input type="button" onclick="exportProgramReports( '$programInstance.id', 'pdf' )" value="$i18n.getString('get_report_as_pdf')">
+			<input type="button" onclick="exportProgramReports( '$programInstance.id', 'xls' )" value="$i18n.getString('get_report_as_xls')" style='width:150px;'>
+			<input type="button" onclick="exportProgramReports( '$programInstance.id', 'pdf' )" value="$i18n.getString('get_report_as_pdf')" style='width:150px;'>
 		</p>
 		<div id='programReportDiv'></div>
 	</div>
@@ -152,6 +150,12 @@
 			jQuery("[id=tab-4] :input").prop('disabled', true);
 			jQuery("[id=tab-5] :input").prop('disabled', true);
 			jQuery("[id=tab-3] :input").datepicker("destroy");
+			jQuery("#completeProgram").attr('disabled', true);
+			jQuery("#incompleteProgram").attr('disabled', false);
+			$('[id=tab-3]').find('img').parent().removeAttr("href");
+		#else
+			jQuery("#completeProgram").attr('disabled', false);
+			jQuery("#incompleteProgram").attr('disabled', true);
 		#end
 	});
 

@@ -84,7 +84,8 @@ public interface ProgramStageInstanceStore
 
     Grid getTabularReport( ProgramStage programStage, Map<Integer, OrganisationUnitLevel> orgUnitLevelMap,
         Collection<Integer> orgUnits, List<TabularReportColumn> columns, int level, int maxLevel, Date startDate,
-        Date endDate, boolean descOrder, Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max, I18n i18n );
+        Date endDate, boolean descOrder, Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max,
+        I18n i18n );
 
     int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, int maxLevel, Date startDate, Date endDate, Boolean completed );
@@ -102,8 +103,9 @@ public interface ProgramStageInstanceStore
         Collection<Integer> orgunitIds, Date startDate, Date endDate, int status, Integer min, Integer max );
 
     Grid getAggregateReport( int position, ProgramStage programStage, Collection<Integer> orgunitIds,
-        String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>> deFilters, List<Period> periods,
-        String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format, I18n i18n );
+        String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>> deFilters,
+        List<Period> periods, String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format,
+        I18n i18n );
 
     // -------------------------------------------------------------------------
     // Activity plans
@@ -111,8 +113,21 @@ public interface ProgramStageInstanceStore
 
     List<ProgramStageInstance> getActiveInstance( Program program, Collection<Integer> orgunitIds, Date startDate,
         Date endDate, Collection<Integer> statusList, Integer max, Integer min );
+
+    int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Collection<Integer> statusList );
+
+    Collection<ProgramStageInstance> get( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Boolean completed );
+
+    int count( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate, Boolean completed );
+
+    int count( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Boolean completed );
+
+    int getOverDueCount( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate, Date endDate );
+
+    int averageNumberCompleted( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        Boolean completed );
     
-   int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate,
-        Date endDate, Collection<Integer> statusList );
-   
 }

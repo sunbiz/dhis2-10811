@@ -152,15 +152,6 @@
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
 
-	<bean
-		id="org.hisp.dhis.patient.action.patientattribute.GetCalPatientAttributeParamsAction"
-		class="org.hisp.dhis.patient.action.patientattribute.GetCalPatientAttributeParamsAction"
-		scope="prototype">
-		<property name="patientAttributeService"
-			ref="org.hisp.dhis.patient.PatientAttributeService" />
-		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
-	</bean>
-
 	<!-- Program -->
 
 	<bean id="org.hisp.dhis.patient.action.program.AddProgramAction"
@@ -1042,6 +1033,9 @@
 		scope="prototype">
 		<property name="schedulingManager"
 			ref="org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager" />
+		<property name="systemSettingManager">
+			<ref bean="org.hisp.dhis.setting.SystemSettingManager" />
+		</property>
 	</bean>
 
 	<bean
@@ -1050,6 +1044,9 @@
 		scope="prototype">
 		<property name="schedulingManager"
 			ref="org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager" />
+		<property name="systemSettingManager">
+			<ref bean="org.hisp.dhis.setting.SystemSettingManager" />
+		</property>
 	</bean>
 
 </beans>

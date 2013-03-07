@@ -46,7 +46,7 @@
                     	<img src="../images/start_process.png" alt="$i18n.getString( 'create' )"></a>                   
 
                         #if ( $security.canManage( $report ) )
-                        <a href="javascript:showSharingDialog('report', '$report.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
+                        <a href="javascript:showSharingDialog('report', '$report.uid');" title="$i18n.getString( 'sharing_settings' )"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
                         #else
                         <img src="../images/relationship-denied.png">
                         #end

@@ -72,7 +72,10 @@ public class OrganisationUnit
     public static final String FEATURETYPE_POLYGON = "Polygon";
     public static final String FEATURETYPE_POINT = "Point";
     public static final String RESULTTYPE_SYMBOL = "Symbol";
-
+    
+    public static final String KEY_USER_ORGUNIT = "USER_ORGUNIT";
+    public static final String KEY_USER_ORGUNIT_CHILDREN = "USER_ORGUNIT_CHILDREN";
+    
     private static final List<String> FEATURETYPES = Arrays.asList( FEATURETYPE_NONE, FEATURETYPE_MULTIPOLYGON, FEATURETYPE_POLYGON, FEATURETYPE_POINT );
 
     private static final Comparator<IdentifiableObject> COMPARATOR = new IdentifiableObjectNameComparator();

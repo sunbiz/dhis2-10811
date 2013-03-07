@@ -27,7 +27,6 @@ package org.hisp.dhis.completeness.engine;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.scheduling.TaskCategory.DATAMART;
 import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_COMPLETENESS_OFFSET;
 import static org.hisp.dhis.setting.SystemSettingManager.KEY_COMPLETENESS_OFFSET;
 import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
@@ -137,7 +136,7 @@ public class DefaultDataSetCompletenessEngine
         final int cpuCores = SystemUtils.getCpuCores();
         
         Clock clock = new Clock().startClock().logTime( "Data completeness export process started, number of CPU cores: " + cpuCores + ", " + SystemUtils.getMemoryString() );
-        notifier.notify( id, DATAMART, "Completeness export process started" );
+        notifier.notify( id, "Completeness export process started" );
 
         completenessStore.dropIndex();
 
@@ -149,7 +148,7 @@ public class DefaultDataSetCompletenessEngine
         completenessStore.deleteDataSetCompleteness( dataSetIds, periodIds, organisationUnitIds );
 
         clock.logTime( "Deleted existing completeness data" );
-        notifier.notify( id, DATAMART, "Exporting completeness for data sets" );
+        notifier.notify( id, "Exporting completeness for data sets" );
 
         Collection<Period> periods = periodService.getPeriods( periodIds );
         Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnits( organisationUnitIds );
@@ -175,6 +174,6 @@ public class DefaultDataSetCompletenessEngine
         clock.logTime( "Created index" );
 
         clock.logTime( "Completeness export process completed" );
-        notifier.notify( id, DATAMART, INFO, "Completeness process completed", true );
+        notifier.notify( id, INFO, "Completeness process completed", true );
     }
 }

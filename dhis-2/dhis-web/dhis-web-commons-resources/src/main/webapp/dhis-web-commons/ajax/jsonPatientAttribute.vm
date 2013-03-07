@@ -5,7 +5,6 @@
 	"description": "$!encoder.jsonEncode( ${patientAttribute.description} )",
 	"mandatory":  "$!{patientAttribute.mandatory}",
 	"valueType": "$!patientAttribute.valueType",
-	"inherit": "$!patientAttribute.inherit",
-	"expression": "$!patientAttribute.expression"
+	"inherit": "$!patientAttribute.inherit"
   }
 }

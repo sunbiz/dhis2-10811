@@ -27,10 +27,10 @@
 
 package org.hisp.dhis.program;
 
-import java.util.Collection;
-
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.validation.ValidationCriteria;
+
+import java.util.Collection;
 
 /**
  * @author Abyot Asalefew
@@ -53,15 +53,17 @@ public interface ProgramService
     Collection<Program> getAllPrograms();
 
     Collection<Program> getPrograms( OrganisationUnit organisationUnit );
-    
+
     Collection<Program> getProgramsByCurrentUser();
+
+    Collection<Program> getProgramsByCurrentUser( int type );
 
     Collection<Program> getPrograms( ValidationCriteria validationCriteria );
 
     Collection<Program> getPrograms( int type );
-    
+
     Collection<Program> getPrograms( int type, OrganisationUnit orgunit );
-    
+
     Program getProgram( String uid );
 
 }

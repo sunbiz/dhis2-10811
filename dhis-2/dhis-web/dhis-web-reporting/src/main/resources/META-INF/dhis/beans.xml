@@ -28,11 +28,6 @@
     <property name="documentService" ref="org.hisp.dhis.document.DocumentService" />
   </bean>
 
-  <bean id="org.hisp.dhis.reporting.document.action.ValidateDocumentAction" class="org.hisp.dhis.reporting.document.action.ValidateDocumentAction"
-    scope="prototype">
-    <property name="documentService" ref="org.hisp.dhis.document.DocumentService" />
-  </bean>
-
   <bean id="org.hisp.dhis.reporting.document.action.AddDocumentToDashboardAction" class="org.hisp.dhis.reporting.document.action.AddDocumentToDashboardAction"
     scope="prototype">
     <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
@@ -103,11 +98,6 @@
     <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
   </bean>
 
-  <bean id="org.hisp.dhis.reporting.tablecreator.action.ValidateTableAction" class="org.hisp.dhis.reporting.tablecreator.action.ValidateTableAction"
-    scope="prototype">
-    <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
-  </bean>
-
   <bean id="org.hisp.dhis.reporting.tablecreator.action.AddReportTableToDashboardAction" class="org.hisp.dhis.reporting.tablecreator.action.AddReportTableToDashboardAction"
     scope="prototype">
     <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
@@ -169,11 +159,6 @@
     <property name="reportService" ref="org.hisp.dhis.report.ReportService" />
   </bean>
 
-  <bean id="org.hisp.dhis.reporting.reportviewer.action.ValidateReportAction" class="org.hisp.dhis.reporting.reportviewer.action.ValidateReportAction"
-	scope="prototype">
-    <property name="reportService" ref="org.hisp.dhis.report.ReportService" />
-  </bean>
-  
   <bean id="org.hisp.dhis.reporting.reportviewer.action.GetReportAndParamsAction" class="org.hisp.dhis.reporting.reportviewer.action.GetReportAndParamsAction"
     scope="prototype">
   </bean>

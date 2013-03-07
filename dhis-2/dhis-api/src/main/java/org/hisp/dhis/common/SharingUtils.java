@@ -27,10 +27,8 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.datadictionary.DataDictionary;
-import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.dataelement.DataElementGroup;
-import org.hisp.dhis.dataelement.DataElementGroupSet;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.document.Document;
 import org.hisp.dhis.indicator.Indicator;
@@ -71,10 +69,6 @@ public final class SharingUtils
         PUBLIC_AUTHORITIES.put( Report.class, "F_REPORT_PUBLIC_ADD" );
         PRIVATE_AUTHORITIES.put( Report.class, "F_REPORT_PRIVATE_ADD" );
 
-        SUPPORTED_TYPES.put( "reportTable", ReportTable.class );
-        PUBLIC_AUTHORITIES.put( ReportTable.class, "F_REPORTTABLE_PUBLIC_ADD" );
-        PRIVATE_AUTHORITIES.put( ReportTable.class, "F_REPORTTABLE_PRIVATE_ADD" );
-
         SUPPORTED_TYPES.put( "dataSet", DataSet.class );
         PUBLIC_AUTHORITIES.put( DataSet.class, "F_DATASET_PUBLIC_ADD" );
         PRIVATE_AUTHORITIES.put( DataSet.class, "F_DATASET_PRIVATE_ADD" );
@@ -82,18 +76,6 @@ public final class SharingUtils
         SUPPORTED_TYPES.put( "dataDictionary", DataDictionary.class );
         PUBLIC_AUTHORITIES.put( DataDictionary.class, "F_DATADICTIONARY_PUBLIC_ADD" );
         PRIVATE_AUTHORITIES.put( DataDictionary.class, "F_DATADICTIONARY_PRIVATE_ADD" );
-
-        SUPPORTED_TYPES.put( "dataElement", DataElement.class );
-        PUBLIC_AUTHORITIES.put( DataElement.class, "F_DATAELEMENT_PUBLIC_ADD" );
-        PRIVATE_AUTHORITIES.put( DataElement.class, "F_DATAELEMENT_PRIVATE_ADD" );
-
-        SUPPORTED_TYPES.put( "dataElementGroup", DataElementGroup.class );
-        PUBLIC_AUTHORITIES.put( DataElementGroup.class, "F_DATAELEMENTGROUP_PUBLIC_ADD" );
-        PRIVATE_AUTHORITIES.put( DataElementGroup.class, "F_DATAELEMENTGROUP_PRIVATE_ADD" );
-
-        SUPPORTED_TYPES.put( "dataElementGroupSet", DataElementGroupSet.class );
-        PUBLIC_AUTHORITIES.put( DataElementGroupSet.class, "F_DATAELEMENTGROUPSET_PUBLIC_ADD" );
-        PRIVATE_AUTHORITIES.put( DataElementGroupSet.class, "F_DATAELEMENTGROUPSET_PRIVATE_ADD" );
 
         SUPPORTED_TYPES.put( "indicator", Indicator.class );
         PUBLIC_AUTHORITIES.put( Indicator.class, "F_INDICATOR_PUBLIC_ADD" );
@@ -107,13 +89,21 @@ public final class SharingUtils
         PUBLIC_AUTHORITIES.put( IndicatorGroupSet.class, "F_INDICATORGROUPSET_PUBLIC_ADD" );
         PRIVATE_AUTHORITIES.put( IndicatorGroupSet.class, "F_INDICATORGROUPSET_PRIVATE_ADD" );
 
-        SUPPORTED_TYPES.put( "userGroup", UserGroup.class );
-        PUBLIC_AUTHORITIES.put( UserGroup.class, "F_USERGROUP_PUBLIC_ADD" );
-        PRIVATE_AUTHORITIES.put( UserGroup.class, "F_USERGROUP_PRIVATE_ADD" );
-        
         SUPPORTED_TYPES.put( "program", Program.class );
         PUBLIC_AUTHORITIES.put( Program.class, "F_PROGRAM_PUBLIC_ADD" );
         PRIVATE_AUTHORITIES.put( Program.class, "F_PROGRAM_PRIVATE_ADD" );
+
+        SUPPORTED_TYPES.put( "userGroup", UserGroup.class );
+        PUBLIC_AUTHORITIES.put( UserGroup.class, "F_USERGROUP_PUBLIC_ADD" );
+
+        SUPPORTED_TYPES.put( "reportTable", ReportTable.class );
+        PUBLIC_AUTHORITIES.put( ReportTable.class, "F_REPORTTABLE_PUBLIC_ADD" );
+
+        SUPPORTED_TYPES.put( "map", org.hisp.dhis.mapping.Map.class );
+        PUBLIC_AUTHORITIES.put( org.hisp.dhis.mapping.Map.class, "F_MAP_PUBLIC_ADD" );
+
+        SUPPORTED_TYPES.put( "chart", Chart.class );
+        PUBLIC_AUTHORITIES.put( Chart.class, "F_CHART_PUBLIC_ADD" );
     }
 
     public static boolean isSupported( String type )
@@ -142,14 +132,24 @@ public final class SharingUtils
      * 1. Does user have SHARING_OVERRIDE_AUTHORITY authority?
      * 2. Does user have the authority to create public instances of that object
      *
-     * @param user   User to check against
-     * @param object Object to check
+     * @param user  User to check against
+     * @param clazz Class to check
      * @return Result of test
      */
-    public static boolean canCreatePublic( User user, IdentifiableObject object )
+    public static <T extends IdentifiableObject> boolean canCreatePublic( User user, Class<T> clazz )
     {
         Set<String> authorities = user != null ? user.getUserCredentials().getAllAuthorities() : new HashSet<String>();
-        return authorities.contains( SHARING_OVERRIDE_AUTHORITY ) || authorities.contains( PUBLIC_AUTHORITIES.get( object.getClass() ) );
+        return authorities.contains( SHARING_OVERRIDE_AUTHORITY ) || authorities.contains( PUBLIC_AUTHORITIES.get( clazz ) );
+    }
+
+    public static boolean canCreatePublic( User user, IdentifiableObject identifiableObject )
+    {
+        return canCreatePublic( user, identifiableObject.getClass() );
+    }
+
+    public static boolean canCreatePublic( User user, String type )
+    {
+        return canCreatePublic( user, SUPPORTED_TYPES.get( type ) );
     }
 
     /**
@@ -158,14 +158,26 @@ public final class SharingUtils
      * 1. Does user have SHARING_OVERRIDE_AUTHORITY authority?
      * 2. Does user have the authority to create private instances of that object
      *
-     * @param user   User to check against
-     * @param object Object to check
+     * @param user  User to check against
+     * @param clazz Class to check
      * @return Result of test
      */
-    public static boolean canCreatePrivate( User user, IdentifiableObject object )
+    public static <T extends IdentifiableObject> boolean canCreatePrivate( User user, Class<T> clazz )
     {
         Set<String> authorities = user != null ? user.getUserCredentials().getAllAuthorities() : new HashSet<String>();
-        return authorities.contains( SHARING_OVERRIDE_AUTHORITY ) || authorities.contains( PRIVATE_AUTHORITIES.get( object.getClass() ) );
+        return authorities.contains( SHARING_OVERRIDE_AUTHORITY )
+            || PRIVATE_AUTHORITIES.get( clazz ) == null
+            || authorities.contains( PRIVATE_AUTHORITIES.get( clazz ) );
+    }
+
+    public static boolean canCreatePrivate( User user, IdentifiableObject identifiableObject )
+    {
+        return canCreatePrivate( user, identifiableObject.getClass() );
+    }
+
+    public static boolean canCreatePrivate( User user, String type )
+    {
+        return canCreatePrivate( user, SUPPORTED_TYPES.get( type ) );
     }
 
     /**
@@ -276,7 +288,22 @@ public final class SharingUtils
      */
     public static boolean canManage( User user, IdentifiableObject object )
     {
-        return sharingOverrideAuthority( user ) || canWrite( user, object );
+        if ( sharingOverrideAuthority( user ) || user.equals( object.getUser() ) ||
+            AccessStringHelper.canWrite( object.getPublicAccess() ) )
+        {
+            return true;
+        }
+
+        for ( UserGroupAccess userGroupAccess : object.getUserGroupAccesses() )
+        {
+            if ( AccessStringHelper.canWrite( userGroupAccess.getAccess() )
+                && userGroupAccess.getUserGroup().getMembers().contains( user ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static boolean sharingOverrideAuthority( User user )

@@ -51,9 +51,8 @@ GIS.core.getConfigs = function() {
 			}
 		},
 		url: {
-			base: '../../',
-			path_api: 'api/',
-			path_gis: 'dhis-web-mapping/'
+			path_api: '/api/',
+			path_gis: '/dhis-web-mapping/'
 		},
 		layout: {
 			widget: {
@@ -347,7 +346,7 @@ GIS.core.getLayers = function(gis) {
 };
 
 GIS.core.createSelectHandlers = function(gis, layer) {
-	var isRelocate = !!GIS.app ? (gis.init.security.isAdmin ? true : false) : false,
+	var isRelocate = !!GIS.app ? (gis.init.user.isAdmin ? true : false) : false,
 		isInfo = !!GIS.app,
 
 		window,
@@ -715,7 +714,7 @@ GIS.core.createSelectHandlers = function(gis, layer) {
 			menuItems.push( Ext.create('Ext.menu.Item', {
 				text: GIS.i18n.relocate,
 				iconCls: 'gis-menu-item-icon-relocate',
-				disabled: !gis.init.security.isAdmin,
+				disabled: !gis.init.user.isAdmin,
 				handler: function(item) {
 					gis.olmap.relocate.active = true;
 					gis.olmap.relocate.feature = feature;
@@ -1732,7 +1731,7 @@ GIS.core.LayerLoaderFacility = function(gis, layer) {
 GIS.core.getInstance = function(config) {
 	var gis = {};
 
-	gis.baseUrl = config && config.baseUrl ? config.baseUrl : '../../';
+	gis.baseUrl = config && config.baseUrl ? config.baseUrl : '../..';
 	gis.el = config && config.el ? config.el : null;
 
 	gis.conf = GIS.core.getConfigs();

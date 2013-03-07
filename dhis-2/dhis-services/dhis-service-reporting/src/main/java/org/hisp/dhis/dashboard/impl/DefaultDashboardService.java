@@ -125,7 +125,7 @@ public class DefaultDashboardService
         
         objects.addAll( userService.getAllUsersBetweenByName( query, 0, MAX_PER_OBJECT ) );
         objects.addAll( chartService.getChartsBetweenByName( query, 0, MAX_PER_OBJECT ) );
-        objects.addAll( mappingService.getAccessibleMapsBetweenLikeName( query, 0, MAX_PER_OBJECT ) );        
+        objects.addAll( mappingService.getMapsBetweenLikeName( query, 0, MAX_PER_OBJECT ) );
 
         remaining = MAX_OBJECTS - objects.size();
         

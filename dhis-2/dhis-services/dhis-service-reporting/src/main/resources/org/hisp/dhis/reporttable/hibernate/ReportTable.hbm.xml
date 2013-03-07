@@ -102,26 +102,8 @@
       <element type="string" column="dimension" />
     </list>
 
-    <component name="relatives">
-      <property name="reportingMonth" />
-      <property name="reportingBimonth" />
-      <property name="reportingQuarter" />
-      <property name="lastSixMonth" />
-      <property name="monthsThisYear" />
-      <property name="quartersThisYear" />
-      <property name="thisYear" />
-      <property name="monthsLastYear" />
-      <property name="quartersLastYear" />
-      <property name="lastYear" />
-      <property name="last5Years" />
-      <property name="last12Months" />
-      <property name="last3Months" />
-      <property name="last4Quarters" />
-      <property name="last2SixMonths" />
-      <property name="thisFinancialYear" />
-      <property name="lastFinancialYear" />
-      <property name="last5FinancialYears" />
-    </component>
+    <many-to-one name="relatives" unique="true" class="org.hisp.dhis.period.RelativePeriods" column="relativeperiodsid"
+      cascade="all-delete-orphan" foreign-key="fk_report_relativeperiodsid" />
 
     <component name="reportParams">
       <property name="paramReportingMonth" />
@@ -134,11 +116,21 @@
 
     <property name="topLimit" />
     
+    <property name="totals" />
+    
     <property name="subtotals" />
+    
+    <property name="hideEmptyRows" />
+    
+    <property name="digitGroupSeparator" />
     
     <property name="displayDensity" />
     
     <property name="fontSize" />
+    
+    <property name="userOrganisationUnit" />
+    
+    <property name="userOrganisationUnitChildren" />
 
     <!-- Access properties -->
     <many-to-one name="user" class="org.hisp.dhis.user.User" column="userid" foreign-key="fk_reporttable_userid" />

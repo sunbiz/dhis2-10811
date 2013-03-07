@@ -37,8 +37,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Nguyen Kim Lai
- * 
- * @version $ J2meClientUpdateAction.java Aug 15, 2012 $
  */
 public class J2meClientUpdateAction
     implements Action

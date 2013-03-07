@@ -92,7 +92,7 @@ public class GetProgramMetaDataAction implements Action
     @Override
     public String execute() throws Exception
     {
-        programs = new ArrayList<Program>( programService.getPrograms( programType ) );
+        programs = new ArrayList<Program>( programService.getProgramsByCurrentUser( programType ) );
 
         for ( Program program : programs )
         {

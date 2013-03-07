@@ -21,6 +21,8 @@
 
 <h3>$i18n.getString( "add_indicatorgroupset" )</h3>
 
+#sharingCreateNotification( "indicatorGroupSet" )
+
 <form id="addIndicatorGroupSet" action="addIndicatorGroupSet.action" method="post" class="inputForm">
 
 <table>

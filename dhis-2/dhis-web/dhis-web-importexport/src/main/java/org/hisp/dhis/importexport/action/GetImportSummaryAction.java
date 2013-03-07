@@ -78,7 +78,7 @@ public class GetImportSummaryAction
     {
         TaskId taskId = new TaskId( category, currentUserService.getCurrentUser() );        
         
-        summary = (ImportSummary) notifier.getTaskSummary( taskId, category );
+        summary = (ImportSummary) notifier.getTaskSummary( taskId );
         
         return SUCCESS;
     }

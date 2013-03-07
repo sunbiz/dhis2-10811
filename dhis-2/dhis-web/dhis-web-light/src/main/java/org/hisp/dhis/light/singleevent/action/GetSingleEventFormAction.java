@@ -232,6 +232,7 @@ public class GetSingleEventFormAction
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public String execute()
         throws Exception
     {

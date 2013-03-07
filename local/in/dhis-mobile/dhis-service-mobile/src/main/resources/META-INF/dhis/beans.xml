@@ -27,6 +27,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService"/>
 		<property name="batchHandlerFactory" ref="batchHandlerFactory"/>
 		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+		<property name="constantService" ref="org.hisp.dhis.constant.ConstantService" />	
+   	  	<property name="patientIdentifierService" ref="org.hisp.dhis.patient.PatientIdentifierService"/>
+		<property name="patientIdentifierTypeService" ref="org.hisp.dhis.patient.PatientIdentifierTypeService"/>
+		<property name="patientAttributeService" ref="org.hisp.dhis.patient.PatientAttributeService"/>
+       	<property name="programService" ref="org.hisp.dhis.program.ProgramService"/>
+        <property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService"/>
+        <property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService"/>
+		<property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService"/>
+		<property name="patientAttributeValueService" ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueService"/>		
+   	    <property name="patientService" ref="org.hisp.dhis.patient.PatientService"/>
+		
     </bean>
 
     <bean id="org.hisp.dhis.mobile.api.XmlCreatorService"

@@ -36,7 +36,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 public class DataValue
     implements DataStreamSerializable
 {
-
     private int id;
 
     private String clientVersion;

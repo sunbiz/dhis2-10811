@@ -33,6 +33,7 @@ import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.hisp.dhis.dxf2.metadata.ImportOptions;
 import org.hisp.dhis.dxf2.metadata.ImportService;
+import org.hisp.dhis.user.User;
 
 /**
  * metadataendpoint is created using a uri of the form:
@@ -44,6 +45,8 @@ public class Dxf2MetaDataEndpoint
     extends DefaultEndpoint
 {
     protected ImportService importService;
+
+    protected User user;
 
     public ImportService getImportService()
     {
@@ -71,17 +74,18 @@ public class Dxf2MetaDataEndpoint
         options.setStrategy( strategy );
     }
 
-    public Dxf2MetaDataEndpoint( String uri, Dxf2Component component, ImportService importService )
+    public Dxf2MetaDataEndpoint( User user, String uri, Dxf2Component component, ImportService importService )
     {
         super( uri, component );
         this.importService = importService;
-        options = new ImportOptions();
+        this.options = new ImportOptions();
+        this.user = user;
     }
 
     @Override
     public Producer createProducer() throws Exception
     {
-        return new Dxf2MetaDataProducer( this );
+        return new Dxf2MetaDataProducer( user, this );
     }
 
     @Override

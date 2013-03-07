@@ -34,13 +34,13 @@
         var lngs = 0.0;
         var n = 0;
 
-        $.each(facilities, function (idx, item) {
-            if (item.coordinates !== undefined && JSON.parse(item.coordinates).length > 0) {
-                var coords = JSON.parse(item.coordinates);
+        $.each(facilities, function (idx, facility) {
+            if (facility.coordinates !== undefined && JSON.parse(facility.coordinates).length > 0) {
+                var coords = JSON.parse(facility.coordinates);
                 var latlng = new google.maps.LatLng(coords[1], coords[0]);
-                var name = item.name;
-                var id = item.uuid;
-                var href = item.href;
+                var name = facility.name;
+                var id = facility.uuid;
+                var href = facility.href;
 
                 lats += coords[1];
                 lngs += coords[0];
@@ -132,17 +132,9 @@
     });
 </script>
 
-<style>
-/*
-    .table > tbody > tr:hover {
-        background-color : #f5f5f5;
-    }
-*/
-</style>
-
-<div class='btn-group pull-right'>
+<div class='btn-group pull-right' style='margin-left: 10px;'>
     <a href='facilities.json' class='btn btn-small btn-info' style='margin-bottom: 5px;'>
-        <span class='icon-white icon-download-alt'> </span> JSON
+        <span class='icon-white icon-download'> </span> JSON
     </a>
 </div>
 
@@ -199,6 +191,15 @@
         #end
     </tbody>
 </table>
+
+<div class="pagination pagination-right">
+    <ul>
+        #set( $nextOffset = $entity.meta.offset + $entity.meta.limit)
+        #set( $prevOffset = $entity.meta.offset - $entity.meta.limit)
+        <li class="#if($prevDisabled)disabled#end"><a class="prev-button" href="facilities?offset=$prevOffset">Prev</a></li>
+        <li class="#if($nextDisabled)disabled#end"><a class="next-button" href="facilities?offset=$nextOffset">Next</a></li>
+    </ul>
+</div>
 #end
 
 #macro( mapContent )

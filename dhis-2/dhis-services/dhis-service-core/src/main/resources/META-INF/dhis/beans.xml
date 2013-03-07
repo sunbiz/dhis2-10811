@@ -570,7 +570,6 @@
     <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
     <property name="aggregatedDataValueService" ref="org.hisp.dhis.aggregation.AggregatedDataValueService" />
-    <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
     <property name="configurationService" ref="org.hisp.dhis.configuration.ConfigurationService" />
   </bean>
 
@@ -583,6 +582,7 @@
         <value>armenia</value>
         <value>bangladesh</value>
         <value>benin</value>
+		<value>bhutan</value>
         <value>botswana</value>
         <value>burkina_faso</value>
         <value>burkina_faso_coat_of_arms</value>
@@ -611,6 +611,7 @@
         <value>mozambique</value>
         <value>namibia</value>
         <value>nicaragua</value>
+		<value>nepal</value>
         <value>niger</value>
         <value>nigeria</value>
         <value>norway</value>
@@ -718,7 +719,6 @@
   <!-- Startup routine definitions -->
 
   <bean id="org.hisp.dhis.startup.TableAlteror" class="org.hisp.dhis.startup.TableAlteror">
-    <property name="statementManager" ref="statementManager" />
     <property name="name" value="TableAlteror" />
     <property name="runlevel" value="1" />
     <property name="skipInTests" value="true" />

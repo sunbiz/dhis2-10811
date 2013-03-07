@@ -76,7 +76,7 @@
 			<td><a href="javascript:programTrackingList( $programStageInstance.id, false );">$programStageInstance.programStage.displayName</a></td>
 			
 			<td>
-				<a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )" title="$i18n.getString( 'edit_profile' )"><img src="../images/enroll.png" alt='$i18n.getString( "edit_profile" )'></a>
+				<a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )" title="$i18n.getString( 'patient_dashboard' )"><img src="../images/enroll.png" alt='$i18n.getString( "patient_dashboard" )'></a>
 				<a href="javascript:programTrackingList( $programStageInstance.id, false );" title="$i18n.getString( 'reschedule_and_set_status' )"><img src="images/data_entry.png" alt="$i18n.getString( 'reschedule_and_set_status' )"></a>   
 				<a href="javascript:showPatientHistory('$patient.id')" title='$i18n.getString( "patient_details_and_history" )'><img src="../images/information.png" alt='$i18n.getString( "patient_details_and_history" )'></a>
 			</td>

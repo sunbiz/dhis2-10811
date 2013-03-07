@@ -4,21 +4,16 @@
 
 function saveTable()
 {
+    if ( $( "#tableForm #tableName" ).val().trim().length == 0  )
+    {
+        setHeaderDelayMessage( i18n_specify_name );
+        return false;
+    }
+
 	if ( validateCollections() )
 	{
-		$.postJSON( "validateTable.action", { id:getFieldValue( "tableId" ), "name":getFieldValue( "tableName" ) }, function( json )
-		{
-			if ( json.response == "input" )
-			{
-				setHeaderDelayMessage( json.message );
-				return false;
-			}
-			else if ( json.response == "success" )
-			{
-				selectTableForm();
-	        	$( "#tableForm" ).submit();
-			}
-		} );
+        selectTableForm();
+        $( "#tableForm" ).submit();
 	}
 }
 

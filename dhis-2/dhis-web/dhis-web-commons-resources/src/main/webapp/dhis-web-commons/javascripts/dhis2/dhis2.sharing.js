@@ -14,7 +14,7 @@ function saveSharingSettings( type, uid, data ) {
     return $.ajax( {
         url: '../api/sharing?type=' + type + '&id=' + uid,
         type: 'POST',
-        dataType: 'json',
+        dataType: 'text',
         contentType: 'application/json; charset=UTF-8',
         data: JSON.stringify( data )
     } );

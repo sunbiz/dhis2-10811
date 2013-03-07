@@ -234,11 +234,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
   <bean id="org.hisp.dhis.dd.action.indicatorgroup.RenameIndicatorGroupNameEditorAction" class="org.hisp.dhis.dd.action.indicatorgroup.RenameIndicatorGroupNameEditorAction"
     scope="prototype"/>
 
-  <bean id="org.hisp.dhis.dd.action.indicatorgroup.ValidateIndicatorGroupAction" class="org.hisp.dhis.dd.action.indicatorgroup.ValidateIndicatorGroupAction"
-    scope="prototype">
-    <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
-  </bean>
-
   <bean id="org.hisp.dhis.dd.action.indicatorgroup.AssignGroupsForIndicatorAction" class="org.hisp.dhis.dd.action.indicatorgroup.AssignGroupsForIndicatorAction"
     scope="prototype">
     <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
@@ -272,11 +267,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
   </bean>
 
   <bean id="org.hisp.dhis.dd.action.indicatorgroupset.UpdateIndicatorGroupSetAction" class="org.hisp.dhis.dd.action.indicatorgroupset.UpdateIndicatorGroupSetAction"
-    scope="prototype">
-    <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
-  </bean>
-
-  <bean id="org.hisp.dhis.dd.action.indicatorgroupset.ValidateIndicatorGroupSetAction" class="org.hisp.dhis.dd.action.indicatorgroupset.ValidateIndicatorGroupSetAction"
     scope="prototype">
     <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
   </bean>
@@ -414,11 +404,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <property name="dataDictionaryService" ref="org.hisp.dhis.datadictionary.DataDictionaryService" />
     <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />
-  </bean>
-
-  <bean id="org.hisp.dhis.dd.action.datadictionary.ValidateDataDictionaryAction" class="org.hisp.dhis.dd.action.datadictionary.ValidateDataDictionaryAction"
-    scope="prototype">
-    <property name="dataDictionaryService" ref="org.hisp.dhis.datadictionary.DataDictionaryService" />
   </bean>
 
   <bean id="org.hisp.dhis.dd.action.datadictionary.SetCurrentDataDictionaryAction" class="org.hisp.dhis.dd.action.datadictionary.SetCurrentDataDictionaryAction"

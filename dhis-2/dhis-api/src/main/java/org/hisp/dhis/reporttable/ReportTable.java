@@ -134,6 +134,18 @@ public class ReportTable
     public static final String TOTAL_COLUMN_NAME = "total";
     public static final String TOTAL_COLUMN_PRETTY_NAME = "Total";
 
+    public static final String DISPLAY_DENSITY_COMFORTABLE = "comfortable";
+    public static final String DISPLAY_DENSITY_NORMAL = "normal";
+    public static final String DISPLAY_DENSITY_COMPACT = "compact";
+    
+    public static final String FONT_SIZE_LARGE = "large";
+    public static final String FONT_SIZE_NORMAL = "normal";
+    public static final String FONT_SIZE_SMALL = "small";
+
+    public static final String NUMBER_FORMATTING_COMMA = "comma";
+    public static final String NUMBER_FORMATTING_SPACE = "space";
+    public static final String NUMBER_FORMATTING_NONE = "none";
+    
     public static final int ASC = -1;
     public static final int DESC = 1;
     public static final int NONE = 0;
@@ -294,7 +306,22 @@ public class ReportTable
     /**
      * Indicates rendering of sub-totals for the table.
      */
+    private boolean totals;
+
+    /**
+     * Indicates rendering of sub-totals for the table.
+     */
     private boolean subtotals;
+
+    /**
+     * Indicates rendering of empty rows for the table.
+     */
+    private boolean hideEmptyRows;
+    
+    /**
+     * Indicates rendering of number formatting for the table.
+     */
+    private String digitGroupSeparator;
     
     /**
      * The display density of the text in the table.
@@ -417,6 +444,11 @@ public class ReportTable
      * The category option combos derived from the dimension set.
      */
     private List<DataElementCategoryOptionCombo> categoryOptionCombos = new ArrayList<DataElementCategoryOptionCombo>();
+
+    /**
+     * Map linking organisation unit uids and parent graphs.
+     */
+    private Map<String, String> parentGraphMap = new HashMap<String, String>();
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -870,7 +902,7 @@ public class ReportTable
      */
     public boolean hasRelativePeriods()
     {
-        return relatives != null && !relatives.getRelativePeriods().isEmpty();
+        return relatives != null && !relatives.isEmpty();
     }
 
     public boolean isDoIndicators()
@@ -1358,6 +1390,19 @@ public class ReportTable
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isTotals()
+    {
+        return totals;
+    }
+
+    public void setTotals( boolean totals )
+    {
+        this.totals = totals;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isSubtotals()
     {
         return subtotals;
@@ -1366,6 +1411,32 @@ public class ReportTable
     public void setSubtotals( boolean subtotals )
     {
         this.subtotals = subtotals;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public boolean isHideEmptyRows()
+    {
+        return hideEmptyRows;
+    }
+
+    public void setHideEmptyRows( boolean hideEmptyRows )
+    {
+        this.hideEmptyRows = hideEmptyRows;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getDigitGroupSeparator()
+    {
+        return digitGroupSeparator;
+    }
+
+    public void setDigitGroupSeparator( String digitGroupSeparator )
+    {
+        this.digitGroupSeparator = digitGroupSeparator;
     }
 
     @JsonProperty
@@ -1597,7 +1668,10 @@ public class ReportTable
             reportParams = reportTable.getReportParams() == null ? reportParams : reportTable.getReportParams();
             sortOrder = reportTable.getSortOrder() == null ? sortOrder : reportTable.getSortOrder();
             topLimit = reportTable.getTopLimit() == null ? topLimit : reportTable.getTopLimit();
+            totals = reportTable.isTotals();
             subtotals = reportTable.isSubtotals();
+            hideEmptyRows = reportTable.isHideEmptyRows();
+            digitGroupSeparator = reportTable.getDigitGroupSeparator();
             displayDensity = reportTable.getDisplayDensity();
             fontSize = reportTable.getFontSize();
             userOrganisationUnit = reportTable.isUserOrganisationUnit();
@@ -1633,5 +1707,17 @@ public class ReportTable
             removeAllFilterDimensions();
             filterDimensions.addAll( reportTable.getFilterDimensions() );
         }
+    }
+
+    @JsonProperty
+    @JsonView({ DetailedView.class, ExportView.class })
+    public Map<String, String> getParentGraphMap()
+    {
+        return parentGraphMap;
+    }
+
+    public void setParentGraphMap( Map<String, String> parentGraphMap )
+    {
+        this.parentGraphMap = parentGraphMap;
     }
 }

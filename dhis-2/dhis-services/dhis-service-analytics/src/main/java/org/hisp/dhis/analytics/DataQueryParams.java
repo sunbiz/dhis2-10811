@@ -28,7 +28,10 @@ package org.hisp.dhis.analytics;
  */
 
 import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT_DISAGGREGATION;
-import static org.hisp.dhis.analytics.DimensionType.*;
+import static org.hisp.dhis.analytics.DimensionType.DATASET;
+import static org.hisp.dhis.analytics.DimensionType.ORGANISATIONUNIT;
+import static org.hisp.dhis.analytics.DimensionType.ORGANISATIONUNIT_GROUPSET;
+import static org.hisp.dhis.system.util.CollectionUtils.emptyIfNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,12 +46,12 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.common.CombinationGenerator;
 import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.CollectionUtils;
-import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.system.util.ListUtils;
 import org.hisp.dhis.system.util.MapMap;
 import org.hisp.dhis.system.util.MathUtils;
@@ -65,6 +68,11 @@ public class DataQueryParams
     public static final String VALUE_ID = "value";    
     public static final String LEVEL_PREFIX = "uidlevel";
     
+    public static final String DISPLAY_NAME_DATA_X = "Data";
+    public static final String DISPLAY_NAME_CATEGORYOPTIONCOMBO = "Category";
+    public static final String DISPLAY_NAME_PERIOD = "Period";
+    public static final String DISPLAY_NAME_ORGUNIT = "Organisation unit";    
+    
     private static final String DIMENSION_NAME_SEP = ":";
     private static final String OPTION_SEP = ";";
     public static final String DIMENSION_SEP = "-";
@@ -72,9 +80,9 @@ public class DataQueryParams
     public static final List<String> DATA_DIMS = Arrays.asList( INDICATOR_DIM_ID, DATAELEMENT_DIM_ID, DATASET_DIM_ID );
     public static final List<String> FIXED_DIMS = Arrays.asList( DATA_X_DIM_ID, INDICATOR_DIM_ID, DATAELEMENT_DIM_ID, DATASET_DIM_ID, PERIOD_DIM_ID, ORGUNIT_DIM_ID );
     
-    public static final int MAX_DIM_OPT_PERM = 5000;
-    
-    private static final List<DimensionType> COMPLETENESS_DIMENSION_TYTPES = Arrays.asList( DATASET, ORGANISATIONUNIT, ORGANISATIONUNIT_GROUPSET );
+    public static final int MAX_DIM_OPT_PERM = 10000;
+
+    private static final List<DimensionType> COMPLETENESS_DIMENSION_TYPES = Arrays.asList( DATASET, ORGANISATIONUNIT, ORGANISATIONUNIT_GROUPSET );
     
     private static final DimensionItem[] DIM_OPT_ARR = new DimensionItem[0];
     private static final DimensionItem[][] DIM_OPT_2D_ARR = new DimensionItem[0][];
@@ -93,10 +101,10 @@ public class DataQueryParams
     
     private transient String tableName;
 
+    private ListMap<String, IdentifiableObject> tableNamePeriodMap;
+    
     private transient String periodType;
-    
-    private transient int organisationUnitLevel;
-    
+        
     private transient PeriodType dataPeriodType;
     
     private transient boolean skipPartitioning;
@@ -104,11 +112,11 @@ public class DataQueryParams
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
-  
+    
     public DataQueryParams()
     {
     }
-        
+    
     public DataQueryParams( DataQueryParams params )
     {
         this.dimensions = new ArrayList<Dimension>( params.getDimensions() );
@@ -118,21 +126,21 @@ public class DataQueryParams
         
         this.tableName = params.getTableName();
         this.periodType = params.getPeriodType();
-        this.organisationUnitLevel = params.getOrganisationUnitLevel();
         this.dataPeriodType = params.getDataPeriodType();
         this.skipPartitioning = params.isSkipPartitioning();
+        this.tableNamePeriodMap = params.getTableNamePeriodMap();
     }
 
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------
-
+    
     /**
      * Ensures conformity for this query. The category option combo dimension
      * can only be present if the data element dimension exists and the indicator
      * and data set dimensions do not exist.
      */
-    public void conform()
+    public DataQueryParams conform()
     {
         if ( !dimensions.contains( new Dimension( DATAELEMENT_DIM_ID ) ) ||
             dimensions.contains( new Dimension( INDICATOR_DIM_ID ) ) ||
@@ -140,6 +148,65 @@ public class DataQueryParams
         {
             removeDimension( CATEGORYOPTIONCOMBO_DIM_ID );
         }
+        
+        return this;
+    }
+    
+    /**
+     * Indicates whether the filters of this query spans more than one partition.
+     * If true it means that a period filter exists and that the periods span
+     * multiple years.
+     */
+    public boolean filterSpansMultiplePartitions()
+    {
+        return tableNamePeriodMap != null && tableNamePeriodMap.size() > 1;
+    }
+    
+    /**
+     * If the filters of this query spans more than partition, this method will
+     * return a list of queries with a query for each partition, generated from 
+     * this query, where the table name and filter period items are set according 
+     * to the relevant partition.
+     */
+    public List<DataQueryParams> getPartitionFilterParams()
+    {
+        List<DataQueryParams> filters = new ArrayList<DataQueryParams>();
+        
+        if ( !filterSpansMultiplePartitions() )
+        {
+            return filters;
+        }   
+        
+        for ( String tableName : tableNamePeriodMap.keySet() )
+        {
+            List<IdentifiableObject> periods = tableNamePeriodMap.get( tableName );
+            
+            DataQueryParams params = new DataQueryParams( this );
+            params.setTableName( tableName );
+            params.updateFilterOptions( PERIOD_DIM_ID, periods );
+            filters.add( params );
+        }
+        
+        return filters;
+    }
+    
+    /**
+     * Creates a mapping between dimension identifiers and filter dimensions. Filters 
+     * are guaranteed not to be null.
+     */
+    public ListMap<String, Dimension> getDimensionFilterMap()
+    {
+        ListMap<String, Dimension> map = new ListMap<String, Dimension>();
+        
+        for ( Dimension filter : filters )
+        {
+            if ( filter != null )
+            {
+                map.putValue( filter.getDimension(), filter );
+            }
+        }
+        
+        return map;
     }
     
     /**
@@ -158,7 +225,7 @@ public class DataQueryParams
         {
             if ( DATA_DIMS.contains( iter.next().getDimension() ) )
             {
-                iter.set( new Dimension( DATA_X_DIM_ID, DimensionType.DATA_X ) );
+                iter.set( new Dimension( DATA_X_DIM_ID, DimensionType.DATA_X, null, DISPLAY_NAME_DATA_X, new ArrayList<IdentifiableObject>() ) );
                 break dimensions;
             }
         }
@@ -191,7 +258,7 @@ public class DataQueryParams
         
         for ( int i = 0; i < dimensions.size(); i++ )
         {
-            if ( COMPLETENESS_DIMENSION_TYTPES.contains( dimensions.get( i ).getType() ) )
+            if ( COMPLETENESS_DIMENSION_TYPES.contains( dimensions.get( i ).getType() ) )
             {
                 indexes.add( i );
             }
@@ -209,7 +276,7 @@ public class DataQueryParams
         
         for ( int i = 0; i < filters.size(); i++ )
         {
-            if ( COMPLETENESS_DIMENSION_TYTPES.contains( filters.get( i ).getType() ) )
+            if ( COMPLETENESS_DIMENSION_TYPES.contains( filters.get( i ).getType() ) )
             {
                 indexes.add( i );
             }
@@ -221,9 +288,21 @@ public class DataQueryParams
     /**
      * Removes the dimension with the given identifier.
      */
-    public void removeDimension( String dimension )
+    public DataQueryParams removeDimension( String dimension )
     {
         this.dimensions.remove( new Dimension( dimension ) );
+        
+        return this;
+    }
+
+    /**
+     * Removes the filter with the given identifier.
+     */
+    public DataQueryParams removeFilter( String filter )
+    {
+        this.filters.remove( new Dimension( filter ) );
+        
+        return this;
     }
     
     /**
@@ -265,39 +344,6 @@ public class DataQueryParams
     {
         return getInputDimensionNamesAsList().indexOf( PERIOD_DIM_ID );
     }
-        
-    /**
-     * Populates the dimension name property on all dimensions. Will set the 
-     * name of the current period type for this query on the period dimension
-     * and the a prefixed organisation unit level on the organisation unit
-     * dimension.
-     */
-    public void populateDimensionNames()
-    {
-        for ( Dimension dimension : dimensions )
-        {
-            if ( periodType != null && PERIOD_DIM_ID.equals( dimension.getDimension() ) )
-            {
-                dimension.setDimensionName( periodType );
-            }
-            else if ( organisationUnitLevel != 0 && ORGUNIT_DIM_ID.equals( dimension.getDimension() ) )
-            {
-                dimension.setDimensionName( LEVEL_PREFIX + organisationUnitLevel );
-            }
-        }
-
-        for ( Dimension filter : filters )
-        {
-            if ( periodType != null && PERIOD_DIM_ID.equals( filter.getDimension() ) )
-            {
-                filter.setDimensionName( periodType );
-            }
-            else if ( organisationUnitLevel != 0 && ORGUNIT_DIM_ID.equals( filter.getDimension() ) )
-            {
-                filter.setDimensionName( LEVEL_PREFIX + organisationUnitLevel );
-            }
-        }
-    }
     
     /**
      * Returns the dimensions which are part of dimensions and filters. If any
@@ -321,15 +367,28 @@ public class DataQueryParams
     }
     
     /**
-     * Returns the number of dimension option permutations.
+     * Returns the number of dimension option permutations. Merges the three data
+     * dimensions into one prior to the calculation.
      */
     public int getNumberOfDimensionOptionPermutations()
     {
         int total = 1;
         
-        for ( Dimension dim : dimensions )
+        DataQueryParams query = new DataQueryParams( this );
+        
+        query.getDimensions().add( new Dimension( DATA_X_DIM_ID ) );
+        
+        query.getDimension( DATA_X_DIM_ID ).getItems().addAll( emptyIfNull( query.getDimensionOptions( INDICATOR_DIM_ID ) ) );
+        query.getDimension( DATA_X_DIM_ID ).getItems().addAll( emptyIfNull( query.getDimensionOptions( DATAELEMENT_DIM_ID ) ) );
+        query.getDimension( DATA_X_DIM_ID ).getItems().addAll( emptyIfNull( query.getDimensionOptions( DATASET_DIM_ID ) ) );
+        
+        query.removeDimension( INDICATOR_DIM_ID );
+        query.removeDimension( DATAELEMENT_DIM_ID );
+        query.removeDimension( DATASET_DIM_ID );
+        
+        for ( Dimension dim : query.getDimensions() )
         {
-            total *= dim.getItems().size();
+            total *= Math.max( dim.getItems().size(), 1 );
         }
         
         return total;
@@ -426,11 +485,11 @@ public class DataQueryParams
             
             if ( getPeriods() != null ) // Period is dimension
             {
-                setPeriods( new ArrayList<IdentifiableObject>( dataPeriodAggregationPeriodMap.keySet() ) );
+                setDimensionOptions( PERIOD_DIM_ID, DimensionType.PERIOD, dataPeriodType.getName(), new ArrayList<IdentifiableObject>( dataPeriodAggregationPeriodMap.keySet() ) );
             }
             else // Period is filter
             {
-                setFilterPeriods( new ArrayList<IdentifiableObject>( dataPeriodAggregationPeriodMap.keySet() ) );
+                setFilterOptions( PERIOD_DIM_ID, DimensionType.PERIOD, dataPeriodType.getName(), new ArrayList<IdentifiableObject>( dataPeriodAggregationPeriodMap.keySet() ) );
             }
         }
     }
@@ -501,7 +560,7 @@ public class DataQueryParams
     }
 
     /**
-     * Retrieves the options for the given dimension.
+     * Retrieves the options for the given dimension identifier.
      */
     public List<IdentifiableObject> getDimensionOptions( String dimension )
     {
@@ -509,22 +568,34 @@ public class DataQueryParams
         
         return index != -1 ? dimensions.get( index ).getItems() : null;
     }
-
+    
+    /**
+     * Retrieves the dimension with the given dimension identifier.
+     */
+    public Dimension getDimension( String dimension )
+    {
+        int index = dimensions.indexOf( new Dimension( dimension ) );
+        
+        return index != -1 ? dimensions.get( index ) : null;
+    }
+    
     /**
      * Sets the options for the given dimension.
      */
-    public void setDimensionOptions( String dimension, DimensionType type, List<IdentifiableObject> options )
+    public DataQueryParams setDimensionOptions( String dimension, DimensionType type, String dimensionName, List<IdentifiableObject> options )
     {
         int index = dimensions.indexOf( new Dimension( dimension ) );
         
         if ( index != -1 )
         {
-            dimensions.set( index, new Dimension( dimension, type, options ) );
+            dimensions.set( index, new Dimension( dimension, type, dimensionName, options ) );
         }
         else
         {
-            dimensions.add( new Dimension( dimension, type, options ) );
+            dimensions.add( new Dimension( dimension, type, dimensionName, options ) );
         }
+        
+        return this;
     }
     
     /**
@@ -536,22 +607,51 @@ public class DataQueryParams
         
         return index != -1 ? filters.get( index ).getItems() : null;
     }
+
+    /**
+     * Retrieves the filter with the given filter identifier.
+     */
+    public Dimension getFilter( String filter )
+    {
+        int index = filters.indexOf( new Dimension( filter ) );
+        
+        return index != -1 ? filters.get( index ) : null;
+    }
     
     /**
      * Sets the options for the given filter.
      */
-    public void setFilterOptions( String filter, DimensionType type, List<IdentifiableObject> options )
+    public DataQueryParams setFilterOptions( String filter, DimensionType type, String dimensionName, List<IdentifiableObject> options )
     {
         int index = filters.indexOf( new Dimension( filter ) );
         
         if ( index != -1 )
         {
-            filters.set( index, new Dimension( filter, type, options ) );
+            filters.set( index, new Dimension( filter, type, dimensionName, options ) );
         }
         else
         {
-            filters.add( new Dimension( filter, type, options ) );
+            filters.add( new Dimension( filter, type, dimensionName, options ) );
         }
+        
+        return this;
+    }
+    
+    /**
+     * Updates the options for the given filter.
+     */
+    public DataQueryParams updateFilterOptions( String filter, List<IdentifiableObject> options )
+    {
+        int index = filters.indexOf( new Dimension( filter ) );
+        
+        if ( index != -1 )
+        {
+            Dimension existing = filters.get( index );
+            
+            filters.set( index, new Dimension( existing.getDimension(), existing.getType(), existing.getDimensionName(), options ) );
+        }
+        
+        return this;
     }
     
     // -------------------------------------------------------------------------
@@ -624,6 +724,28 @@ public class DataQueryParams
         }
         
         return map;
+    }
+    
+    /**
+     * Indicates whether at least one of the given dimenions has at least one
+     * item.
+     */
+    public static boolean anyDimensionHasItems( Collection<Dimension> dimensions )
+    {
+        if ( dimensions == null || dimensions.isEmpty() )
+        {
+            return false;
+        }
+        
+        for ( Dimension dim : dimensions )
+        {
+            if ( dim.hasItems() )
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     // -------------------------------------------------------------------------
@@ -767,6 +889,16 @@ public class DataQueryParams
         this.tableName = tableName;
     }
 
+    public ListMap<String, IdentifiableObject> getTableNamePeriodMap()
+    {
+        return tableNamePeriodMap;
+    }
+
+    public void setTableNamePeriodMap( ListMap<String, IdentifiableObject> tableNamePeriodMap )
+    {
+        this.tableNamePeriodMap = tableNamePeriodMap;
+    }
+
     public String getPeriodType()
     {
         return periodType;
@@ -775,16 +907,6 @@ public class DataQueryParams
     public void setPeriodType( String periodType )
     {
         this.periodType = periodType;
-    }
-
-    public int getOrganisationUnitLevel()
-    {
-        return organisationUnitLevel;
-    }
-
-    public void setOrganisationUnitLevel( int organisationUnitLevel )
-    {
-        this.organisationUnitLevel = organisationUnitLevel;
     }
 
     public PeriodType getDataPeriodType()
@@ -816,18 +938,6 @@ public class DataQueryParams
         return getDimensionOptions( key ) != null ? getDimensionOptions( key ) : getFilterOptions( key );
     }
     
-    public void resetDimensionOrFilter( String key, List<IdentifiableObject> options )
-    {
-        if ( getDimensionOptions( key ) != null )
-        {
-            setDimensionOptions( key, null, options );
-        }
-        else if ( getFilterOptions( key ) != null )
-        {
-            setFilterOptions( key, null, options );
-        }
-    }
-    
     public boolean hasDimensionOrFilter( String key )
     {
         return dimensions.indexOf( new Dimension( key ) ) != -1 || filters.indexOf( new Dimension( key ) ) != -1;
@@ -844,7 +954,7 @@ public class DataQueryParams
     
     public void setIndicators( List<IdentifiableObject> indicators )
     {
-        setDimensionOptions( INDICATOR_DIM_ID, DimensionType.INDICATOR, indicators );
+        setDimensionOptions( INDICATOR_DIM_ID, DimensionType.INDICATOR, null, indicators );
     }
     
     public List<IdentifiableObject> getDataElements()
@@ -854,7 +964,7 @@ public class DataQueryParams
     
     public void setDataElements( List<IdentifiableObject> dataElements )
     {
-        setDimensionOptions( DATAELEMENT_DIM_ID, DimensionType.DATAELEMENT, dataElements );
+        setDimensionOptions( DATAELEMENT_DIM_ID, DimensionType.DATAELEMENT, null, dataElements );
     }
     
     public List<IdentifiableObject> getDataSets()
@@ -864,7 +974,7 @@ public class DataQueryParams
     
     public void setDataSets( List<IdentifiableObject> dataSets )
     {
-        setDimensionOptions( DATASET_DIM_ID, DimensionType.DATASET, dataSets );
+        setDimensionOptions( DATASET_DIM_ID, DimensionType.DATASET, null, dataSets );
     }
     
     public List<IdentifiableObject> getPeriods()
@@ -874,7 +984,7 @@ public class DataQueryParams
     
     public void setPeriods( List<IdentifiableObject> periods )
     {
-        setDimensionOptions( PERIOD_DIM_ID, DimensionType.PERIOD, periods );
+        setDimensionOptions( PERIOD_DIM_ID, DimensionType.PERIOD, null, periods );
     }
 
     public List<IdentifiableObject> getOrganisationUnits()
@@ -884,7 +994,7 @@ public class DataQueryParams
     
     public void setOrganisationUnits( List<IdentifiableObject> organisationUnits )
     {
-        setDimensionOptions( ORGUNIT_DIM_ID, DimensionType.ORGANISATIONUNIT, organisationUnits );
+        setDimensionOptions( ORGUNIT_DIM_ID, DimensionType.ORGANISATIONUNIT, null, organisationUnits );
     }
     
     public List<Dimension> getDataElementGroupSets()
@@ -906,27 +1016,17 @@ public class DataQueryParams
     
     public void setDataElementGroupSet( Dimension dimension, List<IdentifiableObject> dataElementGroups )
     {
-        setDimensionOptions( dimension.getDimension(), DimensionType.DATAELEMENT_GROUPSET, dataElementGroups );
+        setDimensionOptions( dimension.getDimension(), DimensionType.DATAELEMENT_GROUPSET, null, dataElementGroups );
     }
     
     public void enableCategoryOptionCombos()
     {
-        setDimensionOptions( CATEGORYOPTIONCOMBO_DIM_ID, DimensionType.CATEGORY_OPTION_COMBO, new ArrayList<IdentifiableObject>() );
+        setDimensionOptions( CATEGORYOPTIONCOMBO_DIM_ID, DimensionType.CATEGORY_OPTION_COMBO, null, new ArrayList<IdentifiableObject>() );
     }
     
     // -------------------------------------------------------------------------
     // Get and set helpers for filters
     // -------------------------------------------------------------------------
-
-    public List<IdentifiableObject> getFilterDatElements()
-    {
-        return getFilterOptions( DATAELEMENT_DIM_ID );
-    }
-    
-    public void setFilterDataElements( List<IdentifiableObject> dataElements )
-    {
-        setFilterOptions( DATAELEMENT_DIM_ID, DimensionType.DATAELEMENT, dataElements );
-    }
     
     public List<IdentifiableObject> getFilterPeriods()
     {
@@ -935,7 +1035,7 @@ public class DataQueryParams
     
     public void setFilterPeriods( List<IdentifiableObject> periods )
     {
-        setFilterOptions( PERIOD_DIM_ID, DimensionType.PERIOD, periods );
+        setFilterOptions( PERIOD_DIM_ID, DimensionType.PERIOD, null, periods );
     }
     
     public List<IdentifiableObject> getFilterOrganisationUnits()
@@ -945,6 +1045,6 @@ public class DataQueryParams
     
     public void setFilterOrganisationUnits( List<IdentifiableObject> organisationUnits )
     {
-        setFilterOptions( ORGUNIT_DIM_ID, DimensionType.ORGANISATIONUNIT, organisationUnits );
+        setFilterOptions( ORGUNIT_DIM_ID, DimensionType.ORGANISATIONUNIT, null, organisationUnits );
     }
 }

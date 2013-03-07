@@ -38,7 +38,7 @@ public class MySQLStatementBuilder
     @Override
     public String getDoubleColumnType()
     {
-        return "DECIMAL";
+        return "decimal";
     }
 
     @Override

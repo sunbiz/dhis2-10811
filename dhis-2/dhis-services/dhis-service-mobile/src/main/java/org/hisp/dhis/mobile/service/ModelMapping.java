@@ -67,7 +67,24 @@ public class ModelMapping
         }
 
         return mobileOptionSet;
+    }
+    
+    public org.hisp.dhis.api.mobile.model.OptionSet getLWUITOptionSet( org.hisp.dhis.dataelement.DataElement dataElement )
+    {
+        org.hisp.dhis.option.OptionSet dhisOptionSet = dataElement.getOptionSet();
+        org.hisp.dhis.api.mobile.model.OptionSet mobileOptionSet = new org.hisp.dhis.api.mobile.model.OptionSet();
+        if ( dhisOptionSet != null )
+        {
+            mobileOptionSet.setId( dhisOptionSet.getId() );
+            mobileOptionSet.setName( dhisOptionSet.getName() );
+            mobileOptionSet.setOptions( dhisOptionSet.getOptions() );
+        }
+        else
+        {
+            return null;
+        }
 
+        return mobileOptionSet;
     }
 
     public ModelList getCategoryOptionCombos( org.hisp.dhis.dataelement.DataElement dataElement )

@@ -38,8 +38,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Nguyen Kim Lai
- * 
- * @version $ FindOptionSetAction.java Sep 25, 2012 $
  */
 public class FindSingleEventOptionSetAction
     implements Action
@@ -172,7 +170,7 @@ public class FindSingleEventOptionSetAction
                 }
             }
         }
+        
         return SUCCESS;
     }
-
 }

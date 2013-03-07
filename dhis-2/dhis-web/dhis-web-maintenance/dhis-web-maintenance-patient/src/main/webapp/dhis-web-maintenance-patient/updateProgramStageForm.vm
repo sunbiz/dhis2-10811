@@ -29,28 +29,30 @@
 				<td><input type="text" id="minDaysFromStart" name="minDaysFromStart" value="$programStage.minDaysFromStart" class="{validate:{number:true,min:0}}"/></td>
 			</tr>
 			
+			#if($programStage.program.type==1)
+			
 			<tr>
 				<td><label>$i18n.getString( "auto_generate_event" )</label></td>
 				<td><input type="checkbox" id="autoGenerateEvent" name="autoGenerateEvent" value='true' #if( $programStage.autoGenerateEvent && $programStage.autoGenerateEvent=='true' ) checked #end /></td>
 			</tr>
 			
-			#if($programStage.program.type!=3)
-				<tr><th colspan="2">$i18n.getString( "repeatable_program_stage_details" )</th></tr>
-		
-				<tr>
-					<td><label>$i18n.getString( "repeatable" )</label></td>
-					<td><input type="checkbox" id="irregular" name="irregular" value='true' #if( $programStage.irregular && $programStage.irregular=='true' ) checked #end onchange='repeatableOnChange();' /></td>
-				</tr>	
-
-				<tr>
-					<td><label>$i18n.getString( "display_generate_event_box_after_completed" )</label></td>
-					<td><input type="checkbox" id="displayGenerateEventBox" name="displayGenerateEventBox" value='true' #if( $programStage.displayGenerateEventBox && $programStage.displayGenerateEventBox=='true' ) checked #end #if($programStage.irregular!='true' ) disabled checked #end /></td>
-				</tr>
+			<tr><th colspan="2">$i18n.getString( "repeatable_program_stage_details" )</th></tr>
 	
-				<tr>
-					<td><label>$i18n.getString( "standard_interval_days" )</label></td>
-					<td><input type="text" id="standardInterval" name="standardInterval" value='$!programStage.standardInterval'class="{validate:{number:true}}" #if($programStage.irregular!='true' ) disabled #end /></td>
-				</tr>
+			<tr>
+				<td><label>$i18n.getString( "repeatable" )</label></td>
+				<td><input type="checkbox" id="irregular" name="irregular" value='true' #if( $programStage.irregular && $programStage.irregular=='true' ) checked #end onchange='repeatableOnChange();' /></td>
+			</tr>	
+
+			<tr>
+				<td><label>$i18n.getString( "display_generate_event_box_after_completed" )</label></td>
+				<td><input type="checkbox" id="displayGenerateEventBox" name="displayGenerateEventBox" value='true' #if( $programStage.displayGenerateEventBox && $programStage.displayGenerateEventBox=='true' ) checked #end #if($programStage.irregular!='true' ) disabled checked #end /></td>
+			</tr>
+
+			<tr>
+				<td><label>$i18n.getString( "standard_interval_days" )</label></td>
+				<td><input type="text" id="standardInterval" name="standardInterval" value='$!programStage.standardInterval'class="{validate:{number:true}}" #if($programStage.irregular!='true' ) disabled #end /></td>
+			</tr>
+			
 			#end
 			
 			<tr><th colspan="2">$i18n.getString( "form_details" )</th></tr>

@@ -31,11 +31,11 @@ function pageInit()
     } );
 
     $( "#menuLink3" ).click( function() {
-    	window.location.href = "../dhis-web-commons-about/help.action";
+    	window.location.href = "../dhis-web-commons-about/functions.action";
     } );
 
     $( "#menuLink4" ).click( function() {
-    	window.location.href = "../dhis-web-dashboard-integration/profile.action";
+    	window.location.href = "../dhis-web-commons-about/functions.action";
     } );
 	
 	// Set show and hide drop down events on top menu

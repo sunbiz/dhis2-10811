@@ -115,5 +115,46 @@
 
   <bean id="org.hisp.dhis.dashboard.profile.action.GetUserAction" class="org.hisp.dhis.dashboard.profile.action.GetUserAction"
     scope="prototype"/>
+    
+  <!-- User groups -->
+  
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.AddUserGroupAction" class="org.hisp.dhis.dashboard.usergroup.action.AddUserGroupAction"
+    scope="prototype">
+    <property name="userService" ref="org.hisp.dhis.user.UserService" />
+    <property name="userGroupService" ref="org.hisp.dhis.user.UserGroupService" />
+    <property name="attributeService" ref="org.hisp.dhis.attribute.AttributeService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.AddUserGroupFormAction" class="org.hisp.dhis.dashboard.usergroup.action.AddUserGroupFormAction">
+    <property name="attributeService" ref="org.hisp.dhis.attribute.AttributeService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.GetUserGroupListAction" class="org.hisp.dhis.dashboard.usergroup.action.GetUserGroupListAction"
+    scope="prototype">
+    <property name="userGroupService" ref="org.hisp.dhis.user.UserGroupService" />
+  </bean>
+  
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.EditUserGroupFormAction" class="org.hisp.dhis.dashboard.usergroup.action.EditUserGroupFormAction"
+    scope="prototype">
+    <property name="userGroupService" ref="org.hisp.dhis.user.UserGroupService" />
+    <property name="attributeService" ref="org.hisp.dhis.attribute.AttributeService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.UpdateUserGroupAction" class="org.hisp.dhis.dashboard.usergroup.action.UpdateUserGroupAction"
+    scope="prototype">
+    <property name="userService" ref="org.hisp.dhis.user.UserService" />
+    <property name="userGroupService" ref="org.hisp.dhis.user.UserGroupService" />
+    <property name="attributeService" ref="org.hisp.dhis.attribute.AttributeService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.RemoveUserGroupAction" class="org.hisp.dhis.dashboard.usergroup.action.RemoveUserGroupAction"
+    scope="prototype">
+    <property name="userGroupService" ref="org.hisp.dhis.user.UserGroupService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.dashboard.usergroup.action.GetUserGroupAction" class="org.hisp.dhis.dashboard.usergroup.action.GetUserGroupAction"
+    scope="prototype">
+    <property name="userGroupService" ref="org.hisp.dhis.user.UserGroupService" />
+  </bean>
 
 </beans>

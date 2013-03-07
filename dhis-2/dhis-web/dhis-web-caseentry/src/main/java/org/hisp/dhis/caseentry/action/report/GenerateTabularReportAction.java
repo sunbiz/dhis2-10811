@@ -471,6 +471,10 @@ public class GenerateTabularReportAction
                 if ( PREFIX_FIXED_ATTRIBUTE.equals( prefix ) )
                 {
                     column.setName( values[1] );
+                    if ( column.getIdentifier().equals( "birthDate" ) || column.getIdentifier().equals( "deathdate" ) )
+                    {
+                        column.setDateType( true );
+                    }
                     accessPrivateInfo = true;
                 }
                 else if ( PREFIX_IDENTIFIER_TYPE.equals( prefix ) )
@@ -479,6 +483,7 @@ public class GenerateTabularReportAction
                         .getPatientIdentifierType( column.getIdentifierAsInt() );
 
                     column.setName( identifierType.getName() );
+                    accessPrivateInfo = true;
                 }
                 else if ( PREFIX_PATIENT_ATTRIBUTE.equals( prefix ) )
                 {
@@ -489,6 +494,11 @@ public class GenerateTabularReportAction
                     mapSuggestedValues.put( index, getSuggestedAttributeValues( attribute ) );
 
                     column.setName( attribute.getName() );
+                    if ( attribute.getValueType().equals( PatientAttribute.TYPE_DATE ) )
+                    {
+                        column.setDateType( true );
+                    }
+                    accessPrivateInfo = true;
                 }
                 else if ( PREFIX_DATA_ELEMENT.equals( prefix ) )
                 {
@@ -504,7 +514,10 @@ public class GenerateTabularReportAction
                         .getType();
                     valueTypes.add( valueType );
                     mapSuggestedValues.put( index, getSuggestedDataElementValues( dataElement ) );
-
+                    if ( dataElement.getType().equals( DataElement.VALUE_TYPE_DATE ) )
+                    {
+                        column.setDateType( true );
+                    }
                     column.setName( dataElement.getFormNameFallback() );
                 }
 

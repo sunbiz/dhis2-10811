@@ -87,17 +87,14 @@ public class OrgUnits
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
             this.serializeVersion2_8( dataOutputStream );
-            System.out.println("2.8");
         }
         else if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_NINE ) )
         {
             this.serializeVersion2_9( dataOutputStream );
-            System.out.println("2.9");
         }
         else
         {
             this.serializeVersion2_10( dataOutputStream );
-            System.out.println("2.10");
         }
     }
 

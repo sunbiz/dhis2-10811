@@ -32,9 +32,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
 * @author Nguyen Kim Lai
-* @version $Id$
 */
-
 public class DeleteReceiveSMSAction
     implements Action
 {

@@ -41,6 +41,11 @@ import org.springframework.scheduling.annotation.Async;
 public class JdbcCompletenessTargetTableManager
     extends AbstractJdbcTableManager
 {
+    public boolean validState()
+    {
+        return true;
+    }    
+    
     public String getTableName()
     {
         return "completenesstarget";

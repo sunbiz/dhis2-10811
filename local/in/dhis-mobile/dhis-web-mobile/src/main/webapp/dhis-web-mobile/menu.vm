@@ -9,4 +9,6 @@
     <li><a href = "mobileSettings.action">Settings</a></li>
     <li><a href = "receiveAllMessages.action">Inbox</a></li>
     <li><a href = "getAllDraftMessages.action">Draft</a></li>
+    
+    <li><a href = "testSendSMSPage.action">TestSendSMSData</a></li>
 </ul>

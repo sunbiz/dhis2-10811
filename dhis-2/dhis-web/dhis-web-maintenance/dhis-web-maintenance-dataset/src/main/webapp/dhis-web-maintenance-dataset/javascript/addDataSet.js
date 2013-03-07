@@ -9,7 +9,5 @@ jQuery(document).ready(function() {
 		'rules' : getValidationRules("dataSet")
 	});
 
-	// checkValueIsExist("name", "validateDataSet.action");
-	// checkValueIsExist("shortName", "validateDataSet.action");
 	checkValueIsExist("code", "validateDataSet.action");
 });

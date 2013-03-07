@@ -213,8 +213,8 @@ public class DefaultProgramInstanceService
 
         attrGrid.addRow();
         attrGrid.addValue( i18n.getString( "gender" ) );
-        attrGrid.addValue( i18n.getString( patient.getGender() ));
-        
+        attrGrid.addValue( i18n.getString( patient.getGender() ) );
+
         attrGrid.addRow();
         attrGrid.addValue( i18n.getString( "date_of_birth" ) );
         attrGrid.addValue( format.formatDate( patient.getBirthDate() ) );
@@ -348,6 +348,24 @@ public class DefaultProgramInstanceService
         return grid;
     }
 
+    @Override
+    public Collection<ProgramInstance> getUnenrollment( Program program, Collection<Integer> orgunitIds,
+        Date startDate, Date endDate )
+    {
+        return programInstanceStore.getUnenrollment( program, orgunitIds, startDate, endDate );
+    }
+
+    @Override
+    public int countUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate )
+    {
+        return programInstanceStore.countUnenrollment( program, orgunitIds, startDate, endDate );
+    }
+
+    public void removeProgramEnrollment( ProgramInstance programInstance )
+    {
+        programInstanceStore.removeProgramEnrollment( programInstance );
+    }
+    
     // -------------------------------------------------------------------------
     // due-date && report-date
     // -------------------------------------------------------------------------
@@ -407,4 +425,12 @@ public class DefaultProgramInstanceService
             }
         }
     }
+
+    @Override
+    public int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
+        boolean completed )
+    {
+        return programInstanceStore.count( program, orgunitIds, startDate, endDate, completed );
+    }
+
 }

@@ -29,9 +29,9 @@ package org.hisp.dhis.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.common.SharingUtils;
 import org.hisp.dhis.common.CodeGenerator;
 import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.SharingUtils;
 import org.hisp.dhis.message.MessageSender;
 import org.hisp.dhis.period.Cal;
 import org.hisp.dhis.setting.SystemSettingManager;
@@ -243,9 +243,21 @@ public class DefaultSecurityService
     }
 
     @Override
+    public boolean canCreatePublic( String type )
+    {
+        return SharingUtils.canCreatePublic( currentUserService.getCurrentUser(), type );
+    }
+
+    @Override
     public boolean canCreatePrivate( IdentifiableObject identifiableObject )
     {
         return SharingUtils.canCreatePrivate( currentUserService.getCurrentUser(), identifiableObject );
+    }
+
+    @Override
+    public boolean canCreatePrivate( String type )
+    {
+        return SharingUtils.canCreatePrivate( currentUserService.getCurrentUser(), type );
     }
 
     @Override

@@ -102,6 +102,7 @@ public class PropertiesValidator implements ConstraintValidator<ValidProperties,
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean validateDataSets( Map<String, Object> values )
     {
         Collection<String> dataSetIds = (Collection<String>) values.get( "dataSets" );

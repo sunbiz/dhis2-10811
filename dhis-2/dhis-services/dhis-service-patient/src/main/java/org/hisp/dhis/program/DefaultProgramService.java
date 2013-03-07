@@ -27,16 +27,16 @@
 
 package org.hisp.dhis.program;
 
-import static org.hisp.dhis.i18n.I18nUtils.i18n;
+import org.hisp.dhis.i18n.I18nService;
+import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.validation.ValidationCriteria;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.validation.ValidationCriteria;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 /**
  * @author Abyot Asalefew
@@ -110,7 +110,7 @@ public class DefaultProgramService
             }
         }
 
-        return i18n( i18nService, programs);
+        return i18n( i18nService, programs );
     }
 
     public Collection<Program> getPrograms( ValidationCriteria validationCriteria )
@@ -125,7 +125,7 @@ public class DefaultProgramService
             }
         }
 
-        return i18n( i18nService, programs);
+        return i18n( i18nService, programs );
     }
 
     public Collection<Program> getPrograms( int type )
@@ -142,7 +142,13 @@ public class DefaultProgramService
     {
         return i18n( i18nService, programStore.getByCurrentUser() );
     }
-    
+
+    @Override
+    public Collection<Program> getProgramsByCurrentUser( int type )
+    {
+        return i18n( i18nService, programStore.getByCurrentUser( type ) );
+    }
+
     public Program getProgram( String uid )
     {
         return i18n( i18nService, programStore.getByUid( uid ) );

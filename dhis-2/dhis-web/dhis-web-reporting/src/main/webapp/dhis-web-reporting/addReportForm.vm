@@ -1,11 +1,15 @@
 <script type="text/javascript">
 	var i18n_please_specify_file = '$encoder.jsEscape( $i18n.getString( "please_specify_file" ) , "'")';
+	var i18n_specify_name = '$encoder.jsEscape( $i18n.getString( "specify_name" ) , "'")';
+
 	jQuery( document ).ready( function() {
         setReportType();
 	} );
 </script>
 
 <h3>$i18n.getString( 'create_new_report' )</h3>
+
+#sharingCreateNotification( "report" )
 
 <form id="reportForm" action="addReport.action" method="post" enctype="multipart/form-data" class="inputForm">
 

@@ -18,10 +18,6 @@
 	<bean id="org.hisp.dhis.mobile.action.NoAction"
 		class="org.hisp.dhis.mobile.action.NoAction" scope="prototype" />
 
-	<bean id="org.hisp.dhis.mobile.action.ShowSendSMSFormAction"
-		class="org.hisp.dhis.mobile.action.ShowSendSMSFormAction"
-		scope="prototype" />
-
 	<bean id="org.hisp.dhis.mobile.action.incoming.ReceivingSMSAction"
 		class="org.hisp.dhis.mobile.action.incoming.ReceivingSMSAction"
 		scope="prototype">
@@ -51,19 +47,6 @@
 		<property name="incomingSmsService"
 			ref="org.hisp.dhis.sms.incoming.IncomingSmsService" />
 	</bean>
-
-	<bean
-		id="org.hisp.dhis.mobile.action.ShowSendSMSBeneficiaryFormAction"
-		class="org.hisp.dhis.mobile.action.ShowSendSMSBeneficiaryFormAction"
-		scope="prototype" />
-
-	<bean id="org.hisp.dhis.mobile.action.ProcessingSendSMSAction"
-		class="org.hisp.dhis.mobile.action.ProcessingSendSMSAction"
-		scope="prototype" />
-
-	<bean id="org.hisp.dhis.mobile.action.SearchPatientAction"
-		class="org.hisp.dhis.mobile.action.SearchPatientAction"
-		scope="prototype" />
 
 	<bean id="org.hisp.dhis.mobile.action.ShowSentSMSAction"
 		class="org.hisp.dhis.mobile.action.ShowSentSMSAction"

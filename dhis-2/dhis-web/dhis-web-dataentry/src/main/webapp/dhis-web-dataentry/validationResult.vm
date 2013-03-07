@@ -2,7 +2,12 @@
 
 <p class="bold">$i18n.getString( "data_entry_screen_has_following_errors" )</p>
 
-#if( $results.size() > 0)
+#if( !$validationResults.isEmpty() )
+    #foreach( $key in $validationResults.keySet() )
+    #set( $results = $validationResults.get($key))
+
+    <h3>$key.displayName</h3>
+
     <table class="listTable" width="100%">
         <tr>
             <th>$i18n.getString( "validation_rule" )</th>                
@@ -12,16 +17,16 @@
             <th style="width:65px">$i18n.getString( "right_side" )</th>
         </tr>
         #set( $mark = false )   
-        #foreach( $result in $results )
-            #set ( $id = $result.validationRule.id )
-            #set ( $leftFormula = $leftsideFormulaMap.get( $id ) )
-            #set ( $rightFormula = $rightsideFormulaMap.get( $id ) )
+        #foreach( $validationResult in $results )
+            #set ( $id = $validationResult.validationRule.id )
+            #set ( $leftFormula = $leftSideFormulaMap.get( $key ).get( $id ) )
+            #set ( $rightFormula = $rightSideFormulaMap.get( $key ).get( $id ) )
             <tr>
-                <td style="height:32px"#alternate( $mark )>$encoder.htmlEncode( $result.validationRule.getDescriptionNameFallback() )</td>
-                <td#alternate( $mark )>$!encoder.htmlEncode( $leftFormula ) $encoder.htmlEncode( $i18n.getString( $result.validationRule.operator.mathematicalOperator ) ) $!encoder.htmlEncode( $rightFormula )</td>
-                <td#alternate( $mark )>$result.leftsideValue</td>
-                <td#alternate( $mark )>$encoder.htmlEncode( $i18n.getString( $result.validationRule.operator.mathematicalOperator ) )</td>
-                <td#alternate( $mark )>$result.rightsideValue</td>
+                <td style="height:32px"#alternate( $mark )>$encoder.htmlEncode( $validationResult.validationRule.getDescriptionNameFallback() )</td>
+                <td#alternate( $mark )>$!encoder.htmlEncode( $leftFormula ) $encoder.htmlEncode( $i18n.getString( $validationResult.validationRule.operator.mathematicalOperator ) ) $!encoder.htmlEncode( $rightFormula )</td>
+                <td#alternate( $mark )>$validationResult.leftsideValue</td>
+                <td#alternate( $mark )>$encoder.htmlEncode( $i18n.getString( $validationResult.validationRule.operator.mathematicalOperator ) )</td>
+                <td#alternate( $mark )>$validationResult.rightsideValue</td>
             </tr>
         #if( $mark )
             #set( $mark = false )
@@ -30,9 +35,15 @@
         #end
         #end
     </table><br>       
+    #end
 #end
 
-#if( $dataValues.size() > 0 )
+#if( !$dataValues.isEmpty() )
+    #foreach( $key in $dataValues.keySet() )
+    #set( $results = $dataValues.get( $key ))
+
+    <h3>$key.displayName</h3>
+
     <p class="bold">$encoder.htmlEncode( $i18n.getString( "the_following_values_are_outliers" ) )</p>
     <table class="listTable" style="width:100%">
 	    <tr>
@@ -42,7 +53,7 @@
 	        <th style="text-align:center">$i18n.getString( "max" )</th>
 	    </tr>
 	    #set( $mark = false )	    
-	    #foreach( $value in $dataValues ) 
+	    #foreach( $value in $results )
 	    <tr>	    
 	        <td style="height:32px"#alternate( $mark )>$value.dataElementName $value.categoryOptionComboNameParsed</td>	        
 	        <td style="text-align:center"#alternate( $mark )>$value.min</td>	        
@@ -56,4 +67,5 @@
         #end
 	    #end
 	</table>
+    #end
 #end

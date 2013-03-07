@@ -36,9 +36,7 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Dang Duy Hieu
- * @version $Id$
  */
-
 public class UpdateModemGateWayConfigAction
     implements Action
 {

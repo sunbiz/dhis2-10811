@@ -69,7 +69,6 @@ public class HibernateDataValueAuditStore
         Session session = sessionFactory.getCurrentSession();
 
         session.save( dataValueAudit );
-        session.flush();
     }
 
     public void deleteDataValueAudit( DataValueAudit dataValueAudit )

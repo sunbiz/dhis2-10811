@@ -28,10 +28,13 @@ package org.hisp.dhis.mobile.api;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -48,6 +52,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.amplecode.quick.BatchHandlerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.constant.ConstantService;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
@@ -58,6 +63,18 @@ import org.hisp.dhis.external.location.LocationManager;
 import org.hisp.dhis.mobile.SmsService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patient.PatientIdentifier;
+import org.hisp.dhis.patient.PatientIdentifierService;
+import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientIdentifierTypeService;
+import org.hisp.dhis.patient.PatientService;
+import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
+import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
+import org.hisp.dhis.patientdatavalue.PatientDataValue;
+import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.period.DailyPeriodType;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
@@ -65,8 +82,16 @@ import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.WeeklyPeriodType;
 import org.hisp.dhis.period.YearlyPeriodType;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramInstance;
+import org.hisp.dhis.program.ProgramInstanceService;
+import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.program.ProgramStage;
+import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserCredentials;
+import org.hisp.dhis.user.UserService;
 import org.hisp.dhis.user.UserStore;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -83,6 +108,8 @@ public class DefaultMobileImportService
 {
 
     private static final Log LOG = LogFactory.getLog( DefaultMobileImportService.class );
+
+	public static final String ORGUNITAUTOFORMAT = "ORGUNITAUTOFORMAT";
 
     // -------------------------------------------------------------------------
     // Dependencies
@@ -172,6 +199,83 @@ public class DefaultMobileImportService
         this.batchHandlerFactory = batchHandlerFactory;
     }
 
+    private UserService userService;
+
+    public void setUserService(UserService userService) 
+    {
+	this.userService = userService;
+    }
+    
+    private ConstantService constantService;
+    
+    public void setConstantService(ConstantService constantService) {
+  		this.constantService = constantService;
+  	}
+    
+    private PatientAttributeService patientAttributeService;
+
+    public void setPatientAttributeService( PatientAttributeService patientAttributeService )
+    {
+        this.patientAttributeService = patientAttributeService;
+    }
+    
+    private PatientService patientService;
+
+    public void setPatientService( PatientService patientService )
+    {
+        this.patientService = patientService;
+    }
+    
+    private ProgramService programService;
+    
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
+    
+    private ProgramInstanceService programInstanceService;
+    
+    public void setProgramInstanceService( ProgramInstanceService programInstanceService )
+    {
+        this.programInstanceService = programInstanceService;
+    }
+
+    private ProgramStageInstanceService programStageInstanceService;
+    
+    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
+    {
+        this.programStageInstanceService = programStageInstanceService;
+    }
+
+    private PatientDataValueService patientDataValueService;
+    
+    public void setPatientDataValueService( PatientDataValueService patientDataValueService )
+    {
+        this.patientDataValueService = patientDataValueService;
+    }
+        
+    private PatientIdentifierService patientIdentifierService;
+
+    public void setPatientIdentifierService( PatientIdentifierService patientIdentifierService )
+    {
+        this.patientIdentifierService = patientIdentifierService;
+    }
+
+    private PatientIdentifierTypeService patientIdentifierTypeService;
+    
+    public void setPatientIdentifierTypeService( PatientIdentifierTypeService patientIdentifierTypeService )
+    {
+        this.patientIdentifierTypeService = patientIdentifierTypeService;
+    }
+    
+    private PatientAttributeValueService patientAttributeValueService;
+
+    public void setPatientAttributeValueService(
+			PatientAttributeValueService patientAttributeValueService) {
+		this.patientAttributeValueService = patientAttributeValueService;
+	}
+
+    
     // -------------------------------------------------------------------------
     // Parameters
     // -------------------------------------------------------------------------
@@ -599,8 +703,9 @@ public class DefaultMobileImportService
 
             if ( curUser != null )
             {
-                UserCredentials userCredentials = userStore.getUserCredentials( curUser );
-
+              //  UserCredentials userCredentials = userStore.getUserCredentials( curUser );
+            	  UserCredentials userCredentials = userService.getUserCredentials( curUser );
+            	
                 if ( (userCredentials != null)
                     && (mobImportParameters.getMobileNumber().equals( curUser.getPhoneNumber() )) )
                 {
@@ -675,8 +780,9 @@ public class DefaultMobileImportService
 
             if ( curUser != null )
             {
-                UserCredentials userCredentials = userStore.getUserCredentials( curUser );
-
+                //UserCredentials userCredentials = userStore.getUserCredentials( curUser );
+                UserCredentials userCredentials = userService.getUserCredentials( curUser );
+                
                 if ( (userCredentials != null)
                     && (mobImportParameters.getMobileNumber().equals( curUser.getPhoneNumber() )) )
                 {
@@ -777,7 +883,8 @@ public class DefaultMobileImportService
             if ( sqlResultSet != null && sqlResultSet.next() )
             {
                 Integer userId = sqlResultSet.getInt( 1 );
-                User user = userStore.getUser( userId );
+              //  User user = userStore.getUser( userId );
+                User user = userService.getUser(userId);
                 if ( user != null )
                     return user;
             }
@@ -843,7 +950,9 @@ public class DefaultMobileImportService
             }
             else
             {
-                UserCredentials userCredentials = userStore.getUserCredentials( curUser );
+                //UserCredentials userCredentials = userStore.getUserCredentials( curUser );
+                UserCredentials userCredentials = userService.getUserCredentials( curUser );
+            	
                 storedBy = userCredentials.getUsername();
             }
 
@@ -1019,8 +1128,9 @@ public class DefaultMobileImportService
             }
             else
             {
-                UserCredentials userCredentials = userStore.getUserCredentials( curUser );
-
+//                UserCredentials userCredentials = userStore.getUserCredentials( curUser );
+            	  UserCredentials userCredentials = userService.getUserCredentials( curUser );
+              	
                 storedBy = userCredentials.getUsername();
             }
             DataElement dataElement = dataElementService.getDataElement( dataelementid );
@@ -1154,4 +1264,393 @@ public class DefaultMobileImportService
         }
 
     }
-}
+
+	@Override
+	public String registerData(String unCompressedText, String sender, Date sendTime ) {
+	
+		//	S1#10/09/2012$ebc:sc:sname:fname:21032013:F:5:5665222222:0:0:1:0
+		
+		String stage="";
+		String programName = "Registration and Symptom detection";
+		String statusMessage=null;
+		String registrationDate="";
+		 String fullName = "";
+         String firstName = "";
+         String middleName = "";
+         String lastName = "";
+         String gender = null;
+         String formNo = "";
+         Date dob = null;
+         String fatherName = "";
+		
+         int fatherNamePatientAttributeId = (int) constantService.getConstantByName("PatientAttributeFatherNameId").getValue();
+         int schoolCodePatientAttributeId = (int) constantService.getConstantByName("PatientAttributeSchoolCodeId").getValue();
+    		
+         
+         List<PatientAttributeValue> patientAttributeValues = new ArrayList<PatientAttributeValue>();
+         
+		String smsData[] = unCompressedText.split("#");
+		stage = smsData[0];
+		
+		String regDate[] = smsData[1].split("//$");
+		registrationDate = regDate[0];
+		
+		String data[] = regDate[1].split(":");
+		
+		String path = System.getenv( "DHIS2_HOME" ) +  File.separator + "mi" + File.separator + "formIDLayout.csv";
+        Properties props = new Properties();
+        try {
+			props.load( new FileReader( path ) );
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        String mappingString = props.getProperty("S1");
+		String[] elementIds = mappingString.split("\\,");
+		
+		for (int i=0;i<elementIds.length;i++){
+			//print these
+		}
+		
+	//save patient attribute data + patient data + datavalue data
+		//register patient
+		//enroll patient into program
+		// enter data for the program
+		
+		Collection<User> users = userService.getUsersByPhoneNumber(sender);
+		User user = users.iterator().next();
+		
+		Patient patient = new Patient();
+		
+
+		for (int i=0;i<elementIds.length;i++){
+			
+			if (elementIds[i].equalsIgnoreCase("NAME")){
+			
+				// Set FirstName, MiddleName, LastName by FullName
+                fullName = data[i].trim();
+
+                int startIndex = fullName.indexOf( ' ' );
+                int endIndex = fullName.lastIndexOf( ' ' );
+
+                firstName = fullName.toString();
+                middleName = "";
+                lastName = "";
+
+                if ( fullName.indexOf( ' ' ) != -1 )
+                {
+                    firstName = fullName.substring( 0, startIndex );
+                    if ( startIndex == endIndex )
+                    {
+                        middleName = "";
+                        lastName = fullName.substring( startIndex + 1, fullName.length() );
+                    }
+                    else
+                    {
+                        middleName = fullName.substring( startIndex + 1, endIndex );
+                        lastName = fullName.substring( endIndex + 1, fullName.length() );
+                    }
+                }
+
+                patient.setFirstName( firstName );
+                patient.setMiddleName( middleName );
+                patient.setLastName( lastName );
+                patient.setIsDead( false );
+                //patient.setUnderAge( false );
+                patient.setOrganisationUnit( user.getOrganisationUnit() );
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date convertedDate=null;
+				try {
+					convertedDate = dateFormat.parse( registrationDate );
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+                patient.setRegistrationDate( convertedDate );
+			}
+			
+			 else if( elementIds[i].equalsIgnoreCase( "GENDER" ) && data[i] != null )
+             {
+            
+                if( gender == null )
+                     gender = data[i];
+                 patient.setGender( gender );
+             }
+             else if( elementIds[i].equalsIgnoreCase( "PHONE" ) && data[i] != null )
+             {
+                 patient.setPhoneNumber( data[i] );
+             }
+             else if( elementIds[i].equalsIgnoreCase( "DOB" ) && data[i] != null )
+             {
+            	  SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyy");
+                  
+            	  try {
+					Date birthDate = dateFormat.parse(registrationDate);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+             }
+             
+             else if( elementIds[i].substring( 0, 2 ).equalsIgnoreCase( "PA" ) && data[i] != null )
+             {
+                 PatientAttributeValue attributeValue = null;
+                 PatientAttribute attribute = patientAttributeService.getPatientAttribute( Integer.parseInt( elementIds[i].split( ":" )[1] ) );
+                 
+                 String value = data[i];
+                 //String value = props1.getProperty( elementIds[i]+":"+patientData[i] );
+                 
+               PatientAttributeValue patientAttributeValue = new PatientAttributeValue();
+               patientAttributeValue.setPatient(patient);
+               patientAttributeValue.setPatientAttribute(attribute);
+               patientAttributeValue.setValue(value);
+               
+               patientAttributeValues.add(patientAttributeValue);
+             }
+			
+		}
+		
+		 PatientIdentifierType patientIdentifierType = patientIdentifierTypeService.getPatientIdentifierType( ORGUNITAUTOFORMAT );
+         int fourDigitRunningNo = 1;
+         String fourDigitRunningNumber = "0001";
+         
+         PatientAttribute schoolCodePatientAttribute = patientAttributeService.getPatientAttribute(schoolCodePatientAttributeId);
+         PatientAttributeValue schoolCodeValue = patientAttributeValueService.getPatientAttributeValue(patient, schoolCodePatientAttribute);
+         PatientAttribute fatherNamePatientAttribute = patientAttributeService.getPatientAttribute(fatherNamePatientAttributeId);
+         PatientAttributeValue fatherNameAttributeValue = patientAttributeValueService.getPatientAttributeValue(patient, fatherNamePatientAttribute);
+         
+         String orgUnitAutoIdentifierData = schoolCodeValue.getValue()+fullName.substring(0,3)+patient.getAge()+patient.getGender()+fatherNameAttributeValue.getValue().substring(0, 2) + fourDigitRunningNumber;
+       
+         PatientIdentifier orgUnitAutoIdentifier = patientIdentifierService.get( patientIdentifierType, orgUnitAutoIdentifierData );
+         
+         while ( orgUnitAutoIdentifier != null )
+         {
+             fourDigitRunningNo++;
+             if( fourDigitRunningNo <= 9 )
+             {
+                 fourDigitRunningNumber = "000" + fourDigitRunningNo;
+             }
+             else if( fourDigitRunningNo >= 10 && fourDigitRunningNo <= 99 )
+             {
+                 fourDigitRunningNumber = "00" + fourDigitRunningNo;
+             }
+             else if( fourDigitRunningNo >= 100 && fourDigitRunningNo <= 999 )
+             {
+                 fourDigitRunningNumber = "0" + fourDigitRunningNo;
+             }
+             orgUnitAutoIdentifierData = schoolCodeValue.getValue()+fullName.substring(0,3)+patient.getAge()+patient.getGender()+fatherNameAttributeValue.getValue().substring(0, 2) + fourDigitRunningNumber;
+                orgUnitAutoIdentifier = patientIdentifierService.get( patientIdentifierType, orgUnitAutoIdentifierData );
+         }
+         orgUnitAutoIdentifier = new PatientIdentifier();
+         orgUnitAutoIdentifier.setIdentifierType( patientIdentifierType );
+         orgUnitAutoIdentifier.setIdentifier( orgUnitAutoIdentifierData );
+         orgUnitAutoIdentifier.setPatient( patient );
+
+         patient.getIdentifiers().add( orgUnitAutoIdentifier );
+      
+		
+		
+			  // Creating new Patient 
+            Integer id = patientService.createPatient( patient, null, null, patientAttributeValues );
+            
+            // Enrolling Patient to Program
+            Patient createdPatient = patientService.getPatient( id );
+            Program program = programService.getProgramByName(programName);
+            ProgramStage programStage = null;
+            
+
+            if ( program.getProgramStages() != null )
+            {
+                programStage = program.getProgramStages().iterator().next();
+            }
+            ProgramInstance programInstance = null;
+            
+            int type = program.getType();
+            if ( type == Program.SINGLE_EVENT_WITH_REGISTRATION )
+            {
+                // Add a new program-instance
+                programInstance = new ProgramInstance();
+                programInstance.setEnrollmentDate( createdPatient.getRegistrationDate() );
+                programInstance.setDateOfIncident( createdPatient.getRegistrationDate() );
+                programInstance.setProgram( program );
+                programInstance.setCompleted( false );
+
+                programInstance.setPatient( createdPatient );
+                createdPatient.getPrograms().add( program );
+                patientService.updatePatient( createdPatient );
+
+                programInstanceService.addProgramInstance( programInstance );
+                
+                // Add a new program-stage-instance
+                ProgramStageInstance programStageInstance = new ProgramStageInstance();
+                programStageInstance.setProgramInstance( programInstance );
+                programStageInstance.setProgramStage( programStage );
+                
+               // programStageInstance.setStageInProgram( programStage.getStageInProgram() );
+                programStageInstance.setDueDate( createdPatient.getRegistrationDate() );
+                programStageInstance.setExecutionDate( createdPatient.getRegistrationDate() );
+                programStageInstance.setOrganisationUnit( createdPatient.getOrganisationUnit() );
+
+                int psInstanceId = programStageInstanceService.addProgramStageInstance( programStageInstance );
+
+                ProgramStageInstance progStageInstance = programStageInstanceService.getProgramStageInstance( psInstanceId );
+                
+                
+                // Saving Patient Datavalue
+                for ( int i = 0; i < elementIds.length; i++ )
+                {
+                    if( elementIds[i].substring( 0, 2 ).equalsIgnoreCase( "DV" ) && data[i] != null )
+                    {
+                        DataElement dataElement = dataElementService.getDataElement( Integer.parseInt( elementIds[i].split( ":" )[1] ) );
+                        PatientDataValue patientDataValue = patientDataValueService.getPatientDataValue( progStageInstance, dataElement );
+                        
+                        
+                        String value = data[i];
+                        //String value = props1.getProperty( elementIds[i]+":"+patientData[i] );
+                      
+                        
+                        if ( value != null && value.trim().length() == 0 )
+                        {
+                            value = null;
+                        }
+                        
+                        if ( progStageInstance.getExecutionDate() == null )
+                        {
+                            progStageInstance.setExecutionDate( new Date() );
+                            programStageInstanceService.updateProgramStageInstance( progStageInstance );
+                        }
+                        
+                        if ( patientDataValue == null && value != null )
+                        {
+                            LOG.debug( "Adding PatientDataValue, value added" );
+
+                            patientDataValue = new PatientDataValue( progStageInstance, dataElement, new Date(), value );
+                            patientDataValue.setStoredBy( storedBy );
+                            patientDataValue.setProvidedElsewhere( false );
+
+                            patientDataValueService.savePatientDataValue( patientDataValue );
+                        }
+                        if( patientDataValue != null && value == null )
+                        {
+                            patientDataValueService.deletePatientDataValue( patientDataValue );
+                        }
+                        else if( patientDataValue != null && value != null )
+                        {
+                            LOG.debug( "Updating PatientDataValue, value added/changed" );
+
+                            patientDataValue.setValue( value );
+                            patientDataValue.setTimestamp( new Date() );
+                            patientDataValue.setProvidedElsewhere( false );
+                            patientDataValue.setStoredBy( storedBy );
+                            
+                            patientDataValueService.updatePatientDataValue( patientDataValue );
+                        }
+                    }
+                }
+            }
+            
+            statusMessage = fullName+" IS SUCCESSFULLY REGISTERED, UNIQUEID IS: "+orgUnitAutoIdentifierData;
+            return statusMessage;
+	}
+
+	@Override
+	public void registerDataByUID(String unCompressedText, String sender,
+			Date sendTime) {
+		
+		//S2#10/09/2012#UID#0:1:0
+		
+		String stage = "";
+		String registrationDate = "";
+		String UID="";
+		String smsData[] = unCompressedText.split("#");
+		stage = smsData[0];
+		
+		
+		registrationDate = smsData[1];
+		UID = smsData[2];
+		String data[] = smsData[3].split(":");
+		
+		String path = System.getenv( "DHIS2_HOME" ) +  File.separator + "mi" + File.separator + "formIDLayout.csv";
+        Properties props = new Properties();
+        try {
+			props.load( new FileReader( path ) );
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        String mappingString = props.getProperty("S2");
+		String[] elementIds = mappingString.split("\\,");
+		
+		
+		PatientIdentifierType patientIdentifierType = patientIdentifierTypeService.getPatientIdentifierType( ORGUNITAUTOFORMAT );
+	        
+		
+		Patient patient = patientIdentifierService.getPatient(patientIdentifierType, UID.trim());
+		
+		ProgramStageInstance progStageInstance = null;
+		
+		for (int i=0;i<elementIds.length;i++){
+			
+			 if( elementIds[i].substring( 0, 2 ).equalsIgnoreCase( "DV" ) && data[i] != null ){
+                 DataElement dataElement = dataElementService.getDataElement( Integer.parseInt( elementIds[i].split( ":" )[1] ) );
+                 PatientDataValue patientDataValue = patientDataValueService.getPatientDataValue( progStageInstance, dataElement );
+                 
+                 
+                 String value = data[i];
+                 //String value = props1.getProperty( elementIds[i]+":"+patientData[i] );
+               
+                 
+                 if ( value != null && value.trim().length() == 0 )
+                 {
+                     value = null;
+                 }
+                 
+                 if ( progStageInstance.getExecutionDate() == null )
+                 {
+                     progStageInstance.setExecutionDate( new Date() );
+                     programStageInstanceService.updateProgramStageInstance( progStageInstance );
+                 }
+                 
+                 if ( patientDataValue == null && value != null )
+                 {
+                     LOG.debug( "Adding PatientDataValue, value added" );
+
+                     patientDataValue = new PatientDataValue( progStageInstance, dataElement, new Date(), value );
+                     patientDataValue.setStoredBy( storedBy );
+                     patientDataValue.setProvidedElsewhere( false );
+
+                     patientDataValueService.savePatientDataValue( patientDataValue );
+                 }
+                 if( patientDataValue != null && value == null )
+                 {
+                     patientDataValueService.deletePatientDataValue( patientDataValue );
+                 }
+                 else if( patientDataValue != null && value != null )
+                 {
+                     LOG.debug( "Updating PatientDataValue, value added/changed" );
+
+                     patientDataValue.setValue( value );
+                     patientDataValue.setTimestamp( new Date() );
+                     patientDataValue.setProvidedElsewhere( false );
+                     patientDataValue.setStoredBy( storedBy );
+                     
+                     patientDataValueService.updatePatientDataValue( patientDataValue );
+                 }
+				 
+			}
+		}
+		
+		
+	}
+		
+	}
+
+

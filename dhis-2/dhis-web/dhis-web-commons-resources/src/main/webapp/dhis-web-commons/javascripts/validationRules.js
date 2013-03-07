@@ -63,7 +63,7 @@ var validationRules = {
             "rangelength" : [ 2, 210 ],
             "alphanumericwithbasicpuncspaces" : true
         },
-        "memberValidator" : {
+        "groupMembersList" : {
             "required" : true
         }
     },

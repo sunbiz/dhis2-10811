@@ -181,7 +181,7 @@ public class DefaultChartService
 
     public JFreeChart getJFreeChart( Chart chart, Date date, OrganisationUnit unit, I18nFormat format )
     {
-        if ( chart.getRelatives() != null )
+        if ( chart.hasRelativePeriods() )
         {
             List<Period> periods = chart.isRewindRelativePeriods() ?
                 chart.getRelatives().getRewindedRelativePeriods( 1, date, format, true ) :

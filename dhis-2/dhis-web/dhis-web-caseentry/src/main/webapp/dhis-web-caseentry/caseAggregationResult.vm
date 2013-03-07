@@ -23,7 +23,7 @@
 			
 				#set( $dataValues = $mapDataValues.get( $key ) ) 
 				<table class="formSection mainPageTable hidden" id='$periodDiv'>
-					<col width="40">          
+					<col width="40"> 
 					<col>
 					<col>
 					<col>

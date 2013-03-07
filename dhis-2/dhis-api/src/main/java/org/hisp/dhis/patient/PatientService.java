@@ -42,180 +42,203 @@ import org.hisp.dhis.program.Program;
  * @author Abyot Asalefew Gizaw
  * @version $Id$
  */
-public interface PatientService
-{
-    String ID = PatientService.class.getName();
 
-    int savePatient( Patient patient );
+public interface PatientService {
+	String ID = PatientService.class.getName();
 
-    void deletePatient( Patient patient );
+	int savePatient(Patient patient);
 
-    void updatePatient( Patient patient );
+	void deletePatient(Patient patient);
 
-    Patient getPatient( int id );
+	void updatePatient(Patient patient);
 
-    Collection<Patient> getAllPatients();
+	Patient getPatient(int id);
 
-    /**
-     * Search Patient base on firstname/middlename/lastname/birthDate/gender
-     * 
-     * @param firstName
-     * @param middleName
-     * @param lastName
-     * @param birthdate
-     * @param gender
-     * @return Patient List
-     */
-    Collection<Patient> getPatients( String firstName, String middleName, String lastName, Date birthdate, String gender );
-    
-    /**
-     * Search Patient base on gender
-     * 
-     * @param gender
-     * @return Patient List
-     */
-    Collection<Patient> getPatiensByGender( String gender );
+	Collection<Patient> getAllPatients();
 
-    /**
-     * Search Patient base on birthDate
-     * 
-     * @param birthdate
-     * @return Patient List
-     */
-    Collection<Patient> getPatientsByBirthDate( Date birthDate );
+	/**
+	 * Search Patient base on firstname/middlename/lastname/birthDate/gender
+	 * 
+	 * @param firstName
+	 * @param middleName
+	 * @param lastName
+	 * @param birthdate
+	 * @param gender
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatients(String firstName, String middleName,
+			String lastName, Date birthdate, String gender);
 
-    /**
-     * Search Patient base on fullName
-     * 
-     * @param name fullName
-     * @return Patient List
-     */
-    Collection<Patient> getPatientsByNames( String name, Integer min, Integer max );
-    
-    /**
-     * Search Patient base on full-name or identifier value
-     * 
-     * @param searchText value
-     * @return Patient List
-     */
-    Collection<Patient> getPatients( String searchText, Integer min, Integer max );
-    
-    /**
-     * Search Patient for mobile base on identifier value
-     * 
-     * @param searchText value
-     * @param orgUnitId
-     * @return Patient List
-     */
-    Collection<Patient> getPatientsForMobile( String searchText, int orgUnitId );
-    
-    /**
-     * Search Patient base on organization unit with result limited
-     * 
-     * @param organisationUnit organisationUnit
-     * @return Patient List
-     */
-    Collection<Patient> getPatients( OrganisationUnit organisationUnit, Integer min, Integer max );
-    
-    /**
-     * Search Patient base on organization unit and sort the result by PatientAttribute
-     * 
-     * @param organisationUnit organisationUnit
-     * @param patientAttribute 
-     * @param min
-     * @param max
-     * @return Patient List
-     */
-    Collection<Patient> getPatients( OrganisationUnit organisationUnit, PatientAttribute patientAttribute, Integer min, Integer max );
-    
-    /**
-     * Search Patient base on organisationUnit and identifier value
-     * name
-     * 
-     * @param organisationUnit
-     * @param searchText identifier value
-     * @param min 
-     * @param max 
-     * @return
-     */
-    Collection<Patient> getPatients( OrganisationUnit organisationUnit, String searchText, Integer min, Integer max );
-    
-    /**
-     * Search Patient base on PatientIdentifierType or Attribute or Patient's
-     * name
-     * 
-     * @param identifierTypeId
-     * @param attributeId
-     * @param value
-     * @return
-     */
-    Collection<Patient> getPatient( Integer identifierTypeId, Integer attributeId, String value );
+	/**
+	 * Search Patient base on gender
+	 * 
+	 * @param gender
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatiensByGender(String gender);
 
-    /**
-     * Search Patient base on OrganisationUnit and Program with result limited
-     * name
-     * 
-     * @param organisationUnit
-     * @param program
-     * @param min 
-     * @param max 
-     * @return
-     */
-    Collection<Patient> getPatients( OrganisationUnit organisationUnit, Program program, Integer min, Integer max );
-    
-    /**
-     * Sort the result by PatientAttribute
-     * 
-     * @param patients
-     * @param patientAttribute
-     * @return Patient List
-     */
-    Collection<Patient> sortPatientsByAttribute( Collection<Patient> patients, PatientAttribute patientAttribute );
+	/**
+	 * Search Patient base on birthDate
+	 * 
+	 * @param birthdate
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatientsByBirthDate(Date birthDate);
 
-   
-    Collection<Patient> getRepresentatives( Patient patient );
-    /**
-     * Search Patient base on identifier value and get number of result
-     * 
-     * @param searchText
-     * @return number of patients
-     */
-    int countGetPatients( String searchText );
+	/**
+	 * Search Patient base on fullName
+	 * 
+	 * @param name
+	 *            fullName
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatientsByNames(String name, Integer min, Integer max);
 
-    /**
-     * Search Patient base on firstname/middlename/lastname and get number of result
-     * 
-     * @param name
-     * @return number of patients
-     */
-    int countGetPatientsByName( String name );
+	/**
+	 * Search Patient base on full-name or identifier value
+	 * 
+	 * @param searchText
+	 *            value
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatients(String searchText, Integer min, Integer max);
 
-    int createPatient( Patient patient,Integer representativeId,
-        Integer relationshipTypeId, List<PatientAttributeValue> patientAttributeValues );
+	/**
+	 * Search Patient for mobile base on identifier value
+	 * 
+	 * @param searchText
+	 *            value
+	 * @param orgUnitId
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatientsForMobile(String searchText, int orgUnitId);
 
-    void updatePatient( Patient patient, Integer representativeId,
-        Integer relationshipTypeId, List<PatientAttributeValue> valuesForSave,
-        List<PatientAttributeValue> valuesForUpdate, Collection<PatientAttributeValue> valuesForDelete );
-    
-    int countGetPatientsByOrgUnit( OrganisationUnit organisationUnit );
-    
-    int countGetPatientsByOrgUnitProgram( OrganisationUnit organisationUnit, Program program );
-    
-    Object getObjectValue( String property, String value, I18nFormat format );
-    
-    void removeErollmentPrograms( Program program );
-    
-    Collection<Patient> searchPatients( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
-    
-    int countSearchPatients( List<String> searchKeys, OrganisationUnit orgunit );
-    
-    Collection<String> getPatientPhoneNumbers( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
+	/**
+	 * Search Patient base on organization unit with result limited
+	 * 
+	 * @param organisationUnit
+	 *            organisationUnit
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatients(OrganisationUnit organisationUnit,
+			Integer min, Integer max);
 
-    List<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min, Integer max );
-    
-    Grid getScheduledEventsReport( List<String> searchKeys, OrganisationUnit orgunit, I18n i18n );
+	/**
+	 * Search Patient base on organization unit and sort the result by
+	 * PatientAttribute
+	 * 
+	 * @param organisationUnit
+	 *            organisationUnit
+	 * @param patientAttribute
+	 * @param min
+	 * @param max
+	 * @return Patient List
+	 */
+	Collection<Patient> getPatients(OrganisationUnit organisationUnit,
+			PatientAttribute patientAttribute, Integer min, Integer max);
 
-    Collection<Patient> getPatientsByPhone( String phoneNumber, Integer min, Integer max );
-    
-    Collection<Patient> getPatientByFullname( String fullName, Integer orgunitId );
+	/**
+	 * Search Patient base on organisationUnit and identifier value name
+	 * 
+	 * @param organisationUnit
+	 * @param searchText
+	 *            identifier value
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	Collection<Patient> getPatients(OrganisationUnit organisationUnit,
+			String searchText, Integer min, Integer max);
+
+	/**
+	 * Search Patient base on PatientIdentifierType or Attribute or Patient's
+	 * name
+	 * 
+	 * @param identifierTypeId
+	 * @param attributeId
+	 * @param value
+	 * @return
+	 */
+	Collection<Patient> getPatient(Integer identifierTypeId,
+			Integer attributeId, String value);
+
+	/**
+	 * Search Patient base on OrganisationUnit and Program with result limited
+	 * name
+	 * 
+	 * @param organisationUnit
+	 * @param program
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	Collection<Patient> getPatients(OrganisationUnit organisationUnit,
+			Program program, Integer min, Integer max);
+
+	/**
+	 * Sort the result by PatientAttribute
+	 * 
+	 * @param patients
+	 * @param patientAttribute
+	 * @return Patient List
+	 */
+	Collection<Patient> sortPatientsByAttribute(Collection<Patient> patients,
+			PatientAttribute patientAttribute);
+
+	Collection<Patient> getRepresentatives(Patient patient);
+
+	/**
+	 * Search Patient base on identifier value and get number of result
+	 * 
+	 * @param searchText
+	 * @return number of patients
+	 */
+	int countGetPatients(String searchText);
+
+	/**
+	 * Search Patient base on firstname/middlename/lastname and get number of
+	 * result
+	 * 
+	 * @param name
+	 * @return number of patients
+	 */
+	int countGetPatientsByName(String name);
+
+	int createPatient(Patient patient, Integer representativeId,
+			Integer relationshipTypeId,
+			List<PatientAttributeValue> patientAttributeValues);
+
+	void updatePatient(Patient patient, Integer representativeId,
+			Integer relationshipTypeId,
+			List<PatientAttributeValue> valuesForSave,
+			List<PatientAttributeValue> valuesForUpdate,
+			Collection<PatientAttributeValue> valuesForDelete);
+
+	int countGetPatientsByOrgUnit(OrganisationUnit organisationUnit);
+
+	int countGetPatientsByOrgUnitProgram(OrganisationUnit organisationUnit,
+			Program program);
+
+	Object getObjectValue(String property, String value, I18nFormat format);
+
+	void removeErollmentPrograms(Program program);
+
+	Collection<Patient> searchPatients(List<String> searchKeys,
+			OrganisationUnit orgunit, Integer min, Integer max);
+
+	int countSearchPatients(List<String> searchKeys, OrganisationUnit orgunit);
+
+	Collection<String> getPatientPhoneNumbers(List<String> searchKeys,
+			OrganisationUnit orgunit, Integer min, Integer max);
+
+	List<Integer> getProgramStageInstances(List<String> searchKeys,
+			OrganisationUnit orgunit, Integer min, Integer max);
+
+	Grid getScheduledEventsReport(List<String> searchKeys,
+			OrganisationUnit orgunit, I18n i18n);
+
+	Collection<Patient> getPatientsByPhone(String phoneNumber, Integer min,
+			Integer max);
+
+	Collection<Patient> getPatientByFullname(String fullName, Integer orgunitId);
 }

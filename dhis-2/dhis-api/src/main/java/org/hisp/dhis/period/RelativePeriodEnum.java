@@ -52,6 +52,7 @@ public enum RelativePeriodEnum
     THIS_FINANCIAL_YEAR,
     LAST_FINANCIAL_YEAR,
     LAST_5_FINANCIAL_YEARS,
+    LAST_WEEK,
     LAST_4_WEEKS,
     LAST_12_WEEKS,
     LAST_52_WEEKS;
@@ -61,7 +62,7 @@ public enum RelativePeriodEnum
             MONTHS_THIS_YEAR.toString(), QUARTERS_THIS_YEAR.toString(), THIS_YEAR.toString(), MONTHS_LAST_YEAR.toString(), QUARTERS_LAST_YEAR.toString(),
             LAST_YEAR.toString(), LAST_5_YEARS.toString(), LAST_12_MONTHS.toString(), LAST_3_MONTHS.toString(), LAST_6_BIMONTHS.toString(), 
             LAST_4_QUARTERS.toString(), LAST_2_SIXMONTHS.toString(), THIS_FINANCIAL_YEAR.toString(), LAST_FINANCIAL_YEAR.toString(), 
-            LAST_5_FINANCIAL_YEARS.toString(), LAST_4_WEEKS.toString(), LAST_12_WEEKS.toString(), LAST_52_WEEKS.toString() ) );
+            LAST_5_FINANCIAL_YEARS.toString(), LAST_WEEK.toString(), LAST_4_WEEKS.toString(), LAST_12_WEEKS.toString(), LAST_52_WEEKS.toString() ) );
     } };
     
     public static boolean contains( String relativePeriod )

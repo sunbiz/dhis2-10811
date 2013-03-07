@@ -234,7 +234,7 @@ public class DefaultReportTableService
      * report table parameters.
      *
      * @param reportTable        the report table.
-     * @param reportingPeriod    the reporting period number.
+     * @param reportingPeriod    the reporting period start date.
      * @param organisationUnitId the organisation unit identifier.
      * @param format             the I18n format.
      * @return a report table.
@@ -248,7 +248,7 @@ public class DefaultReportTableService
 
         log.info( "Running report table: " + reportTable.getName() );
 
-        if ( reportTable.getReportParams() != null && reportTable.getReportParams().isParamReportingMonth() )
+        if ( reportTable.hasRelativePeriods() && reportTable.getReportParams() != null && reportTable.getReportParams().isParamReportingMonth() )
         {
             reportTable.setRelativePeriods( periodService.reloadPeriods( reportTable.getRelatives().getRelativePeriods(
                 reportingPeriod, format, !reportTable.isDoPeriods() ) ) );
@@ -257,7 +257,7 @@ public class DefaultReportTableService
 
             log.info( "Reporting period date from report param: " + reportTable.getReportingPeriodName() );
         }
-        else
+        else if ( reportTable.hasRelativePeriods() )
         {
             reportTable.setRelativePeriods( periodService.reloadPeriods( reportTable.getRelatives().getRelativePeriods(
                 format, !reportTable.isDoPeriods() ) ) );

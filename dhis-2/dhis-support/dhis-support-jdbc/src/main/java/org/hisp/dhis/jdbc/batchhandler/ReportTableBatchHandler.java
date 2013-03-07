@@ -73,17 +73,20 @@ public class ReportTableBatchHandler
     {        
         statementBuilder.setIdentifierValue( reportTable.getId() );
     }
-    
+
+    @Override
     protected void setUniqueColumns()
     {
         statementBuilder.setUniqueColumn( "name" );
     }
-    
+
+    @Override
     protected void setUniqueValues( ReportTable reportTable )
     {        
         statementBuilder.setUniqueValue( reportTable.getName() );
     }
-    
+
+    @Override
     protected void setColumns()
     {
         statementBuilder.setColumn( "uid" );
@@ -106,7 +109,8 @@ public class ReportTableBatchHandler
         statementBuilder.setColumn( "paramparentorganisationunit" );
         statementBuilder.setColumn( "paramorganisationunit" );
     }
-    
+
+    @Override
     protected void setValues( ReportTable reportTable )
     {        
         statementBuilder.setValue( reportTable.getUid() );

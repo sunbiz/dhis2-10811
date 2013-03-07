@@ -27,15 +27,20 @@ package org.hisp.dhis.analytics.data;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT;
 import static org.hisp.dhis.analytics.AggregationType.AVERAGE_BOOL;
+import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT;
 import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT_DISAGGREGATION;
 import static org.hisp.dhis.analytics.AggregationType.COUNT;
 import static org.hisp.dhis.analytics.DataQueryParams.DIMENSION_SEP;
 import static org.hisp.dhis.analytics.DataQueryParams.VALUE_ID;
+import static org.hisp.dhis.analytics.MeasureFilter.EQ;
+import static org.hisp.dhis.analytics.MeasureFilter.GE;
+import static org.hisp.dhis.analytics.MeasureFilter.GT;
+import static org.hisp.dhis.analytics.MeasureFilter.LE;
+import static org.hisp.dhis.analytics.MeasureFilter.LT;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
 import static org.hisp.dhis.system.util.TextUtils.getQuotedCommaDelimitedString;
-import static org.hisp.dhis.analytics.MeasureFilter.*;
+import static org.hisp.dhis.system.util.TextUtils.trimEnd;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,9 +57,9 @@ import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.analytics.Dimension;
 import org.hisp.dhis.analytics.MeasureFilter;
 import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.system.util.MathUtils;
 import org.hisp.dhis.system.util.SqlHelper;
 import org.hisp.dhis.system.util.TextUtils;
@@ -91,98 +96,42 @@ public class JdbcAnalyticsManager
     public Future<Map<String, Double>> getAggregatedDataValues( DataQueryParams params )
     {
         ListMap<IdentifiableObject, IdentifiableObject> dataPeriodAggregationPeriodMap = params.getDataPeriodAggregationPeriodMap();
+        
         params.replaceAggregationPeriodsWithDataPeriods( dataPeriodAggregationPeriodMap );
-                
-        params.populateDimensionNames();
-
-        List<Dimension> dimensions = params.getQueryDimensions();
-
-        SqlHelper sqlHelper = new SqlHelper();
-
-        String sql = "select " + getCommaDelimitedString( dimensions ) + ", ";
         
-        if ( params.isAggregationType( AVERAGE_INT ) )
-        {
-            int days = PeriodType.getPeriodTypeByName( params.getPeriodType() ).getFrequencyOrder();
-            
-            sql += "sum(daysxvalue) / " + days;
-        }
-        else if ( params.isAggregationType( AVERAGE_BOOL ) )
-        {
-            sql += "sum(daysxvalue) / sum(daysno) * 100";
-        }
-        else if ( params.isAggregationType( COUNT ) )
-        {
-            sql += "count(value)";
-        }
-        else // SUM, AVERAGE_DISAGGREGATION and undefined //TODO
-        {
-            sql += "sum(value)";
-        }
-                
-        sql += " as value from " + params.getTableName() + " ";
+        String sql = getSelectClause( params );
         
-        for ( Dimension dim : dimensions )
+        if ( params.filterSpansMultiplePartitions() )
         {
-            if ( !dim.isAllOptions() )
-            {
-                sql += sqlHelper.whereAnd() + " " + dim.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( dim.getItems() ) ) + " ) ";
-            }
+            sql += getFromWhereClauseMultiplePartitionFilters( params );
         }
-
-        for ( Dimension filter : params.getFilters() )
+        else
         {
-            if ( !filter.isAllOptions() )
-            {
-                sql += sqlHelper.whereAnd() + " " + filter.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( filter.getItems() ) ) + " ) ";
-            }
+            sql += getFromWhereClause( params );
         }
         
-        sql += "group by " + getCommaDelimitedString( dimensions );
+        sql += getGroupByClause( params );
     
         log.info( sql );
 
-        Map<String, Double> map = new HashMap<String, Double>();
-        
-        SqlRowSet rowSet = null;
+        Map<String, Double> map = null;
         
         try
         {
-            rowSet = jdbcTemplate.queryForRowSet( sql );
+            map = getKeyValueMap( params, sql );
         }
         catch ( BadSqlGrammarException ex )
         {
             log.info( "Query failed, likely because the requested analytics table does not exist", ex );
             
-            return new AsyncResult<Map<String, Double>>( map );
-        }
-        
-        while ( rowSet.next() )
-        {
-            Double value = rowSet.getDouble( VALUE_ID );
-
-            if ( !measureCriteriaSatisfied( params, value ) )
-            {
-                continue;
-            }
-            
-            StringBuilder key = new StringBuilder();
-            
-            for ( Dimension dim : dimensions )
-            {
-                key.append( rowSet.getString( dim.getDimensionName() ) + DIMENSION_SEP );
-            }
-            
-            key.deleteCharAt( key.length() - 1 );
-            
-            map.put( key.toString(), value );
+            return new AsyncResult<Map<String, Double>>( new HashMap<String, Double>() );
         }
         
         replaceDataPeriodsWithAggregationPeriods( map, params, dataPeriodAggregationPeriodMap );
         
-        return new AsyncResult<Map<String, Double>>( map );
+        return new AsyncResult<Map<String, Double>>( map );   
     }
-
+    
     public void replaceDataPeriodsWithAggregationPeriods( Map<String, Double> dataValueMap, DataQueryParams params, ListMap<IdentifiableObject, IdentifiableObject> dataPeriodAggregationPeriodMap )
     {
         if ( params.isAggregationType( AVERAGE_INT_DISAGGREGATION ) )
@@ -223,7 +172,164 @@ public class JdbcAnalyticsManager
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
+
+    /**
+     * Generates the select clause of the query SQL.
+     */
+    private String getSelectClause( DataQueryParams params )
+    {
+        String sql = "select " + getCommaDelimitedString( params.getQueryDimensions() ) + ", ";
+        
+        if ( params.isAggregationType( AVERAGE_INT ) )
+        {
+            int days = PeriodType.getPeriodTypeByName( params.getPeriodType() ).getFrequencyOrder();
+            
+            sql += "sum(daysxvalue) / " + days;
+        }
+        else if ( params.isAggregationType( AVERAGE_BOOL ) )
+        {
+            sql += "sum(daysxvalue) / sum(daysno) * 100";
+        }
+        else if ( params.isAggregationType( COUNT ) )
+        {
+            sql += "count(value)";
+        }
+        else // SUM, AVERAGE_DISAGGREGATION and undefined //TODO
+        {
+            sql += "sum(value)";
+        }
+        
+        sql += " as value ";
+        
+        return sql;        
+    }
     
+    /**
+     * Generates the from clause of the SQL query. This method should be used for
+     * queries where the period filter spans multiple partitions.
+     */
+    private String getFromWhereClauseMultiplePartitionFilters( DataQueryParams params )
+    {
+        String sql = "from (";
+        
+        for ( DataQueryParams filterParams : params.getPartitionFilterParams() )
+        {
+            sql += "select " + getCommaDelimitedString( filterParams.getQueryDimensions() ) + ", ";
+            
+            if ( params.isAggregationType( AVERAGE_INT ) )
+            {
+                sql += "daysxvalue";
+            }
+            else if ( params.isAggregationType( AVERAGE_BOOL ) )
+            {
+                sql += "daysxvalue, daysno";
+            }
+            else
+            {
+                sql += "value";
+            }
+            
+            sql += " " + getFromWhereClause( filterParams );
+            
+            sql += "union all ";
+        }
+        
+        sql = trimEnd( sql, "union all ".length() ) + ") as data ";
+        
+        return sql;
+    }
+    
+    /**
+     * Generates the from clause of the query SQL.
+     */
+    private String getFromWhereClause( DataQueryParams params )
+    {
+        SqlHelper sqlHelper = new SqlHelper();
+
+        String sql = "from " + params.getTableName() + " ";
+        
+        for ( Dimension dim : params.getQueryDimensions() )
+        {
+            if ( !dim.isAllItems() )
+            {
+                sql += sqlHelper.whereAnd() + " " + dim.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( dim.getItems() ) ) + ") ";
+            }
+        }
+
+        ListMap<String, Dimension> filterMap = params.getDimensionFilterMap();
+        
+        for ( String dimension : filterMap.keySet() )
+        {
+            List<Dimension> filters = filterMap.get( dimension );
+            
+            if ( DataQueryParams.anyDimensionHasItems( filters ) )
+            {
+                sql += sqlHelper.whereAnd() + " (";
+                
+                for ( Dimension filter : filters )
+                {
+                    if ( filter.hasItems() )
+                    {
+                        sql += filter.getDimensionName() + " in (" + getQuotedCommaDelimitedString( getUids( filter.getItems() ) ) + ") or ";
+                    }
+                }
+            }
+            
+            sql = trimEnd( sql, " or ".length() ) + ") ";
+        }
+        
+        return sql;
+    }
+    
+    /**
+     * Generates the group by clause of the query SQL.
+     */
+    private String getGroupByClause( DataQueryParams params )
+    {
+        String sql = "group by " + getCommaDelimitedString( params.getQueryDimensions() );
+        
+        return sql;
+    }
+
+    /**
+     * Retrieves data from the database based on the given query and SQL and puts
+     * into a value key and value mapping.
+     */
+    private Map<String, Double> getKeyValueMap( DataQueryParams params, String sql )
+        throws BadSqlGrammarException
+    {
+        Map<String, Double> map = new HashMap<String, Double>();
+        
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
+        
+        while ( rowSet.next() )
+        {
+            Double value = rowSet.getDouble( VALUE_ID );
+
+            if ( !measureCriteriaSatisfied( params, value ) )
+            {
+                continue;
+            }
+            
+            StringBuilder key = new StringBuilder();
+            
+            for ( Dimension dim : params.getQueryDimensions() )
+            {
+                key.append( rowSet.getString( dim.getDimensionName() ) + DIMENSION_SEP );
+            }
+            
+            key.deleteCharAt( key.length() - 1 );
+            
+            map.put( key.toString(), value );
+        }
+        
+        return map;
+    }
+    
+    /**
+     * Checks if the measure criteria specified for the given query are satisfied
+     * for the given value.
+     */
     private boolean measureCriteriaSatisfied( DataQueryParams params, Double value )
     {
         if ( value == null )
@@ -264,6 +370,10 @@ public class JdbcAnalyticsManager
         return true;
     }
     
+    /**
+     * Generates a comma-delimited string based on the dimension names of the
+     * given dimensions.
+     */
     private String getCommaDelimitedString( Collection<Dimension> dimensions )
     {
         final StringBuilder builder = new StringBuilder();

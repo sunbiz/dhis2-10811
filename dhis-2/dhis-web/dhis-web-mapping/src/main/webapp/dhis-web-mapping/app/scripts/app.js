@@ -18,6 +18,7 @@ Ext.onReady( function() {
 	// Init
 
 	var gis = GIS.core.getInstance();
+	GIS.app.instances = [gis];
 
 	GIS.app.getInits = function(r) {
 		var init = Ext.decode(r.responseText);
@@ -264,6 +265,30 @@ Ext.onReady( function() {
 
 		util.gui.window.setPositionTopLeft = function(window) {
 			window.setPosition(4,35);
+		};
+
+		util.gui.window.addHideOnBlurHandler = function(w) {
+			var el = Ext.get(Ext.query('.x-mask')[0]);
+
+			el.on('click', function() {
+				if (w.hideOnBlur) {
+					w.hide();
+				}
+			});
+
+			w.hasHideOnBlurHandler = true;
+		};
+
+		util.gui.window.addDestroyOnBlurHandler = function(w) {
+			var el = Ext.get(Ext.query('.x-mask')[0]);
+
+			el.on('click', function() {
+				if (w.destroyOnBlur) {
+					w.destroy();
+				}
+			});
+
+			w.hasDestroyOnBlurHandler = true;
 		};
 
 		return util;
@@ -762,7 +787,7 @@ Ext.onReady( function() {
 						else {
 							layer.filterWindow.destroy();
 						}
-					}
+					}organisationUnitLe
 
 					layer.filterWindow = layer.id === gis.layer.facility.id ?
 						GIS.app.FilterWindowFacility(layer) : GIS.app.FilterWindow(layer);
@@ -1450,6 +1475,256 @@ Ext.onReady( function() {
 		return window;
 	};
 
+	GIS.app.SharingWindow = function(sharing) {
+
+		// Objects
+		var UserGroupRow,
+
+		// Functions
+			getBody,
+
+		// Components
+			userGroupStore,
+			userGroupField,
+			userGroupButton,
+			userGroupRowContainer,
+			publicGroup,
+			window;
+
+		UserGroupRow = function(obj, isPublicAccess, disallowPublicAccess) {
+			var getData,
+				store,
+				getItems,
+				combo,
+				getAccess,
+				panel;
+
+			getData = function() {
+				var data = [
+					{id: 'r-------', name: 'Can view'}, //i18n
+					{id: 'rw------', name: 'Can edit and view'}
+				];
+
+				if (isPublicAccess) {
+					data.unshift({id: '-------', name: 'None'});
+				}
+
+				return data;
+			}
+
+			store = Ext.create('Ext.data.Store', {
+				fields: ['id', 'name'],
+				data: getData()
+			});
+
+			getItems = function() {
+				var items = [];
+
+				combo = Ext.create('Ext.form.field.ComboBox', {
+					fieldLabel: isPublicAccess ? 'Public access' : obj.name, //i18n
+					labelStyle: 'color:#333',
+					cls: 'gis-combo',
+					width: 380,
+					labelWidth: 250,
+					queryMode: 'local',
+					valueField: 'id',
+					displayField: 'name',
+					labelSeparator: null,
+					editable: false,
+					disabled: !!disallowPublicAccess,
+					value: obj.access,
+					store: store
+				});
+
+				items.push(combo);
+
+				if (!isPublicAccess) {
+					items.push(Ext.create('Ext.Img', {
+						src: 'images/grid-delete_16.png',
+						style: 'margin-top:2px; margin-left:7px',
+						overCls: 'pointer',
+						width: 16,
+						height: 16,
+						listeners: {
+							render: function(i) {
+								i.getEl().on('click', function(e) {
+									i.up('panel').destroy();
+									window.doLayout();
+								});
+							}
+						}
+					}));
+				}
+
+				return items;
+			};
+
+			getAccess = function() {
+				return {
+					id: obj.id,
+					name: obj.name,
+					access: combo.getValue()
+				};
+			};
+
+			panel = Ext.create('Ext.panel.Panel', {
+				layout: 'column',
+				bodyStyle: 'border:0 none',
+				getAccess: getAccess,
+				items: getItems()
+			});
+
+			return panel;
+		};
+
+		getBody = function() {
+			var body = {
+				object: {
+					id: sharing.object.id,
+					name: sharing.object.name,
+					publicAccess: publicGroup.down('combobox').getValue(),
+					user: {
+						id: gis.init.user.id,
+						name: gis.init.user.name
+					}
+				}
+			};
+
+			if (userGroupRowContainer.items.items.length > 1) {
+				body.object.userGroupAccesses = [];
+				for (var i = 1, item; i < userGroupRowContainer.items.items.length; i++) {
+					item = userGroupRowContainer.items.items[i];
+					body.object.userGroupAccesses.push(item.getAccess());
+				}
+			}
+
+			return body;
+		};
+
+		// Initialize
+		userGroupStore = Ext.create('Ext.data.Store', {
+			fields: ['id', 'name'],
+			proxy: {
+				type: 'ajax',
+				url: gis.baseUrl + gis.conf.url.path_api + 'sharing/search',
+				reader: {
+					type: 'json',
+					root: 'userGroups'
+				}
+			}
+		});
+
+		userGroupField = Ext.create('Ext.form.field.ComboBox', {
+			valueField: 'id',
+			displayField: 'name',
+			emptyText: 'Search for user groups', //i18n
+			queryParam: 'key',
+			queryDelay: 200,
+			minChars: 1,
+			hideTrigger: true,
+			fieldStyle: 'height:26px; padding-left:6px; border-radius:1px; font-size:11px',
+			style: 'margin-bottom:5px',
+			width: 380,
+			store: userGroupStore,
+			listeners: {
+				beforeselect: function(cb) { // beforeselect instead of select, fires regardless of currently selected item
+					userGroupButton.enable();
+				},
+				afterrender: function(cb) {
+					cb.inputEl.on('keyup', function() {
+						userGroupButton.disable();
+					});
+				}
+			}
+		});
+
+		userGroupButton = Ext.create('Ext.button.Button', {
+			text: '+',
+			style: 'margin-left:2px; padding-right:4px; padding-left:4px; border-radius:1px',
+			disabled: true,
+			height: 26,
+			handler: function(b) {
+				userGroupRowContainer.add(UserGroupRow({
+					id: userGroupField.getValue(),
+					name: userGroupField.getRawValue(),
+					access: 'r-------'
+				}));
+
+				userGroupField.clearValue();
+				b.disable();
+			}
+		});
+
+		userGroupRowContainer = Ext.create('Ext.container.Container', {
+			bodyStyle: 'border:0 none'
+		});
+
+		publicGroup = userGroupRowContainer.add(UserGroupRow({
+			id: sharing.object.id,
+			name: sharing.object.name,
+			access: sharing.object.publicAccess
+		}, true, !sharing.meta.allowPublicAccess));
+
+		if (Ext.isArray(sharing.object.userGroupAccesses)) {
+			for (var i = 0, userGroupRow; i < sharing.object.userGroupAccesses.length; i++) {
+				userGroupRow = UserGroupRow(sharing.object.userGroupAccesses[i]);
+				userGroupRowContainer.add(userGroupRow);
+			}
+		}
+
+		window = Ext.create('Ext.window.Window', {
+			title: 'Sharing settings',
+			bodyStyle: 'padding:8px 8px 3px; background-color:#fff',
+			width: 434,
+			resizable: false,
+			modal: true,
+			destroyOnBlur: true,
+			items: [
+				{
+					html: sharing.object.name,
+					bodyStyle: 'border:0 none; font-weight:bold; color:#333',
+					style: 'margin-bottom:8px'
+				},
+				{
+					xtype: 'container',
+					layout: 'column',
+					bodyStyle: 'border:0 none',
+					items: [
+						userGroupField,
+						userGroupButton
+					]
+				},
+				userGroupRowContainer
+			],
+			bbar: [
+				'->',
+				{
+					text: 'Save',
+					handler: function() {
+						Ext.Ajax.request({
+							url: gis.baseUrl + gis.conf.url.path_api + 'sharing?type=map&id=' + sharing.object.id,
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							params: Ext.encode(getBody())
+						});
+
+						window.destroy();
+					}
+				}
+			],
+			listeners: {
+				show: function(w) {
+					var pos = gis.viewport.mapWindow.getPosition();
+					w.setPosition(pos[0] + 5, pos[1] + 5);
+				}
+			}
+		});
+
+		return window;
+	};
+
     GIS.app.MapControlPanel = function(name, fn) {
 		var button,
 			panel;
@@ -1487,17 +1762,31 @@ Ext.onReady( function() {
 			tbar,
 			bbar,
 			info,
-
 			nameTextfield,
-			systemCheckbox,
 			createButton,
 			updateButton,
 			cancelButton,
+			mapWindow,
 
-			mapWindow;
+		// Vars
+			windowWidth = 500,
+			windowCmpWidth = windowWidth - 22;
 
 		gis.store.maps.on('load', function(store, records) {
-			info.setText(records.length + ' favorite' + (records.length !== 1 ? 's' : '') + ' available');
+			var pager = store.proxy.reader.jsonData.pager;
+
+			info.setText('Page ' + pager.page + ' of ' + pager.pageCount);
+
+			prevButton.enable();
+			nextButton.enable();
+
+			if (pager.page === 1) {
+				prevButton.disable();
+			}
+
+			if (pager.page === pager.pageCount) {
+				nextButton.disable();
+			}
 		});
 
 		NameWindow = function(id) {
@@ -1506,24 +1795,16 @@ Ext.onReady( function() {
 
 			nameTextfield = Ext.create('Ext.form.field.Text', {
 				height: 26,
-				width: 300,
-				labelWidth: 70,
-				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb',
-				fieldLabel: 'Name', //i18n
+				width: 250,
+				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
+				style: 'margin-bottom:0',
+				emptyText: 'Favorite name',
 				value: id ? record.data.name : '',
 				listeners: {
 					afterrender: function() {
 						this.focus();
 					}
 				}
-			});
-
-			systemCheckbox = Ext.create('Ext.form.field.Checkbox', {
-				labelWidth: 70,
-				fieldLabel: 'System', //i18n
-				style: 'margin-bottom: 0',
-				disabled: !gis.init.security.isAdmin,
-				checked: !id ? false : (record.data.user ? false : true)
 			});
 
 			createButton = Ext.create('Ext.button.Button', {
@@ -1557,14 +1838,11 @@ Ext.onReady( function() {
 								longitude: lonlat.lon,
 								latitude: lonlat.lat,
 								zoom: gis.olmap.getZoom(),
-								mapViews: views
-							};
-
-							if (!system) {
-								map.user = {
+								mapViews: views,
+								user: {
 									id: 'currentUser'
-								};
-							}
+								}
+							};
 
 							Ext.Ajax.request({
 								url: gis.baseUrl + gis.conf.url.path_api + 'maps/',
@@ -1595,11 +1873,10 @@ Ext.onReady( function() {
 			updateButton = Ext.create('Ext.button.Button', {
 				text: 'Update', //i18n
 				handler: function() {
-					var name = nameTextfield.getValue(),
-						system = systemCheckbox.getValue();
+					var name = nameTextfield.getValue();
 
 					Ext.Ajax.request({
-						url: gis.baseUrl + gis.conf.url.path_gis + 'renameMap.action?id=' + id + '&name=' + name + '&user=' + !system,
+						url: gis.baseUrl + gis.conf.url.path_gis + 'renameMap.action?id=' + id + '&name=' + name + '&user=true',
 						success: function() {
 							gis.store.maps.loadStore();
 
@@ -1622,10 +1899,7 @@ Ext.onReady( function() {
 				cls: 'gis-container-default',
 				resizable: false,
 				modal: true,
-				items: [
-					nameTextfield,
-					systemCheckbox
-				],
+				items: nameTextfield,
 				bbar: [
 					cancelButton,
 					'->',
@@ -1654,9 +1928,9 @@ Ext.onReady( function() {
 		});
 
 		searchTextfield = Ext.create('Ext.form.field.Text', {
-			width: 340,
+			width: windowCmpWidth - addButton.width - 11,
 			height: 26,
-			fieldStyle: 'padding-right: 0; padding-left: 6px; border-radius: 1px; border-color: #bbb',
+			fieldStyle: 'padding-right: 0; padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
 			emptyText: 'Search for favorites', //i18n
 			enableKeyEvents: true,
 			currentValue: '',
@@ -1714,7 +1988,7 @@ Ext.onReady( function() {
 				{
 					dataIndex: 'name',
 					sortable: false,
-					width: 334,
+					width: windowCmpWidth - 108,
 					renderer: function(value, metaData, record) {
 						var fn = function() {
 							var el = Ext.get(record.data.id);
@@ -1735,25 +2009,20 @@ Ext.onReady( function() {
 				{
 					xtype: 'actioncolumn',
 					sortable: false,
-					width: 80,
+					width: 100,
 					items: [
 						{
 							iconCls: 'gis-grid-row-icon-edit',
 							getClass: function(value, metaData, record) {
-								var system = !record.data.user,
-									isAdmin = gis.init.security.isAdmin;
-
-								if (isAdmin || (!isAdmin && !system)) {
+								if (gis.init.user.isAdmin) {
 									return 'tooltip-map-edit';
 								}
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
 								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									system = !record.data.user,
-									isAdmin = gis.init.security.isAdmin;
+									id = record.data.id;
 
-								if (isAdmin || (!isAdmin && !system)) {
+								if (gis.init.user.isAdmin) {
 									var id = this.up('grid').store.getAt(rowIndex).data.id;
 									nameWindow = new NameWindow(id);
 									nameWindow.show();
@@ -1763,10 +2032,7 @@ Ext.onReady( function() {
 						{
 							iconCls: 'gis-grid-row-icon-overwrite',
 							getClass: function(value, metaData, record) {
-								var system = !record.data.user,
-									isAdmin = gis.init.security.isAdmin;
-
-								if (isAdmin || (!isAdmin && !system)) {
+								if (gis.init.user.isAdmin) {
 									return 'tooltip-map-overwrite';
 								}
 							},
@@ -1824,6 +2090,30 @@ Ext.onReady( function() {
 							}
 						},
 						{
+							iconCls: 'gis-grid-row-icon-sharing',
+							getClass: function() {
+								return 'tooltip-map-sharing';
+							},
+							handler: function(grid, rowIndex) {
+								var record = this.up('grid').store.getAt(rowIndex),
+									id = record.data.id,
+									window;
+
+								Ext.Ajax.request({
+									url: gis.baseUrl + gis.conf.url.path_api + 'sharing?type=map&id=' + id,
+									method: 'GET',
+									failure: function(r) {
+										alert(r.responseText);
+									},
+									success: function(r) {
+										var sharing = Ext.decode(r.responseText);
+										window = GIS.app.SharingWindow(sharing);
+										window.show();
+									}
+								});
+							}
+						},
+						{
 							iconCls: 'gis-grid-row-icon-dashboard',
 							getClass: function() {
 								return 'tooltip-map-dashboard';
@@ -1847,10 +2137,7 @@ Ext.onReady( function() {
 						{
 							iconCls: 'gis-grid-row-icon-delete',
 							getClass: function(value, metaData, record) {
-								var system = !record.data.user,
-									isAdmin = gis.init.security.isAdmin;
-
-								if (isAdmin || (!isAdmin && !system)) {
+								if (gis.init.user.isAdmin) {
 									return 'tooltip-map-delete';
 								}
 							},
@@ -1873,7 +2160,7 @@ Ext.onReady( function() {
 						}
 					],
 					renderer: function(value, metaData, record) {
-						if (!gis.init.security.isAdmin && !record.data.user) {
+						if (!gis.init.user.isAdmin && !record.data.user) {
 							metaData.tdCls = 'gis-grid-row-icon-disabled';
 						}
 					}
@@ -1908,35 +2195,40 @@ Ext.onReady( function() {
 				},
 				afterrender: function() {
 					var fn = function() {
-						var editArray = document.getElementsByClassName('tooltip-map-edit'),
-							overwriteArray = document.getElementsByClassName('tooltip-map-overwrite'),
-							dashboardArray = document.getElementsByClassName('tooltip-map-dashboard'),
-							deleteArray = document.getElementsByClassName('tooltip-map-delete'),
+						var editArray = Ext.query('.tooltip-map-edit'),
+							overwriteArray = Ext.query('.tooltip-map-overwrite'),
+							sharingArray = Ext.query('.tooltip-map-sharing'),
+							dashboardArray = Ext.query('.tooltip-map-dashboard'),
+							deleteArray = Ext.query('.tooltip-map-delete'),
 							el;
 
-						for (var i = 0; i < deleteArray.length; i++) {
-							el = editArray[i];
+						for (var i = 0; i < editArray.length; i++) {
+							var el = editArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Rename',
+								html: 'Rename', //i18n
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
 							});
+						}
 
+						for (var i = 0; i < overwriteArray.length; i++) {
 							el = overwriteArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Overwrite',
+								html: 'Overwrite', //i18n
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
 							});
+						}
 
-							el = deleteArray[i];
+						for (var i = 0; i < sharingArray.length; i++) {
+							el = sharingArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Delete',
+								html: 'Share with other people', //i18n
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -1947,7 +2239,18 @@ Ext.onReady( function() {
 							el = dashboardArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Add to dashboard',
+								html: 'Add to dashboard', //i18n
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+
+						for (var i = 0; i < deleteArray.length; i++) {
+							el = deleteArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Delete', //i18n
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -1974,21 +2277,21 @@ Ext.onReady( function() {
 			title: 'Manage favorites',
 			iconCls: 'gis-window-title-icon-favorite',
 			cls: 'gis-container-default',
+			bodyStyle: 'padding:5px',
 			resizable: false,
 			modal: true,
-			width: 450,
+			width: windowWidth,
 			items: [
 				{
 					xtype: 'panel',
 					layout: 'hbox',
-					width: 422,
 					cls: 'gis-container-inner',
 					items: [
 						addButton,
 						{
 							height: 24,
 							width: 1,
-							style: 'width: 1px; margin-left: 7px; margin-right: 7px; margin-top: 1px',
+							style: 'width:1px; margin-left:5px; margin-right:5px; margin-top:1px',
 							bodyStyle: 'border-left: 1px solid #aaa'
 						},
 						searchTextfield
@@ -4471,7 +4774,7 @@ Ext.onReady( function() {
 								viewport.mapWindow.show();
 							}
 						});
-						if (gis.init.security.isAdmin) {
+						if (gis.init.user.isAdmin) {
 							a.push({
 								text: 'Legend', //i18n
 								menu: {},
@@ -4691,6 +4994,8 @@ Ext.onReady( function() {
 
 		initialize = function() {
 			gis.init = GIS.app.getInits(r);
+			gis.baseUrl = gis.init.contextPath;
+
 			gis.util = GIS.app.getUtils();
 			gis.store = GIS.app.getStores();
 

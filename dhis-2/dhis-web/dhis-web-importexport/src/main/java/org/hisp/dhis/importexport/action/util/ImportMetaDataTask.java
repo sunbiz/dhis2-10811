@@ -54,7 +54,8 @@ public class ImportMetaDataTask
 
     private TaskId taskId;
 
-    public ImportMetaDataTask( ImportService importService, ImportOptions importOptions, InputStream inputStream, TaskId taskId )
+    public ImportMetaDataTask( ImportService importService, ImportOptions importOptions, InputStream inputStream,
+        TaskId taskId )
     {
         this.importService = importService;
         this.importOptions = importOptions;
@@ -70,8 +71,10 @@ public class ImportMetaDataTask
         try
         {
             // TODO check for XML/JSON
+            
             metaData = JacksonUtils.fromXml( inputStream, MetaData.class );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             log.error( "(IOException) Unable to parse meta-data while reading input stream" );
             return;

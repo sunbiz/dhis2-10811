@@ -34,7 +34,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.common.AccessStringHelper;
 import org.hisp.dhis.common.AuditLogUtil;
@@ -227,7 +226,12 @@ public class HibernateGenericStore<T>
 
             if ( SharingUtils.canCreatePublic( currentUserService.getCurrentUser(), identifiableObject ) )
             {
-                identifiableObject.setPublicAccess( AccessStringHelper.newInstance().enable( AccessStringHelper.Permission.READ ).build() );
+                String build = AccessStringHelper.newInstance()
+                    .enable( AccessStringHelper.Permission.READ )
+                    .enable( AccessStringHelper.Permission.WRITE )
+                    .build();
+
+                identifiableObject.setPublicAccess( build );
             }
             else if ( SharingUtils.canCreatePrivate( currentUserService.getCurrentUser(), identifiableObject ) )
             {
@@ -870,63 +874,6 @@ public class HibernateGenericStore<T>
         }
 
         return list;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<T> getAccessibleByUser( User user )
-    {
-        //TODO link to interface
-
-        Criteria criteria = getCriteria();
-        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
-        criteria.addOrder( Order.asc( "name" ) );
-        return criteria.list();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<T> getAccessibleByLastUpdated( User user, Date lastUpdated )
-    {
-        Criteria criteria = getCriteria();
-        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
-        criteria.add( Restrictions.ge( "lastUpdated", lastUpdated ) );
-        criteria.addOrder( Order.asc( "name" ) ).list();
-        return criteria.list();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<T> getAccessibleLikeName( User user, String name )
-    {
-        Criteria criteria = getCriteria();
-        criteria.add( Restrictions.ilike( "name", "%" + name + "%" ) );
-        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
-        criteria.addOrder( Order.asc( "name" ) );
-        return criteria.list();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<T> getAccessibleBetween( User user, int first, int max )
-    {
-        Criteria criteria = getCriteria();
-        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
-        criteria.addOrder( Order.asc( "name" ) );
-        criteria.setFirstResult( first );
-        criteria.setMaxResults( max );
-        return criteria.list();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<T> getAccessibleBetweenLikeName( User user, String name, int first, int max )
-    {
-        Criteria criteria = getCriteria();
-        criteria.add( Restrictions.ilike( "name", "%" + name + "%" ) );
-        criteria.add( Restrictions.or( Restrictions.eq( "user", user ), Restrictions.isNull( "user" ) ) );
-        criteria.addOrder( Order.asc( "name" ) );
-        criteria.setFirstResult( first );
-        criteria.setMaxResults( max );
-        return criteria.list();
     }
 
     //----------------------------------------------------------------------------------------------------------------

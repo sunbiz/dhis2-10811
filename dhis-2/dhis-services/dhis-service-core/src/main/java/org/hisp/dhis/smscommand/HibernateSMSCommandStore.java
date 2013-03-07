@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hisp.dhis.sms.parse.ParserType;
 import org.springframework.beans.factory.annotation.Required;
 
 public class HibernateSMSCommandStore
@@ -75,6 +76,15 @@ public class HibernateSMSCommandStore
         s.delete( cmd );
         t.commit();
         s.flush();
+    }
+    
+    @SuppressWarnings( "unchecked" )
+    @Override
+    public Collection<SMSCommand> getJ2MESMSCommands()
+    {
+        Criteria criteria = sessionFactory.getCurrentSession().createCriteria( SMSCommand.class );
+        criteria.add( Restrictions.eq( "parserType", ParserType.J2ME_PARSER ) );
+        return criteria.list();
     }
 
 }

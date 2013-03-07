@@ -53,7 +53,6 @@
                 <p><label class="bold">$i18n.getString( "mandatory" ):</label><br><span id="mandatoryField"></span></p>
                 <p><label class="bold">$i18n.getString( "inherit" ):</label><br><span id="inheritField"></span></p>
 				<p><label class="bold">$i18n.getString( "value_type" ):</label><br><span id="valueTypeField"></span></p>
-				<p><label class="bold">$i18n.getString( "expression" ):</label><br><span id="expressionField"></span></p>
 			</div>
 
 		</td>

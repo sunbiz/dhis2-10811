@@ -40,4 +40,10 @@ public class DefaultSMSCommandService implements SMSCommandService{
     public void delete(SMSCommand cmd){
        smsCommandStore.delete(cmd);
     }
+
+    @Override
+    public Collection<SMSCommand> getJ2MESMSCommands()
+    {
+        return smsCommandStore.getJ2MESMSCommands();
+    }
 }

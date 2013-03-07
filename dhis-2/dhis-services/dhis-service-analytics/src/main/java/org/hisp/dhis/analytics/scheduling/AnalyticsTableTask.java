@@ -27,7 +27,6 @@ package org.hisp.dhis.analytics.scheduling;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.scheduling.TaskCategory.DATAMART;
 import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
 
 import javax.annotation.Resource;
@@ -80,22 +79,22 @@ public class AnalyticsTableTask
     @Override
     public void run()
     {
-        notifier.clear( taskId, DATAMART ).notify( taskId, DATAMART, "Updating resource tables" );
+        notifier.clear( taskId ).notify( taskId, "Updating resource tables" );
         
         resourceTableService.generateAll();
 
-        notifier.notify( taskId, DATAMART, "Updating analytics tables" );
+        notifier.notify( taskId, "Updating analytics tables" );
         
         analyticsTableService.update( last3Years, taskId );
         
-        notifier.notify( taskId, DATAMART, "Updating completeness tables" );
+        notifier.notify( taskId, "Updating completeness tables" );
         
         completenessTableService.update( last3Years, taskId );
 
-        notifier.notify( taskId, DATAMART, "Updating compeleteness target table" );
+        notifier.notify( taskId, "Updating compeleteness target table" );
         
         completenessTargetTableService.update( last3Years, taskId );
         
-        notifier.notify( taskId, DATAMART, INFO, "Analytics tables updated", true );
+        notifier.notify( taskId, INFO, "Analytics tables updated", true );
     }
 }

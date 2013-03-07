@@ -21,17 +21,9 @@
       <param name="page">/dhis-web-maintenance-mobile/smsSettings.vm</param>
       <param name="menu">/dhis-web-maintenance-mobile/menu.vm</param>
       <param name="requiredAuthorities">F_MOBILE_SETTINGS</param>
-    </action>  
-
-	<!-- Sending SMS Action -->
-  
-	<action name="showSMSForm" class="org.hisp.dhis.mobile.action.ShowSendSMSFormAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-mobile/sendSMSPage.vm</param>
-      <param name="menu">/dhis-web-maintenance-mobile/menu.vm</param>
-      <param name="javascripts">../dhis-web-commons/oust/oust.js,javascript/sendSMS.js</param>
-	  <param name="requiredAuthorities">F_MOBILE_SENDSMS</param>
     </action>
+    
+    <!-- Sent SMS -->
     
     <action name="showSentPage" class="org.hisp.dhis.mobile.action.ShowSentSMSAction">
     	<result name="success" type="velocity">/main.vm</result>
@@ -62,34 +54,12 @@
       <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
-  
-	<action name="showBeneficiarySMSForm" class="org.hisp.dhis.mobile.action.ShowSendSMSBeneficiaryFormAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-mobile/sendBeneficiarySMSPage.vm</param>
-      <param name="menu">/dhis-web-maintenance-mobile/menuWithTree.vm</param>
-	  <param name="stylesheets">css/patient.css</param>
-      <param name="javascripts">../dhis-web-commons/ouwt/ouwt.js</param>
-	  <param name="requiredAuthorities">F_MOBILE_SENDSMS</param>
-    </action>
-
-    <action name="sendSMS" class="org.hisp.dhis.mobile.action.ProcessingSendSMSAction">
-      <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity-json">../dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="onExceptionReturn">plainTextError</param>
-    </action>
     
     <action name="deleteSentSMS" class="org.hisp.dhis.mobile.action.DeleteSentSMSAction">
       <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
       <result name="error" type="velocity-json">../dhis-web-commons/ajax/jsonResponseError.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
-    </action>	
-	
-	<action name="searchRegistrationPatient"
-		class="org.hisp.dhis.mobile.action.SearchPatientAction">
-		<result name="success" type="velocity">/content.vm</result>
-		<param name="page">/dhis-web-maintenance-mobile/patientRegistrationList.vm</param>
-		<param name="requiredAuthorities">F_PATIENT_MANAGEMENT</param>
-	</action>
+    </action>
 	
     <!-- Patient Mobile Setting Action -->
 
@@ -224,13 +194,6 @@
     
     <action name="deleteSMSCommand" class="org.hisp.dhis.mobile.action.smscommand.DeleteSMSCommandAction">
           <result name="success" type="redirect">SMSCommands.action</result>
-      <param name="requiredAuthorities">F_MOBILE_SENDSMS</param>  
-    </action>
-    
-    <action name="sendSMS" class="org.hisp.dhis.mobile.action.ProcessingSendSMSAction">
-      <result name="success" type="velocity-json">../dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity-json">../dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="onExceptionReturn">plainTextError</param>
       <param name="requiredAuthorities">F_MOBILE_SENDSMS</param>  
     </action>
     

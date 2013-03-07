@@ -35,14 +35,11 @@ import org.hisp.dhis.i18n.I18nFormat;
 
 public interface AnalyticsService
 {
-    Grid getAggregatedDataValues( DataQueryParams params ) 
-        throws IllegalQueryException, Exception;
+    Grid getAggregatedDataValues( DataQueryParams params );
     
-    Map<String, Double> getAggregatedDataValueMap( DataQueryParams params ) 
-        throws IllegalQueryException, Exception;
+    Map<String, Double> getAggregatedDataValueMap( DataQueryParams params );
 
-    Map<String, Double> getAggregatedCompletenessValueMap( DataQueryParams params ) 
-        throws IllegalQueryException, Exception;
+    Map<String, Double> getAggregatedCompletenessValueMap( DataQueryParams params );
     
     DataQueryParams getFromUrl( Set<String> dimensionParams, Set<String> filterParams, 
         AggregationType aggregationType, String measureCriteria, I18nFormat format );

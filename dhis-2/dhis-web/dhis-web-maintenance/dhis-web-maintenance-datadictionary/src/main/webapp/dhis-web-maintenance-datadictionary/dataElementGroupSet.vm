@@ -1,5 +1,5 @@
 
-#sharingDialog()
+#* #sharingDialog() *#
 
 <script type="text/javascript">
 	jQuery(document).ready(function(){
@@ -38,29 +38,33 @@
 						<td onclick="showDataElementGroupSetDetails( $dataElementGroupSet.id )">$encoder.htmlEncode( $dataElementGroupSet.displayName )</td>
 						<td style="text-align:right">
 
-                            #if ( $security.canManage( $dataElementGroupSet ) )
+                            #* #if ( $security.canManage( $dataElementGroupSet ) )
                             <a href="javascript:showSharingDialog('dataElementGroupSet', '$dataElementGroupSet.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
                             #else
                             <img src="../images/relationship-denied.png">
                             #end
+                            *#
 
-                            #if( $security.canUpdate( $dataElementGroupSet ) )
+                            #* #if( $security.canUpdate( $dataElementGroupSet ) ) *#
                             <a href="openUpdateDataElementGroupSet.action?id=$dataElementGroupSet.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
+                            #*
                             #else
                             <img src="../images/edit-denied.png">
                             #end
+                             *#
 
-                            #if( $security.canUpdate( $dataElementGroupSet ) )
+                            #* #if( $security.canUpdate( $dataElementGroupSet ) ) *#
                             <a href="javascript:translate( 'DataElementGroupSet', '$dataElementGroupSet.id' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
-                            #else
+                            #* #else
                             <img src="../images/i18n-denied.png">
-                            #end
+                            #end *#
 
-                            #if( $security.canDelete( $dataElementGroupSet ) )
+                            #* #if( $security.canDelete( $dataElementGroupSet ) ) *#
                             <a href="javascript:deleteDataElementGroupSet( $dataElementGroupSet.id, '$encoder.jsEncode( $dataElementGroupSet.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
-                            #else
+                            #* #else
                             <img src="../images/delete-denied.png">
                             #end
+                            *#
 
 							<a href="javascript:showDataElementGroupSetDetails( $dataElementGroupSet.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
 

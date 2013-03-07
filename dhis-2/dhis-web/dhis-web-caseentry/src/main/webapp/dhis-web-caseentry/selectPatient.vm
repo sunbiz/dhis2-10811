@@ -134,5 +134,5 @@
 	#end
 	setFieldValue('startDueDate','');
 	setFieldValue('endDueDate','');
-	
+	jQuery('#emptyProgramOption').text('[' + '$i18n.getString("view_all")' + ']');
 </script>

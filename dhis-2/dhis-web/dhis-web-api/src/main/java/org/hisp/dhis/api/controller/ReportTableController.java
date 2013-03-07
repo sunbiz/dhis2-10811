@@ -27,18 +27,6 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
-import static org.hisp.dhis.system.util.CodecUtils.filenameEncode;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.common.Grid;
@@ -47,6 +35,7 @@ import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.dxf2.utils.JacksonUtils;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.i18n.I18nManager;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
@@ -54,6 +43,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Cal;
+import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.reporttable.ReportTable;
@@ -70,6 +60,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
+import static org.hisp.dhis.system.util.CodecUtils.filenameEncode;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -89,7 +90,7 @@ public class ReportTableController
 
     @Autowired
     private OrganisationUnitService organisationUnitService;
-    
+
     @Autowired
     private OrganisationUnitGroupService organisationUnitGroupService;
 
@@ -104,10 +105,10 @@ public class ReportTableController
 
     @Autowired
     private PeriodService periodService;
-    
+
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private I18nManager i18nManager;
 
@@ -123,64 +124,77 @@ public class ReportTableController
     public void postJsonObject( HttpServletResponse response, HttpServletRequest request, InputStream input ) throws Exception
     {
         ReportTable reportTable = JacksonUtils.fromJson( input, ReportTable.class );
-        System.out.println("rt " + reportTable.getName());
-        System.out.println(reportTable.getColumnDimensions());
-        
+
         reportTable.readPresentationProps();
 
         mergeReportTable( reportTable );
-        
+
         reportTableService.saveReportTable( reportTable );
 
         ContextUtils.createdResponse( response, "Report table created", RESOURCE_PATH + "/" + reportTable.getUid() );
     }
-    
+
     @Override
     @RequestMapping( value = "/{uid}", method = RequestMethod.PUT, consumes = "application/json" )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     public void putJsonObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid, InputStream input ) throws Exception
     {
         ReportTable reportTable = reportTableService.getReportTable( uid );
-        
+
         if ( reportTable == null )
         {
             ContextUtils.notFoundResponse( response, "Report table does not exist: " + uid );
             return;
-        }        
+        }
 
         ReportTable newReportTable = JacksonUtils.fromJson( input, ReportTable.class );
-        
+
         newReportTable.readPresentationProps();
-        
+
         mergeReportTable( newReportTable );
 
         reportTable.mergeWith( newReportTable );
-        
+
         reportTableService.updateReportTable( reportTable );
     }
-    
+
     @Override
     @RequestMapping( value = "/{uid}", method = RequestMethod.DELETE )
     @ResponseStatus( value = HttpStatus.NO_CONTENT )
     public void deleteObject( HttpServletResponse response, HttpServletRequest request, @PathVariable( "uid" ) String uid ) throws Exception
     {
         ReportTable reportTable = reportTableService.getReportTable( uid );
-        
+
         if ( reportTable == null )
         {
             ContextUtils.notFoundResponse( response, "Report table does not exist: " + uid );
             return;
         }
-        
+
         reportTableService.deleteReportTable( reportTable );
     }
-    
+
     @Override
-    protected void postProcessEntity( ReportTable reportTable )
+    protected void postProcessEntity( ReportTable reportTable ) throws Exception
     {
+        I18nFormat format = i18nManager.getI18nFormat();
+
         reportTable.populatePresentationProps();
+
+        for ( OrganisationUnit organisationUnit : reportTable.getOrganisationUnits() )
+        {
+            reportTable.getParentGraphMap().put( organisationUnit.getUid(), organisationUnit.getParentGraph() );
+        }
+
+        if ( reportTable.getPeriods() != null && !reportTable.getPeriods().isEmpty() )
+        {
+            for ( Period period : reportTable.getPeriods() )
+            {
+                period.setName( format.formatPeriod( period ) );
+            }
+        }
     }
-    
+
     //--------------------------------------------------------------------------
     // GET - Dynamic data
     //--------------------------------------------------------------------------
@@ -201,7 +215,7 @@ public class ReportTableController
             orgUnits, crossTab, orgUnitIsParent, minimal, relatives, response );
 
         model.addAttribute( "model", grid );
-        model.addAttribute( "viewClass", "detailed" );        
+        model.addAttribute( "viewClass", "detailed" );
         contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_JSON, CacheStrategy.RESPECT_SYSTEM_SETTING );
 
         return grid != null ? "reportTableData" : null;
@@ -468,7 +482,7 @@ public class ReportTableController
         reportTable.setPeriods( periodService.reloadPeriods( reportTable.getPeriods() ) );
         reportTable.setDataElementGroups( dataElementService.getDataElementGroupsByUid( getUids( reportTable.getDataElementGroups() ) ) );
         reportTable.setOrganisationUnitGroups( organisationUnitGroupService.getOrganisationUnitGroupsByUid( getUids( reportTable.getOrganisationUnitGroups() ) ) );
-        
+
         if ( reportTable.getUser() != null )
         {
             reportTable.setUser( userService.getUser( reportTable.getUser().getUid() ) );

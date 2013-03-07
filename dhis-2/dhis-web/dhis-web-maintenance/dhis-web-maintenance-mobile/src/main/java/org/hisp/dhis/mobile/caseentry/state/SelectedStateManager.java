@@ -34,7 +34,6 @@ import org.hisp.dhis.program.ProgramStageInstance;
 
 /**
  * @author Abyot Asalefew
- * @version $Id$
  */
 public interface SelectedStateManager
 {

@@ -34,8 +34,6 @@ import org.hisp.dhis.api.mobile.model.Model;
 
  /**
  * @author Nguyen Kim Lai
- *
- * @version Relationship.java 4:34:43 PM Jan 25, 2013 $
  */
 public class Relationship extends Model
 {

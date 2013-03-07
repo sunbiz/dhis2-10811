@@ -41,9 +41,11 @@ import org.hisp.dhis.scheduling.DataMartTask;
 import org.hisp.dhis.scheduling.ScheduledTasks;
 import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
+import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.scheduling.Scheduler;
 import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.user.CurrentUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
@@ -84,6 +86,9 @@ public class StartExportAction
     {
         this.dataMartTask = dataMartTask;
     }
+    
+    @Autowired
+    private Notifier notifier;
 
     // -------------------------------------------------------------------------
     // Input
@@ -132,10 +137,12 @@ public class StartExportAction
     public String execute()
         throws Exception
     {
-        ScheduledTasks tasks = new ScheduledTasks();
-
         TaskId taskId = new TaskId( TaskCategory.DATAMART, currentUserService.getCurrentUser() );
         
+        notifier.clear( taskId );
+        
+        ScheduledTasks tasks = new ScheduledTasks();
+
         // ---------------------------------------------------------------------
         // Analytics
         // ---------------------------------------------------------------------

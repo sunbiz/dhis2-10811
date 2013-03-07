@@ -38,7 +38,6 @@
 
   <bean id="org.hisp.dhis.sms.outbound.SmsMessageSender" class="org.hisp.dhis.sms.outbound.SmsMessageSender">
     <property name="outboundSmsService" ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />
-    <property name="userService" ref="org.hisp.dhis.user.UserService" />
   </bean>
 
   <!-- Inbound SMS service -->

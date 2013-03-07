@@ -527,7 +527,7 @@ function runCompleteEvent( isCreateEvent )
 					var eventBox = jQuery('#ps_' + getFieldValue('programStageInstanceId'));
 					eventBox.attr('status',1);
 					resetActiveEvent( eventBox.attr("pi") );
-			
+					
 					hideLoader();
 					
 					if( isCreateEvent ){

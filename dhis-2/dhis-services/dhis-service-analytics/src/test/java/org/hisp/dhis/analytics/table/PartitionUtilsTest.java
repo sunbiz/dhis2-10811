@@ -67,10 +67,10 @@ public class PartitionUtilsTest
     @Test
     public void testGetTable()
     {
-        assertEquals( TABLE_NAME + "_2000", PartitionUtils.getTable( createPeriod( "200011" ), TABLE_NAME ) );
-        assertEquals( TABLE_NAME + "_2001", PartitionUtils.getTable( createPeriod( "2001W02" ), TABLE_NAME ) );
-        assertEquals( TABLE_NAME + "_2002", PartitionUtils.getTable( createPeriod( "2002Q2" ), TABLE_NAME ) );
-        assertEquals( TABLE_NAME + "_2003", PartitionUtils.getTable( createPeriod( "2003S2" ), TABLE_NAME ) );
+        assertEquals( TABLE_NAME + "_2000", PartitionUtils.getTableName( createPeriod( "200011" ), TABLE_NAME ) );
+        assertEquals( TABLE_NAME + "_2001", PartitionUtils.getTableName( createPeriod( "2001W02" ), TABLE_NAME ) );
+        assertEquals( TABLE_NAME + "_2002", PartitionUtils.getTableName( createPeriod( "2002Q2" ), TABLE_NAME ) );
+        assertEquals( TABLE_NAME + "_2003", PartitionUtils.getTableName( createPeriod( "2003S2" ), TABLE_NAME ) );
     }
     
     @Test
@@ -88,7 +88,7 @@ public class PartitionUtilsTest
     @Test
     public void testGetTablePeriodMap()
     {        
-        ListMap<String, IdentifiableObject> map = PartitionUtils.getTablePeriodMap( getList( 
+        ListMap<String, IdentifiableObject> map = PartitionUtils.getTableNamePeriodMap( getList( 
             createPeriod( "2000S1" ), createPeriod( "2000S2" ), createPeriod( "2001S1" ), createPeriod( "2001S2" ), createPeriod( "2002S1" ) ), TABLE_NAME );
         
         assertEquals( 3, map.size() );

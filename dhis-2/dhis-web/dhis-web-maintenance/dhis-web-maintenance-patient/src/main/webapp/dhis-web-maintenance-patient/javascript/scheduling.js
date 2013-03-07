@@ -1,3 +1,4 @@
+
 // -----------------------------------------------------------------------
 // Schedule Messages
 // -----------------------------------------------------------------------
@@ -46,6 +47,7 @@ function executeTasks()
 function schedulingAggCondTasks()
 {
 	$.post( 'scheduleCaseAggTasks.action',{
+		taskStrategy:getFieldValue('taskStrategy'),
 		execute:false
 	}, function( json ){
 		var status = json.scheduleTasks.status;
@@ -71,6 +73,7 @@ function executeAggCondTasks()
 	if ( ok )
 	{
 		$.post( 'scheduleCaseAggTasks.action',{
+			taskStrategy:getFieldValue('taskStrategy'),
 			execute:true
 		},function( json ){
 			setMessage(i18n_execute_success);

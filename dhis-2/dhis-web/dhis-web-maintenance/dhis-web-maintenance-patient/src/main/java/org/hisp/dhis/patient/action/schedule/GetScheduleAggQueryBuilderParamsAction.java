@@ -27,7 +27,11 @@
 
 package org.hisp.dhis.patient.action.schedule;
 
+import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
+import static org.hisp.dhis.setting.SystemSettingManager.KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
+
 import org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager;
+import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.scheduling.Scheduler;
 
 import com.opensymphony.xwork2.Action;
@@ -51,7 +55,14 @@ public class GetScheduleAggQueryBuilderParamsAction
     {
         this.schedulingManager = schedulingManager;
     }
-    
+
+    private SystemSettingManager systemSettingManager;
+
+    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
+    {
+        this.systemSettingManager = systemSettingManager;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -70,6 +81,13 @@ public class GetScheduleAggQueryBuilderParamsAction
         return running;
     }
 
+    private String taskStrategy;
+
+    public String getTaskStrategy()
+    {
+        return taskStrategy;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -78,6 +96,9 @@ public class GetScheduleAggQueryBuilderParamsAction
     public String execute()
         throws Exception
     {
+        taskStrategy = (String) systemSettingManager.getSystemSetting(
+            KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY, DEFAULT_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY );
+
         status = schedulingManager.getTaskStatus();
 
         running = Scheduler.STATUS_RUNNING.equals( status );

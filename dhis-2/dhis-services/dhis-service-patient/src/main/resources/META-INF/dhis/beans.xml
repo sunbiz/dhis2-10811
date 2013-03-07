@@ -37,12 +37,15 @@
 		<property name="patientAuditService" ref="org.hisp.dhis.patient.PatientAuditService" />
 		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
+		<property name="programInstanceService"
+			ref="org.hisp.dhis.program.ProgramInstanceService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramInstanceStore"
 		class="org.hisp.dhis.program.hibernate.HibernateProgramInstanceStore">
 		<property name="clazz" value="org.hisp.dhis.program.ProgramInstance" />
 		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageStore" 
@@ -286,12 +289,6 @@
 		class="org.hisp.dhis.patientattributevalue.DefaultPatientAttributeValueService">
 		<property name="patientAttributeValueStore"
 			ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueStore" />
-		<property name="patientAttributeService"
-			ref="org.hisp.dhis.patient.PatientAttributeService" />
-		<property name="programService"
-			ref="org.hisp.dhis.program.ProgramService" />
-		<property name="programInstanceService"
-			ref="org.hisp.dhis.program.ProgramInstanceService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.PatientAttributeOptionService"
@@ -489,6 +486,7 @@
 		<constructor-arg ref="jdbcTemplate" />
 		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementService" />
 		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
+		<constructor-arg ref="org.hisp.dhis.setting.SystemSettingManager" />
 	</bean>
 
 	<bean id="aggregateQueryBuilder" class="org.hisp.dhis.patient.scheduling.CaseAggregateConditionTask"

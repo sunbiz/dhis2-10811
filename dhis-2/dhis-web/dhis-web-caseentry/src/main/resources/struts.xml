@@ -204,6 +204,12 @@
       <result name="success" type="velocity-json">/dhis-web-caseentry/jsonUsernames.vm
       </result>
     </action>
+    
+   	<action name="getOrganisationUnitPaths"
+		class="org.hisp.dhis.caseentry.action.report.GetOrganisationUnitsAction">
+		<result name="success" type="velocity-json">
+			/dhis-web-caseentry/jsonminOrganisationUnitPaths.vm</result>
+	</action>
 
     <!-- save value -->
 
@@ -293,7 +299,7 @@
     <!-- Single-event DataEntry -->
 
     <action name="singleEventSelect"
-      class="org.hisp.dhis.caseentry.action.patient.SelectAction">
+      class="org.hisp.dhis.caseentry.action.caseentry.MultiDataEntrySelectAction">
       <interceptor-ref name="organisationUnitTreeStack" />
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-caseentry/singleEventSelect.vm</param>
@@ -374,14 +380,7 @@
       <result name="xls" type="gridXlsResult" />
       <param name="requiredAuthorities">F_GENERATE_STATISTICAL_PROGRAM_REPORT</param>
     </action>
-
-    <action name="statisticalProgramDetailsReport"
-      class="org.hisp.dhis.caseentry.action.report.StatisticalProgramDetailsReportAction">
-      <result name="success" type="velocity">/content.vm</result>
-      <param name="page">/dhis-web-caseentry/statisticalProgramDetailsReport.vm</param>
-      <param name="requiredAuthorities">F_GENERATE_STATISTICAL_PROGRAM_REPORT</param>
-    </action>
-
+	
     <!-- i18n -->
 
     <action name="i18n" class="org.hisp.dhis.caseentry.action.NoAction">
@@ -419,7 +418,6 @@
       <result name="success" type="velocity">/content.vm</result>
       <param name="page">/dhis-web-caseentry/caseAggregationResult.vm</param>
       <param name="menu">/dhis-web-caseentry/caseAggregationMenu.vm</param>
-      <param name="javascripts">javascript/caseagg.js</param>
       <param name="requiredAuthorities">F_PATIENT_AGGREGATION</param>
     </action>
 
@@ -1039,6 +1037,17 @@
       <param name="requiredAuthorities">F_PATIENT_DASHBOARD</param>
     </action>
 
+ 	<action name="removeProgramInstance"
+      class="org.hisp.dhis.caseentry.action.caseentry.RemoveProgramInstanceAction">
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+      </result>
+      <result name="error" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseError.vm
+      </result>
+      <param name="requiredAuthorities">F_PROGRAM_INSTANCE_DELETE</param>
+    </action>
+    
     <!-- Comment -->
 
     <action name="addPatientComment"
@@ -1058,7 +1067,7 @@
     <!-- Activity plan -->
 
     <action name="activityPlanSelect"
-      class="org.hisp.dhis.caseentry.action.caseentry.MultiDataEntrySelectAction">
+      class="org.hisp.dhis.caseentry.action.patient.SelectAction">
       <interceptor-ref name="organisationUnitTreeStack" />
       <result name="success" type="velocity">/main.vm</result>
       <param name="page">/dhis-web-caseentry/activityPlanSelect.vm</param>

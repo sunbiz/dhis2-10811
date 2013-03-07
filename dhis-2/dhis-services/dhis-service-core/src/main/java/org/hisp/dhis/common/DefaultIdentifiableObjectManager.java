@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
 import org.hisp.dhis.common.NameableObject.NameableProperty;
 import org.hisp.dhis.user.CurrentUserService;
-import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +41,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -480,89 +478,5 @@ public class DefaultIdentifiableObjectManager
         }
 
         return store;
-    }
-
-    //--------------------------------------------------------------------------
-    // Accessible
-    //--------------------------------------------------------------------------
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends IdentifiableObject> List<T> getAllAccessible( Class<T> clazz )
-    {
-        User user = currentUserService.getCurrentUser();
-
-        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-
-        if ( user == null || store == null )
-        {
-            return new ArrayList<T>();
-        }
-
-        return (List<T>) store.getAccessibleByUser( user );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends IdentifiableObject> List<T> getAccessibleLikeName( Class<T> clazz, String name )
-    {
-        User user = currentUserService.getCurrentUser();
-
-        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-
-        if ( user == null || store == null )
-        {
-            return new ArrayList<T>();
-        }
-
-        return (List<T>) store.getAccessibleLikeName( user, name );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends IdentifiableObject> List<T> getAccessibleBetween( Class<T> clazz, int first, int max )
-    {
-        User user = currentUserService.getCurrentUser();
-
-        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-
-        if ( user == null || store == null )
-        {
-            return new ArrayList<T>();
-        }
-
-        return (List<T>) store.getAccessibleBetween( user, first, max );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends IdentifiableObject> List<T> getAccessibleBetweenLikeName( Class<T> clazz, String name, int first, int max )
-    {
-        User user = currentUserService.getCurrentUser();
-
-        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-
-        if ( user == null || store == null )
-        {
-            return new ArrayList<T>();
-        }
-
-        return (List<T>) store.getAccessibleBetweenLikeName( user, name, first, max );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends IdentifiableObject> List<T> getAccessibleByLastUpdated( Class<T> clazz, Date lastUpdated )
-    {
-        User user = currentUserService.getCurrentUser();
-
-        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-
-        if ( store == null )
-        {
-            return new ArrayList<T>();
-        }
-
-        return (List<T>) store.getAccessibleByLastUpdated( user, lastUpdated );
     }
 }

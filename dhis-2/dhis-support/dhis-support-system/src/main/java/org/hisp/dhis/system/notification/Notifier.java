@@ -29,7 +29,6 @@ package org.hisp.dhis.system.notification;
 
 import java.util.List;
 
-import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
 
 /**
@@ -37,15 +36,15 @@ import org.hisp.dhis.scheduling.TaskId;
  */
 public interface Notifier
 {
-    Notifier notify( TaskId id, TaskCategory category, String message );
+    Notifier notify( TaskId id, String message );
     
-    Notifier notify( TaskId id, TaskCategory category, NotificationLevel level, String message, boolean completed );
+    Notifier notify( TaskId id, NotificationLevel level, String message, boolean completed );
     
-    List<Notification> getNotifications( TaskId id, TaskCategory category, String lastUid );
+    List<Notification> getNotifications( TaskId id, String lastUid );
     
-    Notifier clear( TaskId id, TaskCategory category );
+    Notifier clear( TaskId id );
     
-    Notifier addTaskSummary( TaskId id, TaskCategory category, Object taskSummary );
+    Notifier addTaskSummary( TaskId id, Object taskSummary );
     
-    Object getTaskSummary( TaskId id, TaskCategory category );
+    Object getTaskSummary( TaskId id );
 }

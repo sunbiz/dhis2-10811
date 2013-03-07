@@ -115,11 +115,6 @@ public class DefaultI18nManager
         return resourceBundleManager.getSpecificResourceBundle( clazzName, getCurrentLocale() );
     }
 
-    private ResourceBundle getSpecificResourceBundle( Class<?> clazz )
-    {
-        return resourceBundleManager.getSpecificResourceBundle( clazz, getCurrentLocale() );
-    }
-
     private Locale getCurrentLocale()
     {
         return localeManager.getCurrentLocale();

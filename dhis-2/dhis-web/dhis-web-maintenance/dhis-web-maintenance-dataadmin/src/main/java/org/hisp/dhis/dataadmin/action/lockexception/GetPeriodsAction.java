@@ -37,6 +37,7 @@ import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.filter.PastAndCurrentPeriodFilter;
 import org.hisp.dhis.system.util.FilterUtils;
 
@@ -49,7 +50,7 @@ public class GetPeriodsAction
     implements Action
 {
     private static final int MAX_PERIODS = 24;
-    
+
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -107,12 +108,13 @@ public class GetPeriodsAction
     {
         DataSet dataSet = dataSetService.getDataSet( id );
 
-        if ( dataSet == null )
+        if ( dataSet == null || dataSet.getPeriodType() == null )
         {
             return new ArrayList<Period>();
         }
 
-        CalendarPeriodType periodType = (CalendarPeriodType) dataSet.getPeriodType();
+        CalendarPeriodType periodType = (CalendarPeriodType) PeriodType.getPeriodTypeByName( dataSet.getPeriodType().getName() );
+
         List<Period> periods = periodType.generateLast5Years( new Date() );
         FilterUtils.filter( periods, new PastAndCurrentPeriodFilter() );
         Collections.reverse( periods );

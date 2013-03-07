@@ -164,10 +164,9 @@ public class GenerateStatisticalProgramReportAction
 
         Program program = programService.getProgram( programId );
 
-        Date sDate = format.parseDate( startDate );
-
-        Date eDate = format.parseDate( endDate );
-
+        Date sDate = format.parseDateTime( startDate );
+        Date eDate = format.parseDateTime( endDate );
+        
         // ---------------------------------------------------------------------
         // Get orgunitIds
         // ---------------------------------------------------------------------

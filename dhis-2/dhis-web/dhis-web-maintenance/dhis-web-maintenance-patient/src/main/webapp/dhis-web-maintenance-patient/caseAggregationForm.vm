@@ -100,8 +100,8 @@
 			<input type='button' class="small-button" alt="$i18n.getString( 'left_parent' )" onclick='insertOperator( "(" );' value="(" />
 			<input type='button' class="small-button" alt="$i18n.getString( 'right_parent' )" onclick='insertOperator( ")" );' value=")" />
 			&nbsp;&nbsp;&nbsp;
-			<input type='button' class="nornal-button" alt="$i18n.getString( 'yes' )" onclick='insertOperator( "true" );' value="$i18n.getString( 'yes' )" />
-			<input type='button' class="nornal-button" alt="$i18n.getString( 'no' )" onclick='insertOperator( "false" );' value="$i18n.getString( 'no' )" />
+			<input type='button' class="nornal-button" alt="$i18n.getString( 'yes' )" onclick='insertBoolValue( "true" );' value="$i18n.getString( 'yes' )" />
+			<input type='button' class="nornal-button" alt="$i18n.getString( 'no' )" onclick='insertBoolValue( "false" );' value="$i18n.getString( 'no' )" />
 			<input type='button' class="nornal-button" alt="$i18n.getString( 'is_null' )" onclick='insertOperator( "is null" );' value="==NULL" />
 			<input type='button' class="nornal-button" alt="$i18n.getString( 'not_null' )" onclick='insertOperator( "is not null" );' value="!=NULL" />
 			&nbsp;&nbsp;&nbsp;

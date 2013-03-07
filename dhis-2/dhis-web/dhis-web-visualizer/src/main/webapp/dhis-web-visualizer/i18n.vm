@@ -134,6 +134,7 @@ organisation_unit_groups:'$encoder.jsEscape($i18n.getString( 'organisation_unit_
 groups_replace_orgunits:'$encoder.jsEscape($i18n.getString( 'groups_replace_orgunits' ) , "'")',
 fixed_periods:'$encoder.jsEscape($i18n.getString( 'fixed_periods' ) , "'")',
 relative_periods:'$encoder.jsEscape($i18n.getString( 'relative_periods' ) , "'")',
+periods:'$encoder.jsEscape($i18n.getString( 'periods' ) , "'")',
 select_type:'$encoder.jsEscape($i18n.getString( 'select_type' ) , "'")',
 last_3_months:'$encoder.jsEscape($i18n.getString( 'last_3_months' ) , "'")'
 };

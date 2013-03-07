@@ -143,7 +143,6 @@
 		#foreach($attribute in $attributes )
 			#set($value = "")
 			#set($value = $patientAttributeValueMap.get($attribute.id))
-			#if( $attribute.valueType != 'calculated')
 			<tr>
 				<td class='text-column'><label>$encoder.htmlEncode($attribute.displayName) #if($attribute.mandatory) <em title="$i18n.getString( 'required' )" class="required">*</em> #end</label></td>
 				<td class="input-column">
@@ -170,7 +169,6 @@
 					#end
 				</td>		
 			</tr>
-			#end
 		#end
 	#end
 

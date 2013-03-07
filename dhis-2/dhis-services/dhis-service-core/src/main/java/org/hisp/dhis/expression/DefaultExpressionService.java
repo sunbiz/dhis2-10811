@@ -71,7 +71,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id: DefaultExpressionService.java 6463 2008-11-24 12:05:46Z
  *          larshelg $
  */
-@Transactional
 public class DefaultExpressionService
     implements ExpressionService
 {
@@ -113,26 +112,31 @@ public class DefaultExpressionService
     // Expression CRUD operations
     // -------------------------------------------------------------------------
 
+    @Transactional
     public int addExpression( Expression expression )
     {
         return expressionStore.save( expression );
     }
 
+    @Transactional
     public void deleteExpression( Expression expression )
     {
         expressionStore.delete( expression );
     }
 
+    @Transactional
     public Expression getExpression( int id )
     {
         return expressionStore.get( id );
     }
 
+    @Transactional
     public void updateExpression( Expression expression )
     {
         expressionStore.update( expression );
     }
 
+    @Transactional
     public Collection<Expression> getAllExpressions()
     {
         return expressionStore.getAll();
@@ -174,6 +178,7 @@ public class DefaultExpressionService
         return expressionString != null ? calculateExpression( expressionString ) : null;
     }
 
+    @Transactional
     public Set<DataElement> getDataElementsInExpression( String expression )
     {
         Set<DataElement> dataElementsInExpression = null;
@@ -198,6 +203,7 @@ public class DefaultExpressionService
         return dataElementsInExpression;
     }
 
+    @Transactional
     public Set<DataElementCategoryOptionCombo> getOptionCombosInExpression( String expression )
     {
         Set<DataElementCategoryOptionCombo> optionCombosInExpression = null;
@@ -222,11 +228,10 @@ public class DefaultExpressionService
 
         return optionCombosInExpression;
     }
-    
+
+    @Transactional
     public Set<DataElementOperand> getOperandsInExpression( String expression )
     {
-        //TODO reimplement using uids
-        
         Set<DataElementOperand> operandsInExpression = null;
 
         if ( expression != null )
@@ -243,7 +248,8 @@ public class DefaultExpressionService
 
         return operandsInExpression;
     }
-    
+
+    @Transactional
     public Set<DataElement> getDataElementsInIndicators( Collection<Indicator> indicators )
     {
         Set<DataElement> dataElements = new HashSet<DataElement>();
@@ -266,7 +272,8 @@ public class DefaultExpressionService
         
         return dataElements;
     }
-    
+
+    @Transactional
     public void filterInvalidIndicators( Collection<Indicator> indicators )
     {
         if ( indicators != null )
@@ -287,11 +294,13 @@ public class DefaultExpressionService
         }
     }
 
+    @Transactional
     public String expressionIsValid( String formula )
     {
         return expressionIsValid( formula, null, null, null );
     }
-    
+
+    @Transactional
     public String expressionIsValid( String expression, Set<String> dataElements, Set<String> categoryOptionCombos, Set<String> constants )
     {
         if ( expression == null || expression.isEmpty() )
@@ -362,6 +371,7 @@ public class DefaultExpressionService
         return VALID;
     }
 
+    @Transactional
     public String getExpressionDescription( String expression )
     {
         if ( expression == null || expression.isEmpty() )
@@ -439,6 +449,7 @@ public class DefaultExpressionService
         return expression;
     }
 
+    @Transactional
     public void explodeAndSubstituteExpressions( Collection<Indicator> indicators, Integer days )
     {
         if ( indicators != null && !indicators.isEmpty() )
@@ -488,7 +499,8 @@ public class DefaultExpressionService
 
         return appendTail( matcher, sb );
     }
-    
+
+    @Transactional
     public String explodeExpression( String expression )
     {
         if ( expression == null || expression.isEmpty() )
@@ -522,7 +534,8 @@ public class DefaultExpressionService
 
         return appendTail( matcher, sb );
     }
-    
+
+    @Transactional
     public String substituteExpression( String expression, Integer days )
     {
         if ( expression == null || expression.isEmpty() )
@@ -566,7 +579,8 @@ public class DefaultExpressionService
         
         return appendTail( matcher, sb );
     }
-    
+
+    @Transactional
     public String generateExpression( String expression, Map<DataElementOperand, Double> valueMap, Map<String, Double> constantMap, Integer days, boolean nullIfNoValues )
     {
         if ( expression == null || expression.isEmpty() )
@@ -634,6 +648,7 @@ public class DefaultExpressionService
         return appendTail( matcher, sb );
     }
 
+    @Transactional
     public Set<DataElementOperand> getOperandsInIndicators( Collection<Indicator> indicators )
     {
         final Set<DataElementOperand> operands = new HashSet<DataElementOperand>();

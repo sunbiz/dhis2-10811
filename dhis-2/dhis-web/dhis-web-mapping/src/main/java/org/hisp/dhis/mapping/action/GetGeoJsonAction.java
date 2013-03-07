@@ -131,7 +131,7 @@ public class GetGeoJsonAction
         {
             orgUnitLevel = organisationUnitService.getOrganisationUnitLevel( parent.getOrganisationUnitLevel() );
         }
-
+        
         Collection<OrganisationUnit> organisationUnits = organisationUnitService.getOrganisationUnitsAtLevel(
             orgUnitLevel.getLevel(), parent );
 
@@ -160,11 +160,14 @@ public class GetGeoJsonAction
             }
         }
         
-        Collection<OrganisationUnit> organisationUnitsUp = organisationUnitService.getOrganisationUnitsAtLevel( orgUnitLevel.getLevel() - 1 );
-        
-        FilterUtils.filter( organisationUnitsUp, new OrganisationUnitWithValidCoordinatesFilter() );
-        
-        hasCoordinatesUp = organisationUnitsUp.size() > 0;
+        if ( orgUnitLevel.getLevel() > 1 )
+        {
+            Collection<OrganisationUnit> organisationUnitsUp = organisationUnitService.getOrganisationUnitsAtLevel( orgUnitLevel.getLevel() - 1 );
+            
+            FilterUtils.filter( organisationUnitsUp, new OrganisationUnitWithValidCoordinatesFilter() );
+            
+            hasCoordinatesUp = organisationUnitsUp.size() > 0;
+        }
 
         return SUCCESS;
     }

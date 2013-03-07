@@ -132,7 +132,7 @@ public interface MappingService
     
     Collection<Map> getSystemAndUserMaps();
     
-    List<Map> getAccessibleMapsBetweenLikeName( String name, int first, int max );
+    List<Map> getMapsBetweenLikeName( String name, int first, int max );
     
     // -------------------------------------------------------------------------
     // MapView

@@ -33,6 +33,9 @@
     <property name="thisFinancialYear" />
     <property name="lastFinancialYear" />
     <property name="last5FinancialYears" />
+    <property name="lastWeek" />
+    <property name="last4Weeks" />
+    <property name="last12Weeks" />
     <property name="last52Weeks" />
     
   </class>

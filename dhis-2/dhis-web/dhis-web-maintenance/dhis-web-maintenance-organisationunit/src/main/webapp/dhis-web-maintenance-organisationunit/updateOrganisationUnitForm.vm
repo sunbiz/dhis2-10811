@@ -12,7 +12,7 @@
 			'rules' : getValidationRules("organisationUnit")
 		});
 
-		// checkValueIsExist( "name", "validateOrganisationUnit.action", { id : $organisationUnit.id } );
+        checkValueIsExistWarning( "name", "validateOrganisationUnit.action", { id : $organisationUnit.id } );
         checkValueIsExist( "code", "validateOrganisationUnit.action", { id : $organisationUnit.id } );
 
 		#if ( $numberOfChildren == 0 )

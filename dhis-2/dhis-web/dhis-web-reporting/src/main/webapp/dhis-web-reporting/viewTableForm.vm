@@ -44,7 +44,7 @@
 						<a href="getReportParams.action?uid=${table.uid}&mode=table" title="$i18n.getString( "create" )"><img src="../images/start_process.png" alt="$i18n.getString( "create" )"></a>
 
                         #if ( $security.canManage( $table ) )
-                        <a href="javascript:showSharingDialog('reportTable', '$table.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
+                        <a href="javascript:showSharingDialog('reportTable', '$table.uid');" title="$i18n.getString( 'sharing_settings' )"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
                         #else
                         <img src="../images/relationship-denied.png">
                         #end

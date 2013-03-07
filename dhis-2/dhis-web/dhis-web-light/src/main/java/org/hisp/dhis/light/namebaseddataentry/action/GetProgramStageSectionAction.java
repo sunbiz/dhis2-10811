@@ -47,39 +47,41 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Nguyen Kim Lai
- *
+ * 
  * @version $ GetProgramStageSectionAction.java Oct 10, 2012 $
  */
-public class GetProgramStageSectionAction implements Action
+public class GetProgramStageSectionAction
+    implements Action
 {
     private static final String REDIRECT = "redirect";
+
     private static final String REDIRECT_COMPLETED_FORM = "redirectCompletedForm";
-    
+
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
-    
+
     private NamebasedUtils util;
-    
+
     public void setUtil( NamebasedUtils util )
     {
         this.util = util;
     }
-    
+
     private PatientService patientService;
 
     public void setPatientService( PatientService patientService )
     {
         this.patientService = patientService;
     }
-    
+
     private ProgramStageInstanceService programStageInstanceService;
 
     public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
     {
         this.programStageInstanceService = programStageInstanceService;
     }
-    
+
     private ProgramService programService;
 
     public void setProgramService( ProgramService programService )
@@ -102,7 +104,7 @@ public class GetProgramStageSectionAction implements Action
     {
         this.programInstanceId = programInstanceId;
     }
-    
+
     private Integer programStageInstanceId;
 
     public Integer getProgramStageInstanceId()
@@ -114,7 +116,7 @@ public class GetProgramStageSectionAction implements Action
     {
         this.programStageInstanceId = programStageInstanceId;
     }
-    
+
     private Integer patientId;
 
     public Integer getPatientId()
@@ -126,14 +128,14 @@ public class GetProgramStageSectionAction implements Action
     {
         this.patientId = patientId;
     }
-    
+
     private Patient patient;
-    
+
     public Patient getPatient()
     {
         return patient;
     }
-    
+
     private Integer programId;
 
     public void setProgramId( Integer programId )
@@ -145,7 +147,7 @@ public class GetProgramStageSectionAction implements Action
     {
         return programId;
     }
-    
+
     private Integer programStageId;
 
     public void setProgramStageId( Integer programStageId )
@@ -157,7 +159,7 @@ public class GetProgramStageSectionAction implements Action
     {
         return programStageId;
     }
-    
+
     private Integer orgUnitId;
 
     public void setOrgUnitId( Integer orgUnitId )
@@ -169,16 +171,16 @@ public class GetProgramStageSectionAction implements Action
     {
         return this.orgUnitId;
     }
-    
+
     private ProgramStage programStage;
 
     public ProgramStage getProgramStage()
     {
         return this.programStage;
     }
-    
+
     private List<ProgramStageSection> listOfProgramStageSections;
-    
+
     public List<ProgramStageSection> getListOfProgramStageSections()
     {
         return listOfProgramStageSections;
@@ -190,26 +192,26 @@ public class GetProgramStageSectionAction implements Action
     {
         return listOfProgramStageDataElement;
     }
-    
+
     public DateFormat getDateFormat()
     {
         return new SimpleDateFormat( "yyyy-MM-dd" );
     }
-    
+
     public ProgramStageInstance programStageInstance;
-    
+
     public ProgramStageInstance getProgramStageInstance()
     {
         return programStageInstance;
     }
-    
+
     private Program program;
 
     public Program getProgram()
     {
         return this.program;
     }
-    
+
     private boolean validated;
 
     public boolean isValidated()
@@ -221,16 +223,16 @@ public class GetProgramStageSectionAction implements Action
     {
         this.validated = validated;
     }
-    
+
     public String sectionName;
 
     public String getSectionName()
     {
         return sectionName;
     }
-    
+
     public Integer programStageSectionId;
-    
+
     public void setProgramStageSectionId( Integer programStageSectionId )
     {
         this.programStageSectionId = programStageSectionId;
@@ -239,38 +241,38 @@ public class GetProgramStageSectionAction implements Action
     @Override
     public String execute()
         throws Exception
-    {   
-        
+    {
+
         program = programService.getProgram( programId );
-        
+
         programStageInstance = programStageInstanceService.getProgramStageInstance( programStageInstanceId );
-        
+
         patient = patientService.getPatient( patientId );
-        
+
         programStage = util.getProgramStage( programId, programStageId );
-        
-        this.listOfProgramStageSections = new ArrayList<ProgramStageSection>(programStage.getProgramStageSections());
-        
-        if ( programStageSectionId != null && programStageSectionId != 0)
+
+        this.listOfProgramStageSections = new ArrayList<ProgramStageSection>( programStage.getProgramStageSections() );
+
+        if ( programStageSectionId != null && programStageSectionId != 0 )
         {
-            for ( ProgramStageSection each: this.listOfProgramStageSections )
+            for ( ProgramStageSection each : this.listOfProgramStageSections )
             {
                 if ( each.getId() == programStageSectionId )
                 {
                     sectionName = each.getName();
-
                     break;
                 }
             }
         }
-        
-        if( this.listOfProgramStageSections.size() == 0 && programStageInstance.isCompleted() == false)
-        {
-            return REDIRECT;
-        }
-        else if( this.listOfProgramStageSections.size() == 0 && programStageInstance.isCompleted() == true )
+
+        if ( this.listOfProgramStageSections.size() == 0 && programStageInstance.isCompleted() == true
+            && programStage.getProgram().getBlockEntryForm() )
         {
             return REDIRECT_COMPLETED_FORM;
+        }
+        else if ( this.listOfProgramStageSections.size() == 0 )
+        {
+            return REDIRECT;
         }
 
         return SUCCESS;

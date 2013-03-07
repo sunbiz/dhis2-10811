@@ -27,14 +27,13 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
-import org.hisp.dhis.common.NameableObject.NameableProperty;
-
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
+import org.hisp.dhis.common.NameableObject.NameableProperty;
 
 /**
  * @author Lars Helge Overland
@@ -82,14 +81,4 @@ public interface IdentifiableObjectManager
     IdentifiableObject getObject( int id, String simpleClassName );
 
     <T extends IdentifiableObject> int getCount( Class<T> clazz );
-    
-    <T extends IdentifiableObject> List<T> getAllAccessible( Class<T> clazz );
-
-    <T extends IdentifiableObject> List<T> getAccessibleLikeName( Class<T> clazz, String name );
-
-    <T extends IdentifiableObject> List<T> getAccessibleBetween( Class<T> clazz, int first, int max );
-    
-    <T extends IdentifiableObject> List<T> getAccessibleBetweenLikeName( Class<T> clazz, String name, int first, int max );
-
-    <T extends IdentifiableObject> List<T> getAccessibleByLastUpdated( Class<T> clazz, Date lastUpdated );
 }

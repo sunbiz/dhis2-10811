@@ -27,6 +27,4 @@ jQuery( document ).ready( function()
         },
         'rules' : getValidationRules( "dataDictionary" )
     } );
-
-    // checkValueIsExist( "name", "validateDataDictionary.action" );
 } );

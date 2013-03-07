@@ -1,6 +1,6 @@
 #set($oucSize = $currentUser.getOrganisationUnit().getSortedChildren().size()){
 "contextPath":"$!{contextPath}",
-"user":{"id":"$!currentUser.id","isAdmin":$auth.hasAccess( "dhis-web-visualizer", "addOrUpdateSystemChart" ),
+"user":{"id":"$!currentUser.id","name":"$currentUser.name","isAdmin":$auth.hasAccess( "dhis-web-visualizer", "addOrUpdateSystemChart" ),
 "ou":{"id":"$currentUser.getOrganisationUnit().uid","name":"$currentUser.getOrganisationUnit().name"},
 "ouc":[#foreach($ou in $currentUser.getOrganisationUnit().getSortedChildren()){"id":"$ou.uid","name":"$ou.name"}#if($velocityCount < $oucSize),#end#end]},
 "system":{"rn":[#foreach($rn in $rootNodes)["$!{rn.uid}","$!encoder.jsonEncode(${rn.name})"]#if($velocityCount<$rootNodes.size()),#end#end],

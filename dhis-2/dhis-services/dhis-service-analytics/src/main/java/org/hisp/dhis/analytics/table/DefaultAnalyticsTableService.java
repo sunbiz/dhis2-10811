@@ -27,8 +27,6 @@ package org.hisp.dhis.analytics.table;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.scheduling.TaskCategory.DATAMART;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -83,49 +81,58 @@ public class DefaultAnalyticsTableService
     {
         Clock clock = new Clock().startClock().logTime( "Starting update" );
         
+        boolean valid = tableManager.validState();
+        
+        if ( !valid )
+        {
+            notifier.notify( taskId, "Table not valid, aborted update" );
+            return;
+        }
+        
         final Date threeYrsAgo = new Cal().subtract( Calendar.YEAR, 2 ).set( 1, 1 ).time();
         final Date earliest = last3YearsOnly ? threeYrsAgo : tableManager.getEarliestData();
         final Date latest = tableManager.getLatestData();
         final String tableName = tableManager.getTableName();
         final List<String> tables = PartitionUtils.getTempTableNames( earliest, latest, tableName );        
-        clock.logTime( "Got partition tables: " + tables + ", earliest: " + earliest + ", latest: " + latest );
         
-        notifier.notify( taskId, DATAMART, "Creating analytics tables" );
+        clock.logTime( "Partition tables: " + tables + ", earliest: " + earliest + ", latest: " + latest + ", last 3 years: " + last3YearsOnly );
+        
+        notifier.notify( taskId, "Creating analytics tables" );
         
         createTables( tables );
         
         clock.logTime( "Created analytics tables" );
-        notifier.notify( taskId, DATAMART, "Populating analytics tables" );
+        notifier.notify( taskId, "Populating analytics tables" );
         
         populateTables( tables );
         
         clock.logTime( "Populated analytics tables" );
-        notifier.notify( taskId, DATAMART, "Pruned analytics tables" );
+        notifier.notify( taskId, "Pruned analytics tables" );
         
         pruneTables( tables );
         
         clock.logTime( "Pruned analytics tables" );
-        notifier.notify( taskId, DATAMART, "Applying aggregation levels" );
+        notifier.notify( taskId, "Applying aggregation levels" );
         
         applyAggregationLevels( tables );
         
         clock.logTime( "Applied aggregation levels" );
-        notifier.notify( taskId, DATAMART, "Creating indexes" );
+        notifier.notify( taskId, "Creating indexes" );
         
         createIndexes( tables );
         
         clock.logTime( "Created indexes" );
-        notifier.notify( taskId, DATAMART, "Vacuuming tables" );
+        notifier.notify( taskId, "Vacuuming tables" );
         
         vacuumTables( tables );
         
         clock.logTime( "Vacuumed tables" );
-        notifier.notify( taskId, DATAMART, "Swapping analytics tables" );
+        notifier.notify( taskId, "Swapping analytics tables" );
         
         swapTables( tables );
         
         clock.logTime( "Table update done" );
-        notifier.notify( taskId, DATAMART, "Table update done" );
+        notifier.notify( taskId, "Table update done" );
     }
 
     // -------------------------------------------------------------------------

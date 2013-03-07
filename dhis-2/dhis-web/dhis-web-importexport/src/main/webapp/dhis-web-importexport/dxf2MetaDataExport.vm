@@ -38,12 +38,11 @@
     }
 </script>
 
-<h3>$i18n.getString( "dxf2_metadata_export" )</h3>
+<h3>$i18n.getString( "metadata_export" )</h3>
 
 <form id="exportForm" name="exportForm">
 
-<fieldset style="width: 80%;">
-    <legend>$i18n.getString( "elements" )</legend>
+<fieldset style="width: 80%; border: 1px solid #ccc; padding: 15px;">
     #foreach( $key in $exportClasses.keySet() )
         <div style="width: 200px; float: left;"><input id="$key" name="$key" type="checkbox" value="true" /> <label for="$key">$exportClasses.get( $key )</label></div>
     #end

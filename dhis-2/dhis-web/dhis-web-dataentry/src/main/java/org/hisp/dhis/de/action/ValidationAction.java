@@ -27,16 +27,7 @@ package org.hisp.dhis.de.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.system.util.ListUtils.getCollection;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
+import com.opensymphony.xwork2.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
@@ -54,7 +45,14 @@ import org.hisp.dhis.validation.ValidationResult;
 import org.hisp.dhis.validation.ValidationRule;
 import org.hisp.dhis.validation.ValidationRuleService;
 
-import com.opensymphony.xwork2.Action;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.hisp.dhis.system.util.ListUtils.getCollection;
 
 /**
  * @author Margrethe Store
@@ -152,30 +150,30 @@ public class ValidationAction
     // Output
     // -------------------------------------------------------------------------
 
-    private List<ValidationResult> results;
+    private Map<OrganisationUnit, List<ValidationResult>> validationResults = new TreeMap<OrganisationUnit, List<ValidationResult>>();
 
-    public List<ValidationResult> getResults()
+    public Map<OrganisationUnit, List<ValidationResult>> getValidationResults()
     {
-        return results;
+        return validationResults;
     }
 
-    private Map<Integer, String> leftsideFormulaMap;
+    private Map<OrganisationUnit, Map<Integer, String>> leftSideFormulaMap = new HashMap<OrganisationUnit, Map<Integer, String>>();
 
-    public Map<Integer, String> getLeftsideFormulaMap()
+    public Map<OrganisationUnit, Map<Integer, String>> getLeftSideFormulaMap()
     {
-        return leftsideFormulaMap;
+        return leftSideFormulaMap;
     }
 
-    private Map<Integer, String> rightsideFormulaMap;
+    private Map<OrganisationUnit, Map<Integer, String>> rightSideFormulaMap = new HashMap<OrganisationUnit, Map<Integer, String>>();
 
-    public Map<Integer, String> getRightsideFormulaMap()
+    public Map<OrganisationUnit, Map<Integer, String>> getRightSideFormulaMap()
     {
-        return rightsideFormulaMap;
+        return rightSideFormulaMap;
     }
 
-    private Collection<DeflatedDataValue> dataValues = new HashSet<DeflatedDataValue>();
+    private Map<OrganisationUnit, List<DeflatedDataValue>> dataValues = new TreeMap<OrganisationUnit, List<DeflatedDataValue>>();
 
-    public Collection<DeflatedDataValue> getDataValues()
+    public Map<OrganisationUnit, List<DeflatedDataValue>> getDataValues()
     {
         return dataValues;
     }
@@ -193,88 +191,89 @@ public class ValidationAction
 
         Period selectedPeriod = PeriodType.createPeriodExternalId( periodId );
 
-        Period period = null;
-
-        if ( selectedPeriod != null )
+        if ( selectedPeriod == null || orgUnit == null || (multiOrganisationUnit && !orgUnit.hasChild()) )
         {
-            period = periodService.getPeriod( selectedPeriod.getStartDate(), selectedPeriod.getEndDate(),
-                selectedPeriod.getPeriodType() );
+            return SUCCESS;
+        }
 
-            if ( validationCheck( orgUnit, dataSet, period ).equals( INPUT ) )
+        Period period = periodService.getPeriod( selectedPeriod.getStartDate(), selectedPeriod.getEndDate(),
+            selectedPeriod.getPeriodType() );
+
+        List<OrganisationUnit> organisationUnits = new ArrayList<OrganisationUnit>();
+
+        if ( !multiOrganisationUnit )
+        {
+            organisationUnits.add( orgUnit );
+        }
+        else
+        {
+            organisationUnits.addAll( orgUnit.getChildren() );
+        }
+
+        Collections.sort( organisationUnits, IdentifiableObjectNameComparator.INSTANCE );
+
+        for ( OrganisationUnit organisationUnit : organisationUnits )
+        {
+            List<DeflatedDataValue> values = outlierAnalysis( organisationUnit, dataSet, period );
+
+            if ( !values.isEmpty() )
             {
-                return INPUT;
+                dataValues.put( organisationUnit, values );
+            }
+
+            List<ValidationResult> results = validationRuleAnalysis( organisationUnit, dataSet, period );
+
+            if ( !results.isEmpty() )
+            {
+                validationResults.put( organisationUnit, results );
             }
         }
 
-        if ( multiOrganisationUnit && selectedPeriod != null )
-        {
-            List<OrganisationUnit> children = new ArrayList<OrganisationUnit>( orgUnit.getChildren() );
-
-            Collections.sort( children, IdentifiableObjectNameComparator.INSTANCE );
-
-            for ( OrganisationUnit child : children )
-            {
-                if ( validationCheck( child, dataSet, period ).equals( INPUT ) )
-                {
-                    return INPUT;
-                }
-            }
-        }
-
-        return dataValues.size() == 0 && results.size() == 0 ? SUCCESS : INPUT;
+        return dataValues.size() == 0 && validationResults.size() == 0 ? SUCCESS : INPUT;
     }
 
-    // -------------------------------------------------------------------------
-    // Supportive methods
-    // -------------------------------------------------------------------------
-
-    private String validationCheck( OrganisationUnit unit, DataSet dataSet, Period period )
+    // ---------------------------------------------------------------------
+    // Min-max and outlier analysis
+    // ---------------------------------------------------------------------
+    private List<DeflatedDataValue> outlierAnalysis( OrganisationUnit organisationUnit, DataSet dataSet, Period period )
     {
-        if ( unit != null )
-        {
-            // ---------------------------------------------------------------------
-            // Min-max and outlier analysis
-            // ---------------------------------------------------------------------
+        List<DeflatedDataValue> deflatedDataValues = new ArrayList<DeflatedDataValue>( minMaxOutlierAnalysisService.analyse( getCollection( organisationUnit ),
+            dataSet.getDataElements(), getCollection( period ), null ) );
 
-            dataValues = minMaxOutlierAnalysisService.analyse( getCollection( unit ), dataSet.getDataElements(),
-                getCollection( period ), null );
+        log.debug( "Number of outlier values: " + deflatedDataValues.size() );
 
-            log.debug( "Number of outlier values: " + dataValues.size() );
-
-            if ( dataValues.size() > 0 )
-            {
-                return INPUT;
-            }
-
-            // ---------------------------------------------------------------------
-            // Validation rule analysis
-            // ---------------------------------------------------------------------
-
-            results = new ArrayList<ValidationResult>( validationRuleService.validate( dataSet, period, unit ) );
-
-            log.debug( "Number of validation violations: " + results.size() );
-
-            if ( results.size() > 0 )
-            {
-                leftsideFormulaMap = new HashMap<Integer, String>( results.size() );
-                rightsideFormulaMap = new HashMap<Integer, String>( results.size() );
-
-                for ( ValidationResult result : results )
-                {
-                    ValidationRule rule = result.getValidationRule();
-
-                    leftsideFormulaMap.put( rule.getId(), expressionService.getExpressionDescription( rule
-                        .getLeftSide().getExpression() ) );
-
-                    rightsideFormulaMap.put( rule.getId(), expressionService.getExpressionDescription( rule
-                        .getRightSide().getExpression() ) );
-                }
-
-                return INPUT;
-            }
-        }
-
-        return NONE;
+        return deflatedDataValues;
     }
 
+    // ---------------------------------------------------------------------
+    // Validation rule analysis
+    // ---------------------------------------------------------------------
+    private List<ValidationResult> validationRuleAnalysis( OrganisationUnit organisationUnit, DataSet dataSet, Period period )
+    {
+        List<ValidationResult> validationResults = new ArrayList<ValidationResult>( validationRuleService.validate( dataSet, period, organisationUnit ) );
+
+        log.debug( "Number of validation violations: " + validationResults.size() );
+
+        if ( validationResults.size() > 0 )
+        {
+            Map<Integer, String> leftSideFormulas = new HashMap<Integer, String>( validationResults.size() );
+            Map<Integer, String> rightSideFormulas = new HashMap<Integer, String>( validationResults.size() );
+
+            for ( ValidationResult validationResult : validationResults )
+            {
+                ValidationRule rule = validationResult.getValidationRule();
+
+                leftSideFormulas.put( rule.getId(), expressionService.getExpressionDescription( rule
+                    .getLeftSide().getExpression() ) );
+
+                rightSideFormulas.put( rule.getId(), expressionService.getExpressionDescription( rule
+                    .getRightSide().getExpression() ) );
+            }
+
+            leftSideFormulaMap.put( organisationUnit, leftSideFormulas );
+            rightSideFormulaMap.put( organisationUnit, rightSideFormulas );
+        }
+
+        return validationResults;
+    }
 }

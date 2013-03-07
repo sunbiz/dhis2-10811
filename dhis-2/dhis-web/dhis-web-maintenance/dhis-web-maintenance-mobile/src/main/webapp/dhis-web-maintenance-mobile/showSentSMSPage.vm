@@ -82,7 +82,7 @@
 		<th style="text-align:center"><a href="#" onclick="checkAll()" title="$i18n.getString( 'check_all' )"><img src="../images/check.png"/></a></th>			
 		<th style="text-align:center">$i18n.getString( "no." )</th>
 		<th>$i18n.getString( "message" )</th>
-		<th>$i18n.getString( "receiver" )</th>
+		<th>$i18n.getString( "receipient" )</th>
 		<th>$i18n.getString( "date" )</th>
 		<th>$i18n.getString( "status" )</th>
 	</thead>
