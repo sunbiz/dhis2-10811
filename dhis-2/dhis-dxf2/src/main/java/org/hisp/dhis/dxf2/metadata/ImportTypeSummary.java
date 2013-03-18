@@ -112,4 +112,14 @@ public class ImportTypeSummary
     {
         importCount.incrementIgnored();
     }
+
+    @Override
+    public String toString()
+    {
+        return "ImportTypeSummary{" +
+            "type='" + type + '\'' +
+            ", importCount=" + importCount +
+            ", importConflicts=" + importConflicts +
+            '}';
+    }
 }

@@ -27,9 +27,7 @@ package org.hisp.dhis.integration;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.junit.Assert.assertNotNull;
 import org.hisp.dhis.DhisTest;
-import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.CODE;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
@@ -40,43 +38,47 @@ import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.datavalue.DataValueService;
 import org.hisp.dhis.dxf2.importsummary.ImportSummary;
 import org.hisp.dhis.dxf2.metadata.ImportOptions;
-import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+
+import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.CODE;
+import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
+import static org.junit.Assert.assertNotNull;
 
 public class RoutesTest
     extends DhisTest
 {
     @Autowired
     private DataElementService dataElementService;
-    
+
     @Autowired
     private DataElementCategoryService categoryService;
-    
+
     @Autowired
     private DataSetService dataSetService;
 
     @Autowired
     private OrganisationUnitService organisationUnitService;
-    
+
     @Autowired
     private PeriodService periodService;
-    
+
     @Autowired
     private IntegrationService integrationService;
-    
+
     @Autowired
     private DataValueService dataValueService;
-    
+
     @Autowired
     private CompleteDataSetRegistrationService registrationService;
-    
+
     private DataElement deA;
     private DataElement deB;
     private DataElement deC;
@@ -86,13 +88,13 @@ public class RoutesTest
     private Period peA;
     private Period peB;
     private DataElementCategoryOptionCombo optionComboA;
-    
+
     @Override
     public boolean emptyDatabaseAfterTest()
     {
         return true;
     }
-    
+
     @Override
     public void setUpTest()
     {
@@ -105,7 +107,7 @@ public class RoutesTest
         peA = createPeriod( getDate( 2012, 1, 1 ), getDate( 2012, 1, 31 ) );
         peB = createPeriod( getDate( 2012, 2, 1 ), getDate( 2012, 2, 29 ) );
         optionComboA = categoryService.getDefaultDataElementCategoryOptionCombo();
-        
+
         deA.setUid( "f7n9E0hX8qk" );
         deB.setUid( "Ix2HsbDMLea" );
         deC.setUid( "eY5ehpbEsB7" );
@@ -119,7 +121,7 @@ public class RoutesTest
         dsA.setCode( "DS_A" );
         ouA.setCode( "OU_A" );
         ouB.setCode( "OU_B" );
-        
+
         dataElementService.addDataElement( deA );
         dataElementService.addDataElement( deB );
         dataElementService.addDataElement( deC );
@@ -129,17 +131,17 @@ public class RoutesTest
         periodService.addPeriod( peA );
         periodService.addPeriod( peB );
     }
-    
+
     @Test
     public void testImportDataValueSetSDMX()
         throws Exception
     {
         ImportOptions options = new ImportOptions( CODE, CODE, false, NEW_AND_UPDATES, false );
-        ImportSummary summary = integrationService.importSDMXDataValueSet( new ClassPathResource( "data/sdmx_test.xml" ).getInputStream(),options );
-        
+        ImportSummary summary = integrationService.importSDMXDataValueSet( new ClassPathResource( "data/sdmx_test.xml" ).getInputStream(), options );
+
         assertNotNull( summary );
         assertNotNull( summary.getDataValueCount() );
-        
+
     }
 
     @Test
@@ -147,12 +149,9 @@ public class RoutesTest
         throws Exception
     {
         ImportOptions options = new ImportOptions( CODE, CODE, false, NEW_AND_UPDATES, false );
-        ImportSummary summary = integrationService.importXMLDataValueSet( new ClassPathResource( "data/dataValueSetA.xml" ).getInputStream(),options );
-        
+        ImportSummary summary = integrationService.importXMLDataValueSet( new ClassPathResource( "data/dataValueSetA.xml" ).getInputStream(), options );
+
         assertNotNull( summary );
         assertNotNull( summary.getDataValueCount() );
-        
     }
-    
-
 }

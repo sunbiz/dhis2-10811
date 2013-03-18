@@ -195,8 +195,10 @@ public final class SharingUtils
      */
     public static boolean canWrite( User user, IdentifiableObject object )
     {
-        if ( sharingOverrideAuthority( user ) || object.getUser() == null || user.equals( object.getUser() ) ||
-            AccessStringHelper.canWrite( object.getPublicAccess() ) )
+        if ( sharingOverrideAuthority( user )
+            || object.getUser() == null
+            || object.getUser().equals( user )
+            || AccessStringHelper.canWrite( object.getPublicAccess() ) )
         {
             return true;
         }
@@ -228,8 +230,10 @@ public final class SharingUtils
      */
     public static boolean canRead( User user, IdentifiableObject object )
     {
-        if ( sharingOverrideAuthority( user ) || object.getUser() == null || user.equals( object.getUser() ) ||
-            AccessStringHelper.canRead( object.getPublicAccess() ) )
+        if ( sharingOverrideAuthority( user )
+            || object.getUser() == null
+            || object.getUser().equals( user )
+            || AccessStringHelper.canRead( object.getPublicAccess() ) )
         {
             return true;
         }
@@ -308,7 +312,7 @@ public final class SharingUtils
 
     private static boolean sharingOverrideAuthority( User user )
     {
-        return user != null && user.getUserCredentials().getAllAuthorities().contains( SHARING_OVERRIDE_AUTHORITY );
+        return user == null || user.getUserCredentials().getAllAuthorities().contains( SHARING_OVERRIDE_AUTHORITY );
     }
 
     private SharingUtils()

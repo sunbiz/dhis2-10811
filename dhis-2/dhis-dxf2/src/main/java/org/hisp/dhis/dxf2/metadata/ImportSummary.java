@@ -102,4 +102,13 @@ public class ImportSummary
     {
         importCount.incrementIgnored( n );
     }
+
+    @Override
+    public String toString()
+    {
+        return "ImportSummary{" +
+            "importCount=" + importCount +
+            ", importTypeSummaries=" + importTypeSummaries +
+            '}';
+    }
 }

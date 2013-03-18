@@ -36,12 +36,14 @@
 
 <label for="last12Months">$i18n.getString( "last_12_months" )</label>
 <input type="checkbox" id="last12Months" name="last12Months" value="true"#if( $relatives.isLast12Months() ) checked#end>&nbsp;
+<label for="last6BiMonths">$i18n.getString( "last_6_bimonths" )</label>
+<input type="checkbox" id="last6BiMonths" name="last6BiMonths" value="true"#if( $relatives.isLast6BiMonths() ) checked#end>&nbsp;
 <label for="last4Quarters">$i18n.getString( "last_4_quarters" )</label>
 <input type="checkbox" id="last4Quarters" name="last4Quarters" value="true"#if( $relatives.isLast4Quarters() ) checked#end>&nbsp;
 <label for="last2SixMonths">$i18n.getString( "last_2_sixmonths" )</label>
-<input type="checkbox" id="last2SixMonths" name="last2SixMonths" value="true"#if( $relatives.isLast2SixMonths() ) checked#end>&nbsp;
-<label for="last5Years">$i18n.getString( "last_5_years" )</label>
-<input type="checkbox" id="last5Years" name="last5Years" value="true"#if( $relatives.isLast5Years() ) checked#end><br><br>
+<input type="checkbox" id="last2SixMonths" name="last2SixMonths" value="true"#if( $relatives.isLast2SixMonths() ) checked#end><br><br>
 
+<label for="last5Years">$i18n.getString( "last_5_years" )</label>
+<input type="checkbox" id="last5Years" name="last5Years" value="true"#if( $relatives.isLast5Years() ) checked#end>&nbsp;
 <label for="last5FinancialYears">$i18n.getString( "last_5_financial_years" )</label>
 <input type="checkbox" id="last5FinancialYears" name="last5FinancialYears" value="true"#if( $relatives.isLast5FinancialYears() ) checked#end>

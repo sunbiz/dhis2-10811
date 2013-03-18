@@ -155,6 +155,13 @@ public abstract class AbstractRelativePeriodsAction
         this.last3Months = last3Months;
     }
 
+    protected boolean last6BiMonths;
+    
+    public void setLast6BiMonths( boolean last6BiMonths )
+    {
+        this.last6BiMonths = last6BiMonths;
+    }
+
     protected boolean last5FinancialYears;
 
     public void setLast5FinancialYears( boolean last5FinancialYears )
@@ -195,7 +202,7 @@ public abstract class AbstractRelativePeriodsAction
         RelativePeriods relatives = new RelativePeriods( reportingMonth, reportingBimonth, reportingQuarter, lastSixMonth,
             monthsThisYear, quartersThisYear, thisYear, 
             monthsLastYear, quartersLastYear, lastYear, 
-            last5Years, last12Months, last3Months, false, last4Quarters, last2SixMonths,
+            last5Years, last12Months, last3Months, last6BiMonths, last4Quarters, last2SixMonths,
             thisFinancialYear, lastFinancialYear, last5FinancialYears, 
             lastWeek, last4Weeks, last12Weeks, last52Weeks );
         

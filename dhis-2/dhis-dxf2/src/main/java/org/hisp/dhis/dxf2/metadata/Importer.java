@@ -27,6 +27,8 @@ package org.hisp.dhis.dxf2.metadata;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.user.User;
+
 import java.util.List;
 
 /**
@@ -44,7 +46,7 @@ public interface Importer<T>
      * @param options Import options
      * @return ImportConflict instance if a conflict occurred, if not null
      */
-    ImportTypeSummary importObject( T object, ImportOptions options );
+    ImportTypeSummary importObject( User user, T object, ImportOptions options );
 
     /**
      * Import a collection of objects.
@@ -53,7 +55,7 @@ public interface Importer<T>
      * @param options Import options
      * @return List of all the ImportConflicts encountered
      */
-    ImportTypeSummary importObjects( List<T> objects, ImportOptions options );
+    ImportTypeSummary importObjects( User user, List<T> objects, ImportOptions options );
 
     /**
      * Can this importer handle a certain Class type?

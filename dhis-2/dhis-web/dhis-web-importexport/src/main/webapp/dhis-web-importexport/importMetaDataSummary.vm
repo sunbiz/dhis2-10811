@@ -15,7 +15,6 @@ $summary.importCount.ignored Ignored<br/>
         <td>Imported</td>
         <td>Updated</td>
         <td>Ignored</td>
-        <td>Conflicts</td>
     </tr>
     </thead>
     <tbody>
@@ -25,7 +24,6 @@ $summary.importCount.ignored Ignored<br/>
             <td>$typeSummary.importCount.imported</td>
             <td>$typeSummary.importCount.updated</td>
             <td>$typeSummary.importCount.ignored</td>
-            <td>$typeSummary.conflicts.size()</td>
         </tr>
         #end
     </tbody>

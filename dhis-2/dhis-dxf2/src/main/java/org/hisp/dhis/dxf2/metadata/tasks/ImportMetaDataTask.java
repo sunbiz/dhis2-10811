@@ -31,7 +31,6 @@ import org.hisp.dhis.dxf2.metadata.ImportOptions;
 import org.hisp.dhis.dxf2.metadata.ImportService;
 import org.hisp.dhis.dxf2.metadata.MetaData;
 import org.hisp.dhis.scheduling.TaskId;
-import org.hisp.dhis.user.User;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -39,7 +38,7 @@ import org.hisp.dhis.user.User;
 public class ImportMetaDataTask
     implements Runnable
 {
-    private User user;
+    private String userUid;
 
     private ImportService importService;
 
@@ -49,9 +48,9 @@ public class ImportMetaDataTask
 
     private MetaData metaData;
 
-    public ImportMetaDataTask( User user, ImportService importService, ImportOptions importOptions, TaskId taskId, MetaData metaData )
+    public ImportMetaDataTask( String userUid, ImportService importService, ImportOptions importOptions, TaskId taskId, MetaData metaData )
     {
-        this.user = user;
+        this.userUid = userUid;
         this.importService = importService;
         this.importOptions = importOptions;
         this.taskId = taskId;
@@ -61,6 +60,6 @@ public class ImportMetaDataTask
     @Override
     public void run()
     {
-        importService.importMetaData( user, metaData, importOptions, taskId );
+        importService.importMetaData( userUid, metaData, importOptions, taskId );
     }
 }

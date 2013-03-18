@@ -761,15 +761,17 @@ input:-moz-placeholder
 /* Messages used for sharing                                                  */
 /*----------------------------------------------------------------------------*/
 
-.message * { margin: 0; padding: 0; }
-.message {
-    border: 1px solid #002a80;
-    border-radius: 5px;
+.message 
+{
+    border: 1px solid #ccc;
+    border-radius: 3px;
     width: 450px;
-    padding: 5px;
-    margin-bottom: 4px;
+    padding: 9px;
+    margin-bottom: 8px;
 }
 
-.message-info {
-    background-color: #eee;
+.message-info 
+{
+    background-color: #f3f3f3;
+	color: #222;
 }

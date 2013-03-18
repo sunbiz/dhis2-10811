@@ -32,6 +32,7 @@ import org.apache.camel.impl.DefaultComponent;
 import org.hisp.dhis.dxf2.datavalueset.DataValueSetService;
 import org.hisp.dhis.dxf2.metadata.ImportService;
 import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -71,9 +72,11 @@ public class Dxf2Component
             throw new UnsupportedOperationException( "Invalid dhis2 uri part " + remaining );
         }
 
+        User user = currentUserService == null ? null : currentUserService.getCurrentUser();
+
         Endpoint endpoint = remaining.equals( DATA ) ?
-            new Dxf2DataEndpoint( currentUserService.getCurrentUser(), uri, this, dataValueSetService ) :
-            new Dxf2MetaDataEndpoint( currentUserService.getCurrentUser(), uri, this, importService );
+            new Dxf2DataEndpoint( user, uri, this, dataValueSetService ) :
+            new Dxf2MetaDataEndpoint( user, uri, this, importService );
 
         setProperties( endpoint, parameters );
         return endpoint;

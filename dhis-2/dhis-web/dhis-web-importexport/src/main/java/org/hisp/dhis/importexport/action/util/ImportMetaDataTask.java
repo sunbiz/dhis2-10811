@@ -54,24 +54,26 @@ public class ImportMetaDataTask
 
     private TaskId taskId;
 
-    public ImportMetaDataTask( ImportService importService, ImportOptions importOptions, InputStream inputStream,
+    private String userUid;
+
+    public ImportMetaDataTask( String userUid, ImportService importService, ImportOptions importOptions, InputStream inputStream,
         TaskId taskId )
     {
         this.importService = importService;
         this.importOptions = importOptions;
         this.inputStream = inputStream;
         this.taskId = taskId;
+        this.userUid = userUid;
     }
 
     @Override
     public void run()
     {
-        MetaData metaData = null;
+        MetaData metaData;
 
         try
         {
             // TODO check for XML/JSON
-            
             metaData = JacksonUtils.fromXml( inputStream, MetaData.class );
         }
         catch ( IOException e )
@@ -80,6 +82,6 @@ public class ImportMetaDataTask
             return;
         }
 
-        importService.importMetaData( metaData, importOptions, taskId );
+        importService.importMetaData( userUid, metaData, importOptions, taskId );
     }
 }

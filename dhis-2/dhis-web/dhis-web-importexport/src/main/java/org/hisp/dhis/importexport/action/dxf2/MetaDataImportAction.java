@@ -27,10 +27,7 @@ package org.hisp.dhis.importexport.action.dxf2;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-
+import com.opensymphony.xwork2.Action;
 import org.hisp.dhis.dxf2.metadata.ImportOptions;
 import org.hisp.dhis.dxf2.metadata.ImportService;
 import org.hisp.dhis.importexport.ImportStrategy;
@@ -43,7 +40,9 @@ import org.hisp.dhis.system.util.StreamUtils;
 import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.opensymphony.xwork2.Action;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -63,7 +62,7 @@ public class MetaDataImportAction
 
     @Autowired
     private Scheduler scheduler;
-    
+
     @Autowired
     private Notifier notifier;
 
@@ -104,7 +103,7 @@ public class MetaDataImportAction
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
         notifier.clear( taskId );
-        
+
         InputStream in = new FileInputStream( upload );
         in = StreamUtils.wrapAndCheckCompressionFormat( in );
 
@@ -112,7 +111,7 @@ public class MetaDataImportAction
         importOptions.setStrategy( strategy.toString() );
         importOptions.setDryRun( dryRun );
 
-        scheduler.executeTask( new ImportMetaDataTask( importService, importOptions, in, taskId ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, in, taskId ) );
 
         return SUCCESS;
     }

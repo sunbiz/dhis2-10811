@@ -27,7 +27,6 @@ package org.hisp.dhis.integration.dxf2;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.InputStream;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelSpringTestSupport;
@@ -35,15 +34,18 @@ import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class Dxf2ComponentTest extends CamelSpringTestSupport {
-    
+import java.io.InputStream;
+
+public class Dxf2ComponentTest extends CamelSpringTestSupport
+{
     // just send some strings to the route and check they arrived
     // note we can't send to the actual endpoints yet till we wire in dhis2 services to the test context.  
     // So for now this is only testing component endpoint creation :-(
     @Test
-    public void testDxf2() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(3); 
+    public void testDxf2() throws Exception
+    {
+        MockEndpoint mock = getMockEndpoint( "mock:result" );
+        mock.expectedMinimumMessageCount( 3 );
         //template.sendBody("direct:test","<dxf2 xmlns='http://dhis2.org/schema/dxf/2.0'/>");
         //template.sendBody("direct:test","<dxf2 xmlns='http://dhis2.org/schema/dxf/2.0'/>");
         //template.sendBody("direct:test","<dxf2 xmlns='http://dhis2.org/schema/dxf/2.0'/>");
@@ -51,22 +53,25 @@ public class Dxf2ComponentTest extends CamelSpringTestSupport {
     }
 
     @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            public void configure() {
-                from("direct:test")
-                    .convertBodyTo( InputStream.class)
-                  .to("dhis2:data?dryRun=true&importStrategy=NEW_AND_UPDATES")
-                  .to("mock:result");
+    protected RouteBuilder createRouteBuilder() throws Exception
+    {
+        return new RouteBuilder()
+        {
+            public void configure()
+            {
+                from( "direct:test" )
+                    .convertBodyTo( InputStream.class )
+                    .to( "dhis2:data?dryRun=true&importStrategy=NEW_AND_UPDATES" )
+                    .to( "mock:result" );
             }
         };
     }
-    
+
     @Override
     protected AbstractApplicationContext createApplicationContext()
     {
-        AbstractApplicationContext springContext = new ClassPathXmlApplicationContext("test-context.xml");
-        
+        AbstractApplicationContext springContext = new ClassPathXmlApplicationContext( "test-context.xml" );
+
         return springContext;
     }
 }

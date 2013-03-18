@@ -62,7 +62,7 @@ public class Dxf2MetaDataProducer
         Dxf2MetaDataEndpoint endpoint = (Dxf2MetaDataEndpoint) this.getEndpoint();
         MetaData metadata = JacksonUtils.fromXml( (InputStream) exchange.getIn().getBody(), MetaData.class );
 
-        ImportSummary summary = endpoint.getImportService().importMetaData( user, metadata, endpoint.getImportOptions() );
+        ImportSummary summary = endpoint.getImportService().importMetaData( user.getUid(), metadata, endpoint.getImportOptions() );
         exchange.getOut().setBody( JacksonUtils.toXmlAsString( summary ) );
     }
 }

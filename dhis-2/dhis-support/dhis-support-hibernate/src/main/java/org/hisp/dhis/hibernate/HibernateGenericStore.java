@@ -212,7 +212,7 @@ public class HibernateGenericStore<T>
         if ( !isWriteAllowed( object ) )
         {
             AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_CREATE_DENIED );
-            throw new AccessDeniedException( "You do not have write access to object" );
+            throw new AccessDeniedException( "You do not have write access to object." );
         }
 
         if ( currentUserService.getCurrentUser() != null && SharingUtils.isSupported( clazz ) )
@@ -240,7 +240,7 @@ public class HibernateGenericStore<T>
             else
             {
                 AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_CREATE_DENIED );
-                throw new AccessDeniedException( "You are not allowed to create public or private objects of this kind" );
+                throw new AccessDeniedException( "You are not allowed to create public or private objects of this kind." );
             }
         }
 
@@ -254,7 +254,7 @@ public class HibernateGenericStore<T>
         if ( !isUpdateAllowed( object ) )
         {
             AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_UPDATE_DENIED );
-            throw new AccessDeniedException( "You do not have update access to object" );
+            throw new AccessDeniedException( "You do not have update access to object." );
         }
 
         AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_UPDATE );
@@ -270,7 +270,7 @@ public class HibernateGenericStore<T>
         if ( !isReadAllowed( object ) )
         {
             AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ_DENIED );
-            throw new AccessDeniedException( "You do not have read access to object with id " + id );
+            throw new AccessDeniedException( "You do not have read access to object with id " + id + "." );
         }
 
         // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );

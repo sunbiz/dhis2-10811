@@ -36,6 +36,7 @@ import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.NameableObject;
+import org.hisp.dhis.common.SharingUtils;
 import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataelement.DataElementOperandService;
 import org.hisp.dhis.dataentryform.DataEntryForm;
@@ -58,6 +59,7 @@ import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.CollectionUtils;
 import org.hisp.dhis.system.util.ReflectionUtils;
 import org.hisp.dhis.system.util.functional.Function1;
+import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -380,13 +382,23 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     /**
      * Called every time a new idObject is to be imported.
      *
+     * @param user   User to check
      * @param object Object to import
      * @return An ImportConflict instance if there was a conflict, otherwise null
      */
-    protected boolean newObject( T object )
+    protected boolean newObject( User user, T object )
     {
+        if ( !SharingUtils.canCreatePublic( user, object ) || !SharingUtils.canCreatePrivate( user, object ) )
+        {
+            summaryType.getImportConflicts().add(
+                new ImportConflict( ImportUtils.getDisplayName( object ), "You do not have create access to class type." ) );
+
+            return false;
+        }
+
         // make sure that the internalId is 0, so that the system will generate a ID
         object.setId( 0 );
+        object.setUser( user );
 
         NonIdentifiableObjects nonIdentifiableObjects = new NonIdentifiableObjects();
         nonIdentifiableObjects.extract( object );
@@ -417,12 +429,21 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     /**
      * Update idObject from old => new.
      *
+     * @param user            User to check for access.
      * @param object          Object to import
      * @param persistedObject The current version of the idObject
      * @return An ImportConflict instance if there was a conflict, otherwise null
      */
-    protected boolean updateObject( T object, T persistedObject )
+    protected boolean updateObject( User user, T object, T persistedObject )
     {
+        if ( !SharingUtils.canUpdate( user, persistedObject ) )
+        {
+            summaryType.getImportConflicts().add(
+                new ImportConflict( ImportUtils.getDisplayName( object ), "You do not have update access to object." ) );
+
+            return false;
+        }
+
         NonIdentifiableObjects nonIdentifiableObjects = new NonIdentifiableObjects();
         nonIdentifiableObjects.extract( object );
         nonIdentifiableObjects.delete( persistedObject );
@@ -439,11 +460,6 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
 
         log.debug( "Starting update of object " + ImportUtils.getDisplayName( persistedObject ) + " (" + persistedObject.getClass()
             .getSimpleName() + ")" );
-
-        if ( persistedObject.getName().contains( "java" ) )
-        {
-            System.err.println( "clazz: " + persistedObject.getClass().getName() + ", persistedObject: " + persistedObject );
-        }
 
         objectBridge.updateObject( persistedObject );
 
@@ -475,7 +491,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     //-------------------------------------------------------------------------------------------------------
 
     @Override
-    public ImportTypeSummary importObjects( List<T> objects, ImportOptions options )
+    public ImportTypeSummary importObjects( User user, List<T> objects, ImportOptions options )
     {
         this.options = options;
         this.summaryType = new ImportTypeSummary( importerClass.getSimpleName() );
@@ -490,7 +506,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         for ( T object : objects )
         {
             ObjectHandlerUtils.preObjectHandlers( object, objectHandlers );
-            importObjectLocal( object );
+            importObjectLocal( user, object );
             ObjectHandlerUtils.postObjectHandlers( object, objectHandlers );
         }
 
@@ -500,13 +516,13 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     }
 
     @Override
-    public ImportTypeSummary importObject( T object, ImportOptions options )
+    public ImportTypeSummary importObject( User user, T object, ImportOptions options )
     {
         this.options = options;
         this.summaryType = new ImportTypeSummary( importerClass.getSimpleName() );
 
         ObjectHandlerUtils.preObjectHandlers( object, objectHandlers );
-        importObjectLocal( object );
+        importObjectLocal( user, object );
         ObjectHandlerUtils.postObjectHandlers( object, objectHandlers );
 
         return summaryType;
@@ -522,11 +538,11 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     // Helpers
     //-------------------------------------------------------------------------------------------------------
 
-    private void importObjectLocal( T object )
+    private void importObjectLocal( User user, T object )
     {
         if ( validateIdentifiableObject( object ) )
         {
-            startImport( object );
+            startImport( user, object );
         }
         else
         {
@@ -534,38 +550,50 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         }
     }
 
-    private void startImport( T object )
+    private void startImport( User user, T object )
     {
         T oldObject = objectBridge.getObject( object );
 
         if ( ImportStrategy.NEW.equals( options.getImportStrategy() ) )
         {
-            if ( newObject( object ) )
+            if ( newObject( user, object ) )
             {
                 summaryType.incrementImported();
             }
         }
         else if ( ImportStrategy.UPDATES.equals( options.getImportStrategy() ) )
         {
-            if ( updateObject( object, oldObject ) )
+            if ( updateObject( user, object, oldObject ) )
             {
                 summaryType.incrementUpdated();
+            }
+            else
+            {
+                summaryType.incrementIgnored();
             }
         }
         else if ( ImportStrategy.NEW_AND_UPDATES.equals( options.getImportStrategy() ) )
         {
             if ( oldObject != null )
             {
-                if ( updateObject( object, oldObject ) )
+                if ( updateObject( user, object, oldObject ) )
                 {
                     summaryType.incrementUpdated();
+                }
+                else
+                {
+                    summaryType.incrementIgnored();
                 }
             }
             else
             {
-                if ( newObject( object ) )
+                if ( newObject( user, object ) )
                 {
                     summaryType.incrementImported();
+                }
+                else
+                {
+                    summaryType.incrementIgnored();
                 }
             }
         }
@@ -679,9 +707,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
             return period;
         }
 
-        IdentifiableObject reference = objectBridge.getObject( identifiableObject );
-
-        return reference;
+        return objectBridge.getObject( identifiableObject );
     }
 
     private Map<Field, Object> detachFields( final Object object )

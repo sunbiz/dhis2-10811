@@ -362,9 +362,9 @@ jQuery.each(attributes, function(i, item) {
 #macro( sharingCreateNotification $type )
 <div class="message message-info">
     #if( $security.canCreatePublic( $type ) )
-    <p><img src="../icons/function-about-dhis2.png" width="18" height="18" style="float: left; padding-right: 3px;"/> $i18n.getString("object_will_created_public")</p>
+    $i18n.getString("object_will_created_public")
     #elseif( $security.canCreatePrivate( $type ) )
-    <p><img src="../icons/function-about-dhis2.png" width="18" height="18" style="float: left; padding-right: 3px;"/> $i18n.getString("object_will_created_private")</p>
+    $i18n.getString("object_will_created_private")
     #end
 </div>
 #end

@@ -228,7 +228,7 @@ public class MetaDataController
 
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser(), importService, importOptions, taskId, metaData ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, taskId, metaData ) );
 
         response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
         response.setStatus( HttpServletResponse.SC_NO_CONTENT );
@@ -242,7 +242,7 @@ public class MetaDataController
 
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser(), importService, importOptions, taskId, metaData ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, taskId, metaData ) );
 
         response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
         response.setStatus( HttpServletResponse.SC_NO_CONTENT );
@@ -259,7 +259,7 @@ public class MetaDataController
 
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser(), importService, importOptions, taskId, metaData ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, taskId, metaData ) );
 
         response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
         response.setStatus( HttpServletResponse.SC_NO_CONTENT );
@@ -276,7 +276,7 @@ public class MetaDataController
 
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser(), importService, importOptions, taskId, metaData ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, taskId, metaData ) );
 
         response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
         response.setStatus( HttpServletResponse.SC_NO_CONTENT );
@@ -291,7 +291,7 @@ public class MetaDataController
 
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser(), importService, importOptions, taskId, metaData ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, taskId, metaData ) );
 
         response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
         response.setStatus( HttpServletResponse.SC_NO_CONTENT );
@@ -306,7 +306,7 @@ public class MetaDataController
 
         TaskId taskId = new TaskId( TaskCategory.METADATA_IMPORT, currentUserService.getCurrentUser() );
 
-        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser(), importService, importOptions, taskId, metaData ) );
+        scheduler.executeTask( new ImportMetaDataTask( currentUserService.getCurrentUser().getUid(), importService, importOptions, taskId, metaData ) );
 
         response.setHeader( "Location", ContextUtils.getRootPath( request ) + "/system/tasks/" + TaskCategory.METADATA_IMPORT );
         response.setStatus( HttpServletResponse.SC_NO_CONTENT );

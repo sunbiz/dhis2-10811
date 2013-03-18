@@ -717,23 +717,38 @@ public class TableAlteror
                 boolean doPeriods = rs.getBoolean( "doperiods" );
                 boolean doUnits = rs.getBoolean( "dounits" );
                 
-                int sortOrder = 0;
+                int columnSortOrder = 0;
+                int rowSortOrder = 0;
                 
                 if ( doIndicators )
                 {
-                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + sortOrder + ");" );
-                    sortOrder++;
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + columnSortOrder + ");" );
+                    columnSortOrder++;
+                }
+                else
+                {
+                    executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + rowSortOrder + ");" );
+                    columnSortOrder++;
                 }
                 
                 if ( doPeriods )
                 {
-                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + sortOrder + ");" );
-                    sortOrder++;
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + columnSortOrder + ");" );
+                    columnSortOrder++;
+                }
+                else
+                {
+                    executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + rowSortOrder + ");" );
+                    columnSortOrder++;
                 }
                 
                 if ( doUnits )
                 {
-                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + sortOrder + ");" );
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + columnSortOrder + ");" );
+                }
+                else
+                {
+                    executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + rowSortOrder + ");" );
                 }
             }
             
