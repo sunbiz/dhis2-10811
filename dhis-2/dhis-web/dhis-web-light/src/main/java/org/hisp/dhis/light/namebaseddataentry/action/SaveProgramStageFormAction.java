@@ -93,7 +93,7 @@ public class SaveProgramStageFormAction
     {
         this.dataElementService = dataElementService;
     }
-    
+
     private PatientService patientService;
 
     public PatientService getPatientService()
@@ -421,7 +421,7 @@ public class SaveProgramStageFormAction
         List<PatientDataValue> patientDataValues = new ArrayList<PatientDataValue>();
 
         patient = patientService.getPatient( patientId );
-        
+
         if ( programStageSectionId != null && programStageSectionId != 0 )
         {
             this.programStageSection = programStageSectionService.getProgramStageSection( this.programStageSectionId );
@@ -472,11 +472,11 @@ public class SaveProgramStageFormAction
 
                 prevDataValues.put( key, value );
                 prevDataValues.put( "CB" + dataElement.getId(), parameterMap.get( "CB" + dataElement.getId() ) );
-                
+
                 // build patient data value
                 PatientDataValue patientDataValue = new PatientDataValue( programStageInstance, dataElement,
                     new Date(), value );
-                
+
                 String providedElseWhereValue = parameterMap.get( "CB" + dataElementId );
 
                 if ( providedElseWhereValue != null )
@@ -543,10 +543,17 @@ public class SaveProgramStageFormAction
             }
             else
             {
-                previousPatientDataValue.setValue( patientDataValue.getValue() );
-                previousPatientDataValue.setTimestamp( new Date() );
-                previousPatientDataValue.setProvidedElsewhere( patientDataValue.getProvidedElsewhere() );
-                patientDataValueService.updatePatientDataValue( previousPatientDataValue );
+                if ( patientDataValue.getValue().trim().equals( "" ) )
+                {
+                    patientDataValueService.deletePatientDataValue( previousPatientDataValue );
+                }
+                else
+                {
+                    previousPatientDataValue.setValue( patientDataValue.getValue() );
+                    previousPatientDataValue.setTimestamp( new Date() );
+                    previousPatientDataValue.setProvidedElsewhere( patientDataValue.getProvidedElsewhere() );
+                    patientDataValueService.updatePatientDataValue( previousPatientDataValue );
+                }
             }
 
         }
@@ -566,7 +573,7 @@ public class SaveProgramStageFormAction
         {
             Collection<ProgramValidationResult> validationResults = programValidationService.validate( validations,
                 programStageInstance );
-            
+
             for ( ProgramValidationResult validationResult : validationResults )
             {
                 if ( validationResult != null )

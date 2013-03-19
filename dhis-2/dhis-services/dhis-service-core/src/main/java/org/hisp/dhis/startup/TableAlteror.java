@@ -542,7 +542,7 @@ public class TableAlteror
         
         upgradeChartRelativePeriods();
         upgradeReportTableRelativePeriods();
-        upgradeReportTableColumns();
+        upgradeReportTables();
 
         // clear out sharing of de-group/de-group-set for now
         executeSql( "UPDATE dataelementgroup SET userid=NULL WHERE userid IS NOT NULL" );
@@ -702,11 +702,11 @@ public class TableAlteror
         }
     }
     
-    private void upgradeReportTableColumns()
+    private void upgradeReportTables()
     {
         try
         {
-            String sql = "select reporttableid, doindicators, doperiods, dounits from reporttable";
+            String sql = "select reporttableid, doindicators, doperiods, dounits, categorycomboid from reporttable";
             
             ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
             
@@ -716,6 +716,7 @@ public class TableAlteror
                 boolean doIndicators = rs.getBoolean( "doindicators" );
                 boolean doPeriods = rs.getBoolean( "doperiods" );
                 boolean doUnits = rs.getBoolean( "dounits" );
+                int categoryComboId = rs.getInt( "categorycomboid" );
                 
                 int columnSortOrder = 0;
                 int rowSortOrder = 0;
@@ -728,7 +729,7 @@ public class TableAlteror
                 else
                 {
                     executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + rowSortOrder + ");" );
-                    columnSortOrder++;
+                    rowSortOrder++;
                 }
                 
                 if ( doPeriods )
@@ -739,16 +740,23 @@ public class TableAlteror
                 else
                 {
                     executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + rowSortOrder + ");" );
-                    columnSortOrder++;
+                    rowSortOrder++;
                 }
                 
                 if ( doUnits )
                 {
                     executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + columnSortOrder + ");" );
+                    columnSortOrder++;
                 }
                 else
                 {
                     executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + rowSortOrder + ");" );
+                    rowSortOrder++;
+                }
+                
+                if ( categoryComboId > 0 )
+                {
+                    executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'co'," + columnSortOrder + ");" );
                 }
             }
             

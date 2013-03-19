@@ -86,6 +86,18 @@ public class ShowAnonymousFormAction implements Action
         return program;
     }
     
+    private int orgUnitId;
+    
+    public int getOrgUnitId()
+    {
+        return orgUnitId;
+    }
+
+    public void setOrgUnitId( int orgUnitId )
+    {
+        this.orgUnitId = orgUnitId;
+    }
+    
     private ArrayList<ProgramStageDataElement> programStageDataElements = new ArrayList<ProgramStageDataElement>();
 
     public ArrayList<ProgramStageDataElement> getProgramStageDataElements()

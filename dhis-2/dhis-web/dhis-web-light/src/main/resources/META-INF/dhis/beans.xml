@@ -540,6 +540,8 @@
 	<bean id="org.hisp.dhis.light.anonymous.action.SaveAnonymousProgramAction"
 		class="org.hisp.dhis.light.anonymous.action.SaveAnonymousProgramAction"
 		scope="prototype">
+		<property name="orgUnitService"
+			ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />	
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 		<property name="util" ref="org.hisp.dhis.light.utils.NamebasedUtils" />
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />

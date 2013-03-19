@@ -17,11 +17,17 @@
 				<input type="button" class='large-button' id='completeProgram' value="$i18n.getString( 'complete_quit' )" onclick='unenrollmentForm($programInstance.id)' />
 				<input type="button" style='width:80px' id='incompleteProgram' value="$i18n.getString( 're_enrol' )" onclick='reenrollmentForm($programInstance.id)' />
 				#set($allowRemove = 'true')
+				
+				
 				#foreach( $programStageInstance in $programStageInstances )
-					#if( $programStageInstance.executionDate )
+					#if( $!programStageInstance.executionDate 
+						|| $!programStageInstance.outboundSms.size() > 0 
+						|| $!programStageInstance.patientComments.size() > 0 )
+						
 						#set($allowRemove = 'false')
 					#end
 				#end
+				
 				#if($allowRemove == 'true')
 					<input type="button" style='width:80px' id='removeProgram' value="$i18n.getString( 'remove' )" onclick='removeProgramInstance($programInstance.id)' />
 					<script>
@@ -101,8 +107,10 @@
 				<input type='text' id='message_$programStageInstance.id' name='message_$programStageInstance.id' class="{validate:{required:true,maxlength:160}}" style="width:100%">
 			</td>
 			<td>
-				<input type='button' value="+" class='tiny-button' title='$i18n.getString("post_comment")' onclick="addComment(byId('message_$programStageInstance.id'),'$programStageInstance.id')">
-				<input type="button" value="&raquo;" class='tiny-button' title="$i18n.getString( 'send_message' )" onclick="setFieldValue( 'programStageInstanceId',$programStageInstance.id);sendSmsOnePatient(byId('message_$programStageInstance.id'),'$programStageInstance.id');"/>
+				<img src='images/post_comment.png' class='img-button' title='$i18n.getString("post_comment")' onclick="addComment(byId('message_$programStageInstance.id'),'$programStageInstance.id')">
+				#if($!programInstance.patient.phoneNumber && $!programInstance.patient.phoneNumber!='')
+				<img src="images/send_sms.png" class='img-button' title="$i18n.getString( 'send_message' )" onclick="setFieldValue( 'programStageInstanceId',$programStageInstance.id);sendSmsOnePatient(byId('message_$programStageInstance.id'),'$programStageInstance.id');"/>
+				#end
 			</td>
 			#if( $auth.hasAccess( "dhis-web-caseentry", "removeCurrentEncounter" ) )
 			<td>

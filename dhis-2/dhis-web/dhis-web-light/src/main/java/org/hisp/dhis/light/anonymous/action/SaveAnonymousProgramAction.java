@@ -38,6 +38,7 @@ import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.light.utils.NamebasedUtils;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.program.Program;
@@ -124,6 +125,18 @@ public class SaveAnonymousProgramAction
     {
         this.programStageDataElementService = programStageDataElementService;
     }
+    
+    private OrganisationUnitService orgUnitService;
+    
+    public OrganisationUnitService getOrgUnitService()
+    {
+        return orgUnitService;
+    }
+
+    public void setOrgUnitService( OrganisationUnitService orgUnitService )
+    {
+        this.orgUnitService = orgUnitService;
+    }
 
     // -------------------------------------------------------------------------
     // Input Output
@@ -169,6 +182,18 @@ public class SaveAnonymousProgramAction
 
     {
         return program;
+    }
+    
+    private int orgUnitId;
+    
+    public int getOrgUnitId()
+    {
+        return orgUnitId;
+    }
+
+    public void setOrgUnitId( int orgUnitId )
+    {
+        this.orgUnitId = orgUnitId;
     }
 
     private ArrayList<ProgramStageDataElement> programStageDataElements = new ArrayList<ProgramStageDataElement>();
@@ -287,8 +312,8 @@ public class SaveAnonymousProgramAction
         programStageInstance.setExecutionDate( new Date() );
 
         programStageInstance.setCompleted( false );
-
-        programStageInstanceService.addProgramStageInstance( programStageInstance );
+        
+        programStageInstance.setOrganisationUnit( orgUnitService.getOrganisationUnit( orgUnitId ) );
 
         for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
         {

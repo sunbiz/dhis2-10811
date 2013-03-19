@@ -206,7 +206,10 @@ public class JdbcAnalyticsTableManager
             columns.add( col );
         }
         
-        for ( PeriodType periodType : PeriodType.getAvailablePeriodTypes().subList( 0, 7 ) )
+        List<PeriodType> periodTypes = PeriodType.getAvailablePeriodTypes().subList( 0, 7 );
+        periodTypes.add( PeriodType.getAvailablePeriodTypes().get( 8 ) );
+        
+        for ( PeriodType periodType : periodTypes )
         {
             String column = periodType.getName().toLowerCase();
             String[] col = { column, "character varying(10)", "ps." + column };

@@ -32,7 +32,7 @@ import java.util.Date;
 
 public class IncomingSms
     implements Serializable
-{
+{    
     private static final long serialVersionUID = 3954710607630454226L;
 
     private Integer id;

@@ -65,7 +65,38 @@ body.x-windows {
 	-webkit-text-stroke: 0.2px #888;
 }
 
-.pt-accordion-options .x-panel-body-default {
+	/* Scrollbar Webkit */
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+    border: 0 none;
+}
+
+::-webkit-scrollbar-track:horizontal {
+    background-color: #ddd;
+    margin: 0 2px;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+}
+::-webkit-scrollbar-track:vertical {
+    background-color: #ddd;
+    margin: 2px 0;
+    border-right: 2px solid white;
+    border-left: 2px solid white;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+	background-color: #bbb;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+}
+::-webkit-scrollbar-thumb:vertical {
+	background-color: #bbb;
+    border-right: 2px solid white;
+    border-left: 2px solid white;
+}
+
+.x-scroller-vertical {
 	border: 0 none;
 }
 

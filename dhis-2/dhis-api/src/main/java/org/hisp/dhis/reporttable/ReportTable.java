@@ -599,6 +599,19 @@ public class ReportTable
     // -------------------------------------------------------------------------
     
     /**
+     * Indicates whether this report table can be rendered by the report table
+     * service. Stopgap method until report table UI will be replaced by pivot
+     * table UI. TODO temporary
+     */
+    public boolean isReportTable()
+    {
+        List<String> STANDARD_DIMS = Arrays.asList( DATA_X_DIM_ID, PERIOD_DIM_ID, ORGUNIT_DIM_ID );
+        
+        return dataElementGroups.isEmpty() && filterDimensions.isEmpty() &&
+            STANDARD_DIMS.containsAll( columnDimensions ) && STANDARD_DIMS.containsAll( filterDimensions );            
+    }
+    
+    /**
      * Populates the presentation properties based on the persisted properties.
      */
     public ReportTable populatePresentationProps()

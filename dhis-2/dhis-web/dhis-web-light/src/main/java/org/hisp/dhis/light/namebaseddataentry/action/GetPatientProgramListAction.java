@@ -257,9 +257,10 @@ public class GetPatientProgramListAction
         relatedPeople = new HashMap<Relationship, Patient>();
 
         patient = patientService.getPatient( patientId );
+        Collection<Program> programByCurrentUser = programService.getProgramsByCurrentUser();
         for ( ProgramInstance programInstance : programInstanceService.getProgramInstances( patient ) )
         {
-            if ( !programInstance.isCompleted() )
+            if ( !programInstance.isCompleted() && programByCurrentUser.contains( programInstance.getProgram() ) )
             {
                 programInstances.add( programInstance );
             }
@@ -303,10 +304,17 @@ public class GetPatientProgramListAction
     private List<Program> generateEnrollmentProgramList()
     {
         List<Program> programs = new ArrayList<Program>();
-        for ( Program program : programService.getPrograms( patient.getOrganisationUnit() ) )
+        for ( Program program : programService.getProgramsByCurrentUser() )
 
         {
-            if ( (program.isSingleEvent() && program.isRegistration()) || !program.isSingleEvent() )
+            if ( program.isSingleEvent() && program.isRegistration() )
+            {
+                if ( programInstanceService.getProgramInstances( patient, program ).size() == 0 )
+                {
+                    programs.add( program );
+                }
+            }
+            else if ( !program.isSingleEvent() )
             {
                 if ( programInstanceService.getProgramInstances( patient, program, false ).size() == 0 )
                 {

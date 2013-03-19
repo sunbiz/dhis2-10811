@@ -1,14 +1,4 @@
 
-##parse( "/dhis-web-maintenance-user/menu.vm" )
-<h2>$i18n.getString( "user" )&nbsp;</h2>
-<ul>
-    <li><a href="user.action" title="$i18n.getString( "user_by_orgunit" )">$i18n.getString( "user_by_orgunit" )&nbsp;</a></li>
-    <li><a href="alluser.action" title="$i18n.getString( "user" )">$i18n.getString( "user" )&nbsp;</a></li>
-    <li><a href="allRole.action" title="$i18n.getString( "user_role" )">$i18n.getString( "user_role" )&nbsp;</a></li>
-    <li><a href="deleteCurrentUser.action" title="$i18n.getString( "delete_current_user" )">$i18n.getString( "delete_current_user" )</a></li>
-    <li><a href="getAllUserGroups.action" title="$i18n.getString( "user_group" )" >$i18n.getString( "user_group" )</a></li>
-
-</ul>
-##parse( "/dhis-web-commons/ouwt/orgunittree.vm" )
+#parse( "/dhis-web-maintenance-user/menu.vm" )
 
 #parse( "/dhis-web-commons/ouwt/orgunittreesearch.vm" ) 

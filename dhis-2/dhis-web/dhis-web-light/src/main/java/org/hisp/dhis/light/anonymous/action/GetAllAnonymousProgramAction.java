@@ -77,6 +77,18 @@ public class GetAllAnonymousProgramAction
     {
         this.validated = validated;
     }
+    
+    private int orgUnitId;
+    
+    public int getOrgUnitId()
+    {
+        return orgUnitId;
+    }
+
+    public void setOrgUnitId( int orgUnitId )
+    {
+        this.orgUnitId = orgUnitId;
+    }
 
     // -------------------------------------------------------------------------
     // Implementation Action
@@ -86,7 +98,7 @@ public class GetAllAnonymousProgramAction
     public String execute()
         throws Exception
     {
-        programs = programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION );
+        programs = programService.getProgramsByCurrentUser( Program.SINGLE_EVENT_WITHOUT_REGISTRATION );
         return SUCCESS;
     }
 }

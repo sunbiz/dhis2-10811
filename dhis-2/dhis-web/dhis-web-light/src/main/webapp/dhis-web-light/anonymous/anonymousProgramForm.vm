@@ -13,6 +13,7 @@
 
 <form action="saveAnonymousForm.action" method="POST">
 <input type="hidden" value="$programId" name="programId" />
+<input type="hidden" value="$orgUnitId" name="orgUnitId"/>
 <div class="header-box" align="center">
 	<p style="text-align: left;">
 

@@ -170,5 +170,9 @@ transgender: '$encoder.jsEscape($i18n.getString( 'transgender' ) , "'")',
 verified: '$encoder.jsEscape($i18n.getString( 'verified' ) , "'")',
 declared: '$encoder.jsEscape($i18n.getString( 'declared' ) , "'")',
 approximated: '$encoder.jsEscape($i18n.getString( 'approximated' ) , "'")',
-remove: '$encoder.jsEscape($i18n.getString( 'remove' ) , "'")'
+remove: '$encoder.jsEscape($i18n.getString( 'remove' ) , "'")',
+weeks: '$encoder.jsEscape($i18n.getString( 'weeks' ) , "'")',
+last_week: '$encoder.jsEscape($i18n.getString( 'last_week' ) , "'")',
+last_4_weeks: '$encoder.jsEscape($i18n.getString( 'last_4_weeks' ) , "'")',
+last_12_weeks: '$encoder.jsEscape($i18n.getString( 'last_12_weeks' ) , "'")'
 };

@@ -497,6 +497,14 @@
     </action>
 
     <!-- Anonymous -->
+    
+    <action name="selectAnonymousOrgUnit"
+        class="org.hisp.dhis.light.beneficiaryregistration.action.GetBeneficiaryRegistrationOrganisationUnitAction">
+	  <result name="redirect" type="redirect">/light/anonymous.action?orgUnitId=${orgUnitId}</result>	
+      <result name="success" type="velocity">/dhis-web-light/main.vm</result>
+      <param name="page">/dhis-web-light/anonymous/selectAnonymousOrgUnit.vm</param>
+    </action>
+    
     <action name="anonymous"
         class="org.hisp.dhis.light.anonymous.action.GetAllAnonymousProgramAction">
       <result name="success" type="velocity">/dhis-web-light/main.vm</result>

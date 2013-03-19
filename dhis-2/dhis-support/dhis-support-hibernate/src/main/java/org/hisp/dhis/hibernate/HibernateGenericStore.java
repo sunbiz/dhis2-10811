@@ -904,7 +904,7 @@ public class HibernateGenericStore<T>
 
     protected boolean sharingEnabled()
     {
-        return SharingUtils.isSupported( clazz ) && !(currentUserService.getCurrentUser() == null ||
+        return SharingUtils.isSupported( clazz ) && !( currentUserService.getCurrentUser() == null ||
             currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities().contains( SharingUtils.SHARING_OVERRIDE_AUTHORITY ));
     }
 

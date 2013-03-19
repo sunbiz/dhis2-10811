@@ -44,8 +44,10 @@ import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
 import org.hisp.dhis.period.CalendarPeriodType;
+import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
+import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.relationship.Relationship;
 import org.hisp.dhis.relationship.RelationshipService;
 import org.hisp.dhis.user.CurrentUserService;
@@ -75,6 +77,8 @@ public class PatientDashboardAction
     private PatientAuditService patientAuditService;
 
     private CurrentUserService currentUserService;
+
+    private ProgramService programService;
 
     // -------------------------------------------------------------------------
     // Input && Output
@@ -107,11 +111,16 @@ public class PatientDashboardAction
         this.patientAuditService = patientAuditService;
     }
 
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
+
     public Map<PatientAttribute, String> getAttributeMap()
     {
         return attributeMap;
     }
-    
+
     public void setPatientAttributeValueService( PatientAttributeValueService patientAttributeValueService )
     {
         this.patientAttributeValueService = patientAttributeValueService;
@@ -207,19 +216,28 @@ public class PatientDashboardAction
 
         Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient );
 
+        // ---------------------------------------------------------------------
+        // Get program enrollment
+        // ---------------------------------------------------------------------
+
+        Collection<Program> programs = programService.getProgramsByCurrentUser();
+
         activeProgramInstances = new HashSet<ProgramInstance>();
 
         completedProgramInstances = new HashSet<ProgramInstance>();
 
         for ( ProgramInstance programInstance : programInstances )
         {
-            if ( programInstance.isCompleted() )
+            if ( programs.contains( programInstance.getProgram() ) )
             {
-                completedProgramInstances.add( programInstance );
-            }
-            else
-            {
-                activeProgramInstances.add( programInstance );
+                if ( programInstance.isCompleted() )
+                {
+                    completedProgramInstances.add( programInstance );
+                }
+                else
+                {
+                    activeProgramInstances.add( programInstance );
+                }
             }
         }
 

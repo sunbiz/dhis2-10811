@@ -7,7 +7,7 @@
 <p>
 <ul>
 #foreach( $program in $programs)
-	<li><a href="showAnonymousForm.action?programId=$program.id">$program.name</a></li>
+	<li><a href="showAnonymousForm.action?programId=$program.id&orgUnitId=$orgUnitId">$program.name</a></li>
 #end
 </ul>
 </p>

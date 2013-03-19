@@ -126,7 +126,7 @@ public class ProgramEnrollmentSelectAction
         {
             programs.remove( programInstance.getProgram() );
         }
-
+        
         return SUCCESS;
     }
 }

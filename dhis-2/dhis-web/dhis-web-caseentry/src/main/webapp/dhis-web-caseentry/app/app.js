@@ -3379,8 +3379,47 @@ Ext.onReady( function() {
 												items: [
 													{
 														xtype: 'panel',
+														columnWidth: 0.32,
+														bodyStyle: 'border-style:none; padding:0 0 0 8px',
+														defaults: {
+															labelSeparator: '',
+															style: 'margin-bottom:2px',
+															listeners: {
+																added: function(chb) {
+																	if (chb.xtype === 'checkbox') {
+																		TR.cmp.params.relativeperiod.checkbox.push(chb);
+																	}
+																}
+															}
+														},
+														items: [
+															{
+																xtype: 'label',
+																text: TR.i18n.weeks,
+																cls: 'tr-label-period-heading'
+															},
+															{
+																xtype: 'checkbox',
+																paramName: 'lastWeek',
+																boxLabel: TR.i18n.last_week
+															},
+															{
+																xtype: 'checkbox',
+																paramName: 'last4Weeks',
+																boxLabel: TR.i18n.last_4_weeks
+															},
+															{
+																xtype: 'checkbox',
+																paramName: 'last12Weeks',
+																boxLabel: TR.i18n.last_12_weeks
+															}
+														]
+													},
+													{
+														xtype: 'panel',
 														layout: 'anchor',
-														bodyStyle: 'border-style:none; padding:0 0 0 10px',
+														columnWidth: 0.32,
+														bodyStyle: 'border-style:none; padding:0 0 0 20px',
 														defaults: {
 															labelSeparator: '',
 															listeners: {
@@ -3418,6 +3457,7 @@ Ext.onReady( function() {
 													{
 														xtype: 'panel',
 														layout: 'anchor',
+														columnWidth: 0.32,
 														bodyStyle: 'border-style:none; padding:0 0 0 32px',
 														defaults: {
 															labelSeparator: '',
@@ -3446,38 +3486,6 @@ Ext.onReady( function() {
 																boxLabel: TR.i18n.last_4_quarters
 															}
 														]
-													},
-													{
-														xtype: 'panel',
-														layout: 'anchor',
-														bodyStyle: 'border-style:none; padding:0 0 0 32px',
-														defaults: {
-															labelSeparator: '',
-															listeners: {
-																added: function(chb) {
-																	if (chb.xtype === 'checkbox') {
-																		TR.cmp.params.relativeperiod.checkbox.push(chb);
-																	}
-																}
-															}
-														},
-														items: [
-															{
-																xtype: 'label',
-																text: TR.i18n.six_months,
-																cls: 'tr-label-period-heading'
-															},
-															{
-																xtype: 'checkbox',
-																paramName: 'lastSixMonth',
-																boxLabel: TR.i18n.last_six_month
-															},
-															{
-																xtype: 'checkbox',
-																paramName: 'last2SixMonths',
-																boxLabel: TR.i18n.last_two_six_month
-															}
-														]
 													}
 												]
 											},
@@ -3486,43 +3494,94 @@ Ext.onReady( function() {
 												layout: 'column',
 												bodyStyle: 'border-style:none',
 												items: [
-													{
-														xtype: 'panel',
-														layout: 'anchor',
-														bodyStyle: 'border-style:none; padding:5px 0 0 10px',
-														defaults: {
-															labelSeparator: '',
-															listeners: {
-																added: function(chb) {
-																	if (chb.xtype === 'checkbox') {
-																		TR.cmp.params.relativeperiod.checkbox.push(chb);
-																	}
+												{
+													xtype: 'panel',
+													columnWidth: 0.32,
+													bodyStyle: 'border-style:none; padding:0 0 0 8px',
+													defaults: {
+														labelSeparator: '',
+														style: 'margin-bottom:2px',
+														listeners: {
+															added: function(chb) {
+																if (chb.xtype === 'checkbox') {
+																	TR.cmp.params.relativeperiod.checkbox.push(chb);
 																}
 															}
+														}
+													},
+													items: [
+														{
+															xtype: 'label',
+															text: TR.i18n.six_months,
+															cls: 'tr-label-period-heading'
 														},
-														items: [
-															{
-																xtype: 'label',
-																text: TR.i18n.years,
-																cls: 'tr-label-period-heading'
-															},
-															{
-																xtype: 'checkbox',
-																paramName: 'thisYear',
-																boxLabel: TR.i18n.this_year
-															},
-															{
-																xtype: 'checkbox',
-																paramName: 'lastYear',
-																boxLabel: TR.i18n.last_year
-															},
-															{
-																xtype: 'checkbox',
-																paramName: 'last5Years',
-																boxLabel: TR.i18n.last_5_years
+														{
+															xtype: 'checkbox',
+															paramName: 'lastSixMonth',
+															boxLabel: TR.i18n.last_six_month
+														},
+														{
+															xtype: 'checkbox',
+															paramName: 'last2SixMonths',
+															boxLabel: TR.i18n.last_two_six_month
+														}
+													]
+												},
+												{
+													xtype: 'panel',
+													columnWidth: 0.32,
+													bodyStyle: 'border-style:none; padding:0 0 0 8px',
+													defaults: {
+														labelSeparator: '',
+														style: 'margin-bottom:2px',
+														listeners: {
+															added: function(chb) {
+																if (chb.xtype === 'checkbox') {
+																	TR.cmp.params.relativeperiod.checkbox.push(chb);
+																}
 															}
-														]
-													}
+														}
+													},
+													items: [
+														{
+															xtype: 'panel',
+															layout: 'anchor',
+															bodyStyle: 'border-style:none; padding:5px 0 0 10px',
+															defaults: {
+																labelSeparator: '',
+																listeners: {
+																	added: function(chb) {
+																		if (chb.xtype === 'checkbox') {
+																			TR.cmp.params.relativeperiod.checkbox.push(chb);
+																		}
+																	}
+																}
+															},
+															items: [
+																{
+																	xtype: 'label',
+																	text: TR.i18n.years,
+																	cls: 'tr-label-period-heading'
+																},
+																{
+																	xtype: 'checkbox',
+																	paramName: 'thisYear',
+																	boxLabel: TR.i18n.this_year
+																},
+																{
+																	xtype: 'checkbox',
+																	paramName: 'lastYear',
+																	boxLabel: TR.i18n.last_year
+																},
+																{
+																	xtype: 'checkbox',
+																	paramName: 'last5Years',
+																	boxLabel: TR.i18n.last_5_years
+																}
+															]
+														}
+													]
+												}
 												]
 											}
 										], 

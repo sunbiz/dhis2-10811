@@ -6188,8 +6188,8 @@ For example: the date in which a person enrolls to the system.</para>
               <para>Click <emphasis role="italic">Complete/Quit</emphasis> button to complete/quite the active program.</para>
               <para>Click <emphasis role="italic">Re-enroll </emphasis>button to re-enroll a completed program.</para>
               <para>If the program enrollment which no stage has data values, you can see  button <emphasis role="italic">Remove</emphasis> next to <emphasis role="italic">Re-enroll</emphasis> button. Click on it to delete this program enrollment.</para>
-			  <para>After entering a  message in the field, click on (+) button in <emphasis role="italic">Message</emphasis> column to add a comment for the event. For sending a reminder message, click on (&gt;&gt;) button.</para>
-              <note>
+              <para>After entering a  message in the field, click <emphasis role="italic">Post comment</emphasis> icon, the <emphasis role="italic">first icon</emphasis> under <emphasis role="italic">Message</emphasis> column, next to message text field to add a comment for the event. For sending a reminder message, click on <emphasis role="italic">Send message</emphasis> icon, the <emphasis role="italic">second icon</emphasis> under <emphasis role="italic">Message</emphasis> column.</para>
+			  <note>
                 <para>Only allow to edit due dates of events with status as overdue or scheduled in future.</para>
               </note>
             </listitem>

@@ -314,7 +314,7 @@ public class SaveSingleEventAction
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public String execute()
         throws Exception
     {
@@ -426,13 +426,20 @@ public class SaveSingleEventAction
                 }
                 else if ( patientDataValue != null && value != null )
                 {
-                    patientDataValue.setValue( value );
+                    if ( value.trim().equals( "" ) )
+                    {
+                        patientDataValueService.deletePatientDataValue( patientDataValue );
+                    }
+                    else
+                    {
+                        patientDataValue.setValue( value );
 
-                    patientDataValue.setTimestamp( new Date() );
+                        patientDataValue.setTimestamp( new Date() );
 
-                    patientDataValue.setProvidedElsewhere( false );
+                        patientDataValue.setProvidedElsewhere( false );
 
-                    patientDataValueService.updatePatientDataValue( patientDataValue );
+                        patientDataValueService.updatePatientDataValue( patientDataValue );
+                    }
                 }
             }
         }

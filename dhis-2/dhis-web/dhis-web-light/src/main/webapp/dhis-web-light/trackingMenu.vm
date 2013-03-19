@@ -22,7 +22,7 @@
     <li><a href="showFindBeneficiaryForm.action">$i18n.getString( "find_or_add_person" )</a></li>
     <li><a href="selectNamebasedOrganisationUnit.action">$i18n.getString( "visit_schedule" )</a></li>
     <li><a href="selectRegistrationOrganisationUnit.action">$i18n.getString( "beneficiary_registration" )</a></li>
-    <li><a href="anonymous.action">Anonymous</a></li>
+    <li><a href="selectAnonymousOrgUnit.action">Anonymous</a></li>
     <!-- <li><a href="showBeneficiarySearchingForm.action">$i18n.getString( "beneficiary_enrollment" )</a></li> -->
 </ul>
 </p>

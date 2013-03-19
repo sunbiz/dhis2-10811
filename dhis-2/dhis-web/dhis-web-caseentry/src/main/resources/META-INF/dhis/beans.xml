@@ -1067,6 +1067,7 @@
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
 		<property name="patientAuditService" ref="org.hisp.dhis.patient.PatientAuditService" />
 		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
 	
 	<bean

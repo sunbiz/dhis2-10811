@@ -351,16 +351,22 @@ public class GenerateAggregateReportAction
         List<Period> periods = new ArrayList<Period>();
 
         RelativePeriods rp = new RelativePeriods();
-
-        if ( relativePeriods.contains( "reportingMonth" ) )
+        
+        if ( relativePeriods.contains( "lastWeek" ) )
         {
-            rp.clear().setReportingMonth( true );
+            rp.clear().setLastWeek( true );
+            periods.addAll( periodService.reloadPeriods( rp.getRelativePeriods() ) );
+        }
+        
+        if ( relativePeriods.contains( "last4Weeks" ) )
+        {
+            rp.clear().setLast4Weeks( true );
             periods.addAll( periodService.reloadPeriods( rp.getRelativePeriods() ) );
         }
 
-        if ( relativePeriods.contains( "last3Months" ) )
+        if ( relativePeriods.contains( "last12Weeks" ) )
         {
-            rp.clear().setLast3Months( true );
+            rp.clear().setLast12Weeks( true );
             periods.addAll( periodService.reloadPeriods( rp.getRelativePeriods() ) );
         }
 

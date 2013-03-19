@@ -1793,6 +1793,10 @@ function sendSmsOnePatient( field, programStageInstanceId )
 					+ "<td>" + field.value + "</td></tr>");
 				field.value="";
 				field.style.backgroundColor = SUCCESS_COLOR;
+				
+				jQuery('#enrollmentDate').width('270');
+				jQuery('#dateOfIncident').width('270');
+				jQuery('#removeProgram').remove();
 			}
 			else {
 				showSuccessMessage( json.message );
@@ -1855,6 +1859,9 @@ function addComment( field, programStageInstanceId )
 			else{
 				commentDivToggle(false);
 			}
+			jQuery('#enrollmentDate').width('270');
+			jQuery('#dateOfIncident').width('270');
+			jQuery('#removeProgram').remove();
 		});
 }
 
