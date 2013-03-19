@@ -131,7 +131,7 @@
 
 				<td>
 					#if ( $!patient.phoneNumber && $!patient.phoneNumber != "" )					
-					<a href="javascript:addPhoneToList( 'recipients', '$patient.id', '$patient.getFullName()', '$!patient.phoneNumber' )" title='$i18n.getString( "add_phone_to_list" )'>
+					<a href="javascript:addPhoneToList( 'recipients', '$patient.id', '$value', '$!patient.phoneNumber' )" title='$i18n.getString( "add_phone_to_list" )'>
 					<img src="../images/move_down.png" alt='$i18n.getString( "add_phone_to_list" )' /></a>
 					#else
 					<img src="../dhis-web-sms/images/question.png" title='$i18n.getString( "no_phone" )' />

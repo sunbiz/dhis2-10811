@@ -223,7 +223,7 @@ public class MobileOrgUnitLinks
     {
         this.enrollProgramUrl = enrollProgramUrl;
     }
-    
+
     public String getRegisterPersonUrl()
     {
         return registerPersonUrl;
@@ -304,7 +304,7 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.changeUpdateDataSetLangUrl );
         dataOutputStream.writeUTF( this.searchUrl );
         dataOutputStream.writeUTF( this.updateNewVersionUrl );
-        dataOutputStream.writeUTF( this.updateContactUrl );
+        // dataOutputStream.writeUTF( this.updateContactUrl );
     }
 
     @Override

@@ -15,8 +15,6 @@
 <div id="footer">
 <h2>$i18n.getString( "navigate_to" )</h2>
 <ul>
-    <li><a href="feedback.action">$i18n.getString("feedback")</a></li>
-	<li><a href="../dhis-web-commons-security/logout.action">$i18n.getString("logout")</a></li>
-    <li style="padding-top: 5px;"><a href="../">$i18n.getString("desktop_version")</a></li>
+    <li><a href="index.action">$i18n.getString("home")</a></li>
 </ul>
 </div>

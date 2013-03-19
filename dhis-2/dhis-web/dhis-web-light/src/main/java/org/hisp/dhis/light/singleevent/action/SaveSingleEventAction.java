@@ -399,6 +399,7 @@ public class SaveSingleEventAction
         {
             ProgramStageInstance programStageInstance = programStageInstanceService
                 .getProgramStageInstance( this.programStageInstanceId );
+             ProgramInstance programInstance = programStageInstance.getProgramInstance();
 
             for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
             {
@@ -442,6 +443,11 @@ public class SaveSingleEventAction
                     }
                 }
             }
+            programStageInstance.setCompleted( true );
+            programStageInstanceService.updateProgramStageInstance( programStageInstance );
+            
+            programInstance.setCompleted( true );
+            programInstanceService.updateProgramInstance( programInstance );
         }
         else
         {

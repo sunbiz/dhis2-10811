@@ -29,8 +29,8 @@
 <h3>$i18n.getString( "send_sms_beneficiary" )</h3>
 #if ( $!gatewayMap && $!gatewayMap.size() > 0 )
 <div>
-<form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action">
-	<input type="hidden" id="isShowPatientList" name="isShowPatientList" />
+<form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action" onsubmit="selectAllById('recipients')">
+	<input type="hidden" id="orgunitId" name="orgunitId" />
 	<table id="detailsList">
 		<col width="85px"/>
 		<tbody>
@@ -41,8 +41,8 @@
 						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
 						<option value="userGroup">$i18n.getString( "user_group" )</option>
 						<option value="user">$i18n.getString( "assigned_user_number" )</option>
-						<option value="unit">$i18n.getString( "stakeholder_number" )</option>
-						<option value="patient" selected="true">$i18n.getString( "patient_number" )</option>
+						<option value="unit">$i18n.getString( "stakeholder_contact_person" )</option>
+						<option value="patient" selected="true">$i18n.getString( "patients_registered" )</option>
 					</select>
 				</td>
 			</tr>
@@ -70,7 +70,7 @@
 		</tbody>
 		
 		<tbody>
-			<tr><td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )"/></td></tr>
+			<tr><td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )" /></td></tr>
 		</tbody>
 	</table>	
 </form>
@@ -127,57 +127,14 @@
 		}
 	}
 
-	var i18n_none = '$encoder.jsEscape( $i18n.getString( "none" ) , "'")';
-	var i18n_please_select_village = '[' + '$encoder.jsEscape( $i18n.getString( "please_select_village" ), "'")' + ']';
-	var i18n_specify_search_criteria = '$encoder.jsEscape( $i18n.getString( "specify_search_criteria" ) , "'")';
-	var i18n_select_program = '[' + '$encoder.jsEscape( $i18n.getString( "select_program" ), "'")' + ']';
-	var i18n_list_all_patient = '$encoder.jsEscape( $i18n.getString( "list_all_patient" ) , "'")';
-	var i18n_list_patients_by_program = '$encoder.jsEscape( $i18n.getString( "list_patients_by_program" ) , "'" )';
-    var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")'; 
-	var i18n_date_invalid = '$encoder.jsEscape( $i18n.getString( "date_invalid" ) , "'")';
-	var i18n_oucode_must_have_9_digits = '$encoder.jsEscape( $i18n.getString( "oucode_must_be_valid" ) , "'")';
-	var i18n_patient_identifiers = '$encoder.jsEscape( $i18n.getString( "patient_identifiers" ) , "'")';
-	var i18n_patient_attributes = '$encoder.jsEscape( $i18n.getString( "patient_attributes" ) , "'")';
-	var i18n_patient_id = '$encoder.jsEscape( $i18n.getString( "id" ) , "'")';
-	var i18n_patient_full_name = '$encoder.jsEscape( $i18n.getString( "full_name" ) , "'")';
-	var i18n_patient_demographics = '$encoder.jsEscape( $i18n.getString( "demographics" ) , "'")';
-	var i18n_patient_gender = '$encoder.jsEscape( $i18n.getString( "gender" ) , "'")';
-	var i18n_patient_date_of_birth = '$encoder.jsEscape( $i18n.getString( "date_of_birth" ) , "'")';
-	var i18n_patient_dob_type = '$encoder.jsEscape( $i18n.getString( "dob_type" ), "'")';
-	var i18n_patient_age = '$encoder.jsEscape( $i18n.getString( "age" ) , "'")';
-	var i18n_patient_blood_group = '$encoder.jsEscape( $i18n.getString( "blood_group" ) , "'")';
-	var i18n_patient_phone_number = '$encoder.jsEscape( $i18n.getString( "phone_number" ) , "'")';
-	var i18n_edit_this_patient = '$encoder.jsEscape( $i18n.getString( "edit_this_patient" ) , "'")';
-	var i18n_no_duplicate_found = '$encoder.jsEscape( $i18n.getString( "no_duplicate_found" ) , "'")';
-	var i18n_patient_system_id = '$encoder.jsEscape( $i18n.getString( "patient_system_id" ) , "'")';
-	var i18n_child_representative = '$encoder.jsEscape( $i18n.getString( "child_representative" ) , "'")';
-	var i18n_no_patients_found = '$encoder.jsEscape( $i18n.getString( "no_patients_found" ) , "'")';
-	var i18n_search_result = '$encoder.jsEscape( $i18n.getString( "search_result" ) , "'")';
-	var i18n_duplicated_patient_list = '$encoder.jsEscape( $i18n.getString( "duplicated_patient_list" ) , "'")';
-	var i18n_duplicate_warning = '$encoder.jsEscape( $i18n.getString( "duplicate_warning" ) , "'")';
-	var i18n_search_by_name_identifier = '$encoder.jsEscape( $i18n.getString( "search_by_name_identifier" ) , "'")';
-	var i18n_search_by_program = '$encoder.jsEscape( $i18n.getString( "search_by_program" ) , "'")';
-	var i18n_create_new_patient = '$encoder.jsEscape( $i18n.getString( "create_new_patient" ) , "'")';
+	var i18n_male = '$encoder.jsEscape( $i18n.getString( "male" ) , "'")';
+	var i18n_female = '$encoder.jsEscape( $i18n.getString( "female" ) , "'")';
+	var i18n_transgender = '$encoder.jsEscape( $i18n.getString( "transgender" ) , "'")';
 	var i18n_yes = '$encoder.jsEscape( $i18n.getString( "yes" ) , "'")';
 	var i18n_no = '$encoder.jsEscape( $i18n.getString( "no" ) , "'")';
-	var i18n_choose_this_person = '$encoder.jsEscape( $i18n.getString( "choose_this_person" ) , "'")';
-	var i18n_representative_info = '$encoder.jsEscape( $i18n.getString( "representative_info" ) , "'")';
-	var i18n_select = '[' + '$encoder.jsEscape( $i18n.getString( "select" ), "'")' + ']';
-	var i18n_program_stages_history_plan = '$encoder.jsEscape( $i18n.getString( "program_stages_history_plan" ) , "'")';
-	
-	var i18n_value_must_integer = '$encoder.jsEscape( $i18n.getString( "value_must_integer" ) , "'")';
-	var i18n_value_must_number = '$encoder.jsEscape( $i18n.getString( "value_must_number" ) , "'")';
-	var i18n_value_must_positive_integer = '$encoder.jsEscape( $i18n.getString( "value_must_positive_integer" ) , "'")';
-	var i18n_value_must_negative_integer = '$encoder.jsEscape( $i18n.getString( "value_must_negative_integer" ) , "'")';
-
-    var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")';
-    var i18n_complete_confirm_message = '$encoder.jsEscape( $i18n.getString( "complete_confirm_message" ) , "'")';
-    var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
-
-	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
-	var i18n_show_all_items = '$encoder.jsEscape( $i18n.getString( "show_all_items" ) , "'")';
+	var i18n_specify_search_criteria = '$encoder.jsEscape( $i18n.getString( "specify_search_criteria" ) , "'")';
 	var i18n_clear = '$encoder.jsEscape( $i18n.getString( "clear" ) , "'")';
-
+	
 	// -1: no search anything
 	//  0: show list all patient
 	//  1: search with conditions
@@ -190,21 +147,12 @@
 	// Search field
 	// ----------------------------------------------------------------
 	
-	var searchTextBox = '<input type="text" id="searchText" name="searchText" onkeyup="searchPatientsOnKeyUp( event );">';
-	
-	var trueFalseBox  = '<select id="searchText" name="searchText" style="width:20.2em" >';
-		trueFalseBox += '<option value="true">' + i18n_yes + '</option>';
-		trueFalseBox += '<option value="false">' + i18n_no + '</option>';
-		trueFalseBox += '</select>';
-	
-	var genderSelector = '<select id="searchText" name="searchText" style="width:20.2em" >';
-		genderSelector += '<option value="M">$i18n.getString( "male" )</option>';
-		genderSelector += '<option value="F">$i18n.getString( "female" )</option>';
-		genderSelector += '</select>';
-
-	var programComboBox = '<select class="search-field" id="searchText" name="searchText" >';
+	var searchTextBox = '<input type="text" id="searchText" name="searchText" onkeyup="searchPatientsOnKeyUp( event );" style="width:202px;">';
+	var programComboBox = '<select id="searchText" name="searchText" style="width:205px;">';
 	#foreach ( $program in $programs )
-		programComboBox += '<option value="$program.id">$program.displayName</option>';
+		#if( $program.type!='3')
+			programComboBox += '<option value="$program.id">$program.displayName</option>';
+		#end
 	#end
 	programComboBox += '</select>';
 	

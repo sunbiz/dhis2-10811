@@ -84,7 +84,15 @@
 		#if( $validationMap.get( "phoneNumber" ) )
            	<br /><span style="color: #990000;"> $i18n.getString($validationMap.get( "phoneNumber" ))</span>
      	#end
-		<input type="text" name="phoneNumber" value="$!previousValues.get("phoneNumber")" />
+     	
+     	
+     	#if ($previousValues.get("phoneNumber"))
+     		#set($phoneValue = $previousValues.get("phoneNumber"))
+     	#else
+     		#set($phoneValue = $phoneNumberAreaCode)
+	    #end
+	    
+		<input type="text" name="phoneNumber" value="$phoneValue" />
 		
 		
 		#foreach($patientIdentifierType in $patientIdentifierTypes)

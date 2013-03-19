@@ -83,6 +83,13 @@
 			<param name="onExceptionReturn">plainTextError</param>
 			<param name="requiredAuthorities">F_MOBILE_SENDSMS</param>
 		</action>
+		
+		
+    <action name="searchAllFacilities"
+      class="org.hisp.dhis.sms.action.NoAction">
+      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+      <param name="requiredAuthorities">F_SEARCH_PATIENT_IN_ALL_FACILITIES</param>
+    </action>
 
 	</package>
 </struts>

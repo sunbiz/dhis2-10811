@@ -98,9 +98,10 @@ public class MobileClientController
             unitList.add( getOrgUnit( unit, request ) );
         }
         OrgUnits orgUnits = new OrgUnits( unitList );
-        orgUnits.setClientVersion( version );
+        orgUnits.setClientVersion( DataStreamSerializable.TWO_POINT_NINE );
         return orgUnits;
     }
+    
     @RequestMapping( method = RequestMethod.GET, value = "/{version}/LWUIT" )
     @ResponseBody
     public OrgUnits getOrgUnitsForUserLWUIT( HttpServletRequest request, @PathVariable String version )

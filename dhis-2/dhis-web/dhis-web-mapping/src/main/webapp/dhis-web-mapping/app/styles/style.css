@@ -228,9 +228,26 @@ html * {
 	background-image: url('../images/arrow.png') !important;
 }
 
-.x-btn-default-toolbar-small-over {
-	border-color: #bbb;
+.x-btn-default-toolbar-small,
+.x-btn-default-toolbar-small-over,
+.x-btn-default-toolbar-small-pressed {
 	border-radius: 1px;
+}
+.x-btn-default-toolbar-small-over,
+.x-btn-default-toolbar-small-pressed {
+	border-color: #bbb;
+}
+
+.x-btn-default-toolbar-small-pressed {
+	border-color: #bbb;
+    background-image: none;
+    background-color: #d6d6d6;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d1d1d1), color-stop(100%, #e5e5e5));
+    background-image: -webkit-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: -moz-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: -o-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: -ms-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: linear-gradient(top, #d1d1d1,#e5e5e5);
 }
 
 /* Toolbar */

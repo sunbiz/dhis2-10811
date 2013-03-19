@@ -110,6 +110,11 @@ public class DefaultDataSetService
         return i18n( i18nService, dataSetStore.getByUid( uid ) );
     }
 
+    public DataSet getDataSetNoAcl( String uid )
+    {
+        return i18n( i18nService, dataSetStore.getByUidNoAcl( uid ) );
+    }
+
     public DataSet getDataSet( int id, boolean i18nDataElements, boolean i18nIndicators, boolean i18nOrgUnits )
     {
         DataSet dataSet = getDataSet( id );

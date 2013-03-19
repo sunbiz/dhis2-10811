@@ -27,6 +27,8 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.webdomain.sharing.Sharing;
 import org.hisp.dhis.api.webdomain.sharing.SharingUserGroupAccess;
@@ -58,9 +60,11 @@ import java.util.Iterator;
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Controller
-@RequestMapping( value = SharingController.RESOURCE_PATH, method = RequestMethod.GET )
+@RequestMapping(value = SharingController.RESOURCE_PATH, method = RequestMethod.GET)
 public class SharingController
 {
+    private static final Log log = LogFactory.getLog( SharingController.class );
+
     public static final String RESOURCE_PATH = "/sharing";
 
     @Autowired
@@ -78,7 +82,7 @@ public class SharingController
     @Autowired
     private UserGroupAccessService userGroupAccessService;
 
-    @RequestMapping( value = "", produces = { "application/json", "text/*" } )
+    @RequestMapping(value = "", produces = { "application/json", "text/*" })
     public void getSharing( @RequestParam String type, @RequestParam String id, HttpServletResponse response ) throws IOException
     {
         if ( !SharingUtils.isSupported( type ) )
@@ -127,7 +131,7 @@ public class SharingController
         JacksonUtils.toJson( response.getOutputStream(), sharing );
     }
 
-    @RequestMapping( value = "", method = { RequestMethod.POST, RequestMethod.PUT }, consumes = "application/json" )
+    @RequestMapping(value = "", method = { RequestMethod.POST, RequestMethod.PUT }, consumes = "application/json")
     public void setSharing( @RequestParam String type, @RequestParam String id, HttpServletResponse response, HttpServletRequest request ) throws IOException
     {
         BaseIdentifiableObject object = (BaseIdentifiableObject) manager.get( SharingUtils.classForType( type ), id );
@@ -184,6 +188,28 @@ public class SharingController
         }
 
         manager.update( object );
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append( "'" ).append( currentUserService.getCurrentUsername() ).append( "'" );
+        builder.append( " update sharing on " ).append( object.getClass().getName() );
+        builder.append( ", uid: " ).append( object.getUid() ).append( ", name: " ).append( object.getName() );
+        builder.append( ", publicAccess: " ).append( object.getPublicAccess() );
+
+        if ( !object.getUserGroupAccesses().isEmpty() )
+        {
+            builder.append( ", userGroupAccesses: " );
+
+            for ( UserGroupAccess userGroupAccess : object.getUserGroupAccesses() )
+            {
+                builder.append( "{ uid: " ).append( userGroupAccess.getUserGroup().getUid() );
+                builder.append( ", name: " ).append( userGroupAccess.getUserGroup().getName() );
+                builder.append( ", access: " ).append( userGroupAccess.getAccess() );
+                builder.append( " } " );
+            }
+        }
+
+        log.info( builder );
 
         ContextUtils.okResponse( response, "Access control set" );
     }

@@ -320,8 +320,8 @@ public class GetPatientProgramListAction
                 {
                     programs.add( program );
                 }
-                else if ( programInstanceService.getProgramInstances( patient, program, true ).size() > 0
-                    && !program.getOnlyEnrollOnce() )
+                else if ( programInstanceService.getProgramInstances( patient, program ).size() > 0
+                    && !program.getOnlyEnrollOnce() && programInstanceService.getProgramInstances( patient, program, false ).size() == 0)
                 {
                     programs.add( program );
                 }

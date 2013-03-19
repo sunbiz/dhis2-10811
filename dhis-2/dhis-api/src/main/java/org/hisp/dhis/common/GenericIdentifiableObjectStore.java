@@ -46,6 +46,14 @@ public interface GenericIdentifiableObjectStore<T>
      * @return the object with the given uid.
      */
     T getByUid( String uid );
+    
+    /**
+     * Retrieves the object with the given uid. Bypasses the ACL system.
+     * 
+     * @param uid the uid.
+     * @return the object with the given uid.
+     */
+    T getByUidNoAcl( String uid );
 
     /**
      * Retrieves the object with the given name.

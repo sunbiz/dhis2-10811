@@ -65,7 +65,6 @@ public class ChartServiceTest
 
     private OrganisationUnit unitA;
     private OrganisationUnit unitB;
-    private OrganisationUnit unitC;
 
     private Chart chartA;
     private Chart chartB;
@@ -132,16 +131,13 @@ public class ChartServiceTest
 
         unitA = createOrganisationUnit( 'A' );
         unitB = createOrganisationUnit( 'B' );
-        unitC = createOrganisationUnit( 'C' );
 
         organisationUnitService.addOrganisationUnit( unitA );
         organisationUnitService.addOrganisationUnit( unitB );
-        // organisationUnitService.addOrganisationUnit( unitC );
 
         List<OrganisationUnit> units = new ArrayList<OrganisationUnit>();
         units.add( unitA );
         units.add( unitB );
-        // units.add( unitC );
 
         chartA = createChart( 'A', indicators, periods, units );
         chartA.setType( Chart.TYPE_BAR );
@@ -179,7 +175,6 @@ public class ChartServiceTest
         assertEquals( chartC, chartService.getChart( idC ) );
 
         assertTrue( equals( chartService.getChart( idA ).getIndicators(), indicatorA, indicatorB, indicatorC ) );
-        // assertTrue( equals( chartService.getChart( idA ).getOrganisationUnits(), unitA, unitB, unitC ) );
         assertTrue( equals( chartService.getChart( idA ).getOrganisationUnits(), unitA, unitB ) );
         assertTrue( equals( chartService.getChart( idA ).getPeriods(), periodA, periodB, periodC ) );
     }

@@ -77,9 +77,9 @@ public class GetAllAnonymousProgramAction
     {
         this.validated = validated;
     }
-    
+
     private int orgUnitId;
-    
+
     public int getOrgUnitId()
     {
         return orgUnitId;
@@ -93,12 +93,19 @@ public class GetAllAnonymousProgramAction
     // -------------------------------------------------------------------------
     // Implementation Action
     // -------------------------------------------------------------------------
-    
+
     @Override
     public String execute()
         throws Exception
     {
-        programs = programService.getProgramsByCurrentUser( Program.SINGLE_EVENT_WITHOUT_REGISTRATION );
+        programs = new ArrayList<Program>();
+        for ( Program program : programService.getProgramsByCurrentUser() )
+        {
+            if ( program.isSingleEvent() && !program.isRegistration() )
+            {
+                programs.add( program );
+            }
+        }
         return SUCCESS;
     }
 }

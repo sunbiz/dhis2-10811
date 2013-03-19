@@ -42,7 +42,6 @@ import org.hisp.dhis.period.YearlyPeriodType;
 
 public class PeriodUtil
 {
-
     public static Period getPeriod( String periodName, PeriodType periodType )
         throws IllegalArgumentException
     {

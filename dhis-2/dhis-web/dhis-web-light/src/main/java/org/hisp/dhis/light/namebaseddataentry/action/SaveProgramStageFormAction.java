@@ -539,7 +539,8 @@ public class SaveProgramStageFormAction
 
             if ( previousPatientDataValue == null )
             {
-                patientDataValueService.savePatientDataValue( patientDataValue );
+                if ( patientDataValue.getValue() != null && !patientDataValue.getValue().trim().equals( "" ) )
+                    patientDataValueService.savePatientDataValue( patientDataValue );
             }
             else
             {

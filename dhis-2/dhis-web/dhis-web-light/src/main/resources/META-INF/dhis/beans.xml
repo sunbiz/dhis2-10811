@@ -318,6 +318,7 @@
 		<property name="patientAttributeService"
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
 	</bean>
 
 	<bean

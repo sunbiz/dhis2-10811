@@ -505,15 +505,27 @@ public class ReportTable
         {
             columnDimensions.add( DATA_X_DIM_ID );
         }
+        else
+        {
+            rowDimensions.add( DATA_X_DIM_ID );
+        }
         
         if ( doPeriods )
         {
             columnDimensions.add( PERIOD_DIM_ID );
         }
+        else
+        {
+            rowDimensions.add( PERIOD_DIM_ID );
+        }
         
         if ( doUnits )
         {
             columnDimensions.add( ORGUNIT_DIM_ID );
+        }
+        else
+        {
+            rowDimensions.add( ORGUNIT_DIM_ID );
         }
     }
 

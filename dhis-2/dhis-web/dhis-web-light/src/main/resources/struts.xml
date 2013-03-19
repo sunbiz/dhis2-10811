@@ -520,7 +520,7 @@
 
     <action name="saveAnonymousForm"
         class="org.hisp.dhis.light.anonymous.action.SaveAnonymousProgramAction">
-      <result name="success" type="redirect">/light/anonymous.action?validated=true</result>
+      <result name="success" type="redirect">/light/anonymous.action?validated=true&amp;orgUnitId=${orgUnitId}</result>
       <result name="error" type="velocity">/dhis-web-light/main.vm</result>
       <param name="page">/dhis-web-light/anonymous/anonymousProgramForm.vm</param>
 	  <param name="requiredAuthorities">F_PATIENT_DATAVALUE_ADD,F_PATIENT_DATAVALUE_UPDATE,F_PATIENT_DATAVALUE_DELETE</param>

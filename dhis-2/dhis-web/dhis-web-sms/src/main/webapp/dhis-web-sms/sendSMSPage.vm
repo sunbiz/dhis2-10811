@@ -37,7 +37,7 @@
 
 <h3>$i18n.getString( "send_sms" )</h3>
 #if ( $!gatewayMap && $!gatewayMap.size() > 0 )
-<form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action">
+<form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action" >
 	<table id="detailsList">
 		<col width="90px"/>
 		<tbody>	
@@ -48,8 +48,8 @@
 						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
 						<option value="userGroup">$i18n.getString( "user_group" )</option>
 						<option value="user">$i18n.getString( "assigned_user_number" )</option>
-						<option value="unit">$i18n.getString( "stakeholder_number" )</option>
-						<option value="patient">$i18n.getString( "patient_number" )</option>
+						<option value="unit">$i18n.getString( "stakeholder_contact_person" )</option>
+						<option value="patient">$i18n.getString( "patients_registered" )</option>
 					</select>
 				</td>
 			</tr>

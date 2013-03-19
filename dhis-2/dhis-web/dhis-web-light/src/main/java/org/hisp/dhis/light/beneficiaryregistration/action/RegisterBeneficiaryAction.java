@@ -35,6 +35,7 @@ import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
+import org.hisp.dhis.setting.SystemSettingManager;
 
 import com.opensymphony.xwork2.Action;
 
@@ -58,7 +59,7 @@ public class RegisterBeneficiaryAction
     {
         this.patientAttributeService = patientAttributeService;
     }
-    
+
     private ProgramService programService;
 
     public ProgramService getProgramService()
@@ -69,6 +70,18 @@ public class RegisterBeneficiaryAction
     public void setProgramService( ProgramService programService )
     {
         this.programService = programService;
+    }
+
+    private SystemSettingManager systemSettingManager;
+
+    public SystemSettingManager getSystemSettingManager()
+    {
+        return systemSettingManager;
+    }
+
+    public void setSystemSettingManager( SystemSettingManager systemSettingManager )
+    {
+        this.systemSettingManager = systemSettingManager;
     }
 
     // -------------------------------------------------------------------------
@@ -110,11 +123,11 @@ public class RegisterBeneficiaryAction
     {
         this.patientAttributes = patientAttributes;
     }
-    
-    //Register person on-the-fly
-    
+
+    // Register person on-the-fly
+
     private Integer originalPatientId;
-    
+
     public Integer getOriginalPatientId()
     {
         return originalPatientId;
@@ -126,7 +139,7 @@ public class RegisterBeneficiaryAction
     }
 
     private Integer relationshipTypeId;
-    
+
     public Integer getRelationshipTypeId()
     {
         return relationshipTypeId;
@@ -135,6 +148,18 @@ public class RegisterBeneficiaryAction
     public void setRelationshipTypeId( Integer relationshipTypeId )
     {
         this.relationshipTypeId = relationshipTypeId;
+    }
+
+    private String phoneNumberAreaCode;
+
+    public String getPhoneNumberAreaCode()
+    {
+        return phoneNumberAreaCode;
+    }
+
+    public void setPhoneNumberAreaCode( String phoneNumberAreaCode )
+    {
+        this.phoneNumberAreaCode = phoneNumberAreaCode;
     }
 
     // -------------------------------------------------------------------------
@@ -147,6 +172,10 @@ public class RegisterBeneficiaryAction
     {
         patientIdentifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
         patientAttributes = patientAttributeService.getAllPatientAttributes();
+        phoneNumberAreaCode = (String) systemSettingManager
+            .getSystemSetting( SystemSettingManager.KEY_PHONE_NUMBER_AREA_CODE );
+        if ( phoneNumberAreaCode == null )
+            phoneNumberAreaCode = "";
         Collection<Program> programs = programService.getAllPrograms();
 
         for ( Program program : programs )

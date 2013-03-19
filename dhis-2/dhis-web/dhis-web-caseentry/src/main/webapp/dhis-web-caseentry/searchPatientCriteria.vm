@@ -103,9 +103,7 @@
 					<option value="fixedAttr_gender">$i18n.getString( "gender" )</option>
 					<option value="fixedAttr_phoneNumber">$i18n.getString( "phone_number" )</option>
 					#foreach( $attribute in $patientAttributes )
-						#if($attribute.valueType!='calculated')
 						<option value="attr_$attribute.id" valueType='$attribute.valueType'>$encoder.htmlEncode( $attribute.displayName )</option>
-						#end
 					#end
 				  </select>
 				  <em title="$i18n.getString( 'required' )" class="required">*</em></label>

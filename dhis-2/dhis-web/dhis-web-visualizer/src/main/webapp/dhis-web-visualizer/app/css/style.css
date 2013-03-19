@@ -39,12 +39,51 @@ body {
 	user-select: none;
 }
 
-.dv-accordion-options .x-panel-body-default {
+	/* Scrollbar Webkit */
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+    border: 0 none;
+}
+
+::-webkit-scrollbar-track:horizontal {
+    background-color: #ddd;
+    margin: 0 2px;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+}
+::-webkit-scrollbar-track:vertical {
+    background-color: #ddd;
+    margin: 2px 0;
+    border-right: 2px solid white;
+    border-left: 2px solid white;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+	background-color: #bbb;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+}
+::-webkit-scrollbar-thumb:vertical {
+	background-color: #bbb;
+    border-right: 2px solid white;
+    border-left: 2px solid white;
+}
+
+	/* Scrollbar */
+.x-scroller-vertical {
 	border: 0 none;
 }
 
-.dv-invisible .x-form-item-body { /* Disable class invisible */
-    display: none;
+	/* Disabled icons */
+.disabled {
+	opacity: 0.4;
+	cursor: default !important;
+}
+
+	/* Options border */
+.dv-accordion-options .x-panel-body-default {
+	border: 0 none;
 }
 
 .x-splitter { /* Splitter column */
@@ -118,15 +157,7 @@ body {
 	background: url('../images/grid-delete_16.png') no-repeat;
 	margin-left: 4px;
 }
-.dv-grid-row-icon-disabled img.dv-grid-row-icon-edit,
-.dv-grid-row-icon-disabled img.dv-grid-row-icon-overwrite,
-.dv-grid-row-icon-disabled img.dv-grid-row-icon-delete {
-	opacity: 0;
-	filter:Alpha(opacity=0);
-}
-.dv-grid-row-icon-disabled * {
-	cursor: default !important;
-}
+
 .dv-grid-row-icon-disabled img.dv-grid-row-icon-sharing,
 .dv-grid-row-icon-disabled img.dv-grid-row-icon-dashboard {
 	cursor: pointer !important;

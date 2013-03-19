@@ -72,28 +72,21 @@ public class Chart
     
     private static final Comparator<Period> PERIOD_COMPARATOR = new AscendingPeriodEndDateComparator();
 
-    public static final String DIMENSION_PERIOD_INDICATOR = "period";
-    public static final String DIMENSION_ORGANISATIONUNIT_INDICATOR = "organisationUnit";
-    public static final String DIMENSION_INDICATOR_PERIOD = "indicator";
-    public static final String DIMENSION_PERIOD_DATAELEMENT = "period_dataElement";
-    public static final String DIMENSION_ORGANISATIONUNIT_DATAELEMENT = "organisationUnit_dataElement";
-    public static final String DIMENSION_DATAELEMENT_PERIOD = "dataElement_period";
-
     public static final String SIZE_NORMAL = "normal";
     public static final String SIZE_WIDE = "wide";
     public static final String SIZE_TALL = "tall";
 
-    public static final String TYPE_COLUMN = "COLUMN";
-    public static final String TYPE_STACKED_COLUMN = "STACKEDCOLUMN";
-    public static final String TYPE_BAR = "BAR";
-    public static final String TYPE_STACKED_BAR = "STACKEDBAR";
-    public static final String TYPE_LINE = "LINE";
-    public static final String TYPE_AREA = "AREA";
-    public static final String TYPE_PIE = "PIE";
+    public static final String TYPE_COLUMN = "column";
+    public static final String TYPE_STACKED_COLUMN = "stackedcolumn";
+    public static final String TYPE_BAR = "bar";
+    public static final String TYPE_STACKED_BAR = "stackedbar";
+    public static final String TYPE_LINE = "line";
+    public static final String TYPE_AREA = "area";
+    public static final String TYPE_PIE = "pie";
 
-    public static final String DIMENSION_DATA = "DATA";
-    public static final String DIMENSION_PERIOD = "PERIOD";
-    public static final String DIMENSION_ORGANISATIONUNIT = "ORGANISATIONUNIT";
+    public static final String DIMENSION_DATA = "data";
+    public static final String DIMENSION_PERIOD = "period";
+    public static final String DIMENSION_ORGANISATIONUNIT = "organisationunit";
 
     private String domainAxisLabel;
 

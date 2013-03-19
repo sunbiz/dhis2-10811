@@ -5,9 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -259,9 +263,11 @@ public class DefaultParserManager
     {
         String reportBack = "Thank you! Values entered: ";
         String notInReport = "Missing values for: ";
-        boolean missingElements = false;
 
         Period period = null;
+
+        Map<String, DataValue> codesWithDataValues = new TreeMap<String, DataValue>();
+        List<String> codesWithoutDataValues = new ArrayList<String>();
 
         for ( SMSCode code : command.getCodes() )
         {
@@ -275,30 +281,41 @@ public class DefaultParserManager
 
             if ( dv == null && !StringUtils.isEmpty( code.getCode() ) )
             {
-                notInReport += code.getCode() + ",";
-                missingElements = true;
+                codesWithoutDataValues.add( code.getCode() );
             }
             else if ( dv != null )
             {
-                String value = dv.getValue();
-                if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
-                {
-                    if ( "true".equals( value ) )
-                    {
-                        value = "Yes";
-                    }
-                    else if ( "false".equals( value ) )
-                    {
-                        value = "No";
-                    }
-                }
-                reportBack += code.getCode() + "=" + value + " ";
+                codesWithDataValues.put( code.getCode(), dv );
             }
         }
 
+        for ( String key : codesWithDataValues.keySet() )
+        {
+            DataValue dv = codesWithDataValues.get( key );
+            String value = dv.getValue();
+            if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_BOOL ) )
+            {
+                if ( "true".equals( value ) )
+                {
+                    value = "Yes";
+                }
+                else if ( "false".equals( value ) )
+                {
+                    value = "No";
+                }
+            }
+            reportBack += key + "=" + value + " ";
+        }
+
+        Collections.sort( codesWithoutDataValues );
+
+        for ( String key : codesWithoutDataValues )
+        {
+            notInReport += key + ",";
+        }
         notInReport = notInReport.substring( 0, notInReport.length() - 1 );
 
-        if ( missingElements )
+        if ( codesWithoutDataValues.size() > 0 )
         {
             sendSMS( reportBack + notInReport, sender );
         }

@@ -329,7 +329,7 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
 
     protected T getEntity( String uid )
     {
-        return manager.get( getEntityClass(), uid );
+        return manager.getNoAcl( getEntityClass(), uid ); //TODO consider ACL
     }
 
     protected void addAccessProperties( T object )

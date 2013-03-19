@@ -8,6 +8,7 @@ function organisationUnitSelected( orgUnits, orgUnitNames )
 	enable('advancedSearchBtn');
 	
 	setFieldValue( "orgunitName", orgUnitNames[0] );
+	setFieldValue( "orgunitId", orgUnits[0] );
 }
 
 selection.setListenerFunction( organisationUnitSelected );
@@ -74,18 +75,22 @@ function addAttributeOption()
 	var rowId = 'advSearchBox' + jQuery('#advancedSearchTB select[name=searchObjectId]').length + 1;
 	var contend  = '<td>' + getInnerHTML('searchingAttributeIdTD') + '</td>';
 		contend += '<td>' + searchTextBox ;
-		contend += '&nbsp;<input type="button" name="clearSearchBtn" class="large-button" value="' + i18n_clear + '" onclick="removeAttributeOption(' + "'" + rowId + "'" + ');"></td>';
+		contend += '&nbsp;<input type="button" name="clearSearchBtn" class="normal-button" value="' + i18n_clear + '" onclick="removeAttributeOption(' + "'" + rowId + "'" + ');"></td>';
 		contend = '<tr id="' + rowId + '">' + contend + '</tr>';
 
 	jQuery('#advancedSearchTB').append( contend );
+	var rowspan = eval( jQuery('[name=addAndSearchBtn]').attr('rowspan') );
+	jQuery('[name=addAndSearchBtn]').attr('rowspan', rowspan + 1);
 }	
 
 function removeAttributeOption( rowId )
 {
 	jQuery( '#' + rowId ).remove();
-	if( jQuery( '#advancedSearchTB tr' ).length == 3 ){
+	if( jQuery( '#advancedSearchTB tr' ).length == 2 ){
 		jQuery('#advancedSearchTB [name=clearSearchBtn]').attr('disabled', true);
-	}	
+	}
+	var rowspan = eval( jQuery('[name=addAndSearchBtn]').attr('rowspan') );
+	jQuery('[name=addAndSearchBtn]').attr('rowspan', rowspan - 1);
 }	
 
 //------------------------------------------------------------------------------
@@ -143,7 +148,7 @@ function getTrueFalseBox()
 	
 function getGenderSelector()
 {
-	var genderSelector = '<select id="searchText" name="searchText">';
+	var genderSelector = '<select id="searchText" name="searchText" style="width:200px;">';
 		genderSelector += '<option value="M">' + i18n_male + '</option>';
 		genderSelector += '<option value="F">' + i18n_female + '</option>';
 		genderSelector += '<option value="T">' + i18n_transgender + '</option>';
@@ -154,17 +159,20 @@ function getGenderSelector()
 function getAgeTextBox( container )
 {
 	var ageField = '<select id="dateOperator" name="dateOperator" style="width:40px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
-	ageField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:220px;">';
+	ageField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:160px;">';
 	return ageField;
 }
 
 function getDateField( container )
 {
-	var dateField = '<select id="dateOperator" name="dateOperator" style="width:40px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
-	dateField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:200px;" onkeyup="searchPatientsOnKeyUp( event );">';
+	var dateField = '<select id="dateOperator_' + container + '" name="dateOperator" style="width:40px"><option value=">"> > </option><option value=">="> >= </option><option value="="> = </option><option value="<"> < </option><option value="<="> <= </option></select>';
+	dateField += '<input type="text" id="searchText_' + container + '" name="searchText" style="width:160px;" onkeyup="searchPatientsOnKeyUp( event );">';
 	return dateField;
 }
 
+//-----------------------------------------------------------------------------
+// Search Patient
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // Search Patient
 //-----------------------------------------------------------------------------
@@ -173,9 +181,9 @@ function searchPatientsOnKeyUp( event )
 {
 	var key = getKeyCode( event );
 	
-	if ( key == 13 )// Enter
+	if ( key==13 )// Enter
 	{
-		searchAdvancedPatients()();
+		validateAdvancedSearch();
 	}
 }
 
@@ -191,11 +199,9 @@ function validateAdvancedSearch()
 	hideById( 'listPatientDiv' );
 	var flag = true;
 	var dateOperator = '';
-	
-	if (getFieldValue('searchByProgramStage') == "false" 
-		|| ( getFieldValue('searchByProgramStage') == "true"  
-			&& jQuery( '#advancedSearchTB tr' ).length > 2) ){
-		jQuery("#searchDiv :input").each( function( i, item )
+
+	if (jQuery( '#advancedSearchTB tr' ).length > 1 ){
+		jQuery("#advancedSearchTB :input").each( function( i, item )
 		{
 			var elementName = $(this).attr('name');
 			if( elementName=='searchText' && jQuery( item ).val() == '')
@@ -205,7 +211,7 @@ function validateAdvancedSearch()
 			}
 		});
 	}
-	
+		
 	if(flag){
 		contentDiv = 'listPatientDiv';
 		jQuery( "#loaderDiv" ).show();
@@ -217,16 +223,6 @@ function getSearchParams()
 {
 	var params = "";
 	var programIds = "";
-	var programStageId = jQuery('#programStageAddPatient').val();
-	if( getFieldValue('searchByProgramStage') == "true" ){
-		var statusEvent = jQuery('#programStageAddPatientTR [id=statusEvent]').val();
-		var startDueDate = getFieldValue('startDueDate');
-		var endDueDate = getFieldValue('endDueDate');
-		params = '&searchTexts=stat_' + getFieldValue('programIdAddPatient') 
-			   + '_' + startDueDate + '_' + endDueDate
-			   + "_" + getFieldValue('orgunitId')
-			   + '_false_' + statusEvent;
-	}
 	
 	var flag = false;
 	jQuery( '#advancedSearchTB tr' ).each( function( i, row ){
@@ -267,22 +263,11 @@ function getSearchParams()
 			}
 		});
 		
-		var searchInAllFacility = byId('searchInAllFacility').checked;
-		if( getFieldValue('searchByProgramStage') == "false" && !searchInAllFacility ){
-			p += "_" + getFieldValue('orgunitId');
-		}
 		params += p;
 	});
 		
-	params += '&listAll=false';
-	if( getFieldValue('searchByProgramStage') == "false"){
-		var searchInAllFacility = byId('searchInAllFacility').checked;
-		params += '&searchBySelectedOrgunit=' + !searchInAllFacility;
-	}
-	else
-	{
-		params += '&searchBySelectedOrgunit=false';
-	}
+	var searchInAllFacility = byId('searchInAllFacility').checked;		
+	params += '&searchBySelectedOrgunit=' + !searchInAllFacility;
 	params += programIds;
 	
 	return params;
@@ -295,6 +280,7 @@ function advancedSearch( params )
 		type:"POST",
 		data: params,
 		success: function( html ){
+				setTableStyles();
 				statusSearching = 1;
 				setInnerHTML( 'listPatientDiv', html );
 				showById('listPatientDiv');
@@ -303,6 +289,7 @@ function advancedSearch( params )
 			}
 		});
 }
+
 // ----------------------------------------------------------------
 // Get Params form Div
 // ----------------------------------------------------------------
@@ -347,19 +334,21 @@ function getParamsForDiv( patientDiv)
 // Load all patients
 // -----------------------------------------------------------------------------
 
+
 function listAllPatient()
 {
-	hideById( 'listPatientDiv' );
-	hideById( 'advanced-search' );
+	hideById('listPatientDiv');
+	hideById('editPatientDiv');
+	hideById('migrationPatientDiv');
+	hideById('advanced-search');
 	
 	jQuery('#loaderDiv').show();
 	contentDiv = 'listPatientDiv';
-	
-	var programId = getFieldValue('programIdAddPatient');
-
-	if ( !programId || programId == '' )
+	if( getFieldValue('programIdAddPatient')=='')
 	{
-		jQuery('#listPatientDiv').load('searchRegistrationPatient.action',{ listAll:true },
+		jQuery('#listPatientDiv').load('searchRegistrationPatient.action',{
+				listAll:true
+			},
 			function(){
 				setTableStyles();
 				statusSearching = 0;
@@ -367,44 +356,22 @@ function listAllPatient()
 				jQuery('#loaderDiv').hide();
 			});
 	}
-	else
+	else 
 	{
-		jQuery('#listPatientDiv').load('searchRegistrationPatient.action',
-		{
-			listAll:false,
-			searchBySelectedOrgunit: true,
-			programIds: programId,
-			searchTexts: 'prg_' + programId
-		},
-		function()
-		{
-			setTableStyles();
-			statusSearching = 0;
-			showById('listPatientDiv');
-			jQuery('#loaderDiv').hide();
-		});
+		jQuery('#listPatientDiv').load('searchRegistrationPatient.action',{
+				listAll:false,
+				searchBySelectedOrgunit: true,
+				programIds: getFieldValue('programIdAddPatient'),
+				searchTexts: 'prg_' + getFieldValue('programIdAddPatient')
+			},
+			function(){
+				setTableStyles();
+				statusSearching = 0;
+				showById('listPatientDiv');
+				jQuery('#loaderDiv').hide();
+			});
 	}
-
 	hideLoader();
-}
-
-function addPhoneToList( elementList, _id, _patientName, _phoneNo )
-{
-	var list = jQuery( "#" + elementList );
-	
-	if ( list.find( "option[value='" + _id + "']").val() == undefined )
-	{
-		list.append( "<option title='" + i18n_dblick_to_unselect + "' value='" + _id + "'>\"" + _patientName + " <" + _phoneNo + ">" + "\"</option>" );
-	}
-
-	jQuery( "tr#tr" + _id ).hide();
-}
-
-function removePhoneFromList( elementList, _id )
-{
-	var list = jQuery( "#" + elementList + " option[value='" + _id + "']" ).remove();
-	
-	jQuery( "tr#tr" + _id ).show();
 }
 
 function searchPatient()
@@ -436,24 +403,21 @@ function searchPatient()
 		});
 }
 
-//--------------------------------------------------------------------------------------------
-// Migration patient
-//--------------------------------------------------------------------------------------------
-
-function getPatientLocation( patientId )
+function addPhoneToList( elementList, _id, _patientName, _phoneNo )
 {
-	hideById('listPatientDiv');
-	hideById('selectDiv');
-	hideById('searchPatientDiv');
-				
-	jQuery('#loaderDiv').show();
+	var list = jQuery( "#" + elementList );
 	
-	jQuery('#migrationPatientDiv').load("getPatientLocation.action", 
-		{
-			patientId: patientId
-		}
-		, function(){
-			showById( 'migrationPatientDiv' );
-			jQuery( "#loaderDiv" ).hide();
-		});
+	if ( list.find( "option[value='" + _id + "']").val() == undefined )
+	{
+		list.append( "<option title='" + i18n_dblick_to_unselect + "' value='" + _id + "'>\"" + _patientName + " <" + _phoneNo + ">" + "\"</option>" );
+	}
+
+	jQuery( "tr#tr" + _id ).hide();
+}
+
+function removePhoneFromList( elementList, _id )
+{
+	var list = jQuery( "#" + elementList + " option[value='" + _id + "']" ).remove();
+	
+	jQuery( "tr#tr" + _id ).show();
 }

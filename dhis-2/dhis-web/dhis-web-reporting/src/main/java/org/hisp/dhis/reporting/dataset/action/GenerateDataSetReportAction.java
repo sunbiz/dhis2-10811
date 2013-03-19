@@ -235,7 +235,7 @@ public class GenerateDataSetReportAction
         // Assemble report
         // ---------------------------------------------------------------------
 
-        selectedDataSet = dataSetService.getDataSet( ds );
+        selectedDataSet = dataSetService.getDataSetNoAcl( ds );
 
         if ( pe != null )
         {

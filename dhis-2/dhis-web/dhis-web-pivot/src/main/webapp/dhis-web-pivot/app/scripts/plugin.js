@@ -19,6 +19,9 @@ settings = {
 		displayDensity: 'normal',
 		fontSize: 'normal',
 		digitGroupSeparator: 'space',
+		reportingPeriod: false,
+		organisationUnit: false,
+		parentOrganisationUnit: false,
 		userOrganisationUnit: true,
 		userOrganisationUnitChildren: false
 	}
@@ -67,7 +70,12 @@ xLayout = {
 		hideEmptyRows: false,
 		displayDensity: 'normal',
 		fontSize: 'normal',
-		digitGroupSeparator: 'space'
+		digitGroupSeparator: 'space',
+		reportingPeriod: false,
+		organisationUnit: false,
+		parentOrganisationUnit: false,
+		userOrganisationUnit: true,
+		userOrganisationUnitChildren: false
 	}
 };
 

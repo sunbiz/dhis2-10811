@@ -1583,7 +1583,7 @@ Ext.onReady( function() {
 
         },
         favorite: Ext.create('Ext.data.Store', {
-            fields: ['id', 'name', 'lastUpdated', 'userId'],
+            fields: ['id', 'name', 'lastUpdated', 'access'],
             proxy: {
                 type: 'ajax',
                 reader: {
@@ -2630,7 +2630,7 @@ Ext.onReady( function() {
 			createButton,
 			updateButton,
 			cancelButton,
-			mapWindow,
+			favoriteWindow,
 
 		// Vars
 			windowWidth = 500,
@@ -2658,10 +2658,6 @@ Ext.onReady( function() {
 
 			if (DV.c.rendered) {
 				favorite = {};
-
-				// Server sync
-				//DV.c.lastMonth = DV.c.reportingMonth;
-				//DV.c.lastQuarter = DV.c.reportingQuarter;
 
 				favorite.type = DV.c.type;
 				favorite.series = DV.c.dimension.series;
@@ -2948,15 +2944,15 @@ Ext.onReady( function() {
 					width: windowCmpWidth - 88,
 					renderer: function(value, metaData, record) {
 						var fn = function() {
-							var el = Ext.get(record.data.id);
-							if (el) {
-								el = el.parent('td');
-								el.addClsOnOver('link');
-								el.favoriteId = record.data.id;
-								el.hideWindow = function() {
+							var element = Ext.get(record.data.id);
+							if (element) {
+								element = element.parent('td');
+								element.addClsOnOver('link');
+								element.load = function() {
 									favoriteWindow.hide();
+									DV.exe.execute(record.data.id);
 								};
-								el.dom.setAttribute('onclick', 'Ext.get(this).hideWindow(); DV.exe.execute(Ext.get(this).favoriteId);');
+								element.dom.setAttribute('onclick', 'Ext.get(this).load();');
 							}
 						};
 
@@ -2973,16 +2969,13 @@ Ext.onReady( function() {
 						{
 							iconCls: 'dv-grid-row-icon-edit',
 							getClass: function(value, metaData, record) {
-								if (DV.init.user.isAdmin) {
-									return 'tooltip-favorite-edit';
-								}
+								return 'tooltip-favorite-edit' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
-								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id;
+								var record = this.up('grid').store.getAt(rowIndex);
 
-								if (DV.init.user.isAdmin) {
-									nameWindow = new NameWindow(id);
+								if (record.data.access.update) {
+									nameWindow = new NameWindow(record.data.id);
 									nameWindow.show();
 								}
 							}
@@ -2990,34 +2983,33 @@ Ext.onReady( function() {
 						{
 							iconCls: 'dv-grid-row-icon-overwrite',
 							getClass: function(value, metaData, record) {
-								if (DV.init.user.isAdmin) {
-									return 'tooltip-favorite-overwrite';
-								}
+								return 'tooltip-favorite-overwrite' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
 								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									name = record.data.name,
-									message = 'Overwrite favorite?\n\n' + name,
+									message,
+									favorite;
+
+								if (record.data.access.update) {
+									message = 'Overwrite favorite?\n\n' + record.data.name;
 									favorite = getBody();
 
-								if (favorite) {
-									favorite.name = name;
+									if (favorite) {
+										favorite.name = record.data.name;
 
-									if (confirm(message)) {
-										Ext.Ajax.request({
-											url: DV.init.contextPath + '/api/charts/' + id,
-											method: 'PUT',
-											headers: {'Content-Type': 'application/json'},
-											params: Ext.encode(favorite),
-											success: function() {
-												//pt.favorite = favorite;
-
-												//pt.viewport.interpretationButton.enable();
-
-												DV.store.favorite.loadStore();
-											}
-										});
+										if (confirm(message)) {
+											Ext.Ajax.request({
+												url: DV.init.contextPath + '/api/charts/' + record.data.id,
+												method: 'PUT',
+												headers: {'Content-Type': 'application/json'},
+												params: Ext.encode(favorite),
+												success: function() {
+													//pt.favorite = favorite;
+													DV.cmp.toolbar.share.enable();
+													DV.store.favorite.loadStore();
+												}
+											});
+										}
 									}
 								}
 								else {
@@ -3027,59 +3019,54 @@ Ext.onReady( function() {
 						},
 						{
 							iconCls: 'dv-grid-row-icon-sharing',
-							getClass: function() {
-								return 'tooltip-favorite-sharing';
+							getClass: function(value, metaData, record) {
+								return 'tooltip-favorite-sharing' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex) {
-								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									window;
+								var record = this.up('grid').store.getAt(rowIndex);
 
-								Ext.Ajax.request({
-									url: DV.init.contextPath + '/api/sharing?type=chart&id=' + id,
-									method: 'GET',
-									failure: function(r) {
-										DV.util.mask.hideMask();
-										alert(r.responseText);
-									},
-									success: function(r) {
-										var sharing = Ext.decode(r.responseText);
-										window = DV.app.SharingWindow(sharing);
-										window.show();
-									}
-								});
+								if (record.data.access.update) {
+									Ext.Ajax.request({
+										url: DV.init.contextPath + '/api/sharing?type=chart&id=' + record.data.id,
+										method: 'GET',
+										failure: function(r) {
+											DV.util.mask.hideMask();
+											alert(r.responseText);
+										},
+										success: function(r) {
+											var sharing = Ext.decode(r.responseText),
+												window = DV.app.SharingWindow(sharing);
+											window.show();
+										}
+									});
+								}
 							}
 						},
 						{
 							iconCls: 'dv-grid-row-icon-delete',
 							getClass: function(value, metaData, record) {
-								if (DV.init.user.isAdmin) {
-									return 'tooltip-favorite-delete';
-								}
+								return 'tooltip-favorite-delete' + (!record.data.access['delete'] ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
 								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									name = record.data.name,
-									message = 'Delete favorite?\n\n' + name;
+									message;
 
-								if (confirm(message)) {
-									Ext.Ajax.request({
-										url: DV.init.contextPath + '/api/charts/' + id,
-										method: 'DELETE',
-										success: function() {
-											DV.store.favorite.loadStore();
-										}
-									});
+								if (record.data.access['delete']) {
+									message = 'Delete favorite?\n\n' + record.data.name;
+
+									if (confirm(message)) {
+										Ext.Ajax.request({
+											url: pt.baseUrl + '/api/charts/' + record.data.id,
+											method: 'DELETE',
+											success: function() {
+												DV.store.favorite.loadStore();
+											}
+										});
+									}
 								}
 							}
 						}
-					],
-					renderer: function(value, metaData, record) {
-						if (!DV.init.user.isAdmin && !record.data.user) {
-							metaData.tdCls = 'dv-grid-row-icon-disabled';
-						}
-					}
+					]
 				},
 				{
 					sortable: false,
@@ -5414,9 +5401,33 @@ Ext.onReady( function() {
                             }
                         },
                         '->',
+						{
+							text: 'Table', //i18n
+                            toggleGroup: 'module',
+							handler: function(b) {
+                                window.location.href = '../../dhis-web-pivot/app/index.html';
+							}
+						},
+						{
+							text: 'Chart', //i18n
+                            toggleGroup: 'module',
+                            pressed: true
+						},
+						{
+							text: 'Map', //i18n
+                            toggleGroup: 'module',
+							handler: function(b) {
+                                window.location.href = '../../dhis-web-mapping/app/index.html';
+							}
+						},
+						{
+							xtype: 'tbseparator',
+							height: 18,
+							style: 'border-color: transparent #d1d1d1 transparent transparent; margin-right: 6px; margin-left: 3px',
+						},
                         {
                             xtype: 'button',
-                            text: 'Exit',
+                            text: 'Home',
                             handler: function() {
                                 window.location.href = '../../dhis-web-commons-about/redirect.action';
                             }

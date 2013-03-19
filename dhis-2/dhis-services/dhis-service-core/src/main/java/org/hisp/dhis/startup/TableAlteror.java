@@ -269,22 +269,22 @@ public class TableAlteror
 
         // migrate charts from dimension to category, series, filter
 
-        executeSql( "UPDATE chart SET series='PERIOD', category='DATA', filter='ORGANISATIONUNIT' WHERE dimension='indicator'" );
-        executeSql( "UPDATE chart SET series='DATA', category='ORGANISATIONUNIT', filter='PERIOD' WHERE dimension='organisationUnit'" );
-        executeSql( "UPDATE chart SET series='PERIOD', category='DATA', filter='ORGANISATIONUNIT' WHERE dimension='dataElement_period'" );
-        executeSql( "UPDATE chart SET series='DATA', category='ORGANISATIONUNIT', filter='PERIOD' WHERE dimension='organisationUnit_dataElement'" );
-        executeSql( "UPDATE chart SET series='DATA', category='PERIOD', filter='ORGANISATIONUNIT' WHERE dimension='period'" );
-        executeSql( "UPDATE chart SET series='DATA', category='PERIOD', filter='ORGANISATIONUNIT' WHERE dimension='period_dataElement'" );
+        executeSql( "UPDATE chart SET series='period', category='data', filter='organisationunit' WHERE dimension='indicator'" );
+        executeSql( "UPDATE chart SET series='data', category='organisationunit', filter='period' WHERE dimension='organisationUnit'" );
+        executeSql( "UPDATE chart SET series='period', category='data', filter='organisationunit' WHERE dimension='dataElement_period'" );
+        executeSql( "UPDATE chart SET series='data', category='organisationunit', filter='period' WHERE dimension='organisationUnit_dataElement'" );
+        executeSql( "UPDATE chart SET series='data', category='period', filter='organisationunit' WHERE dimension='period'" );
+        executeSql( "UPDATE chart SET series='data', category='period', filter='organisationunit' WHERE dimension='period_dataElement'" );
 
-        executeSql( "UPDATE chart SET type='BAR' where type='bar'" );
-        executeSql( "UPDATE chart SET type='BAR' where type='bar3d'" );
-        executeSql( "UPDATE chart SET type='STACKEDBAR' where type='stackedBar'" );
-        executeSql( "UPDATE chart SET type='STACKEDBAR' where type='stackedBar3d'" );
-        executeSql( "UPDATE chart SET type='LINE' where type='line'" );
-        executeSql( "UPDATE chart SET type='LINE' where type='line3d'" );
-        executeSql( "UPDATE chart SET type='PIE' where type='pie'" );
-        executeSql( "UPDATE chart SET type='PIE' where type='pie3d'" );
+        executeSql( "UPDATE chart SET type='bar' where type='bar3d'" );
+        executeSql( "UPDATE chart SET type='stackedbar' where type='stackedBar'" );
+        executeSql( "UPDATE chart SET type='stackedbar' where type='stackedBar3d'" );
+        executeSql( "UPDATE chart SET type='line' where type='line3d'" );
+        executeSql( "UPDATE chart SET type='pie' where type='pie'" );
+        executeSql( "UPDATE chart SET type='pie' where type='pie3d'" );
         executeSql( "UPDATE chart SET rewindRelativePeriods = false WHERE rewindRelativePeriods is null" );
+        
+        executeSql( "UPDATE chart SET type=lower(type), series=lower(series), category=lower(category), filter=lower(filter)" );
 
         executeSql( "ALTER TABLE chart ALTER COLUMN dimension DROP NOT NULL" );
         executeSql( "ALTER TABLE chart RENAME COLUMN title TO name" );
@@ -617,7 +617,7 @@ public class TableAlteror
         }
         catch ( Exception ex )
         {
-            log.warn( ex );
+            log.debug( ex );
         }
         finally
         {
@@ -694,7 +694,7 @@ public class TableAlteror
         }
         catch ( Exception ex )
         {
-            log.warn( ex );
+            log.debug( ex );
         }
         finally
         {

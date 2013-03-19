@@ -54,7 +54,7 @@ public class ReportParams
      */
     private static final long serialVersionUID = 2509958165452862235L;
 
-    private Boolean paramReportingMonth;
+    private Boolean paramReportingMonth; //TODO rename to paramReportingPeriod
 
     private Boolean paramGrandParentOrganisationUnit;
 
@@ -118,7 +118,7 @@ public class ReportParams
     // Getters and setters
     // -------------------------------------------------------------------------
 
-    @JsonProperty
+    @JsonProperty( value = "paramReportingPeriod" )
     @JsonView( {DetailedView.class, ExportView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Boolean getParamReportingMonth()

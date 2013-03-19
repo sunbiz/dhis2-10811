@@ -13,7 +13,7 @@
 	<tr id='registrationDateTR'>
 		<td class='text-column'><label for="registration_date">$i18n.getString( "registration_date" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
 		<td class="input-column" colspan='2'>
-			<input type="text" id="registrationDate" name="registrationDate" class="{validate:{required:true}}"/>
+			<input type="text" id="registrationDate" name="registrationDate" class="{validate:{required:true}}" value='$!format.formatDate($!patient.registrationDate)'/>
 		</td>		
 	</tr>
 
@@ -247,7 +247,7 @@
 		showById('birthDate');
 	#end
 	
-	#if( $!patient.phoneNumber ) 
+	#if( $!patient.phoneNumber && $patient.phoneNumber!="") 
 		setFieldValue('phoneNumber',"$!patient.phoneNumber")
 	#else 
 		setFieldValue('phoneNumber',"$!phoneNumberAreaCode")

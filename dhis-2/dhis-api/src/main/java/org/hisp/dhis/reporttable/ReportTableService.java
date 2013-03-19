@@ -84,6 +84,14 @@ public interface ReportTableService
     ReportTable getReportTable( String uid );
 
     /**
+     * Retrieves the ReportTable with the given uid. Bypasses the ACL system.
+     *
+     * @param uid the uid of the ReportTable to retrieve.
+     * @return the ReportTable.
+     */
+    ReportTable getReportTableNoAcl( String uid );
+
+    /**
      * Retrieves a Collection of all ReportTables.
      *
      * @return a Collection of ReportTables.

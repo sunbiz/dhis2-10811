@@ -98,6 +98,14 @@ public interface DataSetService
     DataSet getDataSet( String uid );
 
     /**
+     * Returns the DataSet with the given UID. Bypasses the ACL system.
+     *
+     * @param uid the UID.
+     * @return the DataSet with the given UID, or null if no match.
+     */
+    DataSet getDataSetNoAcl( String uid );
+
+    /**
      * Returns a DataSets with the given name.
      *
      * @param name The name.

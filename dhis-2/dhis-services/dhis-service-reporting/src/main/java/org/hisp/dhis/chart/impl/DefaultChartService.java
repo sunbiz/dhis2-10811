@@ -540,6 +540,10 @@ public class DefaultChartService
         {
             return getStackedBarChart( chart, dataSets[0], true );
         }
+        else
+        {
+            throw new IllegalArgumentException( "Illegal or no chart type: " + chart.getType() );
+        }
 
         if ( chart.isRegression() )
         {

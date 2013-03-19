@@ -45,6 +45,8 @@ public interface IdentifiableObjectManager
     void update( IdentifiableObject object );
 
     <T extends IdentifiableObject> T get( Class<T> clazz, String uid );
+    
+    <T extends IdentifiableObject> T getNoAcl( Class<T> clazz, String uid );
 
     <T extends IdentifiableObject> T getByCode( Class<T> clazz, String code );
 

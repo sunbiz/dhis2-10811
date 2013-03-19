@@ -730,63 +730,25 @@ PT.core.getUtils = function(pt) {
 			};
 
 			extendResponse = function(response, xLayout) {
-				var headers = response.headers,
-					metaData = response.metaData,
-					rows = response.rows;
-
 				response.nameHeaderMap = {};
 				response.idValueMap = {};
 
 				var extendHeaders = function() {
 
-					// Extend headers: index, items (ordered), size
-					for (var i = 0, header, settingsItems, responseItems, orderedResponseItems; i < headers.length; i++) {
-						header = headers[i];
-						settingsItems = xLayout.nameItemsMap[header.name],
-						responseItems = [];
-						orderedResponseItems = [];
-
-						// index
+					// Extend headers: index, items, size
+					for (var i = 0, header; i < response.headers.length; i++) {
+						header = response.headers[i];
 						header.index = i;
 
 						if (header.meta) {
-
-							// items
-							for (var j = 0; j < rows.length; j++) {
-								responseItems.push(rows[j][header.index]);
-							}
-
-							responseItems = Ext.Array.unique(responseItems);
-
-							if (settingsItems.length) {
-								for (var j = 0, item; j < settingsItems.length; j++) {
-									item = settingsItems[j];
-
-									if (header.name === dimConf.period.dimensionName && pt.conf.period.relativePeriods[item]) {
-										orderedResponseItems = responseItems;
-										orderedResponseItems.sort();
-									}
-									else {
-										if (Ext.Array.contains(responseItems, item)) {
-											orderedResponseItems.push(item);
-										}
-									}
-								}
-							}
-							else {
-								orderedResponseItems = responseItems.sort();
-							}
-
-							header.items = orderedResponseItems;
-
-							// size
+							header.items = header.name === pt.conf.finals.dimension.period.dimensionName ? [].concat(response.periods) : xLayout.nameItemsMap[header.name];
 							header.size = header.items.length;
 						}
 					}
 
 					// nameHeaderMap (headerName: header)
-					for (var i = 0, header; i < headers.length; i++) {
-						header = headers[i];
+					for (var i = 0, header; i < response.headers.length; i++) {
+						header = response.headers[i];
 
 						response.nameHeaderMap[header.name] = header;
 					}
@@ -803,8 +765,8 @@ PT.core.getUtils = function(pt) {
 					}
 
 					// idValueMap
-					for (var i = 0, row, id; i < rows.length; i++) {
-						row = rows[i];
+					for (var i = 0, row, id; i < response.rows.length; i++) {
+						row = response.rows[i];
 						id = '';
 
 						for (var j = 0; j < idIndexOrder.length; j++) {
@@ -1697,7 +1659,10 @@ PT.core.getAPI = function(pt) {
 				hideEmptyRows: false,
 				displayDensity: 'normal',
 				fontSize: 'normal',
-				digitGroupSeparator: 'space'
+				digitGroupSeparator: 'space',
+				reportingPeriod: false,
+				organisationUnit: false,
+				parentOrganisationUnit: false
 			};
 
 		removeEmptyDimensions = function(axis) {
@@ -1761,6 +1726,9 @@ PT.core.getAPI = function(pt) {
 			options.displayDensity = options.displayDensity || defaultOptions.displayDensity;
 			options.fontSize = options.fontSize || defaultOptions.fontSize;
 			options.digitGroupSeparator = Ext.isDefined(options.digitGroupSeparator) ? options.digitGroupSeparator : defaultOptions.digitGroupSeparator;
+			options.reportingPeriod = Ext.isDefined(options.reportingPeriod) ? options.reportingPeriod : defaultOptions.reportingPeriod;
+			options.organisationUnit = Ext.isDefined(options.organisationUnit) ? options.organisationUnit : defaultOptions.organisationUnit;
+			options.parentOrganisationUnit = Ext.isDefined(options.parentOrganisationUnit) ? options.parentOrganisationUnit : defaultOptions.parentOrganisationUnit;
 
 			return options;
 		};

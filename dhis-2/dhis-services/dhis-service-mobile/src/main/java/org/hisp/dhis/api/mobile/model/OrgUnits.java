@@ -77,13 +77,6 @@ public class OrgUnits
     public void serialize( DataOutputStream dataOutputStream )
         throws IOException
     {
-        // send the current version to client for updating or not
-        // dataOutputStream.writeDouble( MobileOrgUnitLinks.currentVersion );
-        // dataOutputStream.writeInt( orgUnits.size() );
-        // for ( MobileOrgUnitLinks unit : orgUnits )
-        // {
-        // unit.serialize( dataOutputStream );
-        // }
         if ( this.getClientVersion().equals( DataStreamSerializable.TWO_POINT_EIGHT ) )
         {
             this.serializeVersion2_8( dataOutputStream );
@@ -136,7 +129,6 @@ public class OrgUnits
         {
             unit.serializeVersion2_9( dataOutputStream );
         }
-
     }
 
     @Override

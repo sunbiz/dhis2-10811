@@ -1,82 +1,22 @@
-table
+
+input[type="text"] 
 {
- margin-bottom:10px; 
- font-size: 13px; 
- line-height:18px;
+    width: 260px;
 }
 
-input.button
+select
 {
-	width: 150px;
-	padding-left:5px;
-	padding-right:5px;
+    width: 265px;
 }
 
-input.imgButton
+select.search-field
 {
-	width:20px;
-	height:20px;
-	cursor: pointer;
+	width: 180px;
 }
 
 .hidden
 {
 	display:none;
-}
-
-.text-column
-{
-	text-align:left;
-	padding-right:20px; 
-	padding-left:5px; 
-}
-
-.infor
-{
-	border:1px solid #808080; 
-	vertical-align:top;
-	padding:10px;
-}
-
-.buttons
-{
-	text-align:right;
-	padding-bottom:10px;
-	width:100%;
-}
-
-.list-table
-{
-	width:100%;
-}
-
-.heading-column { width : 450px;}
-td.input-column { width : 390px;}
-td.input-column input[type="text"]{ width: 360px;}
-td.input-column select { width: 367px;}
-td.error {padding-left:1em}
-
-.infor td{vertical-align: top;}
-
-.focusCell{background-color: #AFCCFF}
-.errorCell{background-color: #FFCFCF}
-.sectionOpen {display: true}
-.sectionClose{ display: none}
-.togglePanel.open {height:25px;padding-left:25px; background-image:  url(../images/open.gif) ; background-repeat: no-repeat; background-position: top left}
-.togglePanel.close {height:25px;padding-left:25px;  background-image:  url(../images/close.gif) ; background-repeat: no-repeat; background-position: top left}
-
-.warnmessage {
-	color: red;
-}
-
-#facilityCol
-{
-	width: 130px;
-}
-
-fieldset
-{
-	border: 1px solid #3f5d8e;
 }
 
 .overlaps

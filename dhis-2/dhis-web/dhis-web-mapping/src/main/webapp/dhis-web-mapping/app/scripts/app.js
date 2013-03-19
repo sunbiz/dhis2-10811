@@ -4838,12 +4838,43 @@ Ext.onReady( function() {
 							}
 						});
 						a.push('->');
+
 						a.push({
-							text: 'Exit', //i18n
-							handler: function() {
-								window.location.href = '../../dhis-web-commons-about/redirect.action';
+							text: 'Table', //i18n
+                            toggleGroup: 'module',
+							handler: function(b) {
+                                window.location.href = '../../dhis-web-pivot/app/index.html';
 							}
 						});
+
+						a.push({
+							text: 'Chart', //i18n
+                            toggleGroup: 'module',
+							handler: function(b) {
+                                window.location.href = '../../dhis-web-visualizer/app/index.html';
+							}
+						});
+
+						a.push({
+							text: 'Map', //i18n
+                            toggleGroup: 'module',
+                            pressed: true
+						});
+
+						a.push({
+							xtype: 'tbseparator',
+							height: 18,
+							style: 'border-color: transparent #d1d1d1 transparent transparent; margin-right: 6px; margin-left: 3px',
+						});
+
+                        a.push({
+                            xtype: 'button',
+                            text: 'Home',
+                            handler: function() {
+                                window.location.href = '../../dhis-web-commons-about/redirect.action';
+                            }
+						});
+
 						a.push(resizeButton);
 
 						return a;

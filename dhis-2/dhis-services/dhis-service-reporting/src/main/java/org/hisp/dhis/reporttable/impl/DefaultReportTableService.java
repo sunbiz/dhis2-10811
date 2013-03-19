@@ -182,6 +182,11 @@ public class DefaultReportTableService
         return reportTableStore.getByUid( uid );
     }
 
+    public ReportTable getReportTableNoAcl( String uid )
+    {
+        return reportTableStore.getByUidNoAcl( uid );
+    }
+
     public Collection<ReportTable> getReportTables( final Collection<Integer> identifiers )
     {
         Collection<ReportTable> objects = getAllReportTables();

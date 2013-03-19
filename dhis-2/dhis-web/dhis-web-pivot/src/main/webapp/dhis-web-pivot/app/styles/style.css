@@ -96,14 +96,17 @@ body.x-windows {
     border-left: 2px solid white;
 }
 
+	/* Scrollbar */
 .x-scroller-vertical {
 	border: 0 none;
 }
 
-	/* Disable class invisible */
-.pt-invisible .x-form-item-body {
-    display: none;
+	/* Disabled icons */
+.disabled {
+	opacity: 0.4;
+	cursor: default !important;
 }
+
 
 	/* Collapse splitter column */
 .x-splitter {
@@ -128,6 +131,10 @@ body.x-windows {
 
 .td-collapsed {
 	display: none;
+}
+
+.opacity-50 {
+	opacity: 0.5;
 }
 
 /*----------------------------------------------------------------------------
@@ -599,15 +606,7 @@ td .bad div {
 	background: url('../images/grid-delete_16.png') no-repeat;
 	margin-left: 4px;
 }
-.pt-grid-row-icon-disabled img.pt-grid-row-icon-edit,
-.pt-grid-row-icon-disabled img.pt-grid-row-icon-overwrite,
-.pt-grid-row-icon-disabled img.pt-grid-row-icon-delete {
-	opacity: 0;
-	filter:Alpha(opacity=0);
-}
-.pt-grid-row-icon-disabled * {
-	cursor: default !important;
-}
+
 .pt-grid-row-icon-disabled img.pt-grid-row-icon-sharing,
 .pt-grid-row-icon-disabled img.pt-grid-row-icon-dashboard {
 	cursor: pointer !important;

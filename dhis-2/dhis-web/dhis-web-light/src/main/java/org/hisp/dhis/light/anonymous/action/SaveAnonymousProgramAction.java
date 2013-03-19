@@ -297,7 +297,7 @@ public class SaveAnonymousProgramAction
 
         programInstance.setProgram( program );
 
-        programInstance.setCompleted( false );
+        programInstance.setCompleted( true );
 
         programInstanceService.addProgramInstance( programInstance );
 
@@ -311,9 +311,11 @@ public class SaveAnonymousProgramAction
 
         programStageInstance.setExecutionDate( new Date() );
 
-        programStageInstance.setCompleted( false );
+        programStageInstance.setCompleted( true );
         
         programStageInstance.setOrganisationUnit( orgUnitService.getOrganisationUnit( orgUnitId ) );
+        
+        programStageInstanceService.addProgramStageInstance( programStageInstance );
 
         for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
         {
@@ -324,16 +326,22 @@ public class SaveAnonymousProgramAction
             patientDataValue.setDataElement( dataElement );
 
             String id = "DE" + dataElement.getId();
+            
+            String value = parameterMap.get( id );
+            
+            if ( value != null && !value.trim().equals( "" )) {
+                
+                patientDataValue.setValue( value );
 
-            patientDataValue.setValue( parameterMap.get( id ) );
+                patientDataValue.setProgramStageInstance( programStageInstance );
 
-            patientDataValue.setProgramStageInstance( programStageInstance );
+                patientDataValue.setProvidedElsewhere( false );
 
-            patientDataValue.setProvidedElsewhere( false );
+                patientDataValue.setTimestamp( new Date() );
 
-            patientDataValue.setTimestamp( new Date() );
-
-            patientDataValueService.savePatientDataValue( patientDataValue );
+                patientDataValueService.savePatientDataValue( patientDataValue );
+            }
+           
         }
 
         return SUCCESS;

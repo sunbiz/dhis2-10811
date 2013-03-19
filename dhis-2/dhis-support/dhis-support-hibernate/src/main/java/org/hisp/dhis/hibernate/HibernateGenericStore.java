@@ -273,10 +273,9 @@ public class HibernateGenericStore<T>
             throw new AccessDeniedException( "You do not have read access to object with id " + id + "." );
         }
 
-        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
         return object;
     }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public final T load( int id )
@@ -289,7 +288,6 @@ public class HibernateGenericStore<T>
             throw new AccessDeniedException( "You do not have read access to object with id " + id );
         }
 
-        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
         return object;
     }
 
@@ -304,10 +302,15 @@ public class HibernateGenericStore<T>
             throw new AccessDeniedException( "You do not have read access to object with uid " + uid );
         }
 
-        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
         return object;
     }
 
+    @Override
+    public final T getByUidNoAcl( String uid )
+    {
+        return getObject( Restrictions.eq( "uid", uid ) );
+    }
+    
     @Override
     @Deprecated
     public final T getByName( String name )
@@ -320,7 +323,6 @@ public class HibernateGenericStore<T>
             throw new AccessDeniedException( "You do not have read access to object with name " + name );
         }
 
-        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
         return object;
     }
 
@@ -336,7 +338,6 @@ public class HibernateGenericStore<T>
             throw new AccessDeniedException( "You do not have read access to object with shortName " + shortName );
         }
 
-        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
         return object;
     }
 
@@ -351,7 +352,6 @@ public class HibernateGenericStore<T>
             throw new AccessDeniedException( "You do not have read access to object with code " + code );
         }
 
-        // AuditLogUtil.infoWrapper( log, currentUserService.getCurrentUsername(), object, AuditLogUtil.ACTION_READ );
         return object;
     }
 
@@ -372,12 +372,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public final List<T> getAll()
     {
-        Query query = sharingEnabled() ? getQueryAllACL() : getQueryAll();
+        Query query = sharingEnabled() ? getQueryAllAcl() : getQueryAll();
 
         return query.list();
     }
 
-    private Query getQueryAllACL()
+    private Query getQueryAllAcl()
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -399,12 +399,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllEqName( String name )
     {
-        Query query = sharingEnabled() ? getQueryAllEqNameACL( name ) : getQueryAllEqName( name );
+        Query query = sharingEnabled() ? getQueryAllEqNameAcl( name ) : getQueryAllEqName( name );
 
         return query.list();
     }
 
-    private Query getQueryAllEqNameACL( String name )
+    private Query getQueryAllEqNameAcl( String name )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where name = :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -431,12 +431,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllEqNameIgnoreCase( String name )
     {
-        Query query = sharingEnabled() ? getQueryAllEqNameACLIgnoreCase( name ) : getQueryAllEqNameIgnoreCase( name );
+        Query query = sharingEnabled() ? getQueryAllEqNameAclIgnoreCase( name ) : getQueryAllEqNameIgnoreCase( name );
 
         return query.list();
     }
 
-    private Query getQueryAllEqNameACLIgnoreCase( String name )
+    private Query getQueryAllEqNameAclIgnoreCase( String name )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where lower(name) = :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -463,12 +463,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllEqShortName( String shortName )
     {
-        Query query = sharingEnabled() ? getQueryAllEqShortNameACL( shortName ) : getQueryAllEqShortName( shortName );
+        Query query = sharingEnabled() ? getQueryAllEqShortNameAcl( shortName ) : getQueryAllEqShortName( shortName );
 
         return query.list();
     }
 
-    private Query getQueryAllEqShortNameACL( String shortName )
+    private Query getQueryAllEqShortNameAcl( String shortName )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where shortName = :shortName and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -495,12 +495,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllEqShortNameIgnoreCase( String shortName )
     {
-        Query query = sharingEnabled() ? getQueryAllEqShortNameACLIgnoreCase( shortName ) : getQueryAllEqShortNameIgnoreCase( shortName );
+        Query query = sharingEnabled() ? getQueryAllEqShortNameAclIgnoreCase( shortName ) : getQueryAllEqShortNameIgnoreCase( shortName );
 
         return query.list();
     }
 
-    private Query getQueryAllEqShortNameACLIgnoreCase( String shortName )
+    private Query getQueryAllEqShortNameAclIgnoreCase( String shortName )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where lower(shortName) = :shortName and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -527,12 +527,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllLikeName( String name )
     {
-        Query query = sharingEnabled() ? getQueryAllLikeNameACL( name ) : getQueryAllLikeName( name );
+        Query query = sharingEnabled() ? getQueryAllLikeNameAcl( name ) : getQueryAllLikeName( name );
 
         return query.list();
     }
 
-    private Query getQueryAllLikeNameACL( String name )
+    private Query getQueryAllLikeNameAcl( String name )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where lower(name) like :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -559,12 +559,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public final List<T> getAllOrderedName()
     {
-        Query query = sharingEnabled() ? getQueryAllOrderedNameACL() : getQueryAllOrderedName();
+        Query query = sharingEnabled() ? getQueryAllOrderedNameAcl() : getQueryAllOrderedName();
 
         return query.list();
     }
 
-    private Query getQueryAllOrderedNameACL()
+    private Query getQueryAllOrderedNameAcl()
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -587,7 +587,7 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllOrderedName( int first, int max )
     {
-        Query query = sharingEnabled() ? getQueryAllOrderedNameACL() : getQueryAllOrderedName();
+        Query query = sharingEnabled() ? getQueryAllOrderedNameAcl() : getQueryAllOrderedName();
 
         query.setFirstResult( first );
         query.setMaxResults( max );
@@ -599,7 +599,7 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllOrderedLastUpdated( int first, int max )
     {
-        Query query = sharingEnabled() ? getQueryAllOrderedLastUpdatedACL() : getQueryAllOrderedLastUpdated();
+        Query query = sharingEnabled() ? getQueryAllOrderedLastUpdatedAcl() : getQueryAllOrderedLastUpdated();
 
         query.setFirstResult( first );
         query.setMaxResults( max );
@@ -607,7 +607,7 @@ public class HibernateGenericStore<T>
         return query.list();
     }
 
-    private Query getQueryAllOrderedLastUpdatedACL()
+    private Query getQueryAllOrderedLastUpdatedAcl()
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -630,7 +630,7 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllLikeNameOrderedName( String name, int first, int max )
     {
-        Query query = sharingEnabled() ? getQueryAllLikeNameOrderedNameACL( name ) : getQueryAllLikeNameOrderedName( name );
+        Query query = sharingEnabled() ? getQueryAllLikeNameOrderedNameAcl( name ) : getQueryAllLikeNameOrderedName( name );
 
         query.setFirstResult( first );
         query.setMaxResults( max );
@@ -638,7 +638,7 @@ public class HibernateGenericStore<T>
         return query.list();
     }
 
-    private Query getQueryAllLikeNameOrderedNameACL( String name )
+    private Query getQueryAllLikeNameOrderedNameAcl( String name )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where lower(c.name) like :name and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -664,12 +664,12 @@ public class HibernateGenericStore<T>
     @Override
     public int getCount()
     {
-        Query query = sharingEnabled() ? getQueryCountACL() : getQueryCount();
+        Query query = sharingEnabled() ? getQueryCountAcl() : getQueryCount();
 
         return ((Long) query.uniqueResult()).intValue();
     }
 
-    private Query getQueryCountACL()
+    private Query getQueryCountAcl()
     {
         String hql = "select count(distinct c) from " + clazz.getName() + " c"
             + " where c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -690,12 +690,12 @@ public class HibernateGenericStore<T>
     @Override
     public int getCountLikeName( String name )
     {
-        Query query = sharingEnabled() ? getQueryCountLikeNameACL( name ) : getQueryCountLikeName( name );
+        Query query = sharingEnabled() ? getQueryCountLikeNameAcl( name ) : getQueryCountLikeName( name );
 
         return ((Long) query.uniqueResult()).intValue();
     }
 
-    private Query getQueryCountLikeNameACL( String name )
+    private Query getQueryCountLikeNameAcl( String name )
     {
         String hql = "select count(distinct c) from " + clazz.getName() + " c"
             + " where lower(name) like :name and (c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -721,12 +721,12 @@ public class HibernateGenericStore<T>
     @Override
     public long getCountGeLastUpdated( Date lastUpdated )
     {
-        Query query = sharingEnabled() ? getQueryCountGeLastUpdatedACL( lastUpdated ) : getQueryCountGeLastUpdated( lastUpdated );
+        Query query = sharingEnabled() ? getQueryCountGeLastUpdatedAcl( lastUpdated ) : getQueryCountGeLastUpdated( lastUpdated );
 
         return ((Long) query.uniqueResult()).intValue();
     }
 
-    private Query getQueryCountGeLastUpdatedACL( Date lastUpdated )
+    private Query getQueryCountGeLastUpdatedAcl( Date lastUpdated )
     {
         String hql = "select count(distinct c) from " + clazz.getName() + " c"
             + " where c.lastUpdated >= :lastUpdated and (c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -736,7 +736,7 @@ public class HibernateGenericStore<T>
 
         Query query = getQuery( hql );
         query.setEntity( "user", currentUserService.getCurrentUser() );
-        query.setDate( "lastUpdated", lastUpdated );
+        query.setTimestamp( "lastUpdated", lastUpdated );
 
         return query;
     }
@@ -744,7 +744,7 @@ public class HibernateGenericStore<T>
     private Query getQueryCountGeLastUpdated( Date lastUpdated )
     {
         Query query = getQuery( "select count(distinct c) from " + clazz.getName() + " c where lastUpdated >= :lastUpdated" );
-        query.setDate( "lastUpdated", lastUpdated );
+        query.setTimestamp( "lastUpdated", lastUpdated );
 
         return query;
     }
@@ -753,12 +753,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllGeLastUpdated( Date lastUpdated )
     {
-        Query query = sharingEnabled() ? getQueryAllGeLastUpdatedACL( lastUpdated ) : getQueryAllGeLastUpdated( lastUpdated );
+        Query query = sharingEnabled() ? getQueryAllGeLastUpdatedAcl( lastUpdated ) : getQueryAllGeLastUpdated( lastUpdated );
 
         return query.list();
     }
 
-    private Query getQueryAllGeLastUpdatedACL( Date lastUpdated )
+    private Query getQueryAllGeLastUpdatedAcl( Date lastUpdated )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where c.lastUpdated >= :lastUpdated and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -768,7 +768,7 @@ public class HibernateGenericStore<T>
 
         Query query = getQuery( hql );
         query.setEntity( "user", currentUserService.getCurrentUser() );
-        query.setDate( "lastUpdated", lastUpdated );
+        query.setTimestamp( "lastUpdated", lastUpdated );
 
         return query;
     }
@@ -776,7 +776,7 @@ public class HibernateGenericStore<T>
     private Query getQueryAllGeLastUpdated( Date lastUpdated )
     {
         Query query = getQuery( "from " + clazz.getName() + " c where c.lastUpdated >= :lastUpdated" );
-        query.setDate( "lastUpdated", lastUpdated );
+        query.setTimestamp( "lastUpdated", lastUpdated );
 
         return query;
     }
@@ -785,12 +785,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllGeCreated( Date created )
     {
-        Query query = sharingEnabled() ? getQueryAllGeCreatedACL( created ) : getQueryAllGeCreated( created );
+        Query query = sharingEnabled() ? getQueryAllGeCreatedAcl( created ) : getQueryAllGeCreated( created );
 
         return query.list();
     }
 
-    private Query getQueryAllGeCreatedACL( Date created )
+    private Query getQueryAllGeCreatedAcl( Date created )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where c.created >= :created and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -800,7 +800,7 @@ public class HibernateGenericStore<T>
 
         Query query = getQuery( hql );
         query.setEntity( "user", currentUserService.getCurrentUser() );
-        query.setDate( "created", created );
+        query.setTimestamp( "created", created );
 
         return query;
     }
@@ -808,7 +808,7 @@ public class HibernateGenericStore<T>
     private Query getQueryAllGeCreated( Date created )
     {
         Query query = getQuery( "from " + clazz.getName() + " c where c.created >= :created" );
-        query.setDate( "created", created );
+        query.setTimestamp( "created", created );
 
         return query;
     }
@@ -817,12 +817,12 @@ public class HibernateGenericStore<T>
     @SuppressWarnings("unchecked")
     public List<T> getAllGeLastUpdatedOrderedName( Date lastUpdated )
     {
-        Query query = sharingEnabled() ? getQueryAllGeLastUpdatedOrderedNameACL( lastUpdated ) : getQueryAllGeLastUpdatedOrderedName( lastUpdated );
+        Query query = sharingEnabled() ? getQueryAllGeLastUpdatedOrderedNameAcl( lastUpdated ) : getQueryAllGeLastUpdatedOrderedName( lastUpdated );
 
         return query.list();
     }
 
-    private Query getQueryAllGeLastUpdatedOrderedNameACL( Date lastUpdated )
+    private Query getQueryAllGeLastUpdatedOrderedNameAcl( Date lastUpdated )
     {
         String hql = "select distinct c from " + clazz.getName() + " c"
             + " where c.lastUpdated >= :lastUpdated and ( c.publicAccess like 'r%' or c.user IS NULL or c.user=:user"
@@ -832,7 +832,7 @@ public class HibernateGenericStore<T>
 
         Query query = getQuery( hql );
         query.setEntity( "user", currentUserService.getCurrentUser() );
-        query.setDate( "lastUpdated", lastUpdated );
+        query.setTimestamp( "lastUpdated", lastUpdated );
 
         return query;
     }
@@ -840,7 +840,7 @@ public class HibernateGenericStore<T>
     private Query getQueryAllGeLastUpdatedOrderedName( Date lastUpdated )
     {
         Query query = getQuery( "from " + clazz.getName() + " c where c.lastUpdated >= :lastUpdated order by c.name" );
-        query.setDate( "lastUpdated", lastUpdated );
+        query.setTimestamp( "lastUpdated", lastUpdated );
 
         return query;
     }
@@ -905,7 +905,7 @@ public class HibernateGenericStore<T>
     protected boolean sharingEnabled()
     {
         return SharingUtils.isSupported( clazz ) && !( currentUserService.getCurrentUser() == null ||
-            currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities().contains( SharingUtils.SHARING_OVERRIDE_AUTHORITY ));
+            currentUserService.getCurrentUser().getUserCredentials().getAllAuthorities().contains( SharingUtils.SHARING_OVERRIDE_AUTHORITY ) );
     }
 
     protected boolean isReadAllowed( T object )
