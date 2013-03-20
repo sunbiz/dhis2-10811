@@ -47,6 +47,7 @@ import static org.hisp.dhis.analytics.DataQueryParams.getDimensionFromParam;
 import static org.hisp.dhis.analytics.DataQueryParams.getDimensionItemsFromParam;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asList;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asTypedList;
+import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
 import static org.hisp.dhis.organisationunit.OrganisationUnit.KEY_USER_ORGUNIT;
 import static org.hisp.dhis.organisationunit.OrganisationUnit.KEY_USER_ORGUNIT_CHILDREN;
 
@@ -115,6 +116,8 @@ public class DefaultAnalyticsService
     private static final Log log = LogFactory.getLog( DefaultAnalyticsService.class );
     
     private static final String VALUE_HEADER_NAME = "Value";
+    private static final String PERIODS_META_KEY = "periods";
+    private static final String NAMES_META_KEY = "names";
     private static final int PERCENT = 100;
     private static final int MAX_QUERIES = 8;
     
@@ -172,7 +175,11 @@ public class DefaultAnalyticsService
 
         Grid grid = new ListGrid();
 
-        grid.setMetaData( getUidNameMap( params ) );
+        Map<Object, Object> metaData = new HashMap<Object, Object>();        
+        metaData.put( NAMES_META_KEY, getUidNameMap( params ) );
+        metaData.put( PERIODS_META_KEY, getUids( params.getDimensionOrFilter( PERIOD_DIM_ID ) ) );
+        
+        grid.setMetaData( metaData );
         
         for ( Dimension col : params.getHeaderDimensions() )
         {
@@ -577,7 +584,6 @@ public class DefaultAnalyticsService
                 
                     if ( period != null )
                     {
-                        period.setName( format != null ? format.formatPeriod( period ) : null );
                         periods.add( period );
                     }
                 }
@@ -586,6 +592,11 @@ public class DefaultAnalyticsService
             if ( periods.isEmpty() )
             {
                 throw new IllegalQueryException( "Dimension pe is present in query without any valid dimension options" );
+            }
+            
+            for ( Period period : periods )
+            {
+                period.setName( format != null ? format.formatPeriod( period ) : null );
             }
 
             List<Period> periodList = new ArrayList<Period>( periods );
@@ -626,9 +637,9 @@ public class DefaultAnalyticsService
         return params;
     }
     
-    private Map<Object, String> getUidNameMap( DataQueryParams params )
+    private Map<String, String> getUidNameMap( DataQueryParams params )
     {
-        Map<Object, String> map = new HashMap<Object, String>();
+        Map<String, String> map = new HashMap<String, String>();
         map.putAll( getUidNameMap( params.getDimensions() ) );
         map.putAll( getUidNameMap( params.getFilters() ) );
         map.put( DATA_X_DIM_ID, DISPLAY_NAME_DATA_X );

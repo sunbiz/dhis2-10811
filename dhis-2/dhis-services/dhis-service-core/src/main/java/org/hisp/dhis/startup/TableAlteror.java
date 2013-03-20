@@ -293,7 +293,6 @@ public class TableAlteror
         executeSql( "ALTER TABLE chart DROP COLUMN verticallabels" );
         executeSql( "ALTER TABLE chart DROP COLUMN targetline" );
         executeSql( "ALTER TABLE chart DROP COLUMN horizontalplotorientation" );
-        executeSql( "ALTER TABLE chart ADD COLUMN targetline boolean NOT NULL DEFAULT false" );
         executeSql( "ALTER TABLE chart ADD COLUMN hidesubtitle boolean NOT NULL DEFAULT false" );
 
         executeSql( "ALTER TABLE chart DROP COLUMN monthsLastYear" );
@@ -394,7 +393,6 @@ public class TableAlteror
         executeSql( "update dataset set fieldcombinationrequired = false where fieldcombinationrequired is null" );
         executeSql( "update chart set hidelegend = false where hidelegend is null" );
         executeSql( "update chart set regression = false where regression is null" );
-        executeSql( "update chart set targetline = false where targetline is null" );
         executeSql( "update chart set hidesubtitle = false where hidesubtitle is null" );
         executeSql( "update chart set userorganisationunit = false where userorganisationunit is null" );
         executeSql( "update indicator set annualized = false where annualized is null" );

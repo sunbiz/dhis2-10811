@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategory;
+import org.hisp.dhis.dataelement.DataElementCategoryCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
@@ -231,18 +232,21 @@ public class DefaultResourceTableService
     {
         resourceTableStore.createDataElementCategoryOptionComboName();
 
-        Collection<DataElementCategoryOptionCombo> combos = categoryService.getAllDataElementCategoryOptionCombos();
+        Collection<DataElementCategoryCombo> combos = categoryService.getAllDataElementCategoryCombos();
 
         List<Object[]> batchArgs = new ArrayList<Object[]>();
         
-        for ( DataElementCategoryOptionCombo combo : combos )
+        for ( DataElementCategoryCombo combo : combos )
         {
-            List<Object> values = new ArrayList<Object>();
-
-            values.add( combo.getId() );
-            values.add( combo.getName() );
-            
-            batchArgs.add( values.toArray() );
+            for ( DataElementCategoryOptionCombo coc : combo.getSortedOptionCombos() )
+            {
+                List<Object> values = new ArrayList<Object>();
+    
+                values.add( coc.getId() );
+                values.add( coc.getName() );
+                
+                batchArgs.add( values.toArray() );
+            }
         }
         
         resourceTableStore.batchUpdate( 2, TABLE_NAME_CATEGORY_OPTION_COMBO_NAME, batchArgs );

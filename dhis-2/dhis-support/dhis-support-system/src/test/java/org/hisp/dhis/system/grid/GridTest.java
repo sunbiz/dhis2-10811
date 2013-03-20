@@ -92,7 +92,7 @@ public class GridTest
     @Test
     public void testSubstituteMetaData()
     {
-        Map<Object, String> metaData = new HashMap<Object, String>();
+        Map<Object, Object> metaData = new HashMap<Object, Object>();
         metaData.put( 11, "Eleven" );
         metaData.put( 12, "Twelve" );
         metaData.put( 21, "TwentyOne" );

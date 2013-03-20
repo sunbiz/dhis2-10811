@@ -455,11 +455,5 @@ public class BaseIdentifiableObject
         this.code = other.getCode() == null ? this.code : other.getCode();
         this.lastUpdated = other.getLastUpdated() == null ? this.lastUpdated : other.getLastUpdated();
         this.created = other.getCreated() == null ? this.created : other.getCreated();
-
-        // TODO disabled for 2.11 release, we don't support sharing in dxf2 import-export
-        //this.user = other.getUser() == null ? this.user : other.getUser();
-        //this.publicAccess = other.getPublicAccess() == null ? this.publicAccess : other.getPublicAccess();
-        //this.userGroupAccesses.clear();
-        //this.userGroupAccesses.addAll( other.getUserGroupAccesses() );
     }
 }

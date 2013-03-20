@@ -27,6 +27,7 @@ package org.hisp.dhis.dd.action.category;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.concept.ConceptService;
 import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
@@ -96,6 +97,8 @@ public class UpdateDataElementCategoryOptionAction
 
     public String execute()
     {
+        code = StringUtils.trimToNull( code );
+        
         DataElementCategoryOption categoryOption = dataElementCategoryService.getDataElementCategoryOption( id );
         categoryOption.setName( name );
         categoryOption.setCode( code );

@@ -975,8 +975,8 @@ GIS.core.MapLoader = function(gis) {
 			return;
 		}
 
-		if (gis.viewport.mapWindow && gis.viewport.mapWindow.isVisible()) {
-			gis.viewport.mapWindow.destroy();
+		if (gis.viewport.favoriteWindow && gis.viewport.favoriteWindow.isVisible()) {
+			gis.viewport.favoriteWindow.destroy();
 		}
 
 		gis.olmap.closeAllLayers();

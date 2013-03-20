@@ -2669,24 +2669,25 @@ Ext.onReady( function() {
 				favorite.regression = DV.c.trendline;
 				favorite.userOrganisationUnit = DV.c.userorganisationunit;
 				favorite.userOrganisationUnitChildren = DV.c.userorganisationunitchildren;
-
+				
 				// Options
-				if (DV.c.domainAxisLabel) {
+				
+				if (DV.c.domainaxislabel) {
 					favorite.domainAxisLabel = DV.c.domainaxislabel;
 				}
-				if (DV.c.rangeAxisLabel) {
+				if (DV.c.rangeaxislabel) {
 					favorite.rangeAxisLabel = DV.c.rangeaxislabel;
 				}
-				if (DV.c.targetLineValue) {
+				if (DV.c.targetlinevalue) {
 					favorite.targetLineValue = DV.c.targetlinevalue;
 				}
-				if (DV.c.targetLineLabel) {
+				if (DV.c.targetlinelabel) {
 					favorite.targetLineLabel = DV.c.targetlinelabel;
 				}
-				if (DV.c.baseLineValue) {
+				if (DV.c.baselinevalue) {
 					favorite.baseLineValue = DV.c.baselinevalue;
 				}
-				if (DV.c.baseLineLabel) {
+				if (DV.c.baselinelabel) {
 					favorite.baseLineLabel = DV.c.baselinelabel;
 				}
 

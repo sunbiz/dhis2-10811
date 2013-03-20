@@ -477,7 +477,7 @@ Ext.onReady( function() {
 		});
 
 		stores.maps = Ext.create('Ext.data.Store', {
-			fields: ['id', 'name', 'lastUpdated', 'user'],
+			fields: ['id', 'name', 'lastUpdated', 'access'],
 			proxy: {
 				type: 'ajax',
 				reader: {
@@ -1716,7 +1716,7 @@ Ext.onReady( function() {
 			],
 			listeners: {
 				show: function(w) {
-					var pos = gis.viewport.mapWindow.getPosition();
+					var pos = gis.viewport.favoriteWindow.getPosition();
 					w.setPosition(pos[0] + 5, pos[1] + 5);
 				}
 			}
@@ -1745,7 +1745,7 @@ Ext.onReady( function() {
 		return panel;
 	};
 
-	GIS.app.MapWindow = function() {
+	GIS.app.FavoriteWindow = function() {
 
 		// Objects
 		var NameWindow,
@@ -1766,7 +1766,7 @@ Ext.onReady( function() {
 			createButton,
 			updateButton,
 			cancelButton,
-			mapWindow,
+			favoriteWindow,
 
 		// Vars
 			windowWidth = 500,
@@ -1907,7 +1907,7 @@ Ext.onReady( function() {
 				],
 				listeners: {
 					show: function() {
-						this.setPosition(mapWindow.x + 14, mapWindow.y + 67);
+						this.setPosition(favoriteWindow.x + 14, favoriteWindow.y + 67);
 					}
 				}
 			});
@@ -1991,15 +1991,29 @@ Ext.onReady( function() {
 					width: windowCmpWidth - 108,
 					renderer: function(value, metaData, record) {
 						var fn = function() {
-							var el = Ext.get(record.data.id);
-							if (el) {
-								el = el.parent('td');
-								el.addClsOnOver('link');
-								el.gis = gis;
-								el.map = {id: record.data.id};
-								el.dom.setAttribute('onclick', 'Ext.get(this).gis.map = Ext.get(this).map; GIS.core.MapLoader(Ext.get(this).gis).load();');
+							var element = Ext.get(record.data.id);
+
+							if (element) {
+								element = element.parent('td');
+								element.addClsOnOver('link');
+								element.load = function() {
+									favoriteWindow.hide();
+									gis.map = {id: record.data.id};
+									GIS.core.MapLoader(gis).load();
+								};
+								element.dom.setAttribute('onclick', 'Ext.get(this).load();');
 							}
 						};
+
+							//var el = Ext.get(record.data.id);
+							//if (el) {
+								//el = el.parent('td');
+								//el.addClsOnOver('link');
+								//el.gis = gis;
+								//el.map = {id: record.data.id};
+								//el.dom.setAttribute('onclick', 'Ext.get(this).gis.map = Ext.get(this).map; GIS.core.MapLoader(Ext.get(this).gis).load();');
+							//}
+						//};
 
 						Ext.defer(fn, 100);
 
@@ -2014,17 +2028,13 @@ Ext.onReady( function() {
 						{
 							iconCls: 'gis-grid-row-icon-edit',
 							getClass: function(value, metaData, record) {
-								if (gis.init.user.isAdmin) {
-									return 'tooltip-map-edit';
-								}
+								return 'tooltip-favorite-edit' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
-								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id;
+								var record = this.up('grid').store.getAt(rowIndex);
 
-								if (gis.init.user.isAdmin) {
-									var id = this.up('grid').store.getAt(rowIndex).data.id;
-									nameWindow = new NameWindow(id);
+								if (record.data.access.update) {
+									nameWindow = new NameWindow(record.data.id);
 									nameWindow.show();
 								}
 							}
@@ -2032,138 +2042,139 @@ Ext.onReady( function() {
 						{
 							iconCls: 'gis-grid-row-icon-overwrite',
 							getClass: function(value, metaData, record) {
-								if (gis.init.user.isAdmin) {
-									return 'tooltip-map-overwrite';
-								}
+								return 'tooltip-favorite-overwrite' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
 								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									name = record.data.name,
-									layers = gis.util.map.getVisibleVectorLayers(),
+									layers,
 									layer,
-									lonlat = gis.olmap.getCenter(),
-									views = [],
+									lonlat,
+									views,
 									view,
 									map,
-									message = 'Overwrite favorite?\n\n' + name;
+									message;
 
-								if (layers.length) {
-									if (confirm(message)) {
-										for (var i = 0; i < layers.length; i++) {
-											layer = layers[i];
-											view = layer.core.view;
+								if (record.data.access.update) {
+									layers = gis.util.map.getVisibleVectorLayers();
+									message = 'Overwrite favorite?\n\n' + record.data.name;
 
-											// add
-											view.layer = layer.id;
+									if (layers.length) {
+										if (confirm(message)) {
+											lonlat = gis.olmap.getCenter();
+											views = [];
 
-											// remove
-											delete view.periodType;
+											for (var i = 0; i < layers.length; i++) {
+												layer = layers[i];
+												view = layer.core.view;
 
-											views.push(view);
-										}
+												// add
+												view.layer = layer[record.data.id];
 
-										map = {
-											longitude: lonlat.lon,
-											latitude: lonlat.lat,
-											zoom: gis.olmap.getZoom(),
-											mapViews: views
-										};
+												// remove
+												delete view.periodType;
 
-										Ext.Ajax.request({
-											url: gis.baseUrl + gis.conf.url.path_api + 'maps/' + id,
-											method: 'PUT',
-											headers: {'Content-Type': 'application/json'},
-											params: Ext.encode(map),
-											success: function() {
-												gis.map = map;
-												gis.viewport.interpretationButton.enable();
-
-												gis.store.maps.loadStore();
+												views.push(view);
 											}
-										});
+
+											map = {
+												longitude: lonlat.lon,
+												latitude: lonlat.lat,
+												zoom: gis.olmap.getZoom(),
+												mapViews: views
+											};
+
+											Ext.Ajax.request({
+												url: gis.baseUrl + gis.conf.url.path_api + 'maps/' + record.data.id,
+												method: 'PUT',
+												headers: {'Content-Type': 'application/json'},
+												params: Ext.encode(map),
+												success: function() {
+													gis.map = map;
+													gis.viewport.interpretationButton.enable();
+													gis.store.maps.loadStore();
+												}
+											});
+										}
 									}
-								}
-								else {
-									alert('No layers to save'); //i18n
+									else {
+										alert('No layers to save'); //i18n
+									}
 								}
 							}
 						},
 						{
 							iconCls: 'gis-grid-row-icon-sharing',
-							getClass: function() {
-								return 'tooltip-map-sharing';
+							getClass: function(value, metaData, record) {
+								return 'tooltip-favorite-sharing' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex) {
-								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									window;
+								var record = this.up('grid').store.getAt(rowIndex);
 
-								Ext.Ajax.request({
-									url: gis.baseUrl + gis.conf.url.path_api + 'sharing?type=map&id=' + id,
-									method: 'GET',
-									failure: function(r) {
-										alert(r.responseText);
-									},
-									success: function(r) {
-										var sharing = Ext.decode(r.responseText);
-										window = GIS.app.SharingWindow(sharing);
-										window.show();
-									}
-								});
+								if (record.data.access.update) {
+									Ext.Ajax.request({
+										url: pt.baseUrl + '/api/sharing?type=map&id=' + record.data.id,
+										method: 'GET',
+										failure: function(r) {
+											pt.viewport.mask.hide();
+											alert(r.responseText);
+										},
+										success: function(r) {
+											var sharing = Ext.decode(r.responseText),
+												window = GIS.app.SharingWindow(sharing);
+											window.show();
+										}
+									});
+								}
 							}
 						},
 						{
 							iconCls: 'gis-grid-row-icon-dashboard',
-							getClass: function() {
-								return 'tooltip-map-dashboard';
+							getClass: function(value, metaData, record) {
+								return 'tooltip-favorite-dashboard' + (!record.data.access.update ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex) {
 								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									name = record.data.name,
-									message = 'Add to dashboard?\n\n' + name;
+									message;
 
-								if (confirm(message)) {
-									Ext.Ajax.request({
-										url: gis.baseUrl + gis.conf.url.path_gis + 'addMapViewToDashboard.action',
-										params: {
-											id: id
-										}
-									});
+								if (record.data.access.update) {
+									message = 'Add to dashboard?\n\n' + record.data.name;
+
+									if (confirm(message)) {
+										Ext.Ajax.request({
+											url: gis.baseUrl + gis.conf.url.path_gis + 'addMapViewToDashboard.action',
+											params: {
+												id: record.data.id
+											}
+										});
+									}
 								}
 							}
 						},
 						{
 							iconCls: 'gis-grid-row-icon-delete',
 							getClass: function(value, metaData, record) {
-								if (gis.init.user.isAdmin) {
-									return 'tooltip-map-delete';
-								}
+								return 'tooltip-favorite-delete' + (!record.data.access['delete'] ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex, colIndex, col, event) {
 								var record = this.up('grid').store.getAt(rowIndex),
-									id = record.data.id,
-									name = record.data.name,
-									message = 'Delete favorite?\n\n' + name;
+									message;
 
-								if (confirm(message)) {
-									Ext.Ajax.request({
-										url: gis.baseUrl + gis.conf.url.path_api + 'maps/' + id,
-										method: 'DELETE',
-										success: function() {
-											gis.store.maps.loadStore();
-										}
-									});
+								if (record.data.access['delete']) {
+									message = 'Delete favorite?\n\n' + record.data.name;
+
+									if (confirm(message)) {
+										Ext.Ajax.request({
+											url: pt.baseUrl + '/api/reportTables/' + record.data.id,
+											method: 'DELETE',
+											success: function() {
+												gis.store.maps.loadStore();
+											}
+										});
+									}
 								}
 							}
 						}
-					],
-					renderer: function(value, metaData, record) {
-						if (!gis.init.user.isAdmin && !record.data.user) {
-							metaData.tdCls = 'gis-grid-row-icon-disabled';
-						}
-					}
+					]
 				},
 				{
 					sortable: false,
@@ -2195,11 +2206,11 @@ Ext.onReady( function() {
 				},
 				afterrender: function() {
 					var fn = function() {
-						var editArray = Ext.query('.tooltip-map-edit'),
-							overwriteArray = Ext.query('.tooltip-map-overwrite'),
-							sharingArray = Ext.query('.tooltip-map-sharing'),
-							dashboardArray = Ext.query('.tooltip-map-dashboard'),
-							deleteArray = Ext.query('.tooltip-map-delete'),
+						var editArray = Ext.query('.tooltip-favorite-edit'),
+							overwriteArray = Ext.query('.tooltip-favorite-overwrite'),
+							sharingArray = Ext.query('.tooltip-favorite-sharing'),
+							dashboardArray = Ext.query('.tooltip-favorite-dashboard'),
+							deleteArray = Ext.query('.tooltip-favorite-delete'),
 							el;
 
 						for (var i = 0; i < editArray.length; i++) {
@@ -2273,7 +2284,7 @@ Ext.onReady( function() {
 			}
 		});
 
-		mapWindow = Ext.create('Ext.window.Window', {
+		favoriteWindow = Ext.create('Ext.window.Window', {
 			title: 'Manage favorites',
 			iconCls: 'gis-window-title-icon-favorite',
 			cls: 'gis-container-default',
@@ -2306,7 +2317,7 @@ Ext.onReady( function() {
 			}
 		});
 
-		return mapWindow;
+		return favoriteWindow;
 	};
 
 	GIS.app.LegendSetWindow = function() {
@@ -4766,12 +4777,12 @@ Ext.onReady( function() {
 							text: 'Favorites', //i18n
 							menu: {},
 							handler: function() {
-								if (viewport.mapWindow && viewport.mapWindow.destroy) {
-									viewport.mapWindow.destroy();
+								if (viewport.favoriteWindow && viewport.favoriteWindow.destroy) {
+									viewport.favoriteWindow.destroy();
 								}
 
-								viewport.mapWindow = GIS.app.MapWindow();
-								viewport.mapWindow.show();
+								viewport.favoriteWindow = GIS.app.FavoriteWindow();
+								viewport.favoriteWindow.show();
 							}
 						});
 						if (gis.init.user.isAdmin) {

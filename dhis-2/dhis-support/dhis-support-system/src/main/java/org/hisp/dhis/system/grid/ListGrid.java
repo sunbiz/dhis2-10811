@@ -79,7 +79,7 @@ public class ListGrid
     /**
      * A Map which can hold arbitrary meta-data.
      */
-    private Map<Object, String> metaData;
+    private Map<Object, Object> metaData;
 
     /**
      * A two dimensional List which simulates a grid where the first list
@@ -108,7 +108,7 @@ public class ListGrid
     public ListGrid()
     {
         headers = new ArrayList<GridHeader>();
-        metaData = new HashMap<Object, String>();
+        metaData = new HashMap<Object, Object>();
         grid = new ArrayList<List<Object>>();
     }
 
@@ -219,17 +219,17 @@ public class ListGrid
 
     @JsonProperty
     @JsonView( { DetailedView.class } )
-    public Map<Object, String> getMetaData()
+    public Map<Object, Object> getMetaData()
     {
         return metaData;
     }
     
-    public void setMetaData( Map<Object, String> metaData )
+    public void setMetaData( Map<Object, Object> metaData )
     {
         this.metaData = metaData;
     }
 
-    public void addMetaData( String key, String value )
+    public void addMetaData( Object key, Object value )
     {
         this.metaData.put( key, value );
     }
@@ -546,11 +546,11 @@ public class ListGrid
             {
                 // Header
                 
-                String headerMetaName = metaData.get( header.getName() );
+                Object headerMetaName = metaData.get( header.getName() );
                 
                 if ( headerMetaName != null )
                 {
-                    header.setName( headerMetaName );
+                    header.setName( String.valueOf( headerMetaName ) );
                 }
                 
                 // Column cells

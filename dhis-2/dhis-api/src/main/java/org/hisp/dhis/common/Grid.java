@@ -77,17 +77,17 @@ public interface Grid
     /**
      * Returns map of meta-data.
      */
-    Map<Object, String> getMetaData();
+    Map<Object, Object> getMetaData();
     
     /**
      * Sets map of meta-data.
      */
-    void setMetaData( Map<Object, String> metaData );
+    void setMetaData( Map<Object, Object> metaData );
     
     /**
      * Adds a key-value pair to meta-data.
      */
-    void addMetaData( String key, String value );
+    void addMetaData( Object key, Object value );
     
     /**
      * Returns all visible headers, ie. headers which are not hidden.

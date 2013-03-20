@@ -399,7 +399,7 @@ public class SaveSingleEventAction
         {
             ProgramStageInstance programStageInstance = programStageInstanceService
                 .getProgramStageInstance( this.programStageInstanceId );
-             ProgramInstance programInstance = programStageInstance.getProgramInstance();
+            ProgramInstance programInstance = programStageInstance.getProgramInstance();
 
             for ( ProgramStageDataElement programStageDataElement : programStageDataElements )
             {
@@ -445,7 +445,7 @@ public class SaveSingleEventAction
             }
             programStageInstance.setCompleted( true );
             programStageInstanceService.updateProgramStageInstance( programStageInstance );
-            
+
             programInstance.setCompleted( true );
             programInstanceService.updateProgramInstance( programInstance );
         }
@@ -478,15 +478,21 @@ public class SaveSingleEventAction
 
                 String id = "DE" + dataElement.getId();
 
-                patientDataValue.setValue( parameterMap.get( id ) );
+                String value = parameterMap.get( id );
 
-                patientDataValue.setProgramStageInstance( programStageInstance );
+                if ( value != null && !value.trim().equals( "" ) )
+                {
 
-                patientDataValue.setProvidedElsewhere( false );
+                    patientDataValue.setValue( parameterMap.get( id ) );
 
-                patientDataValue.setTimestamp( new Date() );
+                    patientDataValue.setProgramStageInstance( programStageInstance );
 
-                patientDataValueService.savePatientDataValue( patientDataValue );
+                    patientDataValue.setProvidedElsewhere( false );
+
+                    patientDataValue.setTimestamp( new Date() );
+
+                    patientDataValueService.savePatientDataValue( patientDataValue );
+                }
             }
         }
         SessionUtils.removeSessionVar( "prevDataValues" );

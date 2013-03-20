@@ -165,8 +165,7 @@ public class DataElementCategoryCombo
         CombinationGenerator<DataElementCategoryOption> generator =
             new CombinationGenerator<DataElementCategoryOption>( getCategoryOptionsAsArray() );
 
-        sortLoop:
-        while ( generator.hasNext() )
+        sortLoop: while ( generator.hasNext() )
         {
             List<DataElementCategoryOption> categoryOptions = generator.getNext();
 
