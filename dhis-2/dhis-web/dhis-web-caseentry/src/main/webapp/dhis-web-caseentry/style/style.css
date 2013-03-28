@@ -41,7 +41,7 @@ input[type="text"]
 
 input.option
 {
-    width: 235px;
+    width: 240px;
 }
 
 select 
@@ -192,9 +192,8 @@ input.move-button
 
 input.optionset[type="text"]
 {
-	width:230px; 
+	width:240px; 
 }
-
 
 input.datefield[type="text"]
 {
@@ -258,8 +257,8 @@ table.link-area
   padding-left:1px;
   padding-bottom:0px;
   height:120px;
-  width:33%;
   overflow:hidden;
+  align:bottom;
 }
 
 div.link-area
@@ -271,7 +270,7 @@ div.link-area
   padding-left:1px;
   padding-bottom:0px;
   height:172px;
-  width:32%;
+  
   overflow:hidden;
 }
 

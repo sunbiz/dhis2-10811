@@ -26,23 +26,25 @@
     }
 </style>
 
-<h3>$i18n.getString( "send_sms_beneficiary" )</h3>
+<h3>$i18n.getString( "send_sms" )</h3>
 #if ( $!gatewayMap && $!gatewayMap.size() > 0 )
 <div>
 <form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action" onsubmit="selectAllById('recipients')">
 	<input type="hidden" id="orgunitId" name="orgunitId" />
 	<table id="detailsList">
-		<col width="85px"/>
+		<col width="100px"/>
 		<tbody>
 			<tr>
-				<td>$i18n.getString( "send_sms_to_target" ):<td>
+				<td>$i18n.getString( "send_sms_to_target" )<td>
 				<td>
 					<select id="sendTarget" name="sendTarget" onchange="javascript:toggleBasicSMSGUI( this.value );">
 						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
 						<option value="userGroup">$i18n.getString( "user_group" )</option>
 						<option value="user">$i18n.getString( "assigned_user_number" )</option>
 						<option value="unit">$i18n.getString( "stakeholder_contact_person" )</option>
+						#if( $auth.hasAccess( "dhis-web-sms", "showBeneficiarySMSForm" ) ) 
 						<option value="patient" selected="true">$i18n.getString( "patients_registered" )</option>
+						#end
 					</select>
 				</td>
 			</tr>
@@ -60,17 +62,17 @@
 			<tr><th colspan="2">$i18n.getString( "phone_number" )</th></tr>
 			<tr>
 				<td colspan="2">
-					<select id="recipients" name="recipients" multiple="true" style="width:50em;height:10em" class="{validate:{required:true}}" 
+					<select id="recipients" name="recipients" multiple="true" size='10' style="width:600px" class="{validate:{required:true}}" 
 					ondblclick="removePhoneFromList( 'recipients', this.value );"></select>
 				</td>
 			</tr>
 
 			<tr><th colspan="2">$i18n.getString( "message" ) ($i18n.getString( "do_not_send_patient_confidential_messages_using_sms" ))</th></tr>
-			<tr><td colspan="2"><textarea id="smsMessage" name="smsMessage" cols="95" rows="5" class="{validate:{required:true}}"></textarea></td></tr>
+			<tr><td colspan="2"><textarea id="smsMessage" name="smsMessage" rows="5" style="width:600px;" class="{validate:{required:true}}"></textarea></td></tr>
 		</tbody>
 		
 		<tbody>
-			<tr><td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )" /></td></tr>
+			<tr><td><input type="submit" class='large-button' name="send" value="$i18n.getString( 'send' )" /></td></tr>
 		</tbody>
 	</table>	
 </form>

@@ -47,6 +47,7 @@ import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.user.UserService;
 import org.hisp.dhis.util.SessionUtils;
 
 import com.opensymphony.xwork2.Action;
@@ -91,6 +92,18 @@ public class GetSingleEventFormAction
     public void setPatientService( PatientService patientService )
     {
         this.patientService = patientService;
+    }
+    
+    private UserService userService;
+    
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
     }
 
     // -------------------------------------------------------------------------

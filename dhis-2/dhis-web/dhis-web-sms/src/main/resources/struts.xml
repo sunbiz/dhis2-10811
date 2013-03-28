@@ -8,23 +8,20 @@
 	<package name="dhis-web-sms" extends="dhis-web-commons"
 		namespace="/sms">
 
-		<action name="index"
-			class="org.hisp.dhis.sms.action.NoAction">
+		<action name="index" class="org.hisp.dhis.sms.action.NoAction">
 			<result name="success" type="redirect">
 				showSendingSMSForm.action
 			</result>
 		</action>
 
-		<action name="testSMS"
-			class="org.hisp.dhis.sms.action.NoAction">
+		<action name="testSMS" class="org.hisp.dhis.sms.action.NoAction">
 			<result name="success" type="velocity">
 				/dhis-web-sms/main.vm
 			</result>
 			<param name="page">/dhis-web-sms/testsms.vm</param>
 		</action>
 
-		<action name="smsinput"
-			class="org.hisp.dhis.sms.input.SMSInput">
+		<action name="smsinput" class="org.hisp.dhis.sms.input.SMSInput">
 			<result name="success" type="velocity">
 				/dhis-web-sms/smssuccess.vm
 			</result>
@@ -41,11 +38,12 @@
 			<param name="page">/dhis-web-sms/sendSMSPage.vm</param>
 			<param name="menu">/dhis-web-sms/menu.vm</param>
 			<param name="javascripts">
-				../dhis-web-commons/oust/oust.js,../dhis-web-sms/javascript/sendSMS.js
+				../dhis-web-commons/oust/oust.js,
+				../dhis-web-sms/javascript/sendSMS.js
 			</param>
+			<param name="stylesheets">../dhis-web-sms/css/patient.css</param>
 			<param name="requiredAuthorities">F_MOBILE_SENDSMS</param>
 		</action>
-
 
 		<action name="showBeneficiarySMSForm"
 			class="org.hisp.dhis.sms.outcoming.ShowSendSMSBeneficiaryFormAction">
@@ -54,22 +52,17 @@
 				/dhis-web-sms/sendBeneficiarySMSPage.vm
 			</param>
 			<param name="menu">/dhis-web-sms/menuWithTree.vm</param>
+			<param name="javascripts">../dhis-web-commons/ouwt/ouwt.js</param>
 			<param name="stylesheets">../dhis-web-sms/css/patient.css</param>
-			<param name="javascripts">
-				../dhis-web-commons/ouwt/ouwt.js
-			</param>
-			<param name="requiredAuthorities">F_MOBILE_SENDSMS</param>
+			<param name="requiredAuthorities">F_MOBILE_SENDSMS,F_PATIENT_SEARCH</param>
 		</action>
 
-		<action name="searchRegistrationPatient"
-			class="org.hisp.dhis.sms.outcoming.SearchPatientAction">
+		<action name="searchRegistrationPatient" class="org.hisp.dhis.sms.outcoming.SearchPatientAction">
 			<result name="success" type="velocity">/content.vm</result>
 			<param name="page">
 				/dhis-web-sms/patientRegistrationList.vm
 			</param>
-			<param name="requiredAuthorities">
-				F_PATIENT_MANAGEMENT
-			</param>
+			<param name="requiredAuthorities">F_PATIENT_SEARCH</param>
 		</action>
 
 		<action name="sendSMS"
@@ -83,13 +76,12 @@
 			<param name="onExceptionReturn">plainTextError</param>
 			<param name="requiredAuthorities">F_MOBILE_SENDSMS</param>
 		</action>
-		
-		
-    <action name="searchAllFacilities"
-      class="org.hisp.dhis.sms.action.NoAction">
-      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <param name="requiredAuthorities">F_SEARCH_PATIENT_IN_ALL_FACILITIES</param>
-    </action>
+
+		<action name="searchAllFacilities" class="org.hisp.dhis.sms.action.NoAction">
+			<result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm
+			</result>
+			<param name="requiredAuthorities">F_SEARCH_PATIENT_IN_ALL_FACILITIES</param>
+		</action>
 
 	</package>
 </struts>

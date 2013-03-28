@@ -110,13 +110,7 @@ public interface ProgramStageInstanceStore
     // -------------------------------------------------------------------------
     // Activity plans
     // -------------------------------------------------------------------------
-
-    List<ProgramStageInstance> getActiveInstance( Program program, Collection<Integer> orgunitIds, Date startDate,
-        Date endDate, Collection<Integer> statusList, Integer max, Integer min );
-
-    int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        Collection<Integer> statusList );
-
+    
     Collection<ProgramStageInstance> get( Program program, Collection<Integer> orgunitIds, Date startDate,
         Date endDate, Boolean completed );
 
@@ -129,5 +123,7 @@ public interface ProgramStageInstanceStore
 
     int averageNumberCompleted( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
         Boolean completed );
+    
+    Collection<Integer> getOrgunitIds( Date startDate, Date endDate );
     
 }

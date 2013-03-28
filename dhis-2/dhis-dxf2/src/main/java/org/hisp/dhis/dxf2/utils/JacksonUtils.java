@@ -83,18 +83,7 @@ public class JacksonUtils
         }
 
         jsonMapper.getJsonFactory().enable( JsonGenerator.Feature.QUOTE_FIELD_NAMES );
-        // jsonMapper.getFactory().enable( JsonGenerator.Feature.QUOTE_FIELD_NAMES );
         xmlMapper.configure( ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
-
-        /*
-        jsonMapper.setAnnotationIntrospector(
-            new JacksonAnnotationIntrospector() );
-
-        xmlMapper.setAnnotationIntrospector(
-            new AnnotationIntrospectorPair(
-                new JacksonXmlAnnotationIntrospector(),
-                new JacksonAnnotationIntrospector() ) );
-        */
 
         // register view classes
         viewClasses.put( "default", BasicView.class );

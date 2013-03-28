@@ -164,12 +164,6 @@ public class Indicator
         return name.equals( other.getName() );
     }
 
-    @Override
-    public String toString()
-    {
-        return "[" + name + "]";
-    }
-
     // -------------------------------------------------------------------------
     // Logic
     // -------------------------------------------------------------------------

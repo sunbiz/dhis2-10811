@@ -47,7 +47,11 @@ public class ModelMapping
         de.setType( dataElement.getType() );
 
         de.setCategoryOptionCombos( getCategoryOptionCombos( dataElement ) );
-        de.setOptionSet( getOptionSet( dataElement ) );
+        
+        //Limit the optionset transfer to the client
+        if (dataElement.getOptionSet() != null && dataElement.getOptionSet().getOptions().size() <= 50) {
+            de.setOptionSet( getOptionSet( dataElement ) );
+        }
         return de;
     }
 

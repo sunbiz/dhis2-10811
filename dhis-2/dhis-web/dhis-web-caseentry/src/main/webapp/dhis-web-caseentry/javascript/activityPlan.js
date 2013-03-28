@@ -34,24 +34,34 @@ function displayCadendar()
 
 function showActitityList()
 {
+	setFieldValue('listAll', "true");
 	hideById('listPatientDiv');
 	contentDiv = 'listPatientDiv';
-	
-	var statusList = "";
-	var statusEvent = getFieldValue('statusEvent').split('_');
-	for( var i in statusEvent){
-		statusList += "&statusList=" + statusEvent[i];
-	}
-
 	$('#contentDataRecord').html('');
-	
+	var facilityLB = $('input[name=facilityLB]:checked').val();
+	var programId = getFieldValue('programIdAddPatient');
+	var searchTexts = "stat_" + programId
+					+ "_" + getFieldValue('startDueDate')
+					+ "_" + getFieldValue('endDueDate');
+	if(facilityLB=='selected')
+	{
+		searchTexts += "_" + getFieldValue('orgunitId');
+	}
+	else if(facilityLB=='all')
+	{
+		searchTexts += "_0";
+	}
+	else if(facilityLB=='childrenOnly'){
+		searchTexts += "_-1";
+	}
+	searchTexts += "_false_" + getFieldValue('statusEvent');
+		
 	showLoader();
-	jQuery('#listPatientDiv').load('getActivityPlanRecords.action?' + statusList,
+	jQuery('#listPatientDiv').load('getActivityPlanRecords.action',
 		{
-			programId:getFieldValue('programIdAddPatient'),
-			startDate:getFieldValue('startDueDate'),
-			endDue:getFieldValue('endDueDate'),
-			facilityLB: $('input[name=facilityLB]:checked').val()
+			programId:programId,
+			listAll:false,
+			searchTexts: searchTexts
 		}, 
 		function()
 		{
@@ -64,16 +74,26 @@ function showActitityList()
 
 function exportActitityList( type )
 {
-	var params  = "programId=" + getFieldValue('programIdAddPatient');
-	params += "&startDate=" + getFieldValue('startDueDate');
-	params += "&endDue=" + getFieldValue('endDueDate');
-	params += "&type=xls";
-	params += "&facilityLB=" + $('input[name=facilityLB]:checked').val();
+	var facilityLB = $('input[name=facilityLB]:checked').val();
 	
-	var statusEvent = getFieldValue('statusEvent').split('_');
-	for( var i in statusEvent){
-		params += "&statusList=" + statusEvent[i];
+	var params  = "programId=" + getFieldValue('programIdAddPatient');
+	params += "&type=xls";
+	params += "&searchTexts=stat_" + getFieldValue('programIdAddPatient')
+					+ "_" + getFieldValue('startDueDate')
+					+ "_" + getFieldValue('endDueDate');
+	if(facilityLB=='selected')
+	{
+		params += "_" + getFieldValue('orgunitId');
 	}
+	else if(facilityLB=='all')
+	{
+		params += "_0";
+	}
+	else if(facilityLB=='childrenOnly'){
+		params += "_-1";
+	}
+	params += "_false_" + getFieldValue('statusEvent');
+	
 	var url = "getActivityPlanRecords.action?" + params;
 	window.location.href = url;
 }

@@ -6,6 +6,8 @@
         }, {
             'beforeValidateHandler' : function()
             {
+                jQuery( "#groupMembersList" ).find( "option" ).attr( "selected", "selected" );
+                
                 #tblDynamicAttributesJavascript()
             },
             'rules' : getValidationRules( "userGroup" )

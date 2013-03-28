@@ -134,13 +134,11 @@ public abstract class AbstractJdbcTableManager
 
     public boolean pruneTable( String tableName )
     {
-        final String sqlCount = "select count(*) from " + tableName;
+        final String sql = "select * from " + tableName + " limit 1";
         
-        log.info( "Count SQL: " + sqlCount );
+        final boolean hasRows = jdbcTemplate.queryForRowSet( sql ).next();
         
-        final boolean empty = jdbcTemplate.queryForInt( sqlCount ) == 0;
-        
-        if ( empty )
+        if ( !hasRows )
         {
             final String sqlDrop = "drop table " + tableName;
             

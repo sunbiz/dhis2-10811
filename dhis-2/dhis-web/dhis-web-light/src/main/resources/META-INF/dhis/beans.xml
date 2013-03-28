@@ -184,6 +184,8 @@
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
 		<property name="programStageSectionService"
 			ref="org.hisp.dhis.program.ProgramStageSectionService"/>
+		<property name="userService"
+			ref="org.hisp.dhis.user.UserService"/>
 	</bean>
 
 	<bean id="org.hisp.dhis.light.utils.NamebasedUtils" class="org.hisp.dhis.light.utils.NamebasedUtils">
@@ -207,7 +209,7 @@
 		<property name="programStageSectionService" ref="org.hisp.dhis.program.ProgramStageSectionService"/>
 		<property name="programExpressionService" ref="org.hisp.dhis.program.ProgramExpressionService" />
 		<property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
-
+		<property name="userService" ref="org.hisp.dhis.user.UserService"/>
 	</bean>
 
 	<bean
@@ -241,6 +243,7 @@
 			ref="org.hisp.dhis.relationship.RelationshipTypeService" />
 		<property name="util" ref="org.hisp.dhis.light.utils.NamebasedUtils" />
 		<property name="patientIdentifierService" ref="org.hisp.dhis.patient.PatientIdentifierService" />
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 	</bean>
 
 	<bean
@@ -430,6 +433,7 @@
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
+		<property name="userService" ref="org.hisp.dhis.user.UserService"/>	
 	</bean>
 
 	<bean id="org.hisp.dhis.light.singleevent.action.SaveSingleEventAction"
@@ -448,6 +452,7 @@
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
 		<property name="programStageDataElementService"
 			ref="org.hisp.dhis.program.ProgramStageDataElementService" />
+		<property name="userService" ref="org.hisp.dhis.user.UserService"/>
 	</bean>
 
 
@@ -530,12 +535,14 @@
 		class="org.hisp.dhis.light.anonymous.action.GetAllAnonymousProgramAction"
 		scope="prototype">
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.light.anonymous.action.ShowAnonymousFormAction"
 		class="org.hisp.dhis.light.anonymous.action.ShowAnonymousFormAction"
 		scope="prototype">
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="userService" ref="org.hisp.dhis.user.UserService"/>
 	</bean>
 
 	<bean id="org.hisp.dhis.light.anonymous.action.SaveAnonymousProgramAction"
@@ -553,6 +560,7 @@
 			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
 		<property name="programStageDataElementService"
 			ref="org.hisp.dhis.program.ProgramStageDataElementService" />
+		<property name="userService" ref="org.hisp.dhis.user.UserService"/>	
 	</bean>
 
 	<bean

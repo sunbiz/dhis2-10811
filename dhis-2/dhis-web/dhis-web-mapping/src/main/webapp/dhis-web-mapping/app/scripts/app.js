@@ -572,6 +572,10 @@ Ext.onReady( function() {
 			updateItem: function(value) {
 				this.numberField.setDisabled(!value);
 				this.layer.setVisibility(value);
+
+				if (value && this.layer.layerType === gis.conf.finals.layer.type_base) {
+					gis.olmap.setBaseLayer(this.layer);
+				}
 			},
 			initComponent: function() {
 				var that = this,
@@ -583,13 +587,12 @@ Ext.onReady( function() {
 					listeners: {
 						change: function(chb, value) {
 							if (value && that.layer.layerType === gis.conf.finals.layer.type_base) {
-								var layers = gis.util.map.getLayersByType(gis.conf.finals.layer.type_base),
-									layer;
+								var layers = gis.util.map.getLayersByType(gis.conf.finals.layer.type_base);
+
 								for (var i = 0; i < layers.length; i++) {
-									layer = layers[i];
-									if (layer !== that.layer) {
-										layer.item.checkbox.suppressChange = true;
-										layer.item.disableItem();
+									if (layers[i] !== that.layer) {
+										layers[i].item.checkbox.suppressChange = true;
+										layers[i].item.disableItem();
 									}
 								}
 							}
@@ -927,6 +930,7 @@ Ext.onReady( function() {
 			title: layer.name,
 			layout: 'fit',
 			iconCls: 'gis-window-title-icon-' + layer.id,
+            bodyStyle: 'padding:5px',
 			cls: 'gis-container-default',
 			closeAction: 'hide',
 			width: gis.conf.layout.widget.window_width,
@@ -1532,7 +1536,7 @@ Ext.onReady( function() {
 					labelSeparator: null,
 					editable: false,
 					disabled: !!disallowPublicAccess,
-					value: obj.access,
+					value: obj.access || 'rw------',
 					store: store
 				});
 
@@ -1795,7 +1799,7 @@ Ext.onReady( function() {
 
 			nameTextfield = Ext.create('Ext.form.field.Text', {
 				height: 26,
-				width: 250,
+				width: 371,
 				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
 				style: 'margin-bottom:0',
 				emptyText: 'Favorite name',
@@ -1811,7 +1815,6 @@ Ext.onReady( function() {
 				text: 'Create', //i18n
 				handler: function() {
 					var name = nameTextfield.getValue(),
-						system = systemCheckbox.getValue(),
 						layers = gis.util.map.getVisibleVectorLayers(),
 						layer,
 						lonlat = gis.olmap.getCenter(),
@@ -1896,7 +1899,7 @@ Ext.onReady( function() {
 			window = Ext.create('Ext.window.Window', {
 				title: id ? 'Rename favorite' : 'Create new favorite',
 				iconCls: 'gis-window-title-icon-favorite',
-				cls: 'gis-container-default',
+				bodyStyle: 'padding:2px; background:#fff',
 				resizable: false,
 				modal: true,
 				items: nameTextfield,
@@ -2105,17 +2108,17 @@ Ext.onReady( function() {
 						{
 							iconCls: 'gis-grid-row-icon-sharing',
 							getClass: function(value, metaData, record) {
-								return 'tooltip-favorite-sharing' + (!record.data.access.update ? ' disabled' : '');
+								return 'tooltip-favorite-sharing' + (!record.data.access.manage ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex) {
 								var record = this.up('grid').store.getAt(rowIndex);
 
-								if (record.data.access.update) {
+								if (record.data.access.manage) {
 									Ext.Ajax.request({
-										url: pt.baseUrl + '/api/sharing?type=map&id=' + record.data.id,
+										url: gis.baseUrl + '/api/sharing?type=map&id=' + record.data.id,
 										method: 'GET',
 										failure: function(r) {
-											pt.viewport.mask.hide();
+                                            gis.olmap.mask.hide();
 											alert(r.responseText);
 										},
 										success: function(r) {
@@ -2130,13 +2133,13 @@ Ext.onReady( function() {
 						{
 							iconCls: 'gis-grid-row-icon-dashboard',
 							getClass: function(value, metaData, record) {
-								return 'tooltip-favorite-dashboard' + (!record.data.access.update ? ' disabled' : '');
+								return 'tooltip-favorite-dashboard' + (!record.data.access.read ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex) {
 								var record = this.up('grid').store.getAt(rowIndex),
 									message;
 
-								if (record.data.access.update) {
+								if (record.data.access.read) {
 									message = 'Add to dashboard?\n\n' + record.data.name;
 
 									if (confirm(message)) {
@@ -2164,7 +2167,7 @@ Ext.onReady( function() {
 
 									if (confirm(message)) {
 										Ext.Ajax.request({
-											url: pt.baseUrl + '/api/reportTables/' + record.data.id,
+											url: gis.baseUrl + '/api/maps/' + record.data.id,
 											method: 'DELETE',
 											success: function() {
 												gis.store.maps.loadStore();
@@ -2432,7 +2435,7 @@ Ext.onReady( function() {
 					{
 						dataIndex: 'name',
 						sortable: false,
-						width: 363
+						width: 369
 					},
 					{
 						xtype: 'actioncolumn',
@@ -2560,7 +2563,7 @@ Ext.onReady( function() {
 
 			legendSetName = Ext.create('Ext.form.field.Text', {
 				cls: 'gis-textfield',
-				width: 422,
+				width: 428,
 				height: 25,
 				fieldStyle: 'padding-left: 6px; border-color: #bbb',
 				fieldLabel: 'Legend set name' //i18n
@@ -2569,13 +2572,13 @@ Ext.onReady( function() {
 			legendName = Ext.create('Ext.form.field.Text', {
 				cls: 'gis-textfield',
 				fieldStyle: 'padding-left: 6px',
-				width: 404,
+				width: 415,
 				height: 23,
 				fieldLabel: 'Legend name' //i18n
 			});
 
 			startValue = Ext.create('Ext.form.field.Number', {
-				width: 148,
+				width: 153,
 				height: 23,
 				allowDecimals: false,
 				fieldStyle: 'padding-left: 6px; border-radius: 1px',
@@ -2583,7 +2586,7 @@ Ext.onReady( function() {
 			});
 
 			endValue = Ext.create('Ext.form.field.Number', {
-				width: 148,
+				width: 154,
 				height: 23,
 				allowDecimals: false,
 				fieldStyle: 'padding-left: 6px; border-radius: 1px',
@@ -2592,7 +2595,7 @@ Ext.onReady( function() {
 			});
 
 			color = Ext.create('Ext.ux.button.ColorButton', {
-				width: 299,
+				width: 310,
 				height: 23,
 				fieldLabel: 'Symbolizer', //i18n
 				style: 'border-radius: 1px',
@@ -2644,7 +2647,7 @@ Ext.onReady( function() {
 			legendGrid = Ext.create('Ext.grid.Panel', {
 				cls: 'gis-grid',
 				bodyStyle: 'border-top: 0 none',
-				width: 422,
+				width: 428,
 				height: 235,
 				scroll: 'vertical',
 				hideHeaders: true,
@@ -2653,7 +2656,7 @@ Ext.onReady( function() {
 					{
 						dataIndex: 'name',
 						sortable: false,
-						width: 250
+						width: 256
 					},
 					{
 						sortable: false,
@@ -2745,7 +2748,7 @@ Ext.onReady( function() {
 						cls: 'gis-panel-html-separator'
 					},
 					{
-						bodyStyle: 'background-color: #f1f1f1; border: 1px solid #ccc; border-radius: 1px; padding: 8px',
+						bodyStyle: 'background-color:#f1f1f1; border:1px solid #ccc; border-radius:1px; padding:5px',
 						items: [
 							legendName,
 							{
@@ -2755,7 +2758,7 @@ Ext.onReady( function() {
 									{
 										html: 'Start / end value:', //i18n
 										width: 105,
-										bodyStyle: 'background: transparent; padding-top: 3px'
+										bodyStyle: 'background:transparent; padding-top:3px'
 									},
 									startValue,
 									endValue
@@ -2783,7 +2786,7 @@ Ext.onReady( function() {
 					{
 						cls: 'gis-container-inner',
 						bodyStyle: 'text-align: right',
-						width: 422,
+						width: 428,
 						items: addLegend
 					},
 					{
@@ -2977,7 +2980,7 @@ Ext.onReady( function() {
 		window = Ext.create('Ext.window.Window', {
 			title: 'Legend sets', //i18n
 			iconCls: 'gis-window-title-icon-legendset', //todo
-			cls: 'gis-container-default',
+            bodyStyle: 'padding:5px; background-color:#fff',
 			resizable: false,
 			width: 450,
 			modal: true,
@@ -3018,7 +3021,7 @@ Ext.onReady( function() {
 		button = Ext.create('Ext.button.Button', {
 			text: 'Download', //i18n
 			handler: function() {
-				var title = textfield.getValue(),
+				var title = Ext.htmlEncode(textfield.getValue()),
 					svg = gis.util.svg.getString(title, gis.util.map.getVisibleVectorLayers()),
 					exportForm = document.getElementById('exportForm');
 
@@ -3042,6 +3045,7 @@ Ext.onReady( function() {
 			layout: 'fit',
 			iconCls: 'gis-window-title-icon-download',
 			cls: 'gis-container-default',
+            bodyStyle: 'padding:2px',
 			resizable: true,
 			modal: true,
 			items: textfield,
@@ -3075,7 +3079,7 @@ Ext.onReady( function() {
 		panel = Ext.create('Ext.panel.Panel', {
 			cls: 'gis-container-inner',
 			html: '<b>Link: </b>' + gis.init.contextPath + '/dhis-web-mapping/app/index.html?id=' + gis.map.id, //todo
-			style: 'padding-top: 9px; padding-bottom: 2px'
+			style: 'padding:6px 0 6px 1px'
 		});
 
 		button = Ext.create('Ext.button.Button', {
@@ -3100,6 +3104,7 @@ Ext.onReady( function() {
 			layout: 'fit',
 			iconCls: 'gis-window-title-icon-interpretation',
 			cls: 'gis-container-default',
+            bodyStyle: 'padding:5px 5px 0',
 			width: 500,
 			resizable: true,
 			modal: true,
@@ -4970,10 +4975,10 @@ Ext.onReady( function() {
 			afterRender = function() {
 
 				// Map tools
-				document.getElementsByClassName('zoomInButton')[0].innerHTML = '<img src="images/zoomin_24.png" />';
-				document.getElementsByClassName('zoomOutButton')[0].innerHTML = '<img src="images/zoomout_24.png" />';
-				document.getElementsByClassName('zoomVisibleButton')[0].innerHTML = '<img src="images/zoomvisible_24.png" />';
-				document.getElementsByClassName('measureButton')[0].innerHTML = '<img src="images/measure_24.png" />';
+				Ext.query('.zoomInButton')[0].innerHTML = '<img src="images/zoomin_24.png" />';
+				Ext.query('.zoomOutButton')[0].innerHTML = '<img src="images/zoomout_24.png" />';
+				Ext.query('.zoomVisibleButton')[0].innerHTML = '<img src="images/zoomvisible_24.png" />';
+				Ext.query('.measureButton')[0].innerHTML = '<img src="images/measure_24.png" />';
 
 				gis.olmap.events.register('click', null, function(e) {
 					if (gis.olmap.relocate.active) {

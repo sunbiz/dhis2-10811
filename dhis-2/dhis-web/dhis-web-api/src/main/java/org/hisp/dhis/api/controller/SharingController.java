@@ -33,6 +33,7 @@ import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.webdomain.sharing.Sharing;
 import org.hisp.dhis.api.webdomain.sharing.SharingUserGroupAccess;
 import org.hisp.dhis.api.webdomain.sharing.SharingUserGroups;
+import org.hisp.dhis.common.AccessStringHelper;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -110,7 +111,26 @@ public class SharingController
 
         sharing.getObject().setId( object.getUid() );
         sharing.getObject().setName( object.getDisplayName() );
-        sharing.getObject().setPublicAccess( object.getPublicAccess() );
+
+        if ( object.getPublicAccess() == null )
+        {
+            String access;
+
+            if ( SharingUtils.canCreatePublic( currentUserService.getCurrentUser(), type ) )
+            {
+                access = AccessStringHelper.newInstance().enable( AccessStringHelper.Permission.READ ).enable( AccessStringHelper.Permission.WRITE ).build();
+            }
+            else
+            {
+                access = AccessStringHelper.newInstance().build();
+            }
+
+            sharing.getObject().setPublicAccess( access );
+        }
+        else
+        {
+            sharing.getObject().setPublicAccess( object.getPublicAccess() );
+        }
 
         if ( object.getUser() != null )
         {
@@ -187,7 +207,7 @@ public class SharingController
             }
         }
 
-        manager.update( object );
+        manager.updateNoAcl( object );
 
         StringBuilder builder = new StringBuilder();
 
@@ -214,7 +234,7 @@ public class SharingController
         ContextUtils.okResponse( response, "Access control set" );
     }
 
-    @RequestMapping( value = "/search", produces = { "application/json", "text/*" } )
+    @RequestMapping(value = "/search", produces = { "application/json", "text/*" })
     public void searchUserGroups( @RequestParam String key, HttpServletResponse response ) throws IOException
     {
         SharingUserGroups sharingUserGroups = new SharingUserGroups();

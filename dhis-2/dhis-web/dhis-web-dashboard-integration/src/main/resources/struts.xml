@@ -204,14 +204,12 @@
 			<result name="success" type="velocity">/main.vm</result>
 			<param name="page">/dhis-web-dashboard-integration/addUserGroupForm.vm</param>
 			<param name="javascripts">javascript/usergroup.js</param>
-			<param name="anyAuthorities">F_USERGROUP_PUBLIC_ADD</param>
 		</action>
 
 		<action name="addUserGroup"
 			class="org.hisp.dhis.dashboard.usergroup.action.AddUserGroupAction">
 			<param name="javascripts">javascript/usergroup.js</param>
 			<result name="success" type="redirect">getAllUserGroups.action</result>
-			<param name="anyAuthorities">F_USERGROUP_PUBLIC_ADD</param>
 		</action>
 
 		<action name="editUserGroupForm"

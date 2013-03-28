@@ -135,7 +135,7 @@ public class HibernateProgramStore
         }
         else
         {
-            programs = getAll();
+            programs = getByType(type);
         }
         return programs;
     }

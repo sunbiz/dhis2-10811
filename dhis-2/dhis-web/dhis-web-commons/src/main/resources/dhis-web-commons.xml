@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC
-"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
-"http://struts.apache.org/dtds/struts-2.0.dtd">
+  "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+  "http://struts.apache.org/dtds/struts-2.0.dtd">
 <struts>
 
   <include file="struts-default.xml" />
@@ -39,7 +39,7 @@
       <interceptor name="systemSettingInterceptor" class="org.hisp.dhis.interceptor.SystemSettingInterceptor" />
       <interceptor name="userSettingInterceptor" class="org.hisp.dhis.interceptor.UserSettingInterceptor" />
       <interceptor name="contextInterceptor" class="org.hisp.dhis.interceptor.ContextInterceptor" />
-	  <interceptor name="cacheInterceptor" class="org.hisp.dhis.interceptor.CacheInterceptor" />
+      <interceptor name="cacheInterceptor" class="org.hisp.dhis.interceptor.CacheInterceptor" />
 
       <interceptor name="portalParamsInterceptor" class="org.hisp.dhis.webportal.interceptor.XWorkPortalParamsInterceptor" />
       <interceptor name="portalModuleInterceptor" class="org.hisp.dhis.webportal.interceptor.XWorkPortalModuleInterceptor" />
@@ -48,7 +48,7 @@
       <interceptor name="portalUserInterceptor" class="org.hisp.dhis.webportal.interceptor.XWorkPortalUserInterceptor" />
       <interceptor name="securityInterceptor" class="org.hisp.dhis.security.intercept.XWorkSecurityInterceptor" />
       <interceptor name="postHttpMethodInterceptor" class="org.hisp.dhis.security.intercept.HttpMethodInterceptor" />
-      <interceptor name="loginInterceptor" class="loginInterceptor" />
+      <interceptor name="loginInterceptor" class="org.hisp.dhis.security.intercept.LoginInterceptor" />
 
       <interceptor-stack name="commonInterceptors">
         <interceptor-ref name="staticParams" />
@@ -82,20 +82,24 @@
         <interceptor-ref name="organisationUnitTreeInterceptor" />
         <interceptor-ref name="commonInterceptors" />
       </interceptor-stack>
-	  
+
       <interceptor-stack name="cacheStack">
         <interceptor-ref name="cacheInterceptor" />
         <interceptor-ref name="commonInterceptors" />
       </interceptor-stack>
-	  
+
     </interceptors>
 
     <default-interceptor-ref name="exceptionStack" />
 
     <global-results>
       <result name="exceptionDefault" type="velocity">/exception.vm</result>
-      <result name="accessDenied" type="velocity">/accessDenied.vm</result>
+      <result name="pageAccessDenied" type="velocity">/pageAccessDenied.vm</result>
       <result name="jsonAccessDenied" type="velocity">/dhis-web-commons/ajax/jsonAccessDenied.vm</result>
+      <result name="createAccessDenied" type="velocity">/createAccessDenied.vm</result>
+      <result name="readAccessDenied" type="velocity">/readAccessDenied.vm</result>
+      <result name="updateAccessDenied" type="velocity">/updateAccessDenied.vm</result>
+      <result name="deleteAccessDenied" type="velocity">/deleteAccessDenied.vm</result>
       <result name="plainTextError" type="plainTextErrorResult">
         <param name="parse">true</param>
         <param name="message">${exception.class.name}: ${exception.message}</param>
@@ -105,7 +109,7 @@
   </package>
 
   <!-- Security -->
-  
+
   <package name="dhis-web-commons-security" extends="dhis-web-commons" namespace="/dhis-web-commons/security">
 
     <action name="login" class="org.hisp.dhis.security.action.LoginAction">
@@ -118,21 +122,21 @@
       <result name="success" type="velocity">/dhis-web-commons/useraccount/account.vm</result>
       <result name="error" type="redirect">login.action</result>
     </action>
-    
+
     <action name="recovery" class="org.hisp.dhis.useraccount.action.IsAccountRecoveryAllowedAction">
       <result name="success" type="velocity">/dhis-web-commons/useraccount/recovery.vm</result>
       <result name="error" type="redirect">login.action</result>
     </action>
-    
+
     <action name="restore" class="org.hisp.dhis.useraccount.action.IsRestoreTokenValidAction">
       <result name="success" type="velocity">/dhis-web-commons/useraccount/restore.vm</result>
       <result name="error" type="redirect">login.action</result>
     </action>
-  
+
   </package>
-  
+
   <!-- Organisation Unit Selection Tree -->
-  
+
   <package name="dhis-web-commons-oust" extends="dhis-web-commons" namespace="/dhis-web-commons/oust">
 
     <action name="expandSubtree" class="org.hisp.dhis.oust.action.ExpandSubtreeAction">
@@ -247,9 +251,7 @@
     </action>
 
     <action name="getOrganisationUnitsByName" class="org.hisp.dhis.ouwt.action.GetOrganisationUnitsByNameAction">
-      <result name="success" type="velocity-json">
-        /dhis-web-commons/ouwt/responseSearch.vm
-      </result>
+      <result name="success" type="velocity-json">/dhis-web-commons/ouwt/responseSearch.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
@@ -311,13 +313,14 @@
 
     <action name="getTranslations" class="org.hisp.dhis.i18n.action.GetTranslationsAction">
       <result name="success" type="velocity-json">
-        /dhis-web-commons/i18n/jsonTranslations.vm</result>
+        /dhis-web-commons/i18n/jsonTranslations.vm
+      </result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
     <action name="i18nJavaScript" class="org.hisp.dhis.commons.action.NoAction">
       <result name="success" type="velocity-javascript">/dhis-web-commons/i18n/i18n.vm</result>
-	  <interceptor-ref name="cacheStack"/>
+      <interceptor-ref name="cacheStack" />
     </action>
 
   </package>
@@ -462,20 +465,20 @@
   </package>
 
   <!-- Common actions HTML -->
-  
+
   <package name="dhis-web-commons-ajax-html" extends="dhis-web-commons" namespace="/dhis-web-commons-ajax-html">
 
     <action name="getNotifications" class="org.hisp.dhis.commons.action.GetNotificationsAction">
-	  <result name="success" type="velocity">/dhis-web-commons/ajax/htmlNotifications.vm</result>
+      <result name="success" type="velocity">/dhis-web-commons/ajax/htmlNotifications.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
     <action name="getUser" class="org.hisp.dhis.commons.action.GetUserAction">
-	  <result name="success" type="velocity">
+      <result name="success" type="velocity">
         /dhis-web-commons/ajax/htmlUser.vm
       </result>
       <param name="onExceptionReturn">plainTextError</param>
-	</action>
+    </action>
 
   </package>
 
@@ -484,7 +487,7 @@
   <package name="dhis-web-commons-ajax-json" extends="dhis-web-commons" namespace="/dhis-web-commons-ajax-json">
 
     <action name="getNotifications" class="org.hisp.dhis.commons.action.GetNotificationsAction">
-	  <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonNotifications.vm</result>
+      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonNotifications.vm</result>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
@@ -914,13 +917,14 @@
 
     <action name="setUserSettings" class="org.hisp.dhis.settings.user.action.SetGeneralSettingsAction">
       <result name="success" type="velocity-json">
-		/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-	  <param name="onExceptionReturn">plainTextError</param>
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+      </result>
+      <param name="onExceptionReturn">plainTextError</param>
     </action>
-	
-	<action name="redirect" class="org.hisp.dhis.about.action.RedirectAction">
-	  <result name="success" type="redirect">${redirectUrl}</result>
-	</action>
-	
+
+    <action name="redirect" class="org.hisp.dhis.about.action.RedirectAction">
+      <result name="success" type="redirect">${redirectUrl}</result>
+    </action>
+
   </package>
 </struts>

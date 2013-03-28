@@ -35,11 +35,12 @@ import org.hisp.dhis.period.Period;
  * Sorts periods ascending based on the start date, then the end date.
  * 
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class AscendingPeriodComparator
     implements Comparator<Period>
 {
+    public static final AscendingPeriodComparator INSTANCE = new AscendingPeriodComparator();
+    
     public int compare( Period period1, Period period2 )
     {
         if ( period1.getStartDate() == null )

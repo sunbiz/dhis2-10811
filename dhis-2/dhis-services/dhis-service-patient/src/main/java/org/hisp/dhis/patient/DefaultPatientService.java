@@ -580,7 +580,6 @@ public class DefaultPatientService
         grid.addHeader( new GridHeader( i18n.getString( "last_name" ), false, true ) );
         grid.addHeader( new GridHeader( i18n.getString( "gender" ), false, true ) );
         grid.addHeader( new GridHeader( i18n.getString( "phone_number" ), false, true ) );
-        grid.addHeader( new GridHeader( "orgunitid", true, true ) );
         grid.addHeader( new GridHeader( "programstageinstanceid", true, true ) );
         grid.addHeader( new GridHeader( i18n.getString( "program_stage" ), false, true ) );
         grid.addHeader( new GridHeader( i18n.getString( "due_date" ), false, true ) );

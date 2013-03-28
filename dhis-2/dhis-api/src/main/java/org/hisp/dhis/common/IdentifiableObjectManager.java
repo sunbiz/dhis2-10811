@@ -27,13 +27,13 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
+import org.hisp.dhis.common.NameableObject.NameableProperty;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
-import org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty;
-import org.hisp.dhis.common.NameableObject.NameableProperty;
 
 /**
  * @author Lars Helge Overland
@@ -45,8 +45,6 @@ public interface IdentifiableObjectManager
     void update( IdentifiableObject object );
 
     <T extends IdentifiableObject> T get( Class<T> clazz, String uid );
-    
-    <T extends IdentifiableObject> T getNoAcl( Class<T> clazz, String uid );
 
     <T extends IdentifiableObject> T getByCode( Class<T> clazz, String code );
 
@@ -57,21 +55,21 @@ public interface IdentifiableObjectManager
     <T extends IdentifiableObject> Collection<T> getAll( Class<T> clazz );
 
     <T extends IdentifiableObject> Collection<T> getAllSorted( Class<T> clazz );
-    
+
     <T extends IdentifiableObject> Collection<T> getLikeName( Class<T> clazz, String name );
-    
+
     <T extends IdentifiableObject> Collection<T> getBetween( Class<T> clazz, int first, int max );
 
     <T extends IdentifiableObject> Collection<T> getBetweenByName( Class<T> clazz, String name, int first, int max );
-    
+
     <T extends IdentifiableObject> Collection<T> getByLastUpdated( Class<T> clazz, Date lastUpdated );
 
     <T extends IdentifiableObject> Collection<T> getByLastUpdatedSorted( Class<T> clazz, Date lastUpdated );
-    
+
     void delete( IdentifiableObject object );
 
     <T extends IdentifiableObject> Set<Integer> convertToId( Class<T> clazz, Collection<String> uids );
-    
+
     <T extends IdentifiableObject> Map<String, T> getIdMap( Class<T> clazz, IdentifiableProperty property );
 
     <T extends NameableObject> Map<String, T> getIdMap( Class<T> clazz, NameableProperty property );
@@ -83,4 +81,12 @@ public interface IdentifiableObjectManager
     IdentifiableObject getObject( int id, String simpleClassName );
 
     <T extends IdentifiableObject> int getCount( Class<T> clazz );
+
+    // -------------------------------------------------------------------------
+    // NO ACL
+    // -------------------------------------------------------------------------
+
+    <T extends IdentifiableObject> T getNoAcl( Class<T> clazz, String uid );
+
+    <T extends IdentifiableObject> void updateNoAcl( T object );
 }

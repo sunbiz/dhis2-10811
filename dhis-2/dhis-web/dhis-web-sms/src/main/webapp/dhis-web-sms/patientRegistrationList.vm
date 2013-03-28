@@ -1,38 +1,12 @@
-<style>
-	.overlaps
-	{
-		background-color: #BAFFBC;
-		border: 1px solid #12CD17;
-		display: none;
-		margin: 1em;
-		padding: 1em;
-		width: 500px;
-	}
-</style>
 
-<div class="overlaps" style="display:block;">
-	<table>
-		<tr>
-			<td class='text-column' ><strong>$i18n.getString( "search_result_matching_the_search_criteria" ):</strong></td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>
-				#if( $!listAll )
-					$i18n.getString( "list_all_patients" )
-				#else
-					$i18n.getString( "search_patients_by_attributes" )
-				#end
-			</td>
-		</tr>	
-		
-		<tr>
-			<td class='text-column' ><strong>$i18n.getString( "total_result" ):</strong></td>
-			<td>&nbsp;</td>
-			<td>&nbsp;</td>
-			<td>$!total</td>
-		</tr>
-	</table>
-</div>
+<table>
+	<tr>
+		<td class='text-column'>$i18n.getString( "total_result" ):</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>$!total</td>
+	</tr>
+</table>
 
 #if( $patients.size() > 0 )
 <table class="mainPageTable">

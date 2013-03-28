@@ -214,7 +214,7 @@
     <property name="userService" ref="org.hisp.dhis.user.UserService" />
   </bean>
 
-  <bean id="org.hisp.dhis.user.UserGroupStore" class="org.hisp.dhis.hibernate.HibernateGenericStore">
+  <bean id="org.hisp.dhis.user.UserGroupStore" class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
     <property name="clazz" value="org.hisp.dhis.user.UserGroup" />
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>

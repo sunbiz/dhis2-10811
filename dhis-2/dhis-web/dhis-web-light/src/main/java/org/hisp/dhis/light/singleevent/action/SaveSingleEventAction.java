@@ -56,6 +56,7 @@ import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageDataElementService;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.user.UserService;
 import org.hisp.dhis.util.ContextUtils;
 import org.hisp.dhis.util.SessionUtils;
 
@@ -142,6 +143,18 @@ public class SaveSingleEventAction
     public void setProgramStageDataElementService( ProgramStageDataElementService programStageDataElementService )
     {
         this.programStageDataElementService = programStageDataElementService;
+    }
+    
+    private UserService userService;
+    
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
     }
 
     // -------------------------------------------------------------------------

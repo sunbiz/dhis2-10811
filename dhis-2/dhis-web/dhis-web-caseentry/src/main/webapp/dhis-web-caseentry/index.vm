@@ -9,6 +9,7 @@
 	#if( $auth.hasAccess( "dhis-web-caseentry", "activityPlanSelect" ) )
 		#introListImgItem( "activityPlanSelect.action" "activity_planning" "visitplan" )
 	#end
+	
 	#if( $auth.hasAccess( "dhis-web-caseentry", "smsReminderSelect" ) )
 		#introListImgItem( "smsReminderSelect.action" "program_tracking" "summaryreport" )
 	#end
@@ -16,9 +17,11 @@
 	#if( $auth.hasAccess( "dhis-web-caseentry", "multipledataEntrySelect" ) )
 		#introListImgItem( "multipledataEntrySelect.action" "multiple_individual_records" "attribute" )
 	#end
+	
 	#if( $auth.hasAccess( "dhis-web-caseentry", "singleEventSelect" ) )
 		#introListImgItem( "singleEventSelect.action" "single_event_with_registration" "attribute" )
 	#end
+	
 	#if( $auth.hasAccess( "dhis-web-caseentry", "anonymousRegistration" ) )
 		#introListImgItem( "anonymousRegistration.action" "anonymous_events" "attribute" )
 	#end

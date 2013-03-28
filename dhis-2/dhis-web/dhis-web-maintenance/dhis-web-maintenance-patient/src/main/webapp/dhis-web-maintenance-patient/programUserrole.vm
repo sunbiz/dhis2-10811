@@ -2,7 +2,7 @@
 
 <h4>$program.displayName</h4>
 
-<form name="userRole" action="defineProgramUserrole.action" method="POST" onsubmit="selectAllById( 'selectedList' );">
+<form name="userRole" action="defineProgramUserrole.action" method="POST" onsubmit="selectAllById( 'userRoleIds' );">
 <input type="hidden" name="id" value="$program.id"/>
 <table>
 	<tr>

@@ -28,6 +28,7 @@ package org.hisp.dhis.api.controller;
  */
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +49,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import static org.hisp.dhis.analytics.AnalyticsService.NAMES_META_KEY;
 
 @Controller
 public class AnalyticsController
@@ -114,7 +117,7 @@ public class AnalyticsController
 
         contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_HTML, CacheStrategy.RESPECT_SYSTEM_SETTING );
         Grid grid = analyticsService.getAggregatedDataValues( params );
-        GridUtils.toHtml( grid.substituteMetaData(), response.getWriter() );
+        GridUtils.toHtml( substituteMetaData( grid ), response.getWriter() );
     }
 
     @RequestMapping( value = RESOURCE_PATH + ".csv", method = RequestMethod.GET )
@@ -130,7 +133,7 @@ public class AnalyticsController
 
         contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_CSV, CacheStrategy.RESPECT_SYSTEM_SETTING, "data.csv", true );
         Grid grid = analyticsService.getAggregatedDataValues( params );
-        GridUtils.toCsv( grid.substituteMetaData(), response.getOutputStream() );
+        GridUtils.toCsv( substituteMetaData( grid ), response.getOutputStream() );
     }
     
     @RequestMapping( value = RESOURCE_PATH + ".xls", method = RequestMethod.GET )
@@ -146,7 +149,7 @@ public class AnalyticsController
 
         contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_EXCEL, CacheStrategy.RESPECT_SYSTEM_SETTING, "data.xls", true );
         Grid grid = analyticsService.getAggregatedDataValues( params );
-        GridUtils.toXls( grid.substituteMetaData(), response.getOutputStream() );
+        GridUtils.toXls( substituteMetaData( grid ), response.getOutputStream() );
     }
 
     // -------------------------------------------------------------------------
@@ -158,5 +161,20 @@ public class AnalyticsController
         throws IOException
     {
         ContextUtils.conflictResponse( response, ex.getMessage() );
+    }
+
+    // -------------------------------------------------------------------------
+    // Supportive methods
+    // -------------------------------------------------------------------------
+  
+    @SuppressWarnings("unchecked")
+    private Grid substituteMetaData( Grid grid )
+    {
+        if ( grid.getMetaData() != null && grid.getMetaData().containsKey( NAMES_META_KEY ) )
+        {
+            grid.substituteMetaData( (Map<Object, Object>) grid.getMetaData().get( NAMES_META_KEY ) );
+        }
+        
+        return grid;
     }
 }

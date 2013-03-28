@@ -11,10 +11,8 @@
 		<td>
 			<input type="text" id='orgunitName' readonly="readonly" #if( $organisationUnit ) value="$encoder.htmlEncode( $organisationUnit.name )" #else value="[$i18n.getString( 'please_select_village' )]" #end >
 		</td>
-		<td rowspan='2' valign='bottom'>
+		<td rowspan='3' valign='bottom'>
 			<input type="button" style='width:130px' id='listPatientBtn' style='260px;' value="$i18n.getString( 'list_all_patients' )" onclick="javascript:listAllPatient();" disabled >
-			<input type="button" style='width:130px' class='hidden' id='scheduled7DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_7_days' )" onclick="javascript:scheduled7Days();" disabled >
-			<input type="button" style='width:130px' class='hidden' id='scheduled30DaysBtn' style='260px;' value="$i18n.getString( 'scheduled_30_days' )" onclick="javascript:scheduled30Days();" disabled >
 			<input type="button" style='width:130px' id='addPatientBtn' name='addPatientBtn' class='large-button' value='$i18n.getString( "add_new" )' onclick="showAddPatientForm();" disabled >
 			<input type="button" style='width:130px' id='advancedSearchBtn' value='$i18n.getString( "advanced_search" )' onclick="jQuery('#advanced-search').toggle();" disabled>
 		</td>
@@ -27,6 +25,17 @@
 				#foreach($program in $programs)
 					<option value="$program.id" type='$program.type'>$program.displayName</option>
 				#end
+			</select>
+		</td>
+	</tr>
+	<tr id='scheduleVisitTR' class='hidden'>
+		<td>$i18n.getString('scheduled_visits')</td>
+		<td>
+			<select id='scheduledVisitDays' name='scheduledVisitDays' onchange='javascript:listAllPatient();' disabled >
+				<option value=''>[$i18n.getString("please_select")]</option>
+				<option value='0'>$i18n.getString("today")</option>
+				<option value='7'>$i18n.getString("last_7_days")</option>
+				<option value='30'>$i18n.getString("last_30_days")</option>
 			</select>
 		</td>
 	</tr>

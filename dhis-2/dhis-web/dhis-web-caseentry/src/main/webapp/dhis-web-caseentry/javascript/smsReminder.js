@@ -66,7 +66,6 @@ function listAllPatient()
 		{
 			programId:programId,
 			listAll:false,
-			searchBySelectedOrgunit: false,
 			searchTexts: searchTexts
 		}, 
 		function()

@@ -24,6 +24,8 @@
 	
     <!-- data entry -->
 
+    <action name="hello" class="morten.HelloAction" />
+
     <action name="selectOrganisationUnit"
         class="org.hisp.dhis.light.dataentry.action.GetOrganisationUnitsAction">
       <result name="success" type="velocity">/dhis-web-light/main.vm</result>

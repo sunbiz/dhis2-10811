@@ -11,7 +11,7 @@
 				factorDeviation: getFieldValue( 'factorDeviation' ),
 				completenessOffset: getFieldValue( 'completenessOffset' ),
 				phoneNumberAreaCode: getFieldValue( 'phoneNumberAreaCode' ),
-                multiOrganisationUnitForms: getFieldValue( 'multiOrganisationUnitForms' )
+                multiOrganisationUnitForms: jQuery( '#multiOrganisationUnitForms' ).is( ':checked' )
 			}, function( json ) {
 				if ( json.response == "success" ) {
 					setHeaderDelayMessage( json.message );
@@ -94,13 +94,9 @@
 	<input type="text" id="phoneNumberAreaCode" name="phoneNumberAreaCode" value="$!phoneNumberAreaCode"/>
 </div>
 
-<div class="settingLabel">$i18n.getString( "multi_organisation_unit_forms" )</div>
-
 <div class="setting">
-    <select id="multiOrganisationUnitForms" name="multiOrganisationUnitForms">
-        <option value="true" #if( $multiOrganisationUnitForms == true)selected="selected"#end>True</option>
-        <option value="false" #if( $multiOrganisationUnitForms == false)selected="selected"#end>False</option>
-    </select>
+    <input type="checkbox" id="multiOrganisationUnitForms" name="multiOrganisationUnitForms" #if( $multiOrganisationUnitForms )checked="checked"#end>
+    <label for="multiOrganisationUnitForms">$i18n.getString( "multi_organisation_unit_forms" )</label>
 </div>
 
 <div class="setting">

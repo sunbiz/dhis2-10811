@@ -161,7 +161,7 @@
 
   <!-- Security : Interceptor -->
 
-  <bean id="loginInterceptor" class="org.hisp.dhis.security.intercept.LoginInterceptor">
+  <bean id="org.hisp.dhis.security.intercept.LoginInterceptor" class="org.hisp.dhis.security.intercept.LoginInterceptor">
     <property name="actions">
       <list>
         <ref bean="restrictOrganisationUnitsAction" />

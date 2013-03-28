@@ -23,9 +23,6 @@ function toggleSMSGUI( _value )
 	}
 	else if ( _value == "user" || _value == "unit" )
 	{
-		selectionTree.clearSelectedOrganisationUnits();
-		selectionTree.buildSelectionTree();
-	
 		showById( 'orgunitType' );
 		hideById( 'phoneType' );
 		hideById( 'trRawPhone' );

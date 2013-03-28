@@ -2728,7 +2728,8 @@ Ext.onReady( function() {
 					draggable: false,
 					hidden: true,
 					hideable: false,
-					menuDisabled: true
+					menuDisabled: true,
+					locked: true
 				};
 				
 				// report date
@@ -2740,6 +2741,7 @@ Ext.onReady( function() {
 					sortable: false,
 					draggable: false,
 					hideable: false,
+					locked: true,
 					menuDisabled: true
 				};
 							
@@ -3118,6 +3120,7 @@ Ext.onReady( function() {
 											
 											// FILTER-VALUES FIELDS
 											Ext.getCmp('filterPanel').removeAll();
+											Ext.getCmp('filterPropPanel').removeAll();
 										}
 									}
 								},
@@ -3156,6 +3159,9 @@ Ext.onReady( function() {
 											else {
 												store.load({params: {programStageId: cb.getValue()}});
 											}
+											
+											// FILTER-VALUES FIELDS
+											Ext.getCmp('filterPanel').removeAll();
 										} 
 									}
 								}

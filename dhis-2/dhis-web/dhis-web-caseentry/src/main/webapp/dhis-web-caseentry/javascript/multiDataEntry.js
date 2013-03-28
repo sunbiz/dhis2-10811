@@ -2,6 +2,8 @@ isAjax = true;
 
 function multiDataEntryOrgunitSelected( orgUnits, orgUnitNames )
 {
+	setFieldValue('orgunitName', orgUnitNames[0]);
+	setFieldValue('orgunitId', orgUnits[0]);
 	hideById("listPatientDiv");
 	clearListById('programIdAddPatient');
 	$('#contentDataRecord').html('');
@@ -22,44 +24,22 @@ selection.setListenerFunction( multiDataEntryOrgunitSelected );
 
 function listAllPatient()
 {
-	var today = getCurrentDate();
-	var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
-				+ today + "_" + today + "_" 
-				+ getFieldValue('orgunitId') + "_false_4_3";
+	var scheduledVisitDays = getFieldValue('scheduledVisitDays');
+	if( scheduledVisitDays != '' )
+	{
+		var today = getCurrentDate();
+		var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y= date.getFullYear();
+		var lastDays = jQuery.datepicker.formatDate( dateFormat, new Date(y, m, d - eval(scheduledVisitDays)) ) ;
 	
-	getPatientList(searchTexts);
-}
-
-function scheduled7Days()
-{
-	var today = getCurrentDate();
-	var date = new Date();
-	var d = date.getDate();
-	var m = date.getMonth();
-	var y= date.getFullYear();
-	var last7day = jQuery.datepicker.formatDate( dateFormat, new Date(y, m, d-7) ) ;
-	
-	var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
-				+ last7day + "_" + today + "_" 
-				+ getFieldValue('orgunitId') + "_false_4_3";
-				
-	getPatientList(searchTexts);
-}
-
-function scheduled30Days()
-{
-	var today = getCurrentDate();
-	var date = new Date();
-	var d = date.getDate();
-	var m = date.getMonth();
-	var y= date.getFullYear();
-	var last30day = jQuery.datepicker.formatDate( dateFormat, new Date(y, m-1, d) ) ;
-	
-	var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
-				+ last30day + "_" + today + "_" 
-				+ getFieldValue('orgunitId') + "_false_4_3";
-				
-	getPatientList(searchTexts);
+		var searchTexts = "stat_" + getFieldValue('programIdAddPatient') + "_" 
+					+ lastDays + "_" + today + "_" 
+					+ getFieldValue('orgunitId') + "_false_4_3";
+					
+		getPatientList(searchTexts);
+	}
 }
 
 function getPatientList(searchTexts)
@@ -78,7 +58,6 @@ function getPatientList(searchTexts)
 		{
 			programId:programId,
 			listAll:false,
-			searchBySelectedOrgunit: false,
 			searchTexts: searchTexts
 		}, 
 		function()

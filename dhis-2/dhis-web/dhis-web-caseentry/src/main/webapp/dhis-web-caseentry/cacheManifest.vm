@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2.11-SNAPSHOT V30
+# 2.12-SNAPSHOT V4
 NETWORK:
 *
 CACHE:
@@ -80,7 +80,6 @@ javascript/anonymousRegistration.js
 javascript/entry.js
 images/ajax-loader-circle.gif
 images/close.gif
-images/comments.png
 images/data_entry.png
 images/flag-blue.png
 images/open.gif

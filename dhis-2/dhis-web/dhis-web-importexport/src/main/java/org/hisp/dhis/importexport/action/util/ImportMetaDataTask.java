@@ -73,13 +73,20 @@ public class ImportMetaDataTask
 
         try
         {
-            // TODO check for XML/JSON
+            // TODO should probably sniff if its xml or json, but this works for now
             metaData = JacksonUtils.fromXml( inputStream, MetaData.class );
         }
-        catch ( IOException e )
+        catch ( IOException ignored )
         {
-            log.error( "(IOException) Unable to parse meta-data while reading input stream" );
-            return;
+            try
+            {
+                metaData = JacksonUtils.fromJson( inputStream, MetaData.class );
+            }
+            catch ( IOException e )
+            {
+                log.error( "(IOException) Unable to parse meta-data while reading input stream" );
+                return;
+            }
         }
 
         importService.importMetaData( userUid, metaData, importOptions, taskId );

@@ -35,7 +35,6 @@ import org.hisp.dhis.period.Period;
  * Sorts periods descending based on the start date, then the end date.
  * 
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class PeriodComparator
     implements Comparator<Period>

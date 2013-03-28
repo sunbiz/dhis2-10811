@@ -47,7 +47,7 @@
 						<img src="../images/start_process-denied.png">
 						#end
 
-                        #if ( $security.canManage( $table ) && $table.isReportTable() )
+                        #if ( $security.canManage( $table ) )
                         <a href="javascript:showSharingDialog('reportTable', '$table.uid');" title="$i18n.getString( 'sharing_settings' )"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
                         #else
                         <img src="../images/relationship-denied.png">

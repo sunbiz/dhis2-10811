@@ -42,7 +42,6 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -675,7 +674,7 @@ public class HibernateProgramStageInstanceStore
             sql = getAggregateReportSQL8( programStage, orgunitIds, facilityLB, filterSQL, deGroupBy, periods
                 .iterator().next(), aggregateType, limit, useCompletedEvents, format );
         }
-        
+
         if ( !sql.isEmpty() )
         {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
@@ -685,33 +684,15 @@ public class HibernateProgramStageInstanceStore
                 || position == PatientAggregateReport.POSITION_ROW_DATA_COLUMN_ORGUNIT
                 || (position == PatientAggregateReport.POSITION_ROW_DATA_COLUMN_PERIOD && deGroupBy == null) )
             {
-                pivotTable( grid, rowSet, i18n );
+                pivotTable( grid, rowSet, i18n, format );
             }
             else
             {
-                fillDataInGrid( grid, rowSet, i18n );
+                fillDataInGrid( grid, rowSet, i18n, format );
             }
         }
 
         return grid;
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public List<ProgramStageInstance> getActiveInstance( Program program, Collection<Integer> orgunitIds,
-        Date startDate, Date endDate, Collection<Integer> statusList, Integer max, Integer min )
-    {
-        return getActiveInstanceCriteria( program, orgunitIds, startDate, endDate, statusList, max, min ).list();
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        Collection<Integer> statusList )
-    {
-        Criteria criteria = getActiveInstanceCriteria( program, orgunitIds, startDate, endDate, statusList, null, null );
-
-        List<ProgramStageInstance> list = criteria.list();
-
-        return list != null ? list.size() : 0;
     }
 
     public int getOverDueCount( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate, Date endDate )
@@ -1021,7 +1002,7 @@ public class HibernateProgramStageInstanceStore
         sql += where; // filters
         sql = sql.substring( 0, sql.length() - 1 ) + " "; // Remove last comma
         sql += (min != null && max != null) ? statementBuilder.limitRecord( min, max ) : "";
-        
+
         return sql;
     }
 
@@ -1861,10 +1842,10 @@ public class HibernateProgramStageInstanceStore
                     String operator = (filterValue.substring( 0, index ));
                     String value = filterValue.substring( index + 1, filterValue.length() );
                     filter += "AND (SELECT ";
-                    if( dataElement.getType().equals( DataElement.VALUE_TYPE_INT ) )
+                    if ( dataElement.getType().equals( DataElement.VALUE_TYPE_INT ) )
                     {
-                        filter += "cast(value as " + statementBuilder.getDoubleColumnType()+ ") ";
-                        
+                        filter += "cast(value as " + statementBuilder.getDoubleColumnType() + ") ";
+
                     }
                     else
                     {
@@ -1963,6 +1944,17 @@ public class HibernateProgramStageInstanceStore
         return rs != null ? rs.intValue() : 0;
     }
 
+    @SuppressWarnings( "unchecked" )
+    public Collection<Integer> getOrgunitIds( Date startDate, Date endDate )
+    {
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.between( "executionDate", startDate, endDate ) );
+        criteria.createAlias( "organisationUnit", "orgunit" );
+        criteria.setProjection( Projections.distinct( Projections.projectionList().add(
+            Projections.property( "orgunit.id" ), "orgunitid" ) ) );
+        return criteria.list();
+    }
+    
     // ---------------------------------------------------------------------
     // Get orgunitIds
     // ---------------------------------------------------------------------
@@ -1988,7 +1980,7 @@ public class HibernateProgramStageInstanceStore
         return orgunitIds;
     }
 
-    private void fillDataInGrid( Grid grid, SqlRowSet rs, I18n i18n )
+    private void fillDataInGrid( Grid grid, SqlRowSet rs, I18n i18n, I18nFormat format )
     {
         int cols = rs.getMetaData().getColumnCount();
         int dataCols = 0;
@@ -2028,29 +2020,14 @@ public class HibernateProgramStageInstanceStore
                     double value = rs.getDouble( i );
                     sumRow[i] += value;
                     total += value;
-
-                    if ( value == (int) value )
-                    {
-                        grid.addValue( (int) value );
-                    }
-                    else
-                    {
-                        grid.addValue( value );
-                    }
+                    grid.addValue( format.formatValue( value ) );
                 }
             }
 
             // total
             if ( dataCols > 1 )
             {
-                if ( total == (int) total )
-                {
-                    grid.addValue( (int) total );
-                }
-                else
-                {
-                    grid.addValue( total );
-                }
+                grid.addValue( format.formatValue( total ) );
             }
         }
 
@@ -2062,31 +2039,18 @@ public class HibernateProgramStageInstanceStore
             int total = 0;
             for ( int i = cols - dataCols + 1; i <= cols; i++ )
             {
-                if ( sumRow[i] == (int) sumRow[i] )
-                {
-                    grid.addValue( (int) sumRow[i] );
-                }
-                else
-                {
-                    grid.addValue( sumRow[i] );
-                }
+                grid.addValue( format.formatValue( sumRow[i] ) );
+
                 total += sumRow[i];
             }
             if ( cols > cols - dataCols + 1 )
             {
-                if ( total == (int) total )
-                {
-                    grid.addValue( (int) total );
-                }
-                else
-                {
-                    grid.addValue( total );
-                }
+                grid.addValue( format.formatValue( total ) );
             }
         }
     }
 
-    private void pivotTable( Grid grid, SqlRowSet rowSet, I18n i18n )
+    private void pivotTable( Grid grid, SqlRowSet rowSet, I18n i18n, I18nFormat format )
     {
         try
         {
@@ -2120,14 +2084,7 @@ public class HibernateProgramStageInstanceStore
                 // Add total value of the column
                 if ( cols > 2 )
                 {
-                    if ( total == (int) total )
-                    {
-                        column.add( (int) total );
-                    }
-                    else
-                    {
-                        column.add( total );
-                    }
+                    grid.addValue( format.formatValue( total ) );
                 }
 
                 columnValues.put( index, column );
@@ -2176,26 +2133,13 @@ public class HibernateProgramStageInstanceStore
                             total += (Long) columnValues.get( i ).get( j );
                         }
                     }
-                    if ( total == (int) total )
-                    {
-                        column.add( (int) total );
-                    }
-                    else
-                    {
-                        column.add( total );
-                    }
+                    column.add( format.formatValue( total ) );
+
                     allTotal += total;
                 }
                 if ( cols > 2 )
                 {
-                    if ( allTotal == (int) allTotal )
-                    {
-                        column.add( (int) allTotal );
-                    }
-                    else
-                    {
-                        column.add( allTotal );
-                    }
+                    column.add( format.formatValue( allTotal ) );
                 }
                 grid.addColumn( column );
             }
@@ -2206,60 +2150,4 @@ public class HibernateProgramStageInstanceStore
         }
     }
 
-    private Criteria getActiveInstanceCriteria( Program program, Collection<Integer> orgunitIds, Date startDate,
-        Date endDate, Collection<Integer> statusList, Integer max, Integer min )
-    {
-        Criteria criteria = getCriteria();
-        criteria.createAlias( "programInstance", "programInstance" );
-        criteria.createAlias( "programStage", "programStage" );
-        criteria.createAlias( "programInstance.patient", "patient" );
-        criteria.createAlias( "patient.organisationUnit", "regOrgunit" );
-        criteria.add( Restrictions.eq( "programInstance.program", program ) );
-        criteria.add( Restrictions.isNull( "programInstance.endDate" ) );
-
-        Disjunction disjunction = Restrictions.disjunction();
-
-        for ( Integer status : statusList )
-        {
-            switch ( status )
-            {
-            case ProgramStageInstance.COMPLETED_STATUS:
-                disjunction.add( Restrictions.and( Restrictions.eq( "completed", true ),
-                    Restrictions.between( "executionDate", startDate, endDate ),
-                    Restrictions.in( "organisationUnit.id", orgunitIds ) ) );
-                break;
-            case ProgramStageInstance.VISITED_STATUS:
-                disjunction.add( Restrictions.and( Restrictions.eq( "completed", false ),
-                    Restrictions.between( "executionDate", startDate, endDate ),
-                    Restrictions.in( "organisationUnit.id", orgunitIds ) ) );
-                break;
-            case ProgramStageInstance.FUTURE_VISIT_STATUS:
-                disjunction.add( Restrictions.and( Restrictions.isNull( "executionDate" ),
-                    Restrictions.between( "dueDate", new Date(), endDate ),
-                    Restrictions.in( "regOrgunit.id", orgunitIds ) ) );
-                break;
-            case ProgramStageInstance.LATE_VISIT_STATUS:
-                disjunction.add( Restrictions.and( Restrictions.isNull( "executionDate" ),
-                    Restrictions.between( "dueDate", startDate, new Date() ),
-                    Restrictions.in( "regOrgunit.id", orgunitIds ) ) );
-                break;
-            default:
-                break;
-            }
-        }
-
-        criteria.add( disjunction );
-
-        if ( min != null && max != null )
-        {
-            criteria.setFirstResult( min );
-            criteria.setMaxResults( max );
-        }
-
-        criteria.addOrder( Order.asc( "executionDate" ) );
-        criteria.addOrder( Order.asc( "dueDate" ) );
-        criteria.addOrder( Order.asc( "programStage.minDaysFromStart" ) );
-
-        return criteria;
-    }
 }

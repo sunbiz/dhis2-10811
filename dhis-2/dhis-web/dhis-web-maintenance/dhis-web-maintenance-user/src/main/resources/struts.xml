@@ -162,59 +162,6 @@
       <result name="logout" type="redirect">/dhis-web-commons-security/logout.action</result>
     </action>
 
-	<!-- User Group -->
-
-    <action name="getAllUserGroups" class="org.hisp.dhis.user.action.GetUserGroupListAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-user/userGroupList.vm</param>
-      <param name="menu">/dhis-web-maintenance-user/menu.vm</param>
-      <param name="javascripts">javascript/user.js</param>
-      <param name="requiredAuthorities">F_USERGROUP_LIST</param>
-    </action>
-
-    <action name="getUserGroup" class="org.hisp.dhis.user.action.GetUserGroupAction">
-      <result name="success" type="velocity-json">
-        /dhis-web-commons/ajax/jsonUserGroup.vm</result>
-    </action>
-
-    <action name="addUserGroupForm" class="org.hisp.dhis.user.action.AddUserGroupFormAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-user/addUserGroupForm.vm</param>
-      <param name="menu">/dhis-web-maintenance-user/menu.vm</param>
-      <param name="javascripts">javascript/user.js</param>
-      <param name="anyAuthorities">F_USERGROUP_PUBLIC_ADD, F_USERGROUP_PRIVATE_ADD</param>
-    </action>
-
-    <action name="addUserGroup" class="org.hisp.dhis.user.action.AddUserGroupAction">
-      <param name="javascripts">javascript/user.js</param>
-      <result name="success" type="redirect">getAllUserGroups.action</result>
-      <param name="anyAuthorities">F_USERGROUP_PUBLIC_ADD, F_USERGROUP_PRIVATE_ADD</param>
-    </action>
-
-    <action name="editUserGroupForm" class="org.hisp.dhis.user.action.EditUserGroupFormAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-user/updateUserGroupForm.vm</param>
-      <param name="menu">/dhis-web-maintenance-user/menu.vm</param>
-      <param name="requiredAuthorities">F_USERGROUP_UPDATE</param>
-    </action>
-
-    <action name="updateUserGroup" class="org.hisp.dhis.user.action.UpdateUserGroupAction">
-      <result name="success" type="redirect">getAllUserGroups.action?currentPage=${keyCurrentPage}</result>
-      <param name="requiredAuthorities">F_USERGROUP_UPDATE</param>
-    </action>
-
-    <action name="removeUserGroup" class="org.hisp.dhis.user.action.RemoveUserGroupAction">
-      <result name="success" type="velocity">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity">/dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="requiredAuthorities">F_USERGROUP_DELETE</param>
-    </action>
-
-    <action name="validateUserGroup" class="org.hisp.dhis.user.action.ValidateUserGroupAction">
-      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <result name="error" type="velocity-json">/dhis-web-commons/ajax/jsonResponseError.vm</result>
-      <param name="onExceptionReturn">plainTextError</param>
-    </action>
-
     <!-- Json Actions -->
 	
     <action name="getSystemAuthorities" class="org.hisp.dhis.user.action.GetSystemAuthoritiesAction">

@@ -88,6 +88,7 @@ public class DraftPageAction implements Action
             pendingMsgList.addAll( sendSMSService.getAllSendSMS() );
         }
         
+        System.out.println(pendingMsgList.size());
         return SUCCESS;
     }
 

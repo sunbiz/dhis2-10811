@@ -58,9 +58,22 @@ public class JacksonMapListIdentifiableObjectSerializer
                 for ( IdentifiableObject object : value.get( key ) )
                 {
                     jgen.writeStartObject();
-                    jgen.writeStringField( "id", object.getUid() );
-                    jgen.writeStringField( "name", object.getName() );
-                    jgen.writeStringField( "code", object.getCode() );
+                    
+                    if ( object.getUid() != null )
+                    {
+                        jgen.writeStringField( "id", object.getUid() );
+                    }
+                    
+                    if ( object.getName() != null )
+                    {
+                        jgen.writeStringField( "name", object.getName() );
+                    }
+                    
+                    if ( object.getCode() != null )
+                    {
+                        jgen.writeStringField( "code", object.getCode() );
+                    }
+                    
                     jgen.writeEndObject();
                 }
                 

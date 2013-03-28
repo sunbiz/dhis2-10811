@@ -41,8 +41,8 @@ body {
 
 	/* Scrollbar Webkit */
 ::-webkit-scrollbar {
-    width: 9px;
-    height: 9px;
+    width: 10px;
+    height: 10px;
     border: 0 none;
 }
 

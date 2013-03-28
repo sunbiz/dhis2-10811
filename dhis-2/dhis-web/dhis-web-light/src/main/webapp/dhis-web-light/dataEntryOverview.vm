@@ -46,7 +46,7 @@
 <div class="header-box" align="center">
     <p>
         <input type="hidden" name="formComplete" value="true" />
-        <input type="submit" style="width: 100%;" value=#if($completed == true) $i18n.getString("form_in_complete") #else $i18n.getString("form_complete") #end />
+        <input type="submit" style="width: 100%;" value="#if($completed == true) $i18n.getString('form_in_complete') #else $i18n.getString('form_complete') #end" />
     </p>
 </div>
 

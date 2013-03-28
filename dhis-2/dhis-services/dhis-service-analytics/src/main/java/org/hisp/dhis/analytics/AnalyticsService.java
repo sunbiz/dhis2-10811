@@ -35,6 +35,8 @@ import org.hisp.dhis.i18n.I18nFormat;
 
 public interface AnalyticsService
 {
+    final String NAMES_META_KEY = "names";
+    
     Grid getAggregatedDataValues( DataQueryParams params );
     
     Map<String, Double> getAggregatedDataValueMap( DataQueryParams params );

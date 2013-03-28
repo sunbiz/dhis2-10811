@@ -10,7 +10,7 @@
   #set( $marker = 1 )
 #end
 
-<table class="formSection">
+<table class="formSection" style="margin-bottom: 20px;">
 <tr>
   <td>
     <div class="cent"><h3>$encoder.htmlEncode( $section.displayName )</h3></div>
@@ -79,5 +79,4 @@
     </td>
   </tr>
 </table>
-<br>
 #end

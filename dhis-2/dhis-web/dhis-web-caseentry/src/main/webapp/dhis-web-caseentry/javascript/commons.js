@@ -487,11 +487,10 @@ function enableBtn(){
 	{
 		var programIdAddPatient = getFieldValue('programIdAddPatient');
 		if( programIdAddPatient!='' ){
-			enable('listPatientBtn');
+			disable('listPatientBtn');
 			enable('addPatientBtn');
 			enable('advancedSearchBtn');
-			enable('scheduled7DaysBtn');
-			enable('scheduled30DaysBtn');
+			enable('scheduledVisitDays');
 			jQuery('#advanced-search :input').each( function( idx, item ){
 				enable(this.id);
 			});
@@ -501,8 +500,7 @@ function enableBtn(){
 			disable('listPatientBtn');
 			disable('addPatientBtn');
 			disable('advancedSearchBtn');
-			disable('scheduled7DaysBtn');
-			disable('scheduled30DaysBtn');
+			disable('scheduledVisitDays');
 			jQuery('#advanced-search :input').each( function( idx, item ){
 				disable(this.id);
 			});
@@ -1448,7 +1446,7 @@ function unenrollmentForm( programInstanceId )
 
 function reenrollmentForm( programInstanceId )
 {	
-	if( confirm(i18n_incomplete_confirm_message) )
+	if( confirm(i18n_reenrollment_confirm_message) )
 	{
 		$.ajax({
 			type: "POST",
@@ -1528,6 +1526,11 @@ function saveIdentifierAndAttribute( patientId, programId, paramsDiv)
 			data: params,
 			success: function(json) 
 			{
+				jQuery("[id=tab-2] :input").each(function(){
+					var input = jQuery(this);
+					var id = 'dashboard_' + input.attr('id');
+					setInnerHTML(id, input.val());
+				});
 				showSuccessMessage( i18n_save_success );
 			}
 		});

@@ -56,6 +56,14 @@ public interface GenericIdentifiableObjectStore<T>
     T getByUidNoAcl( String uid );
 
     /**
+     * Update object. Bypasses the ACL system.
+     *
+     * @param object Object update
+     * @return the object with the given uid.
+     */
+    void updateNoAcl( T object );
+
+    /**
      * Retrieves the object with the given name.
      *
      * @param name the name.

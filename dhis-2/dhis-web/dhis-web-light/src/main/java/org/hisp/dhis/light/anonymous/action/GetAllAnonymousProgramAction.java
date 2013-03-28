@@ -30,9 +30,9 @@ package org.hisp.dhis.light.anonymous.action;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
-
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -89,6 +89,18 @@ public class GetAllAnonymousProgramAction
     {
         this.orgUnitId = orgUnitId;
     }
+    
+    private OrganisationUnitService organisationUnitService;
+    
+    public OrganisationUnitService getOrganisationUnitService()
+    {
+        return organisationUnitService;
+    }
+
+    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
+    {
+        this.organisationUnitService = organisationUnitService;
+    }
 
     // -------------------------------------------------------------------------
     // Implementation Action
@@ -101,7 +113,7 @@ public class GetAllAnonymousProgramAction
         programs = new ArrayList<Program>();
         for ( Program program : programService.getProgramsByCurrentUser() )
         {
-            if ( program.isSingleEvent() && !program.isRegistration() )
+            if ( program.isSingleEvent() && !program.isRegistration() && program.getOrganisationUnits().contains( organisationUnitService.getOrganisationUnit( orgUnitId ) ) )
             {
                 programs.add( program );
             }

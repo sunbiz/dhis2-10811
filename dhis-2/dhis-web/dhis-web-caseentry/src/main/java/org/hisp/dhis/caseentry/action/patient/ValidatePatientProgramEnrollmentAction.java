@@ -28,7 +28,6 @@
 package org.hisp.dhis.caseentry.action.patient;
 
 import org.hisp.dhis.i18n.I18n;
-import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.program.Program;
@@ -60,13 +59,6 @@ public class ValidatePatientProgramEnrollmentAction
     public void setProgramService( ProgramService programService )
     {
         this.programService = programService;
-    }
-
-    private I18nFormat format;
-
-    public void setFormat( I18nFormat format )
-    {
-        this.format = format;
     }
 
     // -------------------------------------------------------------------------
@@ -116,29 +108,10 @@ public class ValidatePatientProgramEnrollmentAction
 
         if ( criteria != null )
         {
-            message = i18n.getString( "patient_could_not_be_enrolled_due_to_following_enrollment_criteria" ) + ": " + i18n.getString( criteria.getProperty() );
-            
-            switch ( criteria.getOperator() )
-            {
-            case ValidationCriteria.OPERATOR_EQUAL_TO:
-                message += " = ";
-                break;
-            case ValidationCriteria.OPERATOR_GREATER_THAN:
-                message += " > ";
-                break;
-            default:
-                message += " < ";
-                break;
-            }
+            message = i18n.getString( "patient_could_not_be_enrolled_due_to_following_enrollment_criteria" ) + ": ";
 
-            if ( criteria.getProperty() == "birthDate" )
-            {
-                message += " " + format.formatValue( criteria.getValue() );
-            }
-            else
-            {
-                message += " " + criteria.getValue().toString();
-            }
+            message += (criteria.getDescription() != null && !criteria.getDescription().isEmpty()) ? criteria
+                .getDescription() : criteria.getDisplayName();
 
             return INPUT;
         }

@@ -77,7 +77,7 @@
 
     <tr>
         <td><label for="phoneNumber">$i18n.getString( "phone_number" )</label></td>
-        <td colspan="3"><input type="text" id="phoneNumber" name="phoneNumber" style="width:20em"></td>             
+        <td colspan="3"><input type="text" id="phoneNumber" name="phoneNumber"></td>
     </tr>
 </table>
 

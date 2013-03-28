@@ -66,6 +66,7 @@ import org.smslib.Message.MessageTypes;
 import org.smslib.OutboundWapSIMessage.WapSISignals;
 import org.smslib.helper.Logger;
 import org.smslib.modem.SerialModemGateway;
+import org.smslib.smsserver.SMSServer;
 
 public class SmsService implements MessageService
 {
@@ -108,6 +109,8 @@ public class SmsService implements MessageService
     private Properties props;
 
     private InboundNotification inboundNotification;
+    
+    private IInboundMessageNotification iinboundMessageNotification;
 
     private OutboundNotification outboundNotification;
 
@@ -119,7 +122,8 @@ public class SmsService implements MessageService
     {
         serv = Service.getInstance();
         inboundNotification = new InboundNotification();
-        outboundNotification = new OutboundNotification();
+       
+       // outboundNotification = new OutboundNotification();
         callNotification = new CallNotification();
         logger = Logger.getInstance();
     }
@@ -267,9 +271,10 @@ public class SmsService implements MessageService
     @Override
     public String sendDrafts()
     {
+    	
         int successCount = 0;
         int failCount = 0;
-
+      
         int draftCount = (int) sendSMSService.getRowCount();
 
         List<SendSMS> sendSMSList = new ArrayList<SendSMS>();
@@ -290,11 +295,23 @@ public class SmsService implements MessageService
 
         for ( SendSMS sendSMS : sendSMSList )
         {
-            String status = sendMessage( sendSMS.getSenderInfo().split( "_" )[0], sendSMS.getSendingMessage() );
-            if ( status.equalsIgnoreCase( "SUCCESS" ) )
+        	String phoneNo = sendSMS.getSenderInfo().split( "_" )[0];
+        	if (phoneNo.length() >11){
+        		if (phoneNo.startsWith("91")){
+        			phoneNo = phoneNo.substring(2, phoneNo.length());
+        		}
+        	}
+        	System.out.println("phone= " + phoneNo);
+     
+        	//String status = sendMessage(phoneNo , sendSMS.getSendingMessage() );
+        	OutboundMessage msg = new OutboundMessage(phoneNo, sendSMS.getSendingMessage());
+            boolean status = serv.queueMessage(msg);
+            System.out.println(status);
+       /* 	if ( status.equalsIgnoreCase( "SUCCESS" ) )
             {
                 sendSMSService.deleteSendSMS( sendSMS );
                 successCount++;
+               
             } else
             {
                 if ( status.equalsIgnoreCase( "MODEMERROR" ) )
@@ -305,7 +322,14 @@ public class SmsService implements MessageService
                 {
                     failCount++;
                 }
+            }*/
+            if (status){
+            	sendSMSService.deleteSendSMS( sendSMS );
+                successCount++;
+            }else{
+            	
             }
+        	
         }
 
         return "SMS Successfully Sent : " + successCount + " Failed : " + failCount;
@@ -383,9 +407,9 @@ public class SmsService implements MessageService
     @Override
     public String sendMessage( String recipient, String msg )
     {
+    	
         OutboundMessage message = new OutboundMessage( recipient, msg );
-        message.setDstPort(16000);
-        message.setSrcPort(0);
+        
         if ( getServiceStatus() )
         {
             try
@@ -396,6 +420,7 @@ public class SmsService implements MessageService
                     return "SUCCESS";
                 } else
                 {
+                	System.out.println("failure cause = "+message.getFailureCause());
                     logger.logError( "Timeout error in sending message to: " + recipient, null, null );
                     return "MODEMERROR";
                 }
@@ -474,21 +499,42 @@ public class SmsService implements MessageService
         try
         {
             logger.logInfo( "---Starting processing message---", null, null );
-            InboundBinaryMessage binaryMsg = (InboundBinaryMessage) message;
-            byte[] compressedData = binaryMsg.getDataBytes();
-            String unCompressedText = new String( Compressor.decompress( compressedData ), "UTF-8" );
-            String sender = binaryMsg.getOriginator();
-            Date sendTime = binaryMsg.getDate();
-
+         //   InboundBinaryMessage binaryMsg = (InboundBinaryMessage) message;
+           
+            // byte[] compressedData = binaryMsg.getDataBytes();
+            //String unCompressedText = new String( Compressor.decompress( compressedData ), "UTF-8" );
+            //String sender = binaryMsg.getOriginator();
+            //Date sendTime = binaryMsg.getDate();
+            InboundMessage textMessage = (InboundMessage) message;
+           String unCompressedText = textMessage.getText().trim();
+            String sender = textMessage.getOriginator();
+          Date sendTime = textMessage.getDate();
+            
+            System.out.println("sms content = "+unCompressedText);
             
             if(unCompressedText.startsWith("i"))
             {
                 mobileImportService.importInteractionMessage(unCompressedText, sender, sendTime);
             }
+            else if (unCompressedText.startsWith("SN")){
+            	mobileImportService.registerPatientData(unCompressedText, sender, sendTime);
+            } 
+            else if (unCompressedText.startsWith("SU")){
+            	mobileImportService.registerPatientData(unCompressedText, sender, sendTime);
+            }
             else if (unCompressedText.startsWith("S1")){
-            	mobileImportService.registerData(unCompressedText, sender, sendTime);
+            	mobileImportService.registerDataByUID(unCompressedText, sender, sendTime);
             }
             else if (unCompressedText.startsWith("S2")){
+            	mobileImportService.registerDataByUID(unCompressedText, sender, sendTime);
+            }
+            else if (unCompressedText.startsWith("S3")){
+            	mobileImportService.registerDataByUID(unCompressedText, sender, sendTime);
+            }
+            else if (unCompressedText.startsWith("S4")){
+            	mobileImportService.registerDataByUID(unCompressedText, sender, sendTime);
+            }
+            else if (unCompressedText.startsWith("S5")){
             	mobileImportService.registerDataByUID(unCompressedText, sender, sendTime);
             }
             else
@@ -530,11 +576,13 @@ public class SmsService implements MessageService
             
             }
 
-        } catch ( UnsupportedEncodingException uneex )
-        {
-            logger.logError( "Error reading encoding: ", uneex, null );
-            return;
-        } catch ( ClassCastException ccex )
+        } 
+//        catch ( UnsupportedEncodingException uneex )
+//        {
+//            logger.logError( "Error reading encoding: ", uneex, null );
+//            return;
+//        } 
+        catch ( ClassCastException ccex )
         {
             logger.logError( "Error performing ClassCast: ", ccex, null );
             return;
@@ -945,53 +993,38 @@ public class SmsService implements MessageService
     class InboundNotification implements IInboundMessageNotification
     {
 
-        public void process( String gatewayId, MessageTypes msgType, InboundMessage msg )
-        {
-            if ( msgType == MessageTypes.INBOUND )
-            {
-                logger.logInfo( "New INBOUND MESSAGE on Gateway: " + gatewayId + " from " + msg.getOriginator(), null, null );
-                processMessage( msg );
-            } else
-            {
-                if ( msgType == MessageTypes.STATUSREPORT )
-                {
-                    logger.logInfo( "New STATUS REPORT on Gateway: " + gatewayId + " from " + msg.getOriginator(), null, null );
-                    processStatusReport( msg );
-                }
-
-                if ( getProperties().getProperty( "settings.delete_after_processing", "no" ).equalsIgnoreCase( "yes" ) )
-                {
-                    try
-                    {
-                        getService().deleteMessage( msg );
-                        logger.logInfo( "Deleted message", null, null );
-                    } catch ( Exception e )
-                    {
-                        logger.logError( "Error deleting received message!", e, null );
-                    }
-                }
-            }
-
-            /*
-            if ( getProperties().getProperty( "settings.delete_after_processing", "no" ).equalsIgnoreCase( "yes" ) )
-            {
-            try
-            {
-            getService().deleteMessage( msg );
-            logger.logInfo( "Deleted message", null, null );
-            } 
-            catch ( Exception e )
-            {
-            logger.logError( "Error deleting received message!", e, null );
-            }
-            }
-             */
-        }
-
+      
 		@Override
 		public void process(AGateway gateway, MessageTypes msgType,
 				InboundMessage msg) {
+			String gatewayId = gateway.getGatewayId();
 			// TODO Auto-generated method stub
+			 if ( msgType == MessageTypes.INBOUND )
+	            {
+	                logger.logInfo( "New INBOUND MESSAGE on Gateway: " + gatewayId + " from " + msg.getOriginator(), null, null );
+	              
+	                processMessage( msg );
+	            } else
+	            {
+	                if ( msgType == MessageTypes.STATUSREPORT )
+	                {
+	                    logger.logInfo( "New STATUS REPORT on Gateway: " + gatewayId + " from " + msg.getOriginator(), null, null );
+	                    processStatusReport( msg );
+	                }
+
+	                if ( getProperties().getProperty( "settings.delete_after_processing", "no" ).equalsIgnoreCase( "yes" ) )
+	                {
+	                    try
+	                    {
+	                        getService().deleteMessage( msg );
+	                        logger.logInfo( "Deleted message", null, null );
+	                    } catch ( Exception e )
+	                    {
+	                        logger.logError( "Error deleting received message!", e, null );
+	                    }
+	                }
+	            }
+
 			
 		}
     }
@@ -1001,14 +1034,11 @@ public class SmsService implements MessageService
     class OutboundNotification implements IOutboundMessageNotification
     {
 
-        public void process( String gtwId, org.smslib.OutboundMessage msg )
-        {
-        }
-
+       
 		@Override
 		public void process(AGateway gateway, OutboundMessage msg) {
 			// TODO Auto-generated method stub
-			
+			System.out.println("outbound notification>>>>>>>>>>>" + msg.getMessageStatus() + msg.getText());
 		}
     }
     //</editor-fold>
@@ -1017,15 +1047,13 @@ public class SmsService implements MessageService
     class QueueSendingNotification implements IQueueSendingNotification
     {
 
-        public void process( String gtwId, OutboundMessage msg )
-        {
-            logger.logInfo( "**** >>>> Now Sending: " + msg.getRecipient(), null, gtwId );
-        }
 
 		@Override
 		public void process(AGateway gateway, OutboundMessage msg) {
 			// TODO Auto-generated method stub
-			
+			 logger.logInfo( "**** >>>> Now Sending: " + msg.getRecipient(), null, gateway.getGatewayId());
+		        
+			System.out.println("overidden : queue sending notification");
 		}
     }
     //</editor-fold>
@@ -1034,15 +1062,11 @@ public class SmsService implements MessageService
     class CallNotification implements ICallNotification
     {
 
-        public void process( String gatewayId, String callerId )
-        {
-            logger.logInfo( "**** >>>> Getting call from: " + callerId, null, null );
-        }
-
+        
 		@Override
 		public void process(AGateway gateway, String callerId) {
 			// TODO Auto-generated method stub
-			
+			logger.logInfo( "**** >>>> Getting call from: " + callerId, null, null );
 		}
     }
     //</editor-fold>

@@ -4,7 +4,7 @@
 
   <groupId>org.hisp.dhis.ws</groupId>
   <artifactId>smsclient</artifactId>
-  <version>2.11-SNAPSHOT</version>
+  <version>2.12-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>smsclient</name>

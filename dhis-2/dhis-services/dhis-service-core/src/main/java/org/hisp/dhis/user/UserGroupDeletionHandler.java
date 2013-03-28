@@ -30,6 +30,8 @@ package org.hisp.dhis.user;
 import java.util.Iterator;
 
 import org.hisp.dhis.system.deletion.DeletionHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * @author Lars Helge Overland
@@ -47,6 +49,9 @@ public class UserGroupDeletionHandler
     {
         this.userGroupService = userGroupService;
     }
+    
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     // -------------------------------------------------------------------------
     // DeletionHandler implementation
@@ -58,6 +63,7 @@ public class UserGroupDeletionHandler
         return UserGroup.class.getSimpleName();
     }
 
+    @Override
     public void deleteUser( User user )
     {
         Iterator<UserGroup> iterator = user.getGroups().iterator();
@@ -68,5 +74,13 @@ public class UserGroupDeletionHandler
             group.removeUser( user );
             userGroupService.updateUserGroup( group );
         }
+    }
+    
+    @Override
+    public String allowDeleteUserGroup( UserGroup group )
+    {
+        int count = jdbcTemplate.queryForInt( "select count(*) from usergroupaccess where usergroupid=" + group.getId() );
+        
+        return count == 0 ? null : "";
     }
 }

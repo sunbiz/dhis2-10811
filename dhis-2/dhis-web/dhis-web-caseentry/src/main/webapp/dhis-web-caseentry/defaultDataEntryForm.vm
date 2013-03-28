@@ -54,7 +54,7 @@
 			#elseif( $programStageDataElement.dataElement.type == "trueOnly" )
 				<input name="entryfield" type="checkbox" data="{compulsory: $programStageDataElement.compulsory, deType:'$programStageDataElement.dataElement.getType()'}" id="$id" name="entryfield" #if($patientDataValue.value=="true") checked #end onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" >
 			#elseif( $programStageDataElement.dataElement.type == "date" )
-				<input name="entryfield" type="text" data="{compulsory: $programStageDataElement.compulsory }" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )" onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" class="date-field datefield" />
+				<input name="entryfield" type="text" data="{compulsory: $programStageDataElement.compulsory, deType:'$programStageDataElement.dataElement.getType()' }" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )" onchange="saveVal( $programStageDataElement.dataElement.id )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" class="date-field datefield" />
 				<script type="text/javascript">
 					datePicker($programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false, false);
 				</script> 

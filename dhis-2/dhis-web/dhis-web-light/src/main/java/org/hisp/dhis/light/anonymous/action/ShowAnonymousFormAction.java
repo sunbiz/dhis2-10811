@@ -34,6 +34,8 @@ import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageDataElement;
+import org.hisp.dhis.user.UserService;
+
 import com.opensymphony.xwork2.Action;
 
 /**
@@ -53,6 +55,19 @@ public class ShowAnonymousFormAction implements Action
     {
         this.programService = programService;
     }
+    
+    private UserService userService;
+    
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
+    }
+    
     
     // -------------------------------------------------------------------------
     // Input & Output

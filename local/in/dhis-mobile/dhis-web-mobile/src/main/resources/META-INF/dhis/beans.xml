@@ -79,11 +79,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
           scope="prototype">
         <property name="smsService" ref="org.hisp.dhis.mobile.SmsService" />
     </bean>
-<!--
+
 	<bean id="org.hisp.dhis.mobile.action.TestSMSDataAction"
           class="org.hisp.dhis.mobile.action.TestSMSDataAction"
           scope="prototype">
         <property name="mobileImportService" ref="org.hisp.dhis.mobile.api.MobileImportService"/>
     </bean>
--->	
+
 </beans>

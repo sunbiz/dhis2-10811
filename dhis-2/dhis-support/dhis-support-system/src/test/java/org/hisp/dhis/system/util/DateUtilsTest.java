@@ -58,10 +58,4 @@ public class DateUtilsTest
         assertEquals( "10 mar 2010", convertDate( "2010-03-10" ).toLowerCase() );
         assertEquals( "Invalid", convertDate( "Invalid" ) );
     }
-    
-    @Test
-    public void testGetSecondsUntilTomorrow()
-    {
-        System.out.println( DateUtils.getSecondsUntilTomorrow( 3 ) );
-    }
 }

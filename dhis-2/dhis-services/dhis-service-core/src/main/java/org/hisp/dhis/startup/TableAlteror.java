@@ -27,13 +27,6 @@ package org.hisp.dhis.startup;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.amplecode.quick.BatchHandler;
 import org.amplecode.quick.BatchHandlerFactory;
 import org.amplecode.quick.StatementHolder;
@@ -46,6 +39,13 @@ import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.system.startup.AbstractStartupRoutine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Lars Helge Overland
@@ -61,10 +61,10 @@ public class TableAlteror
 
     @Autowired
     private StatementManager statementManager;
-    
+
     @Autowired
     private StatementBuilder statementBuilder;
-    
+
     @Autowired
     private BatchHandlerFactory batchHandlerFactory;
 
@@ -283,7 +283,7 @@ public class TableAlteror
         executeSql( "UPDATE chart SET type='pie' where type='pie'" );
         executeSql( "UPDATE chart SET type='pie' where type='pie3d'" );
         executeSql( "UPDATE chart SET rewindRelativePeriods = false WHERE rewindRelativePeriods is null" );
-        
+
         executeSql( "UPDATE chart SET type=lower(type), series=lower(series), category=lower(category), filter=lower(filter)" );
 
         executeSql( "ALTER TABLE chart ALTER COLUMN dimension DROP NOT NULL" );
@@ -463,7 +463,7 @@ public class TableAlteror
 
         executeSql( "update dataelementgroup set shortname=name where shortname is null and length(name)<=50" );
         executeSql( "update orgunitgroup set shortname=name where shortname is null and length(name)<=50" );
-        
+
         // report, reporttable, chart groups
 
         executeSql( "DROP TABLE reportgroupmembers" );
@@ -537,7 +537,7 @@ public class TableAlteror
         executeSql( "update relativeperiods set lastweek = false where lastweek is null" );
         executeSql( "update relativeperiods set last4weeks = false where last4weeks is null" );
         executeSql( "update relativeperiods set last12weeks = false where last12weeks is null" );
-        
+
         upgradeChartRelativePeriods();
         upgradeReportTableRelativePeriods();
         upgradeReportTables();
@@ -549,8 +549,11 @@ public class TableAlteror
         executeSql( "UPDATE dataelementgroupset SET publicaccess=NULL WHERE userid IS NOT NULL" );
 
         // upgrade system charts/maps to public read-only sharing
-        executeSql( "UPDATE chart SET publicaccess='r-------' WHERE user IS NOT NULL;" );
-        executeSql( "UPDATE map SET publicaccess='r-------' WHERE user IS NOT NULL;" );
+        executeSql( "UPDATE chart SET publicaccess='r-------' WHERE user IS NULL AND publicaccess IS NULL;" );
+        executeSql( "UPDATE map SET publicaccess='r-------' WHERE user IS NULL AND publicaccess IS NULL;" );
+
+        executeSql( "UPDATE chart SET publicaccess='--------' WHERE user IS NULL AND publicaccess IS NULL;" );
+        executeSql( "UPDATE map SET publicaccess='-------' WHERE user IS NULL AND publicaccess IS NULL;" );
 
         log.info( "Tables updated" );
     }
@@ -558,46 +561,46 @@ public class TableAlteror
     private void upgradeChartRelativePeriods()
     {
         BatchHandler<RelativePeriods> batchHandler = batchHandlerFactory.createBatchHandler( RelativePeriodsBatchHandler.class ).init();
-        
+
         try
         {
             String sql = "select reportingmonth, * from chart";
 
             ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
-            
+
             while ( rs.next() )
             {
-                RelativePeriods r = new RelativePeriods( 
-                    rs.getBoolean( "reportingmonth" ), 
+                RelativePeriods r = new RelativePeriods(
+                    rs.getBoolean( "reportingmonth" ),
                     false,
-                    rs.getBoolean( "reportingquarter" ), 
-                    rs.getBoolean( "lastsixmonth" ), 
-                    rs.getBoolean( "monthsthisyear" ), 
-                    rs.getBoolean( "quartersthisyear" ), 
-                    rs.getBoolean( "thisyear" ), 
+                    rs.getBoolean( "reportingquarter" ),
+                    rs.getBoolean( "lastsixmonth" ),
+                    rs.getBoolean( "monthsthisyear" ),
+                    rs.getBoolean( "quartersthisyear" ),
+                    rs.getBoolean( "thisyear" ),
                     false, false,
-                    rs.getBoolean( "lastyear" ), 
-                    rs.getBoolean( "last5years" ), 
-                    rs.getBoolean( "last12months" ), 
-                    rs.getBoolean( "last3months" ), 
-                    false, 
-                    rs.getBoolean( "last4quarters" ), 
-                    rs.getBoolean( "last2sixmonths" ), 
+                    rs.getBoolean( "lastyear" ),
+                    rs.getBoolean( "last5years" ),
+                    rs.getBoolean( "last12months" ),
+                    rs.getBoolean( "last3months" ),
+                    false,
+                    rs.getBoolean( "last4quarters" ),
+                    rs.getBoolean( "last2sixmonths" ),
                     false, false, false,
                     false, false, false, false );
-                
+
                 int chartId = rs.getInt( "chartid" );
 
                 if ( !r.isEmpty() )
                 {
                     int relativePeriodsId = batchHandler.insertObject( r, true );
-                    
+
                     String update = "update chart set relativeperiodsid=" + relativePeriodsId + " where chartid=" + chartId;
 
                     executeSql( update );
-                    
+
                     log.info( "Updated relative periods for chart with id: " + chartId );
-                }    
+                }
             }
 
             executeSql( "alter table chart drop column reportingmonth" );
@@ -622,55 +625,55 @@ public class TableAlteror
             batchHandler.flush();
         }
     }
-    
+
     private void upgradeReportTableRelativePeriods()
     {
         BatchHandler<RelativePeriods> batchHandler = batchHandlerFactory.createBatchHandler( RelativePeriodsBatchHandler.class ).init();
-        
+
         try
-        {            
+        {
             String sql = "select reportingmonth, * from reporttable";
 
             ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
 
             while ( rs.next() )
             {
-                RelativePeriods r = new RelativePeriods( 
-                    rs.getBoolean( "reportingmonth" ), 
-                    rs.getBoolean( "reportingbimonth" ), 
-                    rs.getBoolean( "reportingquarter" ), 
-                    rs.getBoolean( "lastsixmonth" ), 
-                    rs.getBoolean( "monthsthisyear" ), 
-                    rs.getBoolean( "quartersthisyear" ), 
-                    rs.getBoolean( "thisyear" ), 
-                    rs.getBoolean( "monthslastyear" ), 
-                    rs.getBoolean( "quarterslastyear" ), 
-                    rs.getBoolean( "lastyear" ), 
-                    rs.getBoolean( "last5years" ), 
-                    rs.getBoolean( "last12months" ), 
-                    rs.getBoolean( "last3months" ), 
-                    false, 
-                    rs.getBoolean( "last4quarters" ), 
-                    rs.getBoolean( "last2sixmonths" ), 
-                    rs.getBoolean( "thisfinancialyear" ), 
-                    rs.getBoolean( "lastfinancialyear" ), 
-                    rs.getBoolean( "last5financialyears" ), 
+                RelativePeriods r = new RelativePeriods(
+                    rs.getBoolean( "reportingmonth" ),
+                    rs.getBoolean( "reportingbimonth" ),
+                    rs.getBoolean( "reportingquarter" ),
+                    rs.getBoolean( "lastsixmonth" ),
+                    rs.getBoolean( "monthsthisyear" ),
+                    rs.getBoolean( "quartersthisyear" ),
+                    rs.getBoolean( "thisyear" ),
+                    rs.getBoolean( "monthslastyear" ),
+                    rs.getBoolean( "quarterslastyear" ),
+                    rs.getBoolean( "lastyear" ),
+                    rs.getBoolean( "last5years" ),
+                    rs.getBoolean( "last12months" ),
+                    rs.getBoolean( "last3months" ),
+                    false,
+                    rs.getBoolean( "last4quarters" ),
+                    rs.getBoolean( "last2sixmonths" ),
+                    rs.getBoolean( "thisfinancialyear" ),
+                    rs.getBoolean( "lastfinancialyear" ),
+                    rs.getBoolean( "last5financialyears" ),
                     false, false, false, false );
-                
+
                 int reportTableId = rs.getInt( "reporttableid" );
-                
+
                 if ( !r.isEmpty() )
                 {
                     int relativePeriodsId = batchHandler.insertObject( r, true );
-                    
+
                     String update = "update reporttable set relativeperiodsid=" + relativePeriodsId + " where reporttableid=" + reportTableId;
-                    
+
                     executeSql( update );
-                    
+
                     log.info( "Updated relative periods for report table with id: " + reportTableId );
-                }                
+                }
             }
-            
+
             executeSql( "alter table reporttable drop column reportingmonth" );
             executeSql( "alter table reporttable drop column reportingbimonth" );
             executeSql( "alter table reporttable drop column reportingquarter" );
@@ -699,15 +702,15 @@ public class TableAlteror
             batchHandler.flush();
         }
     }
-    
+
     private void upgradeReportTables()
     {
         try
         {
             String sql = "select reporttableid, doindicators, doperiods, dounits, categorycomboid from reporttable";
-            
+
             ResultSet rs = statementManager.getHolder().getStatement().executeQuery( sql );
-            
+
             while ( rs.next() )
             {
                 int id = rs.getInt( "reporttableid" );
@@ -715,10 +718,10 @@ public class TableAlteror
                 boolean doPeriods = rs.getBoolean( "doperiods" );
                 boolean doUnits = rs.getBoolean( "dounits" );
                 int categoryComboId = rs.getInt( "categorycomboid" );
-                
+
                 int columnSortOrder = 0;
                 int rowSortOrder = 0;
-                
+
                 if ( doIndicators )
                 {
                     executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + columnSortOrder + ");" );
@@ -729,7 +732,7 @@ public class TableAlteror
                     executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'dx'," + rowSortOrder + ");" );
                     rowSortOrder++;
                 }
-                
+
                 if ( doPeriods )
                 {
                     executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + columnSortOrder + ");" );
@@ -740,7 +743,7 @@ public class TableAlteror
                     executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'pe'," + rowSortOrder + ");" );
                     rowSortOrder++;
                 }
-                
+
                 if ( doUnits )
                 {
                     executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + columnSortOrder + ");" );
@@ -751,23 +754,23 @@ public class TableAlteror
                     executeSql( "insert into reporttable_rows (reporttableid, dimension, sort_order) values (" + id + ",'ou'," + rowSortOrder + ");" );
                     rowSortOrder++;
                 }
-                
+
                 if ( categoryComboId > 0 )
                 {
                     executeSql( "insert into reporttable_columns (reporttableid, dimension, sort_order) values (" + id + ",'co'," + columnSortOrder + ");" );
                 }
             }
-            
+
             executeSql( "alter table reporttable drop column doindicators" );
             executeSql( "alter table reporttable drop column doperiods" );
-            executeSql( "alter table reporttable drop column dounits" );   
+            executeSql( "alter table reporttable drop column dounits" );
         }
         catch ( Exception ex )
         {
             log.debug( ex );
         }
     }
-    
+
     private List<Integer> getDistinctIdList( String table, String col1 )
     {
         StatementHolder holder = statementManager.getHolder();

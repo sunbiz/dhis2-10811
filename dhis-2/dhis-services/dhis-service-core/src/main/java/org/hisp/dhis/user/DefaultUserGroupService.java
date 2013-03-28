@@ -34,7 +34,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Transactional
-public class DefaultUserGroupService implements UserGroupService
+public class DefaultUserGroupService
+    implements UserGroupService
 {
     // -------------------------------------------------------------------------
     // Dependencies
@@ -68,7 +69,6 @@ public class DefaultUserGroupService implements UserGroupService
     {
         userGroupStore.update( userGroup );
     }
-
 
     @Override
     public Collection<UserGroup> getAllUserGroups()

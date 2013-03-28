@@ -97,15 +97,13 @@ public class GridTest
         metaData.put( 12, "Twelve" );
         metaData.put( 21, "TwentyOne" );
         metaData.put( 22, "TwentyTwo" );
-        
-        grid.setMetaData( metaData );
-        
+                
         assertEquals( 11, grid.getValue( 0, 0 ) );
         assertEquals( 12, grid.getValue( 0, 1 ) );
         assertEquals( 21, grid.getValue( 1, 0 ) );
         assertEquals( 22, grid.getValue( 1, 1 ) );
         
-        grid.substituteMetaData();
+        grid.substituteMetaData( metaData );
 
         assertEquals( "Eleven", grid.getValue( 0, 0 ) );
         assertEquals( "Twelve", grid.getValue( 0, 1 ) );

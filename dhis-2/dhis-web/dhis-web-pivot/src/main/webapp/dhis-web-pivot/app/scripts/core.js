@@ -206,10 +206,10 @@ PT.core.getConfigs = function() {
         west_fieldset_width: 416,
         west_width_padding: 4,
         west_fill: 2,
-        west_fill_accordion_indicator: 63,
-        west_fill_accordion_dataelement: 63,
+        west_fill_accordion_indicator: 59,
+        west_fill_accordion_dataelement: 59,
         west_fill_accordion_dataset: 33,
-        west_fill_accordion_period: 300,
+        west_fill_accordion_period: 296,
         west_fill_accordion_organisationunit: 62,
         west_maxheight_accordion_indicator: 400,
         west_maxheight_accordion_dataelement: 400,
@@ -741,7 +741,19 @@ PT.core.getUtils = function(pt) {
 						header.index = i;
 
 						if (header.meta) {
-							header.items = header.name === pt.conf.finals.dimension.period.dimensionName ? [].concat(response.periods) : xLayout.nameItemsMap[header.name];
+
+							// categories
+							if (header.name === pt.conf.finals.dimension.category.dimensionName) {
+								header.items = [].concat(response.metaData[pt.conf.finals.dimension.category.dimensionName]);
+							}
+							// periods
+							else if (header.name === pt.conf.finals.dimension.period.dimensionName) {
+								header.items = [].concat(response.metaData[pt.conf.finals.dimension.period.dimensionName]);
+							}
+							else {
+								header.items = xLayout.nameItemsMap[header.name];
+							}
+
 							header.size = header.items.length;
 						}
 					}
@@ -826,14 +838,18 @@ PT.core.getUtils = function(pt) {
 
 	//nCols			= 12
 
-
 				for (var i = 0; i < aUniqueIds.length; i++) {
 					if (aNumCols[i] === 1) {
 						if (i === 0) {
-							aSpan.push(nCols); //if just one and top level, span all
+							aSpan.push(nCols); //if just one item and top level, span all
 						}
 						else {
-							aSpan.push(aSpan[0]); //if just one and not top level, span same as top level
+							if (options.hideEmptyRows && type === 'row') {	
+								aSpan.push(nCols / aAccNumCols[i]);
+							}
+							else {
+								aSpan.push(aSpan[0]); //if just one item and not top level, span same as top level
+							}
 						}
 					}
 					else {
@@ -912,12 +928,16 @@ PT.core.getUtils = function(pt) {
 					aAllObjects.push(allRow);
 				}
 
-				// add span
+				// add span and children
 				for (var i = 0; i < aAllObjects.length; i++) {
 					for (var j = 0, obj; j < aAllObjects[i].length; j += aSpan[i]) {
 						obj = aAllObjects[i][j];
+
+						// span
 						obj[spanType] = aSpan[i];
-						obj.children = aSpan[i] === 1 ? 0 : aSpan[i];
+
+						// children
+						obj.children = Ext.isDefined(aSpan[i + 1]) ? aSpan[i] / aSpan[i + 1] : 0;
 
 						if (i === 0) {
 							obj.root = true;
@@ -964,7 +984,7 @@ PT.core.getUtils = function(pt) {
 			validateUrl = function(url) {
 				if (!Ext.isString(url) || url.length > 2000) {
 					var percent = ((url.length - 2000) / url.length) * 100;
-					alert('Too many parameters selected. Please reduce the number of parameters by minimum ' + percent.toFixed(0) + '%.');
+					alert('Too many parameters selected. Please reduce the number of parameters by at least ' + percent.toFixed(0) + '%.');
 					return;
 				}
 
@@ -1086,7 +1106,7 @@ PT.core.getUtils = function(pt) {
 								type: 'dimension',
 								cls: 'pivot-dim',
 								colSpan: colSpan,
-								htmlValue: xResponse.metaData[id]
+								htmlValue: xResponse.metaData.names[id]
 							}));
 
 							if (doSubTotals(xColAxis) && i === 0) {
@@ -1131,8 +1151,7 @@ PT.core.getUtils = function(pt) {
 							obj.collapsed = true;
 
 							if (obj.parent) {
-								obj.parent.children--;
-								obj.parent.rowSpan = obj.parent.parent ? obj.parent.rowSpan-- : obj.parent.rowSpan;
+								obj.parent.children = obj.parent.children - 1;
 							}
 						}
 
@@ -1152,7 +1171,7 @@ PT.core.getUtils = function(pt) {
 								obj.cls = 'pivot-dim td-nobreak';
 								obj.noBreak = true;
 								obj.hidden = !(obj.rowSpan || obj.colSpan);
-								obj.htmlValue = xResponse.metaData[obj.id];
+								obj.htmlValue = xResponse.metaData.names[obj.id];
 
 								row.push(obj);
 							}
@@ -1299,7 +1318,7 @@ PT.core.getUtils = function(pt) {
 								obj = {};
 								obj.type = 'dimensionSubtotal';
 								obj.cls = 'pivot-dim-subtotal';
-								obj.collapsed = !Ext.Array.contains(collapsed, false);
+								obj.collapsed = Ext.Array.contains(collapsed, true);
 
 								if (i === 0) {
 									obj.htmlValue = '&nbsp;'; //i18n

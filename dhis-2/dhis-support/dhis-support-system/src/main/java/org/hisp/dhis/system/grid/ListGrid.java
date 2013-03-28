@@ -531,9 +531,9 @@ public class ListGrid
         return this;
     }
     
-    public Grid substituteMetaData()
+    public Grid substituteMetaData( Map<Object, Object> metaDataMap )
     {
-        if ( metaData == null || headers == null || headers.isEmpty() )
+        if ( metaDataMap == null || headers == null || headers.isEmpty() )
         {
             return this;
         }
@@ -546,7 +546,7 @@ public class ListGrid
             {
                 // Header
                 
-                Object headerMetaName = metaData.get( header.getName() );
+                Object headerMetaName = metaDataMap.get( header.getName() );
                 
                 if ( headerMetaName != null )
                 {
@@ -561,7 +561,7 @@ public class ListGrid
                 {
                     Object object = col.get( rowIndex );
                     
-                    Object meta = metaData.get( object );
+                    Object meta = metaDataMap.get( object );
                     
                     if ( meta != null )
                     {

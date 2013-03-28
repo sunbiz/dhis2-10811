@@ -116,22 +116,16 @@ public interface ProgramStageInstanceService
         I18n i18n );
 
     // -------------------------------------------------------------------------
-    // Activity plans
+    // Statistical
     // -------------------------------------------------------------------------
-
-    List<ProgramStageInstance> activityPlanList( Program program, Collection<Integer> orgunitIds, Date startDate,
-        Date endDate, Collection<Integer> statusList, Integer min, Integer max );
-
-    Grid activityPlans( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        Collection<Integer> statusList, Integer min, Integer max, I18n i18n );
-
-    int getActiveInstanceCount( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        Collection<Integer> statusList );
-
+    
     Collection<ProgramStageInstance> getProgramStageInstances( Program program, Collection<Integer> orgunitIds,
         Date startDate, Date endDate, Boolean completed );
 
     int getOverDueEventCount( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate, Date endDate );
 
     int averageNumberCompletedProgramInstance( Program program , Collection<Integer> orgunitIds, Date startDate, Date endDate, Boolean completed );
+    
+    Collection<Integer> getOrganisationUnitIds ( Date startDate, Date endDate );
+    
 }

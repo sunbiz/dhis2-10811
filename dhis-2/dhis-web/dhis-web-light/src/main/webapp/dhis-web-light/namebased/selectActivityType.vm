@@ -3,7 +3,6 @@
 <ul>
 	<li><a href="selectBeneficiary.action?organisationUnitId=$organisationUnitId&current=true&validated=false">$i18n.getString( "current_activityplan" )</a></li>
 	<li><a href="selectBeneficiary.action?organisationUnitId=$organisationUnitId&current=false&validated=false">$i18n.getString( "all_activityplan" )</a></li>
-	<li><a href="selectSingleEvent.action?organisationUnitId=$organisationUnitId">$i18n.getString( "single_event" )</a></li>
 </ul>
 </p>
 

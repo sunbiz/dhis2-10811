@@ -18,8 +18,8 @@
 			<th>$i18n.getString('orgunit')</th>
 			<th>$i18n.getString('full_name')</th>
 			<th>$i18n.getString('phone_number')</th>
-			<th>$i18n.getString( "program_stage" )</th>
-			<th>$i18n.getString( "operations" )</th>
+			<th>$i18n.getString('program_stage')</th>
+			<th>$i18n.getString('operations')</th>
 		</tr>
 	</thead>
 	<tbody id="list">

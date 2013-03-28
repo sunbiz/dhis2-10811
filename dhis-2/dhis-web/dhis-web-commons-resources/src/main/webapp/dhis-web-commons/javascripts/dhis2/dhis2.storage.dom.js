@@ -68,17 +68,14 @@ dhis2.storage.Store.adapter( 'dom', (function () {
         addAll: function ( keys, objs, callback ) {
             var that = this;
 
-            if ( keys.length == 0 || objs.length == 0 ) {
-                if ( callback ) callback.call( that, that );
-                return;
+            while ( keys.length != 0 ) {
+                var key = keys.pop();
+                var obj = objs.pop();
+
+                that.add( key, obj );
             }
 
-            var key = keys.pop();
-            var obj = objs.pop();
-
-            this.add( key, obj, function ( store ) {
-                that.addAll( keys, objs, callback );
-            } );
+            if ( callback ) callback.call( that, that );
         },
 
         remove: function ( key, callback ) {

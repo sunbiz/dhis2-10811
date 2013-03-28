@@ -44,6 +44,18 @@
 					<option #if( $prevDataValues.get( $key ) == "true" ) selected="selected" #end value="true">$i18n.getString("yes")</option>
 					<option #if( $prevDataValues.get( $key ) == "false" ) selected="selected" #end value="false">$i18n.getString("no")</option>
 				</select>
+			#elseif($dataElement.type=="username")
+					<select name="$key">
+						<option value="">$i18n.getString("please_select")</option>
+						#foreach ($userName in  $userService.getAllUsers())
+							<option value="$userName.getUsername()"
+							#if( $prevDataValues.get( $key ) == $userName ) 
+								selected
+								#set( $selected=true )
+							#end
+							> $userName.getUsername() </option>
+						#end
+					</select>	
 			#else
 				<input type="text" name="$key" value="$!prevDataValues.get($key)" />
 			#end	

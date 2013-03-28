@@ -1009,7 +1009,13 @@ public class DataQueryParams
             }
         }
         
-        //TODO filters?
+        for ( Dimension filter : filters )
+        {
+            if ( DimensionType.DATAELEMENT_GROUPSET.equals( filter.getType() ) )
+            {
+                list.add( filter );
+            }
+        }
         
         return list;
     }

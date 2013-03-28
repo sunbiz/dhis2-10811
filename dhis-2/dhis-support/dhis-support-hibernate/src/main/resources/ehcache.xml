@@ -132,17 +132,17 @@
 
   <cache name="org.hisp.dhis.dataelement.DataElementGroup.members" maxElementsInMemory="3000" />
 
-  <cache name="org.hisp.dhis.dataelement.DataElementGroupSet.members" maxElementsInMemory="400" />
+  <cache name="org.hisp.dhis.dataelement.DataElementGroupSet.members" maxElementsInMemory="500" />
 
-  <cache name="org.hisp.dhis.indicator.Indicator.groups" maxElementsInMemory="400" />
+  <cache name="org.hisp.dhis.indicator.Indicator.groups" maxElementsInMemory="500" />
 
   <cache name="org.hisp.dhis.indicator.Indicator.dataSets" maxElementsInMemory="400" />
 
   <cache name="org.hisp.dhis.indicator.Indicator.attributeValues" maxElementsInMemory="1000" />
 
-  <cache name="org.hisp.dhis.indicator.IndicatorGroup.members" maxElementsInMemory="400" />
+  <cache name="org.hisp.dhis.indicator.IndicatorGroup.members" maxElementsInMemory="500" />
 
-  <cache name="org.hisp.dhis.indicator.IndicatorGroupSet.members" maxElementsInMemory="400" />
+  <cache name="org.hisp.dhis.indicator.IndicatorGroupSet.members" maxElementsInMemory="500" />
 
   <cache name="org.hisp.dhis.dataset.Section.dataElements" maxElementsInMemory="4000" />
 
@@ -162,7 +162,7 @@
 
   <cache name="org.hisp.dhis.organisationunit.OrganisationUnitGroup.members" maxElementsInMemory="20000" />
 
-  <cache name="org.hisp.dhis.organisationunit.OrganisationUnitGroupSet.organisationUnitGroups" maxElementsInMemory="400" />
+  <cache name="org.hisp.dhis.organisationunit.OrganisationUnitGroupSet.organisationUnitGroups" maxElementsInMemory="500" />
 
   <cache name="org.hisp.dhis.reporttable.ReportTable.dataElements" maxElementsInMemory="1500" />
 

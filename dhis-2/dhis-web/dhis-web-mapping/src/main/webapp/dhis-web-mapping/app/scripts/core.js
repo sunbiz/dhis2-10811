@@ -58,7 +58,7 @@ GIS.core.getConfigs = function() {
 			widget: {
 				item_width: 262,
 				itemlabel_width: 95,
-				window_width: 290
+				window_width: 284
 			},
 			tool: {
 				item_width: 222,
@@ -209,6 +209,7 @@ GIS.core.getOLMap = function(gis) {
 			displayClass: 'olControlButton',
 			trigger: function() {
 				fn.call(gis.olmap);
+				gis.layer.googleHybrid.redraw();
 			}
 		});
 
@@ -347,7 +348,6 @@ GIS.core.getLayers = function(gis) {
 
 GIS.core.createSelectHandlers = function(gis, layer) {
 	var isRelocate = !!GIS.app ? (gis.init.user.isAdmin ? true : false) : false,
-		isInfo = !!GIS.app,
 
 		window,
 		infrastructuralPeriod,

@@ -246,8 +246,10 @@ public interface Grid
     /**
      * Substitutes the values in the meta columns with the mapped value in the
      * meta-data map.
+     * 
+     * @param metaDataMap meta-data map of keys and substitutions.
      */
-    Grid substituteMetaData();
+    Grid substituteMetaData( Map<Object, Object> metaDataMap );
     
     /**
      * Adds a set of headers based on the column names of the given SQL result set.

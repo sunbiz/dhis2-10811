@@ -123,8 +123,13 @@ function getParams()
 		disable('programStageProperty');
 	}
 	
-	if(jQuery("#programStageId").attr("programType")==3){
+	if(jQuery('#programId option:selected').attr('programType')==3){
 		jQuery("[name=multiProgram]").remove();
+		if( jQuery("[value=times]").attr('checked')!=undefined
+			&& jQuery("[value=times]").attr('checked')!='true'  )
+		{
+			jQuery("[value=times]").attr('checked',true);
+		}
 	}
 	
 	jQuery.getJSON( 'getParamsByProgram.action',{ programId:programId }
@@ -150,7 +155,7 @@ function getParams()
 			getPatientDataElements();
 			
 			clearListById( 'caseProperty' );
-			var type = jQuery('#programId option:selected').attr('type');
+			var type = jQuery('#programId option:selected').attr('programType');
 			if( type!='3')
 			{
 				var caseProperty = jQuery( '#caseProperty' );

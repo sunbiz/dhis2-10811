@@ -35,8 +35,8 @@ import static org.hisp.dhis.analytics.DataQueryParams.DATAELEMENT_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.DATASET_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.DATA_X_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.DIMENSION_SEP;
-import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_DATA_X;
 import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_CATEGORYOPTIONCOMBO;
+import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_DATA_X;
 import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_ORGUNIT;
 import static org.hisp.dhis.analytics.DataQueryParams.DISPLAY_NAME_PERIOD;
 import static org.hisp.dhis.analytics.DataQueryParams.FIXED_DIMS;
@@ -98,7 +98,7 @@ import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.RelativePeriodEnum;
 import org.hisp.dhis.period.RelativePeriods;
-import org.hisp.dhis.period.comparator.PeriodComparator;
+import org.hisp.dhis.period.comparator.AscendingPeriodComparator;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.hisp.dhis.system.util.ConversionUtils;
 import org.hisp.dhis.system.util.DebugUtils;
@@ -116,8 +116,6 @@ public class DefaultAnalyticsService
     private static final Log log = LogFactory.getLog( DefaultAnalyticsService.class );
     
     private static final String VALUE_HEADER_NAME = "Value";
-    private static final String PERIODS_META_KEY = "periods";
-    private static final String NAMES_META_KEY = "names";
     private static final int PERCENT = 100;
     private static final int MAX_QUERIES = 8;
     
@@ -170,17 +168,11 @@ public class DefaultAnalyticsService
         params.conform();
                 
         // ---------------------------------------------------------------------
-        // Headers and meta-data
+        // Headers
         // ---------------------------------------------------------------------
 
         Grid grid = new ListGrid();
 
-        Map<Object, Object> metaData = new HashMap<Object, Object>();        
-        metaData.put( NAMES_META_KEY, getUidNameMap( params ) );
-        metaData.put( PERIODS_META_KEY, getUids( params.getDimensionOrFilter( PERIOD_DIM_ID ) ) );
-        
-        grid.setMetaData( metaData );
-        
         for ( Dimension col : params.getHeaderDimensions() )
         {
             grid.addHeader( new GridHeader( col.getDimension(), col.getDisplayName(), String.class.getName(), false, true ) );
@@ -329,17 +321,29 @@ public class DefaultAnalyticsService
                 grid.addValue( entry.getValue() );
             }
         }
-        
+
         // ---------------------------------------------------------------------
-        // Category option combo meta-data
+        // Meta-data
         // ---------------------------------------------------------------------
-        
+
         Integer cocIndex = params.getCocIndex();
+        
+        Map<Object, Object> metaData = new HashMap<Object, Object>();
+        
+        Map<String, String> uidNameMap = getUidNameMap( params );
+        Map<String, String> cocNameMap = getCocNameMap( grid, cocIndex );
+        
+        uidNameMap.putAll( cocNameMap );
+        
+        metaData.put( NAMES_META_KEY, uidNameMap );
+        metaData.put( PERIOD_DIM_ID, getUids( params.getDimensionOrFilter( PERIOD_DIM_ID ) ) );
         
         if ( cocIndex != null )
         {
-            addCocMetaData( grid, cocIndex );
+            metaData.put( CATEGORYOPTIONCOMBO_DIM_ID, cocNameMap.keySet() );
         }
+        
+        grid.setMetaData( metaData );
         
         return grid;
     }
@@ -372,13 +376,13 @@ public class DefaultAnalyticsService
      */
     private Map<String, Double> getAggregatedValueMap( DataQueryParams params, String tableName )        
     {
-        Timer t = new Timer().start();
-
         int optimalQueries = MathUtils.getWithin( SystemUtils.getCpuCores(), 1, MAX_QUERIES );
+        
+        Timer t = new Timer().start();
         
         List<DataQueryParams> queries = queryPlanner.planQuery( params, optimalQueries, tableName );
         
-        t.getTime( "Planned query for optimal: " + optimalQueries + ", got: " + queries.size() );
+        t.getSplitTime( "Planned query" );
         
         List<Future<Map<String, Double>>> futures = new ArrayList<Future<Map<String, Double>>>();
         
@@ -409,7 +413,7 @@ public class DefaultAnalyticsService
             }
         }
         
-        t.getTime( "Got aggregated values" );
+        t.getTime( "Got aggregated value" );
         
         return map;
     }
@@ -569,7 +573,7 @@ public class DefaultAnalyticsService
         
         if ( PERIOD_DIM_ID.equals( dimension ) )
         {
-            List<Period> periods = new ArrayList<Period>();
+            Set<Period> periods = new HashSet<Period>();
             
             for ( String isoPeriod : options )
             {
@@ -600,7 +604,7 @@ public class DefaultAnalyticsService
             }
 
             List<Period> periodList = new ArrayList<Period>( periods );
-            Collections.sort( periodList, PeriodComparator.INSTANCE );
+            Collections.sort( periodList, AscendingPeriodComparator.INSTANCE );
             
             return Arrays.asList( new Dimension( dimension, DimensionType.PERIOD, null, DISPLAY_NAME_PERIOD, asList( periodList ) ) );
         }
@@ -689,15 +693,22 @@ public class DefaultAnalyticsService
         return map;
     }
     
-    private void addCocMetaData( Grid grid, Integer cocIndex )
+    private Map<String, String> getCocNameMap( Grid grid, Integer cocIndex )
     {
-        Set<String> uids = new HashSet<String>( ConversionUtils.<String>cast( grid.getColumn( cocIndex ) ) );
+        Map<String, String> metaData = new HashMap<String, String>();
         
-        Collection<DataElementCategoryOptionCombo> cocs = categoryService.getDataElementCategoryOptionCombosByUid( uids );
-        
-        for ( DataElementCategoryOptionCombo coc : cocs )
+        if ( grid != null && cocIndex != null )
         {
-            grid.addMetaData( coc.getUid(), coc.getName() );
+            Set<String> uids = new HashSet<String>( ConversionUtils.<String>cast( grid.getColumn( cocIndex ) ) );
+            
+            Collection<DataElementCategoryOptionCombo> cocs = categoryService.getDataElementCategoryOptionCombosByUid( uids );
+            
+            for ( DataElementCategoryOptionCombo coc : cocs )
+            {
+                metaData.put( coc.getUid(), coc.getName() );
+            }
         }
+        
+        return metaData;
     }
 }

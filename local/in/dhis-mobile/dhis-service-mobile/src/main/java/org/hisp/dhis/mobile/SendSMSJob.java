@@ -132,9 +132,9 @@ public class SendSMSJob
             System.out.println("Mobile Import Service is null");
         }
         
-        mobileImportService.importPendingFiles();
+      //  mobileImportService.importPendingFiles();
 
-        //smsService.sendDrafts();
+      //  smsService.sendDrafts();
         
         System.out.println("ImportAndSendSMSProcess Job Ended at : "+new Date() );
     }

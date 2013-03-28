@@ -40,4 +40,4 @@
 </table>
 </div>
 
-<div id="importSummaryDiv" class="page formSection" style="display:none; width:400px; padding-bottom:20px;"></div>
+<div id="importSummaryDiv" class="page formSection" style="display:none; width:80%; padding-bottom:20px;"></div>

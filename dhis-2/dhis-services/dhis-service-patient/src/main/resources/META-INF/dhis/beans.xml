@@ -81,6 +81,7 @@
 	<bean id="org.hisp.dhis.patient.PatientStore" class="org.hisp.dhis.patient.hibernate.HibernatePatientStore">
 		<property name="clazz" value="org.hisp.dhis.patient.Patient" />
 		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
 		<property name="statementBuilder" ref="statementBuilder" />
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
@@ -483,6 +484,7 @@
 		<constructor-arg ref="org.hisp.dhis.caseaggregation.CaseAggregationConditionService" />
 		<constructor-arg ref="org.hisp.dhis.datavalue.DataValueService" />
 		<constructor-arg ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+		<constructor-arg ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<constructor-arg ref="jdbcTemplate" />
 		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementService" />
 		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementCategoryService" />

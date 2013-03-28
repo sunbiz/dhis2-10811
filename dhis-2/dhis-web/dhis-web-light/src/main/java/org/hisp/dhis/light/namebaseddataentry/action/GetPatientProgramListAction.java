@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +47,8 @@ import org.hisp.dhis.relationship.Relationship;
 import org.hisp.dhis.relationship.RelationshipService;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.relationship.RelationshipTypeService;
+import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 
@@ -140,6 +141,18 @@ public class GetPatientProgramListAction
     public void setRelationshipTypeService( RelationshipTypeService relationshipTypeService )
     {
         this.relationshipTypeService = relationshipTypeService;
+    }
+
+    private CurrentUserService currentUserService;
+
+    public CurrentUserService getCurrentUserService()
+    {
+        return currentUserService;
+    }
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
     }
 
     // -------------------------------------------------------------------------
@@ -249,10 +262,23 @@ public class GetPatientProgramListAction
         return listOfCompletedProgram;
     }
 
+    private User user;
+
+    public User getUser()
+    {
+        return user;
+    }
+
+    public void setUser( User user )
+    {
+        this.user = user;
+    }
+
     @Override
     public String execute()
         throws Exception
     {
+        user = currentUserService.getCurrentUser();
         programInstances.clear();
         relatedPeople = new HashMap<Relationship, Patient>();
 
@@ -321,7 +347,8 @@ public class GetPatientProgramListAction
                     programs.add( program );
                 }
                 else if ( programInstanceService.getProgramInstances( patient, program ).size() > 0
-                    && !program.getOnlyEnrollOnce() && programInstanceService.getProgramInstances( patient, program, false ).size() == 0)
+                    && !program.getOnlyEnrollOnce()
+                    && programInstanceService.getProgramInstances( patient, program, false ).size() == 0 )
                 {
                     programs.add( program );
                 }

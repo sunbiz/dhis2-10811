@@ -51,6 +51,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.program.ProgramStageInstanceService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -100,6 +101,13 @@ public class CaseAggregationResultAction
     public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
         this.organisationUnitService = organisationUnitService;
+    }
+
+    private ProgramStageInstanceService programStageInstanceService;
+
+    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
+    {
+        this.programStageInstanceService = programStageInstanceService;
     }
 
     private I18nFormat format;
@@ -202,6 +210,28 @@ public class CaseAggregationResultAction
     public String execute()
         throws Exception
     {
+
+        // ---------------------------------------------------------------------
+        // Get CaseAggregateCondition list
+        // ---------------------------------------------------------------------
+
+        DataSet selectedDataSet = dataSetService.getDataSet( dataSetId );
+
+        Collection<CaseAggregationCondition> aggregationConditions = aggregationConditionService
+            .getCaseAggregationCondition( selectedDataSet.getDataElements() );
+
+        // ---------------------------------------------------------------------
+        // Get selected periods list
+        // ---------------------------------------------------------------------
+
+        Date sDate = format.parseDate( startDate );
+        Date eDate = format.parseDate( endDate );
+
+        CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( selectedDataSet
+            .getPeriodType().getName() );
+
+        periods.addAll( periodType.generatePeriods( sDate, eDate ) );
+
         // ---------------------------------------------------------------------
         // Get selected orgunits
         // ---------------------------------------------------------------------
@@ -231,24 +261,8 @@ public class CaseAggregationResultAction
                 selectedOrgunit.getId() ) );
         }
 
-        // ---------------------------------------------------------------------
-        // Get CaseAggregateCondition list
-        // ---------------------------------------------------------------------
-
-        DataSet selectedDataSet = dataSetService.getDataSet( dataSetId );
-
-        Collection<CaseAggregationCondition> aggregationConditions = aggregationConditionService
-            .getCaseAggregationCondition( selectedDataSet.getDataElements() );
-
-        // ---------------------------------------------------------------------
-        // Get selected periods list
-        // ---------------------------------------------------------------------
-
-        CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( selectedDataSet
-            .getPeriodType().getName() );
-
-        periods.addAll( periodType.generatePeriods( format.parseDate( startDate ), format.parseDate( endDate ) ) );
-
+        orgunitIds.retainAll( programStageInstanceService.getOrganisationUnitIds( sDate, eDate ) );
+        
         // ---------------------------------------------------------------------
         // Aggregation
         // ---------------------------------------------------------------------

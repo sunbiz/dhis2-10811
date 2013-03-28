@@ -58,8 +58,12 @@ public interface MobileImportService
     
     public void importInteractionMessage( String smsText, String sender, Date sendTime );
 
-	public String registerData(String unCompressedText, String sender, Date sendTime );
-
 	public void registerDataByUID(String unCompressedText, String sender,
+			Date sendTime);
+
+	public void registerPatientData(String unCompressedText, String sender,
+			Date sendTime);
+
+	public void registerProgram1Data(String unCompressedText, String sender,
 			Date sendTime);
 }

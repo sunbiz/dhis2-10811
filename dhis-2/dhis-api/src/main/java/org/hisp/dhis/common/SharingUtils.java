@@ -196,8 +196,8 @@ public final class SharingUtils
     public static boolean canWrite( User user, IdentifiableObject object )
     {
         if ( sharingOverrideAuthority( user )
-            || object.getUser() == null
-            || object.getUser().equals( user )
+            || (object.getUser() == null && canCreatePublic( user, object ) && PRIVATE_AUTHORITIES.get( object.getClass() ) != null)
+            || user.equals( object.getUser() )
             || AccessStringHelper.canWrite( object.getPublicAccess() ) )
         {
             return true;
@@ -231,8 +231,9 @@ public final class SharingUtils
     public static boolean canRead( User user, IdentifiableObject object )
     {
         if ( sharingOverrideAuthority( user )
+            || UserGroup.class.isAssignableFrom( object.getClass() )
             || object.getUser() == null
-            || object.getUser().equals( user )
+            || user.equals( object.getUser() )
             || AccessStringHelper.canRead( object.getPublicAccess() ) )
         {
             return true;
@@ -292,8 +293,10 @@ public final class SharingUtils
      */
     public static boolean canManage( User user, IdentifiableObject object )
     {
-        if ( sharingOverrideAuthority( user ) || user.equals( object.getUser() ) ||
-            AccessStringHelper.canWrite( object.getPublicAccess() ) )
+        if ( sharingOverrideAuthority( user )
+            || (object.getUser() == null && canCreatePublic( user, object ) && PRIVATE_AUTHORITIES.get( object.getClass() ) != null)
+            || user.equals( object.getUser() )
+            || AccessStringHelper.canWrite( object.getPublicAccess() ) )
         {
             return true;
         }

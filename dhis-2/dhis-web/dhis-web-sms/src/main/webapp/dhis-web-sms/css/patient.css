@@ -14,19 +14,14 @@ select.search-field
 	width: 180px;
 }
 
+.large-button
+{
+	width: 110px;
+}
+
 .hidden
 {
 	display:none;
-}
-
-.overlaps
-{
-	background-color: #BAFFBC;
-	border: 1px solid #12CD17;
-	display: none;
-	margin: 1em;
-	padding: 1em;
-	width: 500px;
 }
 
 .advanced-search 

@@ -94,13 +94,13 @@ Ext.onReady( function() {
 				gis.layer.googleStreets.setVisibility(true);
 			}
 
-			var len = document.getElementsByClassName('zoomInButton').length;
+			var len = Ext.query('.zoomInButton').length;
 
 			for (var i = 0; i < len; i++) {
-				document.getElementsByClassName('zoomInButton')[i].innerHTML = '<img src="images/zoomin_24.png" />';
-				document.getElementsByClassName('zoomOutButton')[i].innerHTML = '<img src="images/zoomout_24.png" />';
-				document.getElementsByClassName('zoomVisibleButton')[i].innerHTML = '<img src="images/zoomvisible_24.png" />';
-				document.getElementsByClassName('measureButton')[i].innerHTML = '<img src="images/measure_24.png" />';
+				Ext.query('.zoomInButton')[i].innerHTML = '<img src="images/zoomin_24.png" />';
+				Ext.query('.zoomOutButton')[i].innerHTML = '<img src="images/zoomout_24.png" />';
+				Ext.query('.zoomVisibleButton')[i].innerHTML = '<img src="images/zoomvisible_24.png" />';
+				Ext.query('.measureButton')[i].innerHTML = '<img src="images/measure_24.png" />';
 			}
 		};
 

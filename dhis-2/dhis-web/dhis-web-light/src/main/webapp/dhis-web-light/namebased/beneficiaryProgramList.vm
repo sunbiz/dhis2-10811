@@ -10,13 +10,30 @@
 	<ul>
         #if( $programInstances.size() > 0)
             #foreach( $programInstance in $programInstances )
+            	#set($authorized = false)
+		    	#foreach($orgUnit in $user.getOrganisationUnits())
+		    		#if($programInstance.getProgram().getOrganisationUnits().contains($orgUnit))
+		    			#set($authorized = true)
+					#end
+				#end
+            	
 				#if($programInstance.getProgram().isSingleEvent())
-					<li><a href="showSingleEventForm.action?programId=$programInstance.getProgram().getId()&patientId=$patientId&organisationUnitId=$patient.getOrganisationUnit().getId()&isEditing=true">$programInstance.getProgram().getName()</a></li>
+					<li>
+					#if ($authorized)
+					<a href="showSingleEventForm.action?programId=$programInstance.getProgram().getId()&patientId=$patientId&organisationUnitId=$patient.getOrganisationUnit().getId()&isEditing=true">$programInstance.getProgram().getName()</a>
+					#else
+					$programInstance.getProgram().getName()
+					#end
+					</li>
 				#else
 					    <li>
+					    	#if ($authorized)
 	          				<a href="showPatientProgramStageList.action?patientId=$patientId&programInstanceId=$programInstance.getId()&programId=$programInstance.getProgram().getId()&validated=false">
 	          					 $programInstance.getProgram().getName()
 	          				</a>
+	          				#else
+	          					$programInstance.getProgram().getName()
+	          				#end
           				</li>
 
 	                    #set($nextStage = false)
@@ -24,7 +41,11 @@
 	
 	          			#if($nextStage)
 	          				<li>
-	          					<a href="showProgramStageSection.action?programId=$programInstance.getProgram().getId()&programStageId=$nextStage.getProgramStage().getId()&programStageInstanceId=$nextStage.getId()&patientId=$patient.getId()&programInstanceId=$programInstance.getId()&orgUnitId=0"> - Next: $nextStage.getProgramStage().getName()</a>
+	          					#if ($authorized)
+	          						<a href="showProgramStageSection.action?programId=$programInstance.getProgram().getId()&programStageId=$nextStage.getProgramStage().getId()&programStageInstanceId=$nextStage.getId()&patientId=$patient.getId()&programInstanceId=$programInstance.getId()&orgUnitId=0"> - Next: $nextStage.getProgramStage().getName()</a>
+	          					#else
+	          						- Next: $nextStage.getProgramStage().getName()	
+					          	#end
 	          				</li>
 	          			#end	
 				#end
@@ -39,13 +60,31 @@
 	<ul>
 		#if( $listOfCompletedProgram.size() != 0 )
 			#foreach( $programInstance in $listOfCompletedProgram )
+					#set($authorized = false)
+			    	#foreach($orgUnit in $user.getOrganisationUnits())
+			    		#if($programInstance.getProgram().getOrganisationUnits().contains($orgUnit))
+			    			#set($authorized = true)
+						#end
+					#end
+					
 					#if($programInstance.getProgram().isSingleEvent())
-						<li><a href="showSingleEventForm.action?programId=$programInstance.getProgram().getId()&patientId=$patientId&organisationUnitId=$patient.getOrganisationUnit().getId()&isEditing=true">$programInstance.getProgram().getName()</a></li>
-
-					#else	
-						<li><a href="showPatientProgramStageList.action?patientId=$patientId&programInstanceId=$programInstance.getId()&programId=$programInstance.getProgram().getId()&validated=false">
-          					 $programInstance.getProgram().getName()
-          			</a></li>
+						<li>
+						#if ($authorized)
+							<a href="showSingleEventForm.action?programId=$programInstance.getProgram().getId()&patientId=$patientId&organisationUnitId=$patient.getOrganisationUnit().getId()&isEditing=true">$programInstance.getProgram().getName()</a>
+						#else
+							$programInstance.getProgram().getName()	
+						#end
+						</li>
+					#else
+						<li>
+						#if ($authorized)
+							<a href="showPatientProgramStageList.action?patientId=$patientId&programInstanceId=$programInstance.getId()&programId=$programInstance.getProgram().getId()&validated=false">
+          					 $programInstance.getProgram().getName()</a>
+						
+						#else
+							$programInstance.getProgram().getName()
+						#end
+						</li>
 					#end
 
 			#end

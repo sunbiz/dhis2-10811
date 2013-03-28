@@ -46,11 +46,13 @@ import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.hibernate.HibernateGenericStore;
 import org.hisp.dhis.jdbc.StatementBuilder;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientStore;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.system.grid.GridUtils;
+import org.hisp.dhis.system.util.TextUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -68,6 +70,13 @@ public class HibernatePatientStore
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
+
+    private OrganisationUnitService organisationUnitService;
+
+    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
+    {
+        this.organisationUnitService = organisationUnitService;
+    }
 
     private StatementBuilder statementBuilder;
 
@@ -357,6 +366,7 @@ public class HibernatePatientStore
         boolean hasIdentifier = false;
         boolean isSearchEvent = false;
         boolean isPriorityEvent = false;
+        Collection<Integer> orgunitChilrenIds = getOrgunitChildren( orgunit );
 
         for ( String searchKey : searchKeys )
         {
@@ -435,7 +445,14 @@ public class HibernatePatientStore
                         patientWhere += condition + operatorStatus
                             + "( psi.executiondate is not null and  psi.executiondate>='" + keys[2]
                             + "' and psi.executiondate<='" + keys[3] + "' and psi.completed=true ";
-                        if ( !keys[4].equals( "0" ) )
+                        // get events by orgunit children
+                        if ( keys[4].equals( "-1" ) )
+                        {
+                            patientWhere += " and psi.organisationunitid in( "
+                                + TextUtils.getCommaDelimitedString( orgunitChilrenIds ) + " )";
+                        }
+                        // get events by selected
+                        else if ( !keys[4].equals( "0" ) )
                         {
                             patientWhere += " and psi.organisationunitid=" + keys[4];
                         }
@@ -447,7 +464,14 @@ public class HibernatePatientStore
                         patientWhere += condition + operatorStatus
                             + "( psi.executiondate is not null and psi.executiondate>='" + keys[2]
                             + "' and psi.executiondate<='" + keys[3] + "' and psi.completed=false ";
-                        if ( !keys[4].equals( "0" ) )
+                        // get events by orgunit children
+                        if ( keys[4].equals( "-1" ) )
+                        {
+                            patientWhere += " and psi.organisationunitid in( "
+                                + TextUtils.getCommaDelimitedString( orgunitChilrenIds ) + " )";
+                        }
+                        // get events by selected
+                        else if ( !keys[4].equals( "0" ) )
                         {
                             patientWhere += " and psi.organisationunitid=" + keys[4];
                         }
@@ -459,7 +483,14 @@ public class HibernatePatientStore
                         patientWhere += condition + operatorStatus + "( psi.executiondate is null and psi.duedate>='"
                             + keys[2] + "' and psi.duedate<='" + keys[3]
                             + "' and psi.status is null and (DATE(now()) - DATE(psi.duedate) <= 0) ";
-                        if ( !keys[4].equals( "0" ) )
+                        // get events by orgunit children
+                        if ( keys[4].equals( "-1" ) )
+                        {
+                            patientWhere += " and p.organisationunitid in( "
+                                + TextUtils.getCommaDelimitedString( orgunitChilrenIds ) + " )";
+                        }
+                        // get events by selected
+                        else if ( !keys[4].equals( "0" ) )
                         {
                             patientWhere += " and p.organisationunitid=" + keys[4];
                         }
@@ -471,7 +502,14 @@ public class HibernatePatientStore
                         patientWhere += condition + operatorStatus + "( psi.executiondate is null and  psi.duedate>='"
                             + keys[2] + "' and psi.duedate<='" + keys[3]
                             + "' and psi.status is null  and (DATE(now()) - DATE(psi.duedate) > 0) ";
-                        if ( !keys[4].equals( "0" ) )
+                        // get events by orgunit children
+                        if ( keys[4].equals( "-1" ) )
+                        {
+                            patientWhere += " and p.organisationunitid in( "
+                                + TextUtils.getCommaDelimitedString( orgunitChilrenIds ) + " )";
+                        }
+                        // get events by selected
+                        else if ( !keys[4].equals( "0" ) )
                         {
                             patientWhere += " and p.organisationunitid=" + keys[4];
                         }
@@ -482,7 +520,14 @@ public class HibernatePatientStore
                     case ProgramStageInstance.SKIPPED_STATUS:
                         patientWhere += condition + operatorStatus + "( psi.status=5 and  psi.duedate>='" + keys[2]
                             + "' and psi.duedate<='" + keys[3] + "' ";
-                        if ( !keys[4].equals( "0" ) )
+                        // get events by orgunit children
+                        if ( keys[4].equals( "-1" ) )
+                        {
+                            patientWhere += " and psi.organisationunitid in( "
+                                + TextUtils.getCommaDelimitedString( orgunitChilrenIds ) + " )";
+                        }
+                        // get events by selected
+                        else if ( !keys[4].equals( "0" ) )
                         {
                             patientWhere += " and p.organisationunitid=" + keys[4];
                         }
@@ -533,7 +578,7 @@ public class HibernatePatientStore
             }
         }
 
-        if ( orgunit != null )
+        if ( orgunit != null && !isSearchEvent )
         {
             sql += "(select organisationunitid from patient where patientid=p.patientid and organisationunitid = "
                 + orgunit.getId() + " ) as orgunitid,";
@@ -545,7 +590,7 @@ public class HibernatePatientStore
         String from = " from patient p ";
         if ( isSearchEvent )
         {
-            String subSQL = " ,MIN( psi.programstageinstanceid ) as programstageinstanceid, min(pgs.name) as programstagename, min(psi.duedate) as duedate ";
+            String subSQL = " , psi.programstageinstanceid as programstageinstanceid, pgs.name as programstagename, psi.duedate as duedate ";
             sql = sql + subSQL + from + " inner join programinstance pgi on " + " (pgi.patientid=p.patientid) "
                 + " inner join programstageinstance psi on " + " (psi.programinstanceid=pgi.programinstanceid) "
                 + " inner join programstage pgs on (pgs.programstageid=psi.programstageid) ";
@@ -553,7 +598,8 @@ public class HibernatePatientStore
             {
                 sql += " inner join patientattributevalue pav on p.patientid=pav.patientid ";
             }
-            orderBy = " ORDER BY duedate DESC ";
+            patientGroupBy += ",psi.programstageinstanceid, pgs.name ";
+            orderBy = " ORDER BY duedate asc ";
             from = " ";
         }
 
@@ -625,6 +671,21 @@ public class HibernatePatientStore
         }
 
         return patients;
+    }
+
+    private Collection<Integer> getOrgunitChildren( OrganisationUnit orgunit )
+    {
+        Collection<Integer> orgunitIds = new HashSet<Integer>();
+        if ( orgunit != null )
+        {
+            orgunitIds.addAll( organisationUnitService.getOrganisationUnitHierarchy().getChildren( orgunit.getId() ) );
+            orgunitIds.remove( orgunit.getId() );
+        }
+        if ( orgunitIds.size() == 0 )
+        {
+            orgunitIds.add( 0 );
+        }
+        return orgunitIds;
     }
 
 }

@@ -1,20 +1,16 @@
 <script type="text/javascript">
 	jQuery(document).ready( function() {
 		validation( "sendSMSForm", function( form ) { sendSMSMessage( form ); } );
-		
 		selectionTreeSelection.setListenerFunction( selectedOrganisationUnitSendSMS );
-
-		var target = '${sendTo}';
 		
+		var target = '${sendTo}';
 		jQuery( "#sendTarget > option" ).each( function( i, item )
 		{
 			if ( item.value == target )
 			{
-			
 				item.selected = true;
 			}
 		} );
-		
 		toggleSMSGUI( target );
 	});
 	
@@ -39,22 +35,24 @@
 #if ( $!gatewayMap && $!gatewayMap.size() > 0 )
 <form id="sendSMSForm" name="sendSMSForm" action="sendSMS.action" >
 	<table id="detailsList">
-		<col width="90px"/>
+		<col width="100px"/>
 		<tbody>	
 			<tr>
-				<td>$i18n.getString( "send_sms_to_target" ):</td>
+				<td>$i18n.getString( "send_sms_to_target" )</td>
 				<td>
 					<select id="sendTarget" name="sendTarget" onchange="javascript:toggleSMSGUI( this.value );">
 						<option value="phone">$i18n.getString( "raw_phone_number" )</option>
 						<option value="userGroup">$i18n.getString( "user_group" )</option>
 						<option value="user">$i18n.getString( "assigned_user_number" )</option>
 						<option value="unit">$i18n.getString( "stakeholder_contact_person" )</option>
-						<option value="patient">$i18n.getString( "patients_registered" )</option>
+						#if( $auth.hasAccess( "dhis-web-sms", "showBeneficiarySMSForm" ) ) 
+						<option value="patient" selected="true">$i18n.getString( "patients_registered" )</option>
+						#end
 					</select>
 				</td>
 			</tr>
 			<tr id="trUserGroup" style="display:none">
-				<td>$i18n.getString( "user_group" ):</td>
+				<td>$i18n.getString( "user_group" )</td>
 				<td>
 					<select id="userGroup" name="userGroup">
 					#foreach( $group in $userGroups )
@@ -64,16 +62,20 @@
 				</td>
 			</tr>
 			<tr id="trRawPhone">
-				<td>$i18n.getString( "phone_number" ):</td>
-				<td><input type="text" id="recipient" name="recipient" style="width:65%"/></td>
+				<td>$i18n.getString( "phone_number" )</td>
+				<td><input type="text" id="recipient" name="recipient" /></td>
 			</tr>
 			
-			<tr id="orgunitType" style="display:none"><td colspan="2"><br/>#organisationUnitSelectionTree( true, true, false )</td></tr>
+			<tr id="orgunitType" style="display:none">
+			
+			<td colspan="2">
+				#organisationUnitSelectionTree( true, true, false )
+			</tr>
 			
 			<tr><th colspan="2">$i18n.getString( "message" ) ($i18n.getString( "do_not_send_patient_confidential_messages_using_sms" ))</th></tr>
-			<tr><td colspan="2"><textarea id="smsMessage" name="smsMessage" cols="86" rows="5" class="{validate:{required:true}}"></textarea></td></tr>
+			<tr><td colspan="2"><textarea id="smsMessage" name="smsMessage" rows="5" style="width:544px;" class="{validate:{required:true}}"></textarea></td></tr>
 			<tr>
-				<td><input type="submit" name="send" value="$i18n.getString( 'send_sms' )"/>				
+				<td><input type="submit" class='large-button' name="send" value="$i18n.getString( 'send' )"/>				
 			</tr>
 		</tbody>
 	</table>

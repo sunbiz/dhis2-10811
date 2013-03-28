@@ -101,6 +101,9 @@ public class RelativePeriodsBatchHandler
         statementBuilder.setColumn( "thisfinancialyear" );
         statementBuilder.setColumn( "lastfinancialyear" );
         statementBuilder.setColumn( "last5financialyears" );
+        statementBuilder.setColumn( "lastweek" );
+        statementBuilder.setColumn( "last4weeks" );
+        statementBuilder.setColumn( "last12weeks" );
         statementBuilder.setColumn( "last52weeks" );
     }
 
@@ -126,6 +129,9 @@ public class RelativePeriodsBatchHandler
         statementBuilder.setValue( relatives.isThisFinancialYear() );
         statementBuilder.setValue( relatives.isLastFinancialYear() );
         statementBuilder.setValue( relatives.isLast5FinancialYears() );
+        statementBuilder.setValue( relatives.isLastWeek() );
+        statementBuilder.setValue( relatives.isLast4Weeks() );
+        statementBuilder.setValue( relatives.isLast12Weeks() );        
         statementBuilder.setValue( relatives.isLast52Weeks() );
     }
 }

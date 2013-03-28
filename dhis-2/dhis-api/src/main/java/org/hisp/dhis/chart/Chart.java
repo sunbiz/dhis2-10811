@@ -280,16 +280,6 @@ public class Chart
         return organisationUnitGroupSet != null && organisationUnitGroupSet.getOrganisationUnitGroups() != null;
     }
     
-    public void removeAllOrganisationUnits()
-    {
-        organisationUnits.clear();
-    }
-
-    public void removeAllDataSets()
-    {
-        dataSets.clear();
-    }
-
     public void removeAllDataElements()
     {
         dataElements.clear();
@@ -298,6 +288,21 @@ public class Chart
     public void removeAllIndicators()
     {
         indicators.clear();
+    }
+
+    public void removeAllDataSets()
+    {
+        dataSets.clear();
+    }
+
+    public void removeAllPeriods()
+    {
+        periods.clear();
+    }
+
+    public void removeAllOrganisationUnits()
+    {
+        organisationUnits.clear();
     }
 
     /**
@@ -768,6 +773,9 @@ public class Chart
 
             removeAllDataSets();
             dataSets.addAll( chart.getDataSets() );
+            
+            removeAllPeriods();
+            periods.addAll( chart.getPeriods() );
 
             removeAllOrganisationUnits();
             organisationUnits.addAll( chart.getOrganisationUnits() );

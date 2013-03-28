@@ -10,7 +10,7 @@
   #set( $marker = 1 )
 #end
 
-<table class="formSection" data-multiorg="true">
+<table class="formSection" data-multiorg="true" style="margin-bottom: 20px;">
 <tr>
   <td>
     <div class="cent"><h3>$encoder.htmlEncode( $section.displayName )</h3></div>
@@ -61,8 +61,7 @@
     #set( $count = 0 )
     #set( $mark = 0 )
     #set( $optionCombos = $orderedCategoryOptionCombos.get( $categoryComboId )  )
-    #foreach( $optionCombo in $optionCombos )<span id="${optionCombo.uid}-optioncombo" class="hidden">${encoder.htmlEncode( $optionCombo.name )}</span>
-    #end
+    #foreach( $optionCombo in $optionCombos )<span id="${optionCombo.uid}-optioncombo" class="hidden">${encoder.htmlEncode( $optionCombo.name )}</span>#end
 
     #foreach( $organisationUnit in $organisationUnits )
         #if( $mark == 1 )
@@ -76,6 +75,7 @@
             <td #if( $mark == 1 )class="alt"#else class="reg"#end>${encoder.htmlEncode( $organisationUnit.name )}</td>
 
             #foreach( $dataElement in $section.dataElements )
+                <span class="hidden" id="${dataElement.uid}-dataelement">${encoder.htmlEncode( $dataElement.getFormNameFallback() )}</span>
                 #foreach( $optionCombo in $optionCombos )
                 #set( $dataEntryId = "${organisationUnit.id}-${dataElement.uid}-${optionCombo.uid}-val" )
                 #set( $greyedField = false )
@@ -100,5 +100,4 @@
     </td>
   </tr>
 </table>
-<br>
 #end

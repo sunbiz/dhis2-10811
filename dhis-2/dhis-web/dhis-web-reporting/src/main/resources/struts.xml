@@ -133,7 +133,6 @@
 
     <action name="removeTable" class="org.hisp.dhis.reporting.tablecreator.action.RemoveTableAction">
       <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
-      <param name="requiredAuthorities">F_REPORTTABLE_DELETE</param>
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 

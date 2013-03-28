@@ -1060,7 +1060,7 @@ Ext.onReady( function() {
 				delete favorite.showSubTotals;
 
 				favorite.reportParams = {
-					paramReportingMonth: favorite.reportingPeriod,
+					paramReportingPeriod: favorite.reportingPeriod,
 					paramOrganisationUnit: favorite.organisationUnit,
 					paramParentOrganisationUnit: favorite.parentOrganisationUnit
 				};
@@ -1176,7 +1176,7 @@ Ext.onReady( function() {
 
 			nameTextfield = Ext.create('Ext.form.field.Text', {
 				height: 26,
-				width: 250,
+				width: 371,
 				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
 				style: 'margin-bottom:0',
 				emptyText: 'Favorite name',
@@ -1268,7 +1268,7 @@ Ext.onReady( function() {
 			window = Ext.create('Ext.window.Window', {
 				title: id ? 'Rename favorite' : 'Create new favorite',
 				//iconCls: 'pt-window-title-icon-favorite',
-				bodyStyle: 'padding:5px; background:#fff',
+				bodyStyle: 'padding:2px; background:#fff',
 				resizable: false,
 				modal: true,
 				items: nameTextfield,
@@ -1451,12 +1451,12 @@ Ext.onReady( function() {
 						{
 							iconCls: 'pt-grid-row-icon-sharing',
 							getClass: function(value, metaData, record) {
-								return 'tooltip-favorite-sharing' + (!record.data.access.update ? ' disabled' : '');
+								return 'tooltip-favorite-sharing' + (!record.data.access.manage ? ' disabled' : '');
 							},
 							handler: function(grid, rowIndex) {
 								var record = this.up('grid').store.getAt(rowIndex);
 
-								if (record.data.access.update) {
+								if (record.data.access.manage) {
 									Ext.Ajax.request({
 										url: pt.baseUrl + '/api/sharing?type=reportTable&id=' + record.data.id,
 										method: 'GET',
@@ -1693,7 +1693,7 @@ Ext.onReady( function() {
 					labelSeparator: null,
 					editable: false,
 					disabled: !!disallowPublicAccess,
-					value: obj.access,
+					value: obj.access || 'rw------',
 					store: store
 				});
 
@@ -1834,8 +1834,8 @@ Ext.onReady( function() {
 		}
 
 		window = Ext.create('Ext.window.Window', {
-			title: 'Sharing layout',
-			bodyStyle: 'padding:8px 8px 3px; background-color:#fff',
+			title: 'Sharing settings',
+			bodyStyle: 'padding:6px 6px 0px; background-color:#fff',
 			width: 434,
 			resizable: false,
 			modal: true,
@@ -2052,12 +2052,11 @@ Ext.onReady( function() {
 						{
 							xtype: 'combobox',
 							cls: 'pt-combo',
-							style: 'margin-bottom:4px; margin-top:2px',
+							style: 'margin-bottom:2px; margin-top:0px',
 							width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
 							valueField: 'id',
 							displayField: 'name',
-							fieldLabel: 'Select group', //i18n pt.i18n.select_group
-							labelStyle: 'padding-left:8px',
+							emptyText: 'Select indicator group',
 							editable: false,
 							store: {
 								xtype: 'store',
@@ -2243,12 +2242,11 @@ Ext.onReady( function() {
 					{
 						xtype: 'combobox',
 						cls: 'pt-combo',
-						style: 'margin-bottom:4px; margin-top:2px',
+						style: 'margin-bottom:2px; margin-top:0px',
 						width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding,
 						valueField: 'id',
 						displayField: 'name',
-						fieldLabel: 'Select group', //i18n pt.i18n.select_group
-						labelStyle: 'padding-left:8px',
+						emptyText: 'Select data element group',
 						editable: false,
 						store: {
 							xtype: 'store',
@@ -2908,18 +2906,16 @@ Ext.onReady( function() {
 						xtype: 'panel',
 						layout: 'column',
 						bodyStyle: 'border-style:none',
-						style: 'margin-top:2px',
+						style: 'margin-top:0px',
 						items: [
 							{
 								xtype: 'combobox',
 								cls: 'pt-combo',
-								style: 'margin-bottom:4px',
-								width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding - 62 - 62 - 7,
+								style: 'margin-bottom:2px',
+								width: pt.conf.layout.west_fieldset_width - pt.conf.layout.west_width_padding - 62 - 62 - 4,
 								valueField: 'id',
 								displayField: 'name',
-								fieldLabel: 'Select period type', //i18n pt.i18n.select_type,
-								labelStyle: 'padding-left:8px',
-								labelWidth: 110,
+								emptyText: 'Select period type',
 								editable: false,
 								queryMode: 'remote',
 								store: pt.store.periodType,
@@ -2944,7 +2940,7 @@ Ext.onReady( function() {
 							{
 								xtype: 'button',
 								text: 'Prev year', //i18n
-								style: 'margin-left:4px; border-radius:2px',
+								style: 'margin-left:2px; border-radius:2px',
 								height: 24,
 								handler: function() {
 									var cb = this.up('panel').down('combobox');
@@ -2957,7 +2953,7 @@ Ext.onReady( function() {
 							{
 								xtype: 'button',
 								text: 'Next year', //i18n
-								style: 'margin-left:3px; border-radius:2px',
+								style: 'margin-left:2px; border-radius:2px',
 								height: 24,
 								handler: function() {
 									var cb = this.up('panel').down('combobox');
@@ -3015,18 +3011,22 @@ Ext.onReady( function() {
 				},
 				numberOfRecords: 0,
 				recordsToSelect: [],
-				multipleSelectIf: function() {
+				multipleSelectIf: function(doUpdate) {
 					if (this.recordsToSelect.length === this.numberOfRecords) {
 						this.getSelectionModel().select(this.recordsToSelect);
 						this.recordsToSelect = [];
 						this.numberOfRecords = 0;
+						
+						if (doUpdate) {
+							update();
+						}
 					}
 				},
-				multipleExpand: function(id, path) {
+				multipleExpand: function(id, path, doUpdate) {					
 					this.expandPath('/' + pt.conf.finals.root.id + path, 'id', '/', function() {
 						var record = this.getRootNode().findChild('id', id, true);
 						this.recordsToSelect.push(record);
-						this.multipleSelectIf();
+						this.multipleSelectIf(doUpdate);
 					}, this);
 				},
 				select: function(url, params) {
@@ -3534,7 +3534,7 @@ Ext.onReady( function() {
 				preventHeader: true,
 				collapsible: true,
 				collapseMode: 'mini',
-				width: Ext.isWebKit ? pt.conf.layout.west_width + 7 : pt.conf.layout.west_width + 17,
+				width: Ext.isWebKit ? pt.conf.layout.west_width + 8 : pt.conf.layout.west_width + 17,
 				items: accordion
 			});
 
@@ -3754,20 +3754,9 @@ Ext.onReady( function() {
 					}
 				}
 
-				// Organisation units
-				if (Ext.isArray(r.organisationUnits) && Ext.isObject(r.parentGraphMap)) {
-					treePanel.numberOfRecords = pt.util.object.getLength(r.parentGraphMap);
+				// Organisation units: tree sync/async
 
-					for (var key in r.parentGraphMap) {
-						if (r.parentGraphMap.hasOwnProperty(key)) {
-							treePanel.multipleExpand(key, r.parentGraphMap[key]);
-						}
-					}
-				}
-				else {
-					treePanel.reset();
-				}
-
+				// User orgunit
 				userOrganisationUnit.setValue(r.userOrganisationUnit);
 				userOrganisationUnitChildren.setValue(r.userOrganisationUnitChildren);
 
@@ -3827,7 +3816,7 @@ Ext.onReady( function() {
 				if (Ext.isArray(r.rowDimensions)) {
 					for (var i = 0, dim; i < r.rowDimensions.length; i++) {
 						dim = pt.conf.finals.dimension.objectNameMap[r.rowDimensions[i]];
-
+						
 						pt.viewport.rowStore.add({
 							id: dim.dimensionName,
 							name: dim.name
@@ -3859,7 +3848,7 @@ Ext.onReady( function() {
 				pt.viewport.digitGroupSeparator.setValue(r.digitGroupSeparator);
 
 				if (Ext.isObject(r.reportParams)) {
-					pt.viewport.reportingPeriod.setValue(r.reportParams.paramReportingMonth);
+					pt.viewport.reportingPeriod.setValue(r.reportParams.paramReportingPeriod);
 					pt.viewport.organisationUnit.setValue(r.reportParams.paramOrganisationUnit);
 					pt.viewport.parentOrganisationUnit.setValue(r.reportParams.paramParentOrganisationUnit);
 				}
@@ -3875,7 +3864,19 @@ Ext.onReady( function() {
 					}
 				}
 
-				update();
+				// Organisation units: If fav has organisation units, execute from tree callback instead
+				if (Ext.isArray(r.organisationUnits) && Ext.isObject(r.parentGraphMap)) {
+					treePanel.numberOfRecords = pt.util.object.getLength(r.parentGraphMap);
+					for (var key in r.parentGraphMap) {
+						if (r.parentGraphMap.hasOwnProperty(key)) {
+							treePanel.multipleExpand(key, r.parentGraphMap[key], true);
+						}
+					}
+				}
+				else {
+					treePanel.reset();
+					update();
+				}
 			};
 
 			viewport = Ext.create('Ext.container.Viewport', {

@@ -37,6 +37,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService"/>
 		<property name="patientAttributeValueService" ref="org.hisp.dhis.patientattributevalue.PatientAttributeValueService"/>		
    	    <property name="patientService" ref="org.hisp.dhis.patient.PatientService"/>
+		<property name="userService" ref="org.hisp.dhis.user.UserService" />
 		
     </bean>
 

@@ -375,14 +375,6 @@ public class GenerateTabularReportAction
         if ( level == 0 )
         {
             level = organisationUnitService.getMaxOfOrganisationUnitLevels();
-            for ( Integer orgunitId : orgunitIds )
-            {
-                int orgLevel = organisationUnitService.getLevelOfOrganisationUnit( orgunitId );
-                if ( level > orgLevel )
-                {
-                    level = orgLevel;
-                }
-            }
         }
 
         // ---------------------------------------------------------------------

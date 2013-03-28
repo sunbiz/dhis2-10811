@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.hisp.dhis.api.mobile.model.Activity;
 import org.hisp.dhis.api.mobile.model.ActivityPlan;
 import org.hisp.dhis.light.utils.NamebasedUtils;
@@ -47,7 +46,7 @@ import org.hisp.dhis.program.ProgramStageDataElement;
 import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.program.ProgramStageSection;
 import org.hisp.dhis.program.ProgramStageSectionService;
-
+import org.hisp.dhis.user.UserService;
 import com.opensymphony.xwork2.Action;
 
 public class GetProgramStageFormAction
@@ -110,6 +109,18 @@ public class GetProgramStageFormAction
     public void setProgramStageSectionService( ProgramStageSectionService programStageSectionService )
     {
         this.programStageSectionService = programStageSectionService;
+    }
+    
+    private UserService userService;
+    
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
     }
 
     // -------------------------------------------------------------------------

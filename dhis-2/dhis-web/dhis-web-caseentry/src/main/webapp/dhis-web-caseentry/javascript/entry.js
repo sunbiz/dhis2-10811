@@ -73,6 +73,10 @@ function saveVal( dataElementId )
                 return;
             }
         }
+		else if(type=='date')
+		{
+			field.focus();
+		}
     	
     }
     
@@ -183,7 +187,7 @@ function keyPress( event, field )
             }
         }
     }
-   
+	
     if ( key == 13 )
     { 
         nextField = getNextEntryField( field );

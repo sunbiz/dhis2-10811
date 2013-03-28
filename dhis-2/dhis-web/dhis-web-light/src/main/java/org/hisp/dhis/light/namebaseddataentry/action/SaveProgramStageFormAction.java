@@ -57,6 +57,7 @@ import org.hisp.dhis.program.ProgramStageService;
 import org.hisp.dhis.program.ProgramValidation;
 import org.hisp.dhis.program.ProgramValidationResult;
 import org.hisp.dhis.program.ProgramValidationService;
+import org.hisp.dhis.user.UserService;
 import org.hisp.dhis.util.ContextUtils;
 
 import com.opensymphony.xwork2.Action;
@@ -75,6 +76,18 @@ public class SaveProgramStageFormAction
     // Dependencies
     // -------------------------------------------------------------------------
 
+    private UserService userService;
+    
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    public void setUserService( UserService userService )
+    {
+        this.userService = userService;
+    }
+    
     private NamebasedUtils util;
 
     public NamebasedUtils getUtil()

@@ -734,7 +734,6 @@ public class DefaultChartService
         return chartStore.save( chart );
     }
 
-    @Override
     public void updateChart( Chart chart )
     {
         chartStore.update( chart );

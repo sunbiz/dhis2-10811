@@ -137,20 +137,6 @@ public class DefaultIdentifiableObjectManager
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends IdentifiableObject> T getNoAcl( Class<T> clazz, String uid )
-    {
-        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
-
-        if ( store == null )
-        {
-            return null;
-        }
-
-        return (T) store.getByUidNoAcl( uid );
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> T getByCode( Class<T> clazz, String code )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -280,7 +266,7 @@ public class DefaultIdentifiableObjectManager
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public <T extends IdentifiableObject> Collection<T> getByLastUpdatedSorted( Class<T> clazz, Date lastUpdated )
     {
         GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
@@ -458,6 +444,31 @@ public class DefaultIdentifiableObjectManager
         }
 
         return 0;
+    }
+
+    @Override
+    @SuppressWarnings( "unchecked" )
+    public <T extends IdentifiableObject> T getNoAcl( Class<T> clazz, String uid )
+    {
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( store == null )
+        {
+            return null;
+        }
+
+        return (T) store.getByUidNoAcl( uid );
+    }
+
+    @Override
+    public <T extends IdentifiableObject> void updateNoAcl( T object )
+    {
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( object.getClass() );
+
+        if ( store != null )
+        {
+            store.updateNoAcl( object );
+        }
     }
 
     private <T extends IdentifiableObject> GenericIdentifiableObjectStore<IdentifiableObject> getIdentifiableObjectStore( Class<T> clazz )

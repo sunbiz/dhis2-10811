@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.hisp.dhis.caseentry.state.SelectedStateManager;
 import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.paging.ActionPagingSupport;
 import org.hisp.dhis.patient.Patient;
@@ -81,16 +82,16 @@ public class GetDataRecordsAction
         this.programStageInstanceService = programStageInstanceService;
     }
 
+    private I18n i18n;
+
+    public void setI18n( I18n i18n )
+    {
+        this.i18n = i18n;
+    }
+
     // -------------------------------------------------------------------------
     // Input/output
     // -------------------------------------------------------------------------
-
-    private Boolean searchBySelectedOrgunit;
-
-    public void setSearchBySelectedOrgunit( Boolean searchBySelectedOrgunit )
-    {
-        this.searchBySelectedOrgunit = searchBySelectedOrgunit;
-    }
 
     private Integer programId;
 
@@ -148,6 +149,13 @@ public class GetDataRecordsAction
         return program;
     }
 
+    private String type;
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
+
     private Grid grid;
 
     public Grid getGrid()
@@ -167,26 +175,31 @@ public class GetDataRecordsAction
         if ( programId != null )
         {
             program = programService.getProgram( programId );
-            
+
             identifierTypes = program.getPatientIdentifierTypes();
         }
-        
+
         if ( searchTexts.size() > 0 )
         {
-            orgunit = (searchBySelectedOrgunit) ? orgunit : null;
-
-            total = patientService.countSearchPatients( searchTexts, orgunit );
-            this.paging = createPaging( total );
-
-            List<Integer> stageInstanceIds = patientService.getProgramStageInstances( searchTexts, orgunit,
-                paging.getStartPos(), paging.getPageSize() );
-
-            for ( Integer stageInstanceId : stageInstanceIds )
+            if ( type == null )
             {
-                programStageInstances.add( programStageInstanceService.getProgramStageInstance( stageInstanceId ) );
+                total = patientService.countSearchPatients( searchTexts, orgunit );
+                this.paging = createPaging( total );
+
+                List<Integer> stageInstanceIds = patientService.getProgramStageInstances( searchTexts, orgunit,
+                    paging.getStartPos(), paging.getPageSize() );
+
+                for ( Integer stageInstanceId : stageInstanceIds )
+                {
+                    programStageInstances.add( programStageInstanceService.getProgramStageInstance( stageInstanceId ) );
+                }
+            }
+            else
+            {
+                grid = patientService.getScheduledEventsReport( searchTexts, orgunit, i18n );
             }
         }
 
-        return SUCCESS;
+        return type == null ? SUCCESS : type;
     }
 }
