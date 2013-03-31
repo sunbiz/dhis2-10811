@@ -32,13 +32,12 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.sqlview.SqlView;
 import org.hisp.dhis.sqlview.SqlViewExpandStore;
@@ -76,9 +75,9 @@ public class JdbcSqlViewExpandStore
     // -------------------------------------------------------------------------
 
     @Override
-    public Collection<String> getAllSqlViewNames()
+    public List<String> getAllSqlViewNames()
     {
-        Set<String> viewersName = new HashSet<String>();
+        List<String> viewNames = new ArrayList<String>();
 
         try
         {
@@ -88,7 +87,7 @@ public class JdbcSqlViewExpandStore
 
             while ( rs.next() )
             {
-                viewersName.add( rs.getString( "TABLE_NAME" ) );
+                viewNames.add( rs.getString( "TABLE_NAME" ) );
             }
         }
         catch ( SQLException e )
@@ -96,7 +95,7 @@ public class JdbcSqlViewExpandStore
             e.printStackTrace();
         }
 
-        return viewersName;
+        return viewNames;
 
     }
 

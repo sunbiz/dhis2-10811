@@ -1,6 +1,6 @@
 package org.hisp.dhis.sqlview;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.common.Grid;
@@ -17,7 +17,7 @@ public interface SqlViewExpandStore
     // SqlView expanded
     // -------------------------------------------------------------------------
 
-    Collection<String> getAllSqlViewNames();
+    List<String> getAllSqlViewNames();
 
     boolean isViewTableExists( String viewTableName );
 

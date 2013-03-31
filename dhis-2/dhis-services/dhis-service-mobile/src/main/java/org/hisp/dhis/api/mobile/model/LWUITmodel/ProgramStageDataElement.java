@@ -88,10 +88,11 @@ public class ProgramStageDataElement extends Model
         
         if ( optionSet == null || optionSet.getOptions().size() <= 0 )
         {
-            dout.writeInt( 0 );
+            dout.writeBoolean( false );
         }
         else
         {
+            dout.writeBoolean( true );
             optionSet.setClientVersion( TWO_POINT_TEN );
             optionSet.serialize( dout );
         }
@@ -116,11 +117,18 @@ public class ProgramStageDataElement extends Model
         this.setCompulsory( dint.readBoolean() );
         this.categoryOptionCombos = new ModelList();
         this.categoryOptionCombos.deSerialize( dint );
-        this.optionSet = new OptionSet();
-        this.optionSet.deSerialize( dint );
+        
+        if( dint.readBoolean() == false )
+        {
+            this.optionSet = null;
+        }
+        else
+        {
+            this.optionSet = new OptionSet();
+            this.optionSet.deSerialize( dint );
+        }
         this.setValue( dint.readUTF() );
     }
-    
     
     public String getClientVersion()
     {

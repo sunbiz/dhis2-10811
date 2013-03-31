@@ -70,3 +70,25 @@ dhis2.storage.Store.adapter = function ( id, obj ) {
     obj['id'] = id;
     Store.adapters.splice( 0, 0, obj );
 };
+
+dhis2.storage.Store.plugins = {};
+
+dhis2.storage.Store.plugin = function ( id, obj ) {
+    var Store = dhis2.storage.Store;
+    var plugin_interface = "call".split( ' ' );
+
+    var missing_functions = [];
+    // verify plugin
+    for ( var i in plugin_interface ) {
+        if ( !obj.hasOwnProperty( plugin_interface[i] ) || typeof obj[plugin_interface[i]] !== 'function' ) {
+            missing_functions.push( plugin_interface[i] );
+        }
+    }
+
+    if ( missing_functions.length > 0 ) {
+        throw 'Plugin\'' + id + '\' does not meet interface requirements, missing: ' + missing_functions.join( ' ' );
+    }
+
+    obj['id'] = id;
+    Store.plugins[id] = obj;
+};

@@ -135,6 +135,7 @@ public class OrgUnits
     public void serializeVersion2_10( DataOutputStream dataOutputStream )
         throws IOException
     {
+        // send the current version to client for updating or not
         dataOutputStream.writeDouble( MobileOrgUnitLinks.currentVersion );
         dataOutputStream.writeInt( orgUnits.size() );
         for ( MobileOrgUnitLinks unit : orgUnits )

@@ -27,11 +27,15 @@ package org.hisp.dhis.sqlview;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,12 +140,6 @@ public class DefaultSqlViewService
     // -------------------------------------------------------------------------
 
     @Override
-    public Collection<String> getAllSqlViewNames()
-    {
-        return sqlViewExpandStore.getAllSqlViewNames();
-    }
-
-    @Override
     public boolean isViewTableExists( String viewTableName )
     {
         return sqlViewExpandStore.isViewTableExists( viewTableName );
@@ -152,7 +150,11 @@ public class DefaultSqlViewService
     {
         boolean success = true;
 
-        for ( SqlView sqlView : getAllSqlViews() )
+        List<SqlView> sqlViews = new ArrayList<SqlView>( getAllSqlViews() );
+        
+        Collections.sort( sqlViews, IdentifiableObjectNameComparator.INSTANCE );
+        
+        for ( SqlView sqlView : sqlViews )
         {
             if ( createViewTable( sqlView ) != null )
             {
@@ -194,7 +196,12 @@ public class DefaultSqlViewService
     @Override
     public void dropAllSqlViewTables()
     {
-        for ( String viewName : getAllSqlViewNames() )
+        List<String> sqlViewNames = sqlViewExpandStore.getAllSqlViewNames();
+        
+        Collections.sort( sqlViewNames );
+        Collections.reverse( sqlViewNames );
+        
+        for ( String viewName : sqlViewNames )
         {
             dropViewTable( viewName );
         }

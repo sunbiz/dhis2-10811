@@ -30,6 +30,7 @@ package org.hisp.dhis.light.anonymous.action;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
@@ -53,6 +54,13 @@ public class GetAllAnonymousProgramAction
     public void setProgramService( ProgramService programService )
     {
         this.programService = programService;
+    }
+
+    private OrganisationUnitService orgUnitService;
+
+    public void setOrgUnitService( OrganisationUnitService orgUnitService )
+    {
+        this.orgUnitService = orgUnitService;
     }
 
     // -------------------------------------------------------------------------
@@ -89,18 +97,6 @@ public class GetAllAnonymousProgramAction
     {
         this.orgUnitId = orgUnitId;
     }
-    
-    private OrganisationUnitService organisationUnitService;
-    
-    public OrganisationUnitService getOrganisationUnitService()
-    {
-        return organisationUnitService;
-    }
-
-    public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
-    {
-        this.organisationUnitService = organisationUnitService;
-    }
 
     // -------------------------------------------------------------------------
     // Implementation Action
@@ -110,14 +106,19 @@ public class GetAllAnonymousProgramAction
     public String execute()
         throws Exception
     {
-        programs = new ArrayList<Program>();
-        for ( Program program : programService.getProgramsByCurrentUser() )
+        OrganisationUnit organisationUnit = orgUnitService.getOrganisationUnit( orgUnitId );
+        
+        if( programService.getProgramsByCurrentUser( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) != null )
         {
-            if ( program.isSingleEvent() && !program.isRegistration() && program.getOrganisationUnits().contains( organisationUnitService.getOrganisationUnit( orgUnitId ) ) )
+            for ( Program program : programService.getProgramsByCurrentUser( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) )
             {
-                programs.add( program );
+                if ( program.getOrganisationUnits().contains( organisationUnit ) )
+                {
+                    programs.add( program );
+                }
             }
         }
+        
         return SUCCESS;
     }
 }

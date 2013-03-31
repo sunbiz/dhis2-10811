@@ -81,12 +81,22 @@ public class J2meClientUpdateAction
     public String execute()
         throws Exception
     { 
-        List<PatientMobileSetting> list = new ArrayList<PatientMobileSetting>();
+        List<PatientMobileSetting> list;
         
         list = (List<PatientMobileSetting>) patientMobileSettingService.getCurrentSetting();
         
-        this.patientMobileSetting = list.get( 0 );
-        
+        if( list.size() == 0 )
+        {
+            this.patientMobileSetting = new PatientMobileSetting();
+            patientMobileSetting.setGender( false );
+            patientMobileSetting.setDobtype( false );
+            patientMobileSetting.setBirthdate( false );
+            patientMobileSetting.setRegistrationdate( false );
+        }
+        else
+        {
+            this.patientMobileSetting = list.get( 0 );
+        }    
         if ( this.version != 0 )
         {
             this.patientMobileSetting.setVersionToUpdate( this.version );
@@ -101,7 +111,6 @@ public class J2meClientUpdateAction
             this.patientMobileSetting.setAutoUpdateClient( false );
         }
         patientMobileSettingService.savePatientMobileSetting( this.patientMobileSetting );
-        
         return SUCCESS;
     }
 

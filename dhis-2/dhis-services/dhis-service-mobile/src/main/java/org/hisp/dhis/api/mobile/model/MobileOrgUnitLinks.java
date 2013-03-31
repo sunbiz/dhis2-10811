@@ -71,6 +71,12 @@ public class MobileOrgUnitLinks
     private String enrollProgramUrl;
 
     private String registerPersonUrl;
+    
+    private String addRelationshipUrl;
+    
+    private String downloadAnonymousProgramUrl;
+    
+    private String findProgramUrl;
 
     @XmlAttribute
     public int getId()
@@ -234,6 +240,36 @@ public class MobileOrgUnitLinks
         this.registerPersonUrl = registerPersonUrl;
     }
 
+    public String getAddRelationshipUrl()
+    {
+        return addRelationshipUrl;
+    }
+
+    public void setAddRelationshipUrl( String addRelationshipUrl )
+    {
+        this.addRelationshipUrl = addRelationshipUrl;
+    }
+
+    public String getDownloadAnonymousProgramUrl()
+    {
+        return downloadAnonymousProgramUrl;
+    }
+
+    public void setDownloadAnonymousProgramUrl( String downloadAnonymousProgramUrl )
+    {
+        this.downloadAnonymousProgramUrl = downloadAnonymousProgramUrl;
+    }
+
+    public String getFindProgramUrl()
+    {
+        return findProgramUrl;
+    }
+
+    public void setFindProgramUrl( String findProgramUrl )
+    {
+        this.findProgramUrl = findProgramUrl;
+    }
+
     public void serialize( DataOutputStream dataOutputStream )
 
         throws IOException
@@ -253,6 +289,9 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.registerPersonUrl );
         dataOutputStream.writeUTF( this.uploadProgramStageUrl );
         dataOutputStream.writeUTF( this.enrollProgramUrl );
+        dataOutputStream.writeUTF( this.addRelationshipUrl );
+        dataOutputStream.writeUTF( this.downloadAnonymousProgramUrl );
+        dataOutputStream.writeUTF( this.findProgramUrl );
     }
 
     public void deSerialize( DataInputStream dataInputStream )
@@ -273,6 +312,8 @@ public class MobileOrgUnitLinks
         this.uploadProgramStageUrl = dataInputStream.readUTF();
         this.registerPersonUrl = dataInputStream.readUTF();
         this.enrollProgramUrl = dataInputStream.readUTF();
+        this.addRelationshipUrl = dataInputStream.readUTF();
+        this.downloadAnonymousProgramUrl = dataInputStream.readUTF();
     }
 
     @Override
@@ -326,6 +367,9 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.uploadProgramStageUrl );
         dataOutputStream.writeUTF( this.registerPersonUrl );
         dataOutputStream.writeUTF( this.enrollProgramUrl );
+        dataOutputStream.writeUTF( this.addRelationshipUrl );
+        dataOutputStream.writeUTF( this.downloadAnonymousProgramUrl );
+        dataOutputStream.writeUTF( this.findProgramUrl );
     }
 
 }

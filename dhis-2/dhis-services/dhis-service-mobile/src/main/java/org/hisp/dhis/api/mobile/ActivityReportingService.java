@@ -27,10 +27,14 @@ package org.hisp.dhis.api.mobile;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Collection;
+
 import org.hisp.dhis.api.mobile.model.ActivityPlan;
 import org.hisp.dhis.api.mobile.model.ActivityValue;
 import org.hisp.dhis.api.mobile.model.LWUITmodel.Patient;
+import org.hisp.dhis.api.mobile.model.LWUITmodel.Program;
 import org.hisp.dhis.api.mobile.model.LWUITmodel.ProgramStage;
+import org.hisp.dhis.api.mobile.model.LWUITmodel.Relationship;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 
 /**
@@ -38,7 +42,6 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
  */
 public interface ActivityReportingService
 {
-
     public ActivityPlan getCurrentActivityPlan( OrganisationUnit unit, String localeString );
 
     public ActivityPlan getAllActivityPlan( OrganisationUnit unit, String localeString );
@@ -52,10 +55,16 @@ public interface ActivityReportingService
     public Patient findPatient( String name, int orgUnitId )
         throws NotAllowedException;
 
-    public String saveProgramStage( ProgramStage programStage )
+    public String saveProgramStage( ProgramStage programStage, int orgUnitId )
         throws NotAllowedException;
 
     public Patient enrollProgram( String enrollInfo, int orgUnitId )
         throws NotAllowedException;
-    
+
+    public Patient addRelationship( Relationship enrollmentRelationship, int orgUnitId )
+        throws NotAllowedException;
+
+    public Program getAllAnonymousProgram( int orgUnitId )
+        throws NotAllowedException;
+
 }

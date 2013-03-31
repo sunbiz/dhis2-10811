@@ -30,6 +30,7 @@ package org.hisp.dhis.api.mobile.model;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OptionSet
@@ -38,7 +39,7 @@ public class OptionSet
 {
     private String clientVersion;
     
-    private List<String> options;
+    private List<String> options = new ArrayList<String>();
 
     public List<String> getOptions()
     {
@@ -64,7 +65,6 @@ public class OptionSet
     public void serialize( DataOutputStream dout )
         throws IOException
     {
-
         dout.writeInt( this.getId() );
         dout.writeUTF( this.getName() );
         dout.writeInt( this.options.size() );
@@ -73,7 +73,6 @@ public class OptionSet
         {
             dout.writeUTF( option );
         }
-
     }
     
     @Override

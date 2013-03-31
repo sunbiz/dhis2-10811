@@ -33,6 +33,7 @@ import static org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingM
 import static org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER_LAST_MONTH;
 import static org.hisp.dhis.setting.SystemSettingManager.DEFAULT_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
 import static org.hisp.dhis.setting.SystemSettingManager.KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY;
+import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -51,7 +52,11 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.setting.SystemSettingManager;
+import org.hisp.dhis.system.notification.Notifier;
+import org.hisp.dhis.system.util.Clock;
+import org.hisp.dhis.system.util.SystemUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -80,7 +85,21 @@ public class CaseAggregateConditionTask
     private ProgramStageInstanceService programStageInstanceService;
     
     private OrganisationUnitService organisationUnitService;
+    
+    private Notifier notifier;
 
+    public void setNotifier( Notifier notifier )
+    {
+        this.notifier = notifier;
+    }
+    
+    private TaskId taskId;
+
+    public void setTaskId( TaskId taskId )
+    {
+        this.taskId = taskId;
+    }
+    
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -88,7 +107,7 @@ public class CaseAggregateConditionTask
     public CaseAggregateConditionTask( CaseAggregationConditionService aggregationConditionService,
         DataValueService dataValueService, JdbcTemplate jdbcTemplate, DataElementService dataElementService,
         DataElementCategoryService categoryService, SystemSettingManager systemSettingManager,
-        ProgramStageInstanceService programStageInstanceService, OrganisationUnitService organisationUnitService )
+        ProgramStageInstanceService programStageInstanceService, OrganisationUnitService organisationUnitService, Notifier notifier )
     {
         this.aggregationConditionService = aggregationConditionService;
         this.dataValueService = dataValueService;
@@ -98,6 +117,7 @@ public class CaseAggregateConditionTask
         this.systemSettingManager = systemSettingManager;
         this.programStageInstanceService = programStageInstanceService;
         this.organisationUnitService = organisationUnitService;
+        this.notifier = notifier;
     }
 
     // -------------------------------------------------------------------------
@@ -107,10 +127,14 @@ public class CaseAggregateConditionTask
     @Override
     public void run()
     {
+        final int cpuCores = SystemUtils.getCpuCores();
+        Clock clock = new Clock().startClock().logTime( "Aggregate process started, number of CPU cores: " + cpuCores + ", " + SystemUtils.getMemoryString() );
+        notifier.clear( taskId ).notify( taskId, "Aggregate process started" );
+ 
         String taskStrategy = (String) systemSettingManager.getSystemSetting(
             KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY, DEFAULT_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY );
 
-        String datasetSQL = "select dm.datasetid as datasetid, pt.name as periodname";
+        String datasetSQL = "select dm.datasetid as datasetid, pt.name as periodname, ds.name as datasetname";
         datasetSQL += "      from caseaggregationcondition cagg inner join datasetmembers dm ";
         datasetSQL += "            on cagg.aggregationdataelementid=dm.dataelementid inner join dataset ds ";
         datasetSQL += "            on ds.datasetid = dm.datasetid inner join periodtype pt ";
@@ -120,7 +144,8 @@ public class CaseAggregateConditionTask
         while ( rsDataset.next() )
         {
             int datasetId = rsDataset.getInt( "datasetid" );
-
+            String datasetName = rsDataset.getString( "datasetname" );
+            
             Collection<Period> periods = getPeriod( rsDataset.getString( "periodname" ), taskStrategy );
 
             for ( Period period : periods )
@@ -201,10 +226,13 @@ public class CaseAggregateConditionTask
                             dataValueService.deleteDataValue( dataValue );
                         }
                     }
-
                 }
+
             }
+            clock.logTime( "Improrted aggregate data completed for data set " + datasetName );
+            notifier.notify( taskId, "Improrted aggregate data completed for data set "  + datasetName );            
         }
+        notifier.notify( taskId, INFO, "Improrted aggregate data completed", true );
     }
 
     // -------------------------------------------------------------------------

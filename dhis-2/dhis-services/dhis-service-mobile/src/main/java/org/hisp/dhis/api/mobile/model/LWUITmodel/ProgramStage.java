@@ -44,6 +44,8 @@ public class ProgramStage extends Model
     private boolean isRepeatable;
     
     private boolean isCompleted;
+    
+    private boolean isSingleEvent;
 
     private List<Section> sections;
     
@@ -99,6 +101,16 @@ public class ProgramStage extends Model
         this.isCompleted = isCompleted;
     }
 
+    public boolean isSingleEvent()
+    {
+        return isSingleEvent;
+    }
+
+    public void setSingleEvent( boolean isSingleEvent )
+    {
+        this.isSingleEvent = isSingleEvent;
+    }
+
     @Override
     public void serialize( DataOutputStream dout )
         throws IOException
@@ -106,6 +118,7 @@ public class ProgramStage extends Model
         super.serialize( dout );
         dout.writeBoolean( this.isRepeatable() );
         dout.writeBoolean( this.isCompleted() );
+        dout.writeBoolean( this.isSingleEvent );
         
         dout.writeInt( this.dataElements.size() );
         for ( int i = 0; i < this.dataElements.size(); i++ )
@@ -127,6 +140,7 @@ public class ProgramStage extends Model
         super.deSerialize( dint );
         this.setRepeatable( dint.readBoolean() );
         this.setCompleted( dint.readBoolean() );
+        this.setSingleEvent( dint.readBoolean() );
         int dataElementSize = dint.readInt();
         if ( dataElementSize > 0 )
         {

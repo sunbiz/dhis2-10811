@@ -70,8 +70,6 @@ public interface SqlViewService
     // SqlView Expanded
     // -------------------------------------------------------------------------
 
-    Collection<String> getAllSqlViewNames();
-
     boolean isViewTableExists( String viewTableName );
 
     boolean createAllViewTables();

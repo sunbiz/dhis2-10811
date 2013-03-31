@@ -72,7 +72,11 @@ dhis2.storage.Store.adapter( 'dom', (function () {
                 var key = keys.pop();
                 var obj = objs.pop();
 
-                that.add( key, obj );
+                try {
+                    that.add( key, obj );
+                } catch ( e ) {
+                    break;
+                }
             }
 
             if ( callback ) callback.call( that, that );

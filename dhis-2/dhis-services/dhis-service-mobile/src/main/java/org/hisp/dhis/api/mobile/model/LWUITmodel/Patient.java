@@ -78,6 +78,8 @@ public class Patient
     private List<Program> enrollmentPrograms;
 
     private List<Relationship> relationships;
+    
+    private List<Relationship> enrollmentRelationships;
 
     private String phoneNumber;
 
@@ -289,6 +291,16 @@ public class Patient
         this.organisationUnit = organisationUnit;
     }
 
+    public List<Relationship> getEnrollmentRelationships()
+    {
+        return enrollmentRelationships;
+    }
+
+    public void setEnrollmentRelationships( List<Relationship> enrollmentRelationships )
+    {
+        this.enrollmentRelationships = enrollmentRelationships;
+    }
+
     @Override
     public void serialize( DataOutputStream out )
         throws IOException
@@ -400,6 +412,14 @@ public class Patient
 
         dout.writeInt( enrollmentPrograms.size() );
         for ( Program each : enrollmentPrograms )
+        {
+            each.serialize( dout );
+        }
+        
+        // Write Enrolled
+        
+        dout.writeInt( enrollmentRelationships.size() );
+        for ( Relationship each : enrollmentRelationships )
         {
             each.serialize( dout );
         }

@@ -62,6 +62,9 @@ public class OrgUnitTest
         unit.setUploadProgramStageUrl( "uploadProgramStageUrl" );
         unit.setEnrollProgramUrl( "enrollProgramUrl" );
         unit.setRegisterPersonUrl( "registerPersonUrl" );
+        unit.setAddRelationshipUrl( "addRelationshipUrl" );
+        unit.setDownloadAnonymousProgramUrl( "downloadAnonymousProgramUrl" );
+        unit.setFindProgramUrl( "findProgramUrl" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream( baos );

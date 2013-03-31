@@ -33,8 +33,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager;
+import org.hisp.dhis.patient.scheduling.CaseAggregateConditionTask;
+import org.hisp.dhis.scheduling.DataMartTask;
+import org.hisp.dhis.scheduling.ScheduledTasks;
+import org.hisp.dhis.scheduling.TaskCategory;
+import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.setting.SystemSettingManager;
+import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.scheduling.Scheduler;
+import org.hisp.dhis.user.CurrentUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
@@ -55,6 +63,13 @@ public class ScheduleCaseAggregateConditionAction
     public void setSchedulingManager( CaseAggregateConditionSchedulingManager schedulingManager )
     {
         this.schedulingManager = schedulingManager;
+    }
+
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
     }
 
     private SystemSettingManager systemSettingManager;
@@ -100,6 +115,20 @@ public class ScheduleCaseAggregateConditionAction
         this.taskStrategy = taskStrategy;
     }
 
+    private CaseAggregateConditionTask aggregateConditionTask;
+
+    public void setAggregateConditionTask( CaseAggregateConditionTask aggregateConditionTask )
+    {
+        this.aggregateConditionTask = aggregateConditionTask;
+    }
+
+    private Notifier notifier;
+
+    public void setNotifier( Notifier notifier )
+    {
+        this.notifier = notifier;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -108,6 +137,10 @@ public class ScheduleCaseAggregateConditionAction
     public String execute()
         throws Exception
     {
+        TaskId taskId = new TaskId( TaskCategory.AGGREGATE_QUERY_BUILDER, currentUserService.getCurrentUser() );
+        notifier.clear( taskId );
+        aggregateConditionTask.setTaskId( taskId );
+        
         if ( execute )
         {
             schedulingManager.executeTasks();
@@ -122,7 +155,7 @@ public class ScheduleCaseAggregateConditionAction
             {
                 systemSettingManager.saveSystemSetting( KEY_SCHEDULE_AGGREGATE_QUERY_BUILDER_TASK_STRATEGY,
                     taskStrategy );
-                
+
                 Map<String, String> keyCronMap = new HashMap<String, String>();
 
                 keyCronMap.put( CaseAggregateConditionSchedulingManager.TASK_AGGREGATE_QUERY_BUILDER,

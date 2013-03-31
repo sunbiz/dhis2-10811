@@ -535,7 +535,7 @@
 		class="org.hisp.dhis.light.anonymous.action.GetAllAnonymousProgramAction"
 		scope="prototype">
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
-		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+		<property name="orgUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.light.anonymous.action.ShowAnonymousFormAction"

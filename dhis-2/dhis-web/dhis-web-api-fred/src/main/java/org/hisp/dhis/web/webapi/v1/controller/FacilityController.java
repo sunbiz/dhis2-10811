@@ -334,6 +334,11 @@ public class FacilityController
             addHierarchyPropertyToFacility( organisationUnitLevels, facility );
 
             facilities.getFacilities().add( facility );
+
+            if ( request.getRequestURL().toString().endsWith( ".json" ) )
+            {
+                facility.setHref( facility.getHref() + ".json" );
+            }
         }
 
         setAccessRights( model );
@@ -376,6 +381,11 @@ public class FacilityController
         Facility facility = conversionService.convert( organisationUnit, Facility.class );
         filterFacility( facility, allProperties, fields );
         addHierarchyPropertyToFacility( organisationUnitLevels, facility );
+
+        if ( request.getRequestURL().toString().endsWith( ".json" ) )
+        {
+            facility.setHref( facility.getHref() + ".json" );
+        }
 
         setAccessRights( model );
 

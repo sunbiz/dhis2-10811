@@ -49,9 +49,11 @@ public class NotAllowedException
     
     public static final NotAllowedException NO_BENEFICIARY_FOUND = new NotAllowedException( "NO_BENEFICIARY_FOUND");
     
+    public static final NotAllowedException NO_PROGRAM_FOUND = new NotAllowedException( "NO_PROGRAM_FOUND");
+    
     private String reason;
 
-    private NotAllowedException( String reason )
+    public NotAllowedException( String reason )
     {
         this.reason = reason;
     }

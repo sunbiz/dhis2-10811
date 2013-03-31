@@ -127,6 +127,7 @@
         ,javascript/commons.js
         ,javascript/anonymousRegistration.js
         ,javascript/entry.js
+        ,javascript/dhis2.storage.anonymous.js
         ,../dhis-web-commons/javascripts/date.js
       </param>
       <param name="stylesheets">style/style.css</param>

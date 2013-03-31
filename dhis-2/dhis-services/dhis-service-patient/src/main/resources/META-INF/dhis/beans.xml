@@ -489,6 +489,7 @@
 		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementService" />
 		<constructor-arg ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
 		<constructor-arg ref="org.hisp.dhis.setting.SystemSettingManager" />
+		<constructor-arg ref="notifier" />
 	</bean>
 
 	<bean id="aggregateQueryBuilder" class="org.hisp.dhis.patient.scheduling.CaseAggregateConditionTask"
