@@ -673,6 +673,21 @@ public class HibernatePatientStore
         return patients;
     }
 
+    @SuppressWarnings( "unchecked" )
+    public Collection<Integer> getRegistrationOrgunitIds( Date startDate, Date endDate )
+    {
+        Criteria criteria = getCriteria();
+        criteria.add( Restrictions.between( "registrationDate", startDate, endDate ) );
+        criteria.createAlias( "organisationUnit", "orgunit" );
+        criteria.setProjection( Projections.distinct( Projections.projectionList().add(
+            Projections.property( "orgunit.id" ), "orgunitid" ) ) );
+        return criteria.list();
+    }
+    
+    // -------------------------------------------------------------------------
+    // Supportive methods
+    // -------------------------------------------------------------------------
+    
     private Collection<Integer> getOrgunitChildren( OrganisationUnit orgunit )
     {
         Collection<Integer> orgunitIds = new HashSet<Integer>();

@@ -673,7 +673,7 @@ public class FacilityController
         return builder.toString();
     }
 
-    private void checkIdentifier( Facility facility, String id ) throws IOException
+    private void checkIdentifier( Facility facility, String id )
     {
         Identifier identifier = new Identifier();
 

@@ -105,7 +105,7 @@ public class RemoveUserAction
             return ERROR;
         }
         
-        boolean isCurrentUser = currentUser != null && currentUser.equals( user );
+        boolean isCurrentUser = currentUser.equals( user );
 
         UserCredentials userCredentials = user.getUserCredentials();
         

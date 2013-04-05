@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
@@ -294,7 +294,7 @@ public class SaveSectionFormAction
         }
 
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
-            ServletActionContext.HTTP_REQUEST );
+            StrutsStatics.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
 
         for ( String key : parameterMap.keySet() )

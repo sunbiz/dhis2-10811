@@ -89,7 +89,7 @@ public class HibernateOutboundSmsStore
     public List<OutboundSms> getAll()
     {
         Session session = sessionFactory.getCurrentSession();
-        return (List<OutboundSms>) session.createCriteria( OutboundSms.class ).addOrder( Order.asc( "date" ) ).list();
+        return session.createCriteria( OutboundSms.class ).addOrder( Order.asc( "date" ) ).list();
     }
     
     @Override

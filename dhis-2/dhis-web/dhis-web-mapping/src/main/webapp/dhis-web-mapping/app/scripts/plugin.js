@@ -193,7 +193,7 @@ Ext.onReady( function() {
 						},
 						items: [
 							{
-								title: 'Thematic layer 1 legend', //i18n
+								title: GIS.i18n.thematic_layer_1_legend,
 								listeners: {
 									added: function() {
 										gis.layer.thematic1.legendPanel = this;
@@ -201,7 +201,7 @@ Ext.onReady( function() {
 								}
 							},
 							{
-								title: 'Thematic layer 2 legend', //i18n
+								title: GIS.i18n.thematic_layer_2_legend,
 								listeners: {
 									added: function() {
 										gis.layer.thematic2.legendPanel = this;
@@ -209,7 +209,7 @@ Ext.onReady( function() {
 								}
 							},
 							{
-								title: 'Facility layer legend', //i18n
+								title: GIS.i18n.facility_layer_legend,
 								listeners: {
 									added: function() {
 										gis.layer.facility.legendPanel = this;

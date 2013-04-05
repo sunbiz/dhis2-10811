@@ -196,7 +196,7 @@ public class ContextUtils
         
         String inputTag = request.getHeader( HEADER_IF_NONE_MATCH );
 
-        if ( objects != null && inputTag != null && tag != null && inputTag.equals( tag ) )
+        if ( objects != null && inputTag != null && inputTag.equals( tag ) )
         {
             response.setStatus( HttpServletResponse.SC_NOT_MODIFIED );
             

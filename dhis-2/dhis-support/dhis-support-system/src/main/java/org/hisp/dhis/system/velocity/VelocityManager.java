@@ -30,8 +30,8 @@ package org.hisp.dhis.system.velocity;
 import java.io.StringWriter;
 
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 public class VelocityManager
@@ -46,7 +46,7 @@ public class VelocityManager
     public VelocityManager()
     {
         velocity = new VelocityEngine();
-        velocity.setProperty( Velocity.RESOURCE_LOADER, RESOURCE_LOADER_NAME );
+        velocity.setProperty( RuntimeConstants.RESOURCE_LOADER, RESOURCE_LOADER_NAME );
         velocity.setProperty( RESOURCE_LOADER_NAME + ".resource.loader.class", ClasspathResourceLoader.class.getName() );
         velocity.setProperty( "runtime.log.logsystem.log4j.logger", "console" );
         velocity.setProperty( "runtime.log", "" );

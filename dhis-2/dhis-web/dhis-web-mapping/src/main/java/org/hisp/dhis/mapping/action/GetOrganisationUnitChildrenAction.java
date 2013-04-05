@@ -85,11 +85,11 @@ public class GetOrganisationUnitChildrenAction
         throws Exception
     {
         OrganisationUnit unit = organisationUnitService.getOrganisationUnit( node );
-        
-        int level = organisationUnitService.getLevelOfOrganisationUnit( unit.getId() ) + 1;
-        
+
         if ( unit != null )
         {
+            int level = organisationUnitService.getLevelOfOrganisationUnit( unit.getId() ) + 1;
+        
             units = new ArrayList<OrganisationUnit>( unit.getChildren() );
             
             for ( OrganisationUnit organisationUnit : units )

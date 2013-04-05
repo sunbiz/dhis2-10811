@@ -91,7 +91,7 @@ public class GetOrganisationUnitGroupsByGroupSetAction
         {
             object = groupSet.getOrganisationUnitGroups();
 
-            boolean modified = !clearIfNotModified( ServletActionContext.getRequest(), ServletActionContext.getResponse(), object );
+            clearIfNotModified( ServletActionContext.getRequest(), ServletActionContext.getResponse(), object );
         }
         
         return SUCCESS;

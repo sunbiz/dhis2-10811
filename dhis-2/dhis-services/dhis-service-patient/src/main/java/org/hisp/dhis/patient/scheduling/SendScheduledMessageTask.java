@@ -55,13 +55,6 @@ public class SendScheduledMessageTask
         this.programStageInstanceService = programStageInstanceService;
     }
 
-    private JdbcTemplate jdbcTemplate;
-
-    public void setJdbcTemplate( JdbcTemplate jdbcTemplate )
-    {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     private OutboundSmsService outboundSmsService;
 
     public void setOutboundSmsService( OutboundSmsService outboundSmsService )
@@ -69,16 +62,11 @@ public class SendScheduledMessageTask
         this.outboundSmsService = outboundSmsService;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
+    private JdbcTemplate jdbcTemplate;
 
-    public SendScheduledMessageTask( ProgramStageInstanceService programStageInstanceService,
-        JdbcTemplate jdbcTemplate, OutboundSmsService outboundSmsService )
+    public void setJdbcTemplate( JdbcTemplate jdbcTemplate )
     {
-        this.programStageInstanceService = programStageInstanceService;
         this.jdbcTemplate = jdbcTemplate;
-        this.outboundSmsService = outboundSmsService;
     }
 
     // -------------------------------------------------------------------------

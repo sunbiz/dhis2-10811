@@ -177,7 +177,7 @@ public class DefaultValidationRuleService
 
             Set<DataElement> dataElements = getDataElementsInValidationRules( relevantRules );
             
-            if ( relevantRules != null && relevantRules.size() > 0 )
+            if ( !relevantRules.isEmpty() )
             {
                 for ( Period period : relevantPeriods )
                 {

@@ -27,8 +27,8 @@
 <table>
     <tr>
         <td style="width:140px"><label for="firstName">$i18n.getString( "name" )</label></td>
-        <td><input type="text" id="firstName" name="firstName" style="width:11.7em; margin-right:7px;" placeholder="First">
-            <input type="text" id="surname" name="surname" style="width:11.7em" placeholder="Last"></td>
+        <td><input type="text" id="firstName" name="firstName" autocomplete="off" style="width:11.7em; margin-right:7px;" placeholder="First">
+            <input type="text" id="surname" name="surname" autocomplete="off" style="width:11.7em" placeholder="Last"></td>
     </tr>
     <tr>
         <td><label for="username">$i18n.getString( "user_name" )</label></td>

@@ -351,7 +351,7 @@ public class DefaultPatientService
     @Override
     public Collection<Patient> sortPatientsByAttribute( Collection<Patient> patients, PatientAttribute patientAttribute )
     {
-         Collection<Patient> sortedPatients = new ArrayList<Patient>();
+        Collection<Patient> sortedPatients = new ArrayList<Patient>();
 
         // ---------------------------------------------------------------------
         // Better to fetch all attribute values at once than fetching the
@@ -540,8 +540,8 @@ public class DefaultPatientService
         return patientStore.getPatientPhoneNumbers( searchKeys, orgunit, min, max );
     }
 
-    public List<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit,
-        Integer min, Integer max )
+    public List<Integer> getProgramStageInstances( List<String> searchKeys, OrganisationUnit orgunit, Integer min,
+        Integer max )
     {
         return patientStore.getProgramStageInstances( searchKeys, orgunit, min, max );
     }
@@ -571,7 +571,7 @@ public class DefaultPatientService
         grid.setTitle( i18n.getString( "activity_plan" ) );
         if ( !startDate.isEmpty() && !endDate.isEmpty() )
         {
-            grid.setSubtitle( i18n.getString( "from" ) + " " + startDate + " " + i18n.getString( "to" )  + " " + endDate );
+            grid.setSubtitle( i18n.getString( "from" ) + " " + startDate + " " + i18n.getString( "to" ) + " " + endDate );
         }
 
         grid.addHeader( new GridHeader( "patientid", true, true ) );
@@ -592,6 +592,12 @@ public class DefaultPatientService
     public Collection<Patient> getPatientByFullname( String fullName, Integer orgunitId )
     {
         return patientStore.getByFullName( fullName, orgunitId );
+    }
+
+    @Override
+    public Collection<Integer> getRegistrationOrgunitIds( Date startDate, Date endDate )
+    {
+        return patientStore.getRegistrationOrgunitIds( startDate, endDate );
     }
 
 }

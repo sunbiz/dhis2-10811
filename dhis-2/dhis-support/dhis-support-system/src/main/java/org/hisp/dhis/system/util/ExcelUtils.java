@@ -56,8 +56,6 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 
-import com.lowagie.text.DocumentException;
-
 /**
  * @author Dang Duy Hieu
  * @version $Id$
@@ -242,7 +240,6 @@ public class ExcelUtils
 
     public static void writeDataBrowserResults( WritableSheet sheet, WritableCellFormat parFormat,
         WritableCellFormat oddFormat, int fontSize, Grid grid )
-        throws DocumentException
     {
         // Data rows
         int i = 0;
@@ -274,7 +271,7 @@ public class ExcelUtils
                     {
                         temp = "";
                     }
-                    else if ( ((String) temp).trim().matches( "0" ) )
+                    else if ( temp.trim().matches( "0" ) )
                     {
                         cellFormat.setFont( zeroFont );
                     }

@@ -47,8 +47,8 @@ import org.hisp.dhis.datavalue.DeflatedDataValue;
  * <li>7: lastupdated - date</li>
  * <li>8: comment - String</li>
  * <li>9: followup - Boolean</li>
- * <li>10: minvalue - int</li>
- * <li>11: maxvalue - int</li>
+ * <li>10: minimumvalue - int</li>
+ * <li>11: maximumvalue - int</li>
  * <li>12: dataelementname - String</li>
  * <li>13: periodtypename - String</li>
  * <li>14: startdate - String</li>
@@ -91,8 +91,8 @@ public class DeflatedDataValueNameMinMaxRowMapper
         value.setTimestamp( resultSet.getDate( "lastupdated" ) );
         value.setComment( resultSet.getString( "comment" ) );
         value.setFollowup( resultSet.getBoolean( "followup" ) );
-        value.setMin( minMap != null ? minMap.get( value.getSourceId() ) : resultSet.getInt( "minvalue" ) );
-        value.setMax( maxMap != null ? maxMap.get( value.getSourceId() ) : resultSet.getInt( "maxvalue" ) );
+        value.setMin( minMap != null ? minMap.get( value.getSourceId() ) : resultSet.getInt( "minimumvalue" ) );
+        value.setMax( maxMap != null ? maxMap.get( value.getSourceId() ) : resultSet.getInt( "maximumvalue" ) );
         value.setDataElementName( resultSet.getString( "dataelementname" ) );
         value.setPeriod( 
             resultSet.getString( "periodtypename" ), 

@@ -80,13 +80,6 @@ public class InitializeAction
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
-
-    private String id;
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
     
     private String callback;
     

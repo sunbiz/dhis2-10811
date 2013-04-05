@@ -117,10 +117,12 @@ public class PatientMobileSetting
 
     public double getVersionToUpdate()
     {
-        if( versionToUpdate != null )
+        if ( versionToUpdate != null )
+        {
             return versionToUpdate;
-        else
-            return 0;
+        }
+        
+        return 0;
     }
 
     public void setVersionToUpdate( Double versionToUpdate )

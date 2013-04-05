@@ -90,7 +90,7 @@ public class HibernatePatientIdentifierStore
     @SuppressWarnings( "unchecked" )
     public Collection<PatientIdentifier> getPatientIdentifiers( Patient patient )
     {
-        return (Collection<PatientIdentifier>) getCriteria( Restrictions.eq( "patient", patient ) ).list();
+        return getCriteria( Restrictions.eq( "patient", patient ) ).list();
     }
 
     public Patient getPatient( PatientIdentifierType idenType, String value )

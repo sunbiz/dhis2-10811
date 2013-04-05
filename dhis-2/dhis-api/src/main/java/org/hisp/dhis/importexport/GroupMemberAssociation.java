@@ -27,16 +27,13 @@ package org.hisp.dhis.importexport;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.Serializable;
-
 import org.hisp.dhis.common.ImportableObject;
 
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class GroupMemberAssociation
-    implements ImportableObject, Serializable
+    implements ImportableObject
 {    
     /**
      * Determines if a de-serialized file is compatible with this class.

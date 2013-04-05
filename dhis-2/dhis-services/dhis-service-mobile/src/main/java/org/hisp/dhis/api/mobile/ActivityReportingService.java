@@ -31,11 +31,13 @@ import java.util.Collection;
 
 import org.hisp.dhis.api.mobile.model.ActivityPlan;
 import org.hisp.dhis.api.mobile.model.ActivityValue;
+import org.hisp.dhis.api.mobile.model.PatientAttribute;
 import org.hisp.dhis.api.mobile.model.LWUITmodel.Patient;
 import org.hisp.dhis.api.mobile.model.LWUITmodel.Program;
 import org.hisp.dhis.api.mobile.model.LWUITmodel.ProgramStage;
 import org.hisp.dhis.api.mobile.model.LWUITmodel.Relationship;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.patient.PatientIdentifierType;
 
 /**
  * Provides services for activity reporting
@@ -61,10 +63,25 @@ public interface ActivityReportingService
     public Patient enrollProgram( String enrollInfo, int orgUnitId )
         throws NotAllowedException;
 
+    public Collection<PatientIdentifierType> getIdentifierTypes();
+
+    public Collection<org.hisp.dhis.patient.PatientAttribute> getPatientAtts();
+
+    public Collection<PatientIdentifierType> getIdentifiers();
+
+    public Collection<PatientAttribute> getAttsForMobile();
+
+    public Collection<org.hisp.dhis.api.mobile.model.PatientIdentifier> getIdentifiersForMobile();
+
+    public Collection<PatientAttribute> getPatientAttributesForMobile();
+
     public Patient addRelationship( Relationship enrollmentRelationship, int orgUnitId )
         throws NotAllowedException;
 
     public Program getAllAnonymousProgram( int orgUnitId )
+        throws NotAllowedException;
+
+    public Program findProgram( String programInfo )
         throws NotAllowedException;
 
 }

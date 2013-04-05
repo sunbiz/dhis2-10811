@@ -171,7 +171,7 @@ public class ExportToPdfAction
                     organisationUnitService.searchOrganisationUnitByName( organisationUnits, curKey );
                 }
 
-                if ( (organisationUnits != null) && !organisationUnits.isEmpty() )
+                if ( !organisationUnits.isEmpty() )
                 {
                     params.setOrganisationUnitObjects( organisationUnits );
                 }

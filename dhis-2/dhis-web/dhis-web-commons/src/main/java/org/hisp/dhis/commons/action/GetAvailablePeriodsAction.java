@@ -91,7 +91,7 @@ public class GetAvailablePeriodsAction
     {
         periodType = periodType != null && !periodType.isEmpty() ? periodType : MonthlyPeriodType.NAME;
 
-        CalendarPeriodType _periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( periodType );
+        CalendarPeriodType _periodType = (CalendarPeriodType) PeriodType.getPeriodTypeByName( periodType );
 
         int thisYear = Calendar.getInstance().get( Calendar.YEAR );
 

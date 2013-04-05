@@ -75,15 +75,21 @@ public class DefaultPatientTabularReportService
     }
     
     @Override
-    public Collection<PatientTabularReport> getPatientTabularReports( User user )
+    public Collection<PatientTabularReport> getPatientTabularReports( User user, String query, Integer min, Integer max )
     {
-        return tabularReportStore.get( user );
+        return tabularReportStore.get( user, query, min, max );
     }
 
     @Override
     public void saveOrUpdate( PatientTabularReport patientTabularReport )
     {
         tabularReportStore.save( patientTabularReport );
+    }
+    
+    @Override
+    public int countPatientTabularReportList( User user, String query )
+    {
+        return tabularReportStore.countList( user, query );
     }
 
 }

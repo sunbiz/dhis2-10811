@@ -79,7 +79,7 @@ public class DefaultAnalyticsTableService
     
     public void update( boolean last3YearsOnly, TaskId taskId )
     {
-        Clock clock = new Clock().startClock().logTime( "Starting update" );
+        Clock clock = new Clock().startClock().logTime( "Starting update, no of processes: " + getProcessNo() );
         
         boolean valid = tableManager.validState();
         
@@ -261,6 +261,8 @@ public class DefaultAnalyticsTableService
     
     private int getProcessNo()
     {
-        return Math.max( ( SystemUtils.getCpuCores() - 1 ), 1 );
+        int cores = SystemUtils.getCpuCores();
+        
+        return cores > 2 ? ( cores - 1 ) : cores;
     }
 }

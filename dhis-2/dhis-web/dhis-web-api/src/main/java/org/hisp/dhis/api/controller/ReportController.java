@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.j2ee.servlets.BaseHttpServlet;
 import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 
 import org.hisp.dhis.api.utils.ContextUtils;
@@ -101,7 +102,7 @@ public class ReportController
     {
         JasperPrint print = getReport( request, response, uid, organisationUnitUid, period, "html", ContextUtils.CONTENT_TYPE_HTML, false );
         
-        request.getSession().setAttribute( ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print );
+        request.getSession().setAttribute( BaseHttpServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, print );
     }
     
     @RequestMapping( value = "/{uid}/design", method = RequestMethod.PUT )

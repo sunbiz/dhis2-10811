@@ -219,9 +219,7 @@ public class DefaultCrossTabService
         {
             return crossTabStore.getAggregatedOrgUnitDataCacheValue( operands, period.getId(), unit.getId(), group.getId(), key );
         }
-        else
-        {
-            return crossTabStore.getAggregatedDataCacheValue( operands, period.getId(), unit.getId(), key );
-        }
+        
+        return crossTabStore.getAggregatedDataCacheValue( operands, period.getId(), unit.getId(), key );
     }
 }

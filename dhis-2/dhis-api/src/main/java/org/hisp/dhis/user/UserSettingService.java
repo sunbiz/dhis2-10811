@@ -51,6 +51,8 @@ public interface UserSettingService
     final String KEY_MESSAGE_SMS_NOTIFICATION = "keyMessageSmsNotification";
     final String KEY_DB_LOCALE = "keyLocaleUserSetting";
     final String KEY_GENERATE_REPORT_INTERFACE = "keyGenerateReportInterface";
+    final String AUTO_SAVE_CASE_ENTRY_FORM = "autoSaveCaseEntryForm";
+    final String AUTO_SAVE_PATIENT_REGISTRATION_ENTRY_FORM = "autoSavePatientRegistration";
     
     final List<Integer> DASHBOARD_CHARTS_TO_DISPLAY = Arrays.asList( 4, 6, 8 );
 

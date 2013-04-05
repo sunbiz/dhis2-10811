@@ -84,4 +84,6 @@ public interface PatientStore
     
     Collection<Patient> getByFullName( String fullName, Integer orgunitId );
     
+    Collection<Integer> getRegistrationOrgunitIds( Date startDate, Date endDate );
+
 }

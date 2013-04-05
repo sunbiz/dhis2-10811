@@ -2,12 +2,14 @@
 var dataElementSelector;
 var otherProgramStageDataElements;
 var existedDataEntry;
+var timeout;
 
 jQuery(function(){
 	dataElementSelector = jQuery("#dataElementSelection").dialog({
 		title: i18n_dataelement,
 		height: 420,
 		width: 480,
+		position: [$("body").width()- 50, 0],
 		autoOpen: false,
 		zIndex:99999
 	});
@@ -16,6 +18,7 @@ jQuery(function(){
 		title: i18n_dataelement_of_orther_program_stage,
 		height: 460,
 		width:jQuery("#otherProgramStageDataElements [id=dataElementIds]").outerWidth() + 50,
+		position: [$("body").width()- 50, 0],
 		autoOpen: false,
 		zIndex:99999
 	});
@@ -31,10 +34,12 @@ jQuery(function(){
 	$(":button").button();
 	$(":submit").button();
 	$("#saveButton").button("option", "icons", { primary: "ui-icon-disk" });
+	$("#saveAndCloseButton").button("option", "icons", { primary: "ui-icon-disk" });
 	$("#cancelButton").button("option", "icons", { primary: "ui-icon-cancel" });
 	$("#deleteButton").button("option", "icons", { primary: "ui-icon-trash" });
 	$("#insertButton").button("option", "icons", { primary: "ui-icon-plusthick" });
 	$("#insertImagesButton").button("option", "icons", { primary: "ui-icon-newwin" });
+	$("#insertImageButton").button("option", "icons", { primary: "ui-icon-plusthick" });
 	$("#loadExistForms").button("option", "icons", { primary: "ui-icon-newwin" });
 	$("#insertDataElements").button("option", "icons", { primary: "ui-icon-newwin" });
 	$("#insertOtherDataElements").button("option", "icons", { primary: "ui-icon-newwin" });
@@ -47,8 +52,19 @@ jQuery(function(){
 	})
 	
 	$("#insertImagesButton").click(function() {
-		$("#imageDialog").dialog();
+		$("#imageDialog").dialog({
+			minWidth: 350,
+			minheight: 263,
+			position: [$("body").width()- 50, 0],
+			zIndex: 10000,
+			resizable: false
+		});
 	});
+	
+	if( autoSave )
+	{
+		timeOut = window.setTimeout( "validateDataEntryFormTimeout( false );", 60000 );
+	}
 });
 
 function openOtherProgramStageDataElements()
@@ -152,7 +168,7 @@ function filterDataElements( filter, container, list )
 	});	
 }
 
-function insertDataElement( source, programStageId )
+function insertDataElement( source, programStageUid )
 {
 	var dataElement = JSON.parse( jQuery( source + ' #dataElementIds').val() );
 
@@ -164,13 +180,13 @@ function insertDataElement( source, programStageId )
 		jQuery( source + " #message_").html( "" );
 	}
 
-	var dataElementId = dataElement.id;	
+	var dataElementUid = dataElement.uid;	
 	var dataElementName = dataElement.name;	
 	var dataElementType = dataElement.type;
 	
 	var htmlCode = "";
-	var id = programStageId + "-" + dataElementId + "-val" ;	
-	var titleValue = dataElementId + " - " + dataElementName + " - " + dataElementType;
+	var id = programStageUid + "-" + dataElementUid + "-val" ;	
+	var titleValue = dataElementUid + " - " + dataElementName + " - " + dataElementType;
 	
 	if ( dataElementType == "bool" )
 	{
@@ -288,4 +304,63 @@ function insertImage() {
 	var html = "<img src=\"" + image + "\" title=\"" + $("#imageDialog :selected").text() + "\">";
 	var oEditor = $("#designTextarea").ckeditorGet();
 	oEditor.insertHtml( html );
+}
+
+// -------------------------------------------------------
+// Auto-save data entry form
+// -------------------------------------------------------
+
+function setAutoSaveDataEntrySetting(_autoSave)
+{
+	jQuery.postJSON("setAutoSaveDataEntrySetting.action", {autoSave:_autoSave}, function(json) {
+		autoSave = _autoSave;
+		if (_autoSave) {
+			window.setTimeout( "validateDataEntryFormTimeout( false );", 600 );
+		}
+		else{
+			window.clearTimeout(timeOut);
+		}
+	});
+}
+
+function validateDataEntryFormTimeout()
+{
+	validateDataEntryForm();
+	timeOut = window.setTimeout( "validateDataEntryFormTimeout();", 60000 );
+}
+
+function validateDataEntryForm()
+{
+	$.post( 'validateDataEntryForm.action',
+	{
+		name: getFieldValue('name'),
+		dataEntryFormId: getFieldValue('dataEntryFormId')
+	}, 
+	function( json )
+	{
+		if ( json.response == 'success' )
+		{
+			autoSaveDataEntryForm();
+		}
+		else if ( json.response = 'error' )
+		{
+			setHeaderDelayMessage( json.message );
+		}
+	} );
+}
+
+function autoSaveDataEntryForm()
+{
+	$.postUTF8( 'autoSaveDataEntryForm.action',
+	{
+		name: getFieldValue('name'),
+		designTextarea: jQuery("#designTextarea").ckeditorGet().getData(),
+		programId: getFieldValue('programId'),
+		programStageId: getFieldValue('programStageId'),
+		dataEntryFormId: getFieldValue('dataEntryFormId')
+	},
+	function( json ) 
+	{
+		setHeaderDelayMessage( i18n_save_success ); 
+	} );
 }

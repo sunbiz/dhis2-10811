@@ -24,7 +24,7 @@
 				<tbody id="list">
 				#foreach($criteria in $criterias)
 				<tr id="tr${criteria.id}">
-				  <td>$criteria.displayName</td>
+				  <td onclick="javascript:showValidationCriteriaDetails( '$criteria.id' )">$criteria.displayName</td>
 				  <td>
 					<a href="showProgramsForValidationCriteriaForm.action?criteriaId=$criteria.id" title="$i18n.getString( 'assign_validation_for_programs' )"><img src="../images/assign.png" alt="$i18n.getString( 'assign_validation_for_programs' )"></a>
 					<a href="showUpdateValidationCriteriaForm.action?id=$criteria.id" title="$i18n.getString( "edit" )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>

@@ -844,7 +844,7 @@ PT.core.getUtils = function(pt) {
 							aSpan.push(nCols); //if just one item and top level, span all
 						}
 						else {
-							if (options.hideEmptyRows && type === 'row') {	
+							if (options.hideEmptyRows && type === 'row') {
 								aSpan.push(nCols / aAccNumCols[i]);
 							}
 							else {
@@ -1026,7 +1026,8 @@ PT.core.getUtils = function(pt) {
 					rowUniqueFactor = getUniqueFactor(xRowAxis),
 
 					valueItems = [],
-					totalColItems = [],
+					valueObjects = [],
+					totalColObjects = [],
 					htmlArray;
 
 				getTdHtml = function(options, config) {
@@ -1138,7 +1139,7 @@ PT.core.getUtils = function(pt) {
 				getRowHtmlArray = function() {
 					var a = [],
 						axisObjects = [],
-						valueObjects = [],
+						xValueObjects,
 						totalValueObjects = [],
 						mergedObjects = [],
 						valueItemsCopy,
@@ -1215,10 +1216,7 @@ PT.core.getUtils = function(pt) {
 
 					// Value total objects
 					if (xColAxis && doTotals()) {
-						for (var i = 0, empty, total; i < valueObjects.length; i++) {
-							empty = [];
-							total = 0;
-
+						for (var i = 0, empty = [], total = 0; i < valueObjects.length; i++) {
 							for (j = 0, obj; j < valueObjects[i].length; j++) {
 								obj = valueObjects[i][j];
 
@@ -1230,12 +1228,16 @@ PT.core.getUtils = function(pt) {
 								type: 'valueTotal',
 								cls: 'pivot-value-total',
 								value: total,
-								htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(total, 1).toString() : '&nbsp;'
+								htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(total, 1).toString() : '&nbsp;',
+								empty: !Ext.Array.contains(empty, false)
 							});
+
+							empty = [];
+							total = 0;
 						}
 					}
 
-					// Hide empty rows/totals
+					// Hide empty rows (dims/values/totals)
 					if (xColAxis && xRowAxis) {
 						if (options.hideEmptyRows) {
 							for (var i = 0, valueRow, empty, parent; i < valueObjects.length; i++) {
@@ -1266,16 +1268,19 @@ PT.core.getUtils = function(pt) {
 						}
 					}
 
+					xValueObjects = Ext.clone(valueObjects);
+
+					// Col subtotals
 					if (doSubTotals(xColAxis)) {
 						var tmpValueObjects = [];
 
-						for (var i = 0, row, rowSubTotal, colCount; i < valueObjects.length; i++) {
+						for (var i = 0, row, rowSubTotal, colCount; i < xValueObjects.length; i++) {
 							row = [];
 							rowSubTotal = 0;
 							colCount = 0;
 
-							for (var j = 0, item, collapsed = [], empty = []; j < valueObjects[i].length; j++) {
-								item = valueObjects[i][j];
+							for (var j = 0, item, collapsed = [], empty = []; j < xValueObjects[i].length; j++) {
+								item = xValueObjects[i][j];
 								rowSubTotal += item.value;
 								empty.push(!!item.empty);
 								collapsed.push(!!item.collapsed);
@@ -1291,8 +1296,10 @@ PT.core.getUtils = function(pt) {
 										cls: 'pivot-value-subtotal',
 										value: rowSubTotal,
 										htmlValue: Ext.Array.contains(empty, false) ? rowSubTotal.toString() : '&nbsp',
+										empty: !Ext.Array.contains(empty, false),
 										collapsed: !Ext.Array.contains(collapsed, false)
 									});
+
 									colCount = 0;
 									rowSubTotal = 0;
 									empty = [];
@@ -1303,13 +1310,15 @@ PT.core.getUtils = function(pt) {
 							tmpValueObjects.push(row);
 						}
 
-						valueObjects = tmpValueObjects;
+						xValueObjects = tmpValueObjects;
 					}
 
+					// Row subtotals
 					if (doSubTotals(xRowAxis)) {
 						var tmpAxisObjects = [],
 							tmpValueObjects = [],
-							tmpTotalValueObjects = [];
+							tmpTotalValueObjects = [],
+							getAxisSubTotalRow;
 
 						getAxisSubTotalRow = function(collapsed) {
 							var row = [];
@@ -1321,7 +1330,7 @@ PT.core.getUtils = function(pt) {
 								obj.collapsed = Ext.Array.contains(collapsed, true);
 
 								if (i === 0) {
-									obj.htmlValue = '&nbsp;'; //i18n
+									obj.htmlValue = '&nbsp;';
 									obj.colSpan = xRowAxis.dims;
 								}
 								else {
@@ -1334,57 +1343,58 @@ PT.core.getUtils = function(pt) {
 							return row;
 						};
 
-						// Row axis objects
-						for (var i = 0, row, collapsed = [], count = 0; i < axisObjects.length; i++) {
+						// tmpAxisObjects
+						for (var i = 0, row, collapsed = []; i < axisObjects.length; i++) {
 							tmpAxisObjects.push(axisObjects[i]);
 							collapsed.push(!!axisObjects[i][0].collapsed);
-							count++;
 
-							if (count === xRowAxis.span[0]) {
+							// Insert subtotal after last objects
+							if (!Ext.isArray(axisObjects[i+1]) || !!axisObjects[i+1][0].root) {
 								tmpAxisObjects.push(getAxisSubTotalRow(collapsed));
 
 								collapsed = [];
-								count = 0;
 							}
 						}
 
-						// Create tmp value object arrays
+						// tmpValueObjects
 						for (var i = 0; i < tmpAxisObjects.length; i++) {
 							tmpValueObjects.push([]);
 						}
 
-						// Populate tmp value object arrays
-						for (var i = 0; i < valueObjects[0].length; i++) {
-							for (var j = 0, rowCount = 0, tmpCount = 0, subTotal = 0, collapsed, item; j < valueObjects.length; j++) {
-								item = valueObjects[j][i];
+						for (var i = 0; i < xValueObjects[0].length; i++) {
+							for (var j = 0, rowCount = 0, tmpCount = 0, subTotal = 0, empty = [], collapsed, item; j < xValueObjects.length; j++) {
+								item = xValueObjects[j][i];
 								tmpValueObjects[tmpCount++].push(item);
 								subTotal += item.value;
+								empty.push(!!item.empty);
 								rowCount++;
 
-								if (rowCount === 1) {
-									collapsed = !!tmpAxisObjects[j][0].collapsed;
+								if (axisObjects[j][0].root) {
+									collapsed = !!axisObjects[j][0].collapsed;
 								}
 
-								if (rowCount === rowUniqueFactor) {
+								if (!Ext.isArray(axisObjects[j+1]) || axisObjects[j+1][0].root) {
 									tmpValueObjects[tmpCount++].push({
-										type: item.cls === 'pivot-value-subtotal' ? 'valueSubtotal' : 'valueSubtotalTotal',
+										type: item.type === 'value' ? 'valueSubtotal' : 'valueSubtotalTotal',
 										value: subTotal,
-										htmlValue: pt.util.number.roundIf(subTotal, 1).toString(),
+										htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(subTotal, 1).toString() : '&nbsp;',
 										collapsed: collapsed,
-										cls: item.cls === 'pivot-value-subtotal' ? 'pivot-value-subtotal-total' : 'pivot-value-subtotal'
+										cls: item.type === 'value' ? 'pivot-value-subtotal' : 'pivot-value-subtotal-total'
 									});
 									rowCount = 0;
 									subTotal = 0;
+									empty = [];
 								}
 							}
 						}
 
-						// Total value objects
-						for (var i = 0, obj, collapsed = [], subTotal = 0, count = 0; i < totalValueObjects.length; i++) {
+						// tmpTotalValueObjects
+						for (var i = 0, obj, collapsed = [], empty = [], subTotal = 0, count = 0; i < totalValueObjects.length; i++) {
 							obj = totalValueObjects[i];
 							tmpTotalValueObjects.push(obj);
 
 							collapsed.push(!!obj.collapsed);
+							empty.push(!!obj.empty);
 							subTotal += obj.value;
 							count++;
 
@@ -1393,30 +1403,32 @@ PT.core.getUtils = function(pt) {
 									type: 'valueTotalSubgrandtotal',
 									cls: 'pivot-value-total-subgrandtotal',
 									value: subTotal,
-									htmlValue: pt.util.number.roundIf(subTotal, 1).toString(),
+									htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(subTotal, 1).toString() : '&nbsp;',
+									empty: !Ext.Array.contains(empty, false),
 									collapsed: !Ext.Array.contains(collapsed, false)
 								});
 
 								collapsed = [];
+								empty = [];
 								subTotal = 0;
 								count = 0;
 							}
 						}
 
 						axisObjects = tmpAxisObjects;
-						valueObjects = tmpValueObjects;
+						xValueObjects = tmpValueObjects;
 						totalValueObjects = tmpTotalValueObjects;
 					}
 
 					// Merge dim, value, total
-					for (var i = 0, row; i < valueObjects.length; i++) {
+					for (var i = 0, row; i < xValueObjects.length; i++) {
 						row = [];
 
 						if (xRowAxis) {
 							row = row.concat(axisObjects[i]);
 						}
 
-						row = row.concat(valueObjects[i]);
+						row = row.concat(xValueObjects[i]);
 
 						if (xColAxis) {
 							row = row.concat(totalValueObjects[i]);
@@ -1443,37 +1455,47 @@ PT.core.getUtils = function(pt) {
 					var a = [];
 
 					if (xRowAxis && doTotals()) {
+						var xTotalColObjects;
 
 						// Total col items
-						for (var i = 0, colSum; i < valueItems[0].length; i++) {
-							colSum = 0;
+						for (var i = 0, total = 0, empty = []; i < valueObjects[0].length; i++) {
+							for (var j = 0, obj; j < valueObjects.length; j++) {
+								obj = valueObjects[j][i];
 
-							for (var j = 0; j < valueItems.length; j++) {
-								colSum += valueItems[j][i];
+								total += obj.value;
+								empty.push(!!obj.empty);
 							}
 
-							totalColItems.push({
+							totalColObjects.push({
 								type: 'valueTotal',
-								value: colSum,
-								htmlValue: pt.util.number.roundIf(colSum, 1).toString(),
+								value: total,
+								htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(total, 1).toString() : '&nbsp;',
+								empty: !Ext.Array.contains(empty, false),
 								cls: 'pivot-value-total'
 							});
+
+							total = 0;
+							empty = [];
 						}
+
+						xTotalColObjects = Ext.clone(totalColObjects);
 
 						if (xColAxis && doSubTotals(xColAxis)) {
 							var tmp = [];
 
-							for (var i = 0, item, subTotal = 0, colCount = 0; i < totalColItems.length; i++) {
-								item = totalColItems[i];
+							for (var i = 0, item, subTotal = 0, empty = [], colCount = 0; i < xTotalColObjects.length; i++) {
+								item = xTotalColObjects[i];
 								tmp.push(item);
 								subTotal += item.value;
+								empty.push(!!item.empty);
 								colCount++;
 
 								if (colCount === colUniqueFactor) {
 									tmp.push({
 										type: 'valueTotalSubgrandtotal',
 										value: subTotal,
-										htmlValue: pt.util.number.roundIf(subTotal, 1).toString(),
+										htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(subTotal, 1).toString() : '&nbsp;',
+										empty: !Ext.Array.contains(empty, false),
 										cls: 'pivot-value-total-subgrandtotal'
 									});
 
@@ -1482,18 +1504,12 @@ PT.core.getUtils = function(pt) {
 								}
 							}
 
-							totalColItems = tmp;
+							xTotalColObjects = tmp;
 						}
 
 						// Total col html items
-						for (var i = 0, item; i < totalColItems.length; i++) {
-							item = totalColItems[i];
-							item.htmlValue = pt.util.number.roundIf(item.htmlValue, 1).toString();
-
-							a.push(getTdHtml(options, {
-								cls: item.cls,
-								htmlValue: item.htmlValue
-							}));
+						for (var i = 0; i < xTotalColObjects.length; i++) {
+							a.push(getTdHtml(options, xTotalColObjects[i]));
 						}
 					}
 
@@ -1501,21 +1517,25 @@ PT.core.getUtils = function(pt) {
 				};
 
 				getGrandTotalHtmlArray = function() {
-					var grandTotalSum,
-						values = [],
+					var total = 0,
+						empty = [],
 						a = [];
 
 					if (doTotals()) {
-						for (var i = 0; i < totalColItems.length; i++) {
-							values.push(totalColItems[i].value);
+						for (var i = 0, obj; i < totalColObjects.length; i++) {
+							obj = totalColObjects[i];
+
+							total += obj.value;
+							empty.push(obj.empty);
+							//values.push(totalColObjects[i].value);
 						}
 
 						if (xColAxis && xRowAxis) {
-							grandTotalSum = Ext.Array.sum(values);
-
 							a.push(getTdHtml(options, {
+								type: 'valueGrandTotal',
 								cls: 'pivot-value-grandtotal',
-								htmlValue: pt.util.number.roundIf(grandTotalSum, 1).toString()
+								htmlValue: Ext.Array.contains(empty, false) ? pt.util.number.roundIf(total, 1).toString() : '&nbsp;',
+								empty: !Ext.Array.contains(empty, false)
 							}));
 						}
 					}
@@ -1533,6 +1553,7 @@ PT.core.getUtils = function(pt) {
 					if (doTotals()) {
 						if (xRowAxis) {
 							dimTotalArray = [getTdHtml(options, {
+								type: 'dimensionSubtotal',
 								cls: 'pivot-dim-total',
 								colSpan: xRowAxis.dims,
 								htmlValue: 'Total'

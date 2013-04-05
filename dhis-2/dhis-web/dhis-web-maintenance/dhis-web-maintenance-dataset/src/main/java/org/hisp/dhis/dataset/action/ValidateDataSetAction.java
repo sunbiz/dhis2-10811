@@ -53,20 +53,6 @@ public class ValidateDataSetAction
         this.dataSetId = dataSetId;
     }
 
-    private String name;
-
-    public void setName( String name )
-    {
-        this.name = name;
-    }
-
-    private String shortName;
-
-    public void setShortName( String shortName )
-    {
-        this.shortName = shortName;
-    }
-
     private String code;
 
     public void setCode( String code )

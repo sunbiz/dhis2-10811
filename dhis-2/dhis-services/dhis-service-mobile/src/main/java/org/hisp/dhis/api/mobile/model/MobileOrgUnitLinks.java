@@ -71,12 +71,14 @@ public class MobileOrgUnitLinks
     private String enrollProgramUrl;
 
     private String registerPersonUrl;
-    
+
     private String addRelationshipUrl;
-    
+
     private String downloadAnonymousProgramUrl;
-    
+
     private String findProgramUrl;
+
+    private String getVariesInfoUrl;
 
     @XmlAttribute
     public int getId()
@@ -240,6 +242,16 @@ public class MobileOrgUnitLinks
         this.registerPersonUrl = registerPersonUrl;
     }
 
+    public String getGetVariesInfoUrl()
+    {
+        return getVariesInfoUrl;
+    }
+
+    public void setGetVariesInfoUrl( String getVariesInfoUrl )
+    {
+        this.getVariesInfoUrl = getVariesInfoUrl;
+    }
+
     public String getAddRelationshipUrl()
     {
         return addRelationshipUrl;
@@ -289,6 +301,7 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.registerPersonUrl );
         dataOutputStream.writeUTF( this.uploadProgramStageUrl );
         dataOutputStream.writeUTF( this.enrollProgramUrl );
+        dataOutputStream.writeUTF( this.getVariesInfoUrl );
         dataOutputStream.writeUTF( this.addRelationshipUrl );
         dataOutputStream.writeUTF( this.downloadAnonymousProgramUrl );
         dataOutputStream.writeUTF( this.findProgramUrl );
@@ -309,11 +322,13 @@ public class MobileOrgUnitLinks
         this.updateNewVersionUrl = dataInputStream.readUTF();
         this.updateContactUrl = dataInputStream.readUTF();
         this.findPatientUrl = dataInputStream.readUTF();
-        this.uploadProgramStageUrl = dataInputStream.readUTF();
         this.registerPersonUrl = dataInputStream.readUTF();
+        this.uploadProgramStageUrl = dataInputStream.readUTF();
         this.enrollProgramUrl = dataInputStream.readUTF();
+        this.getVariesInfoUrl = dataInputStream.readUTF();
         this.addRelationshipUrl = dataInputStream.readUTF();
         this.downloadAnonymousProgramUrl = dataInputStream.readUTF();
+        this.findProgramUrl = dataInputStream.readUTF();
     }
 
     @Override
@@ -364,12 +379,12 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.updateNewVersionUrl );
         dataOutputStream.writeUTF( this.updateContactUrl );
         dataOutputStream.writeUTF( this.findPatientUrl );
-        dataOutputStream.writeUTF( this.uploadProgramStageUrl );
         dataOutputStream.writeUTF( this.registerPersonUrl );
+        dataOutputStream.writeUTF( this.uploadProgramStageUrl );
         dataOutputStream.writeUTF( this.enrollProgramUrl );
+        dataOutputStream.writeUTF( this.getVariesInfoUrl );
         dataOutputStream.writeUTF( this.addRelationshipUrl );
         dataOutputStream.writeUTF( this.downloadAnonymousProgramUrl );
         dataOutputStream.writeUTF( this.findProgramUrl );
     }
-
 }

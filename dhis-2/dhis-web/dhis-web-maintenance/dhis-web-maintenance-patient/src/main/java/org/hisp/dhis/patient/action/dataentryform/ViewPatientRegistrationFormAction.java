@@ -41,6 +41,7 @@ import org.hisp.dhis.patient.PatientRegistrationFormService;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.setting.SystemSettingManager;
+import org.hisp.dhis.user.UserSettingService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -89,6 +90,13 @@ public class ViewPatientRegistrationFormAction
     public void setSystemSettingManager( SystemSettingManager systemSettingManager )
     {
         this.systemSettingManager = systemSettingManager;
+    }
+
+    private UserSettingService userSettingService;
+
+    public void setUserSettingService( UserSettingService userSettingService )
+    {
+        this.userSettingService = userSettingService;
     }
 
     // -------------------------------------------------------------------------
@@ -149,6 +157,13 @@ public class ViewPatientRegistrationFormAction
         return flags;
     }
 
+    private boolean autoSave;
+
+    public boolean getAutoSave()
+    {
+        return autoSave;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -192,6 +207,8 @@ public class ViewPatientRegistrationFormAction
         // ---------------------------------------------------------------------
 
         flags = systemSettingManager.getFlags();
+
+        autoSave = (Boolean) userSettingService.getUserSetting( UserSettingService.AUTO_SAVE_PATIENT_REGISTRATION_ENTRY_FORM, false );
 
         return SUCCESS;
     }

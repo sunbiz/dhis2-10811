@@ -99,7 +99,7 @@ public class SystemSettingStoreTest
         
         settingA = systemSettingStore.getByName( "Setting1" );
         
-        assertEquals( "Value1", (String) settingA.getValue() );
+        assertEquals( "Value1", settingA.getValue() );
         
         settingA.setValue( new String( "Value2" ) );
         
@@ -107,7 +107,7 @@ public class SystemSettingStoreTest
 
         settingA = systemSettingStore.getByName( "Setting1" );
         
-        assertEquals( "Value2", (String) settingA.getValue() );
+        assertEquals( "Value2", settingA.getValue() );
     }
 
     @Test

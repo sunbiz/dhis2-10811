@@ -186,11 +186,14 @@ public class GetDataValuesForDataSetAction
         DataSet dataSet = dataSetService.getDataSet( dataSetId );
         Period period = PeriodType.createPeriodExternalId( periodId );
 
+        // TODO null-checks
+        
         // ---------------------------------------------------------------------
         // Data values & Min-max data elements
         // ---------------------------------------------------------------------
 
         dataValues.addAll( dataValueService.getDataValues( organisationUnit, period, dataSet.getDataElements() ) );
+        
         minMaxDataElements.addAll( minMaxDataElementService.getMinMaxDataElements( organisationUnit, dataSet
             .getDataElements() ) );
 
@@ -198,8 +201,10 @@ public class GetDataValuesForDataSetAction
         {
             for ( OrganisationUnit ou : children )
             {
-                // make sure that the orgUnit have this dataSet (the same data
-                // elements can be contained in another dataSet)
+                // -------------------------------------------------------------
+                // Make sure that the org unit have this data set 
+                // -------------------------------------------------------------
+
                 if ( ou.getDataSets().contains( dataSet ) )
                 {
                     dataValues.addAll( dataValueService.getDataValues( ou, period, dataSet.getDataElements() ) );
@@ -213,7 +218,7 @@ public class GetDataValuesForDataSetAction
         // Data set completeness info
         // ---------------------------------------------------------------------
 
-        if ( dataSet != null && period != null && organisationUnit != null )
+        if ( period != null )
         {
             if ( !multiOrganisationUnit )
             {
@@ -233,8 +238,10 @@ public class GetDataValuesForDataSetAction
             {
                 complete = true;
 
-                // if this is multiOrg, and one of the children is locked. Then
-                // just lock everything down.
+                // -------------------------------------------------------------
+                // If multi-org and one of the children is locked, lock all
+                // -------------------------------------------------------------
+
                 for ( OrganisationUnit ou : children )
                 {
                     if ( ou.getDataSets().contains( dataSet ) )

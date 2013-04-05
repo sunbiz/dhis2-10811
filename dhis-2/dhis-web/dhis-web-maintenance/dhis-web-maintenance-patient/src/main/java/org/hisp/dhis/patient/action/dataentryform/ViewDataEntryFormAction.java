@@ -41,6 +41,7 @@ import org.hisp.dhis.program.ProgramStageDataElementService;
 import org.hisp.dhis.program.ProgramStageService;
 import org.hisp.dhis.program.comparator.ProgramStageNameComparator;
 import org.hisp.dhis.setting.SystemSettingManager;
+import org.hisp.dhis.user.UserSettingService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -90,6 +91,13 @@ public class ViewDataEntryFormAction
     public void setSystemSettingManager( SystemSettingManager systemSettingManager )
     {
         this.systemSettingManager = systemSettingManager;
+    }
+
+    private UserSettingService userSettingService;
+
+    public void setUserSettingService( UserSettingService userSettingService )
+    {
+        this.userSettingService = userSettingService;
     }
 
     // -------------------------------------------------------------------------
@@ -152,6 +160,13 @@ public class ViewDataEntryFormAction
         return flags;
     }
 
+    private boolean autoSave;
+
+    public boolean getAutoSave()
+    {
+        return autoSave;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -211,7 +226,9 @@ public class ViewDataEntryFormAction
         Collections.sort( dataElements, new IdentifiableObjectNameComparator() );
 
         flags = systemSettingManager.getFlags();
-        
+
+        autoSave = (Boolean) userSettingService.getUserSetting( UserSettingService.AUTO_SAVE_CASE_ENTRY_FORM, false );
+
         return SUCCESS;
     }
 }

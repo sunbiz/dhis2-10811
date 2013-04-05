@@ -27,7 +27,8 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
+import static org.hisp.dhis.analytics.AnalyticsService.NAMES_META_KEY;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -49,8 +50,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import static org.hisp.dhis.analytics.AnalyticsService.NAMES_META_KEY;
 
 @Controller
 public class AnalyticsController
@@ -158,7 +157,6 @@ public class AnalyticsController
   
     @ExceptionHandler(IllegalQueryException.class)
     public void handleError( IllegalQueryException ex, HttpServletResponse response )
-        throws IOException
     {
         ContextUtils.conflictResponse( response, ex.getMessage() );
     }

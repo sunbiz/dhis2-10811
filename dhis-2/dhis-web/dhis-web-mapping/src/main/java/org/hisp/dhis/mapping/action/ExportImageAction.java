@@ -28,7 +28,6 @@ package org.hisp.dhis.mapping.action;
  */
 
 import java.awt.Color;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 
@@ -37,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,11 +99,11 @@ public class ExportImageAction
     }
 
     public void convertToPNG( StringBuffer buffer, OutputStream out )
-        throws TranscoderException, IOException
+        throws TranscoderException
     {
         PNGTranscoder t = new PNGTranscoder();
 
-        t.addTranscodingHint( PNGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE );
+        t.addTranscodingHint( ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE );
 
         TranscoderInput input = new TranscoderInput( new StringReader( buffer.toString() ) );
 

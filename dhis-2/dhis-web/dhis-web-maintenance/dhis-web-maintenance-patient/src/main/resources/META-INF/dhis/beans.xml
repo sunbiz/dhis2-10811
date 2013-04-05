@@ -163,8 +163,7 @@
 			ref="org.hisp.dhis.patient.PatientIdentifierTypeService" />
 		<property name="patientAttributeService"
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
-		<property name="currentUserService"
-			ref="org.hisp.dhis.user.CurrentUserService" />
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.action.program.GetProgramListAction"
@@ -231,15 +230,17 @@
 		scope="prototype">
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
-	
-	<bean id="org.hisp.dhis.patient.action.program.ShowProgramUserroleFormAction"
+
+	<bean
+		id="org.hisp.dhis.patient.action.program.ShowProgramUserroleFormAction"
 		class="org.hisp.dhis.patient.action.program.ShowProgramUserroleFormAction"
 		scope="prototype">
 		<property name="userService" ref="org.hisp.dhis.user.UserService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
-	
-	<bean id="org.hisp.dhis.patient.action.program.DefineProgramUserroleAction"
+
+	<bean
+		id="org.hisp.dhis.patient.action.program.DefineProgramUserroleAction"
 		class="org.hisp.dhis.patient.action.program.DefineProgramUserroleAction"
 		scope="prototype">
 		<property name="userService" ref="org.hisp.dhis.user.UserService" />
@@ -378,13 +379,14 @@
 		<property name="programStageSectionService"
 			ref="org.hisp.dhis.program.ProgramStageSectionService" />
 	</bean>
-	
+
 	<bean
 		id="org.hisp.dhis.patient.action.programstage.GetProgramStageSectionListAction"
 		class="org.hisp.dhis.patient.action.programstage.GetProgramStageSectionListAction"
 		scope="prototype">
 		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
-		<property name="programStageSectionService" ref="org.hisp.dhis.program.ProgramStageSectionService" />
+		<property name="programStageSectionService"
+			ref="org.hisp.dhis.program.ProgramStageSectionService" />
 	</bean>
 
 	<!-- Data Entry Form -->
@@ -417,6 +419,9 @@
 			ref="org.hisp.dhis.program.ProgramStageDataElementService" />
 		<property name="systemSettingManager">
 			<ref bean="org.hisp.dhis.setting.SystemSettingManager" />
+		</property>
+		<property name="userSettingService">
+			<ref bean="org.hisp.dhis.user.UserSettingService" />
 		</property>
 	</bean>
 
@@ -484,6 +489,13 @@
 		</property>
 	</bean>
 
+	<bean
+		id="org.hisp.dhis.patient.action.dataentryform.SetAutoSaveDataEntrySettingAction"
+		class="org.hisp.dhis.patient.action.dataentryform.SetAutoSaveDataEntrySettingAction"
+		scope="prototype">
+		<property name="userSettingService" ref="org.hisp.dhis.user.UserSettingService" />
+	</bean>
+
 	<!-- PatientRegistrationForm -->
 
 	<bean
@@ -497,7 +509,7 @@
 			<ref bean="org.hisp.dhis.program.ProgramService" />
 		</property>
 	</bean>
-	
+
 	<bean
 		id="org.hisp.dhis.patient.action.dataentryform.DelRegistrationFormAction"
 		class="org.hisp.dhis.patient.action.dataentryform.DelRegistrationFormAction"
@@ -550,6 +562,16 @@
 		<property name="systemSettingManager">
 			<ref bean="org.hisp.dhis.setting.SystemSettingManager" />
 		</property>
+		<property name="userSettingService">
+			<ref bean="org.hisp.dhis.user.UserSettingService" />
+		</property>
+	</bean>
+	
+	<bean
+		id="org.hisp.dhis.patient.action.dataentryform.SetAutoSavePatientRegistrationSettingAction"
+		class="org.hisp.dhis.patient.action.dataentryform.SetAutoSavePatientRegistrationSettingAction"
+		scope="prototype">
+		<property name="userSettingService" ref="org.hisp.dhis.user.UserSettingService" />
 	</bean>
 
 	<!-- Patient Attribute Group -->
@@ -1051,7 +1073,7 @@
 			<ref bean="org.hisp.dhis.user.CurrentUserService" />
 		</property>
 		<property name="notifier" ref="notifier" />
-		<property name="aggregateConditionTask" ref="aggregateQueryBuilder"/>
+		<property name="aggregateConditionTask" ref="aggregateQueryBuilder" />
 	</bean>
 
 </beans>

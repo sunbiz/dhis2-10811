@@ -192,11 +192,11 @@ public class SaveValuesAction
         Collection<ProgramStageDataElement> psDataElements = programStage.getProgramStageDataElements();
         for ( ProgramStageDataElement psDataElement : psDataElements )
         {
-            String dataElementFieldId = programStage.getId() + "-" + psDataElement.getDataElement().getId() + "-val";
+            String dataElementFieldId = programStage.getUid() + "-" + psDataElement.getDataElement().getUid() + "-val";
             String value = request.getParameter( dataElementFieldId );
             if ( value != null && value.trim().length() > 0 )
             {
-                String providedElsewhereId = programStage.getId() + "_" + psDataElement.getDataElement().getId()
+                String providedElsewhereId = programStage.getUid() + "_" + psDataElement.getDataElement().getUid()
                     + "_facility";
                 boolean providedElsewhere = (request.getParameter( providedElsewhereId ) == null) ? false : true;
 

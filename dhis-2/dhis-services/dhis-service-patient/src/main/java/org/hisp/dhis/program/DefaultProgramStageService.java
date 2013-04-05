@@ -78,12 +78,17 @@ public class DefaultProgramStageService
 
     public ProgramStage getProgramStage( int id )
     {
-        return i18n( i18nService, programStageStore.get( id ));
+        return i18n( i18nService, programStageStore.get( id ) );
+    }
+
+    public ProgramStage getProgramStage( String uid )
+    {
+        return i18n( i18nService, programStageStore.getByUid( uid ) );
     }
 
     public ProgramStage getProgramStageByName( String name )
     {
-        return i18n( i18nService, programStageStore.getByName( name ));
+        return i18n( i18nService, programStageStore.getByName( name ) );
     }
 
     public void updateProgramStage( ProgramStage programStage )
@@ -93,7 +98,7 @@ public class DefaultProgramStageService
 
     public Collection<ProgramStage> getAllProgramStages()
     {
-        return i18n( i18nService, programStageStore.getAll());
+        return i18n( i18nService, programStageStore.getAll() );
     }
 
     public Collection<ProgramStage> getProgramStages( Program program )

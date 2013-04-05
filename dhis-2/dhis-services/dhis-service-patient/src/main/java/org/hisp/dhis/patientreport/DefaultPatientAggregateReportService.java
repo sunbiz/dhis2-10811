@@ -79,9 +79,16 @@ public class DefaultPatientAggregateReportService
     }
 
     @Override
-    public Collection<PatientAggregateReport> getPatientAggregateReports( User user )
+    public Collection<PatientAggregateReport> getPatientAggregateReports( User user, String query, Integer min,
+        Integer max )
     {
-        return patientAggregateReportStore.get( user );
+        return patientAggregateReportStore.get( user, query, min, max );
+    }
+
+    @Override
+    public int countPatientAggregateReportList( User user, String query )
+    {
+        return patientAggregateReportStore.countList( user, query );
     }
 
 }

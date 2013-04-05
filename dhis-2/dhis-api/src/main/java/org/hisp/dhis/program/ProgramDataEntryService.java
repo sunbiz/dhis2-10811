@@ -43,7 +43,7 @@ public interface ProgramDataEntryService
 {
     final Pattern INPUT_PATTERN = Pattern.compile( "(<input.*?)[/]?>", Pattern.DOTALL );
 
-    final Pattern IDENTIFIER_PATTERN_FIELD = Pattern.compile( "id=\"(\\d+)-(\\d+)-val\"" );
+    final Pattern IDENTIFIER_PATTERN_FIELD = Pattern.compile( "id=\"(\\w+)-(\\w+)-val\"" );
 
     // --------------------------------------------------------------------------
     // ProgramDataEntryService

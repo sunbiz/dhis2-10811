@@ -27,25 +27,23 @@ package org.hisp.dhis.visualizer.action;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.awt.Color;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.system.util.CodecUtils;
-import org.hisp.dhis.util.ContextUtils;
-import org.hisp.dhis.util.StreamActionSupport;
+import java.io.StringReader;
 
 import javax.servlet.http.HttpServletResponse;
-
-import java.awt.Color;
-import java.io.IOException;
-import java.io.StringReader;
 
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fop.svg.PDFTranscoder;
+import org.hisp.dhis.system.util.CodecUtils;
+import org.hisp.dhis.util.ContextUtils;
+import org.hisp.dhis.util.StreamActionSupport;
 
 /**
  * @author Jan Henrik Overland
@@ -118,11 +116,11 @@ public class ExportImageAction
     }
 
     public void convertToPNG( StringBuffer buffer, OutputStream out )
-        throws TranscoderException, IOException
+        throws TranscoderException
     {
         PNGTranscoder t = new PNGTranscoder();
 
-        t.addTranscodingHint( PNGTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE );
+        t.addTranscodingHint( ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE );
 
         TranscoderInput input = new TranscoderInput( new StringReader( buffer.toString() ) );
 
@@ -132,7 +130,7 @@ public class ExportImageAction
     }
 
     public void convertToPDF( StringBuffer buffer, OutputStream out )
-        throws TranscoderException, IOException
+        throws TranscoderException
     {
         PDFTranscoder t = new PDFTranscoder();
 

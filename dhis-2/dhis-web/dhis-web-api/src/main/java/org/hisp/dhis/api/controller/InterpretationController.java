@@ -27,7 +27,6 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -122,7 +121,7 @@ public class InterpretationController
     @RequestMapping( value = "/chart/{uid}", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
     public void shareChartInterpretation( 
         @PathVariable( "uid" ) String chartUid, 
-        @RequestBody String text, HttpServletResponse response ) throws IOException
+        @RequestBody String text, HttpServletResponse response )
     {
         Chart chart = chartService.getChart( chartUid );
         
@@ -151,7 +150,7 @@ public class InterpretationController
     @RequestMapping( value = "/map/{uid}", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
     public void shareMapInterpretation( 
         @PathVariable( "uid" ) String mapUid, 
-        @RequestBody String text, HttpServletResponse response ) throws IOException
+        @RequestBody String text, HttpServletResponse response )
     {
         Map map = mappingService.getMap( mapUid );
         
@@ -173,7 +172,7 @@ public class InterpretationController
         @PathVariable( "uid" ) String reportTableUid, 
         @RequestParam( value = "pe", required = false ) String isoPeriod,
         @RequestParam( value = "ou", required = false ) String orgUnitUid, 
-        @RequestBody String text, HttpServletResponse response ) throws IOException
+        @RequestBody String text, HttpServletResponse response )
     {
         ReportTable reportTable = reportTableService.getReportTable( reportTableUid );
         
@@ -210,7 +209,7 @@ public class InterpretationController
         @PathVariable( "uid" ) String dataSetUid,
         @RequestParam( "pe" ) String isoPeriod,
         @RequestParam( "ou" ) String orgUnitUid,
-        @RequestBody String text, HttpServletResponse response ) throws IOException
+        @RequestBody String text, HttpServletResponse response )
     {
         DataSet dataSet = dataSetService.getDataSet( dataSetUid );
         
@@ -246,7 +245,7 @@ public class InterpretationController
     @RequestMapping( value = "/{uid}/comment", method = RequestMethod.POST, consumes = { "text/html", "text/plain" } )
     public void postComment( 
         @PathVariable( "uid" ) String uid, 
-        @RequestBody String text, HttpServletResponse response ) throws IOException
+        @RequestBody String text, HttpServletResponse response )
     {
         interpretationService.addInterpretationComment( uid, text );
 

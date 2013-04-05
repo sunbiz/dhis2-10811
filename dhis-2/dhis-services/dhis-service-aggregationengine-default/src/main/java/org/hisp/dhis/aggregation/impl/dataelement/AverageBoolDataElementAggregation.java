@@ -57,10 +57,8 @@ public class AverageBoolDataElementAggregation
 
             return average;
         }
-        else
-        {
-            return null;
-        }
+        
+        return null;
     }
 
     protected Collection<DataValue> getDataValues( Integer dataElementId, Integer optionComboId, Integer organisationUnitId,

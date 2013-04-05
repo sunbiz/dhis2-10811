@@ -385,7 +385,7 @@ public class LoadFormAction
 
         for ( DataElementCategoryCombo categoryCombo : orderedCategoryCombos )
         {
-            des = (List<DataElement>) orderedDataElements.get( categoryCombo );
+            des = orderedDataElements.get( categoryCombo );
 
             Collections.sort( des, IdentifiableObjectNameComparator.INSTANCE );
 

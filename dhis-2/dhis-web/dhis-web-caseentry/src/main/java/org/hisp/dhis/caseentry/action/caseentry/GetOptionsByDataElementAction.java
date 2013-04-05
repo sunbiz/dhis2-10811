@@ -71,9 +71,9 @@ public class GetOptionsByDataElementAction
     // Input
     // -------------------------------------------------------------------------
 
-    private Integer id;
+    private String id;
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
     }

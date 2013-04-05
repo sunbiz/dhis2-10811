@@ -209,7 +209,6 @@ GIS.core.getOLMap = function(gis) {
 			displayClass: 'olControlButton',
 			trigger: function() {
 				fn.call(gis.olmap);
-				gis.layer.googleHybrid.redraw();
 			}
 		});
 
@@ -228,6 +227,7 @@ GIS.core.getOLMap = function(gis) {
 	olmap = new OpenLayers.Map({
 		controls: [
 			new OpenLayers.Control.Navigation({
+				zoomWheelEnabled: true,
 				documentDrag: true
 			}),
 			new OpenLayers.Control.MousePosition({
@@ -451,7 +451,7 @@ GIS.core.createSelectHandlers = function(gis, layer) {
 					}
 
 					layer.infrastructuralWindow = Ext.create('Ext.window.Window', {
-						title: 'Facility information', //i18n
+						title: GIS.i18n.information,
 						layout: 'column',
 						iconCls: 'gis-window-title-icon-information',
 						cls: 'gis-container-default',
@@ -724,7 +724,7 @@ GIS.core.createSelectHandlers = function(gis, layer) {
 			}));
 
 			menuItems.push( Ext.create('Ext.menu.Item', {
-				text: 'Show information', //i18n
+				text: GIS.i18n.show_information_sheet,
 				iconCls: 'gis-menu-item-icon-information',
 				handler: function(item) {
 					if (gis.store.infrastructuralPeriodsByType.isLoaded) {
@@ -917,7 +917,7 @@ GIS.core.MeasureWindow = function(gis) {
 	});
 
 	window = Ext.create('Ext.window.Window', {
-		title: 'Measure distance', //i18n
+		title: GIS.i18n.measure_distance,
 		layout: 'fit',
 		cls: 'gis-container-default',
 		bodyStyle: 'text-align: center',
@@ -971,7 +971,7 @@ GIS.core.MapLoader = function(gis) {
 
 		if (!(Ext.isArray(views) && views.length)) {
 			gis.olmap.mask.hide();
-			alert('Favorite is outdated - please create a new one'); //i18n
+			alert(GIS.i18n.favorite_outdated_create_new);
 			return;
 		}
 
@@ -1088,13 +1088,13 @@ GIS.core.LayerLoaderBoundary = function(gis, layer) {
 
 				if (!Ext.isArray(features)) {
 					olmap.mask.hide();
-					alert('Invalid coordinates');
+					alert(GIS.i18n.invalid_coordinates);
 					return;
 				}
 
 				if (!features.length) {
 					olmap.mask.hide();
-					alert('No valid coordinates found'); //todo //i18n
+					alert(GIS.i18n.no_valid_coordinates_found);
 					return;
 				}
 
@@ -1102,7 +1102,7 @@ GIS.core.LayerLoaderBoundary = function(gis, layer) {
 			},
 			failure: function(r) {
 				olmap.mask.hide();
-				alert('Server error while loading coordinates');
+				alert(GIS.i18n.coordinates_could_not_be_loaded);
 			}
 		});
     };
@@ -1305,13 +1305,13 @@ GIS.core.LayerLoaderThematic = function(gis, layer) {
 
 				if (!Ext.isArray(features)) {
 					olmap.mask.hide();
-					alert('Coordinates are invalid');
+					alert(GIS.i18n.invalid_coordinates);
 					return;
 				}
 
 				if (!features.length) {
 					olmap.mask.hide();
-					alert('No valid coordinates found'); //todo //i18n
+					alert(GIS.i18n.no_valid_coordinates_found);
 					return;
 				}
 
@@ -1319,7 +1319,7 @@ GIS.core.LayerLoaderThematic = function(gis, layer) {
 			},
 			failure: function(r) {
 				olmap.mask.hide();
-				alert('Server error while loading coordinates');
+				alert(GIS.i18n.coordinates_could_not_be_loaded);
 			}
 		});
     };
@@ -1353,7 +1353,7 @@ GIS.core.LayerLoaderThematic = function(gis, layer) {
 					newFeatures = [];
 
 				if (values.length === 0) {
-					alert('No aggregated data values found'); //todo //i18n
+					alert(GIS.i18n.no_aggregated_data_found);
 					olmap.mask.hide();
 					return;
 				}
@@ -1594,13 +1594,13 @@ GIS.core.LayerLoaderFacility = function(gis, layer) {
 
 				if (!Ext.isArray(features)) {
 					olmap.mask.hide();
-					alert('Coordinates are invalid');
+					alert(GIS.i18n.invalid_coordinates);
 					return;
 				}
 
 				if (!features.length) {
 					olmap.mask.hide();
-					alert('No valid coordinates found'); //todo //i18n
+					alert(GIS.i18n.no_valid_coordinates_found);
 					return;
 				}
 
@@ -1608,7 +1608,7 @@ GIS.core.LayerLoaderFacility = function(gis, layer) {
 			},
 			failure: function(r) {
 				olmap.mask.hide();
-				alert('Server error while loading coordinates');
+				alert(GIS.i18n.coordinates_could_not_be_loaded);
 			}
 		});
     };

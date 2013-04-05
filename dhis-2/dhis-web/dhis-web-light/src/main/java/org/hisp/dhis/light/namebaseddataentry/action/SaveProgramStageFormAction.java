@@ -36,7 +36,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.light.utils.NamebasedUtils;
@@ -358,7 +358,7 @@ public class SaveProgramStageFormAction
         this.patient = patient;
     }
 
-    private Map<Integer, String> leftsideFormulaMap = new HashMap<Integer, String>();;
+    private Map<Integer, String> leftsideFormulaMap = new HashMap<Integer, String>();
 
     public Map<Integer, String> getLeftsideFormulaMap()
     {
@@ -370,7 +370,7 @@ public class SaveProgramStageFormAction
         this.leftsideFormulaMap = leftsideFormulaMap;
     }
 
-    private Map<Integer, String> rightsideFormulaMap = new HashMap<Integer, String>();;
+    private Map<Integer, String> rightsideFormulaMap = new HashMap<Integer, String>();
 
     public Map<Integer, String> getRightsideFormulaMap()
     {
@@ -447,7 +447,7 @@ public class SaveProgramStageFormAction
         }
 
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
-            ServletActionContext.HTTP_REQUEST );
+            StrutsStatics.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
 
         // List<DataValue> dataValues = new ArrayList<DataValue>();

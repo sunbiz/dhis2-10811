@@ -87,6 +87,7 @@ public class OrgUnitsTest
         unit.setUploadProgramStageUrl( "uploadProgramStageUrl" );
         unit.setEnrollProgramUrl( "enrollProgramUrl" );
         unit.setRegisterPersonUrl( "registerPersonUrl" );
+        unit.setGetVariesInfoUrl( "getVariesInfoUrl" );
         unit.setAddRelationshipUrl( "addRelationshipUrl" );
         unit.setDownloadAnonymousProgramUrl( "downloadAnonymousProgramUrl" );
         unit.setFindProgramUrl( "findProgramUrl" );

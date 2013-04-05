@@ -39,6 +39,6 @@ public class DataElementCategoryComboSizeComparator
 {
     public int compare( DataElementCategoryCombo o1, DataElementCategoryCombo o2 )
     {
-        return (int) (o1.getOptionCombos().size() - o2.getOptionCombos().size());
+        return o1.getOptionCombos().size() - o2.getOptionCombos().size();
     }
 }

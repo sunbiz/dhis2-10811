@@ -30,6 +30,7 @@ package org.hisp.dhis.mobile.service;
 import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.api.mobile.FacilityReportingService;
@@ -55,6 +57,9 @@ import org.hisp.dhis.dataset.CompleteDataSetRegistration;
 import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientIdentifierTypeService;
 import org.hisp.dhis.period.DailyPeriodType;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
@@ -63,6 +68,8 @@ import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.QuarterlyPeriodType;
 import org.hisp.dhis.period.WeeklyPeriodType;
 import org.hisp.dhis.period.YearlyPeriodType;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -96,6 +103,18 @@ public class FacilityReportingServiceImpl
     private CurrentUserService currentUserService;
 
     private OrganisationUnitService oUnitService;
+
+    private ProgramService programService;
+
+    public ProgramService getProgramService()
+    {
+        return programService;
+    }
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
 
     // -------------------------------------------------------------------------
     // Service methods
@@ -263,8 +282,8 @@ public class FacilityReportingServiceImpl
                 Section section = new Section();
                 section.setId( s.getId() );
                 section.setName( s.getName() );
-                
-                //Remove grey fields(in order to not display them on mobile)
+
+                // Remove grey fields(in order to not display them on mobile)
                 List<DataElement> dataElementList = getDataElements( locale, s.getDataElements() );
 
                 List<DataElement> dataElementListFinal = new ArrayList<DataElement>( dataElementList );

@@ -43,7 +43,7 @@ public interface PatientAttributeService
     void updatePatientAttribute( PatientAttribute patientAttribute );
 
     PatientAttribute getPatientAttribute( int id );
-    
+
     PatientAttribute getPatientAttribute( String uid );
 
     PatientAttribute getPatientAttributeByName( String name );
@@ -51,12 +51,13 @@ public interface PatientAttributeService
     Collection<PatientAttribute> getAllPatientAttributes();
 
     Collection<PatientAttribute> getPatientAttributesByValueType( String valueType );
-    
+
     Collection<PatientAttribute> getOptionalPatientAttributesWithoutGroup();
-    
-    Collection<PatientAttribute> getPatientAttributesByMandatory(boolean mandatory);
-    
-    PatientAttribute getPatientAttributeByGroupBy(boolean groupBy);
-    
+
+    Collection<PatientAttribute> getPatientAttributesByMandatory( boolean mandatory );
+
+    PatientAttribute getPatientAttributeByGroupBy( boolean groupBy );
+
     Collection<PatientAttribute> getPatientAttributesWithoutGroup();
+
 }

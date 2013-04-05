@@ -47,4 +47,8 @@
 </form>
 
 <span id="info">$i18n.getString( "scheduling_is" ) $!i18n.getString( $!status )</span>
-<span id="message"></span>
+
+<table id="notificationTable" class="notificationTable" style="display:none">
+	<col width="120">
+	<col width="380">
+</table>

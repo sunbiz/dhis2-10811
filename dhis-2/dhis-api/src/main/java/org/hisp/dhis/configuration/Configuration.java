@@ -79,8 +79,7 @@ public class Configuration
     
     public boolean selfRegistrationAllowed()
     {
-        return selfRegistrationRole != null && selfRegistrationRole instanceof UserAuthorityGroup &&
-            selfRegistrationOrgUnit != null && selfRegistrationOrgUnit instanceof OrganisationUnit;
+        return selfRegistrationRole != null && selfRegistrationOrgUnit != null;
     }
     
     // -------------------------------------------------------------------------

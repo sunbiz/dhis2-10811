@@ -39,5 +39,7 @@ import org.hisp.dhis.user.User;
  */
 public interface PatientTabularReportStore extends GenericIdentifiableObjectStore<PatientTabularReport>
 {    
-    Collection<PatientTabularReport> get( User user );
+    Collection<PatientTabularReport> get( User user, String query, Integer min, Integer max );
+    
+    int countList( User user, String query );
 }

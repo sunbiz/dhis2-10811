@@ -151,7 +151,7 @@ public class LoadProgramStageInstancesAction
             programInstances = new ArrayList<ProgramInstance>( programInstanceService.getProgramInstances( program ) );
         }
 
-        if ( programInstances != null && programInstances.size() > 0 )
+        if ( !programInstances.isEmpty() )
         {
             programInstance = programInstances.iterator().next();
 

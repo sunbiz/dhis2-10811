@@ -27,7 +27,6 @@
 
 package org.hisp.dhis.mobile.action;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hisp.dhis.api.mobile.PatientMobileSettingService;

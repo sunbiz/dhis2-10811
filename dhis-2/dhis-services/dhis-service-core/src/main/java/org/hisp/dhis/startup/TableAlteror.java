@@ -243,6 +243,9 @@ public class TableAlteror
         executeSql( "ALTER TABLE translation ALTER value TYPE text" );
         executeSql( "ALTER TABLE organisationunit ALTER comment TYPE text" );
 
+        executeSql( "ALTER TABLE minmaxdataelement RENAME minvalue TO minimumvalue" );
+        executeSql( "ALTER TABLE minmaxdataelement RENAME maxvalue TO maximumvalue" );
+        
         // orgunit shortname uniqueness
         executeSql( "ALTER TABLE organisationunit DROP CONSTRAINT organisationunit_shortname_key" );
 

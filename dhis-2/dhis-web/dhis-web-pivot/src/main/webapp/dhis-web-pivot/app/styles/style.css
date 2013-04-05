@@ -40,6 +40,12 @@
  * General
  *--------------------------------------------------------------------------*/
 
+body {
+	background-color: #e1e1e1;
+	opacity: 0;
+	filter:Alpha(opacity=0)
+}
+
 body,
 .x-body,
 .x-btn-default-toolbar-small .x-btn-inner,
@@ -67,33 +73,29 @@ body.x-windows {
 
 	/* Scrollbar Webkit */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 7px;
     border: 0 none;
 }
 
 ::-webkit-scrollbar-track:horizontal {
     background-color: #ddd;
     margin: 0 2px;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid white;
 }
-::-webkit-scrollbar-track:vertical {
-    background-color: #ddd;
-    margin: 2px 0;
-    border-right: 2px solid white;
-    border-left: 2px solid white;
-}
-
 ::-webkit-scrollbar-thumb:horizontal {
 	background-color: #bbb;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid white;
+}
+
+::-webkit-scrollbar-track:vertical {
+    background-color: #e1e1e1;
+    margin: 2px 0;
+    border-right: 2px solid white;
 }
 ::-webkit-scrollbar-thumb:vertical {
 	background-color: #bbb;
     border-right: 2px solid white;
-    border-left: 2px solid white;
 }
 
 	/* Scrollbar */

@@ -24,7 +24,7 @@
 <input type='hidden' name='irregular' id='irregular' value='$!programStageInstance.programStage.irregular'>
 <input type='hidden' name='displayGenerateEventBox' id='displayGenerateEventBox' value='$!programStageInstance.programStage.displayGenerateEventBox'>
 <input type='hidden' name='completed' id='completed' value='$!programStageInstance.completed'>
-<input type='hidden' name='programStageId' id='programStageId' value='$!programStageInstance.programStage.id'>
+<input type='hidden' name='programStageUid' id='programStageUid' value='$!programStageInstance.programStage.uid'>
 <input type='hidden' name='programId' id='programId' value='$!programStageInstance.programInstance.program.id'>
 <input type='hidden' name='validCompleteOnly' id='validCompleteOnly' value='$!programStageInstance.programStage.validCompleteOnly'>
 <input type='hidden' name='currentUsername' id='currentUsername' value='$!currentUsername'>

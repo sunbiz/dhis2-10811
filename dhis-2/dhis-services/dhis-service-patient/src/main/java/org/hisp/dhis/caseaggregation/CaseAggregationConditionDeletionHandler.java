@@ -37,9 +37,6 @@ import org.hisp.dhis.system.deletion.DeletionHandler;
 
 /**
  * @author Chau Thu Tran
- * @version $ CaseAggregationConditionDeletionHandler.java Jun 24, 2011 1:52:01
- *          PM $
- * 
  */
 public class CaseAggregationConditionDeletionHandler
     extends DeletionHandler
@@ -128,7 +125,6 @@ public class CaseAggregationConditionDeletionHandler
         return null;
     }
     
-
     @Override
     public String allowDeletePatientAttribute( PatientAttribute patientAttribute )
     {

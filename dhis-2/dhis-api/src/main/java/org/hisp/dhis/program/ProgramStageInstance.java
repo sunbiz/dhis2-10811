@@ -316,10 +316,8 @@ public class ProgramStageInstance
             {
                 return ProgramStageInstance.LATE_VISIT_STATUS;
             }
-            else
-            {
-                return ProgramStageInstance.FUTURE_VISIT_STATUS;
-            }
+            
+            return ProgramStageInstance.FUTURE_VISIT_STATUS;
         }
     }
 }

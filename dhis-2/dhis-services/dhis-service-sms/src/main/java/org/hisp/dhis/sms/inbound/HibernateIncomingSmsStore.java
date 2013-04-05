@@ -80,7 +80,7 @@ public class HibernateIncomingSmsStore
     {
         Session session = sessionFactory.getCurrentSession();
         Criteria criteria = session.createCriteria( IncomingSms.class ).add( Restrictions.eq( "status", status ) );
-        return (Collection<IncomingSms>) criteria.list();
+        return criteria.list();
     }
 
     @Override

@@ -33,9 +33,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 import org.hisp.dhis.light.utils.FormUtils;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
@@ -60,6 +62,7 @@ import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.util.ContextUtils;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -303,7 +306,7 @@ public class SaveMobileProgramEnrollmentAction
         List<PatientAttributeValue> patientAttributeValues = new ArrayList<PatientAttributeValue>();
 
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
-            ServletActionContext.HTTP_REQUEST );
+            StrutsStatics.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
         DateTimeFormatter sdf = ISODateTimeFormat.yearMonthDay();
 
@@ -327,7 +330,7 @@ public class SaveMobileProgramEnrollmentAction
 
                 PatientIdentifier duplicateId = null;
 
-                if ( !value.isEmpty() )
+                if ( value != null && !value.isEmpty() )
                 {
                     duplicateId = patientIdentifierService.get( patientIdentifierType, value );
                 }

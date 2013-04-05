@@ -3,22 +3,21 @@
 // Save value
 //------------------------------------------------------------------------------
 
-function saveVal( dataElementId )
+function saveVal( dataElementUid )
 {
-
-	var programStageId = jQuery('.stage-object-selected').attr('psid');
-	if(programStageId==undefined){
-		if( jQuery('#entryFormContainer [id=programStageId]') == null) return;
-		else programStageId = jQuery('#entryFormContainer [id=programStageId]').val();
+	var programStageUid = jQuery('.stage-object-selected').attr('psuid');
+	if(programStageUid==undefined){
+		if( jQuery('#entryFormContainer [id=programStageUid]') == null) return;
+		else programStageUid = jQuery('#entryFormContainer [id=programStageUid]').val();
 	}
-        
-	var fieldId = programStageId + '-' + dataElementId + '-val';
+    
+	var fieldId = programStageUid + '-' + dataElementUid + '-val';
 	
 	var field = byId( fieldId ); 
 	if( field == null) return;
 	
 	var fieldValue = jQuery.trim( field.value );
-
+	
 	var arrData = jQuery( "#" + fieldId ).attr('data').replace('{','').replace('}','').replace(/'/g,"").split(',');
 	var data = new Array();
 	for( var i in arrData )
@@ -87,26 +86,26 @@ function saveVal( dataElementId )
 		else 
 			fieldValue="";
 	}
-	var valueSaver = new ValueSaver( dataElementId, fieldValue, type, SUCCESS_COLOR );
+	var valueSaver = new ValueSaver( dataElementUid, fieldValue, type, SUCCESS_COLOR );
     valueSaver.save();
 }
 
-function saveOpt( dataElementId )
+function saveOpt( dataElementUid )
 {
-	var programStageId = jQuery('.stage-object-selected').attr('psid');
-	var field = byId( programStageId + '-' + dataElementId + '-val' );	
+	var programStageUid = jQuery('.stage-object-selected').attr('psuid');
+	var field = byId( programStageUid + '-' + dataElementUid + '-val' );	
 	field.style.backgroundColor = SAVING_COLOR;
 	
-	var valueSaver = new ValueSaver( dataElementId, field.options[field.selectedIndex].value, 'bool', SUCCESS_COLOR );
+	var valueSaver = new ValueSaver( dataElementUid, field.options[field.selectedIndex].value, 'bool', SUCCESS_COLOR );
     valueSaver.save();
 }
 
-function updateProvidingFacility( dataElementId, checkField )
+function updateProvidingFacility( dataElementUid, checkField )
 {
-	var programStageId = byId( 'programStageId' ).value;
+	var programStageUid = byId( 'programStageUid' ).value;
 	var checked= checkField.checked;
 
-    var facilitySaver = new FacilitySaver( dataElementId, checked, SUCCESS_COLOR );
+    var facilitySaver = new FacilitySaver( dataElementUid, checked, SUCCESS_COLOR );
     facilitySaver.save();    
 }
 
@@ -134,7 +133,7 @@ function valueFocus(e)
     //Retrieve the data element id from the id of the field
     var str = e.target.id;
 	
-    var match = /.*\[(.*)\]/.exec( str ); //value[-dataElementId-]
+    var match = /.*\[(.*)\]/.exec( str ); //value[-dataElementUid-]
 	
     if ( ! match )
     {
@@ -213,15 +212,15 @@ function getNextEntryField( field )
 
 function ValueSaver( dataElementId_, value_, dataElementType_, resultColor_  )
 {
-    var dataElementId = dataElementId_;
-	var providedElsewhereId = getFieldValue('programStageId') + "-" + dataElementId_ + "-facility";
+    var dataElementUid = dataElementId_;
+	var providedElsewhereId = getFieldValue('programStageUid') + "-" + dataElementId_ + "-facility";
 	var value = value_;
 	var type = dataElementType_;
     var resultColor = resultColor_;
 	
     this.save = function()
     {
-		var params  = 'dataElementId=' + dataElementId;
+		var params  = 'dataElementUid=' + dataElementUid;
 			params += '&programStageInstanceId=' + getFieldValue('programStageInstanceId');
 		
 		params += '&providedElsewhere=';
@@ -276,21 +275,21 @@ function ValueSaver( dataElementId_, value_, dataElementType_, resultColor_  )
  
     function markValue( color )
     {
-		var programStageId = jQuery('#entryFormContainer [id=programStageId]').val();
-		var element = byId( programStageId + "-" + dataElementId + '-val' );
+		var programStageUid = jQuery('#entryFormContainer [id=programStageUid]').val();
+		var element = byId( programStageUid + "-" + dataElementUid + '-val' );
         element.style.backgroundColor = color;
     }
 }
 
 function FacilitySaver( dataElementId_, providedElsewhere_, resultColor_ )
 {
-    var dataElementId = dataElementId_;
+    var dataElementUid = dataElementId_;
 	var providedElsewhere = providedElsewhere_;
     var resultColor = resultColor_;
 
     this.save = function()
     {
-		var params  = 'dataElementId=' + dataElementId;
+		var params  = 'dataElementUid=' + dataElementUid;
 			params += '&providedElsewhere=' + providedElsewhere ;
 		$.ajax({
 			   type: "POST",
@@ -351,7 +350,7 @@ function ExecutionDateSaver( programId_, programStageInstanceId_, executionDate_
 					box.css('background-color', COLOR_LIGHT_LIGHTRED);
 					disableCompletedButton(false);
 					enable('validationBtn');
-					setFieldValue( 'programStageId', selectedProgramStageInstance.attr('psid') );
+					setFieldValue( 'programStageUid', selectedProgramStageInstance.attr('psid') );
 					
 					var fieldId = "value_" + programStageInstanceId + "_date";
 					jQuery("#" + fieldId).val(executionDate);
@@ -510,8 +509,8 @@ function runCompleteEvent( isCreateEvent )
 					var programInstanceId = jQuery('#entryFormContainer [id=programInstanceId]').val();
 					if( irregular == 'true' && displayGenerateEventBox=="true" )
 					{
-						var programStageId = jQuery(".stage-object-selected").attr('psid');
-						showCreateNewEvent( programInstanceId, programStageId );
+						var programStageUid = jQuery(".stage-object-selected").attr('psid');
+						showCreateNewEvent( programInstanceId, programStageUid );
 					}
 					
 					var selectedProgram = jQuery('.stage-object-selected');
@@ -689,14 +688,14 @@ function autocompletedField( idField )
 {
 	var input = jQuery( "#" +  idField );
 	input.parent().width( input.width() + 50 );
-	var dataElementId = input.attr('id').split('-')[1];
+	var dataElementUid = input.attr('id').split('-')[1];
 	
 	input.autocomplete({
 		delay: 0,
 		minLength: 0,
 		source: function( request, response ){
 			$.ajax({
-				url: "getOptions.action?id=" + dataElementId + "&query=" + input.val(),
+				url: "getOptions.action?id=" + dataElementUid + "&query=" + input.val(),
 				dataType: "json",
 				cache: true,
 				success: function(data) {
@@ -713,14 +712,14 @@ function autocompletedField( idField )
 		select: function( event, ui ) {
 			var fieldValue = ui.item.value;
 			
-			if ( !dhis2.trigger.invoke( "caseentry-value-selected", [dataElementId, fieldValue] ) ) {
+			if ( !dhis2.trigger.invoke( "caseentry-value-selected", [dataElementUid, fieldValue] ) ) {
 				input.val( "" );
 				return false;
 			}
 			
 			input.val( fieldValue );			
 			if ( !unSave ) {
-				saveVal( dataElementId );
+				saveVal( dataElementUid );
 			}
 			input.autocomplete( "close" );
 		},
@@ -731,7 +730,7 @@ function autocompletedField( idField )
 				if ( !valid ) {
 					$( this ).val( "" );
 					if(!unSave)
-						saveVal( dataElementId );
+						saveVal( dataElementUid );
 					input.data( "autocomplete" ).term = "";
 					return false;
 				}
@@ -777,7 +776,7 @@ function autocompletedUsernameField( idField )
 {
 	var input = jQuery( "#" +  idField );
 	input.parent().width( input.width() + 50 );
-	var dataElementId = input.attr('id').split('-')[1];
+	var dataElementUid = input.attr('id').split('-')[1];
 	
 	input.autocomplete({
 		delay: 0,
@@ -801,14 +800,14 @@ function autocompletedUsernameField( idField )
 		select: function( event, ui ) {
 			var fieldValue = ui.item.value;
 			
-			if ( !dhis2.trigger.invoke( "caseentry-value-selected", [dataElementId, fieldValue] ) ) {
+			if ( !dhis2.trigger.invoke( "caseentry-value-selected", [dataElementUid, fieldValue] ) ) {
 				input.val( "" );
 				return false;
 			}
 			
 			input.val( fieldValue );			
 			if ( !unSave ) {
-				saveVal( dataElementId );
+				saveVal( dataElementUid );
 			}
 			input.autocomplete( "close" );
 		},
@@ -819,7 +818,7 @@ function autocompletedUsernameField( idField )
 				if ( !valid ) {
 					$( this ).val( "" );
 					if(!unSave)
-						saveVal( dataElementId );
+						saveVal( dataElementUid );
 					input.data( "autocomplete" ).term = "";
 					return false;
 				}

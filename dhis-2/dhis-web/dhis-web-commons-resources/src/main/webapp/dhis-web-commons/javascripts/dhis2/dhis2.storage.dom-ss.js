@@ -136,7 +136,7 @@ dhis2.storage.Store.adapter( 'dom-ss', (function () {
 
             for ( var k = 0; k < idx.length; k++ ) {
                 var obj = JSON.parse( storage.getItem( idx[k] ) );
-                obj.key = idx[k].replace( that.dbname + '.' + that.name + '.', '' );
+                obj.key = idx[k].replace( this.dbname + '.' + this.name + '.', '' );
                 arr.push( obj );
             }
 

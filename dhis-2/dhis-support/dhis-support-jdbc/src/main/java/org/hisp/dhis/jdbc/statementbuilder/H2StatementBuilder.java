@@ -127,7 +127,7 @@ public class H2StatementBuilder
     		String periodIds, int organisationUnitId, String organisationUnitName, int lowerBound, int upperBound )
     {	
     	return "SELECT dv.dataelementid, dv.periodid, dv.sourceid, dv.categoryoptioncomboid, dv.value, dv.storedby, dv.lastupdated, " +
-            "dv.comment, dv.followup, '" + lowerBound + "' AS minvalue, '" + upperBound + "' AS maxvalue, " +
+            "dv.comment, dv.followup, '" + lowerBound + "' AS minimumvalue, '" + upperBound + "' AS maximumvalue, " +
             encode( dataElementName ) + " AS dataelementname, pt.name AS periodtypename, pe.startdate, pe.enddate, " + 
             encode( organisationUnitName ) + " AS sourcename, cc.categoryoptioncomboname " +
             "FROM datavalue AS dv " +

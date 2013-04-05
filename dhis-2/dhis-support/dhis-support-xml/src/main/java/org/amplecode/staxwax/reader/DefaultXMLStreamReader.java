@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -355,7 +356,7 @@ public class DefaultXMLStreamReader
     {
         StringBuffer sb = new StringBuffer();
 
-        while ( reader.isCharacters() || reader.getEventType() == XMLStreamReader2.CDATA )
+        while ( reader.isCharacters() || reader.getEventType() == XMLStreamConstants.CDATA )
         {
             sb.append( reader.getText() );
             reader.next();

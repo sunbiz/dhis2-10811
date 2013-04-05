@@ -29,6 +29,8 @@ package org.hisp.dhis.patientreport.hibernate;
 
 import java.util.Collection;
 
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.patientreport.PatientAggregateReport;
@@ -46,9 +48,36 @@ public class HibernatePatientAggregateReportStore
 {
     @SuppressWarnings( "unchecked" )
     @Override
-    public Collection<PatientAggregateReport> get( User user )
+    public Collection<PatientAggregateReport> get( User user, String query, Integer min, Integer max )
     {
-        return getCriteria( Restrictions.eq( "user", user ) ).list();
+        return search( user, query, min, max ).list();
     }
 
+    public int countList( User user, String query )
+    {
+        Number rs = (Number) search( user, query, null, null ).setProjection( Projections.rowCount() ).uniqueResult();
+
+        return rs != null ? rs.intValue() : 0;
+    }
+
+    // -------------------------------------------------------------------------
+    // Support methods
+    // -------------------------------------------------------------------------
+
+    private Criteria search( User user, String query, Integer min, Integer max )
+    {
+        Criteria criteria = getCriteria( Restrictions.eq( "user", user ) );
+
+        if ( query != null )
+        {
+            criteria.add( Restrictions.ilike( "name", "%" + query + "%" ) );
+        }
+
+        if ( min != null && max != null )
+        {
+            criteria.setFirstResult( min ).setMaxResults( max );
+        }
+        
+        return criteria;
+    }
 }

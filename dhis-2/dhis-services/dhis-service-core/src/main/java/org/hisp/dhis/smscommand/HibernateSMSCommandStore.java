@@ -59,10 +59,13 @@ public class HibernateSMSCommandStore
     {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria( SMSCommand.class );
         criteria.add( Restrictions.eq( "id", id ) );
+        
         if ( criteria.list() != null && criteria.list().size() > 0 )
+        {
             return (SMSCommand) criteria.list().get( 0 );
-        else
-            return null;
+        }
+        
+        return null;
     }
 
     public void delete( SMSCommand cmd )
@@ -86,5 +89,4 @@ public class HibernateSMSCommandStore
         criteria.add( Restrictions.eq( "parserType", ParserType.J2ME_PARSER ) );
         return criteria.list();
     }
-
 }

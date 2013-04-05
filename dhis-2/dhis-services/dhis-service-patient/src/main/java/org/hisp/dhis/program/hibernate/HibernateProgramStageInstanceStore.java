@@ -62,8 +62,8 @@ import org.hisp.dhis.patient.PatientAuditService;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientreport.PatientAggregateReport;
 import org.hisp.dhis.patientreport.TabularReportColumn;
-import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
@@ -159,7 +159,7 @@ public class HibernateProgramStageInstanceStore
             Restrictions.eq( "programInstance", programInstance ), Restrictions.eq( "programStage", programStage ) )
             .addOrder( Order.asc( "id" ) ).list() );
 
-        return (list == null || list.size() == 0) ? null : list.get( list.size() - 1 );
+        return list.isEmpty() ? null : list.get( list.size() - 1 );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -699,7 +699,7 @@ public class HibernateProgramStageInstanceStore
     {
         Calendar yesterday = Calendar.getInstance();
         yesterday.add( Calendar.DATE, -1 );
-        CalendarPeriodType.clearTimeOfDay( yesterday );
+        PeriodType.clearTimeOfDay( yesterday );
         Date now = yesterday.getTime();
 
         if ( endDate.before( now ) )

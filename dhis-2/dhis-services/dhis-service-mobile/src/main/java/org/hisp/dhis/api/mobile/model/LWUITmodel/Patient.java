@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -74,11 +75,11 @@ public class Patient
     private Character dobType;
 
     private List<Program> programs;
-    
+
     private List<Program> enrollmentPrograms;
 
     private List<Relationship> relationships;
-    
+
     private List<Relationship> enrollmentRelationships;
 
     private String phoneNumber;
@@ -313,7 +314,7 @@ public class Patient
         dout.writeUTF( this.getMiddleName() );
         dout.writeUTF( this.getLastName() );
         dout.writeInt( this.getAge() );
-        
+
         if ( gender != null )
         {
             dout.writeBoolean( true );
@@ -396,18 +397,18 @@ public class Patient
 
         // Write Program
         dout.writeInt( programs.size() );
-        for ( Program each: programs )
+        for ( Program each : programs )
         {
             each.serialize( dout );
         }
-        
+
         // Write Relationships
         dout.writeInt( relationships.size() );
         for ( Relationship each : relationships )
         {
             each.serialize( dout );
         }
-        
+
         // Write Enrolled Programs
 
         dout.writeInt( enrollmentPrograms.size() );
@@ -415,9 +416,9 @@ public class Patient
         {
             each.serialize( dout );
         }
-        
+
         // Write Enrolled
-        
+
         dout.writeInt( enrollmentRelationships.size() );
         for ( Relationship each : enrollmentRelationships )
         {
@@ -456,13 +457,27 @@ public class Patient
             this.setBirthDate( null );
         }
 
-        if ( din.readBoolean() )
+        // atts & identifiers
+
+        this.patientAttValues = new ArrayList<PatientAttribute>();
+        int attsNumb = din.readInt();
+        for ( int j = 0; j < attsNumb; j++ )
         {
-            this.setRegistrationDate( new Date( din.readLong() ) );
+            PatientAttribute pa = new PatientAttribute();
+            pa.deSerialize( din );
+            this.patientAttValues.add( pa );
+
         }
-        else
+
+        this.identifiers = new ArrayList<PatientIdentifier>();
+        int numbIdentifiers = din.readInt();
+
+        for ( int i = 0; i < numbIdentifiers; i++ )
         {
-            this.setRegistrationDate( null );
+            PatientIdentifier identifier = new PatientIdentifier();
+            identifier.deSerialize( din );
+            this.identifiers.add( identifier );
+
         }
 
     }

@@ -339,10 +339,8 @@ public class ProgramInstance
             {
                 return programInstanceStage;
             }
-            else
-            {
-                count++;
-            }
+            
+            count++;
         }
 
         return null;

@@ -144,7 +144,7 @@ public class IndicatorDeletionHandler
                 .getNumerator() );
             optionCombos.retainAll( categoryCombo.getOptionCombos() );
 
-            if ( optionCombos != null && optionCombos.size() > 0 )
+            if ( !optionCombos.isEmpty() )
             {
                 return indicator.getName();
             }
@@ -152,7 +152,7 @@ public class IndicatorDeletionHandler
             optionCombos = expressionService.getOptionCombosInExpression( indicator.getDenominator() );
             optionCombos.retainAll( categoryCombo.getOptionCombos() );
 
-            if ( optionCombos != null && optionCombos.size() > 0 )
+            if ( !optionCombos.isEmpty() )
             {
                 return indicator.getName();
             }

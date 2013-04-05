@@ -185,7 +185,7 @@ public class ExportToPdfAction
                     dataElements = new ArrayList<DataElement>( dataElementService.getAllDataElements() );
                 }
 
-                if ( (dataElements != null) && !dataElements.isEmpty() )
+                if ( !dataElements.isEmpty() )
                 {
                     params.setDataElementObjects( dataElements );
                 }
@@ -216,7 +216,7 @@ public class ExportToPdfAction
                     indicators = new ArrayList<Indicator>( indicatorService.getAllIndicators() );
                 }
 
-                if ( (indicators != null) && !indicators.isEmpty() )
+                if ( !indicators.isEmpty() )
                 {
                     params.setIndicatorObjects( indicators );
                 }

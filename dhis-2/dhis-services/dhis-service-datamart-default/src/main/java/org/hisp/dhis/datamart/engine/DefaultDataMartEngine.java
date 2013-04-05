@@ -330,7 +330,7 @@ public class DefaultDataMartEngine
         
         clock.logTime( "Populated crosstab table, " + SystemUtils.getMemoryString() );
 
-        final boolean isIndicators = indicators != null && indicators.size() > 0;
+        final boolean isIndicators = !indicators.isEmpty();
         
         // ---------------------------------------------------------------------
         // 1. Create aggregated data cache

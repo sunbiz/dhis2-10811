@@ -9,6 +9,7 @@ $( document ).ready( function()
 	$("#insertButton").button("option", "icons", { primary: "ui-icon-plusthick" });
 	$("#propertiesButton").button("option", "icons", { primary: "ui-icon-newwin" });
 	$("#insertImagesButton").button("option", "icons", { primary: "ui-icon-newwin" });
+	$("#insertImageButton").button("option", "icons", { primary: "ui-icon-plusthick" });
 	
 	$("#imageDialog").bind("dialogopen", function(event, ui) {
 		$("#insertImagesButton").button("disable");
@@ -18,8 +19,18 @@ $( document ).ready( function()
 	})
 	
 	$("#insertImagesButton").click(function() {
-		$("#imageDialog").dialog();
+		$("#imageDialog").dialog({
+			overlay:{background:'#000000', opacity:0.1},
+			width:400,
+			height:300,
+			position: [$("body").width()- 50, 0],
+		});
 	});
+	
+	if( autoSave )
+	{
+		timeOut = window.setTimeout( "validateRegistrationFormTimeout( false );", 60000 );
+	}
 });
 	
 function openPropertiesSelector()
@@ -34,6 +45,7 @@ function openPropertiesSelector()
 			overlay:{background:'#000000', opacity:0.1},
 			width:500,
 			height:460,
+			position: [$("body").width()- 50, 0],
 			close: function(ev, ui) { 
 				$("#propertiesButton").removeClass("ui-state-active2"); 
 			}
@@ -160,10 +172,8 @@ function validateForm()
 			}
 			
 			for (var idx in requiredFields){
-				//var field = requiredFields[idx];
 				if( key == idx)
 				{
-					//requiredFields.splice(idx,1);
 					delete requiredFields[idx];
 				}
 			}
@@ -193,7 +203,13 @@ function validateForm()
 	else{
 		setFieldValue('requiredField','everything_is_ok');
 		setInnerHTML( 'designTextarea' , jQuery("#designTextarea").ckeditorGet().getData() );
-		byId('saveDataEntryForm').submit();
+		if(getFieldValue('autoSave')=='true'){
+			autoSavePatientRegistrationForm();
+		}
+		else
+		{
+			byId('saveDataEntryForm').submit();
+		}
 	}
 }
 
@@ -291,4 +307,74 @@ function insertImage() {
 	var html = "<img src=\"" + image + "\" title=\"" + $("#imageDialog :selected").text() + "\">";
 	var oEditor = $("#designTextarea").ckeditorGet();
 	oEditor.insertHtml( html );
+}
+
+// -------------------------------------------------------
+// Auto-save data entry form
+// -------------------------------------------------------
+
+function setAutoSaveRegistrationSetting(_autoSave)
+{
+	jQuery.postJSON("setAutoSavePatientRegistrationSetting.action", {autoSave:_autoSave}, function(json) {
+		autoSave = _autoSave;
+		if (_autoSave) {
+			window.setTimeout( "validateRegistrationFormTimeout( false );", 6000 );
+		}
+		else{
+			window.clearTimeout(timeOut);
+		}
+	});
+}
+
+function validateRegistrationFormTimeout()
+{
+	validateDataEntryForm();
+	timeOut = window.setTimeout( "validateRegistrationFormTimeout();", 60000 );
+}
+
+function validateDataEntryForm()
+{
+	var name = getFieldValue('name');
+	if( name =='' || name.length<4 || name.length > 150 )
+	{
+		setHeaderDelayMessage( i18n_enter_a_name );
+	}
+	else if ( !validateForm() )
+	{
+		return;
+	}
+	else
+	{
+		$.post( 'validateDataEntryForm.action',
+		{
+			name: getFieldValue('name'),
+			dataEntryFormId: getFieldValue('dataEntryFormId')
+		}, 
+		function( json )
+		{
+			if ( json.response == 'success' )
+			{
+				autoSavePatientRegistrationForm();
+			}
+			else if ( json.response = 'error' )
+			{
+				setHeaderDelayMessage( json.message );
+			}
+		} );
+	}
+}
+
+function autoSavePatientRegistrationForm()
+{
+	$.postUTF8( 'autoSavePatientRegistrationForm.action',
+	{
+		name: getFieldValue('name'),
+		designTextarea: jQuery("#designTextarea").ckeditorGet().getData(),
+		programId: getFieldValue('programId'),
+		id: getFieldValue('id')
+	},
+	function( json ) 
+	{
+		setHeaderDelayMessage( i18n_save_success ); 
+	} );
 }

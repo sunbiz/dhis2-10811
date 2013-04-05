@@ -7,5 +7,11 @@
 	"lastUpdated": "${tabularReport.lastUpdated}"
   }#if( $velocityCount < $size ),#end
   #end
-  ]
+  ],
+  "pager":{
+	  "currentPage":$!currentPage,
+	  "pageSize":10,
+	  "total":$!total,
+	  "pageCount":$!pageCount
+	}
 }

@@ -28,7 +28,6 @@
 package org.hisp.dhis.caseaggregation;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.hisp.dhis.common.GenericNameableObjectStore;
 import org.hisp.dhis.dataelement.DataElement;
@@ -43,12 +42,11 @@ public interface CaseAggregationConditionStore
     extends GenericNameableObjectStore<CaseAggregationCondition>
 {
     String ID = CaseAggregationConditionStore.class.getName();
-   
+
     Collection<CaseAggregationCondition> get( DataElement dataElement );
 
     CaseAggregationCondition get( DataElement dataElement, DataElementCategoryOptionCombo optionCombo );
-    
+
     Collection<CaseAggregationCondition> get( Collection<DataElement> dataElements );
     
-    List<Integer> executeSQL( String sql );
 }

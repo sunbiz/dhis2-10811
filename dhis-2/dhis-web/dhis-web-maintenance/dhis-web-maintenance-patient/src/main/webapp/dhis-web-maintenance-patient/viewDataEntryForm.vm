@@ -10,6 +10,7 @@
 
 		jQuery('#designTextarea').ckeditor();
 		jQuery("#designTextarea").ckeditorGet().setData('$encoder.jsEscape( $dataEntryValue, "'" )');
+		openDataElementSelector();
 		
 		checkValueIsExist( "name", "validateDataEntryForm.action", { dataEntryFormId: '$!programStage.dataEntryForm.id' } );
 	});
@@ -17,9 +18,10 @@
     var i18n_dataelement_is_inserted = '$encoder.jsEscape( $i18n.getString( "dataelement_is_inserted" ) , "'" )';
 	var i18n_specify_dataelememt = '$encoder.jsEscape( $i18n.getString( "specify_dataelememt" ) , "'" )';
     var i18n_choose_existing_dataentry ='$encoder.jsEscape( $i18n.getString( "choose_existing_dataentry" ) , "'" )';
-	var i18n_dataelement = "$i18n.getString( 'dataelement' )";
+	var i18n_dataelement = '$encoder.jsEscape( $i18n.getString( "dataelement" ) , "'" )';
 	var i18n_dataelement_of_orther_program_stage = "$i18n.getString( 'dataelement_of_orther_program_stage' )";
-	
+	var i18n_save_success = '$encoder.jsEscape( $i18n.getString( "save_success" ) , "'" )';
+	var autoSave=${autoSave};
 	var previousName = '';
 </script>
 
@@ -66,7 +68,7 @@
 </style>
 
 <form id="saveDataEntryForm" name="saveDataEntryForm" action="saveDataEntryForm.action" method="post">
-<input type="hidden" name="programStageId" id="programStageId" value="$!programStage.id"/>
+<input type="hidden" name="programStageId" id="programStageId" uid="$!programStage.uid" value="$!programStage.id"/>
 <h3>$i18n.getString( "dataentryform_management_for_program_stage" )</h3>
 <h4>$programStage.displayName</h4>
 
@@ -101,7 +103,8 @@
 <table width="100%">	
     <tr>
         <td>
-            <button type="submit" id="saveButton">$i18n.getString( 'save' )</button>
+            <button type="button" id="saveButton" onclick="validateDataEntryForm();">$i18n.getString( 'save' )</button>
+            <button type="submit" id="saveAndCloseButton">$i18n.getString( 'save_and_close' )</button>
             <button type="button" id="cancelButton" onclick="window.location='programStage.action?id=$!programStage.program.id'">$i18n.getString( 'cancel' )</button>          
 			&nbsp;&nbsp;<span style="color:#606060">|</span>&nbsp;
 			#if( !$existingDataEntryForms.isEmpty() )
@@ -117,9 +120,11 @@
 			
 			#if( $!dataEntryForm )
 			&nbsp;&nbsp;<span style="color:#606060">|</span>&nbsp;
-		    <button type="button" id="deleteButton" onclick="deleteDataEntryForm( $programStage.dataEntryForm.id, $programStage.id )">$i18n.getString( 'delete' )</button>
+		    <button type="button" id="deleteButton" onclick="deleteDataEntryForm( $programStage.dataEntryForm.id, $programStage.id )">$i18n.getString( 'delete_this_form' )</button>
 			#end
-        </td>		
+			
+			<input type="checkbox" id="autoSave" name="autoSave" #if($autoSave && $autoSave=="true") checked #end onchange="setAutoSaveDataEntrySetting(this.checked)" />$i18n.getString( 'auto_save_data_entry_forms' )
+        </td>
     </tr>
 </table>
   
@@ -157,15 +162,15 @@
 		</tr>
 		<tr>
 			<td colspan='2'>	
-				<select id="dataElementIds" name="dataElementIds" style="min-width:400; width:100%; height:210px;" multiple="multiple" size="10" ondblclick="insertDataElement( '#dataElementSelection', '$programStage.id')">
+				<select id="dataElementIds" name="dataElementIds" style="min-width:400; width:100%; height:210px;" multiple="multiple" size="10" ondblclick="insertDataElement( '#dataElementSelection', '$programStage.uid')">
 					#foreach( $de in $dataElements)
-					#set($deJSON = '{' + '"id"' + ":" + $de.id + "," + '"name"' + ':"' + "$de.name" + '",' + '"shortName"' + ':"' + "$de.shortName" + '",' + '"type"' + ':"' + "$de.getDetailedTextType()"  + '"}' )
+					#set($deJSON = '{' + '"uid"' + ':"' + "$de.uid" + '",' + '"name"' + ':"' + "$de.name" + '",' + '"shortName"' + ':"' + "$de.shortName" + '",' + '"type"' + ':"' + "$de.getDetailedTextType()"  + '"}' )
 					<option value='$deJSON' decode="$!de.code" dename="$de.name" title="$de.name">$encoder.htmlEncode( $de.name )</option>
 					#end
 				</select>
 				<select id="dataElementIdsStore" multiple="multiple" style="display:none">
 					#foreach( $de in $dataElements)
-					#set($deJSON = '{' + '"id"' + ":" + $de.id + "," + '"name"' + ':"' + "$de.name" + '",' + '"shortName"' + ':"' + "$de.shortName" + '",' + '"type"' + ':"' + "$de.getDetailedTextType()"  + '"}' )
+					#set($deJSON = '{' + '"uid"' + ':"' + "$de.uid" + '",' + '"name"' + ':"' + "$de.name" + '",' + '"shortName"' + ':"' + "$de.shortName" + '",' + '"type"' + ':"' + "$de.getDetailedTextType()"  + '"}' )
 					<option value='$deJSON' decode="$!de.code" dename="$de.name">$encoder.htmlEncode( $de.name )</option>
 					#end
 				</select>
@@ -173,7 +178,7 @@
 		</tr>
 		<tr>
 			<td>
-				<input type="button" id="insertButton" value="$i18n.getString('insert')" onclick="insertDataElement( '#dataElementSelection', '$programStage.id')" style="width:100px">
+				<input type="button" id="insertButton" value="$i18n.getString('insert')" onclick="insertDataElement( '#dataElementSelection', '$programStage.uid')" style="width:100px">
 			</td>
 			<td>
 				<span id="message_"></span>
@@ -228,7 +233,7 @@
 		</tr>
 		<tr>
 			<td colspan='2'>
-				<select id="dataElementIds" name="dataElementIds" style="min-width:400; width:100%; height:210px;" multiple="multiple" size="10" ondblclick="insertDataElement( '#otherProgramStageDataElements', byId('programStageIds').value )"/>
+				<select id="dataElementIds" name="dataElementIds" style="min-width:400; width:100%; height:210px;" multiple="multiple" size="10" ondblclick="insertDataElement( '#otherProgramStageDataElements', jQuery('#programStageIds option:selected').attr('uid') )"/>
 				<select id="dataElementIdsStore" style="min-width:300px;display:none" multiple="multiple" size="10"/>
 			</td>
 		</tr>

@@ -6,9 +6,6 @@ import org.hisp.dhis.sms.queue.MessageQueue;
 // IEatSMS
 public class SMSConsumer
 {
-
-    
-    
     private ParserManager parserManager;
 
     private MessageQueue messageQueue;
@@ -35,6 +32,10 @@ public class SMSConsumer
         extends Thread
     {
         private boolean stop;
+
+        public SMSConsumerThread()
+        {
+        }
 
         public void run()
         {
@@ -64,13 +65,16 @@ public class SMSConsumer
             IncomingSms message = messageQueue.get();
             while ( message != null )
             {
-                try{
+                try
+                {
                     parserManager.parse( message );
-                }catch(Exception e){
-                    System.out.println(e.getMessage());
+                }
+                catch ( Exception e )
+                {
+                    System.out.println( e.getMessage() );
                 }
 
-                messageQueue.remove( message ); 
+                messageQueue.remove( message );
                 message = messageQueue.get();
             }
         }
@@ -81,16 +85,15 @@ public class SMSConsumer
         }
 
     }
-    
+
     public void setMessageQueue( MessageQueue messageQueue )
     {
         this.messageQueue = messageQueue;
     }
-    
+
     public void setParserManager( ParserManager parserManager )
     {
         this.parserManager = parserManager;
     }
-
 
 }

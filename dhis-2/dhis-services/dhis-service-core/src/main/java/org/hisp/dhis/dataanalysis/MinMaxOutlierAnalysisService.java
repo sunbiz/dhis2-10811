@@ -103,7 +103,7 @@ public class MinMaxOutlierAnalysisService
             categoryOptionCombos.addAll( dataElement.getCategoryCombo().getOptionCombos() );
         }
 
-        log.debug( "Starting min-max analysis, no of data elements: " + elements.size() + ", no of org units: " + organisationUnits.size() );
+        log.info( "Starting min-max analysis, no of data elements: " + elements.size() + ", no of org units: " + organisationUnits.size() );
         
         return dataAnalysisStore.getMinMaxViolations( elements, categoryOptionCombos, periods, organisationUnits, MAX_OUTLIERS );
     }
@@ -111,7 +111,7 @@ public class MinMaxOutlierAnalysisService
     public void generateMinMaxValues( Collection<OrganisationUnit> organisationUnits,
         Collection<DataElement> dataElements, Double stdDevFactor )
     {
-        log.debug( "Starting min-max value generation, no of data elements: " + dataElements.size() + ", no of org units: " + organisationUnits.size() );
+        log.info( "Starting min-max value generation, no of data elements: " + dataElements.size() + ", no of org units: " + organisationUnits.size() );
 
         Set<Integer> orgUnitIds = new HashSet<Integer>( ConversionUtils.getIdentifiers( OrganisationUnit.class, organisationUnits ) ); 
 
@@ -152,6 +152,8 @@ public class MinMaxOutlierAnalysisService
                 }
             }
         }
+        
+        log.info( "Min-max value generation done" );
         
         batchHandler.flush();
     }

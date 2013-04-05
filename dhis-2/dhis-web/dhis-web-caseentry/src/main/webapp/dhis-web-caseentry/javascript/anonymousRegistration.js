@@ -11,24 +11,17 @@ $( document ).ready( function () {
     $( "#orgUnitTree" ).one( "ouwtLoaded", function () {
         // initialize the stores, and then try and add the data
         DAO.programs = new dhis2.storage.Store( {name: 'programs', adapter: 'dom-ss'}, function ( store ) {
-            DAO.programAssociations = new dhis2.storage.Store( {name: 'programAssociations', adapter: 'dom-ss'}, function ( store ) {
-                jQuery.getJSON( "getProgramMetaData.action", {},function ( data ) {
-                    var keys = _.keys( data.metaData.programs );
-                    var objs = _.values( data.metaData.programs );
+            jQuery.getJSON( "getProgramMetaData.action", {},function ( data ) {
+                var keys = _.keys( data.metaData.programs );
+                var objs = _.values( data.metaData.programs );
 
-                    DAO.programs.addAll( keys, objs, function ( store ) {
-                        var keys = _.keys( data.metaData.programAssociations );
-                        var objs = _.values( data.metaData.programAssociations );
-
-                        DAO.programAssociations.addAll( keys, objs, function ( store ) {
-                            selection.setListenerFunction( organisationUnitSelected );
-                            hideHeaderMessage();
-                        } );
-                    } );
-                } ).fail( function () {
-                        selection.setListenerFunction( organisationUnitSelected );
-                        hideHeaderMessage();
-                    } );
+                DAO.programs.addAll( keys, objs, function ( store ) {
+                    selection.setListenerFunction( organisationUnitSelected );
+                    hideHeaderMessage();
+                } );
+            } ).fail( function () {
+                selection.setListenerFunction( organisationUnitSelected );
+                hideHeaderMessage();
             } );
         } );
     } );
@@ -53,12 +46,19 @@ function organisationUnitSelected( orgUnits, orgUnitNames ) {
     hideById( 'listDiv' );
     hideById( 'dataEntryInfor' );
 
-    DAO.programAssociations.fetch( orgUnits[0], function ( store, arr ) {
-        if ( arr.length > 0 ) {
-            DAO.programs.fetch( arr[0], function ( store, arr ) {
-                updateProgramList( arr )
-            } );
+    DAO.programs.fetchAll( function ( store, arr ) {
+        var programs = [];
+
+        $.each( arr, function ( idx, item ) {
+            if ( item.programAssociations.indexOf( orgUnits[0] ) != -1 ) {
+                programs.push( item );
+            }
+        } );
+
+        if( programs.length > 0) {
+            updateProgramList( programs );
         } else {
+            // if we are online, also check server to see if there are any programs
             dhis2.storage.Store.plugins['anonymous-online'].call( {}, function ( arr ) {
                 updateProgramList( arr );
             } );

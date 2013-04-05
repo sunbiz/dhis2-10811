@@ -73,10 +73,8 @@ public class UpdateClientAction
         throws Exception
     {
         File fileToDownload = new File( fileName );
-        
-        if ( fileToDownload != null )
             
-            inputStream = new BufferedInputStream( new FileInputStream( fileToDownload ) );
+        inputStream = new BufferedInputStream( new FileInputStream( fileToDownload ) );
         
         return SUCCESS;
     }

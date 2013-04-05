@@ -33,6 +33,7 @@ import java.util.HashSet;
 import org.hisp.dhis.patientreport.PatientTabularReport;
 import org.hisp.dhis.patientreport.PatientTabularReportService;
 import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 
 import com.opensymphony.xwork2.Action;
 
@@ -73,6 +74,46 @@ public class GetTabularReportsAction
         return reports;
     }
 
+    private String query;
+
+    public void setQuery( String query )
+    {
+        this.query = query;
+    }
+
+    private Integer total;
+
+    public Integer getTotal()
+    {
+        return total;
+    }
+
+    private Integer pageSize;
+
+    public void setPageSize( Integer pageSize )
+    {
+        this.pageSize = pageSize;
+    }
+
+    private Integer currentPage;
+
+    public void setCurrentPage( Integer currentPage )
+    {
+        this.currentPage = currentPage;
+    }
+
+    public Integer getCurrentPage()
+    {
+        return currentPage;
+    }
+
+    private Integer pageCount;
+
+    public Integer getPageCount()
+    {
+        return pageCount;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -81,7 +122,16 @@ public class GetTabularReportsAction
     public String execute()
         throws Exception
     {
-        reports = tabularReportService.getPatientTabularReports( currentUserService.getCurrentUser() );
+        User user = currentUserService.getCurrentUser();
+        
+        total = tabularReportService.countPatientTabularReportList( user, query );
+        
+        int startPos = currentPage <= 0 ? 0 : (currentPage - 1) * pageSize;
+        startPos = (startPos > total) ? total : startPos;
+
+        pageCount = (total % pageSize == 0) ? (total / pageSize) : (total / pageSize + 1);
+
+        reports = tabularReportService.getPatientTabularReports( user, query, startPos, pageSize );
 
         return SUCCESS;
     }

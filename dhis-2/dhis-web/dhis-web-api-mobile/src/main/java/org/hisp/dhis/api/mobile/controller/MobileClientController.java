@@ -1,36 +1,11 @@
 package org.hisp.dhis.api.mobile.controller;
 
-/*
- * Copyright (c) 2004-2012, University of Oslo
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * * Redistributions of source code must retain the above copyright notice, this
- *   list of conditions and the following disclaimer.
- * * Redistributions in binary form must reproduce the above copyright notice,
- *   this list of conditions and the following disclaimer in the documentation
- *   and/or other materials provided with the distribution.
- * * Neither the name of the HISP project nor the names of its contributors may
- *   be used to endorse or promote products derived from this software without
- *   specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.hisp.dhis.api.mobile.NotAllowedException;
 import org.hisp.dhis.api.mobile.model.DataStreamSerializable;
 import org.hisp.dhis.api.mobile.model.MobileOrgUnitLinks;
@@ -80,7 +55,8 @@ public class MobileClientController
 
     @RequestMapping( method = RequestMethod.GET, value = "/{version}" )
     @ResponseBody
-    public OrgUnits getOrgUnitsForUser( HttpServletRequest request, @PathVariable String version )
+    public OrgUnits getOrgUnitsForUser( HttpServletRequest request, @PathVariable
+    String version )
         throws NotAllowedException
     {
         User user = currentUserService.getCurrentUser();
@@ -101,10 +77,11 @@ public class MobileClientController
         orgUnits.setClientVersion( DataStreamSerializable.TWO_POINT_NINE );
         return orgUnits;
     }
-    
+
     @RequestMapping( method = RequestMethod.GET, value = "/{version}/LWUIT" )
     @ResponseBody
-    public OrgUnits getOrgUnitsForUserLWUIT( HttpServletRequest request, @PathVariable String version )
+    public OrgUnits getOrgUnitsForUserLWUIT( HttpServletRequest request, @PathVariable
+    String version )
         throws NotAllowedException
     {
         User user = currentUserService.getCurrentUser();
@@ -140,15 +117,17 @@ public class MobileClientController
         orgUnit.setUpdateDataSetUrl( getUrl( request, unit.getId(), "updateDataSets" ) );
         orgUnit.setChangeUpdateDataSetLangUrl( getUrl( request, unit.getId(), "changeLanguageDataSet" ) );
         orgUnit.setSearchUrl( getUrl( request, unit.getId(), "search" ) );
+        orgUnit.setUpdateNewVersionUrl( getUrl( request, unit.getId(), "updateNewVersionUrl" ) );
         orgUnit.setUpdateContactUrl( getUrl( request, unit.getId(), "updateContactForMobile" ) );
         orgUnit.setFindPatientUrl( getUrl( request, unit.getId(), "findPatient" ) );
         orgUnit.setRegisterPersonUrl( getUrl( request, unit.getId(), "registerPerson" ) );
         orgUnit.setUploadProgramStageUrl( getUrl( request, unit.getId(), "uploadProgramStage" ) );
         orgUnit.setEnrollProgramUrl( getUrl( request, unit.getId(), "enrollProgram" ) );
+        orgUnit.setGetVariesInfoUrl( getUrl( request, unit.getId(), "getVariesInfo" ) );
         orgUnit.setAddRelationshipUrl( getUrl( request, unit.getId(), "addRelationship" ) );
         orgUnit.setDownloadAnonymousProgramUrl( getUrl( request, unit.getId(), "downloadAnonymousProgramUrl" ) );
         orgUnit.setFindProgramUrl( getUrl( request, unit.getId(), "findProgram" ) );
-        
+
         // generate URL for download new version
         String full = UrlUtils.buildFullRequestUrl( request );
         String root = full.substring( 0, full.length() - UrlUtils.buildRequestUrl( request ).length() );

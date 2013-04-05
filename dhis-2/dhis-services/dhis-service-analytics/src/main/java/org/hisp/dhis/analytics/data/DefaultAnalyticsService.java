@@ -382,7 +382,7 @@ public class DefaultAnalyticsService
         
         List<DataQueryParams> queries = queryPlanner.planQuery( params, optimalQueries, tableName );
         
-        t.getSplitTime( "Planned query" );
+        t.getSplitTime( "Planned query, got: " + queries.size() + " for optimal: " + optimalQueries );
         
         List<Future<Map<String, Double>>> futures = new ArrayList<Future<Map<String, Double>>>();
         
@@ -663,7 +663,7 @@ public class DefaultAnalyticsService
             // If dimension is not fixed and has no options, insert all options
             // -----------------------------------------------------------------
             
-            if ( !FIXED_DIMS.contains( dimension.getDimension() ) && ( options == null || options.isEmpty() ) )
+            if ( !FIXED_DIMS.contains( dimension.getDimension() ) && options.isEmpty() )
             {
                 if ( DimensionType.ORGANISATIONUNIT_GROUPSET.equals( dimension.getType() ) )
                 {

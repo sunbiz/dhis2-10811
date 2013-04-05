@@ -167,6 +167,7 @@ TR.conf = {
         center_tbar_height: 31,
         east_gridcolumn_height: 30,
         form_label_width: 90,
+		grid_row_height: 27,
 		grid_favorite_width: 450,
 		grid_favorite_height: 500,
         window_favorite_ypos: 100,
@@ -190,7 +191,7 @@ TR.conf = {
 		},
 		jsonEncodeArray: function(a) {
 			for (var i = 0; i < a.length; i++) {
-				a[i] = DV.conf.util.jsonEncodeString(a[i]);
+				a[i] = TR.conf.util.jsonEncodeString(a[i]);
 			}
 			return a;
 		}
@@ -316,7 +317,7 @@ Ext.onReady( function() {
                     var array = [];
                     Ext.Array.each(selected, function(item) {
 						var data = a.store.findExact('id', item);
-                        array.push({id: item, name: a.store.getAt(data).data.name, compulsory: a.store.getAt(data).data.compulsory, valueType: a.store.getAt(data).data.valueType});
+                        array.push({id: item, uid:a.store.getAt(data).data.uid, name: a.store.getAt(data).data.name, compulsory: a.store.getAt(data).data.compulsory, valueType: a.store.getAt(data).data.valueType});
                     });
                     s.store.add(array);
                 }
@@ -338,7 +339,7 @@ Ext.onReady( function() {
 						var name = a.store.getAt(i).data.name;
 						var valueType = a.store.getAt(i).data.valueType;
 						
-						array.push({id: id, name: name, compulsory: a.store.getAt(i).data.compulsory, valueType: valueType});
+						array.push({id: id, uid:a.store.getAt(data).data.uid, name: name, compulsory: a.store.getAt(i).data.compulsory, valueType: valueType});
 						if(f!=undefined)
 						{
 							this.addFilterField( f, id, name, valueType );
@@ -620,13 +621,15 @@ Ext.onReady( function() {
 						params.displayField = 'o';
 						params.multiSelect = true;
 						params.delimiter = ';';
+						var index = TR.store.dataelement.selected.findExact('id', 'de_' + deId);
+						var deUid = TR.store.dataelement.selected.getAt(index).data.uid;
 						params.store = Ext.create('Ext.data.Store', {
 							fields: ['o'],
 							data:[],
 							proxy: {
 								type: 'ajax',
 								url: TR.conf.finals.ajax.path_commons + TR.conf.finals.ajax.suggested_dataelement_get,
-								extraParams:{id: deId},
+								extraParams:{id: deUid},
 								reader: {
 									type: 'json',
 									root: 'options'
@@ -969,14 +972,14 @@ Ext.onReady( function() {
                 update: function(fn) {
 					TR.util.crud.favorite.create(fn, true);
                 },
-				updateName: function(name) {
+				updateName: function(id, name) {
                     if(Ext.getCmp('reportTypeGroup').getValue().reportType=='true')
 					{
-						this.caseBasedReport.updateName(name);
+						this.caseBasedReport.updateName(id, name);
 					}
 					else
 					{
-						this.aggregateReport.updateName(name);
+						this.aggregateReport.updateName(id, name);
 					}
                 },
                 del: function(fn) {
@@ -1001,48 +1004,16 @@ Ext.onReady( function() {
 				},			
 				
 				caseBasedReport:{
-					create: function(fn, isupdate) {
-						// Validation
-						
-						if( !TR.state.caseBasedReport.validation.objects() )
-						{
-							return;
-						}
-						
-						// Save favorite
-						
-						TR.util.mask.showMask(TR.cmp.caseBasedFavorite.window, TR.i18n.saving + '...');
-						var p = TR.state.caseBasedReport.getParams(false);
-						p.name = TR.cmp.caseBasedFavorite.name.getValue();
-						
-						if (isupdate) {
-							p.uid = TR.store.caseBasedFavorite.getAt(TR.store.caseBasedFavorite.findExact('name', p.name)).data.id;
-						}
 					
-						Ext.Ajax.request({
-							url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_save,
-							method: 'POST',
-							params: p,
-							success: function() {
-								TR.store.caseBasedFavorite.load({callback: function() {
-									TR.util.mask.hideMask();
-									if (fn) {
-										fn();
-									}
-								}});
-							}
-						});  
-					},
-					updateName: function(name) {
+					updateName: function(id, name) {
 						if (TR.store.caseBasedFavorite.findExact('name', name) != -1) {
 							return;
 						}
 						TR.util.mask.showMask(TR.cmp.caseBasedFavorite.window, TR.i18n.renaming + '...');
-						var r = TR.cmp.caseBasedFavorite.grid.getSelectionModel().getSelection()[0];
 						Ext.Ajax.request({
 							url:  TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_rename,
 							method: 'POST',
-							params: {id: r.data.id, name: name},
+							params: {id: id, name: name},
 							success: function() {
 								TR.store.caseBasedFavorite.load({callback: function() {
 									TR.cmp.caseBasedFavorite.rename.window.close();
@@ -1210,16 +1181,15 @@ Ext.onReady( function() {
 							}
 						});  
 					},
-					updateName: function(name) {
+					updateName: function(id, name) {
 						if (TR.store.aggregateFavorite.findExact('name', name) != -1) {
 							return;
 						}
 						TR.util.mask.showMask(TR.cmp.aggregateFavorite.window, TR.i18n.renaming + '...');
-						var r = TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection()[0];
 						Ext.Ajax.request({
 							url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_rename,
 							method: 'POST',
-							params: {id: r.data.id, name: name},
+							params: {id: id, name: name},
 							success: function() {
 								TR.store.aggregateFavorite.load({callback: function() {
 									TR.cmp.aggregateFavorite.rename.window.close();
@@ -1411,7 +1381,22 @@ Ext.onReady( function() {
 					}				
 				}
 		   }
-        }
+        },
+		window: {
+			setAnchorPosition: function(w, target) {
+				var vpw = TR.viewport.getWidth(),
+					targetx = target ? target.getPosition()[0] : 600,
+					winw = w.getWidth(),
+					y = target ? target.getPosition()[1] + target.getHeight() + 4 : 33;
+
+				if ((targetx + winw) > vpw) {
+					w.setPosition((vpw - winw - 2), y);
+				}
+				else {
+					w.setPosition(targetx, y);
+				}
+			}
+		}
 	};
     
     TR.store = {
@@ -1506,7 +1491,7 @@ Ext.onReady( function() {
 		}),
 		dataelement: {
             available: Ext.create('Ext.data.Store', {
-                fields: ['id', 'name', 'compulsory', 'valueType'],
+                fields: ['id', 'uid', 'name', 'compulsory', 'valueType'],
                 proxy: {
                     type: 'ajax',
                     url: TR.conf.finals.ajax.path_commons + TR.conf.finals.ajax.dataelements_get,
@@ -1549,7 +1534,7 @@ Ext.onReady( function() {
 				}
             }),
             selected: Ext.create('Ext.data.Store', {
-                fields: ['id', 'name', 'compulsory', 'valueType'],
+                fields: ['id', 'uid', 'name', 'compulsory', 'valueType'],
                 data: []
             })
         },
@@ -1564,19 +1549,45 @@ Ext.onReady( function() {
 			fields: ['id', 'name', 'lastUpdated'],
 			proxy: {
 				type: 'ajax',
-				url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_getall,
 				reader: {
 					type: 'json',
 					root: 'tabularReports'
 				}
 			},
 			isloaded: false,
-			sorting: {
-				field: 'name',
-				direction: 'ASC'
+            pageSize: 10,
+            currentPage: 1,
+			defaultUrl: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_getall,
+			loadStore: function(url) {
+				this.proxy.url = url || this.defaultUrl;
+				this.load({
+					params: {
+						pageSize: this.pageSize,
+						currentPage: this.currentPage
+					}
+				});
 			},
-			sortStore: function() {
-				this.sort(this.sorting.field, this.sorting.direction);
+			loadFn: function(fn) {
+				if (this.isLoaded) {
+					fn.call();
+				}
+				else {
+					this.load(fn);
+				}
+			},
+			sorting: {
+                field: 'name',
+                direction: 'ASC'
+            },
+            sortStore: function() {
+                this.sort(this.sorting.field, this.sorting.direction);
+            },
+            filtersystem: function() {
+				if (!TR.init.user.isAdmin) {
+					this.filterBy( function(r) {
+						return r.data.userId ? true : false;
+					});
+				}
 			},
 			listeners: {
 				load: function(s) {
@@ -1595,19 +1606,45 @@ Ext.onReady( function() {
 			fields: ['id', 'name', 'lastUpdated'],
 			proxy: {
 				type: 'ajax',
-				url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_getall,
 				reader: {
 					type: 'json',
 					root: 'tabularReports'
 				}
 			},
 			isloaded: false,
-			sorting: {
-				field: 'name',
-				direction: 'ASC'
+			pageSize: 10,
+            currentPage: 1,
+			defaultUrl: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_getall,
+			loadStore: function(url) {
+				this.proxy.url = url || this.defaultUrl;
+				this.load({
+					params: {
+						pageSize: this.pageSize,
+						currentPage: this.currentPage
+					}
+				});
 			},
-			sortStore: function() {
-				this.sort(this.sorting.field, this.sorting.direction);
+			loadFn: function(fn) {
+				if (this.isLoaded) {
+					fn.call();
+				}
+				else {
+					this.load(fn);
+				}
+			},
+			sorting: {
+                field: 'name',
+                direction: 'ASC'
+            },
+            sortStore: function() {
+                this.sort(this.sorting.field, this.sorting.direction);
+            },
+            filtersystem: function() {
+				if (!TR.init.user.isAdmin) {
+					this.filterBy( function(r) {
+						return r.data.userId ? true : false;
+					});
+				}
 			},
 			listeners: {
                 load: function(s) {
@@ -2924,6 +2961,789 @@ Ext.onReady( function() {
 			TR.datatable.setPagingToolbarStatus();
 		}
     };
+	
+	TR.app = {};
+	
+	TR.app.CaseFavoriteWindow = function() {
+
+		// Objects
+		var NameWindow,
+
+		// Instances
+			nameWindow,
+	
+		// Components
+			addButton,
+			searchTextfield,
+			grid,
+			prevButton,
+			nextButton,
+			tbar,
+			bbar,
+			info,
+			nameTextfield,
+			createButton,
+			updateButton,
+			cancelButton,
+			favoriteWindow,
+
+		// Vars
+			windowWidth = 500,
+			windowCmpWidth = windowWidth - 22;
+
+		TR.store.caseBasedFavorite.on('load', function(store, records) {
+			var pager = store.proxy.reader.jsonData.pager;
+
+			info.setText( TR.i18n.page + ' ' + pager.currentPage + TR.i18n.of + ' ' + pager.pageCount );
+
+			prevButton.enable();
+			nextButton.enable();
+
+			if (pager.currentPage === 1) {
+				prevButton.disable();
+			}
+
+			if (pager.currentPage === pager.pageCount) {
+				nextButton.disable();
+			}
+		});
+		
+		NameWindow = function(id) {
+			var window;
+			var record = TR.store.caseBasedFavorite.getById(id);
+			
+			nameTextfield = Ext.create('Ext.form.field.Text', {
+				height: 26,
+				width: 371,
+				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
+				style: 'margin-bottom:0',
+				emptyText: TR.i18n.favorite_name,
+				value: id ? record.data.name : '',
+				listeners: {
+					afterrender: function() {
+						this.focus();
+					}
+				}
+			});
+			
+			createButton = Ext.create('Ext.button.Button', {
+				text: TR.i18n.create,
+				handler: function() {
+					var name = nameTextfield.getValue();
+
+					if (name) {
+						
+						// Validation
+
+						if( !TR.state.caseBasedReport.validation.objects() )
+						{
+							return;
+						}
+						
+						// Save favorite
+						
+						TR.util.mask.showMask(TR.cmp.caseBasedFavorite.window, TR.i18n.saving + '...');
+						var p = TR.state.caseBasedReport.getParams(false);
+						p.name = name;
+						
+						Ext.Ajax.request({
+							url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_save,
+							method: 'POST',
+							params: p,
+							success: function() {
+								TR.store.caseBasedFavorite.loadStore();
+								window.destroy();
+								TR.util.mask.hideMask();
+							}
+						});
+					}
+				}
+			});
+			
+			updateButton = Ext.create('Ext.button.Button', {
+				text: TR.i18n.update,
+				handler: function() {
+					var name = nameTextfield.getValue();
+
+					if (id && name) {
+						if (TR.store.caseBasedFavorite.findExact('name', name) != -1) {
+							return;
+						}
+						TR.util.mask.showMask(TR.cmp.caseBasedFavorite.window, TR.i18n.renaming + '...');
+						Ext.Ajax.request({
+							url:  TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_rename,
+							method: 'POST',
+							params: {id: id, name: name},
+							failure: function(r) {
+								TR.util.mask.hideMask();
+								alert(r.responseText);
+							},
+							success: function() {
+								TR.store.caseBasedFavorite.loadStore();
+								window.destroy();
+								TR.util.mask.hideMask();
+							}
+						});
+					}
+				}
+			});
+			
+			cancelButton = Ext.create('Ext.button.Button', {
+				text: TR.i18n.cancel,
+				handler: function() {
+					window.destroy();
+				}
+			});
+			
+			window = Ext.create('Ext.window.Window', {
+				title: id ? TR.i18n.rename_favorite : TR.i18n.create_new_favorite,
+				bodyStyle: 'padding:2px; background:#fff',
+				resizable: false,
+				modal: true,
+				items: nameTextfield,
+				bbar: [
+					cancelButton,
+					'->',
+					id ? updateButton : createButton
+				],
+				listeners: {
+					show: function(w) {
+						TR.util.window.setAnchorPosition(w, addButton);
+					}
+				}
+			});
+
+			return window;
+		};
+
+		addButton = Ext.create('Ext.button.Button', {
+			text: TR.i18n.add_new,
+			width: 75,
+			height: 26,
+			style: 'border-radius: 1px;',
+			menu: {},
+			handler: function() {
+				nameWindow = new NameWindow(null, TR.i18n.create);
+				nameWindow.show();
+			}
+		});
+
+		searchTextfield = Ext.create('Ext.form.field.Text', {
+			width: windowCmpWidth - addButton.width - 11,
+			height: 26,
+			fieldStyle: 'padding-right: 0; padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
+			emptyText: TR.i18n.search_for_favorites,
+			enableKeyEvents: true,
+			currentValue: '',
+			listeners: {
+				keyup: function() {
+					if (this.getValue() !== this.currentValue) {
+						this.currentValue = this.getValue();
+
+						var value = this.getValue();
+						var url = ( value ) ? TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_getall + "?query=" + value : null;
+						var store = TR.store.caseBasedFavorite;
+
+						store.currentPage = 1;
+						store.loadStore(url);
+					}
+				}
+			}
+		});
+
+		prevButton = Ext.create('Ext.button.Button', {
+			text: TR.i18n.prev,
+			handler: function() {
+				var value = searchTextfield.getValue();
+				var url = ( value ) ? TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_getall + "?query=" + value : null;
+				var store = TR.store.caseBasedFavorite;
+
+				store.currentPage = store.currentPage <= 1 ? 1 : store.currentPage - 1;
+				store.loadStore(url);
+			}
+		});
+
+		nextButton = Ext.create('Ext.button.Button', {
+			text: TR.i18n.next,
+			handler: function() {
+				var value = searchTextfield.getValue();
+				var url = ( value ) ? TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.casebasedfavorite_getall + "?query=" + value : null;
+				var store = TR.store.caseBasedFavorite;
+
+				store.currentPage = store.currentPage + 1;
+				store.loadStore(url);
+			}
+		});
+
+		info = Ext.create('Ext.form.Label', {
+			cls: 'tr-label-info',
+			width: 300,
+			height: 22
+		});
+		
+		grid = Ext.create('Ext.grid.Panel', {
+			cls: 'tr-grid',
+			scroll: false,
+			hideHeaders: true,
+			columns: [
+				{
+					dataIndex: 'name',
+					sortable: false,
+					width: windowCmpWidth - 88,
+					renderer: function(value, metaData, record) {
+						var fn = function() {
+							var element = Ext.get(record.data.id);
+							if (element) {
+								element = element.parent('td');
+								element.addClsOnOver('link');
+								element.load = function() {
+									favoriteWindow.hide();
+									TR.util.crud.favorite.run( record.data.id );
+								};
+								element.dom.setAttribute('onclick', 'Ext.get(this).load();');
+							}
+						};
+
+						Ext.defer(fn, 100);
+
+						return '<div id="' + record.data.id + '">' + value + '</div>';
+					}
+				},
+				{
+					xtype: 'actioncolumn',
+					sortable: false,
+					width: 80,
+					items: [
+						{
+							iconCls: 'tr-grid-row-icon-edit',
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex);
+								nameWindow = new NameWindow(record.data.id);
+								nameWindow.show();
+							}
+						},
+						{
+							iconCls: 'tr-grid-row-icon-delete',
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex);
+									
+								var message = TR.i18n.confirm_delete_favorite + '\n\n' + record.data.name;
+								if (confirm(message)) {
+									TR.util.mask.showMask(TR.cmp.caseBasedFavorite.window, TR.i18n.deleting + '...');
+									var baseurl =  TR.conf.finals.ajax.casebasedfavorite_delete + "?id=" + record.data.id;
+									selection = TR.cmp.caseBasedFavorite.grid.getSelectionModel().getSelection();
+									Ext.Array.each(selection, function(item) {
+										baseurl = Ext.String.urlAppend(baseurl, 'uids=' + item.data.id);
+									});
+									
+									Ext.Ajax.request({
+										url: baseurl,
+										method: 'POST',
+										success: function() {
+											TR.store.caseBasedFavorite.loadStore();
+											TR.util.mask.hideMask();
+										}
+									});  
+								}
+							}
+						}
+					]
+				},
+				{
+					sortable: false,
+					width: 2
+				}
+			],
+			store: TR.store.caseBasedFavorite,
+			bbar: [
+				info,
+				'->',
+				prevButton,
+				nextButton
+			],
+			listeners: {
+				added: function() {
+					TR.cmp.caseBasedFavorite.grid = this;
+				},
+				render: function() {
+					var size = Math.floor((TR.cmp.region.center.getHeight() - 155) / TR.conf.layout.grid_row_height);
+					this.store.pageSize = size;
+					this.store.currentPage = 1;
+					this.store.loadStore();
+
+					TR.store.caseBasedFavorite.on('load', function() {
+						if (this.isVisible()) {
+							this.fireEvent('afterrender');
+						}
+					}, this);
+				},
+				afterrender: function() {
+					var fn = function() {
+						var editArray = Ext.query('.tooltip-favorite-edit'),
+							deleteArray = Ext.query('.tooltip-favorite-delete'),
+							el;
+
+						for (var i = 0; i < editArray.length; i++) {
+							el = editArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: TR.i18n.rename,
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+						
+						for (var i = 0; i < deleteArray.length; i++) {
+							el = deleteArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Delete', //i18n
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+					};
+
+					Ext.defer(fn, 100);
+				},
+				itemmouseenter: function(grid, record, item) {
+					this.currentItem = Ext.get(item);
+					this.currentItem.removeCls('x-grid-row-over');
+				},
+				select: function() {
+					this.currentItem.removeCls('x-grid-row-selected');
+				},
+				selectionchange: function() {
+					this.currentItem.removeCls('x-grid-row-focused');
+				}
+			}
+		});
+		
+		favoriteWindow = Ext.create('Ext.window.Window', {
+			title: TR.i18n.manage_favorites,
+			bodyStyle: 'padding:5px; background-color:#fff',
+			resizable: false,
+			modal: true,
+			width: windowWidth,
+			destroyOnBlur: true,
+			items: [
+				{
+					xtype: 'panel',
+					layout: 'hbox',
+					bodyStyle: 'border:0 none',
+					items: [
+						addButton,
+						{
+							height: 24,
+							width: 1,
+							style: 'width:1px; margin-left:5px; margin-right:5px; margin-top:1px',
+							bodyStyle: 'border-left: 1px solid #aaa'
+						},
+						searchTextfield
+					]
+				},
+				grid
+			],
+			listeners: {
+				show: function(w) {
+					TR.util.window.setAnchorPosition(w, TR.cmp.toolbar.favoritee);
+				}
+			}
+		});
+
+		return favoriteWindow;
+	};
+	
+	TR.app.AggregateFavoriteWindow = function() {
+
+		// Objects
+		var NameWindow,
+
+		// Instances
+			nameWindow,
+	
+		// Components
+			addButton,
+			searchTextfield,
+			grid,
+			prevButton,
+			nextButton,
+			tbar,
+			bbar,
+			info,
+			nameTextfield,
+			createButton,
+			updateButton,
+			cancelButton,
+			favoriteWindow,
+
+		// Vars
+			windowWidth = 500,
+			windowCmpWidth = windowWidth - 22;
+
+		TR.store.aggregateFavorite.on('load', function(store, records) {
+			var pager = store.proxy.reader.jsonData.pager;
+
+			info.setText( TR.i18n.page + ' ' + pager.currentPage + TR.i18n.of + ' ' + pager.pageCount );
+
+			prevButton.enable();
+			nextButton.enable();
+
+			if (pager.currentPage === 1) {
+				prevButton.disable();
+			}
+
+			if (pager.currentPage === pager.pageCount) {
+				nextButton.disable();
+			}
+		});
+		
+		NameWindow = function(id) {
+			var window;
+			var record = TR.store.aggregateFavorite.getById(id);
+			
+			nameTextfield = Ext.create('Ext.form.field.Text', {
+				height: 26,
+				width: 371,
+				fieldStyle: 'padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
+				style: 'margin-bottom:0',
+				emptyText: TR.i18n.favorite_name,
+				value: id ? record.data.name : '',
+				listeners: {
+					afterrender: function() {
+						this.focus();
+					}
+				}
+			});
+			
+			createButton = Ext.create('Ext.button.Button', {
+				text: TR.i18n.create,
+				handler: function() {
+					var name = nameTextfield.getValue();
+					if (name) {
+						
+						// Validation
+						
+						if( !TR.state.aggregateReport.validation.objects() )
+						{
+							return;
+						}
+						
+						// Save favorite
+						
+						TR.util.mask.showMask(TR.cmp.aggregateFavorite.window, TR.i18n.saving + '...');
+						var p = TR.state.getParams();
+						p.name = name;
+						
+						Ext.Ajax.request({
+							url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_save,
+							method: 'POST',
+							params: p,
+							success: function() {
+								TR.store.aggregateFavorite.loadStore();
+								window.destroy();
+								TR.util.mask.hideMask();
+							}
+						});  
+					}
+				}
+			});
+			
+			updateButton = Ext.create('Ext.button.Button', {
+				text: TR.i18n.update,
+				handler: function() {
+					var name = nameTextfield.getValue();
+
+					if (id && name) {
+					
+						if (TR.store.aggregateFavorite.findExact('name', name) != -1) {
+							return;
+						}
+						TR.util.mask.showMask(TR.cmp.aggregateFavorite.window, TR.i18n.renaming + '...');
+						var r = TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection()[0];
+						Ext.Ajax.request({
+							url: TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_rename,
+							method: 'POST',
+							params: {id: id, name: name},
+							success: function() {
+								TR.store.aggregateFavorite.loadStore();
+								window.destroy();
+								TR.util.mask.hideMask();
+							}
+						});
+					}
+				}
+			});
+			
+			cancelButton = Ext.create('Ext.button.Button', {
+				text: TR.i18n.cancel,
+				handler: function() {
+					window.destroy();
+				}
+			});
+			
+			window = Ext.create('Ext.window.Window', {
+				title: id ? TR.i18n.rename_favorite : TR.i18n.create_new_favorite,
+				bodyStyle: 'padding:2px; background:#fff',
+				resizable: false,
+				modal: true,
+				items: nameTextfield,
+				bbar: [
+					cancelButton,
+					'->',
+					id ? updateButton : createButton
+				],
+				listeners: {
+					show: function(w) {
+						TR.util.window.setAnchorPosition(w, addButton);
+					}
+				}
+			});
+
+			return window;
+		};
+
+		addButton = Ext.create('Ext.button.Button', {
+			text: TR.i18n.add_new,
+			width: 75,
+			height: 26,
+			style: 'border-radius: 1px;',
+			menu: {},
+			handler: function() {
+				nameWindow = new NameWindow(null, TR.i18n.create);
+				nameWindow.show();
+			}
+		});
+
+		searchTextfield = Ext.create('Ext.form.field.Text', {
+			width: windowCmpWidth - addButton.width - 11,
+			height: 26,
+			fieldStyle: 'padding-right: 0; padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
+			emptyText: TR.i18n.search_for_favorites,
+			enableKeyEvents: true,
+			currentValue: '',
+			listeners: {
+				keyup: function() {
+					if (this.getValue() !== this.currentValue) {
+						this.currentValue = this.getValue();
+
+						var value = this.getValue();
+						var url = ( value ) ? TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_getall + "?query=" + value : null;
+						var store = TR.store.aggregateFavorite;
+
+						store.currentPage = 1;
+						store.loadStore(url);
+					}
+				}
+			}
+		});
+
+		prevButton = Ext.create('Ext.button.Button', {
+			text: TR.i18n.prev,
+			handler: function() {
+				var value = searchTextfield.getValue();
+				var url = ( value ) ? TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_getall + "?query=" + value : null;
+				var store = TR.store.aggregateFavorite;
+
+				store.currentPage = store.currentPage <= 1 ? 1 : store.currentPage - 1;
+				store.loadStore(url);
+			}
+		});
+
+		nextButton = Ext.create('Ext.button.Button', {
+			text: TR.i18n.next,
+			handler: function() {
+				var value = searchTextfield.getValue();
+				var url = ( value ) ? TR.conf.finals.ajax.path_root + TR.conf.finals.ajax.aggregatefavorite_getall + "?query=" + value : null;
+				var store = TR.store.aggregateFavorite;
+
+				store.currentPage = store.currentPage + 1;
+				store.loadStore(url);
+			}
+		});
+
+		info = Ext.create('Ext.form.Label', {
+			cls: 'tr-label-info',
+			width: 300,
+			height: 22
+		});
+		
+		grid = Ext.create('Ext.grid.Panel', {
+			cls: 'tr-grid',
+			scroll: false,
+			hideHeaders: true,
+			columns: [
+				{
+					dataIndex: 'name',
+					sortable: false,
+					width: windowCmpWidth - 88,
+					renderer: function(value, metaData, record) {
+						var fn = function() {
+							var element = Ext.get(record.data.id);
+							if (element) {
+								element = element.parent('td');
+								element.addClsOnOver('link');
+								element.load = function() {
+									favoriteWindow.hide();
+									TR.util.crud.favorite.run( record.data.id );
+								};
+								element.dom.setAttribute('onclick', 'Ext.get(this).load();');
+							}
+						};
+
+						Ext.defer(fn, 100);
+
+						return '<div id="' + record.data.id + '">' + value + '</div>';
+					}
+				},
+				{
+					xtype: 'actioncolumn',
+					sortable: false,
+					width: 80,
+					items: [
+						{
+							iconCls: 'tr-grid-row-icon-edit',
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex);
+								nameWindow = new NameWindow(record.data.id);
+								nameWindow.show();
+							}
+						},
+						{
+							iconCls: 'tr-grid-row-icon-delete',
+							handler: function(grid, rowIndex, colIndex, col, event) {
+								var record = this.up('grid').store.getAt(rowIndex);
+									
+								var message = TR.i18n.confirm_delete_favorite + '\n\n' + record.data.name;
+								if (confirm(message)) {
+									TR.util.mask.showMask(TR.cmp.aggregateFavorite.window, TR.i18n.deleting + '...');
+									var baseurl =  TR.conf.finals.ajax.aggregatefavorite_delete + "?id=" + record.data.id;
+									selection = TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection();
+									Ext.Array.each(selection, function(item) {
+										baseurl = Ext.String.urlAppend(baseurl, 'uids=' + item.data.id);
+									});
+									
+									Ext.Ajax.request({
+										url: baseurl,
+										method: 'POST',
+										success: function() {
+											TR.store.aggregateFavorite.loadStore();
+											TR.util.mask.hideMask();
+										}
+									});  
+								}
+							}
+						}
+					]
+				},
+				{
+					sortable: false,
+					width: 2
+				}
+			],
+			store: TR.store.aggregateFavorite,
+			bbar: [
+				info,
+				'->',
+				prevButton,
+				nextButton
+			],
+			listeners: {
+				added: function() {
+					TR.cmp.aggregateFavorite.grid = this;
+				},
+				render: function() {
+					var size = Math.floor((TR.cmp.region.center.getHeight() - 155) / TR.conf.layout.grid_row_height);
+					this.store.pageSize = size;
+					this.store.currentPage = 1;
+					this.store.loadStore();
+
+					TR.store.aggregateFavorite.on('load', function() {
+						if (this.isVisible()) {
+							this.fireEvent('afterrender');
+						}
+					}, this);
+				},
+				afterrender: function() {
+					var fn = function() {
+						var editArray = Ext.query('.tooltip-favorite-edit'),
+							deleteArray = Ext.query('.tooltip-favorite-delete'),
+							el;
+
+						for (var i = 0; i < editArray.length; i++) {
+							el = editArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: TR.i18n.rename,
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+						
+						for (var i = 0; i < deleteArray.length; i++) {
+							el = deleteArray[i];
+							Ext.create('Ext.tip.ToolTip', {
+								target: el,
+								html: 'Delete', //i18n
+								'anchor': 'bottom',
+								anchorOffset: -14,
+								showDelay: 1000
+							});
+						}
+					};
+
+					Ext.defer(fn, 100);
+				},
+				itemmouseenter: function(grid, record, item) {
+					this.currentItem = Ext.get(item);
+					this.currentItem.removeCls('x-grid-row-over');
+				},
+				select: function() {
+					this.currentItem.removeCls('x-grid-row-selected');
+				},
+				selectionchange: function() {
+					this.currentItem.removeCls('x-grid-row-focused');
+				}
+			}
+		});
+		
+		favoriteWindow = Ext.create('Ext.window.Window', {
+			title: TR.i18n.manage_favorites,
+			bodyStyle: 'padding:5px; background-color:#fff',
+			resizable: false,
+			modal: true,
+			width: windowWidth,
+			destroyOnBlur: true,
+			items: [
+				{
+					xtype: 'panel',
+					layout: 'hbox',
+					bodyStyle: 'border:0 none',
+					items: [
+						addButton,
+						{
+							height: 24,
+							width: 1,
+							style: 'width:1px; margin-left:5px; margin-right:5px; margin-top:1px',
+							bodyStyle: 'border-left: 1px solid #aaa'
+						},
+						searchTextfield
+					]
+				},
+				grid
+			],
+			listeners: {
+				show: function(w) {
+					TR.util.window.setAnchorPosition(w, TR.cmp.toolbar.favoritee);
+				}
+			}
+		});
+
+		return favoriteWindow;
+	};
 	
 	Ext.apply(Ext.form.VTypes, {
 		daterange : function(val, field) {
@@ -4986,502 +5806,16 @@ Ext.onReady( function() {
 						xtype: 'button',
 						cls: 'tr-toolbar-btn-2',
 						id: 'caseBasedFavoriteBtn',
-						text: TR.i18n.favorites + '..',
+						text: TR.i18n.favorites,
 						menu: {},
 						hidden: true,
+						handler: function() {
+							TR.cmp.caseBasedFavorite.window = TR.app.CaseFavoriteWindow();
+							TR.cmp.caseBasedFavorite.window.show();
+						},
 						listeners: {
-							afterrender: function(b) {
-								this.menu = Ext.create('Ext.menu.Menu', {
-									shadow: false,
-									showSeparator: false,
-									items: [
-										{
-											text: TR.i18n.manage_favorites,
-											iconCls: 'tr-menu-item-edit',
-											handler: function() {
-												if (TR.cmp.caseBasedFavorite.window) {
-													TR.cmp.caseBasedFavorite.window.show();
-												}
-												else {
-													TR.cmp.caseBasedFavorite.window = Ext.create('Ext.window.Window', {
-														title: TR.i18n.manage_favorites,
-														iconCls: 'tr-window-title-favorite',
-														bodyStyle: 'padding:8px; background-color:#fff',
-														region: 'center',
-														width: TR.conf.layout.grid_favorite_width,
-														height: TR.conf.layout.grid_favorite_height,
-														closeAction: 'hide',
-														resizable: false,
-														modal: true,
-														resetForm: function() {
-															TR.cmp.caseBasedFavorite.name.setValue('');
-														},
-														items: [
-															{
-																xtype: 'form',
-																bodyStyle: 'border-style:none',
-																items: [
-																	{
-																		xtype: 'textfield',
-																		cls: 'tr-textfield',
-																		fieldLabel: TR.i18n.name,
-																		maxLength: 160,
-																		enforceMaxLength: true,
-																		labelWidth: TR.conf.layout.form_label_width,
-																		width: TR.conf.layout.grid_favorite_width - 28,
-																		listeners: {
-																			added: function() {
-																				TR.cmp.caseBasedFavorite.name = this;
-																			},
-																			change: function() {
-																				TR.cmp.caseBasedFavorite.save.xable();
-																			}
-																		}
-																	}
-																]
-															},
-															{
-																xtype: 'grid',
-																width: TR.conf.layout.grid_favorite_width - 28,
-																scroll: 'vertical',
-																multiSelect: true,
-																columns: [
-																	{
-																		dataIndex: 'name',
-																		width: TR.conf.layout.grid_favorite_width - 139,
-																		style: 'display:none'
-																	},
-																	{
-																		dataIndex: 'lastUpdated',
-																		width: 111,
-																		style: 'display:none'
-																	}
-																],
-																setHeightInWindow: function(store) {
-																	var window = this.up('window');																	
-																	this.setHeight(window.getHeight() - 105);																	
-																	this.doLayout();
-																	this.up('window').doLayout();
-																},
-																store: TR.store.caseBasedFavorite,
-																tbar: {
-																	id: 'favorite_t',
-																	cls: 'tr-toolbar-tbar',
-																	defaults: {
-																		height: 24
-																	},
-																	items: [
-																		{
-																			text: TR.i18n.sort_by + '..',
-																			cls: 'tr-toolbar-btn-2',
-																			listeners: {
-																				added: function() {
-																					TR.cmp.caseBasedFavorite.sortby = this;
-																				},
-																				afterrender: function(b) {
-																					this.addCls('tr-menu-togglegroup');
-																					this.menu = Ext.create('Ext.menu.Menu', {
-																						margin: '-1 0 0 -1',
-																						shadow: false,
-                                                                                        showSeparator: false,
-																						width: 109,
-																						height: 67,
-																						items: [
-																							{
-																								xtype: 'radiogroup',
-																								cls: 'tr-radiogroup',
-																								columns: 1,
-																								vertical: true,
-																								items: [
-																									{
-																										boxLabel: TR.i18n.name,
-																										name: 'sortby',
-																										handler: function() {
-																											if (this.getValue()) {
-																												var store = TR.store.caseBasedFavorite;
-																												store.sorting.field = 'name';
-																												store.sorting.direction = 'ASC';
-																												store.sortStore();
-																												this.up('menu').hide();
-																											}
-																										}
-																									},
-																									{
-																										boxLabel:  TR.i18n.last_updated,
-																										name: 'sortby',
-																										checked: true,
-																										handler: function() {
-																											if (this.getValue()) {
-																												var store = TR.store.caseBasedFavorite;
-																												store.sorting.field = 'lastUpdated';
-																												store.sorting.direction = 'DESC';
-																												store.sortStore();
-																												this.up('menu').hide();
-																											}
-																										}
-																									}
-																								]
-																							}
-																						]
-																					});
-																				}
-																			}
-																		},
-																		'->',
-																		{
-																			text: TR.i18n.rename,
-																			cls: 'tr-toolbar-btn-2',
-																			disabled: true,
-																			xable: function() {
-																				if (TR.cmp.caseBasedFavorite.grid.getSelectionModel().getSelection().length == 1) {
-																					TR.cmp.caseBasedFavorite.rename.button.enable();
-																				}
-																				else {
-																					TR.cmp.caseBasedFavorite.rename.button.disable();
-																				}
-																			},
-																			handler: function() {
-																				var selected = TR.cmp.caseBasedFavorite.grid.getSelectionModel().getSelection()[0];
-																				var w = Ext.create('Ext.window.Window', {
-																					title: TR.i18n.rename_favorite,
-																					layout: 'fit',
-																					width: TR.conf.layout.window_confirm_width,
-																					bodyStyle: 'padding:10px 5px; background-color:#fff; text-align:center',
-																					modal: true,
-																					cmp: {},
-																					items: [
-																						{
-																							xtype: 'textfield',
-																							cls: 'tr-textfield',
-																							maxLength: 160,
-																							enforceMaxLength: true,
-																							value: selected.data.name,
-																							listeners: {
-																								added: function() {
-																									this.up('window').cmp.name = this;
-																								},
-																								change: function() {
-																									this.up('window').cmp.rename.xable();
-																								}
-																							}
-																						}
-																					],
-																					bbar: [
-																						{
-																							xtype: 'label',
-																							style: 'padding-left:2px; line-height:22px; font-size:10px; color:#666; width:50%',
-																							listeners: {
-																								added: function() {
-																									TR.cmp.caseBasedFavorite.rename.label = this;
-																								}
-																							}
-																						},
-																						'->',
-																						{
-																							text: TR.i18n.cancel,
-																							handler: function() {
-																								this.up('window').close();
-																							}
-																						},
-																						{
-																							text: TR.i18n.rename,
-																							disabled: true,
-																							xable: function() {
-																								var value = this.up('window').cmp.name.getValue();
-																								if (value) {
-																									if (TR.store.caseBasedFavorite.findExact('name', value) == -1) {
-																										this.enable();
-																										TR.cmp.caseBasedFavorite.rename.label.setText('');
-																										return;
-																									}
-																									else {
-																										TR.cmp.caseBasedFavorite.rename.label.setText(TR.i18n.name_already_in_use);
-																									}
-																								}
-																								this.disable();
-																							},
-																							handler: function() {
-																								TR.util.crud.favorite.updateName(this.up('window').cmp.name.getValue());
-																							},
-																							listeners: {
-																								afterrender: function() {
-																									this.up('window').cmp.rename = this;
-																								},
-																								change: function() {
-																									this.xable();
-																								}
-																							}
-																						}
-																					],
-																					listeners: {
-																						afterrender: function() {
-																							TR.cmp.caseBasedFavorite.rename.window = this;
-																						}
-																					}
-																				});
-																				w.setPosition((screen.width/2)-(TR.conf.layout.window_confirm_width/2), TR.conf.layout.window_favorite_ypos + 100, true);
-																				w.show();
-																			},
-																			listeners: {
-																				added: function() {
-																					TR.cmp.caseBasedFavorite.rename.button = this;
-																				}
-																			}
-																		},
-																		{
-																			text: TR.i18n.delete_object,
-																			cls: 'tr-toolbar-btn-2',
-																			disabled: true,
-																			xable: function() {
-																				if (TR.cmp.caseBasedFavorite.grid.getSelectionModel().getSelection().length) {
-																					TR.cmp.caseBasedFavorite.del.enable();
-																				}
-																				else {
-																					TR.cmp.caseBasedFavorite.del.disable();
-																				}
-																			},
-																			handler: function() {
-																				var sel = TR.cmp.caseBasedFavorite.grid.getSelectionModel().getSelection();
-																				if (sel.length) {
-																					var str = '';
-																					for (var i = 0; i < sel.length; i++) {
-																						var out = sel[i].data.name.length > 35 ? (sel[i].data.name.substr(0,35) + '...') : sel[i].data.name;
-																						str += '<br/>' + out;
-																					}
-																					var w = Ext.create('Ext.window.Window', {
-																						title: TR.i18n.delete_favorite,
-																						width: TR.conf.layout.window_confirm_width,
-																						bodyStyle: 'padding:10px 5px; background-color:#fff; text-align:center',
-																						modal: true,
-																						items: [
-																							{
-																								html: TR.i18n.are_you_sure,
-																								bodyStyle: 'border-style:none'
-																							},
-																							{
-																								html: str,
-																								cls: 'tr-window-confirm-list'
-																							}                                                                                                    
-																						],
-																						bbar: [
-																							{
-																								text: TR.i18n.cancel,
-																								handler: function() {
-																									this.up('window').close();
-																								}
-																							},
-																							'->',
-																							{
-																								text: TR.i18n.delete_object,
-																								handler: function() {
-																									this.up('window').close();
-																									TR.util.crud.favorite.del(function() {
-																										TR.cmp.caseBasedFavorite.name.setValue('');
-																										TR.cmp.caseBasedFavorite.window.down('grid').setHeightInWindow(TR.store.caseBasedFavorite);
-																									});                                                                                                        
-																								}
-																							}
-																						]
-																					});
-																					w.setPosition((screen.width/2)-(TR.conf.layout.window_confirm_width/2), TR.conf.layout.window_favorite_ypos + 100, true);
-																					w.show();
-																				}
-																			},
-																			listeners: {
-																				added: function() {
-																					TR.cmp.caseBasedFavorite.del = this;
-																				}
-																			}
-																		}
-																	]
-																},
-																listeners: {
-																	added: function() {
-																		TR.cmp.caseBasedFavorite.grid = this;
-																	},
-																	itemclick: function(g, r) {
-																		TR.cmp.caseBasedFavorite.name.setValue(r.data.name);
-																		TR.cmp.caseBasedFavorite.rename.button.xable();
-																		TR.cmp.caseBasedFavorite.del.xable();
-																	},
-																	itemdblclick: function() {
-																		if (TR.cmp.caseBasedFavorite.save.xable()) {
-																			TR.cmp.caseBasedFavorite.save.handler();
-																		}
-																	}
-																}
-															}
-														],
-														bbar: {
-															cls: 'tr-toolbar-bbar',
-															defaults: {
-																height: 24
-															},
-															items: [
-																{
-																	xtype: 'label',
-																	style: 'padding-left:2px; line-height:22px; font-size:10px; color:#666; width:70%',
-																	listeners: {
-																		added: function() {
-																			TR.cmp.caseBasedFavorite.label = this;
-																		}
-																	}
-																},																
-																'->',
-																{
-																	text: TR.i18n.save,
-																	disabled: true,
-																	xable: function() {
-																		if (TR.cmp.caseBasedFavorite.name.getValue()) {
-																			var index = TR.store.caseBasedFavorite.findExact('name', TR.cmp.caseBasedFavorite.name.getValue());
-																			if (index != -1) {
-																				this.enable();
-																				TR.cmp.caseBasedFavorite.label.setText('');
-																				return true;
-																			}
-																			else {
-																				this.enable();
-																				TR.cmp.caseBasedFavorite.label.setText('');
-																				return true;
-																			}
-																		}
-																		else {
-																			TR.cmp.caseBasedFavorite.label.setText('');
-																		}
-																		
-																		this.disable();
-																		return false;
-																	},
-																	handler: function() {
-																		if (this.xable()) {
-																			var value = TR.cmp.caseBasedFavorite.name.getValue();
-																			if (TR.store.caseBasedFavorite.findExact('name', value) != -1) {
-																				var item = value.length > 40 ? (value.substr(0,40) + '...') : value;
-																				var w = Ext.create('Ext.window.Window', {
-																					title: TR.i18n.save_favorite,
-																					width: TR.conf.layout.window_confirm_width,
-																					bodyStyle: 'padding:10px 5px; background-color:#fff; text-align:center',
-																					modal: true,
-																					items: [
-																						{
-																							html: TR.i18n.are_you_sure,
-																							bodyStyle: 'border-style:none'
-																						},
-																						{
-																							html: '<br/>' + item,
-																							cls: 'tr-window-confirm-list'
-																						}
-																					],
-																					bbar: [
-																						{
-																							text: TR.i18n.cancel,
-																							handler: function() {
-																								this.up('window').close();
-																							}
-																						},
-																						'->',
-																						{
-																							text: TR.i18n.overwrite,
-																							handler: function() {
-																								this.up('window').close();
-																								TR.util.crud.favorite.update(function() {
-																									TR.cmp.caseBasedFavorite.window.resetForm();
-																								});
-																								
-																							}
-																						}
-																					]
-																				});
-																				w.setPosition((screen.width/2)-(TR.conf.layout.window_confirm_width/2), TR.conf.layout.window_favorite_ypos + 100, true);
-																				w.show();
-																			}
-																			else {
-																				TR.util.crud.favorite.create(function() {
-																					TR.cmp.caseBasedFavorite.window.resetForm();
-																					TR.cmp.caseBasedFavorite.window.down('grid').setHeightInWindow(TR.store.caseBasedFavorite);
-																				});
-																			}                                                                                    
-																		}
-																	},
-																	listeners: {
-																		added: function() {
-																			TR.cmp.caseBasedFavorite.save = this;
-																		}
-																	}
-																}
-															]
-														},
-														listeners: {
-															show: function() {                                               
-																TR.cmp.caseBasedFavorite.save.xable();
-																this.down('grid').setHeightInWindow(TR.store.caseBasedFavorite);
-															}
-														}
-													});
-													var w = TR.cmp.caseBasedFavorite.window;
-													w.setPosition((screen.width/2)-(TR.conf.layout.grid_favorite_width/2), TR.conf.layout.window_favorite_ypos, true);
-													w.show();
-												}
-											},
-											listeners: {
-												added: function() {
-													TR.cmp.toolbar.menuitem.datatable = this;
-												}
-											}
-										},
-										'-',
-										{
-											xtype: 'grid',
-											cls: 'tr-menugrid',
-											width: 420,
-											scroll: 'vertical',
-											columns: [
-												{
-													dataIndex: 'icon',
-													width: 25,
-													style: 'display:none'
-												},
-												{
-													dataIndex: 'name',
-													width: 285,
-													style: 'display:none'
-												},
-												{
-													dataIndex: 'lastUpdated',
-													width: 110,
-													style: 'display:none'
-												}
-											],
-											setHeightInMenu: function(store) {
-												var h = store.getCount() * 26,
-													sh = TR.util.viewport.getSize().y * 0.6;
-												this.setHeight(h > sh ? sh : h);
-												this.doLayout();
-												this.up('menu').doLayout();
-											},
-											store: TR.store.caseBasedFavorite,
-											listeners: {
-												itemclick: function(g, r) {
-													g.getSelectionModel().select([], false);
-													this.up('menu').hide();
-													TR.util.crud.favorite.run(r.data.id);
-												}
-											}
-										}
-									],
-									listeners: {
-										show: function() {
-											if (!TR.store.caseBasedFavorite.isloaded) {
-												TR.store.caseBasedFavorite.load({scope: this, callback: function() {
-													this.down('grid').setHeightInMenu(TR.store.caseBasedFavorite);
-												}});
-											}
-											else {
-												this.down('grid').setHeightInMenu(TR.store.caseBasedFavorite);
-											}
-										}
-									}
-								});
+							added: function() {
+								TR.cmp.toolbar.favorite = this;
 							}
 						}
 					},
@@ -5491,507 +5825,25 @@ Ext.onReady( function() {
 						xtype: 'button',
 						cls: 'tr-toolbar-btn-2',
 						id: 'aggregateFavoriteBtn',
-						text: TR.i18n.favorites + '..',
+						text: TR.i18n.favorites,
 						menu: {},
+						handler: function() {
+							if (TR.cmp.aggregateFavorite.window) {
+								TR.cmp.aggregateFavorite.window.destroy();
+							}
+							
+							TR.cmp.aggregateFavorite.window = TR.app.AggregateFavoriteWindow();
+							TR.cmp.aggregateFavorite.window.show();
+						},
 						listeners: {
-							afterrender: function(b) {
-								this.menu = Ext.create('Ext.menu.Menu', {
-									shadow: false,
-									showSeparator: false,
-									items: [
-										{
-											text: TR.i18n.manage_favorites,
-											iconCls: 'tr-menu-item-edit',
-											handler: function() {
-												if (TR.cmp.aggregateFavorite.window) {
-													TR.cmp.aggregateFavorite.window.show();
-												}
-												else {
-													TR.cmp.aggregateFavorite.window = Ext.create('Ext.window.Window', {
-														title: TR.i18n.manage_favorites,
-														iconCls: 'tr-window-title-favorite',
-														bodyStyle: 'padding:8px; background-color:#fff',
-														region: 'center',
-														width: TR.conf.layout.grid_favorite_width,
-														height: TR.conf.layout.grid_favorite_height,
-														closeAction: 'hide',
-														resizable: false,
-														modal: true,
-														resetForm: function() {
-															TR.cmp.aggregateFavorite.name.setValue('');
-														},
-														items: [
-															{
-																xtype: 'form',
-																bodyStyle: 'border-style:none',
-																items: [
-																	{
-																		xtype: 'textfield',
-																		cls: 'tr-textfield',
-																		fieldLabel: TR.i18n.name,
-																		maxLength: 160,
-																		enforceMaxLength: true,
-																		labelWidth: TR.conf.layout.form_label_width,
-																		width: TR.conf.layout.grid_favorite_width - 28,
-																		listeners: {
-																			added: function() {
-																				TR.cmp.aggregateFavorite.name = this;
-																			},
-																			change: function() {
-																				TR.cmp.aggregateFavorite.save.xable();
-																			}
-																		}
-																	}
-																]
-															},
-															{
-																xtype: 'grid',
-																width: TR.conf.layout.grid_favorite_width - 28,
-																scroll: 'vertical',
-																multiSelect: true,
-																columns: [
-																	{
-																		dataIndex: 'name',
-																		width: TR.conf.layout.grid_favorite_width - 139,
-																		style: 'display:none'
-																	},
-																	{
-																		dataIndex: 'lastUpdated',
-																		width: 111,
-																		style: 'display:none'
-																	}
-																],
-																setHeightInWindow: function(store) {
-																	var window = this.up('window');																	
-																	this.setHeight(window.getHeight() - 105);																	
-																	this.doLayout();
-																	this.up('window').doLayout();
-																},
-																store: TR.store.aggregateFavorite,
-																tbar: {
-																	id: 'favorite_t',
-																	cls: 'tr-toolbar-tbar',
-																	defaults: {
-																		height: 24
-																	},
-																	items: [
-																		{
-																			text: TR.i18n.sort_by + '..',
-																			cls: 'tr-toolbar-btn-2',
-																			listeners: {
-																				added: function() {
-																					TR.cmp.aggregateFavorite.sortby = this;
-																				},
-																				afterrender: function(b) {
-																					this.addCls('tr-menu-togglegroup');
-																					this.menu = Ext.create('Ext.menu.Menu', {
-																						margin: '-1 0 0 -1',
-																						shadow: false,
-                                                                                        showSeparator: false,
-																						width: 109,
-																						height: 67,
-																						items: [
-																							{
-																								xtype: 'radiogroup',
-																								cls: 'tr-radiogroup',
-																								columns: 1,
-																								vertical: true,
-																								items: [
-																									{
-																										boxLabel: TR.i18n.name,
-																										name: 'sortby',
-																										handler: function() {
-																											if (this.getValue()) {
-																												var store = TR.store.aggregateFavorite;
-																												store.sorting.field = 'name';
-																												store.sorting.direction = 'ASC';
-																												store.sortStore();
-																												this.up('menu').hide();
-																											}
-																										}
-																									},
-																									{
-																										boxLabel:  TR.i18n.last_updated,
-																										name: 'sortby',
-																										checked: true,
-																										handler: function() {
-																											if (this.getValue()) {
-																												var store = TR.store.aggregateFavorite;
-																												store.sorting.field = 'lastUpdated';
-																												store.sorting.direction = 'DESC';
-																												store.sortStore();
-																												this.up('menu').hide();
-																											}
-																										}
-																									}
-																								]
-																							}
-																						]
-																					});
-																				}
-																			}
-																		},
-																		'->',
-																		{
-																			text: TR.i18n.rename,
-																			cls: 'tr-toolbar-btn-2',
-																			disabled: true,
-																			xable: function() {
-																				if (TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection().length == 1) {
-																					TR.cmp.aggregateFavorite.rename.button.enable();
-																				}
-																				else {
-																					TR.cmp.aggregateFavorite.rename.button.disable();
-																				}
-																			},
-																			handler: function() {
-																				var selected = TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection()[0];
-																				var w = Ext.create('Ext.window.Window', {
-																					title: TR.i18n.rename_favorite,
-																					layout: 'fit',
-																					width: TR.conf.layout.window_confirm_width,
-																					bodyStyle: 'padding:10px 5px; background-color:#fff; text-align:center',
-																					modal: true,
-																					cmp: {},
-																					items: [
-																						{
-																							xtype: 'textfield',
-																							cls: 'tr-textfield',
-																							maxLength: 160,
-																							enforceMaxLength: true,
-																							value: selected.data.name,
-																							listeners: {
-																								added: function() {
-																									this.up('window').cmp.name = this;
-																								},
-																								change: function() {
-																									this.up('window').cmp.rename.xable();
-																								}
-																							}
-																						}
-																					],
-																					bbar: [
-																						{
-																							xtype: 'label',
-																							style: 'padding-left:2px; line-height:22px; font-size:10px; color:#666; width:50%',
-																							listeners: {
-																								added: function() {
-																									TR.cmp.aggregateFavorite.rename.label = this;
-																								}
-																							}
-																						},
-																						'->',
-																						{
-																							text: TR.i18n.cancel,
-																							handler: function() {
-																								this.up('window').close();
-																							}
-																						},
-																						{
-																							text: TR.i18n.rename,
-																							disabled: true,
-																							xable: function() {
-																								var value = this.up('window').cmp.name.getValue();
-																								if (value) {
-																									if (TR.store.aggregateFavorite.findExact('name', value) == -1) {
-																										this.enable();
-																										TR.cmp.aggregateFavorite.rename.label.setText('');
-																										return;
-																									}
-																									else {
-																										TR.cmp.aggregateFavorite.rename.label.setText(TR.i18n.name_already_in_use);
-																									}
-																								}
-																								this.disable();
-																							},
-																							handler: function() {
-																								TR.util.crud.favorite.updateName(this.up('window').cmp.name.getValue());
-																							},
-																							listeners: {
-																								afterrender: function() {
-																									this.up('window').cmp.rename = this;
-																								},
-																								change: function() {
-																									this.xable();
-																								}
-																							}
-																						}
-																					],
-																					listeners: {
-																						afterrender: function() {
-																							TR.cmp.aggregateFavorite.rename.window = this;
-																						}
-																					}
-																				});
-																				w.setPosition((screen.width/2)-(TR.conf.layout.window_confirm_width/2), TR.conf.layout.window_favorite_ypos + 100, true);
-																				w.show();
-																			},
-																			listeners: {
-																				added: function() {
-																					TR.cmp.aggregateFavorite.rename.button = this;
-																				}
-																			}
-																		},
-																		{
-																			text: TR.i18n.delete_object,
-																			cls: 'tr-toolbar-btn-2',
-																			disabled: true,
-																			xable: function() {
-																				if (TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection().length) {
-																					TR.cmp.aggregateFavorite.del.enable();
-																				}
-																				else {
-																					TR.cmp.aggregateFavorite.del.disable();
-																				}
-																			},
-																			handler: function() {
-																				var sel = TR.cmp.aggregateFavorite.grid.getSelectionModel().getSelection();
-																				if (sel.length) {
-																					var str = '';
-																					for (var i = 0; i < sel.length; i++) {
-																						var out = sel[i].data.name.length > 35 ? (sel[i].data.name.substr(0,35) + '...') : sel[i].data.name;
-																						str += '<br/>' + out;
-																					}
-																					var w = Ext.create('Ext.window.Window', {
-																						title: TR.i18n.delete_favorite,
-																						width: TR.conf.layout.window_confirm_width,
-																						bodyStyle: 'padding:10px 5px; background-color:#fff; text-align:center',
-																						modal: true,
-																						items: [
-																							{
-																								html: TR.i18n.are_you_sure,
-																								bodyStyle: 'border-style:none'
-																							},
-																							{
-																								html: str,
-																								cls: 'tr-window-confirm-list'
-																							}                                                                                                    
-																						],
-																						bbar: [
-																							{
-																								text: TR.i18n.cancel,
-																								handler: function() {
-																									this.up('window').close();
-																								}
-																							},
-																							'->',
-																							{
-																								text: TR.i18n.delete_object,
-																								handler: function() {
-																									this.up('window').close();
-																									TR.util.crud.favorite.del(function() {
-																										TR.cmp.aggregateFavorite.name.setValue('');
-																										TR.cmp.aggregateFavorite.window.down('grid').setHeightInWindow(TR.store.aggregateFavorite);
-																									});                                                                                                        
-																								}
-																							}
-																						]
-																					});
-																					w.setPosition((screen.width/2)-(TR.conf.layout.window_confirm_width/2), TR.conf.layout.window_favorite_ypos + 100, true);
-																					w.show();
-																				}
-																			},
-																			listeners: {
-																				added: function() {
-																					TR.cmp.aggregateFavorite.del = this;
-																				}
-																			}
-																		}
-																	]
-																},
-																listeners: {
-																	added: function() {
-																		TR.cmp.aggregateFavorite.grid = this;
-																	},
-																	itemclick: function(g, r) {
-																		TR.cmp.aggregateFavorite.name.setValue(r.data.name);
-																		TR.cmp.aggregateFavorite.rename.button.xable();
-																		TR.cmp.aggregateFavorite.del.xable();
-																	},
-																	itemdblclick: function() {
-																		if (TR.cmp.aggregateFavorite.save.xable()) {
-																			TR.cmp.aggregateFavorite.save.handler();
-																		}
-																	}
-																}
-															}
-														],
-														bbar: {
-															cls: 'tr-toolbar-bbar',
-															defaults: {
-																height: 24
-															},
-															items: [
-																{
-																	xtype: 'label',
-																	style: 'padding-left:2px; line-height:22px; font-size:10px; color:#666; width:70%',
-																	listeners: {
-																		added: function() {
-																			TR.cmp.aggregateFavorite.label = this;
-																		}
-																	}
-																},																
-																'->',
-																{
-																	text: TR.i18n.save,
-																	disabled: true,
-																	xable: function() {
-																		if (TR.cmp.aggregateFavorite.name.getValue()) {
-																			var index = TR.store.aggregateFavorite.findExact('name', TR.cmp.aggregateFavorite.name.getValue());
-																			if (index != -1) {
-																				this.enable();
-																				TR.cmp.aggregateFavorite.label.setText('');
-																				return true;
-																			}
-																			else {
-																				this.enable();
-																				TR.cmp.aggregateFavorite.label.setText('');
-																				return true;
-																			}
-																		}
-																		else {
-																			TR.cmp.aggregateFavorite.label.setText('');
-																		}
-																		
-																		this.disable();
-																		return false;
-																	},
-																	handler: function() {
-																		if (this.xable()) {
-																			var value = TR.cmp.aggregateFavorite.name.getValue();
-																			if (TR.store.aggregateFavorite.findExact('name', value) != -1) {
-																				var item = value.length > 40 ? (value.substr(0,40) + '...') : value;
-																				var w = Ext.create('Ext.window.Window', {
-																					title: TR.i18n.save_favorite,
-																					width: TR.conf.layout.window_confirm_width,
-																					bodyStyle: 'padding:10px 5px; background-color:#fff; text-align:center',
-																					modal: true,
-																					items: [
-																						{
-																							html: TR.i18n.are_you_sure,
-																							bodyStyle: 'border-style:none'
-																						},
-																						{
-																							html: '<br/>' + item,
-																							cls: 'tr-window-confirm-list'
-																						}
-																					],
-																					bbar: [
-																						{
-																							text: TR.i18n.cancel,
-																							handler: function() {
-																								this.up('window').close();
-																							}
-																						},
-																						'->',
-																						{
-																							text: TR.i18n.overwrite,
-																							handler: function() {
-																								this.up('window').close();
-																								TR.util.crud.favorite.update(function() {
-																									TR.cmp.aggregateFavorite.window.resetForm();
-																								});
-																								
-																							}
-																						}
-																					]
-																				});
-																				w.setPosition((screen.width/2)-(TR.conf.layout.window_confirm_width/2), TR.conf.layout.window_favorite_ypos + 100, true);
-																				w.show();
-																			}
-																			else {
-																				TR.util.crud.favorite.create(function() {
-																					TR.cmp.aggregateFavorite.window.resetForm();
-																					TR.cmp.aggregateFavorite.window.down('grid').setHeightInWindow(TR.store.aggregateFavorite);
-																				});
-																			}                                                                                    
-																		}
-																	},
-																	listeners: {
-																		added: function() {
-																			TR.cmp.aggregateFavorite.save = this;
-																		}
-																	}
-																}
-															]
-														},
-														listeners: {
-															show: function() {                                               
-																TR.cmp.aggregateFavorite.save.xable();
-																this.down('grid').setHeightInWindow(TR.store.aggregateFavorite);
-															}
-														}
-													});
-													var w = TR.cmp.aggregateFavorite.window;
-													w.setPosition((screen.width/2)-(TR.conf.layout.grid_favorite_width/2), TR.conf.layout.window_favorite_ypos, true);
-													w.show();
-												}
-											},
-											listeners: {
-												added: function() {
-													TR.cmp.toolbar.menuitem.datatable = this;
-												}
-											}
-										},
-										'-',
-										{
-											xtype: 'grid',
-											cls: 'tr-menugrid',
-											width: 420,
-											scroll: 'vertical',
-											columns: [
-												{
-													dataIndex: 'icon',
-													width: 25,
-													style: 'display:none'
-												},
-												{
-													dataIndex: 'name',
-													width: 285,
-													style: 'display:none'
-												},
-												{
-													dataIndex: 'lastUpdated',
-													width: 110,
-													style: 'display:none'
-												}
-											],
-											setHeightInMenu: function(store) {
-												var h = store.getCount() * 26,
-													sh = TR.util.viewport.getSize().y * 0.6;
-												this.setHeight(h > sh ? sh : h);
-												this.doLayout();
-												this.up('menu').doLayout();
-											},
-											store: TR.store.aggregateFavorite,
-											listeners: {
-												itemclick: function(g, r) {
-													g.getSelectionModel().select([], false);
-													this.up('menu').hide();
-													TR.util.crud.favorite.run(r.data.id);
-												}
-											}
-										}
-									],
-									listeners: {
-										show: function() {
-											if (!TR.store.aggregateFavorite.isloaded) {
-												TR.store.aggregateFavorite.load({scope: this, callback: function() {
-													this.down('grid').setHeightInMenu(TR.store.aggregateFavorite);
-												}});
-											}
-											else {
-												this.down('grid').setHeightInMenu(TR.store.aggregateFavorite);
-											}
-										}
-									}
-								});
+							added: function() {
+								TR.cmp.toolbar.favorite = this;
 							}
 						}
 					},
 					{
 						xtype: 'button',
-						text: TR.i18n.download + '..',
+						text: TR.i18n.download,
 						menu: {},
 						execute: function(type) {
 							TR.exe.execute( type );
@@ -6038,7 +5890,7 @@ Ext.onReady( function() {
 					{
 						xtype: 'button',
 						cls: 'tr-toolbar-btn-2',
-						text: 'Exit',
+						text: TR.i18n.home,
 						handler: function() {
 							window.location.href = TR.conf.finals.ajax.path_commons + TR.conf.finals.ajax.redirect;
 						}

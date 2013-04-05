@@ -173,6 +173,6 @@ public class TransformerTask
         log.info( "transform successful - importing dxf" );
 
         // set reader to output of pipe
-        return new DefaultXMLEventReader( (XMLEventReader2) pipeoutput );
+        return new DefaultXMLEventReader( pipeoutput );
     }
 }

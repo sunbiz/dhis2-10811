@@ -72,35 +72,10 @@
 				<tr id="tr${dataElement.id}">
 					<td onclick="showDataElementDetails( $dataElement.id )">$encoder.htmlEncode( $dataElement.displayName )</td>
 					<td style="text-align:right">
-
-                    #* Hide sharing controls for 2.11 release
-                    #if ( $security.canManage( $dataElement ) )
-                    <a href="javascript:showSharingDialog('dataElement', '$dataElement.uid');"><img src="../images/relationship.png" alt="$i18n.getString( 'sharing_settings' )"></a>
-                    #else
-                    <img src="../images/relationship-denied.png">
-                    #end
-                    *#
-
-                    #if( $security.canUpdate( $dataElement ) )
-                    <a href="showUpdateDataElementForm.action?id=$dataElement.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
-                    #else
-                    <img src="../images/edit-denied.png">
-                    #end
-
-                    #if( $security.canUpdate( $dataElement ) )
-                    <a href="javascript:translate( 'DataElement', '$dataElement.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
-                    #else
-                    <img src="../images/i18n-denied.png">
-                    #end
-
-                    #if( $security.canDelete( $dataElement ) )
-                    <a href="javascript:removeDataElement( $dataElement.id, '$encoder.jsEncode( $dataElement.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
-                    #else
-                    <img src="../images/delete-denied.png">
-                    #end
-
-                    <a href="javascript:showDataElementDetails( $dataElement.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
-
+                        <a href="showUpdateDataElementForm.action?id=$dataElement.id" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"/></a>
+                        <a href="javascript:translate( 'DataElement', '$dataElement.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>
+                        <a href="javascript:removeDataElement( $dataElement.id, '$encoder.jsEncode( $dataElement.displayName )' )" title="$i18n.getString( 'remove' )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"/></a>
+                        <a href="javascript:showDataElementDetails( $dataElement.id )" title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"/></a>
 					</td>
 				</tr>
 				#end

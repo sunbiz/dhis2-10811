@@ -142,7 +142,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         private Set<DataElementOperand> greyedFields = new HashSet<DataElementOperand>();
 
         private DataEntryForm dataEntryForm;
-
+        
         public void extract( T object )
         {
             attributeValues = extractAttributeValues( object );

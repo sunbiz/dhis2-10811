@@ -27,13 +27,31 @@
 
 package org.hisp.dhis.light.beneficiaryregistration.action;
 
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionContext;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 import org.hisp.dhis.light.utils.FormUtils;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
-import org.hisp.dhis.patient.*;
+import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientAttribute;
+import org.hisp.dhis.patient.PatientAttributeOption;
+import org.hisp.dhis.patient.PatientAttributeOptionService;
+import org.hisp.dhis.patient.PatientAttributeService;
+import org.hisp.dhis.patient.PatientIdentifier;
+import org.hisp.dhis.patient.PatientIdentifierService;
+import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientIdentifierTypeService;
+import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
@@ -42,8 +60,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 
 public class SaveBeneficiaryAction
     implements Action
@@ -405,7 +423,7 @@ public class SaveBeneficiaryAction
         }
 
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
-            ServletActionContext.HTTP_REQUEST );
+            StrutsStatics.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
 
         // Add Identifier and Attributes
@@ -428,7 +446,7 @@ public class SaveBeneficiaryAction
 
                 PatientIdentifier duplicateId = null;
 
-                if ( !value.isEmpty() )
+                if ( value != null && !value.isEmpty() )
                 {
                     duplicateId = patientIdentifierService.get( patientIdentifierType, value );
                 }

@@ -487,7 +487,7 @@ function enableBtn(){
 	{
 		var programIdAddPatient = getFieldValue('programIdAddPatient');
 		if( programIdAddPatient!='' ){
-			disable('listPatientBtn');
+			enable('listPatientBtn');
 			enable('addPatientBtn');
 			enable('advancedSearchBtn');
 			enable('scheduledVisitDays');

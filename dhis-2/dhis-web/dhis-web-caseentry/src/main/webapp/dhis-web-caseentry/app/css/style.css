@@ -811,3 +811,93 @@ TR.utilbody {
     background-image: -moz-linear-gradient(center top , #F1F1F1, #F5F5F5);
     border-color: #D0D0D0;
 }
+
+/* Window bbar info */
+.tr-label-info {
+	font-size: 10px !important;
+	color: #666;
+	padding-left: 4px;
+	height: 22px;
+	line-height: 21px;
+}
+
+/*----------------------------------------------------------------------------
+ * Grid
+ *--------------------------------------------------------------------------*/
+
+.tr-grid-row-icon-edit,
+.tr-grid-row-icon-overwrite,
+.tr-grid-row-icon-sharing,
+.tr-grid-row-icon-dashboard,
+.tr-grid-row-icon-delete {
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.tr-grid-row-icon-edit {
+	background: url('../images/grid-edit_16.png') no-repeat;
+}
+.tr-grid-row-icon-overwrite {
+	background: url('../images/grid-save_16.png') no-repeat;
+	margin-left: 4px;
+}
+.tr-grid-row-icon-sharing {
+	background: url('../images/grid-sharing_16.png') no-repeat;
+	margin-left: 4px;
+}
+.tr-grid-row-icon-dashboard {
+	background: url('../images/grid-dashboard_16.png') no-repeat;
+	margin-left: 4px;
+}
+.tr-grid-row-icon-delete {
+	background: url('../images/grid-delete_16.png') no-repeat;
+	margin-left: 4px;
+}
+
+.tr-grid-row-icon-disabled img.tr-grid-row-icon-sharing,
+.tr-grid-row-icon-disabled img.tr-grid-row-icon-dashboard {
+	cursor: pointer !important;
+}
+
+.tr-grid .x-grid-cell-inner,
+.tr-grid .x-grid-cell-inner * {
+	font-size: 10px !important;
+}
+.tr-grid {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+.x-grid-cell-inner {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.tr-grid .x-column-header-text {
+	color: #333;
+}
+.tr-grid .x-grid-header-ct {
+	border-bottom-width: 1px !important;
+	border-bottom-color: #d0d0d0;
+}
+.tr-grid .x-grid-body {
+	border: 1px solid #d0d0d0;
+	border-top: 1 solid #d0d0d0 !important;
+}
+
+.tr-grid .x-grid-dirty-cell { /* hide red "dirty" icon */
+	background-image: none;
+}
+.tr-grid .x-grid-row { /* middle align text in row with image */
+	vertical-align: middle;
+}
+.tr-grid .x-grid-row .x-grid-cell { /* remove blurry borders */
+	border-top: 0 none;
+}
+
+.tr-grid .link,
+.tr-grid .link * {
+	cursor: pointer;
+	cursor: hand;
+	color: blue;
+	text-decoration: underline;
+}

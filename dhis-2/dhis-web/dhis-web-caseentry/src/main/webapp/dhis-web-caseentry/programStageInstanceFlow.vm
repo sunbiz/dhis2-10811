@@ -24,6 +24,7 @@
 								name="ps_$!programStageInstance.id"
 								pi="$programInstance.id"
 								psid="$programStageInstance.programStage.id"
+								psuid="$programStageInstance.programStage.uid"
 								psname="$programStageInstance.programStage.displayName"
 								status="$programStageInstance.getEventStatus()"
 								programType='$programInstance.program.type'

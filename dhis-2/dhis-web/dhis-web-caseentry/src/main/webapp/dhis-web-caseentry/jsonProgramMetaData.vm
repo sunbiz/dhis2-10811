@@ -7,17 +7,11 @@
 "description":"$encoder.jsonEncode( ${program.description} )",
 "enrollmentDescription":"$encoder.jsonEncode( ${program.dateOfEnrollmentDescription} )",
 "incidentDescription":"$encoder.jsonEncode( ${program.dateOfIncidentDescription} )",
-"programStages":[
-#set( $pssize = $program.programStages.size() )
+"programStages":[#set( $pssize = $program.programStages.size() )
 #foreach( $ps in $program.programStages )
 { "id": "${ps.id}", "name": "$encoder.jsonEncode( ${ps.displayName} )", "reportDateDescription": "$encoder.jsonEncode( ${ps.reportDateDescription} )" }#if( $velocityCount < $pssize ),#end
-#end
-]
+#end],
+"programAssociations": $programAssociations.get(${program.id})
 }#if( $velocityCount < $psize ),#end
-#end },
-"programAssociations": {
-#set( $psize = $programAssociations.size() )
-#foreach( $ou in $programAssociations.keySet() )
-"${ou}":$programAssociations.get(${ou})#if( $velocityCount < $psize ),#end
-#end
-}}}
+#end }
+}}

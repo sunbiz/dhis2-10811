@@ -51,6 +51,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.program.ProgramStageInstanceService;
 
 import com.opensymphony.xwork2.Action;
@@ -210,7 +211,6 @@ public class CaseAggregationResultAction
     public String execute()
         throws Exception
     {
-
         // ---------------------------------------------------------------------
         // Get CaseAggregateCondition list
         // ---------------------------------------------------------------------
@@ -227,7 +227,7 @@ public class CaseAggregationResultAction
         Date sDate = format.parseDate( startDate );
         Date eDate = format.parseDate( endDate );
 
-        CalendarPeriodType periodType = (CalendarPeriodType) CalendarPeriodType.getPeriodTypeByName( selectedDataSet
+        CalendarPeriodType periodType = (CalendarPeriodType) PeriodType.getPeriodTypeByName( selectedDataSet
             .getPeriodType().getName() );
 
         periods.addAll( periodType.generatePeriods( sDate, eDate ) );
@@ -277,7 +277,7 @@ public class CaseAggregationResultAction
 
                 for ( Period period : periods )
                 {
-                    Integer resultValue = aggregationConditionService.parseConditition( condition, orgUnit, period );
+                    Double resultValue = aggregationConditionService.getAggregateValue( condition, orgUnit, period );
                     DataValue dataValue = dataValueService.getDataValue( orgUnit, dElement, period, optionCombo );
 
                     String key = orgUnitId + "-" + format.formatPeriod( period );

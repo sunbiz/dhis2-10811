@@ -70,7 +70,7 @@
 										</td>        
 										##entry        
 										<td class='input-column'>   
-											#set( $id = $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val' )
+											#set( $id = $programStageDataElement.programStage.uid + '-' + $programStageDataElement.dataElement.uid + '-val' )
 											#if( $!programStageDataElement.dataElement.optionSet )
 												#set($hasOptionSet = 'true')
 											#else
@@ -109,12 +109,12 @@
 											#elseif( $programStageDataElement.dataElement.type == "date" )
 												<input name="entryfield" class='datefield' type="text" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )" class="{validate:{$validate}}">
 												<script type="text/javascript">
-													datePicker( $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false, false);
+													datePicker( '$programStageDataElement.programStage.uid' + '-' + '$programStageDataElement.dataElement.uid' + '-val', false, false);
 												</script> 
 											#elseif($hasOptionSet=='true')
 												<input name="entryfield" options='$hasOptionSet' id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" class="option {validate:{$validate}}" />
 											#elseif($programStageDataElement.dataElement.type=='username')
-												<input name="entryfield" username='true' class="auto-field optionset" dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" />
+												<input name="entryfield" username='true' class="auto-field optionset" data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" />
 											#else
 												<input name="entryfield" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" class="{validate:{$validate}}" />
 											#end
@@ -122,7 +122,7 @@
 											
 										<td>
 										#if( $programStage.program.displayProvidedOtherFacility=='true' )
-											#set( $id = $programStageDataElement.programStage.id + '_' + $programStageDataElement.dataElement.id + '_facility' )
+											#set( $id = $programStageDataElement.programStage.uid + '_' + $programStageDataElement.dataElement.uid + '_facility' )
 											#if( $programStageDataElement.allowProvidedElsewhere == 'true')
 												<input class='provided-elsewhere' name="$id" id="$id" type="checkbox" title="$i18n.getString('provided_elsewhere') ?"/>
 											#else
@@ -175,7 +175,7 @@
 		</td>        
 		##entry        
 		<td class='input-column'>   
-			#set( $id = $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val' )
+			#set( $id = $programStageDataElement.programStage.uid + '-' + $programStageDataElement.dataElement.uid + '-val' )
 			#if( $!programStageDataElement.dataElement.optionSet )
 				#set($hasOptionSet = 'true')
 			#else
@@ -214,17 +214,17 @@
 			#elseif( $programStageDataElement.dataElement.type == "date" )
 				<input name="entryfield" class='datefield' type="text" id="$id" name="entryfield" value="$!encoder.htmlEncode( $patientDataValue.value )"class="{validate:{$validate}}">
 				<script type="text/javascript">
-					datePicker( $programStageDataElement.programStage.id + '-' + $programStageDataElement.dataElement.id + '-val', false, false);
+					datePicker( '$programStageDataElement.programStage.uid' + '-' + '$programStageDataElement.dataElement.uid' + '-val', false, false);
 				</script> 
 			#elseif($hasOptionSet=='true')
 				<input name="entryfield" options='$hasOptionSet' id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" class="option {validate:{$validate}}" />
 			#elseif($programStageDataElement.dataElement.type=='username')
-				<input name="entryfield" username='true' class="auto-field optionset" dataElementId='$programStageDataElement.dataElement.id' data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" />
+				<input name="entryfield" username='true' class="auto-field optionset" data="{compulsory: $programStageDataElement.compulsory, deName:'$programStageDataElement.dataElement.name', deType:'$programStageDataElement.dataElement.getDetailedNumberType()' }" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" onkeypress="return keyPress(event, this)" tabindex="$tabIndex" />
 			#else
 				<input name="entryfield" id="$id" type="text" value="$!encoder.htmlEncode( $patientDataValue.value )" class="{validate:{$validate}}" />
 			#end
 			#if( $programStage.program.displayProvidedOtherFacility=='true' )
-				#set( $id = $programStageDataElement.programStage.id + '_' + $programStageDataElement.dataElement.id + '_facility' )
+				#set( $id = $programStageDataElement.programStage.uid + '_' + $programStageDataElement.dataElement.uid + '_facility' )
 				#if( $programStageDataElement.allowProvidedElsewhere == 'true')
 					<input class='provided-elsewhere' name="$id" id="$id" type="checkbox" title="$i18n.getString('provided_elsewhere') ?"/>
 				#else

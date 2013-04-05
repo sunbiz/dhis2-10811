@@ -129,7 +129,6 @@ public class DataValueSetController
 
     @ExceptionHandler(IllegalArgumentException.class)
     public void handleError( IllegalArgumentException ex, HttpServletResponse response )
-        throws IOException
     {
         ContextUtils.conflictResponse( response, ex.getMessage() );
     }

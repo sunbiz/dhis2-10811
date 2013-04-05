@@ -267,10 +267,6 @@ public class AddProgramAction
         program.setPatientAttributes( patientAttributes );
 
         programService.saveProgram( program );
-
-        program.setPublicAccess( "rw------" );
-        program.setUser( currentUserService.getCurrentUser() );
-        programService.updateProgram( program );
         
         if ( program.getType().equals( Program.SINGLE_EVENT_WITH_REGISTRATION )
             || program.getType().equals( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) )

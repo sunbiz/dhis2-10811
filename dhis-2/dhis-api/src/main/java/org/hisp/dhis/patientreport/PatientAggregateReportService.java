@@ -33,7 +33,7 @@ import org.hisp.dhis.user.User;
 
 /**
  * @author Chau Thu Tran
- *
+ * 
  * @version PatientAggregateReportService.java 11:35:43 AM Jan 10, 2013 $
  */
 public interface PatientAggregateReportService
@@ -47,6 +47,9 @@ public interface PatientAggregateReportService
     void deletePatientAggregateReport( PatientAggregateReport patientAggregateReport );
 
     Collection<PatientAggregateReport> getAllPatientAggregateReports();
+
+    Collection<PatientAggregateReport> getPatientAggregateReports( User user, String query, Integer min, Integer max );
     
-    Collection<PatientAggregateReport> getPatientAggregateReports( User user );
+    int countPatientAggregateReportList( User user, String query );
+
 }

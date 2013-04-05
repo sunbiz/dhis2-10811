@@ -40,5 +40,7 @@ import org.hisp.dhis.user.User;
 public interface PatientAggregateReportStore
     extends GenericIdentifiableObjectStore<PatientAggregateReport>
 {
-    Collection<PatientAggregateReport> get( User user );
+    Collection<PatientAggregateReport> get( User user, String query, Integer min, Integer max );
+    
+    int countList( User user, String query );
 }

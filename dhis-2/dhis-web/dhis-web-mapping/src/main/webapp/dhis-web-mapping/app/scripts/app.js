@@ -99,7 +99,7 @@ Ext.onReady( function() {
 
 		util.map.getTransformedPointByXY = function(x, y) {
 			var p = new OpenLayers.Geometry.Point(parseFloat(x), parseFloat(y));
-			return p.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+			return p.transform(new OpenLayers.Projection('EPSG:4326'), new OpenLayers.Projection('EPSG:900913'));
 		};
 
 		util.map.getLonLatByXY = function(x, y) {
@@ -169,7 +169,7 @@ Ext.onReady( function() {
 			for (var i = layers.length - 1; i > 0; i--) {
 				if (layers[i].id === gis.layer.facility.id) {
 					layers.splice(i, 1);
-					console.log('Facility layer export currently not supported');
+					console.log(GIS.i18n.facility_layer_export_currently_not_supported);
 				}
 			}
 
@@ -240,7 +240,7 @@ Ext.onReady( function() {
 		util.json = {};
 
 		util.json.encodeString = function(str) {
-			return typeof str === 'string' ? str.replace(/[^a-zA-Z 0-9(){}<>_!+;:?*&%#-]+/g,'') : str;
+			return Ext.isString(str) ? str.replace(/[^a-zA-Z 0-9(){}<>_!+;:?*&%#-]+/g,'') : str;
 		};
 
 		util.json.decodeAggregatedValues = function(responseText) {
@@ -748,7 +748,7 @@ Ext.onReady( function() {
 			item;
 
 		item = {
-			text: 'Edit layer..', //i18n
+			text: GIS.i18n.edit_layer,
 			iconCls: 'gis-menu-item-icon-edit',
 			cls: 'gis-menu-item-first',
 			alwaysEnabled: true,
@@ -764,7 +764,7 @@ Ext.onReady( function() {
 		});
 
 		item = {
-			text: 'Labels..', //i18n
+			text: GIS.i18n.labels,
 			iconCls: 'gis-menu-item-icon-labels',
 			handler: function() {
 				if (layer.labelWindow) {
@@ -780,7 +780,7 @@ Ext.onReady( function() {
 
 		if (layer.id !== gis.layer.boundary.id) {
 			item = {
-				text: 'Filter..', //i18n
+				text: GIS.i18n.filter + '..',
 				iconCls: 'gis-menu-item-icon-filter',
 				handler: function() {
 					if (layer.filterWindow) {
@@ -790,7 +790,7 @@ Ext.onReady( function() {
 						else {
 							layer.filterWindow.destroy();
 						}
-					}organisationUnitLe
+					}
 
 					layer.filterWindow = layer.id === gis.layer.facility.id ?
 						GIS.app.FilterWindowFacility(layer) : GIS.app.FilterWindow(layer);
@@ -801,7 +801,7 @@ Ext.onReady( function() {
 		}
 
 		item = {
-			text: 'Search..', //i18n
+			text: GIS.i18n.search,
 			iconCls: 'gis-menu-item-icon-search',
 			handler: function() {
 				if (layer.searchWindow) {
@@ -825,7 +825,7 @@ Ext.onReady( function() {
 		});
 
 		item = {
-			text: 'Close', //i18n
+			text: GIS.i18n.close,
 			iconCls: 'gis-menu-item-icon-clear',
 			handler: function() {
 				gis.viewport.interpretationButton.disable();
@@ -940,7 +940,7 @@ Ext.onReady( function() {
 			bbar: [
 				'->',
 				{
-					text: 'Update', //i18n
+					text: GIS.i18n.update,
 					handler: function() {
 						var view = layer.widget.getView();
 
@@ -980,7 +980,7 @@ Ext.onReady( function() {
 
 		if (!data.length) {
 			GIS.logg.push([data, layer.id + '.search.data: feature ids/names']);
-			alert('Layer has no organisation units'); //todo
+			alert(GIS.i18n.layer + ' ' + GIS.i18n.has_no_orgunits);
 			return;
 		}
 
@@ -1440,7 +1440,7 @@ Ext.onReady( function() {
 						items: [
 							{
 								cls: 'gis-panel-html-label',
-								html: 'Color:', //i18n
+								html: GIS.i18n.color + ':',
 								width: gis.conf.layout.tool.itemlabel_width
 							},
 							color
@@ -1452,7 +1452,7 @@ Ext.onReady( function() {
 				'->',
 				{
 					xtype: 'button',
-					text: 'Show / hide', //i18n
+					text: GIS.i18n.showhide,
 					handler: function() {
 						if (layer.hasLabels) {
 							layer.hasLabels = false;
@@ -1505,12 +1505,12 @@ Ext.onReady( function() {
 
 			getData = function() {
 				var data = [
-					{id: 'r-------', name: 'Can view'}, //i18n
-					{id: 'rw------', name: 'Can edit and view'}
+					{id: 'r-------', name: GIS.i18n.can_view},
+					{id: 'rw------', name: GIS.i18n.can_edit_and_view}
 				];
 
 				if (isPublicAccess) {
-					data.unshift({id: '-------', name: 'None'});
+					data.unshift({id: '-------', name: GIS.i18n.none});
 				}
 
 				return data;
@@ -1525,7 +1525,7 @@ Ext.onReady( function() {
 				var items = [];
 
 				combo = Ext.create('Ext.form.field.ComboBox', {
-					fieldLabel: isPublicAccess ? 'Public access' : obj.name, //i18n
+					fieldLabel: isPublicAccess ? GIS.i18n.public_access : obj.name,
 					labelStyle: 'color:#333',
 					cls: 'gis-combo',
 					width: 380,
@@ -1621,7 +1621,7 @@ Ext.onReady( function() {
 		userGroupField = Ext.create('Ext.form.field.ComboBox', {
 			valueField: 'id',
 			displayField: 'name',
-			emptyText: 'Search for user groups', //i18n
+			emptyText: GIS.i18n.search_for_user_groups,
 			queryParam: 'key',
 			queryDelay: 200,
 			minChars: 1,
@@ -1812,7 +1812,7 @@ Ext.onReady( function() {
 			});
 
 			createButton = Ext.create('Ext.button.Button', {
-				text: 'Create', //i18n
+				text: GIS.i18n.create,
 				handler: function() {
 					var name = nameTextfield.getValue(),
 						layers = gis.util.map.getVisibleVectorLayers(),
@@ -1874,7 +1874,7 @@ Ext.onReady( function() {
 			});
 
 			updateButton = Ext.create('Ext.button.Button', {
-				text: 'Update', //i18n
+				text: GIS.i18n.update,
 				handler: function() {
 					var name = nameTextfield.getValue();
 
@@ -1890,7 +1890,7 @@ Ext.onReady( function() {
 			});
 
 			cancelButton = Ext.create('Ext.button.Button', {
-				text: 'Cancel', //i18n
+				text: GIS.i18n.cancel,
 				handler: function() {
 					window.destroy();
 				}
@@ -1919,7 +1919,7 @@ Ext.onReady( function() {
 		};
 
 		addButton = Ext.create('Ext.button.Button', {
-			text: 'Add new', //i18n
+			text: GIS.i18n.add_new,
 			width: 67,
 			height: 26,
 			style: 'border-radius: 1px;',
@@ -1934,7 +1934,7 @@ Ext.onReady( function() {
 			width: windowCmpWidth - addButton.width - 11,
 			height: 26,
 			fieldStyle: 'padding-right: 0; padding-left: 6px; border-radius: 1px; border-color: #bbb; font-size:11px',
-			emptyText: 'Search for favorites', //i18n
+			emptyText: GIS.i18n.search_for_favorites,
 			enableKeyEvents: true,
 			currentValue: '',
 			listeners: {
@@ -1954,7 +1954,7 @@ Ext.onReady( function() {
 		});
 
 		prevButton = Ext.create('Ext.button.Button', {
-			text: 'Prev', //i18n
+			text: GIS.i18n.prev,
 			handler: function() {
 				var value = searchTextfield.getValue(),
 					url = value ? gis.baseUrl + gis.conf.url.path_api +  'maps/query/' + value + '.json?links=false' : null,
@@ -1966,7 +1966,7 @@ Ext.onReady( function() {
 		});
 
 		nextButton = Ext.create('Ext.button.Button', {
-			text: 'Next', //i18n
+			text: GIS.i18n.next,
 			handler: function() {
 				var value = searchTextfield.getValue(),
 					url = value ? gis.baseUrl + gis.conf.url.path_api +  'maps/query/' + value + '.json?links=false' : null,
@@ -2100,7 +2100,7 @@ Ext.onReady( function() {
 										}
 									}
 									else {
-										alert('No layers to save'); //i18n
+										alert(GIS.i18n.no_map_to_save);
 									}
 								}
 							}
@@ -2220,7 +2220,7 @@ Ext.onReady( function() {
 							var el = editArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Rename', //i18n
+								html: GIS.i18n.rename,
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -2231,7 +2231,7 @@ Ext.onReady( function() {
 							el = overwriteArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Overwrite', //i18n
+								html: GIS.i18n.overwrite,
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -2242,7 +2242,7 @@ Ext.onReady( function() {
 							el = sharingArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Share with other people', //i18n
+								html: GIS.i18n.share_with_other_people,
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -2253,7 +2253,7 @@ Ext.onReady( function() {
 							el = dashboardArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Add to dashboard', //i18n
+								html: GIS.i18n.add_to_dashboard,
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -2264,7 +2264,7 @@ Ext.onReady( function() {
 							el = deleteArray[i];
 							Ext.create('Ext.tip.ToolTip', {
 								target: el,
-								html: 'Delete', //i18n
+								html: GIS.i18n.delete_,
 								'anchor': 'bottom',
 								anchorOffset: -14,
 								showDelay: 1000
@@ -2416,7 +2416,7 @@ Ext.onReady( function() {
 				addButton;
 
 			addButton = Ext.create('Ext.button.Button', {
-				text: 'Add new', //i18n
+				text: GIS.i18n.add_new,
 				height: 26,
 				style: 'border-radius: 1px',
 				menu: {},
@@ -2566,7 +2566,7 @@ Ext.onReady( function() {
 				width: 428,
 				height: 25,
 				fieldStyle: 'padding-left: 6px; border-color: #bbb',
-				fieldLabel: 'Legend set name' //i18n
+				fieldLabel: GIS.i18n.legend_set_name
 			});
 
 			legendName = Ext.create('Ext.form.field.Text', {
@@ -2574,7 +2574,7 @@ Ext.onReady( function() {
 				fieldStyle: 'padding-left: 6px',
 				width: 415,
 				height: 23,
-				fieldLabel: 'Legend name' //i18n
+				fieldLabel: GIS.i18n.legend_name
 			});
 
 			startValue = Ext.create('Ext.form.field.Number', {
@@ -2597,13 +2597,13 @@ Ext.onReady( function() {
 			color = Ext.create('Ext.ux.button.ColorButton', {
 				width: 310,
 				height: 23,
-				fieldLabel: 'Symbolizer', //i18n
+				fieldLabel: GIS.i18n.legend_symbolizer,
 				style: 'border-radius: 1px',
 				value: 'e1e1e1'
 			});
 
 			addLegend = Ext.create('Ext.button.Button', {
-				text: 'Add legend', //i18n
+				text: GIS.i18n.add_legend,
 				height: 26,
 				style: 'border-radius: 1px',
 				handler: function() {
@@ -2741,7 +2741,7 @@ Ext.onReady( function() {
 						cls: 'gis-panel-html-separator'
 					},
 					{
-						html: 'Add legend', //i18n
+						html: GIS.i18n.add_legend,
 						cls: 'gis-panel-html-title'
 					},
 					{
@@ -2756,7 +2756,7 @@ Ext.onReady( function() {
 								bodyStyle: 'background: transparent',
 								items: [
 									{
-										html: 'Start / end value:', //i18n
+										html: GIS.i18n.start_end_value + ':',
 										width: 105,
 										bodyStyle: 'background:transparent; padding-top:3px'
 									},
@@ -2771,7 +2771,7 @@ Ext.onReady( function() {
 								items: [
 									{
 										cls: 'gis-panel-html-label',
-										html: 'Symbolizer:', //i18n
+										html: GIS.i18n.legend_symbolizer,
 										bodyStyle: 'background: transparent',
 										width: gis.conf.layout.widget.itemlabel_width + 10
 									},
@@ -2790,7 +2790,7 @@ Ext.onReady( function() {
 						items: addLegend
 					},
 					{
-						html: 'Current legends', //i18n
+						html: GIS.i18n.current_legends,
 						cls: 'gis-panel-html-title'
 					},
 					{
@@ -2915,7 +2915,7 @@ Ext.onReady( function() {
 		};
 
 		create = Ext.create('Ext.button.Button', {
-			text: 'Create', //i18n
+			text: GIS.i18n.create,
 			hidden: true,
 			handler: function() {
 				if (legendSetName.getValue() && validateLegends()) {
@@ -2941,7 +2941,7 @@ Ext.onReady( function() {
 		});
 
 		update = Ext.create('Ext.button.Button', {
-			text: 'Update', //i18n
+			text: GIS.i18n.update,
 			hidden: true,
 			handler: function() {
 				if (legendSetName.getValue() && validateLegends()) {
@@ -2964,7 +2964,7 @@ Ext.onReady( function() {
 		});
 
 		cancel = Ext.create('Ext.button.Button', {
-			text: 'Cancel', //i18n
+			text: GIS.i18n.cancel,
 			hidden: true,
 			handler: function() {
 				reset();
@@ -2978,7 +2978,7 @@ Ext.onReady( function() {
 		});
 
 		window = Ext.create('Ext.window.Window', {
-			title: 'Legend sets', //i18n
+			title: GIS.i18n.legendsets,
 			iconCls: 'gis-window-title-icon-legendset', //todo
             bodyStyle: 'padding:5px; background-color:#fff',
 			resizable: false,
@@ -3015,18 +3015,18 @@ Ext.onReady( function() {
 			height: 26,
 			width: 230,
 			fieldStyle: 'padding-left: 5px',
-			emptyText: 'Enter map title' //i18n
+			emptyText: GIS.i18n.please_enter_map_title
 		});
 
 		button = Ext.create('Ext.button.Button', {
-			text: 'Download', //i18n
+			text: GIS.i18n.download,
 			handler: function() {
 				var title = Ext.htmlEncode(textfield.getValue()),
 					svg = gis.util.svg.getString(title, gis.util.map.getVisibleVectorLayers()),
 					exportForm = document.getElementById('exportForm');
 
 				if (!svg) {
-					alert('Please create a map first'); //todo //i18n
+					alert(GIS.i18n.please_create_map_first);
 					return;
 				}
 
@@ -3041,7 +3041,7 @@ Ext.onReady( function() {
 		});
 
 		window = Ext.create('Ext.window.Window', {
-			title: 'Download map as PNG', //i18n
+			title: GIS.i18n.download_map_as_png,
 			layout: 'fit',
 			iconCls: 'gis-window-title-icon-download',
 			cls: 'gis-container-default',
@@ -3073,17 +3073,17 @@ Ext.onReady( function() {
 			cls: 'gis-textarea',
 			height: 130,
 			fieldStyle: 'padding-left: 4px; padding-top: 3px',
-			emptyText: 'Write your interpretation' //i18n
+			emptyText: GIS.i18n.write_your_interpretation
 		});
 
 		panel = Ext.create('Ext.panel.Panel', {
 			cls: 'gis-container-inner',
-			html: '<b>Link: </b>' + gis.init.contextPath + '/dhis-web-mapping/app/index.html?id=' + gis.map.id, //todo
+			html: '<b>' + GIS.i18n.link_ + ': </b>' + gis.init.contextPath + '/dhis-web-mapping/app/index.html?id=' + gis.map.id,
 			style: 'padding:6px 0 6px 1px'
 		});
 
 		button = Ext.create('Ext.button.Button', {
-			text: 'Share', //i18n
+			text: GIS.i18n.share,
 			handler: function() {
 				if (textarea.getValue() && gis.map && gis.map.id) {
 					Ext.Ajax.request({
@@ -3100,7 +3100,7 @@ Ext.onReady( function() {
 		});
 
 		window = Ext.create('Ext.window.Window', {
-			title: 'Share interpretation', //i18n
+			title: GIS.i18n.share_interpretation,
 			layout: 'fit',
 			iconCls: 'gis-window-title-icon-interpretation',
 			cls: 'gis-container-default',
@@ -3345,7 +3345,7 @@ Ext.onReady( function() {
 		validateView = function(view) {
 			if (!view.organisationUnitLevel.id || !Ext.isString(view.organisationUnitLevel.id)) {
 				GIS.logg.push([view.organisationUnitLevel.id, layer.id + '.organisationUnitLevel.id: string']);
-					alert('No level selected'); //todo
+				alert(GIS.i18n.no_level_selected);
 				return false;
 			}
 			if (!view.organisationUnitLevel.name || !Ext.isString(view.organisationUnitLevel.name)) {
@@ -3360,7 +3360,7 @@ Ext.onReady( function() {
 			}
 			if (!view.parentOrganisationUnit.id || !Ext.isString(view.parentOrganisationUnit.id)) {
 				GIS.logg.push([view.parentOrganisationUnit.id, layer.id + '.parentOrganisationUnit.id: string']);
-					alert('No parent organisation unit selected'); //todo
+				alert(GIS.i18n.no_parent_organisationunit_selected);
 				return false;
 			}
 			if (!view.parentOrganisationUnit.name || !Ext.isString(view.parentOrganisationUnit.name)) {
@@ -3381,7 +3381,7 @@ Ext.onReady( function() {
 
 			if (view.parentOrganisationUnit.level > view.organisationUnitLevel.level) {
 				GIS.logg.push([view.parentOrganisationUnit.level, view.organisationUnitLevel.level, layer.id + '.parentOrganisationUnit.level: number <= ' + layer.id + '.organisationUnitLevel.level']);
-					alert('Orgunit level cannot be higher than parent level'); //todo
+				alert(GIS.i18n.level_not_higher_than_parent_level);
 				return false;
 			}
 
@@ -3408,7 +3408,7 @@ Ext.onReady( function() {
 					width: 270,
 					items: [
 						{
-							html: 'Organisation unit level / parent', //i18n
+							html: GIS.i18n.organisation_unit_level_parent,
 							cls: 'gis-form-subtitle-first'
 						},
 						level,
@@ -3630,7 +3630,7 @@ Ext.onReady( function() {
 		// Components
 
 		valueType = Ext.create('Ext.form.field.ComboBox', {
-			fieldLabel: 'Value type', //i18n
+			fieldLabel: GIS.i18n.value_type,
 			editable: false,
 			valueField: 'id',
 			displayField: 'name',
@@ -3642,8 +3642,8 @@ Ext.onReady( function() {
 			store: Ext.create('Ext.data.ArrayStore', {
 				fields: ['id', 'name'],
 				data: [
-					[gis.conf.finals.dimension.indicator.id, 'Indicator'], //i18n
-					[gis.conf.finals.dimension.dataElement.id, 'Data element'] //i18n
+					[gis.conf.finals.dimension.indicator.id, GIS.i18n.indicator],
+					[gis.conf.finals.dimension.dataElement.id, GIS.i18n.dataelement]
 				]
 			}),
 			listeners: {
@@ -3913,8 +3913,8 @@ Ext.onReady( function() {
 			store: Ext.create('Ext.data.ArrayStore', {
 				fields: ['id', 'name'],
 				data: [
-					[2, 'By class range'],
-					[3, 'By class count'] //i18n
+					[2, GIS.i18n.equal_intervals],
+					[3, GIS.i18n.quantiles]
 				]
 			})
 		});
@@ -4004,7 +4004,7 @@ Ext.onReady( function() {
 			layout: 'hbox',
 			items: [
 				{
-					html: 'Period type:', //i18n
+					html: GIS.i18n.period_type + ':',
 					width: 100,
 					bodyStyle: 'color: #444',
 					style: 'padding: 3px 0 0 4px'
@@ -4019,7 +4019,7 @@ Ext.onReady( function() {
 			layout: 'hbox',
 			items: [
 				{
-					html: 'Classes / method:', //i18n
+					html: GIS.i18n.classes_method,
 					width: 100,
 					bodyStyle: 'color: #444',
 					style: 'padding: 3px 0 0 4px'
@@ -4033,7 +4033,7 @@ Ext.onReady( function() {
 			layout: 'hbox',
 			items: [
 				{
-					html: 'Low color / size:', //i18n
+					html: GIS.i18n.low_color_size,
 					width: 100,
 					bodyStyle: 'color: #444',
 					style: 'padding: 3px 0 0 4px'
@@ -4047,7 +4047,7 @@ Ext.onReady( function() {
 			layout: 'hbox',
 			items: [
 				{
-					html: 'High color / size:', //i18n
+					html: GIS.i18n.high_color_size,
 					width: 100,
 					bodyStyle: 'color: #444',
 					style: 'padding: 3px 0 0 4px'
@@ -4240,7 +4240,7 @@ Ext.onReady( function() {
 				}
 				if (!view.indicator.id || !Ext.isString(view.indicator.id)) {
 					GIS.logg.push([view.indicator.id, layer.id + '.indicator.id: string']);
-					alert('No indicator selected'); //todo //i18n
+					alert(GIS.i18n.no_indicator_selected);
 					return false;
 				}
 			}
@@ -4252,7 +4252,7 @@ Ext.onReady( function() {
 				}
 				if (!view.dataElement.id || !Ext.isString(view.dataElement.id)) {
 					GIS.logg.push([view.dataElement.id, layer.id + '.dataElement.id: string']);
-					alert('No data element selected'); //todo //i18n
+					alert(GIS.i18n.no_dataelement_selected);
 					return false;
 				}
 			}
@@ -4264,7 +4264,7 @@ Ext.onReady( function() {
 			}
 			if (!view.period.id || !Ext.isString(view.period.id)) {
 				GIS.logg.push([view.period.id, layer.id + '.period.id: string']);
-					alert('No period selected'); //todo //i18n
+					alert(GIS.i18n.no_period_selected);
 				return false;
 			}
 
@@ -4303,14 +4303,14 @@ Ext.onReady( function() {
 			else if (view.legendType === gis.conf.finals.widget.legendtype_predefined) {
 				if (!view.legendSet.id || !Ext.isString(view.legendSet.id)) {
 					GIS.logg.push([view.legendSet.id, layer.id + '.legendSet.id: string']);
-					alert('No legend set selected'); //todo //i18n
+					alert(GIS.i18n.no_legendset_selected);
 					return false;
 				}
 			}
 
 			if (!view.organisationUnitLevel.id || !Ext.isString(view.organisationUnitLevel.id)) {
 				GIS.logg.push([view.organisationUnitLevel.id, layer.id + '.organisationUnitLevel.id: string']);
-					alert('No level selected'); //todo
+					alert(GIS.i18n.no_level_selected);
 				return false;
 			}
 			if (!view.organisationUnitLevel.name || !Ext.isString(view.organisationUnitLevel.name)) {
@@ -4325,7 +4325,7 @@ Ext.onReady( function() {
 			}
 			if (!view.parentOrganisationUnit.id || !Ext.isString(view.parentOrganisationUnit.id)) {
 				GIS.logg.push([view.parentOrganisationUnit.id, layer.id + '.parentOrganisationUnit.id: string']);
-					alert('No parent organisation unit selected'); //todo
+					alert(GIS.i18n.no_parent_organisationunit_selected);
 				return false;
 			}
 			if (!view.parentOrganisationUnit.name || !Ext.isString(view.parentOrganisationUnit.name)) {
@@ -4346,7 +4346,7 @@ Ext.onReady( function() {
 
 			if (view.parentOrganisationUnit.level > view.organisationUnitLevel.level) {
 				GIS.logg.push([view.parentOrganisationUnit.level, view.organisationUnitLevel.level, layer.id + '.parentOrganisationUnit.level: number <= ' + layer.id + '.organisationUnitLevel.level']);
-					alert('Orgunit level cannot be higher than parent level'); //todo
+				alert(GIS.i18n.level_not_higher_than_parent_level);
 				return false;
 			}
 
@@ -4393,7 +4393,7 @@ Ext.onReady( function() {
 						lowPanel,
 						highPanel,
 						{
-							html: 'Organisation unit level / parent', //i18n
+							html: GIS.i18n.organisation_unit_level_parent,
 							cls: 'gis-form-subtitle'
 						},
 						level,
@@ -4529,7 +4529,7 @@ Ext.onReady( function() {
 
 		areaRadius = Ext.create('Ext.ux.panel.CheckTextNumber', {
 			width: 262,
-			text: 'Show circular area with radius (m):' //i18n
+			text: GIS.i18n.show_circular_area + ':'
 		});
 
 		// Functions
@@ -4628,13 +4628,13 @@ Ext.onReady( function() {
 		validateView = function(view) {
 			if (!view.organisationUnitGroupSet.id || !Ext.isString(view.organisationUnitGroupSet.id)) {
 				GIS.logg.push([view.organisationUnitGroupSet.id, layer.id + '.organisationUnitGroupSet.id: string']);
-					alert('No group set selected'); //todo
+				alert(GIS.i18n.no_groupset_selected);
 				return false;
 			}
 
 			if (!view.organisationUnitLevel.id || !Ext.isString(view.organisationUnitLevel.id)) {
 				GIS.logg.push([view.organisationUnitLevel.id, layer.id + '.organisationUnitLevel.id: string']);
-					alert('No level selected'); //todo
+				alert(GIS.i18n.no_level_selected);
 				return false;
 			}
 			if (!view.organisationUnitLevel.name || !Ext.isString(view.organisationUnitLevel.name)) {
@@ -4649,7 +4649,7 @@ Ext.onReady( function() {
 			}
 			if (!view.parentOrganisationUnit.id || !Ext.isString(view.parentOrganisationUnit.id)) {
 				GIS.logg.push([view.parentOrganisationUnit.id, layer.id + '.parentOrganisationUnit.id: string']);
-					alert('No parent organisation unit selected'); //todo
+				alert(GIS.i18n.no_parent_organisationunit_selected);
 				return false;
 			}
 			if (!view.parentOrganisationUnit.name || !Ext.isString(view.parentOrganisationUnit.name)) {
@@ -4670,7 +4670,7 @@ Ext.onReady( function() {
 
 			if (view.parentOrganisationUnit.level > view.organisationUnitLevel.level) {
 				GIS.logg.push([view.parentOrganisationUnit.level, view.organisationUnitLevel.level, layer.id + '.parentOrganisationUnit.level: number <= ' + layer.id + '.organisationUnitLevel.level']);
-					alert('Orgunit level cannot be higher than parent level'); //todo
+				alert(GIS.i18n.level_not_higher_than_parent_level);
 				return false;
 			}
 
@@ -4697,18 +4697,18 @@ Ext.onReady( function() {
 					width: 270,
 					items: [
 						{
-							html: 'Organisation unit group set', //i18n
+							html: GIS.i18n.organisationunit_groupset,
 							cls: 'gis-form-subtitle-first'
 						},
 						groupSet,
 						{
-							html: 'Organisation unit level / parent', //i18n
+							html: GIS.i18n.organisation_unit_level_parent,
 							cls: 'gis-form-subtitle'
 						},
 						level,
 						parent,
 						{
-							html: 'Surrounding areas', //i18n
+							html: GIS.i18n.surrounding_areas,
 							cls: 'gis-form-subtitle'
 						},
 						areaRadius
@@ -4740,7 +4740,7 @@ Ext.onReady( function() {
 				afterRender;
 
 			resizeButton = Ext.create('Ext.button.Button', {
-				text: '>>>', //i18n
+				text: '>>>',
 				handler: function() {
 					eastRegion.toggleCollapse();
 				}
@@ -4779,7 +4779,7 @@ Ext.onReady( function() {
 							width: 26
 						});
 						a.push({
-							text: 'Favorites', //i18n
+							text: GIS.i18n.favorites,
 							menu: {},
 							handler: function() {
 								if (viewport.favoriteWindow && viewport.favoriteWindow.destroy) {
@@ -4792,7 +4792,7 @@ Ext.onReady( function() {
 						});
 						if (gis.init.user.isAdmin) {
 							a.push({
-								text: 'Legend', //i18n
+								text: GIS.i18n.legend,
 								menu: {},
 								handler: function() {
 									if (viewport.legendSetWindow && viewport.legendSetWindow.destroy) {
@@ -4810,7 +4810,7 @@ Ext.onReady( function() {
 							style: 'border-color: transparent #d1d1d1 transparent transparent; margin-right: 4px',
 						});
 						a.push({
-							text: 'Download', //i18n
+							text: GIS.i18n.download,
 							menu: {},
 							disabled: true,
 							handler: function() {
@@ -4836,7 +4836,7 @@ Ext.onReady( function() {
 							}
 						});
 						a.push({
-							text: 'Share', //i18n
+							text: GIS.i18n.share,
 							menu: {},
 							disabled: true,
 							handler: function() {
@@ -4856,7 +4856,7 @@ Ext.onReady( function() {
 						a.push('->');
 
 						a.push({
-							text: 'Table', //i18n
+							text: GIS.i18n.table,
                             toggleGroup: 'module',
 							handler: function(b) {
                                 window.location.href = '../../dhis-web-pivot/app/index.html';
@@ -4864,7 +4864,7 @@ Ext.onReady( function() {
 						});
 
 						a.push({
-							text: 'Chart', //i18n
+							text: GIS.i18n.chart,
                             toggleGroup: 'module',
 							handler: function(b) {
                                 window.location.href = '../../dhis-web-visualizer/app/index.html';
@@ -4872,7 +4872,7 @@ Ext.onReady( function() {
 						});
 
 						a.push({
-							text: 'Map', //i18n
+							text: GIS.i18n.map,
                             toggleGroup: 'module',
                             pressed: true
 						});
@@ -4907,14 +4907,14 @@ Ext.onReady( function() {
 				collapseMode: 'mini',
 				items: [
 					{
-						title: 'Layer stack / transparency', //i18n
+						title: GIS.i18n.layer_stack_transparency,
 						bodyStyle: 'padding: 4px 6px 3px',
 						items: GIS.app.LayersPanel(),
 						collapsible: true,
 						animCollapse: false
 					},
 					{
-						title: 'Thematic layer 1 legend', //i18n
+						title: GIS.i18n.thematic_layer_1_legend,
 						bodyStyle: 'padding: 4px 6px 6px; border: 0 none',
 						collapsible: true,
 						collapsed: true,
@@ -4926,7 +4926,7 @@ Ext.onReady( function() {
 						}
 					},
 					{
-						title: 'Thematic layer 2 legend', //i18n
+						title: GIS.i18n.thematic_layer_2_legend,
 						contentEl: 'thematic2Legend',
 						bodyStyle: 'padding: 4px 6px 6px; border: 0 none',
 						collapsible: true,
@@ -4939,7 +4939,7 @@ Ext.onReady( function() {
 						}
 					},
 					{
-						title: 'Facility layer legend', //i18n
+						title: GIS.i18n.facility_layer_legend,
 						contentEl: 'facilityLegend',
 						bodyStyle: 'padding: 4px 6px 6px; border: 0 none',
 						collapsible: true,

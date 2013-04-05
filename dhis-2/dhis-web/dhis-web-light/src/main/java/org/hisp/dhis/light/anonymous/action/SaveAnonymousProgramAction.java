@@ -33,8 +33,10 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
-import org.apache.struts2.ServletActionContext;
+
+import org.apache.struts2.StrutsStatics;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.light.utils.NamebasedUtils;
@@ -250,7 +252,7 @@ public class SaveAnonymousProgramAction
         Collections.sort( programStageDataElements, OrderBySortOrder );
 
         HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
-            ServletActionContext.HTTP_REQUEST );
+            StrutsStatics.HTTP_REQUEST );
 
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
 

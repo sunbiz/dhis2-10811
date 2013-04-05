@@ -29,7 +29,7 @@ package org.hisp.dhis.patient.hibernate;
 
 import java.util.Collection;
 
-import org.hibernate.Criteria;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore;
 import org.hisp.dhis.patient.PatientAttributeGroup;
@@ -50,7 +50,7 @@ public class HibernatePatientAttributeGroupStore
     @Override
     public Collection<PatientAttributeGroup> get( Program program )
     {
-        return getCriteria().setResultTransformer( Criteria.DISTINCT_ROOT_ENTITY ).createAlias( "attributes",
+        return getCriteria().setResultTransformer( CriteriaSpecification.DISTINCT_ROOT_ENTITY ).createAlias( "attributes",
             "attribute" ).add( Restrictions.eq( "attribute.program", program ) ).list();
     }
 
@@ -58,7 +58,7 @@ public class HibernatePatientAttributeGroupStore
     @Override
     public Collection<PatientAttributeGroup> getWithoutProgram()
     {
-        return getCriteria().setResultTransformer( Criteria.DISTINCT_ROOT_ENTITY ).createAlias( "attributes",
+        return getCriteria().setResultTransformer( CriteriaSpecification.DISTINCT_ROOT_ENTITY ).createAlias( "attributes",
             "attribute" ).add( Restrictions.isNull( "attribute.program" ) ).list();
     }
 

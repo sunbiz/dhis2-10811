@@ -48,6 +48,8 @@ public interface ProgramStageService
     
     ProgramStage getProgramStage( int id );
     
+    ProgramStage getProgramStage( String uid );
+    
     ProgramStage getProgramStageByName( String name );
     
     Collection<ProgramStage> getAllProgramStages();

@@ -238,7 +238,7 @@ public abstract class DhisConvenienceTest
             return true;
         }
 
-        if ( actual == null || collection == null )
+        if ( actual == null )
         {
             return false;
         }

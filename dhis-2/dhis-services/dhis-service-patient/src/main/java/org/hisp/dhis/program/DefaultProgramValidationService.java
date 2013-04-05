@@ -27,7 +27,6 @@
 
 package org.hisp.dhis.program;
 
-import static org.hisp.dhis.program.ProgramExpression.NOT_NULL_VALUE_IN_EXPRESSION;
 import static org.hisp.dhis.program.ProgramExpression.OBJECT_PROGRAM_STAGE_DATAELEMENT;
 import static org.hisp.dhis.program.ProgramExpression.SEPARATOR_ID;
 import static org.hisp.dhis.program.ProgramExpression.SEPARATOR_OBJECT;
@@ -147,7 +146,8 @@ public class DefaultProgramValidationService
         }
         else
         {
-            patientDataValues = patientDataValueService.getPatientDataValues(  programStageInstance.getProgramInstance().getProgramStageInstances() );
+            patientDataValues = patientDataValueService.getPatientDataValues( programStageInstance.getProgramInstance()
+                .getProgramStageInstances() );
         }
 
         Map<String, String> patientDataValueMap = new HashMap<String, String>( patientDataValues.size() );
@@ -171,14 +171,13 @@ public class DefaultProgramValidationService
                 programStageInstance, patientDataValueMap );
             String operator = validate.getOperator().getMathematicalOperator();
 
-            if ( (leftSideValue != null && rightSideValue.equals( NOT_NULL_VALUE_IN_EXPRESSION ) && rightSideValue == null)
-                || ((leftSideValue != null && rightSideValue != null && !((operator.equals( "==" ) && leftSideValue
-                    .compareTo( rightSideValue ) == 0)
-                    || (operator.equals( "<" ) && leftSideValue.compareTo( rightSideValue ) < 0)
-                    || (operator.equals( "<=" ) && (leftSideValue.compareTo( rightSideValue ) <= 0))
-                    || (operator.equals( ">" ) && leftSideValue.compareTo( rightSideValue ) > 0)
-                    || (operator.equals( ">=" ) && leftSideValue.compareTo( rightSideValue ) >= 0) || (operator
-                    .equals( "!=" ) && leftSideValue.compareTo( rightSideValue ) == 0)))) )
+            if ( (leftSideValue != null && rightSideValue != null && !((operator.equals( "==" ) && leftSideValue
+                .compareTo( rightSideValue ) == 0)
+                || (operator.equals( "<" ) && leftSideValue.compareTo( rightSideValue ) < 0)
+                || (operator.equals( "<=" ) && (leftSideValue.compareTo( rightSideValue ) <= 0))
+                || (operator.equals( ">" ) && leftSideValue.compareTo( rightSideValue ) > 0)
+                || (operator.equals( ">=" ) && leftSideValue.compareTo( rightSideValue ) >= 0) || (operator
+                .equals( "!=" ) && leftSideValue.compareTo( rightSideValue ) == 0))) )
             {
                 ProgramValidationResult validationResult = new ProgramValidationResult( programStageInstance, validate,
                     leftSideValue, rightSideValue );

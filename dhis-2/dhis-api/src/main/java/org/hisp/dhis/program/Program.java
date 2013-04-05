@@ -396,11 +396,8 @@ public class Program
             {
                 return programStage;
             }
-            else
-            {
-                count++;
-            }
-
+            
+            count++;
         }
 
         return null;
@@ -417,7 +414,7 @@ public class Program
 
                 // Compare property value with compare value
 
-                int i = ((Comparable<Object>) propertyValue).compareTo( (Comparable<Object>) criteria.getValue() );
+                int i = ((Comparable<Object>) propertyValue).compareTo( criteria.getValue() );
 
                 // Return validation criteria if criteria is not met
 

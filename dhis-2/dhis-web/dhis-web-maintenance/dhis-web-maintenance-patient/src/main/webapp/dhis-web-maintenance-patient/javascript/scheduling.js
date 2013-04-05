@@ -69,14 +69,19 @@ function schedulingAggCondTasks()
 function executeAggCondTasks()
 {
 	var ok = confirm( i18n_execute_tasks_confirmation );
-	setWaitMessage( i18n_executing );	
 	if ( ok )
 	{
 		$.post( 'scheduleCaseAggTasks.action',{
 			taskStrategy:getFieldValue('taskStrategy'),
 			execute:true
 		},function( json ){
-			setMessage(i18n_execute_success);
+			pingNotificationsTimeout();
 		});
 	}
+}
+
+function pingNotificationsTimeout()
+{
+	pingNotifications( 'AGGREGATE_QUERY_BUILDER', 'notificationTable' );
+	setTimeout( "pingNotificationsTimeout()", 200 );
 }

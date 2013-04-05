@@ -3,6 +3,7 @@
 #foreach( $psDataElement in $psDataElements )
   {
     "id": "de_$!{psDataElement.dataElement.id}",
+	"uid": "$!{psDataElement.dataElement.uid}",
     "name": "$encoder.xmlEncode(${psDataElement.dataElement.getFormNameFallback()} )",
 	"compulsory": "${psDataElement.compulsory}",
 	"displayInReports": "$psDataElement.displayInReports",

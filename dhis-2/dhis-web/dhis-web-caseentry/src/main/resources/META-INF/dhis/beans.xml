@@ -346,8 +346,6 @@
 			ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
 		<property name="programValidationService"
 			ref="org.hisp.dhis.program.ProgramValidationService" />
-		<property name="programExpressionService"
-			ref="org.hisp.dhis.program.ProgramExpressionService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.caseentry.action.GetProgramMetaDataAction"

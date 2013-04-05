@@ -27,7 +27,7 @@
 
 package org.hisp.dhis.caseaggregation;
 
-import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.BaseNameableObject;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 
@@ -37,7 +37,7 @@ import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
  * @version CaseAggregationCondition.java Nov 17, 2010 10:47:12 AM
  */
 public class CaseAggregationCondition
-    extends BaseIdentifiableObject
+    extends BaseNameableObject
 {
     private static final long serialVersionUID = -5746649805915250424L;
 

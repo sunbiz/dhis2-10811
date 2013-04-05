@@ -88,6 +88,7 @@ function programOnChange()
 		if( type == 2 ){
 			disable('ignoreOverdueEvents');
 			disable('onlyEnrollOnce');
+			disable('generatedByEnrollmentDate');
 		}
 		
 		if(byId('displayIncidentDate').checked){

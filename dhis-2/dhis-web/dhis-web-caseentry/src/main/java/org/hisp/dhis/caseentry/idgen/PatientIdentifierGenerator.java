@@ -69,11 +69,11 @@ public class PatientIdentifierGenerator
         {
             char ch = idWithoutCheckdigit.charAt( idWithoutCheckdigit.length() - i - 1 );
 
-            int digit = (int) ch - 48;
+            int digit = ch - 48;
             int weight;
             if ( i % 2 == 0 )
             {
-                weight = (2 * digit) - (int) (digit / 5) * 9;
+                weight = (2 * digit) - (digit / 5) * 9;
             }
             else
             {

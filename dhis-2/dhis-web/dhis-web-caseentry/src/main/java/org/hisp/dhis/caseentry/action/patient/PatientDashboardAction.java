@@ -43,7 +43,7 @@ import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientService;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
-import org.hisp.dhis.period.CalendarPeriodType;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
@@ -248,7 +248,7 @@ public class PatientDashboardAction
         patientAudits = patientAuditService.getPatientAudits( patient );
 
         Calendar today = Calendar.getInstance();
-        CalendarPeriodType.clearTimeOfDay( today );
+        PeriodType.clearTimeOfDay( today );
         Date date = today.getTime();
         String visitor = currentUserService.getCurrentUsername();
         PatientAudit patientAudit = patientAuditService.getPatientAudit( patientId, visitor, date,

@@ -18,6 +18,12 @@
 
 /* General */
 
+body {
+	background-color: #e1e1e1;
+	opacity: 0;
+	filter:Alpha(opacity=0)
+}
+
 body,
 .x-body,
 .x-btn-default-toolbar-small .x-btn-inner,

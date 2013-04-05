@@ -33,7 +33,10 @@
 		}
 		for (var i = 0; i < aa.elements.length; i++) 
 		{
-		 aa.elements[i].checked = checked;
+			if ( aa.elements[i].type == "checkbox" )
+			{
+				aa.elements[i].checked = checked;
+			}
 		}
 	};
 	
@@ -52,7 +55,7 @@
 		
 		if( result != "")
 		{
-			var confirmation = window.confirm( "$i18n.getString( 'confirm_delete_items' )" );
+			var confirmation = window.confirm( "$i18n.getString( 'confirm_delete_items' )"+result );
 			if ( confirmation )
 			{
 				jQuery.get( 'deleteReceiveSMS.action?' + result, {},

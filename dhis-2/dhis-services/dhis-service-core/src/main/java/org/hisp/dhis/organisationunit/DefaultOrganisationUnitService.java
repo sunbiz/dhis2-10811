@@ -491,7 +491,7 @@ public class DefaultOrganisationUnitService
         List<OrganisationUnit> intersection = new ArrayList<OrganisationUnit>( CollectionUtils.intersection( subTree,
             result ) );
 
-        return limit && intersection != null && intersection.size() > MAX_LIMIT ? intersection.subList( 0, MAX_LIMIT )
+        return limit && intersection.size() > MAX_LIMIT ? intersection.subList( 0, MAX_LIMIT )
             : intersection;
     }
 

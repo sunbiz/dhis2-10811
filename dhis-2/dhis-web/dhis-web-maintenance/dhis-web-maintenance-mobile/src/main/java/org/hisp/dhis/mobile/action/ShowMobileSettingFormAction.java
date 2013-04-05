@@ -137,7 +137,7 @@ public class ShowMobileSettingFormAction
         Collection<PatientMobileSetting> paSettings = new HashSet<PatientMobileSetting>( patientMobileSettingService
             .getCurrentSetting() );
 
-        if ( paSettings != null )
+        if ( !paSettings.isEmpty() )
         {
             Iterator<PatientMobileSetting> settingsIt = paSettings.iterator();
 

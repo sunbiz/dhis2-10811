@@ -34,15 +34,12 @@ import java.util.Map;
 
 import org.hisp.dhis.patient.scheduling.CaseAggregateConditionSchedulingManager;
 import org.hisp.dhis.patient.scheduling.CaseAggregateConditionTask;
-import org.hisp.dhis.scheduling.DataMartTask;
-import org.hisp.dhis.scheduling.ScheduledTasks;
 import org.hisp.dhis.scheduling.TaskCategory;
 import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.scheduling.Scheduler;
 import org.hisp.dhis.user.CurrentUserService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 

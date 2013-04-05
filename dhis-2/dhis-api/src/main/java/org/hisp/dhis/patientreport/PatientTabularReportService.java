@@ -46,5 +46,8 @@ public interface PatientTabularReportService
 
     Collection<PatientTabularReport> getAllCharts();
     
-    Collection<PatientTabularReport> getPatientTabularReports( User user );
+    Collection<PatientTabularReport> getPatientTabularReports( User user, String query, Integer min, Integer max );
+    
+    int countPatientTabularReportList( User user, String query );
+    
 }

@@ -103,7 +103,7 @@ public class ProgramInstanceDeletionHandler
                 dataValues.addAll( patientDataValueService.getPatientDataValues( programInstance
                     .getProgramStageInstances() ) );
 
-                if ( dataValues != null )
+                if ( !dataValues.isEmpty() )
                 {
                     for ( PatientDataValue dataValue : dataValues )
                     {

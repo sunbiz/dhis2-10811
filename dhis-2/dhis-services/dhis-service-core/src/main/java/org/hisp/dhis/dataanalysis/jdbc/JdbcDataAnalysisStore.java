@@ -164,7 +164,7 @@ public class JdbcDataAnalysisStore
         
         String sql = 
             "select dv.dataelementid, dv.periodid, dv.sourceid, dv.categoryoptioncomboid, dv.value, dv.storedby, dv.lastupdated, " +
-            "dv.comment, dv.followup, ou.name as sourcename, de.name as dataelementname, pt.name as periodtypename, pe.startdate, pe.enddate, mm.minvalue, mm.maxvalue " + 
+            "dv.comment, dv.followup, ou.name as sourcename, de.name as dataelementname, pt.name as periodtypename, pe.startdate, pe.enddate, mm.minimumvalue, mm.maximumvalue " + 
             "from datavalue dv " +
             "join minmaxdataelement mm on ( dv.dataelementid = mm.dataelementid and dv.categoryoptioncomboid = mm.categoryoptioncomboid and dv.sourceid = mm.sourceid ) " +
             "join dataelement de on dv.dataelementid = de.dataelementid " +
@@ -175,8 +175,8 @@ public class JdbcDataAnalysisStore
             "and dv.categoryoptioncomboid in (" + categoryOptionComboIds + ") " +
             "and dv.periodid in (" + periodIds + ") " + 
             "and dv.sourceid in (" + organisationUnitIds + ") and ( " +
-                "cast( dv.value as " + statementBuilder.getDoubleColumnType() + " ) < mm.minvalue " +
-                "or cast( dv.value as " + statementBuilder.getDoubleColumnType() + " ) > mm.maxvalue )" +
+                "cast( dv.value as " + statementBuilder.getDoubleColumnType() + " ) < mm.minimumvalue " +
+                "or cast( dv.value as " + statementBuilder.getDoubleColumnType() + " ) > mm.maximumvalue )" +
             statementBuilder.limitRecord( 0, limit );
         
         return jdbcTemplate.query( sql, new DeflatedDataValueNameMinMaxRowMapper( null, null, optionComboMap ) );
@@ -221,7 +221,7 @@ public class JdbcDataAnalysisStore
     {
         final String sql =
             "select dv.dataelementid, dv.periodid, dv.sourceid, dv.categoryoptioncomboid, dv.value, " +
-            "dv.storedby, dv.lastupdated, dv.comment, dv.followup, mm.minvalue, mm.maxvalue, de.name as dataelementname, " +
+            "dv.storedby, dv.lastupdated, dv.comment, dv.followup, mm.minimumvalue, mm.maximumvalue, de.name as dataelementname, " +
             "pe.startdate, pe.enddate, pt.name AS periodtypename, ou.name AS sourcename, cc.categoryoptioncomboname " +
             "from datavalue dv " +
             "left join minmaxdataelement mm on (dv.sourceid = mm.sourceid and dv.dataelementid = mm.dataelementid and dv.categoryoptioncomboid = mm.categoryoptioncomboid) " +

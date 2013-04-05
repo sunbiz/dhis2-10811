@@ -143,7 +143,7 @@ public class TestCaseAggregationConditionAction
         period.setStartDate( new Date() );
         period.setEndDate( new Date() );
 
-        Integer value = aggregationConditionService.parseConditition( aggCondition, orgunit, period );
+        Double value = aggregationConditionService.getAggregateValue( aggCondition, orgunit, period );
 
         if ( value == null )
         {

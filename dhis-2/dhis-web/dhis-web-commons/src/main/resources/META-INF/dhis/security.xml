@@ -241,6 +241,8 @@
         <value>ALL</value>
         <value>F_CHART_PUBLIC_ADD</value>
         <value>F_MAP_PUBLIC_ADD</value>
+        <value>F_USERGROUP_PUBLIC_ADD</value>
+        <value>F_REPORTTABLE_PUBLIC_ADD</value>
         <value>F_METADATA_EXPORT</value>
         <value>F_METADATA_IMPORT</value>
       </set>

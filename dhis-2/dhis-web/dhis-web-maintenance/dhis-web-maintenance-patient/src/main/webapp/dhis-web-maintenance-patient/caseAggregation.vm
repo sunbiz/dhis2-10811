@@ -39,8 +39,8 @@
 			<tbody id="list">
 				#set( $mark = true )
 				#foreach( $aggregationCondition in $aggregationConditions )
-					<tr  id="tr${aggregationCondition.id}" #alternate( $mark )>
-						<td>$encoder.htmlEncode( $aggregationCondition.displayName )</td>                
+					<tr id="tr${aggregationCondition.id}" #alternate( $mark )>
+						<td onclick="javascript:showCaseAggregationDetails( $aggregationCondition.id )" >$encoder.htmlEncode( $aggregationCondition.displayName )</td>                
 						<td>
 						  <a href="showUpdateCaseAggregationForm.action?id=$aggregationCondition.id&dataSetId=$!dataSetId" title="$i18n.getString( "edit" )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>
 						  <a href="javascript:translate( 'CaseAggregationCondition', '$aggregationCondition.id' )" title="$i18n.getString( 'translation_translate' )"><img src="../images/i18n.png" alt="$i18n.getString( 'translation_translate' )"/></a>  
@@ -65,7 +65,7 @@
                 <p><label class="bold">$i18n.getString( "operator" ):</label><br><span id="operatorField"></span></p>
                 <p><label class="bold">$i18n.getString( "aggregation_data_element" ):</label><br><span id="aggregationDataElementField"></span></p>
 				<p><label class="bold">$i18n.getString( "option_combo" ):</label><br><span id="optionComboField"></span></p>
-                <p><label class="bold">$i18n.getString( "data_element_for_summary" ):</label><br><span id="deSumField"></span></p>
+                <p><label class="bold">$i18n.getString( "data_element_for_sum_avg_min_max" ):</label><br><span id="deSumField"></span></p>
                 <p><label class="bold">$i18n.getString( "aggregation_expression" ):</label><br><span id="aggregationExpressionField"></span></p>
 			</div>
 

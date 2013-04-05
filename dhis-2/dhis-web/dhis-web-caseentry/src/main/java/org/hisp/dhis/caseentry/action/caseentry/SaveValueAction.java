@@ -93,11 +93,11 @@ public class SaveValueAction
         this.value = value;
     }
 
-    private int dataElementId;
-
-    public void setDataElementId( int dataElementId )
+    private String dataElementUid;
+    
+    public void setDataElementUid( String dataElementUid )
     {
-        this.dataElementId = dataElementId;
+        this.dataElementUid = dataElementUid;
     }
 
     private Integer programStageInstanceId;
@@ -105,11 +105,6 @@ public class SaveValueAction
     public void setProgramStageInstanceId( Integer programStageInstanceId )
     {
         this.programStageInstanceId = programStageInstanceId;
-    }
-
-    public int getDataElementId()
-    {
-        return dataElementId;
     }
 
     private int statusCode;
@@ -135,7 +130,7 @@ public class SaveValueAction
     {
         ProgramStageInstance programStageInstance = programStageInstanceService.getProgramStageInstance( programStageInstanceId );
 
-        DataElement dataElement = dataElementService.getDataElement( dataElementId );
+        DataElement dataElement = dataElementService.getDataElement( dataElementUid );
 
         PatientDataValue patientDataValue = patientDataValueService.getPatientDataValue( programStageInstance,
             dataElement );

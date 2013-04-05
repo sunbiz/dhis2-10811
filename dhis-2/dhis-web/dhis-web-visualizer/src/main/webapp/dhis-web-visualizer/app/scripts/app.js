@@ -338,6 +338,13 @@ Ext.onReady( function() {
         DV.init.cmd = DV.util.getUrlParam(DV.conf.finals.cmd.urlparam) || DV.conf.finals.cmd.init;
 
         DV.exe.execute(DV.init.cmd);
+
+        // Fade in
+		Ext.defer( function() {
+			Ext.getBody().fadeIn({
+				duration: 500
+			});
+		}, 500 );
     };
 
     DV.util = {
@@ -586,7 +593,7 @@ Ext.onReady( function() {
 					var a = [],
 						count = 0;
                     for (var key in rp) {
-                        if (rp[key]) {
+                        if (rp[key] && Ext.isNumber(DV.conf.period.relativePeriods[key])) {
 							count += DV.conf.period.relativePeriods[key];
                         }
                     }

@@ -86,7 +86,12 @@ public class DefaultQueryPlanner
     {
         String violation = null;
         
-        if ( params == null || params.getDimensions().isEmpty() )
+        if ( params == null )
+        {
+            throw new IllegalQueryException( "Params cannot be null" );
+        }
+        
+        if ( params.getDimensions().isEmpty() )
         {
             violation = "At least one dimension must be specified";
         }

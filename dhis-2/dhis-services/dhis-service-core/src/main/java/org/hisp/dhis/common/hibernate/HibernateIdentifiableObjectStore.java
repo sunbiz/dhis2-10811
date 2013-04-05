@@ -28,7 +28,6 @@ package org.hisp.dhis.common.hibernate;
  */
 
 import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.hibernate.HibernateGenericStore;
 
 /**
@@ -36,7 +35,6 @@ import org.hisp.dhis.hibernate.HibernateGenericStore;
  */
 public class HibernateIdentifiableObjectStore<T extends BaseIdentifiableObject>
     extends HibernateGenericStore<T>
-    implements GenericIdentifiableObjectStore<T>
 {
     @Override
     public int save( T object )

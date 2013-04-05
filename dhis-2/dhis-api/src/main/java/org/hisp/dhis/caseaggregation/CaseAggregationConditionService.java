@@ -28,6 +28,7 @@
 package org.hisp.dhis.caseaggregation;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
@@ -46,7 +47,7 @@ import org.hisp.dhis.program.ProgramStageInstance;
  */
 public interface CaseAggregationConditionService
 {
-    int  addCaseAggregationCondition( CaseAggregationCondition caseAggregationCondition );
+    int addCaseAggregationCondition( CaseAggregationCondition caseAggregationCondition );
 
     void updateCaseAggregationCondition( CaseAggregationCondition caseAggregationCondition );
 
@@ -62,7 +63,7 @@ public interface CaseAggregationConditionService
     
     Collection<CaseAggregationCondition> getCaseAggregationCondition( Collection<DataElement> dataElements );
     
-    Integer parseConditition( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
+    Double getAggregateValue( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
         
     Collection<PatientDataValue> getPatientDataValues( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
     
@@ -77,4 +78,7 @@ public interface CaseAggregationConditionService
     Collection<PatientAttribute> getPatientAttributesInCondition( String aggregationExpression );
     
     String getConditionDescription( String condition );
+    
+    void aggregate( List<CaseAggregateSchedule> caseAggregateSchedules, String taskStrategy );
+    
 }
