@@ -37,7 +37,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Chau Thu Tran
- * 
  * @version RemoveEmptyEventsAction.java Jul 3, 2012 $
  */
 public class RemoveEmptyEventsAction
@@ -86,8 +85,13 @@ public class RemoveEmptyEventsAction
     public String execute()
         throws Exception
     {
+        if ( programStageId == null )
+        {
+            return INPUT;
+        }
+
         ProgramStage programStage = programStageService.getProgramStage( programStageId );
-        
+
         OrganisationUnit organisationUnit = selectionManager.getSelectedOrganisationUnit();
 
         programStageInstanceService.removeEmptyEvents( programStage, organisationUnit );

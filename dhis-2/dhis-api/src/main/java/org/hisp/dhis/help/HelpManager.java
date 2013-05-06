@@ -28,6 +28,7 @@ package org.hisp.dhis.help;
  */
 
 import java.io.OutputStream;
+import java.util.Locale;
 
 /**
  * @author Lars Helge Overland
@@ -35,8 +36,8 @@ import java.io.OutputStream;
 public interface HelpManager
 {
     final String ID = HelpManager.class.getName();
-    
-    void getHelpContent( OutputStream out, String id );
-    
-    void getHelpItems( OutputStream out );
+
+    void getHelpContent( OutputStream out, String id, Locale locale );
+
+    void getHelpItems( OutputStream out, Locale locale );
 }

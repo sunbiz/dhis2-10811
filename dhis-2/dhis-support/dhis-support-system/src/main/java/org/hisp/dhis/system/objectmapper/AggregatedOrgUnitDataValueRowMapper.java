@@ -30,7 +30,6 @@ package org.hisp.dhis.system.objectmapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.amplecode.quick.mapper.RowMapper;
 import org.hisp.dhis.aggregation.AggregatedDataValue;
 
 /**
@@ -38,7 +37,6 @@ import org.hisp.dhis.aggregation.AggregatedDataValue;
  */
 public class AggregatedOrgUnitDataValueRowMapper
     extends AggregatedDataValueRowMapper
-    implements RowMapper<AggregatedDataValue>, org.springframework.jdbc.core.RowMapper<AggregatedDataValue>
 {
     @Override
     public AggregatedDataValue mapRow( ResultSet resultSet )

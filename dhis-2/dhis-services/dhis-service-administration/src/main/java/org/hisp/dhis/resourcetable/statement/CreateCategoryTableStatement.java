@@ -63,7 +63,7 @@ public class CreateCategoryTableStatement
         for ( DataElementCategory category : categories )
         {
             statement += CodecUtils.databaseEncode( category.getName() ) + SPACE + LONG_TEXT_COLUMN_TYPE + SEPARATOR;
-            statement += "cat_" + category.getId() + SPACE + "INTEGER" + SEPARATOR;
+            statement += category.getUid() + SPACE + "CHARACTER(11)" + SEPARATOR;
         }
 
         statement += "PRIMARY KEY ( categoryoptioncomboid ) )";

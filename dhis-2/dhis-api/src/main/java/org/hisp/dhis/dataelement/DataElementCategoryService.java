@@ -35,7 +35,6 @@ import org.hisp.dhis.hierarchy.HierarchyViolationException;
 
 /**
  * @author Abyot Asalefew
- * @version $Id$
  */
 public interface DataElementCategoryService
 {
@@ -93,6 +92,14 @@ public interface DataElementCategoryService
      * @return a collection of DataElementCategories.
      */
     Collection<DataElementCategory> getDataElementCategories( Collection<Integer> identifiers );
+    
+    /**
+     * Retrieves the DataElementCategories with the given uids.
+     * 
+     * @param uids the uids of the DataElementCategories to retrieve.
+     * @return a collection of DataElementCategories.
+     */
+    Collection<DataElementCategory> getDataElementCategoriesByUid( Collection<String> uids );
 
     /**
      * Retrieves the DataElementCategory with the given name.
@@ -102,6 +109,13 @@ public interface DataElementCategoryService
      */
     DataElementCategory getDataElementCategoryByName( String name );
 
+    /**
+     * Returns DataElementCategories which are considered data dimensions.
+     * 
+     * @return DataElementCategories which are considered data dimensions.
+     */
+    Collection<DataElementCategory> getDataDimensionDataElementCategories();
+    
     /**
      * Returns all DataElementCategories.
      *

@@ -1,0 +1,6 @@
+{ "optionSet": {
+    "uid": "$encoder.jsonEncode( $optionSet.uid )",
+    "name": "$encoder.jsonEncode( $optionSet.displayName )",
+    "options": [#foreach( $option in $optionSet.options )"$encoder.jsonEncode( $option )"#if( $velocityCount < $optionSet.options.size() ),#end #end]
+   }
+}

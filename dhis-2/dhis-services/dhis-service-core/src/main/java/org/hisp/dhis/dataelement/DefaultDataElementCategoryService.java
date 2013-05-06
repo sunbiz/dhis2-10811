@@ -27,14 +27,7 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.hisp.dhis.common.GenericDimensionalObjectStore;
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
-import org.hisp.dhis.concept.Concept;
-import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.system.util.Filter;
-import org.hisp.dhis.system.util.FilterUtils;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,11 +37,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hisp.dhis.i18n.I18nUtils.i18n;
+import org.apache.commons.collections.CollectionUtils;
+import org.hisp.dhis.common.GenericDimensionalObjectStore;
+import org.hisp.dhis.common.GenericIdentifiableObjectStore;
+import org.hisp.dhis.concept.Concept;
+import org.hisp.dhis.i18n.I18nService;
+import org.hisp.dhis.system.util.Filter;
+import org.hisp.dhis.system.util.FilterUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Abyot Asalefew
- * @version $Id$
  */
 @Transactional
 public class DefaultDataElementCategoryService
@@ -122,6 +121,21 @@ public class DefaultDataElementCategoryService
         dataElementCategoryStore.delete( dataElementCategory );
     }
 
+    public Collection<DataElementCategory> getDataDimensionDataElementCategories()
+    {
+        Collection<DataElementCategory> categories = getAllDataElementCategories();
+        
+        FilterUtils.filter( categories, new Filter<DataElementCategory>()
+        {
+            public boolean retain( DataElementCategory category )
+            {
+                return category != null && category.isDataDimension();
+            }            
+        } );
+        
+        return categories;
+    }
+    
     public Collection<DataElementCategory> getAllDataElementCategories()
     {
         return i18n( i18nService, dataElementCategoryStore.getAll() );
@@ -148,6 +162,11 @@ public class DefaultDataElementCategoryService
                 return identifiers.contains( object.getId() );
             }
         } );
+    }
+    
+    public Collection<DataElementCategory> getDataElementCategoriesByUid( Collection<String> uids )
+    {
+        return dataElementCategoryStore.getByUid( uids );
     }
 
     public DataElementCategory getDataElementCategoryByName( String name )

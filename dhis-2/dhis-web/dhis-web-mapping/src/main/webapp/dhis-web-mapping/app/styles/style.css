@@ -179,7 +179,17 @@ html * {
 	cursor: hand;
 }
 
-/* GIS */
+/* ScaleLine */
+.olControlScaleLine {
+	left: 5px !important;
+	bottom: 5px !important;
+}
+.olControlScaleLineBottom {
+	display: none;
+}
+.olControlScaleLineTop {
+	font-weight: bold;
+}
 
 /*----------------------------------------------------------------------------
  * Combobox
@@ -201,7 +211,6 @@ html * {
     color: #111;
 }
 
-
 /*----------------------------------------------------------------------------
  * GIS Combobox
  *--------------------------------------------------------------------------*/
@@ -216,7 +225,7 @@ html * {
 
 	/* Combobox border-radius */
 .gis-combo input {
-    border-radius: 2px 0px 0px 0px;
+    border-radius: 1px 0px 0px 0px;
     font-size: 10px !important;
 }
 
@@ -310,6 +319,8 @@ html * {
 	.x-toolbar .gis-btn-icon-boundary,
 	.x-toolbar .gis-btn-icon-thematic1,
 	.x-toolbar .gis-btn-icon-thematic2,
+	.x-toolbar .gis-btn-icon-thematic3,
+	.x-toolbar .gis-btn-icon-thematic4,
 	.x-toolbar .gis-btn-icon-facility,
 	.x-toolbar .gis-btn-icon-symbol {
 		width: 24px !important;
@@ -323,6 +334,12 @@ html * {
 	}
 	.x-toolbar .gis-btn-icon-thematic2 {
 		background: url('../images/thematic2_20.png') no-repeat;
+	}
+	.x-toolbar .gis-btn-icon-thematic3 {
+		background: url('../images/thematic3_20.png') no-repeat;
+	}
+	.x-toolbar .gis-btn-icon-thematic4 {
+		background: url('../images/thematic4_20.png') no-repeat;
 	}
 	.x-toolbar .gis-btn-icon-facility {
 		background: url('../images/facility_20.png') no-repeat;
@@ -485,6 +502,12 @@ html * {
 }
 .gis-window-title-icon-thematic2 {
 	background: url('../images/thematic2_14.png') no-repeat;
+}
+.gis-window-title-icon-thematic3 {
+	background: url('../images/thematic3_14.png') no-repeat;
+}
+.gis-window-title-icon-thematic4 {
+	background: url('../images/thematic4_14.png') no-repeat;
 }
 .gis-window-title-icon-facility {
 	background: url('../images/facility_14.png') no-repeat;

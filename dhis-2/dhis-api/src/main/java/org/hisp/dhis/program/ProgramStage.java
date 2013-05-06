@@ -53,19 +53,7 @@ public class ProgramStage
     public static final String TYPE_SECTION = "section";
 
     public static final String TYPE_CUSTOM = "custom";
-
-    public static final String TEMPLATE_MESSSAGE_PATIENT_NAME = "{patient-name}";
-
-    public static final String TEMPLATE_MESSSAGE_PROGRAM_NAME = "{program-name}";
-
-    public static final String TEMPLATE_MESSSAGE_PROGAM_STAGE_NAME = "{program-stage-name}";
-
-    public static final String TEMPLATE_MESSSAGE_DUE_DATE = "{due-date}";
-
-    public static final String TEMPLATE_MESSSAGE_ORGUNIT_NAME = "{orgunit-name}";
-
-    public static final String TEMPLATE_MESSSAGE_DAYS_SINCE_DUE_DATE = "{days-since-due-date}";
-
+    
     /**
      * Determines if a de-serialized file is compatible with this class.
      */

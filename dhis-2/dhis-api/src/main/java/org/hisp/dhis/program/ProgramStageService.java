@@ -27,6 +27,7 @@
 package org.hisp.dhis.program;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Abyot Asalefew
@@ -39,20 +40,21 @@ public interface ProgramStageService
     // -------------------------------------------------------------------------
     // ProgramStage
     // -------------------------------------------------------------------------
-    
+
     int saveProgramStage( ProgramStage programStage );
-    
+
     void deleteProgramStage( ProgramStage programStage );
-    
+
     void updateProgramStage( ProgramStage programStage );
-    
+
     ProgramStage getProgramStage( int id );
-    
+
     ProgramStage getProgramStage( String uid );
-    
-    ProgramStage getProgramStageByName( String name );
-    
+
+    List<ProgramStage> getProgramStageByName( String name );
+
+    ProgramStage getProgramStageByName( String name, Program program );
+
     Collection<ProgramStage> getAllProgramStages();
-    
-    Collection<ProgramStage> getProgramStages( Program program );
+
 }

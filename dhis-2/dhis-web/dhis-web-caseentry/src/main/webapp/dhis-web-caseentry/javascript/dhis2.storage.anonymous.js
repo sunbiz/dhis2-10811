@@ -1,7 +1,8 @@
-dhis2.storage.Store.plugin( 'anonymous-online', (function () {
+/*
+dhis2.storage.Store.plugin( 'online-anonymous-programs', (function () {
     return {
-        call: function ( args, callback ) {
-            $.ajax( {
+        call: function ( args, success, failure ) {
+            return $.ajax( {
                 type: 'POST',
                 url: "anonymousPrograms.action",
                 data: args,
@@ -23,8 +24,9 @@ dhis2.storage.Store.plugin( 'anonymous-online', (function () {
                     delete arr[i].type;
                 }
 
-                if ( callback ) callback( arr );
-            } );
+                if ( success ) success( arr );
+            } ).fail(failure);
         }
     };
 })() );
+*/

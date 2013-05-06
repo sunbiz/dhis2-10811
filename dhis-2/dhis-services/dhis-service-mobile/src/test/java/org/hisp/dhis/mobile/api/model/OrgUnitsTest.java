@@ -71,11 +71,11 @@ public class OrgUnitsTest
     private MobileOrgUnitLinks createOrgUnit()
     {
         MobileOrgUnitLinks unit = new MobileOrgUnitLinks();
-        
+
         unit.setId( 1 );
         unit.setName( "name" );
         unit.setDownloadAllUrl( "downloadAllUrl" );
-        unit.setUpdateActivityPlanUrl("updateActivityPlanUrl");
+        unit.setUpdateActivityPlanUrl( "updateActivityPlanUrl" );
         unit.setUploadFacilityReportUrl( "uploadFacilityReportUrl" );
         unit.setUploadActivityReportUrl( "uploadActivityReportUrl" );
         unit.setUpdateDataSetUrl( "updateDataSetUrl" );
@@ -91,6 +91,7 @@ public class OrgUnitsTest
         unit.setAddRelationshipUrl( "addRelationshipUrl" );
         unit.setDownloadAnonymousProgramUrl( "downloadAnonymousProgramUrl" );
         unit.setFindProgramUrl( "findProgramUrl" );
+        unit.setFindLatestPersonUrl( "findLatestPersonUrl" );
         return unit;
     }
 }

@@ -86,5 +86,4 @@ public class DeleteReceiveSMSAction
         }
         return SUCCESS;
     }
-
 }

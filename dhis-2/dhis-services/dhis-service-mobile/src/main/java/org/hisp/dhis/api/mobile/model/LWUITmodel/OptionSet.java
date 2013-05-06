@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hisp.dhis.api.mobile.model.DataStreamSerializable;
 import org.hisp.dhis.api.mobile.model.Model;
 
 /**
@@ -42,7 +41,6 @@ import org.hisp.dhis.api.mobile.model.Model;
  */
 public class OptionSet
     extends Model
-    implements DataStreamSerializable
 {
 private String clientVersion;
     

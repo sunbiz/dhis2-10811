@@ -279,9 +279,9 @@ public class Beneficiary
         {
             dout.writeBoolean( false );
         }
-        //doesn't transfer blood group to client
-            dout.writeBoolean( false );
-        
+        // doesn't transfer blood group to client
+        dout.writeBoolean( false );
+
         if ( registrationDate != null )
         {
             dout.writeBoolean( true );
@@ -334,8 +334,97 @@ public class Beneficiary
     @Override
     public boolean equals( Object otherObject )
     {
-        Beneficiary otherBeneficiary = (Beneficiary) otherObject;
-        return this.getId() == otherBeneficiary.getId();
+        if ( this == otherObject )
+        {
+            return true;
+        }
+
+        if ( otherObject == null )
+        {
+            return false;
+        }
+
+        if ( getClass() != otherObject.getClass() )
+        {
+            return false;
+        }
+        
+        final Beneficiary otherBeneficiary = (Beneficiary) otherObject;
+        
+        if ( birthDate == null )
+        {
+            if ( otherBeneficiary.birthDate != null )
+            {
+                return false;
+            }
+        }
+        else if ( !birthDate.equals( otherBeneficiary.birthDate ) )
+        {
+            return false;
+        }
+        
+        if ( firstName == null )
+        {
+            if ( otherBeneficiary.firstName != null )
+            {
+                return false;
+            }
+        }
+        else if ( !firstName.equals( otherBeneficiary.firstName ) )
+        {
+            return false;
+        }
+
+        if ( gender == null )
+        {
+            if ( otherBeneficiary.gender != null )
+                return false;
+        }
+        else if ( !gender.equals( otherBeneficiary.gender ) )
+        {
+            return false;
+        }
+
+        if ( lastName == null )
+        {
+            if ( otherBeneficiary.lastName != null )
+            {
+                return false;
+            }
+        }
+        else if ( !lastName.equals( otherBeneficiary.lastName ) )
+        {
+            return false;
+        }
+
+        if ( middleName == null )
+        {
+            if ( otherBeneficiary.middleName != null )
+            {
+                return false;
+            }
+        }
+        else if ( !middleName.equals( otherBeneficiary.middleName ) )
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        
+        result = prime * result + ((birthDate == null) ? 0 : birthDate.hashCode());
+        result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+        result = prime * result + ((gender == null) ? 0 : gender.hashCode());
+        result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+        result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
+
+        return result;
     }
 
     @Override
@@ -380,8 +469,8 @@ public class Beneficiary
         {
             dout.writeBoolean( false );
         }
-        //doesn't transfer blood group to client
-            dout.writeBoolean( false );
+        // doesn't transfer blood group to client
+        dout.writeBoolean( false );
 
         if ( registrationDate != null )
         {
@@ -464,8 +553,8 @@ public class Beneficiary
         {
             dout.writeBoolean( false );
         }
-        //doesn't transfer blood group to client
-            dout.writeBoolean( false );
+        // doesn't transfer blood group to client
+        dout.writeBoolean( false );
 
         if ( registrationDate != null )
         {
@@ -511,6 +600,6 @@ public class Beneficiary
         throws IOException
     {
         // TODO Auto-generated method stub
-        
+
     }
 }

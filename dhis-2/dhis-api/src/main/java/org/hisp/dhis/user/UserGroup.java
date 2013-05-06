@@ -38,7 +38,6 @@ import org.hisp.dhis.attribute.AttributeValue;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
-import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 
@@ -57,7 +56,6 @@ public class UserGroup
     /**
      * Set of related users
      */
-    @Scanned
     private Set<User> members = new HashSet<User>();
 
     /**

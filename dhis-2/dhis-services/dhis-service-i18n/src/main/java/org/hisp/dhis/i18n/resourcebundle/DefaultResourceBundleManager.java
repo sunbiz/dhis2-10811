@@ -27,6 +27,7 @@ package org.hisp.dhis.i18n.resourcebundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.commons.io.IOUtils;
 import org.hisp.dhis.i18n.locale.LocaleManager;
 import org.hisp.dhis.i18n.util.PathUtils;
 
@@ -148,35 +149,35 @@ public class DefaultResourceBundleManager
     private Collection<Locale> getAvailableLocalesFromJar( URL url )
         throws ResourceBundleManagerException
     {
-        JarFile jar;
+        JarFile jar = null;
+
+        Set<Locale> availableLocales = new HashSet<Locale>();
 
         try
         {
             JarURLConnection connection = (JarURLConnection) url.openConnection();
 
             jar = connection.getJarFile();
+
+            Enumeration<JarEntry> e = jar.entries();
+    
+            while ( e.hasMoreElements() )
+            {
+                JarEntry entry = e.nextElement();
+    
+                String name = entry.getName();
+    
+                if ( name.startsWith( globalResourceBundleName ) && name.endsWith( EXT_RESOURCE_BUNDLE ) )
+                {
+                    availableLocales.add( getLocaleFromName( name ) );
+                }
+            }
         }
         catch ( IOException e )
         {
             throw new ResourceBundleManagerException( "Failed to get jar file: " + url, e );
         }
-
-        Set<Locale> availableLocales = new HashSet<Locale>();
-
-        Enumeration<JarEntry> e = jar.entries();
-
-        while ( e.hasMoreElements() )
-        {
-            JarEntry entry = e.nextElement();
-
-            String name = entry.getName();
-
-            if ( name.startsWith( globalResourceBundleName ) && name.endsWith( EXT_RESOURCE_BUNDLE ) )
-            {
-                availableLocales.add( getLocaleFromName( name ) );
-            }
-        }
-
+        
         return availableLocales;
     }
 

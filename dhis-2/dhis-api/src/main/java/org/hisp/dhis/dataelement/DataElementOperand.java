@@ -210,9 +210,35 @@ public class DataElementOperand
      *
      * @return the id.
      */
+    @Deprecated
     public String getPersistedId()
     {
         return dataElement.getId() + SEPARATOR + categoryOptionCombo.getId();
+    }
+    
+    /**
+     * Returns the operand expression which is on the format #{de-uid.coc-uid} .
+     * 
+     * @return the operand expression.
+     */
+    public String getOperandExpression()
+    {
+        String expression = null;
+        
+        if ( dataElementId != null )
+        {
+            String coc = optionComboId != null ? SEPARATOR + optionComboId : "";
+        
+            expression = "#{" + dataElementId + coc + "}";
+        }
+        else if ( dataElement != null )
+        {
+            String coc = categoryOptionCombo != null ? SEPARATOR + categoryOptionCombo.getUid() : "";
+            
+            expression = "#{" + dataElement.getUid() + coc + "}";
+        }
+        
+        return expression;
     }
 
     /**
@@ -304,7 +330,7 @@ public class DataElementOperand
 
     /**
      * Generates a DataElementOperand based on the given formula. The formula
-     * needs to be on the form "[<dataelementid>.<categoryoptioncomboid>]".
+     * needs to be on the form "#{<dataelementid>.<categoryoptioncomboid>}".
      *
      * @param expression the formula.
      * @return a DataElementOperand.
@@ -467,7 +493,6 @@ public class DataElementOperand
     // hashCode, equals, toString, compareTo
     // -------------------------------------------------------------------------
 
-
     @Override
     public String toString()
     {
@@ -520,6 +545,18 @@ public class DataElementOperand
         }
         
         DataElementOperand other = (DataElementOperand) object;
+
+        if ( dataElement == null )
+        {
+            if ( other.dataElement != null )
+            {
+                return false;
+            }
+        }
+        else if ( !dataElement.equals( other.dataElement ) )
+        {
+            return false;
+        }
         
         if ( categoryOptionCombo == null )
         {
@@ -529,18 +566,6 @@ public class DataElementOperand
             }
         }
         else if ( !categoryOptionCombo.equals( other.categoryOptionCombo ) )
-        {
-            return false;
-        }
-        
-        if ( dataElement == null )
-        {
-            if ( other.dataElement != null )
-            {
-                return false;
-            }
-        }
-        else if ( !dataElement.equals( other.dataElement ) )
         {
             return false;
         }

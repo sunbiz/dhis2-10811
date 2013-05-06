@@ -35,7 +35,6 @@ import java.util.List;
 
 public class OptionSet
     extends Model
-    implements DataStreamSerializable
 {
     private String clientVersion;
     

@@ -88,7 +88,7 @@ public class ProgramStage
 
         for ( int i = 0; i < dataElements.size(); i++ )
         {
-            DataElement de = (DataElement) dataElements.get( i );
+            DataElement de = dataElements.get( i );
             de.setClientVersion( TWO_POINT_EIGHT );
             de.serialize( dout );
         }
@@ -105,7 +105,7 @@ public class ProgramStage
 
         for ( int i = 0; i < dataElements.size(); i++ )
         {
-            DataElement de = (DataElement) dataElements.get( i );
+            DataElement de = dataElements.get( i );
             de.setClientVersion( TWO_POINT_NINE );
             de.serialize( dout );
         }
@@ -122,7 +122,7 @@ public class ProgramStage
 
         for ( int i = 0; i < dataElements.size(); i++ )
         {
-            DataElement de = (DataElement) dataElements.get( i );
+            DataElement de = dataElements.get( i );
             de.setClientVersion( TWO_POINT_TEN );
             de.serialize( dout );
         }

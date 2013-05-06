@@ -165,7 +165,7 @@ public class SaveProgramEnrollmentAction
         }
 
         Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, program,
-            false );
+            ProgramInstance.STATUS_ACTIVE );
 
         if ( programInstances.iterator().hasNext() )
         {
@@ -179,7 +179,7 @@ public class SaveProgramEnrollmentAction
             programInstance.setDateOfIncident( format.parseDate( dateOfIncident ) );
             programInstance.setProgram( program );
             programInstance.setPatient( patient );
-            programInstance.setCompleted( false );
+            programInstance.setStatus( ProgramInstance.STATUS_ACTIVE );
 
             programInstanceService.addProgramInstance( programInstance );
 
@@ -201,7 +201,8 @@ public class SaveProgramEnrollmentAction
                     Date dueDate = DateUtils
                         .getDateAfterAddition( dateCreatedEvent, programStage.getMinDaysFromStart() );
 
-                    if ( ! ( program.getIgnoreOverdueEvents() && dueDate.before( currentDate ) ))
+                    if ( !program.getIgnoreOverdueEvents()
+                        || !(program.getIgnoreOverdueEvents() && dueDate.before( currentDate )) )
                     {
                         ProgramStageInstance programStageInstance = new ProgramStageInstance();
                         programStageInstance.setProgramInstance( programInstance );

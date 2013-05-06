@@ -364,3 +364,13 @@ function autoSaveDataEntryForm()
 		setHeaderDelayMessage( i18n_save_success ); 
 	} );
 }
+
+function deleteRegistrationFormFromView()
+{
+	var result = window.confirm( i18n_confirm_delete + '\n\n' + name );
+	if ( result )
+	{
+		window.location.href = 'delRegistrationEntryFormAction.action?id=' + id;
+	}
+}
+

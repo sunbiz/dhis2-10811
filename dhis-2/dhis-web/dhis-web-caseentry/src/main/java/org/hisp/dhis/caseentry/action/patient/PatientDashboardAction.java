@@ -45,6 +45,7 @@ import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramIndicatorService;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramService;
@@ -80,6 +81,8 @@ public class PatientDashboardAction
 
     private ProgramService programService;
 
+    private ProgramIndicatorService programIndicatorService;
+
     // -------------------------------------------------------------------------
     // Input && Output
     // -------------------------------------------------------------------------
@@ -102,13 +105,25 @@ public class PatientDashboardAction
 
     private Collection<Relationship> relationships = new HashSet<Relationship>();
 
+    private Map<String, String> programIndicatorsMap = new HashMap<String, String>();
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
 
+    public Map<String, String> getProgramIndicatorsMap()
+    {
+        return programIndicatorsMap;
+    }
+
     public void setPatientAuditService( PatientAuditService patientAuditService )
     {
         this.patientAuditService = patientAuditService;
+    }
+
+    public void setProgramIndicatorService( ProgramIndicatorService programIndicatorService )
+    {
+        this.programIndicatorService = programIndicatorService;
     }
 
     public void setProgramService( ProgramService programService )
@@ -230,16 +245,22 @@ public class PatientDashboardAction
         {
             if ( programs.contains( programInstance.getProgram() ) )
             {
-                if ( programInstance.isCompleted() )
+                if ( programInstance.getStatus() == ProgramInstance.STATUS_ACTIVE )
                 {
-                    completedProgramInstances.add( programInstance );
+                    activeProgramInstances.add( programInstance );
+
+                    programIndicatorsMap.putAll( programIndicatorService.getProgramIndicatorValues( programInstance ) );
                 }
                 else
                 {
-                    activeProgramInstances.add( programInstance );
+                    completedProgramInstances.add( programInstance );
                 }
             }
         }
+
+        // ---------------------------------------------------------------------
+        // Get program-indicators
+        // ---------------------------------------------------------------------
 
         // ---------------------------------------------------------------------
         // Patient-Audit

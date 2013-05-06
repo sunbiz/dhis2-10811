@@ -47,13 +47,14 @@ public class ZipAnalyzer
 
     static
     {
-        knownDataStreams.add( "Data_CROSS.xml" );        // sdmx cross sectional data file
-        knownDataStreams.add( "GMS_INDICATOR.xml" );     // sdmx indicator metadata
-        knownDataStreams.add( "xl/workbook.xml" );       // xslsx file
-        knownDataStreams.add( "content.xml" );           // xslsx file
+        knownDataStreams.add( "Data_CROSS.xml" ); // sdmx cross sectional data file
+        knownDataStreams.add( "GMS_INDICATOR.xml" ); // sdmx indicator metadata
+        knownDataStreams.add( "xl/workbook.xml" ); // xslsx file
+        knownDataStreams.add( "content.xml" ); // xslsx file
     }
 
-    public static InputStream getTransformableStream( ZipFile zipFile ) throws IOException
+    public static InputStream getTransformableStream( ZipFile zipFile )
+        throws IOException
     {
         InputStream resultStream = null;
         Enumeration<?> entries = zipFile.entries();
@@ -63,7 +64,8 @@ public class ZipAnalyzer
         {
             ZipEntry entry = zipFile.entries().nextElement();
             resultStream = zipFile.getInputStream( entry );
-        } else
+        }
+        else
         {
             while ( entries.hasMoreElements() )
             {

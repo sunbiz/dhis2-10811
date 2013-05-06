@@ -15,18 +15,18 @@
 
 <h3>$i18n.getString( "create_new_data_element_category_option" )</h3>
 
-<form id="addDataElementCategoryOptionForm" name="addDataElementCategoryOptionForm" action="addDataElementCategoryOption.action" method="post">
+<form id="addDataElementCategoryOptionForm" name="addDataElementCategoryOptionForm" action="addDataElementCategoryOption.action" method="post" class="inputForm">
   <table>
     <tr>
       <th colspan="4">$i18n.getString( "details" )</th>      
     </tr>
     <tr>
       <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-      <td colspan="3"><input type="text" id="name" name="name" style="width:25em" class="{validate:{required:true,rangelength:[2,150]}}"/></td>
+      <td colspan="3"><input type="text" id="name" name="name" class="{validate:{required:true,rangelength:[2,150]}}"/></td>
     </tr>   
 	<tr>
 	  <td><label>$i18n.getString( "code" )</td>
-	  <td colspan="3"><input type="text" id="code" name="code" style="width:25em"/></td>
+	  <td colspan="3"><input type="text" id="code" name="code"/></td>
     </tr>	
     <tr>
       <td><label>$i18n.getString( "concept_name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>

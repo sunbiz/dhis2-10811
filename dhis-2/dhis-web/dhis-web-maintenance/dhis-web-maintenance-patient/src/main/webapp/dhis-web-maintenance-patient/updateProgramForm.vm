@@ -1,8 +1,74 @@
-<script type="text/javascript" src="javascript/updateProgramForm.js"></script>
+<script>
+	jQuery( document ).ready( function()
+{
+	validation( 'updateProgramForm', function( form ){ 
+		if( duplicate==true) 
+			return false;
+		else{
+			enable('dateOfEnrollmentDescription');
+			enable('dateOfIncidentDescription');
+			form.submit();
+		}
+	}, function(){
+		duplicate = false;
+		var COLOR_RED = '#ff8a8a';
+		jQuery(".daysAllowedSendMessage").each( function( i, a ){ 
+			jQuery(".daysAllowedSendMessage").each( function(j, b){ 
+				if( i!=j && a.value==b.value){
+					jQuery( a ).css( 'background-color', COLOR_RED );
+					jQuery( b ).css( 'background-color', COLOR_RED );
+					duplicate = true;
+				}
+			});
+		});
+		
+		var daysAllowedSendMessages = jQuery( "#daysAllowedSendMessages" );
+		daysAllowedSendMessages.empty();
+		
+		var templateMessages = jQuery( "#templateMessages" );
+		templateMessages.empty();
+		
+		var datesToCompare = jQuery( "#datesToCompare" );
+		datesToCompare.empty();
+		
+		jQuery(".daysAllowedSendMessage").each( function( i, item ){ 
+			daysAllowedSendMessages.append( "<option value='" + item.value + "' selected='true'>" + item.value +"</option>" );
+		});
+		
+		jQuery(".templateMessage").each( function( i, item ){ 
+			templateMessages.append( "<option value='" + item.value + "' selected='true'>" +item.value+"</option>" );
+		});
+		
+		jQuery(".dateToCompare").each( function( i, item ){ 
+			datesToCompare.append( "<option value='" + item.value + "' selected='true'>" +item.value+"</option>" );
+		});
+		
+		var selectedPropertyIds = jQuery( "#selectedPropertyIds" );
+		selectedPropertyIds.empty();
+		var personDisplayNames = jQuery( "#personDisplayNames" );
+		personDisplayNames.empty();
+		if(getFieldValue('type')!=3){
+			jQuery("#selectedList").find("tr").each( function( i, item ){ 
+				
+				selectedPropertyIds.append( "<option value='" + item.id + "' selected='true'>" + item.id + "</option>" );
+				
+				var displayed = jQuery( item ).find( "input[name='displayed']:first");
+				var checked = displayed.attr('checked') ? true : false;
+				personDisplayNames.append( "<option value='" + checked + "' selected='true'>" + checked + "</option>" );
+			});
+		}
+	});
+	
+	checkValueIsExist( "name", "validateProgram.action",{id:getFieldValue('id')} );	
+});
+</script>
 
 <h3>$i18n.getString( "edit_program" )</h3>
 
 <form id="updateProgramForm" name="updateProgramForm" action="updateProgram.action" method="post" onsubmit="selectAllById('selectedPropertyIds');" >
+  <select id='daysAllowedSendMessages' name="daysAllowedSendMessages" multiple="multiple" class="hidden"></select>
+  <select id='templateMessages' name="templateMessages" multiple="multiple" class="hidden"></select>
+  <select id='datesToCompare' name="datesToCompare" multiple="multiple" class="hidden"></select>
   <input type="hidden" id="id" name="id" value="$program.id">
   <table id="detailsList">
     <thead>
@@ -37,7 +103,7 @@
 		
 		<tr>
 			<td><label>$i18n.getString( "version" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-			<td><input type="text" id="version" name="version" value="$program.version" class="{validate:{required:true,number:true}}"></td>
+			<td><input type="text" id="version" name="version" value="$program.version" class="{validate:{required:true,integer:true}}"></td>
 			<td></td>
 		</tr>
 		
@@ -56,11 +122,22 @@
 			<td><input type="checkbox" id="blockEntryForm" name="blockEntryForm" value='true' #if( $program.blockEntryForm=='true' ) checked #end ></td>
 			<td></td>
 		</tr>
+		
+		<tr>
+			<td><label>$i18n.getString( "remind_completing_program_after_program_stage_completed" )</label></td>
+			<td><input type="checkbox" id="remindCompleted" name="remindCompleted" value='true' #if( $program.remindCompleted=='true' ) checked #end ></td>
+			<td></td>
+		</tr>
 			
 		<tr name='nonAnonymous'>
 			<th colspan="2">$i18n.getString( "enrollment_details" )</th>
 		</tr>
 		
+		<tr name='nonAnonymous'>
+			<td><label>$i18n.getString( "disable_registration_fields" )</label></td>
+			<td><input type="checkbox" id="disableRegistrationFields" name="disableRegistrationFields" value='true' #if($program.disableRegistrationFields=='true') checked #end #if( $program.type=='3' ) disabled #end ></td>
+			<td></td>
+		</tr>
 		
 		<tr name='nonAnonymous'>
 			<td><label>$i18n.getString( "generated_events_by_enrollment_date" )</label></td>
@@ -173,6 +250,65 @@
 	  </tr>
     </tbody>
   </table>  
+  
+  #if($program.type!=3)
+	<table>
+		<tr>
+			<th colspan='3'>$i18n.getString("template_reminder_message")</th>
+		</tr>
+		<tbody id='programStageMessage'>
+			#set($index = 0)
+			#foreach($reminder in $program.patientReminders)
+				#set($index = $index + 1)
+				<tr name="tr$index" class="listAlternateRow" >
+					<td colspan='2'>
+						$i18n.getString( "reminder" ) $index
+						<span style="align:right"><a href='javascript:removeTemplateMessageForm($index)'> ( $i18n.getString("remove_reminder") )</a>
+					</td>
+				</tr>
+				<tr name="tr$index">
+				<td><label>$i18n.getString( "date_to_compare")</label></td>
+					<td>
+						<select class="dateToCompare"/>
+							<option value="dateofincident">$i18n.getString( "incident_date" )</option>
+							<option value="enrollmentdate">$i18n.getString( "enrollment_date" )</option>
+						</select>
+					</td>
+				</tr>
+				<tr name="tr$index">
+					<td><label>$i18n.getString( "days_before_after_comparison_date" )</label></td>
+					<td><input type="text" id="daysAllowedSendMessage$index" name="daysAllowedSendMessage$index" class="daysAllowedSendMessage {validate:{required:true,number:true}}" value="$!reminder.daysAllowedSendMessage"/></td>
+				</tr>
+				<tr name="tr$index">
+					<td>$i18n.getString( "params" )</td>
+					<td>
+						<select multiple size='4' ondblclick="insertParams(this.value, $index);">
+							<option value="{patient-name}">$i18n.getString("patient_name")</option>
+							<option value="{program-name}">$i18n.getString("program_name")</option>
+							<option value="{incident-date}">$i18n.getString("incident_date")</option>
+							<option value="{days-since-incident-date}">$i18n.getString("days_since_incident_date")</option>
+							<option value="{enrollement-date}">$i18n.getString("enrollement_date")</option>
+							<option value="{days-since-enrollement-date}">$i18n.getString("days_since_enrollment_date")</option>
+							<option value="{orgunit-name}">$i18n.getString("orgunit_name")</option>
+						</select>
+					</td>
+				</tr>
+				<tr name="tr$index">
+					<td><label>$i18n.getString( "message" )</label></td>
+					<td><textarea id="templateMessage$index" name="templateMessage$index" style="width:320px" class="templateMessage {validate:{required:true, rangelength:[3,160]}}">$reminder.templateMessage</textarea></td>
+				</tr>
+			#end
+		</tbody>
+		
+		<tr>
+			<td></td>
+			<td>
+				<input type="button" value="$i18n.getString('add_more')" onclick='generateTemplateMessageForm();'>
+			</td>
+		</tr>
+	</table>
+	#end
+	
   <table>
 	 <tr>
       	<td colspan='3'>
@@ -181,4 +317,21 @@
 		</td>
       </tr>
   </table>
-</form>	
+</form>
+
+<script>
+	var i18n_reminder = '$encoder.jsEscape( $i18n.getString( "reminder" ) , "'")';   
+	var i18n_remove_reminder = '$encoder.jsEscape( $i18n.getString( "remove_reminder" ) , "'")';   
+	var i18n_days_before_after_comparison_date = '$encoder.jsEscape( $i18n.getString( "days_before_after_comparison_date" ) , "'")';   
+	var i18n_params = '$encoder.jsEscape( $i18n.getString( "params" ) , "'")';   
+	var i18n_patient_name = '$encoder.jsEscape( $i18n.getString( "patient_name" ) , "'")';   
+	var i18n_program_name = '$encoder.jsEscape( $i18n.getString( "program_name" ) , "'")';   
+	var i18n_incident_date = '$encoder.jsEscape( $i18n.getString( "incident_date" ) , "'")';   
+	var i18n_days_since_incident_date = '$encoder.jsEscape( $i18n.getString( "days_since_incident_date" ) , "'")';   
+	var i18n_orgunit_name = '$encoder.jsEscape( $i18n.getString( "orgunit_name" ) , "'")';   
+	var i18n_enrollment_date = '$encoder.jsEscape( $i18n.getString( "enrollement_date" ) , "'")';   
+	var i18n_days_since_enrollment_date = '$encoder.jsEscape( $i18n.getString( "days_since_enrollment_date" ) , "'")';   
+	var i18n_message = '$encoder.jsEscape( $i18n.getString( "message" ) , "'")';   
+	var i18n_name_exists = '$encoder.jsEscape( $i18n.getString( "name_exists" ) , "'")';   
+	var i18n_date_to_compare = '$encoder.jsEscape( $i18n.getString( "date_to_compare" ) , "'")'; 
+</script>

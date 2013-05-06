@@ -42,23 +42,23 @@ public interface ProgramInstanceStore
 {
     String ID = ProgramInstanceStore.class.getName();
 
-    Collection<ProgramInstance> get( boolean completed );
+    Collection<ProgramInstance> get( Integer status );
 
     Collection<ProgramInstance> get( Program program );
 
     Collection<ProgramInstance> get( Collection<Program> programs );
 
-    Collection<ProgramInstance> get( Program program, boolean completed );
+    Collection<ProgramInstance> get( Program program, Integer status );
 
-    Collection<ProgramInstance> get( Collection<Program> programs, boolean completed );
+    Collection<ProgramInstance> get( Collection<Program> programs, Integer status );
 
     Collection<ProgramInstance> get( Patient patient );
 
-    Collection<ProgramInstance> get( Patient patient, boolean completed );
+    Collection<ProgramInstance> get( Patient patient, Integer status );
 
     Collection<ProgramInstance> get( Patient patient, Program program );
 
-    Collection<ProgramInstance> get( Patient patient, Program program, boolean completed );
+    Collection<ProgramInstance> get( Patient patient, Program program, Integer status );
 
     Collection<ProgramInstance> get( Program program, OrganisationUnit organisationUnit );
 
@@ -73,11 +73,12 @@ public interface ProgramInstanceStore
     
     int count( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
     
-    int count( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate, boolean completed );
-
-    Collection<ProgramInstance> getUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
-    
-    int countUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
-   
     void removeProgramEnrollment( ProgramInstance programInstance );
+    
+    int countByStatus( Integer status, Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
+    
+    Collection<ProgramInstance> getByStatus( Integer status, Program program, Collection<Integer> orgunitIds,
+        Date startDate, Date endDate );
+    
+    Collection<SchedulingProgramObject> getSendMesssageEvents( String dateToCompare );
 }

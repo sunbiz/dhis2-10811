@@ -4,8 +4,6 @@
 <ul>
 	<li><a href="displayDataBrowserForm.action">$i18n.getString( "data_browser" )&nbsp;</a></li>
     <li><a href="displayDataIntegrityForm.action">$i18n.getString( "data_integrity" )&nbsp;</a></li>
-    <li><a href="displayDataArchiveForm.action">$i18n.getString( "data_archive" )&nbsp;</a></li>
-	<li><a href="displayPatientDataArchiveForm.action">$i18n.getString( "patient_data_archive" )&nbsp;</a></li>
 	<li><a href="displayMaintenanceForm.action">$i18n.getString( "maintenance" )&nbsp;</a></li>
 	<li><a href="displayResourceTableForm.action">$i18n.getString( "resource_table" )&nbsp;</a></li>
 	<li><a href="showSqlViewListForm.action">$i18n.getString( "sql_view" )&nbsp;</a></li>

@@ -27,16 +27,19 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.hisp.dhis.system.util.ValidationUtils.coordinateIsValid;
+import static org.hisp.dhis.system.util.ValidationUtils.dataValueIsValid;
+import static org.hisp.dhis.system.util.ValidationUtils.emailIsValid;
 import static org.hisp.dhis.system.util.ValidationUtils.getLatitude;
 import static org.hisp.dhis.system.util.ValidationUtils.getLongitude;
 import static org.hisp.dhis.system.util.ValidationUtils.passwordIsValid;
-import static org.hisp.dhis.system.util.ValidationUtils.emailIsValid;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import org.hisp.dhis.dataelement.DataElement;
 import org.junit.Test;
 
 /**
@@ -103,5 +106,46 @@ public class ValidationUtilsTest
     {
         assertFalse( emailIsValid( "john@doe" ) );
         assertTrue( emailIsValid( "john@doe.com" ) );
+    }
+    
+    @Test
+    public void testDataValueIsValid()
+    {
+        DataElement de = new DataElement( "DEA" );
+        de.setType( DataElement.VALUE_TYPE_INT );
+
+        assertNull( dataValueIsValid( null, de ) );
+        assertNull( dataValueIsValid( "", de ) );
+        
+        assertNull( dataValueIsValid( "34", de ) );
+        assertNotNull( dataValueIsValid( "Yes", de ) );
+        
+        de.setNumberType( DataElement.VALUE_TYPE_NUMBER );
+        
+        assertNull( dataValueIsValid( "3.7", de ) );
+        assertNotNull( dataValueIsValid( "No", de ) );
+
+        de.setNumberType( DataElement.VALUE_TYPE_POSITIVE_INT );
+        
+        assertNull( dataValueIsValid( "3", de ) );
+        assertNotNull( dataValueIsValid( "-4", de ) );
+
+        de.setNumberType( DataElement.VALUE_TYPE_NEGATIVE_INT );
+        
+        assertNull( dataValueIsValid( "-3", de ) );
+        assertNotNull( dataValueIsValid( "4", de ) );
+
+        de.setNumberType( DataElement.VALUE_TYPE_INT );
+        
+        assertNotNull( dataValueIsValid( "0", de ) );
+        
+        de.setAggregationOperator( DataElement.AGGREGATION_OPERATOR_AVERAGE );
+
+        assertNull( dataValueIsValid( "0", de ) );
+
+        de.setAggregationOperator( DataElement.AGGREGATION_OPERATOR_SUM );
+        de.setType( DataElement.VALUE_TYPE_TEXT );
+
+        assertNull( dataValueIsValid( "0", de ) );
     }
 }

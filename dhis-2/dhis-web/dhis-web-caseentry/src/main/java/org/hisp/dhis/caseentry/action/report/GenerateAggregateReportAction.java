@@ -229,6 +229,13 @@ public class GenerateAggregateReportAction
         this.type = type;
     }
 
+    private Boolean displayTotals;
+
+    public void setDisplayTotals( Boolean displayTotals )
+    {
+        this.displayTotals = displayTotals;
+    }
+
     // -------------------------------------------------------------------------
     // Output
     // -------------------------------------------------------------------------
@@ -246,6 +253,8 @@ public class GenerateAggregateReportAction
 
     public String execute()
     {
+        displayTotals = ( displayTotals == null )? false : displayTotals;
+        
         // ---------------------------------------------------------------------
         // Get user orgunits
         // ---------------------------------------------------------------------
@@ -296,18 +305,18 @@ public class GenerateAggregateReportAction
         }
 
         // Fixed periods
-        List<Period> fixedPeriodList = new ArrayList<Period>(); 
+        List<Period> fixedPeriodList = new ArrayList<Period>();
         for ( String periodId : fixedPeriods )
         {
             Period p = PeriodType.getPeriodFromIsoString( periodId );
             fixedPeriodList.add( p );
         }
-        Collections.sort( fixedPeriodList, new AscendingPeriodComparator() );      
+        Collections.sort( fixedPeriodList, new AscendingPeriodComparator() );
         periods.addAll( fixedPeriodList );
-        
+
         // Relative periods
         periods.addAll( getRelativePeriod() );
-        
+
         // ---------------------------------------------------------------------
         // Generate report
         // ---------------------------------------------------------------------
@@ -335,9 +344,9 @@ public class GenerateAggregateReportAction
                 }
             }
         }
-        
+
         grid = programStageInstanceService.getAggregateReport( position, programStage, orgunitIds, facilityLB,
-            deGroupBy, deSum, deFilterMap, periods, aggregateType, limitRecords, useCompletedEvents, format, i18n );
+            deGroupBy, deSum, deFilterMap, periods, aggregateType, limitRecords, useCompletedEvents, displayTotals, format, i18n );
 
         return type == null ? SUCCESS : type;
     }
@@ -351,13 +360,13 @@ public class GenerateAggregateReportAction
         List<Period> periods = new ArrayList<Period>();
 
         RelativePeriods rp = new RelativePeriods();
-        
+
         if ( relativePeriods.contains( "lastWeek" ) )
         {
             rp.clear().setLastWeek( true );
             periods.addAll( periodService.reloadPeriods( rp.getRelativePeriods() ) );
         }
-        
+
         if ( relativePeriods.contains( "last4Weeks" ) )
         {
             rp.clear().setLast4Weeks( true );
@@ -417,8 +426,8 @@ public class GenerateAggregateReportAction
             rp.clear().setLast5Years( true );
             periods.addAll( periodService.reloadPeriods( rp.getRelativePeriods() ) );
         }
- 
-        return setNames(periods);
+
+        return setNames( periods );
     }
 
     private List<Period> setNames( List<Period> periods )

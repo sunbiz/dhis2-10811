@@ -77,42 +77,11 @@
     <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
   </bean>
-  
-  <!-- Data archive -->
-
-  <bean id="org.hisp.dhis.dataarchive.DataArchiveStore" class="org.hisp.dhis.dataarchive.jdbc.JdbcDataArchiveStore">
-    <property name="jdbcTemplate" ref="jdbcTemplate" />
-    <property name="statementBuilder" ref="statementBuilder" />
-  </bean>
-
-  <bean id="org.hisp.dhis.dataarchive.DataArchiveService" class="org.hisp.dhis.dataarchive.DefaultDataArchiveService">
-    <property name="dataArchiveStore" ref="org.hisp.dhis.dataarchive.DataArchiveStore" />
-  </bean>
-  
+    
   <!-- User audit -->
 
   <bean id="org.hisp.dhis.useraudit.UserAuditService" class="org.hisp.dhis.useraudit.DefaultUserAuditService"/>
-  
-  <!--DeletionHandler -->
-
-  <bean id="org.hisp.dhis.dataarchive.ArchivedDataValueDeletionHandler" class="org.hisp.dhis.dataarchive.ArchivedDataValueDeletionHandler">
-    <property name="jdbcTemplate" ref="jdbcTemplate" />
-  </bean>
-
-  <!-- DeletionManager -->
-
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="deletionManager" />
-    <property name="targetMethod" value="addDeletionHandlers" />
-    <property name="arguments">
-      <list>
-        <list>
-          <ref local="org.hisp.dhis.dataarchive.ArchivedDataValueDeletionHandler" />
-        </list>
-      </list>
-    </property>
-  </bean>
-  
+    
   <!-- Sql View -->
 
   <bean id="org.hisp.dhis.sqlview.SqlViewStore" class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">

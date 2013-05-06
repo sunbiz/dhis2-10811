@@ -106,10 +106,6 @@ public class TableAlteror
         executeSql( "ALTER TABLE programstage_dataelements DROP COLUMN showOnReport" );
 
         executeSql( "ALTER TABLE patientdatavalue DROP COLUMN categoryoptioncomboid" );
-        executeSql( "ALTER TABLE patientdatavaluearchive DROP COLUMN providedbyanotherfacility" );
-        executeSql( "ALTER TABLE patientdatavaluearchive DROP COLUMN organisationunitid" );
-        executeSql( "ALTER TABLE patientdatavaluearchive ADD COLUMN storedby VARCHAR(31)" );
-        executeSql( "ALTER TABLE patientdatavaluearchive ADD COLUMN providedelsewhere BOOLEAN" );
         executeSql( "DROP TABLE patientchart" );
 
         executeSql( "ALTER TABLE program DROP COLUMN hidedateofincident" );
@@ -126,6 +122,7 @@ public class TableAlteror
         executeSql( "DROP TABLE programinstance_attributes" );
         executeSql( "DROP TABLE programattributeoption" );
         executeSql( "DROP TABLE programattribute" );
+        executeSql( "DROP TABLE patientdatavaluearchive" );
 
         executeSql( "ALTER TABLE patientattribute DROP COLUMN noChars" );
         executeSql( "ALTER TABLE programstageinstance ALTER executiondate TYPE date" );
@@ -198,9 +195,24 @@ public class TableAlteror
 
         executeSql( "update caseaggregationcondition set \"operator\"='times' where \"operator\"='SUM'" );
 
-        updateUid();
+        executeSql( "update prorgam set \"operator\"='times' where \"operator\"='SUM'" );
         
+        executeSql( "update program set remindCompleted=false where remindCompleted is null" );
+        executeSql( "update patientreminder set dateToCompare='duedate' where programstageid is not null" );
+        executeSql( "UPDATE programinstance SET followup=false where followup is null" );
+        
+        updateUid();
+
         updateUidInDataEntryFrom();
+
+        updateProgramInstanceStatus();
+        
+        executeSql( "UPDATE program SET disableRegistrationFields=false where disableRegistrationFields is null" );
+        executeSql( "ALTER TABLE program ALTER COLUMN dateofincidentdescription DROP NOT NULL");
+        executeSql( "ALTER TABLE patient ALTER COLUMN birthdate DROP NOT NULL");
+        executeSql( "ALTER TABLE patient ALTER COLUMN gender DROP NOT NULL");
+        executeSql( "ALTER TABLE patient ALTER COLUMN underage DROP NOT NULL");
+        executeSql( "ALTER TABLE program ALTER COLUMN dateofenrollmentdescription DROP NOT NULL");
     }
 
     // -------------------------------------------------------------------------
@@ -309,7 +321,7 @@ public class TableAlteror
                 }
 
                 inputMatcher.appendTail( sb );
-                
+
                 htmlCode = (sb.toString().isEmpty()) ? htmlCode : sb.toString();
                 dataEntryForm.setHtmlCode( htmlCode );
                 dataEntryForm.setFormat( DataEntryForm.CURRENT_FORMAT );
@@ -317,7 +329,25 @@ public class TableAlteror
             }
         }
     }
-    
+
+    private void updateProgramInstanceStatus()
+    {
+        // Set active status for events
+        executeSql( "UPDATE programinstance SET status=0 WHERE completed=false" );
+
+        // Set un-completed status for events
+        executeSql( "UPDATE programinstance SET status=2 WHERE programinstanceid in "
+            + "( select psi.programinstanceid from programinstance pi join programstageinstance psi "
+            + "on psi.programinstanceid = psi.programstageinstanceid "
+            + "where pi.completed=true and psi.completed = false )" );
+
+        // Set completed status for events
+        executeSql( "UPDATE programinstance SET status=1 WHERE status is null" );
+
+        // Drop the column with name as completed
+        executeSql( "ALTER TABLE programinstance DROP COLUMN completed" );
+    }
+
     private int executeSql( String sql )
     {
         try

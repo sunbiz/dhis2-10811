@@ -98,7 +98,7 @@ public class Chart
 
     private String category;
 
-    private String filter;
+    private List<String> filters = new ArrayList<String>();
 
     private boolean hideLegend;
 
@@ -180,14 +180,14 @@ public class Chart
 
     public NameableObject filter()
     {
-        List<NameableObject> list = dimensionToList( filter );
+        List<NameableObject> list = dimensionToList( filters.get( 0 ) ); //TODO
 
         return list != null && !list.isEmpty() ? list.iterator().next() : null;
     }
 
-    public String getTitle()
+    public String generateTitle()
     {
-        if ( DIMENSION_PERIOD.equals( filter ) )
+        if ( DIMENSION_PERIOD.equals( filters.get( 0 ) ) )
         {
             return format.formatPeriod( getAllPeriods().get( 0 ) );
         }
@@ -316,7 +316,8 @@ public class Chart
     {
         this.series = series;
         this.category = category;
-        this.filter = filter;
+        this.filters.clear();
+        this.filters.add( filter ); //TODO
     }
 
     public boolean hasIndicators()
@@ -438,17 +439,28 @@ public class Chart
         this.category = category;
     }
 
+    public List<String> getFilters()
+    {
+        return filters;
+    }
+
+    public void setFilters( List<String> filters )
+    {
+        this.filters = filters;
+    }
+
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getFilter()
     {
-        return filter;
+        return filters.get( 0 ); //TODO
     }
 
     public void setFilter( String filter )
     {
-        this.filter = filter;
+        this.filters.clear();
+        this.filters.add( filter ); //TODO
     }
 
     @JsonProperty
@@ -747,8 +759,8 @@ public class Chart
             rangeAxisLabel = chart.getRangeAxisLabel() == null ? rangeAxisLabel : chart.getRangeAxisLabel();
             type = chart.getType() == null ? type : chart.getType();
             series = chart.getSeries() == null ? series : chart.getSeries();
-            category = chart.getCategory() == null ? category : chart.getCategory();
-            filter = chart.getFilter() == null ? filter : chart.getFilter();
+            category = chart.getCategory() == null ? category : chart.getCategory();            
+            setFilter( chart.getFilter() == null ? getFilter() : chart.getFilter() ); //TODO
             hideLegend = chart.isHideLegend();
             regression = chart.isRegression();
             hideSubtitle = chart.isHideSubtitle();

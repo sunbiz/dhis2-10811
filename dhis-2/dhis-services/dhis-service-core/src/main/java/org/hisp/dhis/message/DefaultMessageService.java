@@ -90,7 +90,7 @@ public class DefaultMessageService
 
         log.info( "Found the following message senders: " + messageSenders );
     }
-
+    
     // -------------------------------------------------------------------------
     // MessageService implementation
     // -------------------------------------------------------------------------

@@ -26,16 +26,19 @@
  */
 package org.hisp.dhis.caseentry.action.caseentry;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientService;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceService;
+import org.hisp.dhis.user.CurrentUserService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -68,6 +71,13 @@ public class CompleteDataEntryAction
     public void setPatientService( PatientService patientService )
     {
         this.patientService = patientService;
+    }
+
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
     }
 
     // -------------------------------------------------------------------------
@@ -105,10 +115,22 @@ public class CompleteDataEntryAction
     public String execute()
         throws Exception
     {
+        if ( programStageInstanceId == null )
+        {
+            return INPUT;
+        }
+
         ProgramStageInstance programStageInstance = programStageInstanceService
             .getProgramStageInstance( programStageInstanceId );
 
         programStageInstance.setCompleted( true );
+
+        Calendar today = Calendar.getInstance();
+        PeriodType.clearTimeOfDay( today );
+        Date date = today.getTime();
+
+        programStageInstance.setCompletedDate( date );
+        programStageInstance.setCompletedUser( currentUserService.getCurrentUsername() );
 
         programStageInstanceService.updateProgramStageInstance( programStageInstance );
 
@@ -132,7 +154,7 @@ public class CompleteDataEntryAction
                 }
             }
 
-            programInstance.setCompleted( true );
+            programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
             programInstance.setEndDate( new Date() );
 
             programInstanceService.updateProgramInstance( programInstance );

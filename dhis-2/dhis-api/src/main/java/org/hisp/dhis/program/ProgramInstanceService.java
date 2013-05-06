@@ -54,23 +54,23 @@ public interface ProgramInstanceService
 
     Collection<ProgramInstance> getAllProgramInstances();
 
-    Collection<ProgramInstance> getProgramInstances( boolean completed );
+    Collection<ProgramInstance> getProgramInstances( Integer status );
 
     Collection<ProgramInstance> getProgramInstances( Program program );
 
     Collection<ProgramInstance> getProgramInstances( Collection<Program> programs );
 
-    Collection<ProgramInstance> getProgramInstances( Program program, boolean completed );
+    Collection<ProgramInstance> getProgramInstances( Program program, Integer status );
 
-    Collection<ProgramInstance> getProgramInstances( Collection<Program> programs, boolean completed );
+    Collection<ProgramInstance> getProgramInstances( Collection<Program> programs, Integer status );
 
     Collection<ProgramInstance> getProgramInstances( Patient patient );
 
-    Collection<ProgramInstance> getProgramInstances( Patient patient, boolean completed );
+    Collection<ProgramInstance> getProgramInstances( Patient patient, Integer status );
 
     Collection<ProgramInstance> getProgramInstances( Patient patient, Program program );
 
-    Collection<ProgramInstance> getProgramInstances( Patient patient, Program program, boolean completed );
+    Collection<ProgramInstance> getProgramInstances( Patient patient, Program program, Integer status );
 
     Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit );
 
@@ -82,23 +82,21 @@ public interface ProgramInstanceService
 
     Collection<ProgramInstance> getProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate,
         Date endDate, int min, int max );
-
-    int countProgramInstances( Program program, OrganisationUnit organisationUnit );
-
+    
     int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
-
-    int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        boolean completed );
 
     List<Grid> getProgramInstanceReport( Patient patient, I18n i18n, I18nFormat format );
 
     Grid getProgramInstanceReport( ProgramInstance programInstance, I18n i18n, I18nFormat format );
-    
-    Collection<ProgramInstance> getUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate,
+
+    int countProgramInstancesByStatus( Integer status, Program program, Collection<Integer> orgunitIds, Date startDate,
         Date endDate );
 
-    int countUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate );
-    
+    Collection<ProgramInstance> getProgramInstancesByStatus( Integer status, Program program,
+        Collection<Integer> orgunitIds, Date startDate, Date endDate );
+
     void removeProgramEnrollment( ProgramInstance programInstance );
+    
+    Collection<SchedulingProgramObject> getSendMesssageEvents();
 
 }

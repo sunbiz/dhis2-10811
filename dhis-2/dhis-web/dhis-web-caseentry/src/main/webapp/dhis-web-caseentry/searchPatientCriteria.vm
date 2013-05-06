@@ -26,6 +26,7 @@
 					<option value="$program.id" type='$program.type'>$program.displayName</option>
 				#end
 			</select>
+			<span id="programLoader" style="display:none;" ><img src="../images/ajax-loader-bar.gif" /></span>
 		</td>
 	</tr>
 	<tr id='scheduleVisitTR' class='hidden'>
@@ -105,16 +106,21 @@
 			<tr id='advSearchBox0'>	       
 				<td>
 				  <select class='search-field' id="searchObjectId" name="searchObjectId" #if( $patientAttributes.size() == 0 ) disabled="disabled" #end onchange="searchObjectOnChange(this)">
-					<option value="iden">$i18n.getString( "search_by_name_identifier" )</option>
-					<option value="prg">$i18n.getString( "search_by_program" )</option>
-					<option value="fixedAttr_birthDate">$i18n.getString( "date_of_birth" )</option>
-					<option value="fixedAttr_age">$i18n.getString( "age_year" )</option>
-					<option value="fixedAttr_gender">$i18n.getString( "gender" )</option>
-					<option value="fixedAttr_phoneNumber">$i18n.getString( "phone_number" )</option>
-					#foreach( $attribute in $patientAttributes )
-						<option value="attr_$attribute.id" valueType='$attribute.valueType'>$encoder.htmlEncode( $attribute.displayName )</option>
+					#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+						<option value="iden">$i18n.getString( "search_by_name_identifier" )</option>
 					#end
-				  </select>
+					<option value="prg">$i18n.getString( "search_by_program" )</option>
+					
+					#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+						<option value="fixedAttr_birthDate">$i18n.getString( "date_of_birth" )</option>
+						<option value="fixedAttr_age">$i18n.getString( "age_year" )</option>
+						<option value="fixedAttr_gender">$i18n.getString( "gender" )</option>
+						<option value="fixedAttr_phoneNumber">$i18n.getString( "phone_number" )</option>
+						#foreach( $attribute in $patientAttributes )
+							<option value="attr_$attribute.id" valueType='$attribute.valueType'>$encoder.htmlEncode( $attribute.displayName )</option>
+						#end
+					  </select>
+					#end
 				  <em title="$i18n.getString( 'required' )" class="required">*</em></label>
 				</td>		
 				<td>

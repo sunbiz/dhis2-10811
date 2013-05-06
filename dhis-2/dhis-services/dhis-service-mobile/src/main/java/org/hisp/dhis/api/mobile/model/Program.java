@@ -108,7 +108,7 @@ public class Program
         dout.writeInt( programStages.size() );
         for ( int i = 0; i < programStages.size(); i++ )
         {
-            ProgramStage programStage = (ProgramStage) programStages.get( i );
+            ProgramStage programStage = programStages.get( i );
             programStage.setClientVersion( TWO_POINT_EIGHT );
             programStage.serialize( dout );
         }
@@ -124,7 +124,7 @@ public class Program
         dout.writeInt( programStages.size() );
         for ( int i = 0; i < programStages.size(); i++ )
         {
-            ProgramStage programStage = (ProgramStage) programStages.get( i );
+            ProgramStage programStage = programStages.get( i );
             programStage.setClientVersion( TWO_POINT_NINE );
             programStage.serialize( dout );
         }
@@ -140,7 +140,7 @@ public class Program
         dout.writeInt( programStages.size() );
         for ( int i = 0; i < programStages.size(); i++ )
         {
-            ProgramStage programStage = (ProgramStage) programStages.get( i );
+            ProgramStage programStage = programStages.get( i );
             programStage.setClientVersion( TWO_POINT_TEN );
             programStage.serialize( dout );
         }

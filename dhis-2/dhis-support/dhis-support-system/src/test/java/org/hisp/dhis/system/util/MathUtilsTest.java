@@ -96,10 +96,9 @@ public class MathUtilsTest
         assertTrue( MathUtils.isNumeric( "1.2" ) );
         assertTrue( MathUtils.isNumeric( "12.34" ) );
         assertTrue( MathUtils.isNumeric( "0.0" ) );
-        assertTrue( MathUtils.isNumeric( ".1" ) );
         assertTrue( MathUtils.isNumeric( "1.234" ) );
-        assertTrue( MathUtils.isNumeric( "1234  " ) );
-        assertTrue( MathUtils.isNumeric( "  1234" ) );
+        assertTrue( MathUtils.isNumeric( "-1234" ) );
+        assertTrue( MathUtils.isNumeric( "-12.34" ) );
 
         assertFalse( MathUtils.isNumeric( "Hey" ) );
         assertFalse( MathUtils.isNumeric( "45 Perinatal Condition" ) );
@@ -108,9 +107,117 @@ public class MathUtilsTest
         assertFalse( MathUtils.isNumeric( "1 234" ) );
         assertFalse( MathUtils.isNumeric( "." ) );
         assertFalse( MathUtils.isNumeric( "1." ) );
+        assertFalse( MathUtils.isNumeric( ".1" ) );
         assertFalse( MathUtils.isNumeric( "" ) );
         assertFalse( MathUtils.isNumeric( " " ) );
+        assertFalse( MathUtils.isNumeric( "+1234  " ) );
+        assertFalse( MathUtils.isNumeric( "1234  " ) );
+        assertFalse( MathUtils.isNumeric( "  1234" ) );
+        assertFalse( MathUtils.isNumeric( "1,234" ) );
+        assertFalse( MathUtils.isNumeric( "0,1" ) );
+        assertFalse( MathUtils.isNumeric( "0," ) );
+        assertFalse( MathUtils.isNumeric( "0." ) );
         assertFalse( MathUtils.isNumeric( null ) );
+    }
+
+    @Test
+    public void testIsNumericLenient()
+    {
+        assertTrue( MathUtils.isNumericLenient( "0123" ) );
+        assertTrue( MathUtils.isNumericLenient( "123" ) );
+        assertTrue( MathUtils.isNumericLenient( "0" ) );
+        assertTrue( MathUtils.isNumericLenient( "1.2" ) );
+        assertTrue( MathUtils.isNumericLenient( "012.34" ) );
+        assertTrue( MathUtils.isNumericLenient( "12.34" ) );
+        assertTrue( MathUtils.isNumericLenient( "0.0" ) );
+        assertTrue( MathUtils.isNumericLenient( "1.234" ) );
+        assertTrue( MathUtils.isNumericLenient( "-1234" ) );
+        assertTrue( MathUtils.isNumericLenient( "-12.34" ) );
+
+        assertFalse( MathUtils.isNumericLenient( "Hey" ) );
+        assertFalse( MathUtils.isNumericLenient( "45 Perinatal Condition" ) );
+        assertFalse( MathUtils.isNumericLenient( "Long street 2" ) );
+        assertFalse( MathUtils.isNumericLenient( "1.2f" ) );
+        assertFalse( MathUtils.isNumericLenient( "1 234" ) );
+        assertFalse( MathUtils.isNumericLenient( ".1" ) );
+        assertFalse( MathUtils.isNumericLenient( ".4543" ) );
+        assertFalse( MathUtils.isNumericLenient( "." ) );
+        assertFalse( MathUtils.isNumericLenient( "1." ) );
+        assertFalse( MathUtils.isNumericLenient( "" ) );
+        assertFalse( MathUtils.isNumericLenient( " " ) );
+        assertFalse( MathUtils.isNumericLenient( "+6575  " ) );
+        assertFalse( MathUtils.isNumericLenient( "5643  " ) );
+        assertFalse( MathUtils.isNumericLenient( "  3243" ) );
+        assertFalse( MathUtils.isNumericLenient( "1,877" ) );
+        assertFalse( MathUtils.isNumericLenient( "0,1" ) );
+        assertFalse( MathUtils.isNumericLenient( "0," ) );
+        assertFalse( MathUtils.isNumericLenient( "0." ) );
+        assertFalse( MathUtils.isNumericLenient( null ) );
+    }
+    
+    @Test
+    public void testIsInteger()
+    {
+        assertTrue( MathUtils.isInteger( "1" ) );
+        assertTrue( MathUtils.isInteger( "123" ) );
+        assertTrue( MathUtils.isInteger( "-2" ) );
+        assertTrue( MathUtils.isInteger( "0" ) );
+        
+        assertFalse( MathUtils.isInteger( "1.1" ) );
+        assertFalse( MathUtils.isInteger( "+4" ) );
+        assertFalse( MathUtils.isInteger( "-0" ) );
+        assertFalse( MathUtils.isInteger( "Hey" ) );
+        assertFalse( MathUtils.isInteger( " 1" ) );
+        assertFalse( MathUtils.isInteger( "1 " ) );
+        assertFalse( MathUtils.isInteger( "1.2345" ) );
+    }
+
+    @Test
+    public void testIsPositiveInteger()
+    {
+        assertTrue( MathUtils.isPositiveInteger( "1" ) );
+        assertTrue( MathUtils.isPositiveInteger( "123" ) );
+
+        assertFalse( MathUtils.isPositiveInteger( "0" ) );
+        assertFalse( MathUtils.isPositiveInteger( "+2" ) );
+        assertFalse( MathUtils.isPositiveInteger( "-2" ) );
+        assertFalse( MathUtils.isPositiveInteger( "-2232" ) );
+        assertFalse( MathUtils.isPositiveInteger( "-2.17" ) );
+        assertFalse( MathUtils.isPositiveInteger( "1.1" ) );
+        assertFalse( MathUtils.isPositiveInteger( "-0" ) );
+        assertFalse( MathUtils.isPositiveInteger( "Hey" ) );
+        assertFalse( MathUtils.isPositiveInteger( "1 " ) );
+        assertFalse( MathUtils.isPositiveInteger( "1.2345" ) );
+    }
+
+    @Test
+    public void testIsNegativeInteger()
+    {
+        assertTrue( MathUtils.isNegativeInteger( "-1" ) );
+        assertTrue( MathUtils.isNegativeInteger( "-123" ) );
+
+        assertFalse( MathUtils.isNegativeInteger( "0" ) );
+        assertFalse( MathUtils.isNegativeInteger( "+2" ) );
+        assertFalse( MathUtils.isNegativeInteger( "2" ) );
+        assertFalse( MathUtils.isNegativeInteger( "2232" ) );
+        assertFalse( MathUtils.isNegativeInteger( "2.17" ) );
+        assertFalse( MathUtils.isNegativeInteger( "1.1" ) );
+        assertFalse( MathUtils.isNegativeInteger( "-0" ) );
+        assertFalse( MathUtils.isNegativeInteger( "Hey" ) );
+        assertFalse( MathUtils.isNegativeInteger( "2 " ) );
+        assertFalse( MathUtils.isNegativeInteger( "6.1345" ) );
+    }
+
+    @Test
+    public void testIsZero()
+    {
+        assertTrue( MathUtils.isZero( "0" ) );
+
+        assertFalse( MathUtils.isZero( "+0" ) );
+        assertFalse( MathUtils.isZero( "-0" ) );
+        assertFalse( MathUtils.isZero( "2232" ) );
+        assertFalse( MathUtils.isZero( "2.17" ) );
+        assertFalse( MathUtils.isZero( "Hey" ) );
     }
     
     @Test

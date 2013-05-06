@@ -154,11 +154,6 @@
     <property name="reportService" ref="org.hisp.dhis.report.ReportService" />
   </bean>
 
-  <bean id="org.hisp.dhis.reporting.reportviewer.action.GetReportDesignAction" class="org.hisp.dhis.reporting.reportviewer.action.GetReportDesignAction"
-    scope="prototype">
-    <property name="reportService" ref="org.hisp.dhis.report.ReportService" />
-  </bean>
-
   <bean id="org.hisp.dhis.reporting.reportviewer.action.GetReportAndParamsAction" class="org.hisp.dhis.reporting.reportviewer.action.GetReportAndParamsAction"
     scope="prototype">
   </bean>
@@ -182,6 +177,7 @@
     scope="prototype">
     <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     <property name="selectionTreeManager" ref="org.hisp.dhis.oust.manager.SelectionTreeManager" />
   </bean>
 
@@ -191,6 +187,7 @@
     <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
 	<property name="registrationService" ref="org.hisp.dhis.dataset.CompleteDataSetRegistrationService" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
   </bean>
 

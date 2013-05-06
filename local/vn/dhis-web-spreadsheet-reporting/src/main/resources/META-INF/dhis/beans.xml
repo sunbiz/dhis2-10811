@@ -127,8 +127,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			ref="org.hisp.dhis.reportsheet.ReportLocationManager" />
 		<property name="systemSettingManager"
 			ref="org.hisp.dhis.setting.SystemSettingManager" />
-		<property name="userSettingService"
-			ref="org.hisp.dhis.user.UserSettingService" />
 	</bean>
 
 	<bean

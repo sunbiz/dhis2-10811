@@ -76,7 +76,7 @@ public class SavePatientRegistrationFormAction
     // -------------------------------------------------------------------------
     // Getters & Setters
     // -------------------------------------------------------------------------
-
+    
     private String name;
 
     public void setName( String name )
@@ -91,18 +91,18 @@ public class SavePatientRegistrationFormAction
         this.designTextarea = designTextarea;
     }
 
-    private Integer id;
-
-    public void setId( Integer id )
-    {
-        this.id = id;
-    }
-
     private Integer programId;
 
     public void setProgramId( Integer programId )
     {
         this.programId = programId;
+    }
+
+    private String message;
+
+    public String getMessage()
+    {
+        return message;
     }
 
     // -------------------------------------------------------------------------
@@ -114,9 +114,16 @@ public class SavePatientRegistrationFormAction
     {
         PatientRegistrationForm registrationForm = null;
 
-        if ( id != null )
+        Program program = null;
+
+        if ( programId == null )
         {
-            registrationForm = patientRegistrationFormService.getPatientRegistrationForm( id );
+            registrationForm = patientRegistrationFormService.getCommonPatientRegistrationForm();
+        }
+        else
+        {
+            program = programService.getProgram( programId );
+            registrationForm = patientRegistrationFormService.getPatientRegistrationForm( program );
         }
 
         // ---------------------------------------------------------------------
@@ -130,7 +137,6 @@ public class SavePatientRegistrationFormAction
             registrationForm.setDataEntryForm( dataEntryForm );
             if ( programId != null )
             {
-                Program program = programService.getProgram( programId );
                 registrationForm.setProgram( program );
             }
             patientRegistrationFormService.savePatientRegistrationForm( registrationForm );
@@ -142,6 +148,10 @@ public class SavePatientRegistrationFormAction
             dataEntryForm.setHtmlCode( designTextarea );
             dataEntryFormService.updateDataEntryForm( dataEntryForm );
         }
+
+        Integer dataEntryFormId = dataEntryFormService.getDataEntryFormByName( name ).getId();
+
+        message = dataEntryFormId + "";
 
         return SUCCESS;
     }

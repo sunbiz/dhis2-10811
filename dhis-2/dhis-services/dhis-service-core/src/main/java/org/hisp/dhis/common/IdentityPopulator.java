@@ -27,20 +27,17 @@ package org.hisp.dhis.common;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.amplecode.quick.StatementHolder;
-import org.amplecode.quick.StatementManager;
+import java.sql.SQLException;
+import java.util.UUID;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.system.startup.AbstractStartupRoutine;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.UUID;
+import org.hisp.dhis.system.util.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author bobj
@@ -62,107 +59,125 @@ public class IdentityPopulator
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     // -------------------------------------------------------------------------
     // Execute
     // -------------------------------------------------------------------------
 
-    @Transactional
-    @Override
     public void execute()
         throws SQLException
     {
-        StatementHolder holder = statementManager.getHolder();
-
-        Statement dummyStatement = holder.getStatement();
-
-        Statement statement = null;
-
-        try
+        for ( String table : tables )
         {
-            Connection conn = dummyStatement.getConnection();
-
-            statement = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
-
-            for ( String table : tables )
+            try
             {
-                try
+                log.debug( "Checking table: " + table );
+                
+                int count = 0;
+                
+                SqlRowSet resultSet = jdbcTemplate.queryForRowSet( "SELECT * from " + table + " WHERE uid IS NULL" );
+                
+                while ( resultSet.next() )
                 {
-                    int count = 0;
-                    ResultSet resultSet = statement.executeQuery( "SELECT * from " + table + " WHERE uid IS NULL" );
-                    while ( resultSet.next() )
-                    {
-                        ++count;
-                        resultSet.updateString( "uid", CodeGenerator.generateCode() );
-                        resultSet.updateRow();
-                    }
-                    if ( count > 0 )
-                    {
-                        log.info( count + " uids updated on " + table );
-                    }
-
-                    count = 0;
-
-                    Timestamp now = new Timestamp( new Date().getTime() );
-
-                    resultSet = statement.executeQuery( "SELECT * from " + table + " WHERE lastUpdated IS NULL" );
-
-                    while ( resultSet.next() )
-                    {
-                        ++count;
-                        resultSet.updateTimestamp( "lastUpdated", now );
-                        resultSet.updateRow();
-                    }
-
-                    resultSet = statement.executeQuery( "SELECT * from " + table + " WHERE created IS NULL" );
-
-                    while ( resultSet.next() )
-                    {
-                        ++count;
-                        resultSet.updateTimestamp( "created", resultSet.getTimestamp( "lastUpdated" ) );
-                        resultSet.updateRow();
-                    }
-
-                    if ( count > 0 )
-                    {
-                        log.info( count + " timestamps updated on " + table );
-                    }
-
+                    ++count;
+                    String idColumn = table + "id";
+                    int id = resultSet.getInt( idColumn );
+                    String sql = "update " + table + " set uid = '" + CodeGenerator.generateCode() + "' where " + idColumn + " = " + id;
+                    jdbcTemplate.update( sql );
                 }
-                catch ( SQLException ex )
+                
+                if ( count > 0 )
                 {
-                    log.info( "Problem updating " + table + ": ", ex );
+                    log.info( count + " uids set on " + table );
+                }
+
+                count = 0;
+
+                resultSet = jdbcTemplate.queryForRowSet( "SELECT * from " + table + " WHERE lastUpdated IS NULL" );
+                
+                String timestamp = DateUtils.getLongDateString();
+                
+                while ( resultSet.next() )
+                {
+                    ++count;
+                    String idColumn = table + "id";
+                    int id = resultSet.getInt( idColumn );
+                    String sql = "update " + table + " set lastupdated = '" + timestamp + "' where " + idColumn + " = " + id;
+                    jdbcTemplate.update( sql );
+                }
+                
+                if ( count > 0 )
+                {
+                    log.info( count + " last updated set on " + table );
+                }
+
+                count = 0;
+
+                resultSet = jdbcTemplate.queryForRowSet( "SELECT * from " + table + " WHERE created IS NULL" );
+                
+                while ( resultSet.next() )
+                {
+                    ++count;
+                    String idColumn = table + "id";
+                    int id = resultSet.getInt( idColumn );
+                    String sql = "update " + table + " set created = '" + timestamp + "' where " + idColumn + " = " + id;
+                    jdbcTemplate.update( sql );
+                }
+                
+                if ( count > 0 )
+                {
+                    log.info( count + " timestamps set on " + table );
                 }
             }
-        }
-        finally
-        {
-            if ( statement != null )
+            catch ( BadSqlGrammarException ex )
             {
-                statement.close();
+                log.error( "Problem updating " + table + ": ", ex );
             }
         }
 
+        log.debug( "Identifiable properties updated" );
+        
+        createUidConstraints();
+
+        log.debug( "Identifiable constraints updated" );
+        
+        createOrgUnitUuids();
+        
+        log.debug( "Organisation unit uuids updated" );        
+    }
+
+    private void createUidConstraints()
+    {
+        for ( String table : tables )
+        {
+            try
+            {
+                final String sql = "ALTER TABLE " + table + " ADD CONSTRAINT " + table + "_uid_key UNIQUE(uid)";
+                jdbcTemplate.execute( sql );
+            }
+            catch ( BadSqlGrammarException ex )
+            {
+                log.debug( "Could not create uid constraint on table " + table +
+                    ", might already be created or column contains duplicates", ex );
+            }
+        }
+    }
+    
+    private void createOrgUnitUuids()
+    {
         try
         {
-            Connection conn = dummyStatement.getConnection();
-
-            statement = conn.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE );
-
-            ResultSet resultSet = statement.executeQuery( "SELECT * from organisationunit WHERE uuid IS NULL" );
+            SqlRowSet resultSet = jdbcTemplate.queryForRowSet( "SELECT * from organisationunit WHERE uuid IS NULL" );
             int count = 0;
 
             while ( resultSet.next() )
             {
                 ++count;
-                resultSet.updateString( "uuid", UUID.randomUUID().toString() );
-                resultSet.updateRow();
+                int id = resultSet.getInt( "organisationunitid" );
+                String sql = "update organisationunit set uuid = '" + UUID.randomUUID().toString() + "' where organisationunitid = " + id;
+                jdbcTemplate.update( sql );
             }
 
             if ( count > 0 )
@@ -170,41 +185,9 @@ public class IdentityPopulator
                 log.info( count + " UUIDs updated on organisationunit" );
             }
         }
-        catch ( SQLException ex )
+        catch ( BadSqlGrammarException ex )
         {
-            log.info( "Problem updating organisationunit: ", ex );
-        }
-        finally
-        {
-            if ( statement != null )
-            {
-                statement.close();
-            }
-        }
-
-        createUidConstraints();
-    }
-
-    private void createUidConstraints()
-    {
-        for ( String table : tables )
-        {
-            StatementHolder holder = statementManager.getHolder();
-
-            try
-            {
-                final String sql = "ALTER TABLE " + table + " ADD CONSTRAINT " + table + "_uid_key UNIQUE(uid)";
-                holder.executeUpdate( sql, true );
-            }
-            catch ( Exception ex )
-            {
-                log.debug( "Could not create uid constraint on table " + table +
-                    ", might already be created or column contains duplicates", ex );
-            }
-            finally
-            {
-                holder.close();
-            }
+            log.debug( "Problem updating organisationunit: ", ex );
         }
     }
 }

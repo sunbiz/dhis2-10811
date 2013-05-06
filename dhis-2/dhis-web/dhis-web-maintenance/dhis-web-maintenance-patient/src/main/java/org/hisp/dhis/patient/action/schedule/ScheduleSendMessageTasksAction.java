@@ -36,8 +36,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hisp.dhis.patient.scheduling.ProgramSchedulingManager;
+import org.hisp.dhis.patient.scheduling.SendScheduledMessageTask;
+import org.hisp.dhis.scheduling.TaskCategory;
+import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.setting.SystemSettingManager;
+import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.scheduling.Scheduler;
+import org.hisp.dhis.user.CurrentUserService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -67,6 +72,27 @@ public class ScheduleSendMessageTasksAction
         this.schedulingManager = schedulingManager;
     }
 
+    private CurrentUserService currentUserService;
+
+    public void setCurrentUserService( CurrentUserService currentUserService )
+    {
+        this.currentUserService = currentUserService;
+    }
+
+    private SendScheduledMessageTask sendMessageScheduled;
+
+    public void setSendMessageScheduled( SendScheduledMessageTask sendMessageScheduled )
+    {
+        this.sendMessageScheduled = sendMessageScheduled;
+    }
+
+    private Notifier notifier;
+
+    public void setNotifier( Notifier notifier )
+    {
+        this.notifier = notifier;
+    }
+
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -78,13 +104,6 @@ public class ScheduleSendMessageTasksAction
         this.execute = execute;
     }
 
-    private boolean schedule;
-
-    public void setSchedule( boolean schedule )
-    {
-        this.schedule = schedule;
-    }
-    
     private String timeSendingMessage;
 
     public void setTimeSendingMessage( String timeSendingMessage )
@@ -116,13 +135,17 @@ public class ScheduleSendMessageTasksAction
 
     public String execute()
     {
+        TaskId taskId = new TaskId( TaskCategory.SENDING_REMINDER_MESSAGE, currentUserService.getCurrentUser() );
+        notifier.clear( taskId );
+        sendMessageScheduled.setTaskId( taskId );
+
         systemSettingManager.saveSystemSetting( KEY_TIME_FOR_SENDING_MESSAGE, timeSendingMessage );
-        
+
         if ( execute )
         {
             schedulingManager.executeTasks();
         }
-        else if ( schedule )
+        else
         {
             if ( Scheduler.STATUS_RUNNING.equals( schedulingManager.getTaskStatus() ) )
             {

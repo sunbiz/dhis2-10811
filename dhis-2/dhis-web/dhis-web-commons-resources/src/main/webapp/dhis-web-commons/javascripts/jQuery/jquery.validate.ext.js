@@ -417,7 +417,7 @@ jQuery.validator.addMethod("custome_regex", function(value, element, params) {
 });
 
 jQuery.validator.addMethod("number", function(value, element, param) {
-    return this.optional(element) || isRealNumber(value);
+    return this.optional(element) || isNumber(value);
 });
 
 jQuery.validator.addMethod("integer", function(value, element, param) {

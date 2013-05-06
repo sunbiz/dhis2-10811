@@ -432,7 +432,7 @@ public class DefaultResourceTableService
                 DataElementCategoryOption categoryOption = category.getCategoryOption( categoryOptionCombo );
                 
                 values.add( categoryOption != null ? categoryOption.getName() : null );
-                values.add( categoryOption != null ? categoryOption.getId() : null );
+                values.add( categoryOption != null ? categoryOption.getUid() : null );
             }
             
             batchArgs.add( values.toArray() );

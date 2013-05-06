@@ -38,6 +38,10 @@
 		#introListImgItem( "statisticalProgramReportSelect.action" "statistical_program" "validationanalysis" )
 	#end
 	
+	#if( $auth.hasAccess( "dhis-web-caseentry", "programStageCompletenessSelect" ) )
+		#introListImgItem( "programStageCompletenessSelect.action" "program_stage_completeness" "validationanalysis" )
+	#end
+	
 	#if( $auth.hasAccess( "dhis-web-caseentry", "caseAggregationForm" ) )
 		#introListImgItem( "caseAggregationForm.action" "manual_person_aggregation" "caseaggregation" )
 	#end

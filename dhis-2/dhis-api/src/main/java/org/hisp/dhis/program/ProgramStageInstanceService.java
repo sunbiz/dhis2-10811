@@ -89,12 +89,13 @@ public interface ProgramStageInstanceService
 
     List<ProgramStageInstance> getProgramStageInstances( Patient patient, Boolean completed );
 
-    Grid getTabularReport( ProgramStage programStage, List<TabularReportColumn> columns,
+    Grid getTabularReport( Boolean anonynousEntryForm, ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, Date startDate, Date endDate, boolean descOrder,
         Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max, I18n i18n );
 
-    int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
-        Collection<Integer> organisationUnits, int level, Boolean completed, Date startDate, Date endDate );
+    int getTabularReportCount( Boolean anonynousEntryForm, ProgramStage programStage,
+        List<TabularReportColumn> columns, Collection<Integer> organisationUnits, int level, Boolean completed,
+        Date startDate, Date endDate );
 
     List<Grid> getProgramStageInstancesReport( ProgramInstance programInstance, I18nFormat format, I18n i18n );
 
@@ -112,20 +113,24 @@ public interface ProgramStageInstanceService
 
     Grid getAggregateReport( int position, ProgramStage programStage, Collection<Integer> orgunitIds,
         String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>> deFilters,
-        List<Period> periods, String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format,
-        I18n i18n );
+        List<Period> periods, String aggregateType, Integer limit, Boolean useCompletedEvents, Boolean displayTotals,
+        I18nFormat format, I18n i18n );
 
     // -------------------------------------------------------------------------
     // Statistical
     // -------------------------------------------------------------------------
-    
+
     Collection<ProgramStageInstance> getProgramStageInstances( Program program, Collection<Integer> orgunitIds,
         Date startDate, Date endDate, Boolean completed );
 
     int getOverDueEventCount( ProgramStage programStage, Collection<Integer> orgunitIds, Date startDate, Date endDate );
 
-    int averageNumberCompletedProgramInstance( Program program , Collection<Integer> orgunitIds, Date startDate, Date endDate, Boolean completed );
-    
-    Collection<Integer> getOrganisationUnitIds ( Date startDate, Date endDate );
-    
+    int averageNumberCompletedProgramInstance( Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate, Integer status );
+
+    Collection<Integer> getOrganisationUnitIds( Date startDate, Date endDate );
+
+    Grid getCompletenessProgramStageInstance( OrganisationUnit orgunit, Program program, String startDate,
+        String endDate, I18n i18n );
+
 }

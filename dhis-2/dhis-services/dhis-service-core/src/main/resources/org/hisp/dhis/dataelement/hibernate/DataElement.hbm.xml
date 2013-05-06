@@ -31,7 +31,7 @@
 
     <property name="textType" column="textType" length="16" />
 
-    <property name="domainType" column="domaintype" length="16" />
+    <property name="domainType" not-null="true" column="domaintype" length="16" />
 
     <property name="aggregationOperator" not-null="true" column="aggregationtype" length="16" />
 
@@ -62,17 +62,6 @@
     </list>
 
     <property name="zeroIsSignificant" not-null="true" />
-
-    <!-- Access properties -->
-    <many-to-one name="user" class="org.hisp.dhis.user.User" column="userid" foreign-key="fk_dataelement_userid" />
-
-    <property name="publicAccess" length="8" />
-
-    <set name="userGroupAccesses" table="dataelementusergroupaccesses">
-      <cache usage="read-write" />
-      <key column="dataelementid" />
-      <many-to-many class="org.hisp.dhis.user.UserGroupAccess" column="usergroupaccessid" unique="true" />
-    </set>
 
     <!-- Dynamic attribute values -->
 

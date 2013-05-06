@@ -26,9 +26,8 @@ package org.hisp.dhis.settings.action.system;
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_EMAIL_HOST_NAME;
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_EMAIL_PASSWORD;
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_EMAIL_USERNAME;
+
+import static org.hisp.dhis.setting.SystemSettingManager.*;
 
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.setting.SystemSettingManager;
@@ -64,6 +63,13 @@ public class SetSMTPSettingsAction
         this.smtpHostName = hostName;
     }
 
+    private int smtpPort;
+
+    public void setSmtpPort( int smtpPort )
+    {
+        this.smtpPort = smtpPort;
+    }
+
     private String smtpUsername;
 
     public void setSmtpUsername( String username )
@@ -76,6 +82,13 @@ public class SetSMTPSettingsAction
     public void setSmtpPassword( String password )
     {
         this.smtpPassword = password;
+    }
+
+    private boolean smtpTls;
+
+    public void setSmtpTls( boolean smtpTls )
+    {
+        this.smtpTls = smtpTls;
     }
 
     private String message;
@@ -100,10 +113,14 @@ public class SetSMTPSettingsAction
     {
         systemSettingManager.saveSystemSetting( KEY_EMAIL_HOST_NAME, smtpHostName );
 
+        systemSettingManager.saveSystemSetting( KEY_EMAIL_PORT, smtpPort );
+        
         systemSettingManager.saveSystemSetting( KEY_EMAIL_PASSWORD, smtpPassword );
 
         systemSettingManager.saveSystemSetting( KEY_EMAIL_USERNAME, smtpUsername );
 
+        systemSettingManager.saveSystemSetting( KEY_EMAIL_TLS, smtpTls );
+        
         message = i18n.getString( "settings_updated" );
 
         return SUCCESS;

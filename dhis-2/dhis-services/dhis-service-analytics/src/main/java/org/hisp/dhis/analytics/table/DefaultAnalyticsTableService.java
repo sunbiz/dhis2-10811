@@ -93,7 +93,7 @@ public class DefaultAnalyticsTableService
         final Date earliest = last3YearsOnly ? threeYrsAgo : tableManager.getEarliestData();
         final Date latest = tableManager.getLatestData();
         final String tableName = tableManager.getTableName();
-        final List<String> tables = PartitionUtils.getTempTableNames( earliest, latest, tableName );        
+        final List<String> tables = PartitionUtils.getTempTableNames( earliest, latest, tableName );
         
         clock.logTime( "Partition tables: " + tables + ", earliest: " + earliest + ", latest: " + latest + ", last 3 years: " + last3YearsOnly );
         
@@ -135,6 +135,20 @@ public class DefaultAnalyticsTableService
         notifier.notify( taskId, "Table update done" );
     }
 
+    public void dropTables()
+    {
+        List<String> tempTables = PartitionUtils.getTempTableNames( 
+            new Cal().set( 1900, 1, 1 ).time(), new Cal().set( 2100, 1, 1 ).time(), tableManager.getTableName() );
+        
+        for ( String tempTable : tempTables )   
+        {
+            String realTable = tempTable.replaceFirst( AnalyticsTableManager.TABLE_TEMP_SUFFIX, "" );
+            
+            tableManager.dropTable( tempTable );
+            tableManager.dropTable( realTable );            
+        }
+    }
+    
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
@@ -248,14 +262,6 @@ public class DefaultAnalyticsTableService
         for ( String table : tables )
         {
             tableManager.swapTable( table );
-        }
-    }
-    
-    protected void dropTables( List<String> tables )
-    {
-        for ( String table : tables )
-        {
-            tableManager.dropTable( table );
         }
     }
     

@@ -266,10 +266,11 @@ div#menuDropDown4
 
 #leftBarContents h2
 {
-  font-size: 14px;
+  font-size: 10px;
+  text-transform: uppercase;
   background-color: #679a6d;
   margin: 16px 15px 0px 15px;
-  padding: 5px 0px 4px 10px;
+  padding: 7px 0px 5px 11px;
   color: white;
   font-weight: normal;
   border-radius: 3px;
@@ -284,8 +285,8 @@ div#menuDropDown4
 
 #leftBarContents li
 {
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 #leftBarContents a

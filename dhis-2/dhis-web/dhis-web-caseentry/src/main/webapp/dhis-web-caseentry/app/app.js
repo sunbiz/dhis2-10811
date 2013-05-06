@@ -309,23 +309,26 @@ Ext.onReady( function() {
         multiselect: {
             select: function(a, s, f) {
                 var selected = a.getValue();
-				var idx = a.store.findExact('id', selected);
-				var name = a.store.getAt(idx).data.name;
-				var valueType = a.store.getAt(idx).data.valueType;
-				
-                if (selected.length) {
-                    var array = [];
-                    Ext.Array.each(selected, function(item) {
-						var data = a.store.findExact('id', item);
-                        array.push({id: item, uid:a.store.getAt(data).data.uid, name: a.store.getAt(data).data.name, compulsory: a.store.getAt(data).data.compulsory, valueType: a.store.getAt(data).data.valueType});
-                    });
-                    s.store.add(array);
-                }
-                this.filterAvailable(a, s);
-				
-				if(f!=undefined)
+				if( selected.length > 0 )
 				{
-					this.addFilterField( f, selected[0], name, valueType );
+					var idx = a.store.findExact('id', selected);
+					var name = a.store.getAt(idx).data.name;
+					var valueType = a.store.getAt(idx).data.valueType;
+					
+					if (selected.length) {
+						var array = [];
+						Ext.Array.each(selected, function(item) {
+							var data = a.store.findExact('id', item);
+							array.push({id: item, uid:a.store.getAt(data).data.uid, name: a.store.getAt(data).data.name, compulsory: a.store.getAt(data).data.compulsory, valueType: a.store.getAt(data).data.valueType});
+						});
+						s.store.add(array);
+					}
+					this.filterAvailable(a, s);
+					
+					if(f!=undefined)
+					{
+						this.addFilterField( f, selected[0], name, valueType );
+					}
 				}
             },
             selectAll: function(a, s, f) {
@@ -339,7 +342,7 @@ Ext.onReady( function() {
 						var name = a.store.getAt(i).data.name;
 						var valueType = a.store.getAt(i).data.valueType;
 						
-						array.push({id: id, uid:a.store.getAt(data).data.uid, name: name, compulsory: a.store.getAt(i).data.compulsory, valueType: valueType});
+						array.push({id: id, uid:a.store.getAt(i).data.uid, name: name, compulsory: a.store.getAt(i).data.compulsory, valueType: valueType});
 						if(f!=undefined)
 						{
 							this.addFilterField( f, id, name, valueType );
@@ -351,15 +354,18 @@ Ext.onReady( function() {
             },            
             unselect: function(a, s, f) {
                 var selected = s.getValue();
-                if (selected.length) {
-                    Ext.Array.each(selected, function(item) {
-                        s.store.remove(s.store.getAt(s.store.findExact('id', item)));
-                    });                    
-                    this.filterAvailable(a, s);
-                }
-				if(f!=undefined)
+				if( selected.length > 0 )
 				{
-					this.removeFilterField( f, selected[0], a.store.getAt(a.store.findExact('id', selected)).data.valueType );
+					if (selected.length) {
+						Ext.Array.each(selected, function(item) {
+							s.store.remove(s.store.getAt(s.store.findExact('id', item)));
+						});                    
+						this.filterAvailable(a, s);
+					}
+					if(f!=undefined)
+					{
+						this.removeFilterField( f, selected[0], a.store.getAt(a.store.findExact('id', selected)).data.valueType );
+					}
 				}
             },
             unselectAll: function(a, s, f) {
@@ -1338,6 +1344,7 @@ Ext.onReady( function() {
 								TR.util.positionFilter.convert( f.position );
 								
 								Ext.getCmp('completedEventsOpt').setValue(f.useCompletedEvents);
+								Ext.getCmp('displayTotalsOpt').setValue(f.displayTotalsOpt);
 								Ext.getCmp('facilityLBCombobox').setValue( f.facilityLB );
 								Ext.getCmp('limitOption').setValue( f.limitRecords );
 								Ext.getCmp('levelCombobox').setValue( f.level );
@@ -2100,8 +2107,15 @@ Ext.onReady( function() {
 					{
 						completedEvent = "&completedEventsOpt=true";
 					}
+					
+					var displayTotals='&displayTotals=false';
+					if( Ext.getCmp('displayTotalsOpt').getValue() == true )
+					{
+						displayTotals = "&displayTotals=true";
+					}
+					
   				    var exportForm = document.getElementById('exportForm');
-					exportForm.action = url + "?type=" + type + completedEvent;
+					exportForm.action = url + "?type=" + type + completedEvent + "&" + displayTotals;
 					exportForm.submit();
 				}
 				// Show report on grid
@@ -2300,6 +2314,15 @@ Ext.onReady( function() {
 				if( Ext.getCmp('completedEventsOpt').getValue()== true )
 				{
 					p.useCompletedEvents = Ext.getCmp('completedEventsOpt').getValue();
+				}
+				
+				if( Ext.getCmp('displayTotalsOpt').getValue()== true )
+				{
+					p.displayTotals = Ext.getCmp('displayTotalsOpt').getValue();
+				}
+				else
+				{
+					p.displayTotals = 'false';
 				}
 				
 				return p;
@@ -5555,14 +5578,31 @@ Ext.onReady( function() {
 													}
 												},
 												{
-													xtype: 'checkbox',
-													cls: 'tr-checkbox',
-													id: 'completedEventsOpt',
-													style:'padding: 0px 0px 0px 3px;',
-													boxLabel: TR.i18n.use_completed_events,
-													boxLabelAlign: 'before',
-													labelWidth: 135
+													xtype: 'panel',
+													layout: 'column',
+													bodyStyle: 'border-style:none; background-color:transparent;',
+													items:[
+														{
+															xtype: 'checkbox',
+															cls: 'tr-checkbox',
+															id: 'completedEventsOpt',
+															style:'padding: 0px 0px 0px 3px;',
+															boxLabel: TR.i18n.use_completed_events,
+															boxLabelAlign: 'before',
+															labelWidth: 135
+														},
+														{
+															xtype: 'checkbox',
+															cls: 'tr-checkbox',
+															id: 'displayTotalsOpt',
+															style:'padding-left: 20px;',
+															boxLabel: TR.i18n.display_totals,
+															boxLabelAlign: 'before',
+															labelWidth: 135
+														},
+													]
 												},
+												
 												{
 													xtype: 'combobox',
 													cls: 'tr-combo',

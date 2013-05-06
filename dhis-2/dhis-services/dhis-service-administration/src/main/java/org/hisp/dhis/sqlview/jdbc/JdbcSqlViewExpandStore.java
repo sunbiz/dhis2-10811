@@ -27,13 +27,6 @@ package org.hisp.dhis.sqlview.jdbc;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -44,6 +37,7 @@ import org.hisp.dhis.sqlview.SqlViewExpandStore;
 import org.hisp.dhis.system.util.SqlHelper;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author Dang Duy Hieu
@@ -57,7 +51,6 @@ public class JdbcSqlViewExpandStore
     private static final String PREFIX_CREATEVIEW_QUERY = "CREATE VIEW ";
     private static final String PREFIX_DROPVIEW_QUERY = "DROP VIEW IF EXISTS ";
     private static final String PREFIX_SELECT_QUERY = "SELECT * FROM ";
-    private static final String[] types = { "VIEW" };
 
     // -------------------------------------------------------------------------
     // Dependencies
@@ -75,49 +68,22 @@ public class JdbcSqlViewExpandStore
     // -------------------------------------------------------------------------
 
     @Override
-    public List<String> getAllSqlViewNames()
-    {
-        List<String> viewNames = new ArrayList<String>();
-
-        try
-        {
-            DatabaseMetaData mtdt = jdbcTemplate.getDataSource().getConnection().getMetaData();
-
-            ResultSet rs = mtdt.getTables( null, null, SqlView.PREFIX_VIEWNAME + "%", types );
-
-            while ( rs.next() )
-            {
-                viewNames.add( rs.getString( "TABLE_NAME" ) );
-            }
-        }
-        catch ( SQLException e )
-        {
-            e.printStackTrace();
-        }
-
-        return viewNames;
-
-    }
-
-    @Override
-    public boolean isViewTableExists( String viewTableName )
+    public boolean viewTableExists( String viewTableName )
     {
         try
         {
-            DatabaseMetaData mtdt = jdbcTemplate.getDataSource().getConnection().getMetaData();
+            jdbcTemplate.queryForRowSet( "select * from " + viewTableName.toLowerCase() + " limit 1" );
             
-            ResultSet rs = mtdt.getTables( null, null, viewTableName.toLowerCase(), types );
-
-            return rs.next();
+            return true;
         }
-        catch ( Exception e )
+        catch ( BadSqlGrammarException ex )
         {
-            return false;
+            return false; // View does not exist
         }
     }
 
     @Override
-    public String createView( SqlView sqlViewInstance )
+    public String createViewTable( SqlView sqlViewInstance )
     {
         String viewName = sqlViewInstance.getViewName();
 
@@ -131,9 +97,9 @@ public class JdbcSqlViewExpandStore
         {
             jdbcTemplate.execute( sql );
         }
-        catch ( BadSqlGrammarException bge )
+        catch ( BadSqlGrammarException ex )
         {
-            return bge.getCause().getMessage();
+            return ex.getCause().getMessage();
         }
 
         return null;
@@ -156,17 +122,10 @@ public class JdbcSqlViewExpandStore
         
         log.info( "Get view SQL: " + sql );
         
-        try
-        {
-            ResultSet rs = getResultSet( sql );
-
-            grid.addHeaders( rs );
-            grid.addRows( rs );
-        }
-        catch ( SQLException e )
-        {
-            throw new RuntimeException( "Failed to get data from view " + viewTableName, e );
-        }
+        SqlRowSet rs = jdbcTemplate.queryForRowSet( sql );
+        
+        grid.addHeaders( rs );
+        grid.addRows( rs );
     }
 
     @Override
@@ -184,7 +143,7 @@ public class JdbcSqlViewExpandStore
 
             dropViewTable( viewNameCheck );
         }
-        catch ( Exception ex )
+        catch ( BadSqlGrammarException ex )
         {
             return ex.getCause().getMessage();
         }
@@ -199,24 +158,9 @@ public class JdbcSqlViewExpandStore
         {
             jdbcTemplate.update( PREFIX_DROPVIEW_QUERY + viewName );
         }
-        catch ( Exception ex )
+        catch ( BadSqlGrammarException ex )
         {
             throw new RuntimeException( "Failed to drop view: " + viewName, ex );
         }
-    }
-
-    // -------------------------------------------------------------------------
-    // Supporting methods
-    // -------------------------------------------------------------------------
-
-    /**
-     * Obtains a scrollable, read-only result set based on the query string.
-     */
-    private ResultSet getResultSet( String sql )
-        throws SQLException
-    {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        Statement stm = con.createStatement( ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-        return stm.executeQuery( sql );
     }
 }

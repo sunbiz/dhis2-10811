@@ -27,16 +27,12 @@
 
 package org.hisp.dhis.caseaggregation;
 
-import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.AGGRERATION_SUM;
+import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_ORGUNIT_COMPLETE_PROGRAM_STAGE;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PATIENT;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PATIENT_ATTRIBUTE;
-import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PATIENT_PROGRAM_STAGE_PROPERTY;
-import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PATIENT_PROPERTY;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PROGRAM;
-import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PROGRAM_PROPERTY;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PROGRAM_STAGE;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PROGRAM_STAGE_DATAELEMENT;
-import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.OBJECT_PROGRAM_STAGE_PROPERTY;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.SEPARATOR_ID;
 import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.SEPARATOR_OBJECT;
 import static org.hisp.dhis.i18n.I18nUtils.i18n;
@@ -50,26 +46,21 @@ import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementService;
+import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeService;
-import org.hisp.dhis.patient.PatientService;
-import org.hisp.dhis.patientdatavalue.PatientDataValue;
-import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramStage;
-import org.hisp.dhis.program.ProgramStageInstance;
-import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.program.ProgramStageService;
 import org.hisp.dhis.system.util.ConcurrentUtils;
-import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.system.util.SystemUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,12 +71,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultCaseAggregationConditionService
     implements CaseAggregationConditionService
 {
-    private final String regExp = "\\[(" + OBJECT_PATIENT + "|" + OBJECT_PROGRAM + "|" + OBJECT_PROGRAM_STAGE + "|"
-        + OBJECT_PROGRAM_STAGE_PROPERTY + "|" + OBJECT_PATIENT_PROGRAM_STAGE_PROPERTY + "|"
-        + OBJECT_PROGRAM_STAGE_DATAELEMENT + "|" + OBJECT_PATIENT_ATTRIBUTE + "|" + OBJECT_PATIENT_PROPERTY + "|"
-        + OBJECT_PROGRAM_PROPERTY + ")" + SEPARATOR_OBJECT + "([a-zA-Z0-9@#\\- ]+[" + SEPARATOR_ID + "[a-zA-Z0-9]*]*)"
-        + "\\]";
-
     private final String INVALID_CONDITION = "Invalid condition";
 
     private final String TOTAL_OF_PATIENTS_REGISTERED = "Total of patient registration";
@@ -102,17 +87,11 @@ public class DefaultCaseAggregationConditionService
 
     private DataElementService dataElementService;
 
-    private PatientService patientService;
-
-    private PatientDataValueService dataValueService;
-
     private ProgramStageService programStageService;
 
     private ProgramService programService;
 
     private PatientAttributeService patientAttributeService;
-
-    private ProgramStageInstanceService programStageInstanceService;
 
     private I18nService i18nService;
 
@@ -128,11 +107,6 @@ public class DefaultCaseAggregationConditionService
     public void setAggregationConditionManager( CaseAggregationConditionManager aggregationConditionManager )
     {
         this.aggregationConditionManager = aggregationConditionManager;
-    }
-
-    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
-    {
-        this.programStageInstanceService = programStageInstanceService;
     }
 
     public void setPatientAttributeService( PatientAttributeService patientAttributeService )
@@ -168,16 +142,6 @@ public class DefaultCaseAggregationConditionService
     public int addCaseAggregationCondition( CaseAggregationCondition caseAggregationCondition )
     {
         return aggregationConditionStore.save( caseAggregationCondition );
-    }
-
-    public void setPatientService( PatientService patientService )
-    {
-        this.patientService = patientService;
-    }
-
-    public void setDataValueService( PatientDataValueService dataValueService )
-    {
-        this.dataValueService = dataValueService;
     }
 
     @Override
@@ -219,156 +183,24 @@ public class DefaultCaseAggregationConditionService
     }
 
     @Override
-    public Double getAggregateValue( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit,
-        Period period )
+    public Grid getAggregateValue( CaseAggregationCondition aggregationCondition, Collection<Integer> orgunitIds,
+        Period period, I18nFormat format, I18n i18n )
     {
-        DataElement aggDataElement = aggregationCondition.getAggregationDataElement();
-        DataElement deSum = aggregationCondition.getDeSum();
-        Integer deSumId = (deSum == null) ? null : deSum.getId();
-
-        return aggregationConditionManager.getAggregateValue( aggregationCondition.getAggregationExpression(),
-            aggregationCondition.getOperator(), aggDataElement.getType(), deSumId, orgunit.getId(), period );
+        return aggregationConditionManager.getAggregateValue( aggregationCondition, orgunitIds, period, format, i18n );
     }
 
     @Override
-    public Collection<PatientDataValue> getPatientDataValues( CaseAggregationCondition aggregationCondition,
-        OrganisationUnit orgunit, Period period )
+    public void insertAggregateValue( CaseAggregationCondition caseAggregationCondition,
+        Collection<Integer> orgunitIds, Period period )
     {
-        // get params
-
-        int orgunitId = orgunit.getId();
-        String startDate = DateUtils.getMediumDateString( period.getStartDate() );
-        String endDate = DateUtils.getMediumDateString( period.getEndDate() );
-        DataElement aggDataElement = aggregationCondition.getAggregationDataElement();
-        DataElement deSum = aggregationCondition.getDeSum();
-        Integer deSumId = (deSum == null) ? null : deSum.getId();
-
-        Collection<PatientDataValue> result = new HashSet<PatientDataValue>();
-
-        String sql = aggregationConditionManager.parseExpressionToSql( aggregationCondition.getAggregationExpression(),
-            aggregationCondition.getOperator(), aggDataElement.getType(), deSumId, orgunitId, startDate, endDate );
-
-        Collection<DataElement> dataElements = getDataElementsInCondition( aggregationCondition
-            .getAggregationExpression() );
-
-        if ( dataElements.size() > 0 )
-        {
-            Collection<Integer> patientIds = aggregationConditionManager.executeSQL( sql );
-
-            for ( Integer patientId : patientIds )
-            {
-                Patient patient = patientService.getPatient( patientId );
-
-                Collection<PatientDataValue> dataValues = dataValueService.getPatientDataValues( patient, dataElements,
-                    period.getStartDate(), period.getEndDate() );
-
-                result.addAll( dataValues );
-            }
-        }
-
-        return result;
-    }
-
-    public Collection<Patient> getPatients( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit,
-        Period period )
-    {
-        DataElement aggDataElement = aggregationCondition.getAggregationDataElement();
-        DataElement deSum = aggregationCondition.getDeSum();
-        Integer deSumId = (deSum == null) ? null : deSum.getId();
-
-        String sql = aggregationConditionManager
-            .parseExpressionToSql( aggregationCondition.getAggregationExpression(), aggregationCondition.getOperator(),
-                aggDataElement.getType(), deSumId, orgunit.getId(),
-                DateUtils.getMediumDateString( period.getStartDate() ),
-                DateUtils.getMediumDateString( period.getEndDate() ) );
-
-        Collection<Patient> result = new HashSet<Patient>();
-
-        Collection<Integer> patientIds = aggregationConditionManager.executeSQL( sql );
-
-        if ( patientIds != null )
-        {
-            for ( Integer patientId : patientIds )
-            {
-                result.add( patientService.getPatient( patientId ) );
-            }
-        }
-
-        return result;
-    }
-
-    public Collection<ProgramStageInstance> getProgramStageInstances( CaseAggregationCondition aggregationCondition,
-        OrganisationUnit orgunit, Period period )
-    {
-        Collection<ProgramStageInstance> result = new HashSet<ProgramStageInstance>();
-
-        // get params
-        int orgunitId = orgunit.getId();
-        String startDate = DateUtils.getMediumDateString( period.getStartDate() );
-        String endDate = DateUtils.getMediumDateString( period.getEndDate() );
-
-        String operator = aggregationCondition.getOperator();
-        String sql = "";
-        if ( operator.equals( CaseAggregationCondition.AGGRERATION_COUNT )
-            || operator.equals( CaseAggregationCondition.AGGRERATION_SUM ) )
-        {
-            aggregationCondition.setOperator( AGGRERATION_SUM );
-
-            // get params
-
-            DataElement aggDataElement = aggregationCondition.getAggregationDataElement();
-            DataElement deSum = aggregationCondition.getDeSum();
-            Integer deSumId = (deSum == null) ? null : deSum.getId();
-
-            sql = aggregationConditionManager.parseExpressionToSql( aggregationCondition.getAggregationExpression(),
-                aggregationCondition.getOperator(), aggDataElement.getType(), deSumId, orgunitId, startDate, endDate );
-        }
-        else
-        {
-            sql = "SELECT psi.programstageinstanceid ";
-            sql += "FROM patientdatavalue pdv ";
-            sql += "    INNER JOIN programstageinstance psi  ";
-            sql += "    ON psi.programstageinstanceid = pdv.programstageinstanceid ";
-            sql += "WHERE executiondate >='" + DateUtils.getMediumDateString( period.getStartDate() ) + "'  ";
-            sql += "    AND executiondate <='" + DateUtils.getMediumDateString( period.getEndDate() )
-                + "' AND pdv.dataelementid=" + aggregationCondition.getDeSum().getId();
-
-            if ( aggregationCondition.getAggregationExpression() != null
-                && !aggregationCondition.getAggregationExpression().isEmpty() )
-            {
-                sql = sql + " AND pdv.programstageinstanceid in ( ";
-
-                // Get params
-
-                DataElement aggDataElement = aggregationCondition.getAggregationDataElement();
-                DataElement deSum = aggregationCondition.getDeSum();
-                Integer deSumId = (deSum == null) ? null : deSum.getId();
-
-                String conditionSql = aggregationConditionManager.parseExpressionToSql(
-                    aggregationCondition.getAggregationExpression(), aggregationCondition.getOperator(),
-                    aggDataElement.getType(), deSumId, orgunit.getId(),
-                    DateUtils.getMediumDateString( period.getStartDate() ),
-                    DateUtils.getMediumDateString( period.getEndDate() ) );
-
-                sql += conditionSql + " ) ";
-            }
-        }
-
-        Collection<Integer> stageInstanceIds = aggregationConditionManager.executeSQL( sql );
-
-        for ( Integer stageInstanceId : stageInstanceIds )
-        {
-            result.add( programStageInstanceService.getProgramStageInstance( stageInstanceId ) );
-        }
-
-        return result;
+        aggregationConditionManager.insertAggregateValue( caseAggregationCondition, orgunitIds, period );
     }
 
     public String getConditionDescription( String condition )
     {
         StringBuffer description = new StringBuffer();
 
-        Pattern patternCondition = Pattern.compile( regExp );
+        Pattern patternCondition = Pattern.compile( CaseAggregationCondition.regExp );
 
         Matcher matcher = patternCondition.matcher( condition );
 
@@ -443,7 +275,8 @@ public class DefaultCaseAggregationConditionService
                     }
                     matcher.appendReplacement( description, "[" + programDes + "]" );
                 }
-                else if ( info[0].equalsIgnoreCase( OBJECT_PROGRAM_STAGE ) )
+                else if ( info[0].equalsIgnoreCase( OBJECT_PROGRAM_STAGE )
+                    || info[0].equalsIgnoreCase( OBJECT_ORGUNIT_COMPLETE_PROGRAM_STAGE ) )
                 {
                     int objectId = Integer.parseInt( ids[0] );
                     ProgramStage programStage = programStageService.getProgramStage( objectId );
@@ -454,8 +287,8 @@ public class DefaultCaseAggregationConditionService
                     }
 
                     String count = (ids.length == 2) ? SEPARATOR_ID + ids[1] : "";
-                    matcher.appendReplacement( description, "[" + OBJECT_PROGRAM_STAGE + SEPARATOR_OBJECT
-                        + programStage.getDisplayName() + count + "]" );
+                    matcher.appendReplacement( description,
+                        "[" + info[0] + SEPARATOR_OBJECT + programStage.getDisplayName() + count + "]" );
                 }
             }
 
@@ -580,6 +413,11 @@ public class DefaultCaseAggregationConditionService
         ConcurrentUtils.waitForCompletion( futures );
     }
 
+    public boolean hasOrgunitProgramStageCompleted( String expresstion )
+    {
+        return aggregationConditionManager.hasOrgunitProgramStageCompleted( expresstion );
+    }
+    
     // -------------------------------------------------------------------------
     // Support Methods
     // -------------------------------------------------------------------------
@@ -593,4 +431,5 @@ public class DefaultCaseAggregationConditionService
     {
         return patientIds.size();
     }
+
 }

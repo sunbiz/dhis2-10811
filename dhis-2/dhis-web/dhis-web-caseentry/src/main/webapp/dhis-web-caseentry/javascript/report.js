@@ -32,11 +32,16 @@ function loadGeneratedReport()
 
 function loadDataEntry( programStageInstanceId ) 
 {
+	isReport = false;
 	jQuery('#viewRecordsDiv' )
-		.load( 'viewProgramStageRecords.action?programStageInstanceId=' + programStageInstanceId
+		.load( 'viewRecords.action?programStageInstanceId=' + programStageInstanceId
 		,function(){
+			showById('entryForm');
 			jQuery("#viewRecordsDiv :input" ).attr("disabled", true);
 			jQuery("#viewRecordsDiv :input" ).datepicker("destroy");
+			jQuery("#viewRecordsDiv :input" ).removeAttr("onclick");
+			jQuery("#viewRecordsDiv :input" ).removeAttr("onchange");
+			jQuery("#viewRecordsDiv" ).find('img').removeAttr("onclick");
 			showById("reportTitle");
 			hideById("patientInforTB");
 			jQuery(".ui-combobox" ).hide();

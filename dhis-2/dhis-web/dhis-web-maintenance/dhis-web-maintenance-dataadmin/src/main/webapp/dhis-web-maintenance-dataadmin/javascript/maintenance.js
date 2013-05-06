@@ -1,17 +1,19 @@
 
 function performMaintenance()
 {
+    var clearAnalytics = document.getElementById( "clearAnalytics" ).checked;
     var clearDataMart = document.getElementById( "clearDataMart" ).checked;
     var dataMartIndex = document.getElementById( "dataMartIndex" ).checked;
     var zeroValues = document.getElementById( "zeroValues" ).checked;
     var dataSetCompleteness = document.getElementById( "dataSetCompleteness" ).checked;
     var prunePeriods = document.getElementById( "prunePeriods" ).checked;
     
-    if ( clearDataMart || dataMartIndex || zeroValues || dataSetCompleteness || prunePeriods )
+    if ( clearAnalytics || clearDataMart || dataMartIndex || zeroValues || dataSetCompleteness || prunePeriods )
     {
         setWaitMessage( i18n_performing_maintenance );
         
-        var params = "clearDataMart=" + clearDataMart + 
+        var params = "clearAnalytics=" + clearAnalytics + 
+        	"&clearDataMart=" + clearDataMart + 
             "&dataMartIndex=" + dataMartIndex +
             "&zeroValues=" + zeroValues +
             "&dataSetCompleteness=" + dataSetCompleteness +

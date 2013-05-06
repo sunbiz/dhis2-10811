@@ -38,11 +38,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 
+import net.sf.jasperreports.engine.util.JRProperties;
 import org.amplecode.quick.StatementManager;
 import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.common.Grid;
@@ -61,6 +64,7 @@ import org.hisp.dhis.system.util.Filter;
 import org.hisp.dhis.system.util.FilterUtils;
 import org.hisp.dhis.system.util.JRExportUtils;
 import org.hisp.dhis.system.util.StreamUtils;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -97,13 +101,6 @@ public class DefaultReportService
     {
         this.constantService = constantService;
     }
-
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
     
     private OrganisationUnitService organisationUnitService;
     
@@ -124,6 +121,13 @@ public class DefaultReportService
     public void setPeriodService( PeriodService periodService )
     {
         this.periodService = periodService;
+    }
+
+    private DataSource dataSource;
+
+    public void setDataSource( DataSource dataSource )
+    {
+        this.dataSource = dataSource;
     }
 
     // -------------------------------------------------------------------------
@@ -163,6 +167,9 @@ public class DefaultReportService
 
         try
         {
+            JRProperties.setProperty( "net.sf.jasperreports.awt.ignore.missing.font", "true" );
+            JRProperties.setProperty( "net.sf.jasperreports.default.font.name", "DejaVu Sans" );
+
             JasperReport jasperReport = JasperCompileManager.compileReport( StreamUtils.getInputStream( report.getDesignContent() ) );
 
             if ( report.hasReportTable() ) // Use JR data source
@@ -180,8 +187,6 @@ public class DefaultReportService
             }
             else // Use JDBC data source
             {
-                Connection connection = statementManager.getHolder().getConnection();
-
                 if ( report.hasRelativePeriods() )
                 {
                     Collection<Period> periods = periodService.reloadPeriods( report.getRelatives().getRelativePeriods( reportDate, null, false ) );
@@ -193,14 +198,16 @@ public class DefaultReportService
                 {
                     params.put( PARAM_ORG_UNITS, String.valueOf( orgUnit.getId() ) );
                 }
-                
+
+                Connection connection = DataSourceUtils.getConnection( dataSource );
+
                 try
                 {
                     print = JasperFillManager.fillReport( jasperReport, params, connection );
-                } 
+                }
                 finally
-                {
-                    connection.close();
+                {                    
+                    DataSourceUtils.releaseConnection( connection, dataSource );
                 }
             }
 

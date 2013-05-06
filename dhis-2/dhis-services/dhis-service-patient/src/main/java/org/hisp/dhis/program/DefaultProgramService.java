@@ -29,6 +29,7 @@ package org.hisp.dhis.program;
 
 import org.hisp.dhis.i18n.I18nService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.validation.ValidationCriteria;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,6 +105,14 @@ public class DefaultProgramService
 
         for ( Program program : getAllPrograms() )
         {
+            Set<OrganisationUnitGroup> orgunitGroups = program.getOrganisationUnitGroups();
+            for( OrganisationUnitGroup orgunitGroup : orgunitGroups )
+            {
+                if( orgunitGroup.getMembers().contains( organisationUnit ))
+                {
+                    programs.add( program );
+                }
+            }
             if ( program.getOrganisationUnits().contains( organisationUnit ) )
             {
                 programs.add( program );

@@ -53,6 +53,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static org.hisp.dhis.system.util.CodecUtils.filenameEncode;
+
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  * @author Lars Helge Overland
@@ -123,6 +125,35 @@ public class ReportController
         reportService.saveReport( report );
     }
 
+    @RequestMapping( value = "/{uid}/design", method = RequestMethod.GET )
+    public void getReportDesign( @PathVariable( "uid" ) String uid, HttpServletResponse response ) throws Exception
+    {
+        Report report = reportService.getReport( uid );
+
+        if ( report == null )
+        {
+            ContextUtils.notFoundResponse( response, "Report not found for identifier: " + uid );
+            return;
+        }
+        
+        if ( report.getDesignContent() == null )
+        {
+            ContextUtils.conflictResponse( response, "Report has no design content: " + uid );
+            return;
+        }        
+        
+        if ( Report.TYPE_HTML.equals( report.getType() ) )
+        {
+            contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_HTML, CacheStrategy.NO_CACHE, filenameEncode( report.getName() ) + ".html", true );
+        }
+        else
+        {
+            contextUtils.configureResponse( response, ContextUtils.CONTENT_TYPE_XML, CacheStrategy.NO_CACHE, filenameEncode( report.getName() ) + ".jrxml", true );
+        }
+        
+        response.getWriter().write( report.getDesignContent() );
+    }
+    
     /**
      * This methods wraps the Jasper image servlet to avoid having a separate
      * servlet mapping around. Note that the path to images are relative to the

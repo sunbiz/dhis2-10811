@@ -94,14 +94,18 @@ public class ValidateDataEntryFormAction
     public String execute()
         throws Exception
     {
+        name = name.trim();
+
         DataEntryForm match = dataEntryFormService.getDataEntryFormByName( name );
 
-        if ( match != null && (dataEntryFormId == null || match.getId() != dataEntryFormId.intValue()) )
+        if ( match != null && (dataEntryFormId == null || match.getId() != dataEntryFormId ) )
         {
             message = i18n.getString( "duplicate_names" );
 
             return ERROR;
         }
+
+        message = i18n.getString( "everything_is_ok" );
 
         return SUCCESS;
     }

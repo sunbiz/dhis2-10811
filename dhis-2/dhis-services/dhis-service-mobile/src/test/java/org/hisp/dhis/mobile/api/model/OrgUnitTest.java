@@ -46,11 +46,11 @@ public class OrgUnitTest
         throws IOException
     {
         MobileOrgUnitLinks unit = new MobileOrgUnitLinks();
-        
+
         unit.setId( 1 );
         unit.setName( "name" );
         unit.setDownloadAllUrl( "downloadAllUrl" );
-        unit.setUpdateActivityPlanUrl("updateActivityPlanUrl");
+        unit.setUpdateActivityPlanUrl( "updateActivityPlanUrl" );
         unit.setUploadFacilityReportUrl( "uploadFacilityReportUrl" );
         unit.setUploadActivityReportUrl( "uploadActivityReportUrl" );
         unit.setUpdateDataSetUrl( "updateDataSetUrl" );
@@ -66,6 +66,7 @@ public class OrgUnitTest
         unit.setAddRelationshipUrl( "addRelationshipUrl" );
         unit.setDownloadAnonymousProgramUrl( "downloadAnonymousProgramUrl" );
         unit.setFindProgramUrl( "findProgramUrl" );
+        unit.setFindLatestPersonUrl( "findLatestPersonUrl" );
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream( baos );

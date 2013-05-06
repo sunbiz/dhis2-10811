@@ -26,10 +26,11 @@ javascripts/dhis2/dhis2.array.js
 javascripts/dhis2/dhis2.select.js
 javascripts/dhis2/dhis2.comparator.js
 javascripts/dhis2/dhis2.availability.js
-javascripts/dhis2/dhis2.storage.js
-javascripts/dhis2/dhis2.storage.dom-ss.js
-javascripts/dhis2/dhis2.storage.dom.js
+javascripts/dhis2/dhis2.storage.memory.js
+javascripts/dhis2/dhis2.storage.ss.js
+javascripts/dhis2/dhis2.storage.ls.js
 javascripts/dhis2/dhis2.storage.idb.js
+javascripts/dhis2/dhis2.storage.js
 javascripts/jQuery/jquery.cookie.js
 ../main.js
 ouwt/ouwt.js 

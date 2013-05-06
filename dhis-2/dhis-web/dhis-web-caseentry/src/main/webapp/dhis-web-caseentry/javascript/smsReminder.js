@@ -1,6 +1,10 @@
 
 function orgunitSelected( orgUnits, orgUnitNames )
 {
+	var width = jQuery('#programIdAddPatient').width();
+	jQuery('#programIdAddPatient').width(width-30);
+	showById( "programLoader" );
+	disable('programIdAddPatient');
 	showById('mainLinkLbl');
 	showById('searchDiv');
 	hideById('listEventDiv');
@@ -29,6 +33,9 @@ function orgunitSelected( orgUnits, orgUnitNames )
 				}
 			}
 			enableBtn();
+			hideById('programLoader');
+			jQuery('#programIdAddPatient').width(width);
+			enable('programIdAddPatient');
 		});
 }
 
@@ -59,7 +66,7 @@ function listAllPatient()
 	var programId = getFieldValue('programIdAddPatient');
 	var searchTexts = "stat_" + programId + "_" 
 				+ startDate + "_" + endDate + "_" 
-				+ getFieldValue('orgunitId') + "_false_4";
+				+ getFieldValue('orgunitId') + "_true_4";
 	
 	showLoader();
 	jQuery('#listEventDiv').load('getSMSPatientRecords.action',
@@ -81,6 +88,8 @@ function listAllPatient()
 // --------------------------------------------------------------------
 // Search events
 // --------------------------------------------------------------------
+
+followup = true;
 
 function advancedSearch( params )
 {
@@ -194,6 +203,7 @@ function loadDataEntry( programStageInstanceId )
 	disable('validationBtn');
 	disableCompletedButton(true);
 	disable('uncompleteBtn');
+	jQuery( 'input[id=programStageInstanceId]').val( programStageInstanceId );
 	
 	$('#executionDate').unbind("change");
 	$('#executionDate').change(function() {
@@ -211,6 +221,7 @@ function loadDataEntry( programStageInstanceId )
 			programStageInstanceId: programStageInstanceId
 		},function()
 		{
+			setFieldValue( 'programStageInstanceId', programStageInstanceId );
 			var executionDate = jQuery('#executionDate').val();
 			var completed = jQuery('#entryFormContainer input[id=completed]').val();
 			var irregular = jQuery('#entryFormContainer input[id=irregular]').val();

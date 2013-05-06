@@ -160,7 +160,7 @@ function saveVal( dataElementId, optionComboId, fieldId )
             {
                 return alertField( fieldId, i18n_value_must_integer + ': ' + dataElementName );
             }
-            if ( type == 'number' && !isRealNumber( value ) )
+            if ( type == 'number' && !isNumber( value ) )
             {
                 return alertField( fieldId, i18n_value_must_number + ': ' + dataElementName );
             }

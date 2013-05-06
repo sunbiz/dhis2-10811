@@ -152,7 +152,7 @@ public class CaseAggregationResultDetailsAction
     public String execute()
         throws Exception
     {
-        OrganisationUnit orgunit = organisationUnitService.getOrganisationUnit( orgunitId );
+//        OrganisationUnit orgunit = organisationUnitService.getOrganisationUnit( orgunitId );
 
         PeriodType periodType = periodService.getPeriodTypeByName( periodTypeName );
         Period period = periodType.createPeriod( format.parseDate( startDate ) );
@@ -164,7 +164,8 @@ public class CaseAggregationResultDetailsAction
         {
             mapPatients = new HashMap<Patient, Collection<PatientDataValue>>();
 
-            Collection<Patient> patients = aggregationConditionService.getPatients( aggCondition, orgunit, period );
+            Collection<Patient> patients = null;
+//            Collection<Patient> patients = aggregationConditionService.getPatients( aggCondition, orgunit, period );
 
             for ( Patient patient : patients )
             {
@@ -186,8 +187,9 @@ public class CaseAggregationResultDetailsAction
         {
             mapEvents = new HashMap<ProgramStageInstance, Collection<PatientDataValue>>();
 
-            Collection<ProgramStageInstance> programStageInstances = aggregationConditionService
-                .getProgramStageInstances( aggCondition, orgunit, period );
+            Collection<ProgramStageInstance> programStageInstances = null;
+//            Collection<ProgramStageInstance> programStageInstances = aggregationConditionService
+//                .getProgramStageInstances( aggCondition, orgunit, period );
 
             for ( ProgramStageInstance programStageInstance : programStageInstances )
             {

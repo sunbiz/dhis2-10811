@@ -67,7 +67,7 @@ public class DataValueDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM datavalue where dataelementid=" + dataElement.getId();
         
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -75,7 +75,7 @@ public class DataValueDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM datavalue where periodid=" + period.getId();
         
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -83,7 +83,7 @@ public class DataValueDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM datavalue where sourceid=" + unit.getId();
         
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -91,6 +91,6 @@ public class DataValueDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM datavalue where categoryoptioncomboid=" + combo.getId();
         
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 }

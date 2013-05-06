@@ -15,11 +15,11 @@ jQuery(function() {
     #introListImgItem( "categoryOption.action" "data_element_category_option" "dataelement" )
     #introListImgItem( "category.action" "data_element_category" "dataelement" )
     #introListImgItem( "categoryCombo.action" "data_element_category_combo" "dataelement" )
+    #introListImgItem( "dataDictionary.action" "data_dictionary" "datadictionary" )
 	#introListImgItem( "concept.action" "concept" "dataelement" )
     #introListImgItem( "indicator.action" "indicator" "indicator" )
     #introListImgItem( "indicatorType.action" "indicator_type" "indicator" )
     #introListImgItem( "indicatorGroup.action" "indicator_group" "indicator" )
     #introListImgItem( "indicatorGroupEditor.action" "indicator_group_editor" "indicator" )
     #introListImgItem( "indicatorGroupSet.action" "indicator_group_set" "indicator" )
-    #introListImgItem( "dataDictionary.action" "data_dictionary" "datadictionary" )
 </ul>

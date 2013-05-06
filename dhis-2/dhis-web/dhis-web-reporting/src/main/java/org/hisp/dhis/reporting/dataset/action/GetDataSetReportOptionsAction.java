@@ -37,6 +37,8 @@ import java.util.List;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.period.Cal;
@@ -68,7 +70,14 @@ public class GetDataSetReportOptionsAction
     {
         this.organisationUnitService = organisationUnitService;
     }
-    
+
+    private OrganisationUnitGroupService organisationUnitGroupService;
+
+    public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
+    {
+        this.organisationUnitGroupService = organisationUnitGroupService;
+    }
+
     private SelectionTreeManager selectionTreeManager;
 
     public void setSelectionTreeManager( SelectionTreeManager selectionTreeManager )
@@ -150,6 +159,13 @@ public class GetDataSetReportOptionsAction
         return periodType;
     }
 
+    private List<OrganisationUnitGroupSet> groupSets = new ArrayList<OrganisationUnitGroupSet>();
+
+    public List<OrganisationUnitGroupSet> getGroupSets()
+    {
+        return groupSets;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -174,6 +190,8 @@ public class GetDataSetReportOptionsAction
             
             selectionTreeManager.setSelectedOrganisationUnit( organisationUnitService.getOrganisationUnit( ou ) ); //TODO set unit state in client instead
         }
+
+        groupSets = new ArrayList<OrganisationUnitGroupSet>( organisationUnitGroupService.getAllOrganisationUnitGroupSets() );
         
         return SUCCESS;
     }

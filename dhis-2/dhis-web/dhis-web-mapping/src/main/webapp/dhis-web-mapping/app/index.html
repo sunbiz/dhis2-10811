@@ -12,14 +12,11 @@
 
 <body>
 	<div id="layerItems"></div>
-	<div id="boundaryLegend"></div>
-	<div id="thematic2Legend"></div>
-	<div id="facilityLegend"></div>
-	<div id="symbolLegend"></div>
 
 	<form id="exportForm" method="post">
-        <input type="hidden" id="svgField" name="svg"/>
+        <input type="hidden" id="typeField" name="type"/>
         <input type="hidden" id="titleField" name="title"/>
+        <input type="hidden" id="svgField" name="svg"/>
 	</form>
 
 	<script type="text/javascript">
@@ -27,12 +24,13 @@
 		window.google = null;
 	</script>
 
-    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
 
     <script type="text/javascript" src="../../dhis-web-commons/javascripts/ext/ext-all.js"></script>
     <script type="text/javascript" src="scripts/ext-ux/ext-ux-custom.js"></script>
 
     <script type="text/javascript" src="scripts/openlayers/OpenLayers.js"></script>
+    <script type="text/javascript" src="scripts/openlayers/script/OpenStreetMap.js"></script>
     <script type="text/javascript" src="scripts/openlayers-ux/newSelectFeature.js"></script>
     <script type="text/javascript" src="scripts/openlayers-ux/Circle.js"></script>
 
@@ -50,6 +48,8 @@
     <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Boundary.js"></script>
     <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Thematic1.js"></script>
     <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Thematic2.js"></script>
+    <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Thematic3.js"></script>
+    <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Thematic4.js"></script>
     <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Facility.js"></script>
     <script type="text/javascript" src="scripts/mapfish/core/GeoStat/Symbol.js"></script>
     <script type="text/javascript" src="scripts/mapfish/core/Util.js"></script>

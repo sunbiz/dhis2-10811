@@ -33,6 +33,7 @@ import org.hisp.dhis.DhisSpringTest;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Locale;
 
 /**
  * @author Lars Helge Overland
@@ -55,7 +56,7 @@ public class HelpManagerTest
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        helpManager.getHelpContent( out, "overview" );
+        helpManager.getHelpContent( out, "overview", Locale.ENGLISH );
 
         log.debug( out.toString() );
     }
@@ -65,7 +66,7 @@ public class HelpManagerTest
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        helpManager.getHelpItems( out );
+        helpManager.getHelpItems( out, Locale.ENGLISH );
 
         log.debug( out.toString() );
     }

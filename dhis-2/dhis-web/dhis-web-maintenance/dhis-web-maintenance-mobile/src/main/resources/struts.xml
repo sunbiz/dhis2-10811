@@ -15,13 +15,6 @@
       <param name="page">/dhis-web-maintenance-mobile/welcome.vm</param>
       <param name="menu">/dhis-web-maintenance-mobile/menu.vm</param>
     </action>
-
-    <action name="mobileSettings" class="org.hisp.dhis.mobile.action.MobileSettingsAction">
-      <result name="success" type="velocity">/main.vm</result>
-      <param name="page">/dhis-web-maintenance-mobile/smsSettings.vm</param>
-      <param name="menu">/dhis-web-maintenance-mobile/menu.vm</param>
-      <param name="requiredAuthorities">F_MOBILE_SETTINGS</param>
-    </action>
     
     <!-- Sent SMS -->
     

@@ -459,7 +459,7 @@ public class SaveSingleEventAction
             programStageInstance.setCompleted( true );
             programStageInstanceService.updateProgramStageInstance( programStageInstance );
 
-            programInstance.setCompleted( true );
+            programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
             programInstanceService.updateProgramInstance( programInstance );
         }
         else
@@ -469,7 +469,7 @@ public class SaveSingleEventAction
             programInstance.setDateOfIncident( new Date() );
             programInstance.setProgram( program );
             programInstance.setPatient( patient );
-            programInstance.setCompleted( true );
+            programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
             programInstanceService.addProgramInstance( programInstance );
 
             ProgramStageInstance programStageInstance = new ProgramStageInstance();

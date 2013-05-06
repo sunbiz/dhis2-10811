@@ -11,30 +11,7 @@ function beforeSubmit()
 }
 
 // -----------------------------------------------------------------------------
-// Validate Add Data Element Group
-// -----------------------------------------------------------------------------
-
-function validateAddDataElementGroupSet()
-{
-   $.post( 'validateDataElementGroupSet.action',{name:getFieldValue( "name" )}
-		, function( messageElement ) 
-		{
-			messageElement = messageElement.getElementsByTagName( 'message' )[0];
-			var type = messageElement.getAttribute( "type" );
-			if ( type == "success" )
-			{
-				selectAllById( "groupMembers" );
-				document.forms['addDataElementGroupSet'].submit();
-			} 
-			else
-			{
-				setMessage( messageElement.firstChild.nodeValue );
-			}
-		} );
-}
-
-// -----------------------------------------------------------------------------
-// Delete Data Element Group
+// Delete
 // -----------------------------------------------------------------------------
 
 function deleteDataElementGroupSet( groupSetId, groupSetName )

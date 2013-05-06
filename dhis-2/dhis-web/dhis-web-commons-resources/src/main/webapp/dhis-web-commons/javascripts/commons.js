@@ -1629,15 +1629,9 @@ function isNegativeInt( value )
  * Allow any real number,optionally with a sign, no thousands seperators and a
  * single decimal point.
  */
-function isRealNumber( value )
-{
-	var regex = /^-?(0|[1-9]\d*)(\.\d+)?$/;
-	return regex.test( value );
-}
-
 function isNumber( value )
 {
-	var regex = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
+	var regex = /^(0|-?[1-9]\d*)(\.\d+)?$/;
 	return regex.test( value );
 }
 

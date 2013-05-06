@@ -190,7 +190,6 @@
     <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
     <property name="chartService" ref="org.hisp.dhis.chart.ChartService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
-    <property name="aggregatedDataValueService" ref="org.hisp.dhis.aggregation.AggregatedDataValueService" />
     <property name="batchHandlerFactory" ref="batchHandlerFactory" />
     <property name="objectMappingGenerator" ref="org.hisp.dhis.importexport.mapping.ObjectMappingGenerator" />
     <property name="converterInvoker" ref="org.hisp.dhis.importexport.invoker.ConverterInvoker" />
@@ -223,7 +222,6 @@
 
   <bean id="org.hisp.dhis.importexport.DXFExportService" class="org.hisp.dhis.importexport.dxf.exporter.DefaultDXFExportService">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="statementManager" ref="statementManager" />
     <property name="conceptService" ref="org.hisp.dhis.concept.ConceptService" />
 	<property name="constantService" ref="org.hisp.dhis.constant.ConstantService" />
     <property name="categoryService" ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
@@ -239,7 +237,6 @@
     <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
     <property name="chartService" ref="org.hisp.dhis.chart.ChartService" />
     <property name="completeDataSetRegistrationService" ref="org.hisp.dhis.dataset.CompleteDataSetRegistrationService" />
-    <property name="aggregatedDataValueService" ref="org.hisp.dhis.aggregation.AggregatedDataValueService" />
   </bean>
 
 	<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -262,7 +259,6 @@
 
   <bean id="org.hisp.dhis.importexport.Dhis14XMLExportService" class="org.hisp.dhis.importexport.dhis14.xml.exporter.DefaultDhis14XMLExportService">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="statementManager" ref="statementManager" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
     <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService" />

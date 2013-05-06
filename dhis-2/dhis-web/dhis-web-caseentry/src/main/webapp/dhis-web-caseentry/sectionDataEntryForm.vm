@@ -1,6 +1,6 @@
 #set( $tabIndex = 1 )
 #foreach( $section in $sections )
-	<table class="formSection" width='80%'>
+	<table class="formSection" width='80%' id='sec_$section.id' >
 		<tr>
 		  <td class='entryScreen'>
 			<div class="cent"><h3>$encoder.htmlEncode( $section.displayName )</h3></div>
@@ -8,7 +8,7 @@
 		</tr>
 		<tr>
 			<td width='100%'>
-				<div id='div_$section.id' class='entryScreen'>
+				<div class='entryScreen'>
 					<table width='100%'>
 						<colgroup>
 							<col id="deCol">

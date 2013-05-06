@@ -120,7 +120,7 @@ public class ProgramEnrollmentSelectAction
         programs.retainAll( programService.getProgramsByCurrentUser());
         programs.removeAll( patient.getPrograms() );
         
-        Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, false );
+        Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, ProgramInstance.STATUS_ACTIVE );
 
         for ( ProgramInstance programInstance : programInstances )
         {

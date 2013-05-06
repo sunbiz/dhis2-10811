@@ -1,45 +1,100 @@
 #set($programStageInstances = $programInstance.programStageInstances)
-<fieldset>
-	<legend>$i18n.getString("program")</legend>
+
+<table>
+	<tr>		
+		<!-- Comment -->
+		<td style="height:24px" valign="bottom">
+            <div class="commentHeader">$i18n.getString( "comment" )
+				#if($programInstance.followup)
+					#set($followup=$programInstance.followup)
+				#else
+					#set($followup='false')
+				#end
+				<a href='javascript:markForFollowup($programInstance.id, false)' #if( $followup == 'false') class='hidden' #end id='imgMarkFollowup' title='$i18n.getString("unmark_followup")' ><img src='../images/marked_large.png'></a>
+				<a href='javascript:markForFollowup($programInstance.id, true)' #if( $followup == 'true') class='hidden' #end id='imgUnmarkFollowup' title='$i18n.getString("mark_followup")' ><img src='../images/unmarked_large.png'></a>			
+			</div>
+		</td>
+		<!-- Progam Enrollement -->
+		<td style="height:24px" valign="bottom">       
+            <div class="commentHeader">$encoder.htmlEncode( $i18n.getString( "program_enrollement" ) )</div>
+        </td>
+    </tr>
+    <tr>
+		<td valign="top">
+			<textarea id="comment" name='comment' maxlength="360" style="height:157px;width:240px">$!encoder.htmlEncode( $programInstance.patientComment.commentText )</textarea><br>
+			<input type="button" value="$i18n.getString( 'save_comment' )" style="width:130px" onclick="saveComment($programInstance.id);">
+		</td>		
+        <td valign="top">
+            <table>
+			   <tr>
+					<td style="background-color:#88be3b; height:26px;">&nbsp;</td>
+                    <td class='text-column'>$programInstance.program.dateOfEnrollmentDescription:</td>
+					<td><input name="enrollmentDate" id="enrollmentDate" readonly value="$!format.formatDate( $programInstance.enrollmentDate )" style="width:325px;"></td>
+			   </tr>
+               <tr>
+					<td style="background-color:#88be3b; height:26px;">&nbsp;</td>
+                    <td class='text-column'>$programInstance.program.dateOfIncidentDescription:</td>
+					<td><input name="dateOfIncident" id="dateOfIncident" readonly value="$!format.formatDate( $programInstance.dateOfIncident )" style="width:325px;"></td>
+				</tr>
+                <tr>
+					<td style="background-color:#88be3b; height:26px;">&nbsp;</td>
+                    <td></td>
+					<td>
+						#if( !$auth.hasAccess( "dhis-web-caseentry", "saveProgramEnrollment" ) )
+							<input type="button" style='width:80px' value="$i18n.getString( 'update' )" onclick='updateEnrollment($programInstance.patient.id, $programInstance.program.id, $programInstance.id, "$programInstance.program.displayName")'/>
+						#end
+						<input type="button" style='width:80px' id='completeProgram' value="$i18n.getString( 'complete' )" onclick='unenrollmentForm($programInstance.id, 1)' />
+						<input type="button" style='width:80px' id='cancelProgram' value="$i18n.getString( 'quit' )" onclick='unenrollmentForm($programInstance.id, 2)' />
+						<input type="button" style='width:80px' id='incompleteProgram' value="$i18n.getString( 're_enrol' )" onclick='reenrollmentForm($programInstance.id)' />
+						#set($allowRemove = 'true')
+						#foreach( $programStageInstance in $programStageInstances )
+							#if( $!programStageInstance.executionDate 
+								|| $!programStageInstance.outboundSms.size() > 0 
+								|| $!programStageInstance.patientComments.size() > 0 )
+								
+								#set($allowRemove = 'false')
+							#end
+						#end
+				
+					#if($allowRemove == 'true')
+						<input type="button" style='width:80px' id='removeProgram' value="$i18n.getString( 'remove' )" onclick='removeProgramInstance($programInstance.id)' />
+						<script>
+							jQuery('#enrollmentDate').width('325');
+							jQuery('#dateOfIncident').width('325');
+						</script>
+					#end
+					</td>
+                </tr>
+                <tr>
+                	<td colspan="3" style="height:15px"></td>
+                </tr>
+                <tr>
+                	<td colspan="2" style="background-color: #e0e0e0; height:26px;">$i18n.getString( "stored_by" ):</td>
+                	<td>$!encoder.htmlEncode( $programInstance.patientComment.creator )</td>
+                </tr>
+                <tr>
+                	<td colspan="2" style="background-color: #e0e0e0; height:26px;">$i18n.getString( "stored_date" ):</td>
+                	<td>$!format.formatDate( $programInstance.patientComment.createdDate )</td>
+                </tr>
+            </table>
+        </td>
+	</tr>
+</table>
+
+#if( $programInstance.outboundSms.size() > 0 )
 	<table>
 		<tr>
-			<td class='text-column'>$programInstance.program.dateOfEnrollmentDescription:</td>
-			<td><input name="enrollmentDate" id="enrollmentDate" readonly value="$!format.formatDate( $programInstance.enrollmentDate )" style="width:270px;"></td>
+			<td><span class="commentHeader">$i18n.getString('message')</span><td>
 		</tr>
-		<tr>
-			<td class='text-column'>$programInstance.program.dateOfIncidentDescription:</td>
-			<td><input name="dateOfIncident" id="dateOfIncident" readonly value="$!format.formatDate( $programInstance.dateOfIncident )" style="width:270px;"></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td>
-				<input type="button" style='width:80px' value="$i18n.getString( 'update' )" onclick='updateEnrollment($programInstance.patient.id, $programInstance.program.id, $programInstance.id, "$programInstance.program.displayName")'/>
-				<input type="button" class='large-button' id='completeProgram' value="$i18n.getString( 'complete_quit' )" onclick='unenrollmentForm($programInstance.id)' />
-				<input type="button" style='width:80px' id='incompleteProgram' value="$i18n.getString( 're_enrol' )" onclick='reenrollmentForm($programInstance.id)' />
-				#set($allowRemove = 'true')
-				
-				
-				#foreach( $programStageInstance in $programStageInstances )
-					#if( $!programStageInstance.executionDate 
-						|| $!programStageInstance.outboundSms.size() > 0 
-						|| $!programStageInstance.patientComments.size() > 0 )
-						
-						#set($allowRemove = 'false')
-					#end
-				#end
-				
-				#if($allowRemove == 'true')
-					<input type="button" style='width:80px' id='removeProgram' value="$i18n.getString( 'remove' )" onclick='removeProgramInstance($programInstance.id)' />
-					<script>
-						jQuery('#enrollmentDate').width('355');
-						jQuery('#dateOfIncident').width('355');
-					</script>
-				#end
-			</td>
-		</tr>
+		#foreach($sms in $programInstance.outboundSms)
+			<tr>
+				<td>
+				($format.formatDateTime($!sms.date) - $encoder.htmlEncode($sms.sender) )
+				$encoder.htmlEncode($sms.message)</td>
+			</tr>
+		#end
 	</table>
-</fieldset>
-<br>
+#end
 
 #if( $programStageInstances.size() > 0 )
 	<table class='mainPageTable listTable' id='progarmStageListDiv' name='progarmStageListDiv' >
@@ -125,7 +180,7 @@
 #end
 
 <script>
-	#if( $programInstance.completed=='false')
+	#if( $programInstance.status==0)
 		datePickerInRangeValid( 'dateOfIncident' , 'enrollmentDate' );
 		jQuery("#incompleteProgram").attr('disabled', true);
 	#else

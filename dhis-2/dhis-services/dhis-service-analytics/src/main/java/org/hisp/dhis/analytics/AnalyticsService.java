@@ -37,12 +37,44 @@ public interface AnalyticsService
 {
     final String NAMES_META_KEY = "names";
     
+    /**
+     * Generates aggregated values for the given query.
+     * 
+     * @param params the data query parameters.
+     * @return aggregated data as a Grid object.
+     */
     Grid getAggregatedDataValues( DataQueryParams params );
     
+    /**
+     * Generates aggregated values for the given query. Creates a mapping between 
+     * a dimension key and the aggregated value. The dimension key is a 
+     * concatenation of the identifiers of the dimension items separated by "-".
+     * 
+     * @param params the data query parameters.
+     * @return a mapping between a dimension key and the aggregated value.
+     */
     Map<String, Double> getAggregatedDataValueMap( DataQueryParams params );
 
+    /**
+     * Generates aggregated values for the given query. Creates a mapping between 
+     * a dimension key and the aggregated value. The dimension key is a 
+     * concatenation of the identifiers of the dimension items separated by "-".
+     * 
+     * @param params the data query parameters.
+     * @return a mapping between a dimension key and the aggregated value.
+     */
     Map<String, Double> getAggregatedCompletenessValueMap( DataQueryParams params );
     
+    /**
+     * Creates a data query parameter object from the given URL.
+     * 
+     * @param dimensionParams the dimension URL parameters.
+     * @param filterParams the filter URL parameters.
+     * @param aggregationType the aggregation type.
+     * @param measureCriteria the measure criteria.
+     * @param format the i18n format.
+     * @return a data query parameter object created based on the given URL info.
+     */
     DataQueryParams getFromUrl( Set<String> dimensionParams, Set<String> filterParams, 
         AggregationType aggregationType, String measureCriteria, I18nFormat format );
 }

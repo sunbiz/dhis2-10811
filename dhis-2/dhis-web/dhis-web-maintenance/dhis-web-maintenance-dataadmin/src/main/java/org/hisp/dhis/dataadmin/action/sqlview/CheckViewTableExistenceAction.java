@@ -100,7 +100,7 @@ public class CheckViewTableExistenceAction
 
         String viewTableName = sqlViewService.getSqlView( id ).getViewName();
 
-        if ( !sqlViewService.isViewTableExists( viewTableName ) )
+        if ( !sqlViewService.viewTableExists( viewTableName ) )
         {
             message = i18n.getString( "sql_view_table_is_not_created_yet" );
 

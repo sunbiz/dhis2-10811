@@ -36,7 +36,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
- * @version $Id: ValidateOrganisationUnitToMoveAction.java 1232 2006-01-30 06:29:30Z torgeilo $
  */
 public class ValidateOrganisationUnitToMoveAction
     implements Action

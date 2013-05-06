@@ -46,7 +46,7 @@ public class Dhis14TypeHandler
     
     public static String convertBooleanToDhis14( String value )
     {
-        return (String) (value.equals("true") ? "1" : "0");
+        return value.equals("true") ? "1" : "0";
     }
     
     public static boolean convertBooleanFromDhis14( String value )

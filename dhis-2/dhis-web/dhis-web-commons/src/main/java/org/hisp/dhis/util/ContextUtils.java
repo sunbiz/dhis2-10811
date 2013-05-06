@@ -28,7 +28,6 @@ package org.hisp.dhis.util;
  */
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -163,18 +162,7 @@ public class ContextUtils
         
         return null;
     }
-    
-    public static void errorResponse( HttpServletResponse response, String message )
-        throws IOException
-    {
-        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-        response.setContentType( CONTENT_TYPE_TEXT );
-
-        PrintWriter writer = response.getWriter();
-        writer.println( message );
-        writer.flush();
-    }
-    
+        
     /**
      * Clears the given collection if it is not modified according to the HTTP
      * cache validation. This method looks up the ETag sent in the request from 

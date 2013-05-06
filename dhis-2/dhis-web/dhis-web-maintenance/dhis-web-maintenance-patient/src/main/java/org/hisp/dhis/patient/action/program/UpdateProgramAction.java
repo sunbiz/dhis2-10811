@@ -28,13 +28,16 @@
 package org.hisp.dhis.patient.action.program;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientAttributeService;
 import org.hisp.dhis.patient.PatientIdentifierType;
 import org.hisp.dhis.patient.PatientIdentifierTypeService;
+import org.hisp.dhis.patient.PatientReminder;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
 
@@ -178,15 +181,49 @@ public class UpdateProgramAction
     {
         this.blockEntryForm = blockEntryForm;
     }
-    
+
     private Boolean onlyEnrollOnce = false;
-    
+
     public void setOnlyEnrollOnce( Boolean onlyEnrollOnce )
     {
         this.onlyEnrollOnce = onlyEnrollOnce;
     }
-    
-    
+
+    private Boolean remindCompleted = false;
+
+    public void setRemindCompleted( Boolean remindCompleted )
+    {
+        this.remindCompleted = remindCompleted;
+    }
+
+    private List<Integer> daysAllowedSendMessages = new ArrayList<Integer>();
+
+    public void setDaysAllowedSendMessages( List<Integer> daysAllowedSendMessages )
+    {
+        this.daysAllowedSendMessages = daysAllowedSendMessages;
+    }
+
+    private List<String> templateMessages = new ArrayList<String>();
+
+    public void setTemplateMessages( List<String> templateMessages )
+    {
+        this.templateMessages = templateMessages;
+    }
+
+    private List<String> datesToCompare = new ArrayList<String>();
+
+    public void setDatesToCompare( List<String> datesToCompare )
+    {
+        this.datesToCompare = datesToCompare;
+    }
+
+    private Boolean disableRegistrationFields;
+
+    public void setDisableRegistrationFields( Boolean disableRegistrationFields )
+    {
+        this.disableRegistrationFields = disableRegistrationFields;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -199,6 +236,8 @@ public class UpdateProgramAction
         generateBydEnrollmentDate = (generateBydEnrollmentDate == null) ? false : generateBydEnrollmentDate;
         ignoreOverdueEvents = (ignoreOverdueEvents == null) ? false : ignoreOverdueEvents;
         blockEntryForm = (blockEntryForm == null) ? false : blockEntryForm;
+        remindCompleted = (remindCompleted == null) ? false : remindCompleted;
+        disableRegistrationFields = (disableRegistrationFields == null) ? false : disableRegistrationFields;
 
         Program program = programService.getProgram( id );
         program.setName( name );
@@ -211,7 +250,9 @@ public class UpdateProgramAction
         program.setDisplayIncidentDate( displayIncidentDate );
         program.setBlockEntryForm( blockEntryForm );
         program.setOnlyEnrollOnce( onlyEnrollOnce );
-        
+        program.setRemindCompleted( remindCompleted );
+        program.setDisableRegistrationFields( disableRegistrationFields );
+
         if ( type == Program.MULTIPLE_EVENTS_WITH_REGISTRATION )
         {
             program.setGeneratedByEnrollmentDate( generateBydEnrollmentDate );
@@ -251,6 +292,17 @@ public class UpdateProgramAction
 
         program.setPatientIdentifierTypes( identifierTypes );
         program.setPatientAttributes( patientAttributes );
+
+        // Template messasges
+        Set<PatientReminder> patientReminders = new HashSet<PatientReminder>();
+        for ( int i = 0; i < daysAllowedSendMessages.size(); i++ )
+        {
+            PatientReminder reminder = new PatientReminder( "", daysAllowedSendMessages.get( i ),
+                templateMessages.get( i ) );
+            reminder.setDateToCompare( datesToCompare.get( i ) );
+            patientReminders.add( reminder );
+        }
+        program.setPatientReminders( patientReminders );
 
         programService.updateProgram( program );
 

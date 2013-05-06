@@ -27,9 +27,11 @@
 
 package org.hisp.dhis.patient.action.program;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.program.Program;
@@ -48,20 +50,27 @@ public class GetProgramAction
     // Dependencies
     // -------------------------------------------------------------------------
 
+    private OrganisationUnitGroupService organisationUnitGroupService;
+
+    public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
+    {
+        this.organisationUnitGroupService = organisationUnitGroupService;
+    }
+
     private ProgramService programService;
 
     public void setProgramService( ProgramService programService )
     {
         this.programService = programService;
     }
-    
+
     private SelectionTreeManager selectionTreeManager;
 
     public void setSelectionTreeManager( SelectionTreeManager selectionTreeManager )
     {
         this.selectionTreeManager = selectionTreeManager;
     }
-    
+
     // -------------------------------------------------------------------------
     // Input/Output
     // -------------------------------------------------------------------------
@@ -123,6 +132,13 @@ public class GetProgramAction
         this.organisationUnitGroupId = organisationUnitGroupId;
     }
 
+    private List<OrganisationUnitGroup> availableOrgunitGroups = new ArrayList<OrganisationUnitGroup>();
+
+    public List<OrganisationUnitGroup> getAvailableOrgunitGroups()
+    {
+        return availableOrgunitGroups;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -132,8 +148,11 @@ public class GetProgramAction
     {
         program = programService.getProgram( id );
         
+        availableOrgunitGroups = new ArrayList<OrganisationUnitGroup>(organisationUnitGroupService.getAllOrganisationUnitGroups());
+        availableOrgunitGroups.removeAll( program.getOrganisationUnitGroups() );
+
         selectionTreeManager.setSelectedOrganisationUnits( program.getOrganisationUnits() );
-        
+
         return SUCCESS;
     }
 }

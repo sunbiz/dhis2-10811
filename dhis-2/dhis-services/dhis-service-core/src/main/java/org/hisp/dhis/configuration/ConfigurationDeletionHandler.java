@@ -65,6 +65,6 @@ public class ConfigurationDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM configuration where feedbackrecipientsid=" + userGroup.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 }

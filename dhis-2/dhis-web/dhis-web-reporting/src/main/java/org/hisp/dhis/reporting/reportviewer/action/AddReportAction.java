@@ -42,7 +42,6 @@ import org.hisp.dhis.system.util.StreamUtils;
 
 /**
  * @author Lars Helge Overland
- * @version $Id: UploadDesignAction.java 5207 2008-05-22 12:16:36Z larshelg $
  */
 public class AddReportAction
     extends AbstractRelativePeriodsAction

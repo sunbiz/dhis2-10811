@@ -173,7 +173,7 @@ public class GetPatientAction
         {
             program = programService.getProgram( programId );
             Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient,
-                program, false );
+                program, ProgramInstance.STATUS_ACTIVE );
 
             ProgramInstance programInstance = null;
 
@@ -222,7 +222,7 @@ public class GetPatientAction
             Collections.sort( attributeGroups, new PatientAttributeGroupSortOrderComparator() );
             for ( PatientAttributeGroup attributeGroup : attributeGroups )
             {
-                List<PatientAttribute> attributes = attributeGroupService.getPatientAttributes( attributeGroup );
+                List<PatientAttribute> attributes = attributeGroup.getAttributes();
                 attributes.removeAll( patientAttributesInProgram );
 
                 if ( attributes.size() > 0 )

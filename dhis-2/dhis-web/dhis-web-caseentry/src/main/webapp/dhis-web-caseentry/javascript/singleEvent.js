@@ -3,6 +3,10 @@ var _continue = false;
 
 function orgunitSelected( orgUnits, orgUnitNames )
 {	
+	var width = jQuery('#programIdAddPatient').width();
+	jQuery('#programIdAddPatient').width(width-30);
+	showById( "programLoader" );
+	disable('programIdAddPatient');
 	hideById('addNewDiv');
 	organisationUnitSelected( orgUnits, orgUnitNames );
 	clearListById('programIdAddPatient');
@@ -13,6 +17,9 @@ function orgunitSelected( orgUnits, orgUnitNames )
 				jQuery( '#programIdAddPatient').append( '<option value="' + json.programs[i].id +'" programStageId="' + json.programs[i].programStageId + '" type="' + json.programs[i].type + '">' + json.programs[i].name + '</option>' );
 			}
 			enableBtn();
+			hideById('programLoader');
+			jQuery('#programIdAddPatient').width(width);
+			enable('programIdAddPatient');
 		});
 }
 selection.setListenerFunction( orgunitSelected );

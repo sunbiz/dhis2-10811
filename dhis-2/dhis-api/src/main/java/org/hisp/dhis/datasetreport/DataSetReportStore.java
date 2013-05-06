@@ -28,9 +28,11 @@ package org.hisp.dhis.datasetreport;
  */
 
 import java.util.Map;
+import java.util.Set;
 
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.period.Period;
 
 /**
@@ -40,11 +42,11 @@ public interface DataSetReportStore
 {
     final String SEPARATOR = "-";
     
-    Map<String, Double> getAggregatedValues( DataSet dataSet, Period period, OrganisationUnit unit, boolean rawData );
+    Map<String, Double> getAggregatedValues( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups, boolean rawData );
 
-    Map<String, Double> getAggregatedSubTotals( DataSet dataSet, Period period, OrganisationUnit unit );
+    Map<String, Double> getAggregatedSubTotals( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups );
     
-    Map<String, Double> getAggregatedTotals( DataSet dataSet, Period period, OrganisationUnit unit );
+    Map<String, Double> getAggregatedTotals( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups );
     
-    Map<String, Double> getAggregatedIndicatorValues( DataSet dataSet, Period period, OrganisationUnit unit );
+    Map<String, Double> getAggregatedIndicatorValues( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups );
 }

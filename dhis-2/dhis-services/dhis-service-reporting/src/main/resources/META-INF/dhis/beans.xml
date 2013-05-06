@@ -36,10 +36,10 @@
     <property name="reportStore" ref="org.hisp.dhis.report.ReportStore" />
     <property name="reportTableService" ref="org.hisp.dhis.reporttable.ReportTableService" />
     <property name="constantService" ref="org.hisp.dhis.constant.ConstantService" />
-    <property name="statementManager" ref="statementManager" />
     <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
     <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+    <property name="dataSource" ref="dataSource" />
   </bean>
 
   <!-- Chart -->
@@ -126,13 +126,17 @@
 
   <bean id="org.hisp.dhis.datasetreport.DataSetReportService" class="org.hisp.dhis.datasetreport.impl.DefaultDataSetReportService">
     <property name="dataValueService" ref="org.hisp.dhis.datavalue.DataValueService" />
-	<property name="dataSetReportStore" ref="org.hisp.dhis.datasetreport.DataSetReportStore" />
+	<property name="dataSetReportStore" ref="org.hisp.dhis.datasetreport.AnalyticsDataSetReportStore" />
   </bean>
   
   <bean id="org.hisp.dhis.datasetreport.DataSetReportStore" class="org.hisp.dhis.datasetreport.jdbc.JdbcDataSetReportStore">
 	<property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
 
+  <bean id="org.hisp.dhis.datasetreport.AnalyticsDataSetReportStore" class="org.hisp.dhis.datasetreport.jdbc.AnalyticsDataSetReportStore">
+    <property name="analyticsService" ref="org.hisp.dhis.analytics.AnalyticsService" />
+  </bean>
+  
   <!-- Dashboard -->
 
   <bean id="org.hisp.dhis.dashboard.DashboardContentStore" class="org.hisp.dhis.dashboard.hibernate.HibernateDashboardContentStore">

@@ -59,6 +59,13 @@ public class GetSMTPSettingsAction
     {
         return smtpHostName;
     }
+    
+    private int smtpPort;
+
+    public int getSmtpPort()
+    {
+        return smtpPort;
+    }
 
     private String smtpUsername;
 
@@ -73,6 +80,13 @@ public class GetSMTPSettingsAction
     {
         return smtpPassword;
     }
+    
+    private boolean smtpTls;
+
+    public boolean isSmtpTls()
+    {
+        return smtpTls;
+    }
 
     // -------------------------------------------------------------------------
     // Action implementation
@@ -82,10 +96,14 @@ public class GetSMTPSettingsAction
     {
         smtpHostName = systemSettingManager.getEmailHostName();
         
+        smtpPort = systemSettingManager.getEmailPort();
+        
         smtpPassword = systemSettingManager.getEmailPassword();
         
         smtpUsername = systemSettingManager.getEmailUsername();
 
+        smtpTls = systemSettingManager.getEmailTls();
+        
         return SUCCESS;
     }
 }

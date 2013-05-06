@@ -50,7 +50,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.plot.PlotOrientation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 /**
  * @author Lars Helge Overland
@@ -90,7 +89,10 @@ public class DefaultOrgUnitDistributionService
         
         Grid grid = getOrganisationUnitDistribution( groupSet, organisationUnit, true );
         
-        Assert.isTrue( grid != null && grid.getHeight() == 1 );
+        if ( grid == null || grid.getHeight() != 1 )
+        {
+            return null;
+        }
         
         for ( int i = 1; i < grid.getWidth() - 2; i++ ) // Skip name, none and total column
         {

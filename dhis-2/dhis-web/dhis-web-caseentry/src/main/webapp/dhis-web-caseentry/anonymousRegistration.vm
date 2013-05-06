@@ -111,10 +111,51 @@
 	</div>
 </div>
 
+<script id="offline-event-template" type="text/template">
+    <tr id="tr<%= programStageInstanceId %>" class="listRow">
+        <td><%= index %></td>
+        <td><%= executionDate %></td>
+
+        <td align="right" style="padding-right:20px;">
+            <% if( !completed ) { %>
+            <span class="incomplete-record" title="Incomplete">&nbsp;!&nbsp;</span>
+            <% } %>
+            <a href="javascript:showUpdateEvent( '<%= programStageInstanceId %>' )" title="Data entry"><img src="images/data_entry.png" alt="Data entry"></a>
+            <a href="javascript:removeEvent( '<%= programStageInstanceId %>' )" title="Remove"><img src="../images/delete.png" alt="Remove"></a>
+        </td>
+    </tr>
+</script>
+
+<script id="no-offline-event-template" type="text/template">
+    <tr class="listRow">
+        <td colspan="3">No offline events</td>
+    </tr>
+</script>
+
+<div id='offlineListDiv'>
+    <table class="listTable hidden">
+        <thead>
+        <tr>
+            <th colspan="4">Offline Events</th>
+        </tr>
+        </thead>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Report date</th>
+            <th style="width:100px">Operations</th>
+        </tr>
+        </thead>
+
+        <tbody id="offlineEventList">
+        </tbody>
+    </table>
+</div>
+
 <div id='listDiv'></div>
 
 <div id='dataEntryInfor' class='hidden'>
-	<table style="width:600px;" class="listTable">
+	<table style="width:600px; margin-bottom: 0;" class="listTable">
 			<tr>
 				<th style='width:220px' colspan='2'><span id="reportDateDescriptionField2">$i18n.getString( "report_date" )</span> <em title="$i18n.getString( "required" )" class="required">*</em> </th>
 				<th colspan="2"><input type="text" id="executionDate" name="executionDate" onchange="addNewEvent();" style="margin-left:10px;width:300px;" ></th>
@@ -126,11 +167,11 @@
 	<div id='dataEntryFormDiv'></div>
 	
 	<div id='actionDiv' class="page inputCriteria" style="width:700px;height:29px;">	
-		<input type="button" onclick="completedAndAddNewEvent();" value="$i18n.getString('complete_and_add_new_event')" id="completeAndNewBtn" style="width:150px;">
-		<input type="button" onclick="doComplete()" value="$i18n.getString('complete')" id="completeBtn">
-		<input type="button" onclick="doUnComplete()" value="$i18n.getString('incomplete')" id="uncompleteBtn" >
-		<input type="button" value="$i18n.getString('run_validation')" onclick="javascript: runValidation();">
-		<input type="button" onclick="removeCurrentEvent();" value="$i18n.getString('remove')" id="completeBtn">
+		<input type="button" id="completeAndNewBtn" onclick="completedAndAddNewEvent();" value="$i18n.getString('complete_and_add_new_event')" style="width:150px;">
+		<input type="button" id="completeBtn" onclick="doComplete()" value="$i18n.getString('complete')">
+		<input type="button" id="uncompleteBtn" onclick="doUnComplete()" value="$i18n.getString('incomplete')">
+		<input type="button" id="validateBtn" value="$i18n.getString('run_validation')" onclick="javascript: runValidation();">
+		<input type="button" id="completeBtn" onclick="removeCurrentEvent();" value="$i18n.getString('remove')">
 	</div>
 </div>
 
@@ -150,11 +191,10 @@
     var i18n_saving_value_failed_error_code = '$encoder.jsEscape( $i18n.getString( "saving_value_failed_error_code" ) , "'")';
     var i18n_searching_patient_failed = '$encoder.jsEscape( $i18n.getString( "searching_patient_failed" ) , "'")';
     var i18n_complete_confirm_message = '$encoder.jsEscape( $i18n.getString( "complete_confirm_message" ) , "'")';
-	var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
     var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
 	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
 	var i18n_date_is_greater_then_or_equals_due_date = '$encoder.jsEscape( $i18n.getString( "date_is_greater_then_or_equals_due_date" ) , "'")';
-	
+
 	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
 	var i18n_show_all_items = '$encoder.jsEscape( $i18n.getString( "show_all_items" ) , "'")';
 	var i18n_specify_data_element = '$encoder.jsEscape( $i18n.getString( "specify_data_element" ) , "'")';
@@ -167,7 +207,7 @@
 	var i18n_remove_empty_events_success = '$encoder.jsEscape( $i18n.getString( "remove_empty_events_success" ) , "'")';
 	var i18n_confirm_remove_empty_events = '$encoder.jsEscape( $i18n.getString( "confirm_remove_empty_events" ) , "'")';
 	var i18n_report_date = '$encoder.jsEscape( $i18n.getString( "report_date" ) , "'")';
-	
+
 	var i18n_male = '$encoder.jsEscape( $i18n.getString( "male" ) , "'")';
 	var i18n_female = '$encoder.jsEscape( $i18n.getString( "female" ) , "'")';
 	var i18n_transgender = '$encoder.jsEscape( $i18n.getString( "transgender" ) , "'")';
@@ -179,7 +219,19 @@
 	var i18n_specify_a_date = '$encoder.jsEscape( $i18n.getString( "specify_a_date" ) , "'")';
 	var i18n_clear = '$encoder.jsEscape( $i18n.getString( "clear" ) , "'")';
 	var i18n_insert_a_report_date = '$encoder.jsEscape( $i18n.getString( "insert_a_report_date" ) , "'")';
-	
+    var i18n_comment_added = '$encoder.jsEscape( $i18n.getString( "comment_added" ) , "'")';
+
+    var i18n_need_to_sync_notification = '$encoder.jsEscape( $i18n.getString( "need_to_sync_notification" ) , "'")';
+    var i18n_sync_now = '$encoder.jsEscape( $i18n.getString( "sync_now" ) , "'")';
+    var i18n_sync_success = '$encoder.jsEscape( $i18n.getString( "sync_success" ) , "'")';
+    var i18n_sync_failed = '$encoder.jsEscape( $i18n.getString( "sync_failed" ) , "'")';
+    var i18n_uploading_data_notification = '$encoder.jsEscape( $i18n.getString( "uploading_data_notification" ) , "'")';
+    var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
+    var i18n_ajax_login_failed = '$encoder.jsEscape( $i18n.getString( "ajax_login_failed" ) , "'")';
+    var i18n_online_notification = '$encoder.jsEscape( $i18n.getString( "online_notification" ) , "'")';
+    var i18n_offline_notification = '$encoder.jsEscape( $i18n.getString( "offline_notification" ) , "'")';
+    var i18n_operation_not_available_offline = '$encoder.jsEscape( $i18n.getString( "operation_not_available_offline" ) , "'")';
+
 	isAjax = true;
 	contentDiv = '';
 	var unSave = false;

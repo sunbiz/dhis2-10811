@@ -6,12 +6,14 @@
 
 <input type='hidden' id='currentUsername' name='currentUsername' value='$currentUsername'>
 <input type='hidden' id='programInstanceId' name='programInstanceId' value='$programStageInstance.programInstance.id'>
+<input type='hidden' id='ps_$programStageInstance.id' name='ps_$programStageInstance.id' programStageName='$programStageInstance.programStage.displayName' >
 
 <div class='dashboard-area'>
+	#set($status = $programStageInstance.getEventStatus())
+	#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
 	<div class="link-area" style="height:200px">
 		<p class='header'>$i18n.getString("demographics")</p>
 		<div class="contentProviderTable" style="height:200px">
-			#set($status = $programStageInstance.getEventStatus())
 			<table>
 				<tr>            
 					<td class="bold">$i18n.getString( "full_name" ):</td>
@@ -44,6 +46,7 @@
 			</table>
 		</div>
 	</div>
+	#end
 		
 	<div class="link-area-tracking">
 		<p class='header'>
@@ -97,7 +100,7 @@
 				<tr>
 					<td>$i18n.getString( "post_comment" )</td>
 					<td>
-						<input type='text' id='commentText' name='commentText' onkeypress="keypressOnComent(event,this,'$programStageInstance.id');">
+						<input type='text' id='commentText' name='commentText' onkeypress="keypressOnComment(event,this,'$programStageInstance.id');">
 						<input type='button' value="+" class='tiny-button' title='$i18n.getString("post_comment")' onclick="addComment( byId('commentText'),'$programStageInstance.id');">
 					</td>
 				</tr>
@@ -130,7 +133,7 @@
 		<th>$i18n.getString( "sender" )</th>
 		<th>$i18n.getString( "message" )</th>
 	</tr>
-	<tbody id='commentTB'>
+	<tbody id='commentTB' name='commentTB'>
 		#foreach( $comment in $comments )
 			<tr id="comment_$comment.id">
 				<td>$format.formatDateTime($comment.createdDate)</td>

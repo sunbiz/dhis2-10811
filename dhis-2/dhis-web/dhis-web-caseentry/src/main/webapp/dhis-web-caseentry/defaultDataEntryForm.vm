@@ -3,7 +3,7 @@
 		<col id="deCol">
 		<col id="deCol">
 		<col id="entryCol">
-		#if( $!programStageInstance.programStage.program.displayProvidedOtherFacility=='true')
+		#if( $!program.displayProvidedOtherFacility=='true')
 		<col width="5%" />
 		#end
 	</colgroup>
@@ -11,7 +11,7 @@
 	<tr>
 		<th>$i18n.getString( "data_element" )</th>                   
 		<th>$i18n.getString( "value" )</th>
-		#if( $programStage.program.displayProvidedOtherFacility=='true')
+		#if( $program.displayProvidedOtherFacility=='true')
 		<th>$i18n.getString( "provided_elsewhere" )</th>
 		#end
 	</tr>

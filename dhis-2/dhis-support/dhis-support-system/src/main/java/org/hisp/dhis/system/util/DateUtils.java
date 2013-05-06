@@ -35,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.validator.DateValidator;
+import org.apache.commons.validator.routines.DateValidator;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.period.Period;
@@ -368,7 +368,7 @@ public class DateUtils
      */
     public static boolean dateIsValid( String dateString )
     {
-        return DateValidator.getInstance().isValid( dateString, DEFAULT_DATE_FORMAT, true );
+        return DateValidator.getInstance().isValid( dateString, DEFAULT_DATE_FORMAT );
     }
     
     /**

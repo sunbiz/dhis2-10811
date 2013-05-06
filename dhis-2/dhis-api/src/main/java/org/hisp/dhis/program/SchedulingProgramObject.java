@@ -38,6 +38,8 @@ public class SchedulingProgramObject
 
     private Integer programStageInstanceId;
 
+    private Integer programInstanceId;
+
     private String message;
 
     public SchedulingProgramObject()
@@ -80,6 +82,16 @@ public class SchedulingProgramObject
     public void setMessage( String message )
     {
         this.message = message;
+    }
+
+    public Integer getProgramInstanceId()
+    {
+        return programInstanceId;
+    }
+
+    public void setProgramInstanceId( Integer programInstanceId )
+    {
+        this.programInstanceId = programInstanceId;
     }
 
 }

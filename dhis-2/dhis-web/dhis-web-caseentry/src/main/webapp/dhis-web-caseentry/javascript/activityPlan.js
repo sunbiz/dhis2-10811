@@ -102,12 +102,15 @@ function exportActitityList( type )
 // Patient program tracking
 // --------------------------------------------------------------------
 
-function loadDataEntryDialog( programStageInstanceId ) 
+function loadDataEntryDialog( programStageInstanceId, programStageUid ) 
 {
-	$('#contentDataRecord' ).load("viewProgramStageRecords.action",
+	jQuery('[id=programStageInstanceId]').val(programStageInstanceId);
+	jQuery('.stage-object-selected').attr('psuid',programStageUid);
+	$('#contentDataRecord' ).load("dataentryform.action",
 		{
 			programStageInstanceId: programStageInstanceId
 		}, function(){	
+			jQuery('#programStageUid').val(programStageUid);
 			showById('reportDateDiv');
 			showById('patientInforTB');
 			showById('postCommentTbl');
@@ -241,5 +244,3 @@ function setDateRangeAll()
 	var m = date.getMonth();
 	var y= date.getFullYear();
 }
-
-function entryFormContainerOnReady (){}

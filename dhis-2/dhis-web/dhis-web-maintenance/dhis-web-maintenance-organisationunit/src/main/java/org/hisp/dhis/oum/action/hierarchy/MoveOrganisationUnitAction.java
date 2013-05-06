@@ -35,7 +35,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
- * @version $Id: MoveOrganisationUnitAction.java 1898 2006-09-22 12:06:56Z torgeilo $
  */
 public class MoveOrganisationUnitAction
     implements Action

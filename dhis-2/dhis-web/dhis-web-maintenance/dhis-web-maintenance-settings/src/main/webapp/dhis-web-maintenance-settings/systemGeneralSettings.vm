@@ -56,7 +56,7 @@
 <div class="settingLabel">$i18n.getString( "feedback_recipients" )</div>
 
 <div class="setting">
-<select id="feedbackRecipients" name="feedbackRecipients" style="width:25em">
+<select id="feedbackRecipients" name="feedbackRecipients">
 	<option value="-1">$i18n.getString( "no_feedback_recipients" )</option>
 	#foreach ( $group in $userGroups )
 	<option value="$group.id" #if( $group.id == $!feedbackRecipients.id )selected="selected"#end>$encoder.htmlEncode( $group.name )</option>

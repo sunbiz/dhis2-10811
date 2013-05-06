@@ -38,8 +38,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRHtmlExporter;
 import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXlsAbstractExporterParameter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 
 /**
  * Supports PDF and XLS exports.
@@ -84,12 +84,12 @@ public class JRExportUtils
         public JRAbstractExporter provide()
         {
             JRXlsExporter exporter = new JRXlsExporter();
-            exporter.setParameter( JRXlsExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE );
-            exporter.setParameter( JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE );
-            exporter.setParameter( JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, Boolean.TRUE );
-            exporter.setParameter( JRXlsExporterParameter.IS_COLLAPSE_ROW_SPAN, Boolean.TRUE );
-            exporter.setParameter( JRXlsExporterParameter.IS_IGNORE_CELL_BORDER, Boolean.TRUE );
-            exporter.setParameter( JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE );
+            exporter.setParameter( JRXlsAbstractExporterParameter.IS_DETECT_CELL_TYPE, Boolean.TRUE );
+            exporter.setParameter( JRXlsAbstractExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE );
+            exporter.setParameter( JRXlsAbstractExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, Boolean.TRUE );
+            exporter.setParameter( JRXlsAbstractExporterParameter.IS_COLLAPSE_ROW_SPAN, Boolean.TRUE );
+            exporter.setParameter( JRXlsAbstractExporterParameter.IS_IGNORE_CELL_BORDER, Boolean.TRUE );
+            exporter.setParameter( JRXlsAbstractExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE );
             return exporter;
         }
     }

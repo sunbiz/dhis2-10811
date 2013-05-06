@@ -52,10 +52,12 @@ public class PatientAttribute
 
     public static final String TYPE_BOOL = "bool";
 
+    public static final String TYPE_TRUE_ONLY = "trueOnly";
+
     public static final String TYPE_COMBO = "combo";
 
     private String description;
-
+    
     private String valueType;
 
     private boolean mandatory;

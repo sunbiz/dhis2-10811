@@ -304,8 +304,7 @@ public class DataElement
 
     /**
      * Returns the value type. If value type is int and the number type exists,
-     * the number type is returned, if the type is int and the number type does
-     * not exist int is returned.
+     * the number type is returned, otherwise the type is returned.
      */
     public String getDetailedNumberType()
     {

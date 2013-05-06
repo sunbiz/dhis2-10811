@@ -7,8 +7,6 @@ function scheduleTasks()
 {
 	$.post( 'scheduleTasks.action',{
 		execute:false,
-		schedule: true,
-		gateWayId: getFieldValue("gatewayId"),
 		timeSendingMessage: getFieldValue("timeSendingMessage")
 	}, function( json ){
 		var status = json.scheduleTasks.status;
@@ -30,14 +28,21 @@ function scheduleTasks()
 function executeTasks()
 {
 	var ok = confirm( i18n_execute_tasks_confirmation );
-	setWaitMessage( i18n_executing );	
 	if ( ok )
 	{		
-		$.post( 'executeSendMessage.action',{}
-		, function( json ){
-			setMessage(i18n_execute_success);
+		$.post( 'scheduleTasks.action',{
+			execute:true,
+			timeSendingMessage: getFieldValue("timeSendingMessage")
+		}, function( json ){
+			pingMessageNotificationsTimeout();
 		});
 	}
+}
+
+function pingMessageNotificationsTimeout()
+{
+	pingNotifications( 'SENDING_REMINDER_MESSAGE', 'notificationTable' );
+	setTimeout( "pingMessageNotificationsTimeout()", 200 );
 }
 
 // -----------------------------------------------------------------------

@@ -4,7 +4,7 @@
 			loadGeneratedReport();
 		}); 
 		datePickerInRange( 'startDate' , 'endDate' );
-	});		
+	});
 </script>
 
 <h3>$i18n.getString( "program_summary_report" ) #openHelp('program_summary_report')</h3>

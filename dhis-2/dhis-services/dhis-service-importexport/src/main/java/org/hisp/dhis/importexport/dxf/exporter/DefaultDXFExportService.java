@@ -42,11 +42,9 @@ import java.io.PipedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.amplecode.quick.StatementManager;
 import org.amplecode.staxwax.factory.XMLFactory;
 import org.amplecode.staxwax.writer.XMLWriter;
 import org.hibernate.SessionFactory;
-import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.concept.ConceptService;
 import org.hisp.dhis.constant.ConstantService;
@@ -58,7 +56,6 @@ import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.importexport.ExportParams;
 import org.hisp.dhis.importexport.ExportPipeThread;
 import org.hisp.dhis.importexport.ExportService;
-import org.hisp.dhis.importexport.dxf.converter.AggregatedDataValueConverter;
 import org.hisp.dhis.importexport.dxf.converter.CategoryCategoryOptionAssociationConverter;
 import org.hisp.dhis.importexport.dxf.converter.CategoryComboCategoryAssociationConverter;
 import org.hisp.dhis.importexport.dxf.converter.ChartConverter;
@@ -80,7 +77,6 @@ import org.hisp.dhis.importexport.dxf.converter.DataElementGroupSetMemberConvert
 import org.hisp.dhis.importexport.dxf.converter.DataSetConverter;
 import org.hisp.dhis.importexport.dxf.converter.DataSetMemberConverter;
 import org.hisp.dhis.importexport.dxf.converter.DataSetSourceAssociationConverter;
-import org.hisp.dhis.importexport.dxf.converter.DataValueConverter;
 import org.hisp.dhis.importexport.dxf.converter.GroupSetConverter;
 import org.hisp.dhis.importexport.dxf.converter.GroupSetMemberConverter;
 import org.hisp.dhis.importexport.dxf.converter.IndicatorConverter;
@@ -125,13 +121,6 @@ public class DefaultDXFExportService
     public void setSessionFactory( SessionFactory sessionFactory )
     {
         this.sessionFactory = sessionFactory;
-    }
-
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
     }
 
     private ConceptService conceptService;
@@ -240,13 +229,6 @@ public class DefaultDXFExportService
         this.completeDataSetRegistrationService = completeDataSetRegistrationService;
     }
 
-    private AggregatedDataValueService aggregatedDataValueService;
-
-    public void setAggregatedDataValueService( AggregatedDataValueService aggregatedDataValueService )
-    {
-        this.aggregatedDataValueService = aggregatedDataValueService;
-    }
-
     // -------------------------------------------------------------------------
     // ExportService implementation
     // -------------------------------------------------------------------------
@@ -336,10 +318,6 @@ public class DefaultDXFExportService
             thread.registerXMLConverter( new ChartConverter( chartService ) );
             thread.registerXMLConverter( new CompleteDataSetRegistrationConverter( completeDataSetRegistrationService,
                 dataSetService, organisationUnitService, periodService ) );
-
-            thread.registerXMLConverter( params.isAggregatedData() ? new AggregatedDataValueConverter(
-                aggregatedDataValueService, dataSetService, periodService ) : new DataValueConverter(
-                aggregatedDataValueService, statementManager, periodService ) );
 
             thread.start();
 

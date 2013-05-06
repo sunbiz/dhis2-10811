@@ -78,7 +78,7 @@ public class DataElementCategoryOptionComboDeletionHandler
                 "select cc.categoryoptioncomboid from categoryoptioncombos_categoryoptions cc " +
                 "where cc.categoryoptionid = " + categoryOption.getId() + " );";
         
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -91,7 +91,7 @@ public class DataElementCategoryOptionComboDeletionHandler
               "join categories_categoryoptions co on cc.categoryoptionid=co.categoryoptionid " +
               "where co.categoryid=" + category.getId() + " );";        
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -103,7 +103,7 @@ public class DataElementCategoryOptionComboDeletionHandler
               "select co.categoryoptioncomboid from categorycombos_optioncombos co " +
               "where co.categorycomboid=" + categoryCombo.getId() + " );";
         
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override

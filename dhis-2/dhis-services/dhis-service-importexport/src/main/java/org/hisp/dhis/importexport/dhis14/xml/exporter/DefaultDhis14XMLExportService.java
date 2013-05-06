@@ -71,13 +71,6 @@ public class DefaultDhis14XMLExportService
         this.sessionFactory = sessionFactory;
     }
 
-    private StatementManager statementManager;
-
-    public void setStatementManager( StatementManager statementManager )
-    {
-        this.statementManager = statementManager;
-    }
-
     private DataElementService dataElementService;
 
     public void setDataElementService( DataElementService dataElementService )
@@ -173,7 +166,7 @@ public class DefaultDhis14XMLExportService
             thread.registerXMLConverter( new UserConverter() );
             thread.registerXMLConverter( new UserRoleConverter() );
             
-            thread.registerCSVConverter( new DataValueConverter( periodService, aggregatedDataValueService, statementManager, dataElementService ) );
+            thread.registerCSVConverter( new DataValueConverter( periodService, aggregatedDataValueService, dataElementService ) );
             
             thread.start();
 

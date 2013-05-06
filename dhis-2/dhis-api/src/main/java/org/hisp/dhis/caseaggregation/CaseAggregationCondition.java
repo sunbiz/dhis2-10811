@@ -48,15 +48,15 @@ public class CaseAggregationCondition
     public static final String AGGRERATION_COUNT = "COUNT";
 
     public static final String AGGRERATION_SUM = "times";
-    
+
     public static final String AGGRERATION_SUM_VALUE = "sum";
-    
+
     public static final String AGGRERATION_AVG_VALUE = "avg";
-    
+
     public static final String AGGRERATION_AVG_MIN = "min";
-    
+
     public static final String AGGRERATION_AVG_MAX = "max";
-    
+
     public static final String OPERATOR_AND = "AND";
 
     public static final String OPERATOR_OR = "OR";
@@ -74,13 +74,24 @@ public class CaseAggregationCondition
     public static String OBJECT_PATIENT = "PT";
 
     public static String OBJECT_PROGRAM_STAGE = "PS";
-    
+
     public static String OBJECT_PROGRAM_STAGE_PROPERTY = "PSP";
-    
+
     public static String OBJECT_PATIENT_PROGRAM_STAGE_PROPERTY = "PC";
-    
+
+    public static String OBJECT_ORGUNIT_COMPLETE_PROGRAM_STAGE = "PSIC";
+
     public static String OBJECT_PROGRAM_PROPERTY_INCIDENT_DATE = "dateOfIncident";
+
     public static String OBJECT_PROGRAM_PROPERTY_ENROLLEMENT_DATE = "enrollmentDate";
+
+    public static String AUTO_STORED_BY = "DHIS-SYSTEM";
+
+    public static final String regExp = "\\[(" + OBJECT_ORGUNIT_COMPLETE_PROGRAM_STAGE + "|" + OBJECT_PATIENT + "|"
+        + OBJECT_PROGRAM + "|" + OBJECT_PROGRAM_STAGE_PROPERTY + "|" + OBJECT_PROGRAM_STAGE + "|"
+        + OBJECT_PATIENT_PROGRAM_STAGE_PROPERTY + "|" + OBJECT_PROGRAM_STAGE_DATAELEMENT + "|"
+        + OBJECT_PATIENT_ATTRIBUTE + "|" + OBJECT_PATIENT_PROPERTY + "|" + OBJECT_PROGRAM_PROPERTY + ")"
+        + SEPARATOR_OBJECT + "([a-zA-Z0-9@#\\- ]+[" + SEPARATOR_ID + "[a-zA-Z0-9]*]*)" + "\\]";
 
     // -------------------------------------------------------------------------
     // Fields
@@ -93,7 +104,7 @@ public class CaseAggregationCondition
     private DataElement aggregationDataElement;
 
     private DataElementCategoryOptionCombo optionCombo;
-    
+
     private DataElement deSum;
 
     // -------------------------------------------------------------------------
@@ -115,9 +126,8 @@ public class CaseAggregationCondition
         this.optionCombo = optionCombo;
     }
 
-    
-    public CaseAggregationCondition( String name, String operator, String aggregationExpression, DataElement aggregationDataElement,
-        DataElementCategoryOptionCombo optionCombo, DataElement deSum )
+    public CaseAggregationCondition( String name, String operator, String aggregationExpression,
+        DataElement aggregationDataElement, DataElementCategoryOptionCombo optionCombo, DataElement deSum )
     {
         this.name = name;
         this.operator = operator;

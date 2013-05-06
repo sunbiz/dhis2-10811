@@ -137,6 +137,11 @@ public class DefaultSystemSettingManager
     {
         return StringUtils.trimToNull( (String) getSystemSetting( KEY_EMAIL_HOST_NAME ) );
     }
+    
+    public int getEmailPort()
+    {
+        return (Integer) getSystemSetting( KEY_EMAIL_PORT, DEFAULT_EMAIL_PORT );
+    }
 
     public String getEmailPassword()
     {
@@ -146,6 +151,11 @@ public class DefaultSystemSettingManager
     public String getEmailUsername()
     {
         return StringUtils.trimToNull( (String) getSystemSetting( KEY_EMAIL_USERNAME ) );
+    }
+    
+    public boolean getEmailTls()
+    {
+        return (Boolean) getSystemSetting( KEY_EMAIL_TLS, true );
     }
     
     public boolean accountRecoveryEnabled()

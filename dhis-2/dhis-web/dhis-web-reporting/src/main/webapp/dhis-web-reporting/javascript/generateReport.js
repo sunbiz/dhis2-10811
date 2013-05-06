@@ -11,7 +11,7 @@ function validationError()
 {
     if ( $( "#selectionTree" ).length && !selectionTreeSelection.isSelected() )
     {
-        setMessage( i18n_please_select_unit );
+        setHeaderDelayMessage( i18n_please_select_unit );
         return true;
     }
 
@@ -35,7 +35,7 @@ function viewReport( type )
     var mode = $( "#mode" ).val();
     var type = $( "#type" ).val();
 
-    setMessage( i18n_process_completed );
+    setHeaderMessage( i18n_process_completed );
 
     if ( MODE_REPORT == mode )
     {

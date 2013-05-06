@@ -36,10 +36,13 @@ import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patientcomment.PatientComment;
+import org.hisp.dhis.sms.outbound.OutboundSms;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -50,6 +53,12 @@ import java.util.Set;
 public class ProgramInstance
     implements Serializable
 {
+    public static int STATUS_ACTIVE = 0;
+
+    public static int STATUS_COMPLETED = 1;
+
+    public static int STATUS_CANCELLED = 2;
+
     /**
      * Determines if a de-serialized file is compatible with this class.
      */
@@ -63,13 +72,19 @@ public class ProgramInstance
 
     private Date endDate;
 
-    private boolean completed = false;
+    private Integer status = STATUS_ACTIVE;
 
     private Patient patient;
 
     private Program program;
 
     private Set<ProgramStageInstance> programStageInstances = new HashSet<ProgramStageInstance>();
+
+    private List<OutboundSms> outboundSms;
+
+    private Boolean followup;
+
+    private PatientComment patientComment;
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -86,11 +101,6 @@ public class ProgramInstance
         this.patient = patient;
         this.program = program;
     }
-
-    // -------------------------------------------------------------------------
-    // hashCode and equals
-    // -------------------------------------------------------------------------
-
 
     // -------------------------------------------------------------------------
     // Getters and setters
@@ -255,22 +265,19 @@ public class ProgramInstance
     }
 
     /**
-     * @return the completed
+     * @return the status
      */
     @JsonProperty
     @JsonView( { DetailedView.class, ExportView.class } )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
-    public boolean isCompleted()
+    public int getStatus()
     {
-        return completed;
+        return status.intValue();
     }
 
-    /**
-     * @param completed the completed to set
-     */
-    public void setCompleted( boolean completed )
+    public void setStatus( Integer status )
     {
-        this.completed = completed;
+        this.status = status;
     }
 
     /**
@@ -325,6 +332,48 @@ public class ProgramInstance
         this.programStageInstances = programStageInstances;
     }
 
+    public List<OutboundSms> getOutboundSms()
+    {
+        return outboundSms;
+    }
+
+    public void setOutboundSms( List<OutboundSms> outboundSms )
+    {
+        this.outboundSms = outboundSms;
+    }
+
+    /**
+     * @return the followup
+     */
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public Boolean getFollowup()
+    {
+        return followup;
+    }
+
+    public void setFollowup( Boolean followup )
+    {
+        this.followup = followup;
+    }
+
+    /**
+     * @return the patientComment
+     */
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public PatientComment getPatientComment()
+    {
+        return patientComment;
+    }
+
+    public void setPatientComment( PatientComment patientComment )
+    {
+        this.patientComment = patientComment;
+    }
+
     // -------------------------------------------------------------------------
     // Convenience method
     // -------------------------------------------------------------------------
@@ -339,7 +388,7 @@ public class ProgramInstance
             {
                 return programInstanceStage;
             }
-            
+
             count++;
         }
 

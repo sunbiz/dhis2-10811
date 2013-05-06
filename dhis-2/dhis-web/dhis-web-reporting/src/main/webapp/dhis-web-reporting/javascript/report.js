@@ -2,13 +2,13 @@ function addReport()
 {
     if ( $( "#reportForm #name" ).val().trim().length == 0  )
    	{
-   		setMessage( i18n_specify_name );
+    	setHeaderDelayMessage( i18n_specify_name );
    		return false;
    	}
 
     if ( $( "#reportForm #id" ).val().trim().length == 0 && !hasText( "upload" ) )
    	{
-   		setMessage( i18n_please_specify_file );
+    	setHeaderDelayMessage( i18n_please_specify_file );
    		return false;
    	}
 

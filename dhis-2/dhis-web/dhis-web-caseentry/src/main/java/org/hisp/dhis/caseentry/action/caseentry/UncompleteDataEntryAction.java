@@ -113,9 +113,10 @@ public class UncompleteDataEntryAction
         // ----------------------------------------------------------------------
 
         ProgramInstance programInstance = programStageInstance.getProgramInstance();
-        if ( programInstance.isCompleted() )
+        
+        if ( ProgramInstance.STATUS_COMPLETED == programInstance.getStatus() )
         {
-            programInstance.setCompleted( false );
+            programInstance.setStatus( ProgramInstance.STATUS_ACTIVE );
             programInstance.setEndDate( null );
             programInstanceService.updateProgramInstance( programInstance );
         }

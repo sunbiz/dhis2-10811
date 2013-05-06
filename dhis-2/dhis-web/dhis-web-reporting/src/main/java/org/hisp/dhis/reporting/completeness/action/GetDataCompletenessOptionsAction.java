@@ -42,7 +42,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class GetDataCompletenessOptionsAction
     implements Action
@@ -97,7 +96,7 @@ public class GetDataCompletenessOptionsAction
     public String execute()
     {
         dataSets = new ArrayList<DataSet>( dataSetService.getAllDataSets() );
-        groupSets = new ArrayList<OrganisationUnitGroupSet>( organisationUnitGroupService.getCompulsoryOrganisationUnitGroupSets() );
+        groupSets = new ArrayList<OrganisationUnitGroupSet>( organisationUnitGroupService.getAllOrganisationUnitGroupSets() );
         
         Collections.sort( dataSets, IdentifiableObjectNameComparator.INSTANCE );
         Collections.sort( groupSets, IdentifiableObjectNameComparator.INSTANCE );

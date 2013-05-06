@@ -2,6 +2,7 @@
 #set($noGroup = $attributeGroups.size() )
 #if( $programInstance || $hasDataEntry=='true' )
 <input type='hidden' id='programInstanceId' name='programInstanceId' value='$programInstance.id' />
+<input type='hidden' id='programStageInstanceId' name='programStageInstanceId' value='0'>
 <input type='hidden' id='patientId' name='patientId' value='$programInstance.patient.id' />
 <input type='hidden' id='hasDataEntry' name='hasDataEntry' value='$hasDataEntry' />
 <div id="tabs">
@@ -144,7 +145,7 @@
 			saveCoordinatesEvent($!programStageInstance.id);
 		});
 		
-		#if( $programInstance.completed)
+		#if( $programInstance.status==1)
 			jQuery("[id=tab-2] :input").prop('disabled', true);
 			jQuery("[id=tab-3] :input").prop('disabled', true);
 			jQuery("[id=tab-4] :input").prop('disabled', true);

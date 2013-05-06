@@ -8,3 +8,8 @@ div#header, div#headerMessage, div#leftBar, div#headerMessage, div#rightBar, .hi
 {
   display: none;
 }
+
+div#mainPage 
+{
+  margin-left: 20px;
+}

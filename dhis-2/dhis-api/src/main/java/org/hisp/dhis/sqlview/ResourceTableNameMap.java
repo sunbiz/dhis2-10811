@@ -54,8 +54,9 @@ public class ResourceTableNameMap
 
         ignoredNameMap.put( "_users", "users" );
         ignoredNameMap.put( "_uinfo", "userinfo" );
-        ignoredNameMap.put( "_patient", "patient.*" );
-        ignoredNameMap.put( "_program", "program.*" );
+        ignoredNameMap.put( "_patient", "patient" );
+        ignoredNameMap.put( "_patientid", "patientidentifier" );
+        ignoredNameMap.put( "_patientattr", "patientattribute" );
         ignoredNameMap.put( "_relationship", "relationship.*" );
         ignoredNameMap.put( "_caseaggrcondition", "caseaggregationcondition" );
     }

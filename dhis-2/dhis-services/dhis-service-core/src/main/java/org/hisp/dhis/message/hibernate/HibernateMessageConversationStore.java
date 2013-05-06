@@ -138,7 +138,7 @@ public class HibernateMessageConversationStore
             sql += "and um.isread=false ";
         }
 
-        return jdbcTemplate.queryForInt( sql );
+        return jdbcTemplate.queryForObject( sql, Integer.class );
     }
 
     public long getUnreadUserMessageConversationCount( User user )

@@ -1,0 +1,55 @@
+{
+    "currentUsername": "$encoder.jsonEncode( $currentUsername )",
+    "id": "$!programStageInstance.id",
+    "dueDate": "$format.formatDate( $!programStageInstance.dueDate )",
+    "executionDate": "$!format.formatDate( $programStageInstance.executionDate )",
+    "status": "$!programStageInstance.getEventStatus()",
+    "completed": "$!programStageInstance.completed",
+    #if($programStageInstance.programStage.captureCoordinates)
+    "latitude": "$!latitude",
+    "longitude": "$!longitude",
+    #end
+
+    "comments": [
+    #set( $size = $programStageInstance.patientComments.size() )
+    #foreach( $comment in $programStageInstance.patientComments )
+{"createdDate": "$format.formatDateTime($comment.createdDate)", "creator": "$encoder.jsonEncode( $comment.creator )", "text": "$encoder.jsonEncode( $!comment.commentText )"}#if( $velocityCount < $size ),
+    #end
+    #end
+
+    ],
+
+    "dataValues": {
+    #set( $size = $dataValueMap.keySet().size() )
+    #foreach( $key in $dataValueMap.keySet() )
+    #set( $value = $dataValueMap.get($key) )
+"$key": {"value": "$encoder.jsonEncode( $!value.value )", "timestamp": "$!value.timestamp", "providedElsewhere": "$!value.providedElsewhere", "storedBy": "$!value.storedBy"}#if( $velocityCount < $size ),
+    #end
+    #end
+
+    },
+
+    "program": {
+        "id": "$!programStageInstance.programInstance.program.id",
+        "uid": "$encoder.jsonEncode( $!programStageInstance.programInstance.program.uid )",
+        "type": "$!programStageInstance.programInstance.program.type",
+        "blockEntryForm": "$!programStageInstance.programInstance.program.blockEntryForm",
+        "remindCompleted": "$!programStageInstance.programInstance.program.remindCompleted"
+    },
+
+    "programStage": {
+        "id": "$!programStageInstance.programStage.id",
+        "uid": "$encoder.jsonEncode( $!programStageInstance.programStage.uid )",
+        "name": "$!programStageInstance.programStage.displayName",
+        "irregular": "$!programStageInstance.programStage.irregular",
+        "displayGenerateEventBox": "$!programStageInstance.programStage.displayGenerateEventBox",
+        "validCompleteOnly": "$!programStageInstance.programStage.validCompleteOnly",
+        "captureCoordinates": "$!programStageInstance.programStage.captureCoordinates"
+    },
+
+    "programInstance": {
+        "id": "$!programStageInstance.programInstance.id",
+        "dateOfIncident": "$format.formatDate( $!programStageInstance.programInstance.dateOfIncident )",
+        "status": "$!programStageInstance.programInstance.status"
+    }
+}

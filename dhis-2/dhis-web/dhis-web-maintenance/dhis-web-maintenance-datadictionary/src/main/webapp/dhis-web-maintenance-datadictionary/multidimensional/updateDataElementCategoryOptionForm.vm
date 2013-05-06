@@ -17,7 +17,7 @@
 
 <h3>$i18n.getString( "edit_data_element_category_option" )</h3>
 
-<form id="editDataElementCategoryOptionForm" name="editDataElementCategoryOptionForm" action="updateDataElementCategoryOption.action" method="post">
+<form id="editDataElementCategoryOptionForm" name="editDataElementCategoryOptionForm" action="updateDataElementCategoryOption.action" method="post" class="inputForm">
   
   <input type="hidden" id="id" name="id" value="$dataElementCategoryOption.id"/>
   
@@ -27,7 +27,7 @@
     </tr>
     <tr>
       <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-      <td><input type="text" id="name" name="name" value="$!encoder.htmlEncode( $dataElementCategoryOption.name )" style="width:25em" class="{validate:{required:true,rangelength:[2,150]}}"/></td>
+      <td><input type="text" id="name" name="name" value="$!encoder.htmlEncode( $dataElementCategoryOption.name )" class="{validate:{required:true,rangelength:[2,150]}}"/></td>
       <td></td>
     </tr>      
 	<tr>
@@ -39,7 +39,7 @@
 	  <td>
 		<div style="inline">
 			#set ( $conceptId = $!dataElementCategoryOption.concept.id )
-			<select id="conceptId" name="conceptId" style="width:305px" >				
+			<select id="conceptId" name="conceptId">				
 				#foreach( $concept in $concepts )
 				<option value="$concept.id" #if ( $concept.id == $conceptId ) selected #end>$concept.name</option>
 				#end

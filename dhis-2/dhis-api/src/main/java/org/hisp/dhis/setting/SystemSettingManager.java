@@ -60,8 +60,10 @@ public interface SystemSettingManager
     final String KEY_DATAMART_TASK = "keyDataMartTask";
     final String KEY_DATASETCOMPLETENESS_TASK = "keyDataSetCompletenessTask";
     final String KEY_EMAIL_HOST_NAME = "keyEmailHostName";
+    final String KEY_EMAIL_PORT = "keyEmailPort";
     final String KEY_EMAIL_USERNAME = "keyEmailUsername";
     final String KEY_EMAIL_PASSWORD = "keyEmailPassword";
+    final String KEY_EMAIL_TLS = "keyEmailTls";
     final String KEY_SCHEDULED_PERIOD_TYPES = "keyScheduledPeriodTypes";
     final String KEY_SCHEDULED_TASKS = "keySchedTasks";
     final String KEY_ORGUNITGROUPSET_AGG_LEVEL = "orgUnitGroupSetAggregationLevel";
@@ -86,6 +88,7 @@ public interface SystemSettingManager
     final String DEFAULT_GOOGLE_MAPS_API_KEY = "ABQIAAAAut6AhySExnYIXm5s2OFIkxRKNzJ-_9njnryRTbvC6CtrS4sRvRREWnxwlZUa630pLuPf3nD9i4fq9w";
     final String DEFAULT_START_MODULE = "dhis-web-dashboard-integration";
     final String DEFAULT_APPLICATION_TITLE = "District Health Information Software 2";
+    final int DEFAULT_EMAIL_PORT = 587;
     
     final int DEFAULT_COMPLETENESS_OFFSET = 15;
     final String DEFAULT_TIME_FOR_SENDING_MESSAGE = "08:00";    
@@ -114,9 +117,13 @@ public interface SystemSettingManager
     
     String getEmailHostName();
     
+    int getEmailPort();
+    
     String getEmailUsername();
     
     String getEmailPassword();
+    
+    boolean getEmailTls();
     
     boolean accountRecoveryEnabled();
     

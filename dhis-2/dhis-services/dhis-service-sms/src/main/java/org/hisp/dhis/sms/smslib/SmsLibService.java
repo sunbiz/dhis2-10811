@@ -312,8 +312,7 @@ public class SmsLibService
                     else if ( gatewayConfig instanceof SMPPGatewayConfig )
                     {
                         gatewayMap.put( SMPP_GATEWAY, gateway.getGatewayId() );
-                        // Service.getInstance().setInboundMessageNotification(
-                        // new InboundNotification() );
+                        // Service.getInstance().setInboundMessageNotification( new InboundNotification() );
                     }
                     else
                     {
@@ -525,7 +524,7 @@ public class SmsLibService
         {
             return null;
         }
-
+        
         if ( getGatewayMap() == null )
         {
             return null;
@@ -553,7 +552,6 @@ public class SmsLibService
         {
             gatewayId = gatewayMap.get( MODEM_GATEWAY );
         }
-
         return gatewayId;
     }
 }

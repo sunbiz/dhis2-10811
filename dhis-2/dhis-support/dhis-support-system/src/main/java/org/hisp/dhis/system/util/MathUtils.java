@@ -38,7 +38,6 @@ import org.nfunk.jep.JEP;
 
 /**
  * @author Lars Helge Overland
- * @version $Id: MathUtil.java 4712 2008-03-12 10:32:45Z larshelg $
  */
 public class MathUtils
 {
@@ -47,7 +46,15 @@ public class MathUtils
     
     private static final double TOLERANCE = 0.01; 
     
-    private static final Pattern NUMERIC_PATTERN = Pattern.compile( "^[ \\t]*[\\.]?[0-9]+[ \\t]*$|^[ \\t]*[0-9]+[\\.][0-9]+[ \\t]*$" );
+    public static final String NUMERIC_REGEXP = "^(0|-?[1-9]\\d*)(\\.\\d+)?$";    
+    public static final String NUMERIC_LENIENT_REGEXP = "^(-?\\d+)(\\.\\d+)?$";
+    
+    private static final Pattern NUMERIC_PATTERN = Pattern.compile( NUMERIC_REGEXP );
+    private static final Pattern NUMERIC_LENIENT_PATTERN = Pattern.compile( NUMERIC_LENIENT_REGEXP );
+    private static final Pattern INT_PATTERN = Pattern.compile( "^(0|-?[1-9]\\d*)$" );
+    private static final Pattern POSITIVE_INT_PATTERN = Pattern.compile( "^[1-9]\\d*$" );
+    private static final Pattern NEGATIVE_INT_PATTERN = Pattern.compile( "^-[1-9]\\d*$" );
+    private static final Pattern ZERO_PATTERN = Pattern.compile( "^0(\\.0*)?$" );
 
     /**
      * Validates whether an expression is true or false.
@@ -197,15 +204,74 @@ public class MathUtils
     }
     
     /**
-     * Returns true if the provided String argument can be converted to a Double,
-     * false if not.
+     * Returns true if the provided string argument is to be considered numeric. 
      * 
      * @param value the value.
-     * @return true if the provided String argument can be converted to a Double.
+     * @return true if the provided string argument is to be considered numeric. 
      */
     public static boolean isNumeric( String value )
     {
         return value != null && NUMERIC_PATTERN.matcher( value ).matches();
+    }
+
+    /**
+     * Returns true if the provided string argument is to be considered numeric.
+     * Matches using a lenient pattern where leading zeros are allowed.
+     * 
+     * @param value the value.
+     * @return true if the provided string argument is to be considered numeric. 
+     */
+    public static boolean isNumericLenient( String value )
+    {
+        return value != null && NUMERIC_LENIENT_PATTERN.matcher( value ).matches();
+    }
+
+    /**
+     * Returns true if the provided string argument is to be considered an integer. 
+     * 
+     * @param value the value.
+     * @return true if the provided string argument is to be considered an integer. 
+     */
+    public static boolean isInteger( String value )
+    {
+        return value != null && INT_PATTERN.matcher( value ).matches();
+    }
+
+    /**
+     * Returns true if the provided string argument is to be considered a positive
+     * integer.
+     * 
+     * @param value the value.
+     * @return true if the provided string argument is to be considered a positive 
+     *         integer. 
+     */
+    public static boolean isPositiveInteger( String value )
+    {
+        return value != null && POSITIVE_INT_PATTERN.matcher( value ).matches();
+    }
+
+    /**
+     * Returns true if the provided string argument is to be considered a negative
+     * integer.
+     * 
+     * @param value the value.
+     * @return true if the provided string argument is to be considered a negative 
+     *         integer. 
+     */
+    public static boolean isNegativeInteger( String value )
+    {
+        return value != null && NEGATIVE_INT_PATTERN.matcher( value ).matches();
+    }
+
+    /**
+     * Returns true if the provided string argument is to be considered a zero.
+     * 
+     * @param value the value.
+     * @return true if the provided string argument is to be considered a zero.
+     */
+    public static boolean isZero( String value )
+    {
+        return value != null && ZERO_PATTERN.matcher( value ).matches();
     }
     
     /**

@@ -572,7 +572,14 @@ public class SaveProgramStageFormAction
 
         }
 
-        programStageInstance.setCompleted( true );
+        if ( programStageSectionId != null && programStageSectionId != 0 )
+        {
+            programStageInstance.setCompleted( false );
+        }
+        else
+        {
+            programStageInstance.setCompleted( true );
+        }
         programStageInstance.setExecutionDate( new Date() );
         programStageInstanceService.updateProgramStageInstance( programStageInstance );
 

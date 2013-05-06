@@ -50,7 +50,7 @@ function getConstantsPage()
 	var target = jQuery( "#expression-container select[id=constantId]" );
 	target.children().remove();
 	
-	jQuery.postJSON( '../dhis-web-commons-ajax-json/getConstants.action', {}, function( json ) 
+	jQuery.get( '../api/constants.json?paging=false&links=false', {}, function( json ) 
 	{
 		if ( json.constants.length == 0 )
 		{
@@ -59,7 +59,7 @@ function getConstantsPage()
 		}
 		
 		jQuery.each( json.constants, function(i, item) {
-			target.append( '<option value="[C'+item.constantId+']">'+item.constantName+'</option>' );
+			target.append( '<option value="C{' + item.id + '}">' + item.name + '</option>' );
 		});
 	});
 }

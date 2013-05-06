@@ -290,8 +290,6 @@ public class TableAlteror
         executeSql( "UPDATE chart SET type=lower(type), series=lower(series), category=lower(category), filter=lower(filter)" );
 
         executeSql( "ALTER TABLE chart ALTER COLUMN dimension DROP NOT NULL" );
-        executeSql( "ALTER TABLE chart RENAME COLUMN title TO name" );
-        executeSql( "ALTER TABLE chart DROP COLUMN title" );
         executeSql( "ALTER TABLE chart DROP COLUMN size" );
         executeSql( "ALTER TABLE chart DROP COLUMN verticallabels" );
         executeSql( "ALTER TABLE chart DROP COLUMN targetline" );
@@ -343,9 +341,9 @@ public class TableAlteror
         executeSql( "ALTER TABLE completedatasetregistration DROP CONSTRAINT fk_datasetcompleteregistration_sourceid" );
         executeSql( "ALTER TABLE minmaxdataelement DROP CONSTRAINT fk_minmaxdataelement_sourceid" );
         executeSql( "ALTER TABLE datavalue DROP CONSTRAINT fk_datavalue_sourceid" );
-        executeSql( "ALTER TABLE datavaluearchive DROP CONSTRAINT fk_datavaluearchive_sourceid" );
         executeSql( "ALTER TABLE organisationunit DROP CONSTRAINT fke509dd5ef1c932ed" );
         executeSql( "DROP TABLE source CASCADE" );
+        executeSql( "DROP TABLE datavaluearchive" );
 
         // message
 
@@ -459,7 +457,10 @@ public class TableAlteror
         executeSql( "update chart set showdata = false where showdata is null" );
         executeSql( "update chart set userorganisationunitchildren = false where userorganisationunitchildren is null" );
         executeSql( "update chart set userorganisationunit = false where userorganisationunit is null" );
-
+        
+        executeSql( "insert into chart_filters (chartid, sort_order, filter) select chartid, 0, filter from chart" );
+        executeSql( "alter table chart drop column filter" );
+        
         executeSql( "update users set selfregistered = false where selfregistered is null" );
         executeSql( "update users set disabled = false where disabled is null" );
         executeSql( "update dataentryform set format = 1 where format is null" );
@@ -476,7 +477,6 @@ public class TableAlteror
         executeSql( "DROP TABLE chartgroupmembers" );
         executeSql( "DROP TABLE chartgroup" );
 
-        executeSql( "ALTER TABLE patientdatavaluearchive DROP COLUMN categoryoptioncomboid" );
         executeSql( "delete from usersetting where name='currentStyle' and value like '%blue/blue.css'" );
         executeSql( "delete from systemsetting where name='currentStyle' and value like '%blue/blue.css'" );
 
@@ -558,6 +558,9 @@ public class TableAlteror
         executeSql( "UPDATE chart SET publicaccess='--------' WHERE user IS NULL AND publicaccess IS NULL;" );
         executeSql( "UPDATE map SET publicaccess='-------' WHERE user IS NULL AND publicaccess IS NULL;" );
 
+        executeSql( "ALTER TABLE dataelement ALTER COLUMN domaintype SET NOT NULL" );
+        executeSql( "update dataelementcategory set datadimension = false where datadimension is null" );
+        
         log.info( "Tables updated" );
     }
 

@@ -683,6 +683,8 @@
 
   <bean id="org.hisp.dhis.help.HelpManager" class="org.hisp.dhis.help.DefaultHelpManager" />
 
+  <bean id="org.hisp.dhis.common.DimensionService" class="org.hisp.dhis.common.DefaultDimensionService" />
+
   <!-- I18nService -->
 
   <bean id="org.hisp.dhis.i18n.I18nService" class="org.hisp.dhis.i18n.DefaultI18nService">
@@ -711,6 +713,7 @@
         <value>ru</value>
         <value>rw</value>
         <value>sw</value>
+        <value>tg</value>
         <value>vi</value>
         <value>zh</value>
       </list>
@@ -734,7 +737,6 @@
   </bean>
 
   <bean id="org.hisp.dhis.common.IdentityPopulator" class="org.hisp.dhis.common.IdentityPopulator">
-    <property name="statementManager" ref="statementManager" />
     <property name="name" value="IdentityPopulator" />
     <property name="runlevel" value="2" />
     <property name="skipInTests" value="true" />

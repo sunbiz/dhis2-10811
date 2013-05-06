@@ -457,7 +457,7 @@ public class ReportTableController
     private Grid getReportTableGrid( String uid, String organisationUnitUid, String period )
         throws Exception
     {
-        ReportTable reportTable = reportTableService.getReportTable( uid );
+        ReportTable reportTable = reportTableService.getReportTableNoAcl( uid );
 
         if ( organisationUnitUid == null && reportTable.hasReportParams() && reportTable.getReportParams().isOrganisationUnitSet() )
         {

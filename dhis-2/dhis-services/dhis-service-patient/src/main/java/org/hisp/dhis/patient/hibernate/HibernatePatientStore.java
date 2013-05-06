@@ -50,6 +50,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientStore;
 import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.system.grid.GridUtils;
 import org.hisp.dhis.system.util.TextUtils;
@@ -209,7 +210,7 @@ public class HibernatePatientStore
         String sql = "SELECT count(*) FROM patient where lower( " + statementBuilder.getPatientFullName() + ") "
             + "like '%" + fullName + "%' ";
 
-        return jdbcTemplate.queryForInt( sql );
+        return jdbcTemplate.queryForObject( sql, Integer.class );
     }
 
     @Override
@@ -327,7 +328,7 @@ public class HibernatePatientStore
     public int countSearch( List<String> searchKeys, OrganisationUnit orgunit )
     {
         String sql = searchPatientSql( true, searchKeys, orgunit, null, null );
-        return jdbcTemplate.queryForInt( sql );
+        return jdbcTemplate.queryForObject( sql, Integer.class );
     }
 
     @Override
@@ -431,7 +432,7 @@ public class HibernatePatientStore
                 isPriorityEvent = Boolean.parseBoolean( keys[5] );
                 patientWhere += patientOperator + "pgi.patientid=p.patientid and ";
                 patientWhere += "pgi.programid=" + id + " and ";
-                patientWhere += "pgi.completed = false ";
+                patientWhere += "pgi.status=" + ProgramInstance.STATUS_ACTIVE;
 
                 String operatorStatus = "";
                 String condition = " and ( ";
@@ -464,6 +465,7 @@ public class HibernatePatientStore
                         patientWhere += condition + operatorStatus
                             + "( psi.executiondate is not null and psi.executiondate>='" + keys[2]
                             + "' and psi.executiondate<='" + keys[3] + "' and psi.completed=false ";
+
                         // get events by orgunit children
                         if ( keys[4].equals( "-1" ) )
                         {
@@ -543,7 +545,7 @@ public class HibernatePatientStore
                 {
                     patientWhere += ")";
                 }
-                patientWhere += " and pgi.completed=false ";
+                patientWhere += " and pgi.status=" + ProgramInstance.STATUS_ACTIVE + " ";
                 patientOperator = " and ";
 
             }
@@ -573,7 +575,7 @@ public class HibernatePatientStore
                     break;
                 }
 
-                patientWhere += " and pgi.completed=false ";
+                patientWhere += " and pgi.status=" + ProgramInstance.STATUS_ACTIVE + " ";
                 patientOperator = " and ";
             }
         }
@@ -591,15 +593,22 @@ public class HibernatePatientStore
         if ( isSearchEvent )
         {
             String subSQL = " , psi.programstageinstanceid as programstageinstanceid, pgs.name as programstagename, psi.duedate as duedate ";
+            if ( isPriorityEvent )
+            {
+                subSQL += ",pgi.followup ";
+                orderBy = " ORDER BY pgi.followup desc, duedate asc ";
+                patientGroupBy += ",pgi.followup ";
+            }
+            else
+            {
+                orderBy = " ORDER BY duedate asc ";
+            }
             sql = sql + subSQL + from + " inner join programinstance pgi on " + " (pgi.patientid=p.patientid) "
                 + " inner join programstageinstance psi on " + " (psi.programinstanceid=pgi.programinstanceid) "
                 + " inner join programstage pgs on (pgs.programstageid=psi.programstageid) ";
-            if ( isPriorityEvent )
-            {
-                sql += " inner join patientattributevalue pav on p.patientid=pav.patientid ";
-            }
+
             patientGroupBy += ",psi.programstageinstanceid, pgs.name ";
-            orderBy = " ORDER BY duedate asc ";
+
             from = " ";
         }
 
@@ -649,7 +658,7 @@ public class HibernatePatientStore
         fullName = fullName.toLowerCase();
         String sql = "SELECT patientid FROM patient where lower( " + statementBuilder.getPatientFullName() + ") "
             + "='" + fullName + "'";
-        if ( orgunitId != null )
+        if ( orgunitId != null && orgunitId != 0 )
         {
             sql += " and organisationunitid=" + orgunitId;
         }
@@ -683,11 +692,11 @@ public class HibernatePatientStore
             Projections.property( "orgunit.id" ), "orgunitid" ) ) );
         return criteria.list();
     }
-    
+
     // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
-    
+
     private Collection<Integer> getOrgunitChildren( OrganisationUnit orgunit )
     {
         Collection<Integer> orgunitIds = new HashSet<Integer>();

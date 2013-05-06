@@ -176,7 +176,7 @@ public class DefaultProgramStageInstanceService
         return programStageInstanceStore.get( patient, completed );
     }
 
-    public Grid getTabularReport( ProgramStage programStage, List<TabularReportColumn> columns,
+    public Grid getTabularReport( Boolean anonynousEntryForm, ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, Date startDate, Date endDate, boolean descOrder,
         Boolean completed, Boolean accessPrivateInfo, Integer min, Integer max, I18n i18n )
     {
@@ -184,16 +184,16 @@ public class DefaultProgramStageInstanceService
 
         Map<Integer, OrganisationUnitLevel> orgUnitLevelMap = organisationUnitService.getOrganisationUnitLevelMap();
 
-        return programStageInstanceStore.getTabularReport( programStage, orgUnitLevelMap, organisationUnits, columns,
+        return programStageInstanceStore.getTabularReport( anonynousEntryForm, programStage, orgUnitLevelMap, organisationUnits, columns,
             level, maxLevel, startDate, endDate, descOrder, completed, accessPrivateInfo, min, max, i18n );
     }
 
-    public int getTabularReportCount( ProgramStage programStage, List<TabularReportColumn> columns,
+    public int getTabularReportCount( Boolean anonynousEntryForm, ProgramStage programStage, List<TabularReportColumn> columns,
         Collection<Integer> organisationUnits, int level, Boolean completed, Date startDate, Date endDate )
     {
         int maxLevel = organisationUnitService.getMaxOfOrganisationUnitLevels();
 
-        return programStageInstanceStore.getTabularReportCount( programStage, columns, organisationUnits, level,
+        return programStageInstanceStore.getTabularReportCount( anonynousEntryForm, programStage, columns, organisationUnits, level,
             maxLevel, startDate, endDate, completed );
     }
 
@@ -333,12 +333,11 @@ public class DefaultProgramStageInstanceService
 
         // Total programs completed in this period
 
-        int totalDiscontinued = programInstanceService.countUnenrollment( program, orgunitIds, startDate, endDate );
-        int totalCompleted = programInstanceService.countProgramInstances( program, orgunitIds, startDate, endDate,
-            true );
+        int totalCompleted = programInstanceService.countProgramInstancesByStatus( ProgramInstance.STATUS_COMPLETED,
+            program, orgunitIds, startDate, endDate );
         grid.addRow();
         grid.addValue( i18n.getString( "total_programs_completed_in_this_period" ) );
-        grid.addValue( totalCompleted - totalDiscontinued );
+        grid.addValue( totalCompleted );
         grid.addValue( "" );
         grid.addValue( "" );
         grid.addValue( "" );
@@ -347,7 +346,9 @@ public class DefaultProgramStageInstanceService
         grid.addValue( "" );
 
         // Total programs discontinued (un-enrollments)
-
+        
+        int totalDiscontinued = programInstanceService.countProgramInstancesByStatus( ProgramInstance.STATUS_CANCELLED,
+            program, orgunitIds, startDate, endDate );
         grid.addRow();
         grid.addValue( i18n.getString( "total_programs_discontinued_unenrollments" ) );
         grid.addValue( totalDiscontinued );
@@ -365,8 +366,9 @@ public class DefaultProgramStageInstanceService
         double percent = 0.0;
         if ( totalCompleted != 0 )
         {
-            int stageCompleted = averageNumberCompletedProgramInstance( program, orgunitIds, startDate, endDate, true );
-            percent = (stageCompleted + 0.0) / (totalCompleted - totalDiscontinued);
+            int stageCompleted = averageNumberCompletedProgramInstance( program, orgunitIds, startDate, endDate,
+                ProgramInstance.STATUS_ACTIVE );
+            percent = (stageCompleted + 0.0) / totalCompleted;
         }
         grid.addValue( format.formatValue( percent ) );
         grid.addValue( "" );
@@ -481,11 +483,11 @@ public class DefaultProgramStageInstanceService
     @Override
     public Grid getAggregateReport( int position, ProgramStage programStage, Collection<Integer> orgunitIds,
         String facilityLB, Integer deGroupBy, Integer deSum, Map<Integer, Collection<String>> deFilters,
-        List<Period> periods, String aggregateType, Integer limit, Boolean useCompletedEvents, I18nFormat format,
-        I18n i18n )
+        List<Period> periods, String aggregateType, Integer limit, Boolean useCompletedEvents, Boolean displayTotals,
+        I18nFormat format, I18n i18n )
     {
         return programStageInstanceStore.getAggregateReport( position, programStage, orgunitIds, facilityLB, deGroupBy,
-            deSum, deFilters, periods, aggregateType, limit, useCompletedEvents, format, i18n );
+            deSum, deFilters, periods, aggregateType, limit, useCompletedEvents, displayTotals, format, i18n );
     }
 
     @Override
@@ -497,9 +499,9 @@ public class DefaultProgramStageInstanceService
 
     @Override
     public int averageNumberCompletedProgramInstance( Program program, Collection<Integer> orgunitIds, Date startDate,
-        Date endDate, Boolean completed )
+        Date endDate, Integer status )
     {
-        return programStageInstanceStore.averageNumberCompleted( program, orgunitIds, startDate, endDate, completed );
+        return programStageInstanceStore.averageNumberCompleted( program, orgunitIds, startDate, endDate, status );
     }
 
     @Override
@@ -508,4 +510,10 @@ public class DefaultProgramStageInstanceService
         return programStageInstanceStore.getOrgunitIds( startDate, endDate );
     }
     
+    @Override
+    public Grid getCompletenessProgramStageInstance( OrganisationUnit orgunit, Program program, String startDate, String endDate, I18n i18n )
+    {
+        return programStageInstanceStore.getCompleteness( orgunit, program, startDate, endDate, i18n );
+    }
+
 }

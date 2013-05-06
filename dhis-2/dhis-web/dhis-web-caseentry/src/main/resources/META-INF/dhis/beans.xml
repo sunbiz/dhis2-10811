@@ -43,17 +43,14 @@
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
 
-	<bean
-		id="org.hisp.dhis.caseentry.action.caseentry.SaveExecutionDateAction"
-		class="org.hisp.dhis.caseentry.action.caseentry.SaveExecutionDateAction"
-		scope="prototype">
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+	<bean id="org.hisp.dhis.caseentry.action.caseentry.SaveExecutionDateAction"
+		class="org.hisp.dhis.caseentry.action.caseentry.SaveExecutionDateAction" scope="prototype">
+		<property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
-		<property name="selectedStateManager"
-			ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+		<property name="selectedStateManager" ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
 	</bean>
 
 	<bean id="org.hisp.dhis.caseentry.action.caseentry.SaveValueAction"
@@ -90,29 +87,25 @@
 			ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
 	</bean>
 
-	<bean id="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction"
-		class="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction"
-		scope="prototype">
-		<property name="programDataEntryService"
-			ref="org.hisp.dhis.program.ProgramDataEntryService" />
-		<property name="patientDataValueService"
-			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
-		<property name="selectedStateManager"
-			ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
-		<property name="programStageSectionService"
-			ref="org.hisp.dhis.program.ProgramStageSectionService" />
-	</bean>
+  <bean id="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction"
+    class="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction" scope="prototype">
+    <property name="programDataEntryService" ref="org.hisp.dhis.program.ProgramDataEntryService" />
+    <property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
+    <property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
+    <property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+    <property name="selectedStateManager" ref="org.hisp.dhis.caseentry.state.SelectedStateManager" />
+    <property name="programStageSectionService" ref="org.hisp.dhis.program.ProgramStageSectionService" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+  </bean>
 
-	<bean
-		id="org.hisp.dhis.caseentry.action.caseentry.CompleteDataEntryAction"
+    <bean id="org.hisp.dhis.caseentry.action.caseentry.CompleteDataEntryAction"
 		class="org.hisp.dhis.caseentry.action.caseentry.CompleteDataEntryAction"
 		scope="prototype">
 		<property name="programStageInstanceService"
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 	</bean>
 
 	<bean
@@ -156,6 +149,22 @@
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 	</bean>
 
+	<bean id="org.hisp.dhis.caseentry.action.caseentry.MarkForFollowupAction"
+		class="org.hisp.dhis.caseentry.action.caseentry.MarkForFollowupAction"
+		scope="prototype">
+		<property name="programInstanceService"
+			ref="org.hisp.dhis.program.ProgramInstanceService" />
+	</bean>
+	
+	<bean id="org.hisp.dhis.caseentry.action.caseentry.SaveProgramInstanceCommentAction"
+		class="org.hisp.dhis.caseentry.action.caseentry.SaveProgramInstanceCommentAction"
+		scope="prototype">
+		<property name="programInstanceService"
+			ref="org.hisp.dhis.program.ProgramInstanceService" />
+		<property name="currentUserService"
+			ref="org.hisp.dhis.user.CurrentUserService" />
+	</bean>
+	
 	<!-- Multi DataEntry -->
 
 	<bean
@@ -306,8 +315,6 @@
 		<property name="dataValueService" ref="org.hisp.dhis.datavalue.DataValueService" />
 		<property name="organisationUnitService"
 			ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 	</bean>
 
 	<bean
@@ -319,7 +326,6 @@
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
 		<property name="categoryService"
 			ref="org.hisp.dhis.dataelement.DataElementCategoryService" />
-		<property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
 		<property name="dataValueService" ref="org.hisp.dhis.datavalue.DataValueService" />
 		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 
@@ -664,6 +670,7 @@
 		scope="prototype">
 		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
 		<property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
+		<property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.caseentry.action.patient.GetProgramAction"
@@ -1072,6 +1079,7 @@
 		<property name="patientAuditService" ref="org.hisp.dhis.patient.PatientAuditService" />
 		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="programIndicatorService" ref="org.hisp.dhis.program.ProgramIndicatorService" />
 	</bean>
 
 	<bean
@@ -1101,4 +1109,33 @@
 			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 	</bean>
 
+  <bean id="org.hisp.dhis.caseentry.action.caseentry.GetProgramStageInstanceAction"
+    class="org.hisp.dhis.caseentry.action.caseentry.GetProgramStageInstanceAction"
+    scope="prototype">
+    <property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+    <property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+    <property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
+  </bean>
+  
+  <!-- Program-stage-completeness -->
+  
+  <bean id="org.hisp.dhis.caseentry.action.caseentry.ProgramStageInstanceCompletenessAction"
+    class="org.hisp.dhis.caseentry.action.caseentry.ProgramStageInstanceCompletenessAction"
+    scope="prototype">
+    <property name="selectionManager" ref="org.hisp.dhis.ouwt.manager.OrganisationUnitSelectionManager" />
+    <property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+    <property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+  </bean>
+
+  <bean id="org.hisp.dhis.caseentry.action.caseentry.UploadAnonymousEventAction"
+    class="org.hisp.dhis.caseentry.action.caseentry.UploadAnonymousEventAction" scope="prototype">
+  </bean>
+
+  <bean id="org.hisp.dhis.caseentry.action.GetOptionSetAction"
+    class="org.hisp.dhis.caseentry.action.GetOptionSetAction" scope="prototype">
+  </bean>
+
+  <bean id="org.hisp.dhis.caseentry.action.GetUsernamesAction"
+    class="org.hisp.dhis.caseentry.action.GetUsernamesAction" scope="prototype">
+  </bean>
 </beans>

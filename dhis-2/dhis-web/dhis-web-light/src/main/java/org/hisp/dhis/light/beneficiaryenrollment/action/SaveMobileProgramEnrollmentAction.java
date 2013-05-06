@@ -305,8 +305,7 @@ public class SaveMobileProgramEnrollmentAction
 
         List<PatientAttributeValue> patientAttributeValues = new ArrayList<PatientAttributeValue>();
 
-        HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(
-            StrutsStatics.HTTP_REQUEST );
+        HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get( StrutsStatics.HTTP_REQUEST );
         Map<String, String> parameterMap = ContextUtils.getParameterMap( request );
         DateTimeFormatter sdf = ISODateTimeFormat.yearMonthDay();
 
@@ -425,7 +424,7 @@ public class SaveMobileProgramEnrollmentAction
         patientService.updatePatient( patient );
 
         Collection<ProgramInstance> programInstances = programInstanceService.getProgramInstances( patient, program,
-            false );
+            ProgramInstance.STATUS_ACTIVE );
 
         ProgramInstance programInstance = null;
 
@@ -441,7 +440,7 @@ public class SaveMobileProgramEnrollmentAction
             programInstance.setDateOfIncident( sdf.parseDateTime( incidentDate ).toDate() );
             programInstance.setProgram( program );
             programInstance.setPatient( patient );
-            programInstance.setCompleted( false );
+            programInstance.setStatus( ProgramInstance.STATUS_ACTIVE );
 
             programInstanceService.addProgramInstance( programInstance );
 
@@ -466,7 +465,7 @@ public class SaveMobileProgramEnrollmentAction
                         .getDateAfterAddition( dateCreatedEvent, programStage.getMinDaysFromStart() );
 
                     programStageInstance.setDueDate( dueDate );
-                    
+
                     if ( program.isSingleEvent() )
                     {
                         programStageInstance.setExecutionDate( dueDate );

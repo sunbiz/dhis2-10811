@@ -60,18 +60,18 @@ public class JdbcStatisticsProvider
     {
         final Map<Objects, Integer> objectCounts = new HashMap<Objects, Integer>();
         
-        objectCounts.put( Objects.DATAELEMENT, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM dataelement" ) );
-        objectCounts.put( Objects.DATAELEMENTGROUP, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM dataelementgroup" ) );
-        objectCounts.put( Objects.INDICATORTYPE, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM indicatortype" ) );
-        objectCounts.put( Objects.INDICATOR, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM indicator" ) );
-        objectCounts.put( Objects.INDICATORGROUP, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM indicatorgroup" ) );
-        objectCounts.put( Objects.DATASET, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM dataset" ) );
-        objectCounts.put( Objects.DATADICTIONARY, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM datadictionary" ) );
-        objectCounts.put( Objects.SOURCE, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM organisationunit" ) );
-        objectCounts.put( Objects.VALIDATIONRULE, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM validationrule" ) );
-        objectCounts.put( Objects.PERIOD, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM period" ) );
-        objectCounts.put( Objects.USER, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM users" ) );
-        objectCounts.put( Objects.DATAVALUE, jdbcTemplate.queryForInt( "SELECT COUNT(*) FROM datavalue" ) );
+        objectCounts.put( Objects.DATAELEMENT, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM dataelement", Integer.class ) );
+        objectCounts.put( Objects.DATAELEMENTGROUP, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM dataelementgroup", Integer.class ) );
+        objectCounts.put( Objects.INDICATORTYPE, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM indicatortype", Integer.class ) );
+        objectCounts.put( Objects.INDICATOR, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM indicator", Integer.class ) );
+        objectCounts.put( Objects.INDICATORGROUP, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM indicatorgroup", Integer.class ) );
+        objectCounts.put( Objects.DATASET, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM dataset", Integer.class ) );
+        objectCounts.put( Objects.DATADICTIONARY, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM datadictionary", Integer.class ) );
+        objectCounts.put( Objects.SOURCE, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM organisationunit", Integer.class ) );
+        objectCounts.put( Objects.VALIDATIONRULE, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM validationrule", Integer.class ) );
+        objectCounts.put( Objects.PERIOD, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM period", Integer.class ) );
+        objectCounts.put( Objects.USER, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM users", Integer.class ) );
+        objectCounts.put( Objects.DATAVALUE, jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM datavalue", Integer.class ) );
         
         return objectCounts;
     }

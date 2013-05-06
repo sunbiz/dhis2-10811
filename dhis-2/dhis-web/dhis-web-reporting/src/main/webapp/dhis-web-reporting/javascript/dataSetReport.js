@@ -9,13 +9,28 @@ var periodTypeFactory = new PeriodType();
 function getDataSetReport()
 {
     var dataSetReport = {
-        dataSet: $( "#dataSetId" ).val(),
+        ds: $( "#dataSetId" ).val(),
         periodType: $( "#periodType" ).val(),
-        period: $( "#periodId" ).val(),
-        orgUnit: selectionTreeSelection.getSelectedUid()[0],
+        pe: $( "#periodId" ).val(),
+        ou: selectionTreeSelection.getSelectedUid()[0],
         selectedUnitOnly: $( "#selectedUnitOnly" ).is( ":checked" ),
         offset: currentPeriodOffset
     };
+    
+    var groups = "";
+    
+    $( "[name='groupSet']" ).each( function( index, value ) {
+    	var item = $( this ).val();
+    	if ( item )
+    	{
+    		groups += item + ";";
+    	}
+    } );
+    
+    if ( groups )
+    {
+    	dataSetReport["groups"] = groups;
+    }
     
     return dataSetReport;
 }
@@ -33,7 +48,8 @@ function setDataSetReport( dataSetReport )
 	selectionTreeSelection.setMultipleSelectionAllowed( false );
 	selectionTree.buildSelectionTree();
 		
-	$( "body" ).on( "oust.selected", function() {
+	$( "body" ).on( "oust.selected", function() 
+	{
 		$( "body" ).off( "oust.selected" );
 		validateDataSetReport();
 	} );
@@ -82,12 +98,12 @@ function validateDataSetReport()
 {
 	var dataSetReport = getDataSetReport();
 	
-    if ( !dataSetReport.dataSet )
+    if ( !dataSetReport.ds )
     {
         setHeaderMessage( i18n_select_data_set );
         return false;
     }
-    if ( !dataSetReport.period )
+    if ( !dataSetReport.pe )
     {
         setHeaderMessage( i18n_select_period );
         return false;
@@ -103,9 +119,10 @@ function validateDataSetReport()
     hideContent();
     showLoader();
 	
-    var currentParams = { ds: dataSetReport.dataSet, pe: dataSetReport.period, selectedUnitOnly: dataSetReport.selectedUnitOnly, ou: dataSetReport.orgUnit };
+    delete dataSetReport.periodType;
+    delete dataSetReport.offset;
     
-    $.get( 'generateDataSetReport.action', currentParams, function( data ) {
+    $.get( 'generateDataSetReport.action', dataSetReport, function( data ) {
     	$( '#content' ).html( data );
     	hideLoader();
     	showContent();
@@ -118,10 +135,10 @@ function exportDataSetReport( type )
 	var dataSetReport = getDataSetReport();
 	
 	var url = "generateDataSetReport.action" + 
-		"?ds=" + dataSetReport.dataSet +
-	    "&pe=" + dataSetReport.period +
+		"?ds=" + dataSetReport.ds +
+	    "&pe=" + dataSetReport.pe +
 	    "&selectedUnitOnly=" + dataSetReport.selectedUnitOnly +
-	    "&ou=" + dataSetReport.orgUnit +
+	    "&ou=" + dataSetReport.ou +
 	    "&type=" + type;
 	    
 	window.location.href = url;
@@ -162,6 +179,12 @@ function hideContent()
 	$( ".downloadButton" ).hide();
 }
 
+function showAdvancedOptions()
+{
+	$( "#advancedOptionsLink" ).hide();
+	$( "#advancedOptions" ).show();
+}
+
 //------------------------------------------------------------------------------
 // Share
 //------------------------------------------------------------------------------
@@ -186,8 +209,8 @@ function shareInterpretation()
     	text = $.trim( text );
     	
 	    var url = "../api/interpretations/dataSetReport/" + $( "#currentDataSetId" ).val() +
-	    	"?pe=" + dataSetReport.period +
-	    	"&ou=" + dataSetReport.orgUnit;
+	    	"?pe=" + dataSetReport.pe +
+	    	"&ou=" + dataSetReport.ou;
 	    	    
 	    $.ajax( url, {
 	    	type: "POST",

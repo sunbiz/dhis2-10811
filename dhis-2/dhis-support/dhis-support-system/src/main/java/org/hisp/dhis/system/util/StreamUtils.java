@@ -27,6 +27,8 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.system.comparator.FileLastModifiedComparator;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -55,8 +57,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.hisp.dhis.system.comparator.FileLastModifiedComparator;
-
 /**
  * @author Lars Helge Overland
  * @version $Id$
@@ -64,18 +64,18 @@ import org.hisp.dhis.system.comparator.FileLastModifiedComparator;
 public class StreamUtils
 {
     public static final String LINE_BREAK = "\n";
-    public static final String ENCODING_UTF = "UTF8";
-    
+    public static final String ENCODING_UTF8 = "UTF-8";
+
     /**
      * Loads a resorce from the classpath defined by the name parameter.
-     * 
+     *
      * @param name the name of the resource.
      * @return an InputStream.
      */
     public static InputStream loadResource( String name )
     {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            
+
         return classLoader.getResourceAsStream( name );
     }
 
@@ -85,7 +85,7 @@ public class StreamUtils
 
         try
         {
-           while ( ( b = in.read() ) != -1 )
+            while ( (b = in.read()) != -1 )
             {
                 out.write( b );
             }
@@ -100,10 +100,11 @@ public class StreamUtils
             closeOutputStream( out );
         }
     }
+
     /**
      * Writes the content of the first File to the second File.
-     * 
-     * @param inFile the input File.
+     *
+     * @param inFile  the input File.
      * @param outFile the output File.
      */
     public static void write( File inFile, File outFile )
@@ -111,11 +112,12 @@ public class StreamUtils
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
 
-        try {
+        try
+        {
             in = new BufferedInputStream( new FileInputStream( inFile ) );
             out = new BufferedOutputStream( new FileOutputStream( outFile ) );
 
-            streamcopy(in, out);
+            streamcopy( in, out );
         }
         catch ( IOException ex )
         {
@@ -126,14 +128,13 @@ public class StreamUtils
             closeInputStream( in );
             closeOutputStream( out );
         }
-        
     }
 
     /**
      * Returns all Files in the given directory.
-     * 
+     *
      * @param directory a File representing the relevant directory.
-     * @param sort indicates whether to sort chronologically on the lastModified property.
+     * @param sort      indicates whether to sort chronologically on the lastModified property.
      * @return a List of Files.
      */
     public static List<File> getFileList( File directory, boolean sort )
@@ -144,28 +145,28 @@ public class StreamUtils
         {
             files = Arrays.asList( directory.listFiles() );
         }
-        
+
         if ( sort )
         {
             Collections.sort( files, new FileLastModifiedComparator() );
         }
-        
+
         return files;
     }
 
     /**
      * Writes the content of the StringBuffer to the file.
-     * 
-     * @param file the file to write to.
+     *
+     * @param file    the file to write to.
      * @param content the content to write.
      * @throws IOException
      */
     public static void writeContent( File file, StringBuffer content )
         throws IOException
     {
-        BufferedWriter writer = new BufferedWriter( 
-            new OutputStreamWriter( new FileOutputStream( file ), ENCODING_UTF ) );
-        
+        BufferedWriter writer = new BufferedWriter(
+            new OutputStreamWriter( new FileOutputStream( file ), ENCODING_UTF8 ) );
+
         try
         {
             writer.write( content.toString() );
@@ -177,22 +178,22 @@ public class StreamUtils
                 writer.flush();
             }
             catch ( Exception ex )
-            {   
+            {
             }
-            
+
             try
             {
                 writer.close();
             }
             catch ( Exception ex )
-            {   
+            {
             }
         }
     }
-    
+
     /**
      * Get an InputStream for the String.
-     * 
+     *
      * @param string the String.
      * @return the InputStream.
      */
@@ -200,17 +201,17 @@ public class StreamUtils
     {
         try
         {
-            return new BufferedInputStream( new ByteArrayInputStream( string.getBytes( ENCODING_UTF ) ) );
+            return new BufferedInputStream( new ByteArrayInputStream( string.getBytes( ENCODING_UTF8 ) ) );
         }
         catch ( UnsupportedEncodingException ex )
         {
             throw new RuntimeException( ex );
         }
     }
-    
+
     /**
      * Creates a FileWriter.
-     * 
+     *
      * @param file the name of the file.
      * @return a FileWriter.
      */
@@ -225,10 +226,10 @@ public class StreamUtils
             throw new RuntimeException( ex );
         }
     }
-    
+
     /**
      * Returns the content of the File as a String.
-     * 
+     *
      * @param file the File.
      * @return the String.
      */
@@ -237,27 +238,27 @@ public class StreamUtils
         try
         {
             BufferedInputStream in = new BufferedInputStream( new FileInputStream( file ) );
-            
-            byte[] bytes = new byte[(int)file.length()];
-            
+
+            byte[] bytes = new byte[(int) file.length()];
+
             in.read( bytes );
-            
-            return new String( bytes, ENCODING_UTF );
+
+            return new String( bytes, ENCODING_UTF8 );
         }
         catch ( IOException ex )
         {
             throw new RuntimeException( ex );
         }
     }
-    
+
     /**
      * Reads the content of the file to a StringBuffer. Each line is compared to
-     * the keys of the argument map. If a line is matched, the line is replaced 
+     * the keys of the argument map. If a line is matched, the line is replaced
      * with the keys corresponding value. Passing null as replace map argument skips
-     * value replacement. The reading will stop at the first match for a single 
-     * line. 
-     * 
-     * @param file the file to read from.
+     * value replacement. The reading will stop at the first match for a single
+     * line.
+     *
+     * @param file       the file to read from.
      * @param replaceMap a map containing keys to be matched and values with replacements.
      * @return a StringBuffer with the content of the file replaced according to the Map.
      * @throws IOException
@@ -266,16 +267,16 @@ public class StreamUtils
         throws IOException
     {
         StringBuffer content = new StringBuffer();
-        
-        BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream( file ), ENCODING_UTF ) );
-        
+
+        BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream( file ), ENCODING_UTF8 ) );
+
         String line = null;
-        
+
         String currentEndString = null;
-        
+
         try
-        {   
-            while ( ( line = reader.readLine() ) != null )
+        {
+            while ( (line = reader.readLine()) != null )
             {
                 if ( currentEndString != null )
                 {
@@ -283,25 +284,25 @@ public class StreamUtils
                     {
                         currentEndString = null;
                     }
-                    
+
                     continue;
                 }
-                
+
                 if ( replaceMap != null )
                 {
                     for ( Entry<String[], String> entry : replaceMap.entrySet() )
                     {
                         if ( line.contains( entry.getKey()[0] ) )
                         {
-                            currentEndString = ( entry.getKey()[1] != null && !line.contains( entry.getKey()[1] ) ) ? entry.getKey()[1] : null;
-                            
+                            currentEndString = (entry.getKey()[1] != null && !line.contains( entry.getKey()[1] )) ? entry.getKey()[1] : null;
+
                             line = entry.getValue();
-                            
+
                             break;
                         }
                     }
                 }
-                
+
                 content.append( line + LINE_BREAK );
             }
         }
@@ -312,16 +313,16 @@ public class StreamUtils
                 reader.close();
             }
             catch ( Exception ex )
-            {   
+            {
             }
         }
-        
+
         return content;
     }
-    
+
     /**
      * Closes the given Reader.
-     * 
+     *
      * @param reader the Reader to close.
      */
     public static void closeReader( Reader reader )
@@ -338,10 +339,10 @@ public class StreamUtils
             }
         }
     }
-    
+
     /**
      * Closes the given Writer.
-     * 
+     *
      * @param writer the Writer to close.
      */
     public static void closeWriter( Writer writer )
@@ -356,7 +357,7 @@ public class StreamUtils
             {
                 ex.printStackTrace();
             }
-            
+
             try
             {
                 writer.close();
@@ -367,10 +368,10 @@ public class StreamUtils
             }
         }
     }
-    
+
     /**
      * Closes the given InputStream.
-     * 
+     *
      * @param in the InputStream to close.
      */
     public static void closeInputStream( InputStream in )
@@ -387,10 +388,10 @@ public class StreamUtils
             }
         }
     }
-    
+
     /**
      * Closes and flushes the given OutputStream.
-     * 
+     *
      * @param out the OutputStream to close.
      */
     public static void closeOutputStream( OutputStream out )
@@ -405,7 +406,7 @@ public class StreamUtils
             {
                 ex.printStackTrace();
             }
-            
+
             try
             {
                 out.close();
@@ -420,7 +421,7 @@ public class StreamUtils
     /**
      * Test for ZIP/GZIP stream signature. Wraps the input stream in a
      * BufferedInputStream. If ZIP/GZIP test is true wraps again in ZipInputStream/GZIPInputStream.
-     * 
+     *
      * @param in the InputStream.
      * @return the wrapped InputStream.
      */
@@ -428,29 +429,29 @@ public class StreamUtils
         throws IOException
     {
         BufferedInputStream bufferedIn = new BufferedInputStream( in );
-        
+
         if ( isZip( bufferedIn ) )
         {
             ZipInputStream zipIn = new ZipInputStream( bufferedIn );
             zipIn.getNextEntry();
             return zipIn;
         }
-        else if( isGZip( bufferedIn ) )
+        else if ( isGZip( bufferedIn ) )
         {
             GZIPInputStream gzipIn = new GZIPInputStream( bufferedIn );
             return gzipIn;
         }
-        
+
         return bufferedIn;
     }
-    
+
     /**
      * Test for ZIP stream signature.
-     * 
+     * <p/>
      * Signature of ZIP stream from
      * http://www.pkware.com/documents/casestudies/APPNOTE.TXT Local file
      * header: local file header signature 4 bytes (0x04034b50)
-     * 
+     *
      * @param instream the BufferedInputStream to test.
      */
     public static boolean isZip( BufferedInputStream instream )
@@ -479,17 +480,17 @@ public class StreamUtils
         {
             throw new RuntimeException( "Couldn't reset stream ", ex );
         }
-        
+
         return Arrays.equals( b, zipSig );
     }
 
     /**
      * Test for GZIP stream signature.
-     *
+     * <p/>
      * Signature of GZIP stream from RFC 1952: ID1 (IDentification 1) ID2
      * (IDentification 2) These have the fixed values ID1 = 31 (0x1f, \037),
      * ID2 = 139 (0x8b, \213), to identify the file as being in GZIP format.
-     * 
+     *
      * @param instream the BufferedInputStream to test.
      */
     public static boolean isGZip( BufferedInputStream instream )
@@ -514,13 +515,13 @@ public class StreamUtils
             throw new RuntimeException( "Couldn't reset stream ", ex );
         }
 
-        return ( b[0] == 31 && b[1] == -117 );
+        return (b[0] == 31 && b[1] == -117);
     }
 
     /**
-     * Reads the next ZIP file entry from the ZipInputStream and positions the 
+     * Reads the next ZIP file entry from the ZipInputStream and positions the
      * stream at the beginning of the entry data.
-     * 
+     *
      * @param in the ZipInputStream to read from.
      * @return a ZipEntry.
      */
@@ -535,10 +536,10 @@ public class StreamUtils
             throw new RuntimeException( "Failed to get next entry in ZIP-file", ex );
         }
     }
-    
+
     /**
      * Closes the current ZipEntry and positions the stream for writing the next entry.
-     * 
+     *
      * @param out the ZipOutputStream.
      */
     public static void closeZipEntry( ZipOutputStream out )
@@ -552,10 +553,10 @@ public class StreamUtils
             throw new RuntimeException( "Failed to close the current ZipEntry", ex );
         }
     }
-    
+
     /**
      * Finishes writing the contents of the ZIP output stream without closing the underlying stream.
-     * 
+     *
      * @param out the ZipOutputStream.
      */
     public static void finishZipEntry( ZipOutputStream out )
@@ -569,10 +570,10 @@ public class StreamUtils
             throw new RuntimeException( "Failed to finish the content of the ZipOutputStream", ex );
         }
     }
-    
+
     /**
      * Attempts to delete the File with the given path.
-     * 
+     *
      * @param path the File path.
      * @return true if the operation succeeded, false otherwise.
      */
@@ -580,10 +581,10 @@ public class StreamUtils
     {
         return new File( path ).delete();
     }
-    
+
     /**
      * Tests whether the File with the given path exists.
-     * 
+     *
      * @param path the File path.
      * @return true if the File exists, false otherwise.
      */

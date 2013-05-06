@@ -87,6 +87,13 @@ public class GetOperandsAction
     {
         this.id = id;
     }
+    
+    private String uid;
+
+    public void setUid( String uid )
+    {
+        this.uid = uid;
+    }
 
     private String key;
 
@@ -149,6 +156,10 @@ public class GetOperandsAction
         if ( id != null )
         {
             dataElements = new ArrayList<DataElement>( dataElementService.getDataElementGroup( id ).getMembers() );
+        }
+        else if ( uid != null )
+        {
+            dataElements = new ArrayList<DataElement>( dataElementService.getDataElementGroup( uid ).getMembers() );
         }
         else if ( !StringUtils.isEmpty( key ) )
         {

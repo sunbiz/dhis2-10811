@@ -47,7 +47,8 @@
                 <option value="number" #if( $patientAttribute.valueType == 'number' ) selected="selected" #end>$i18n.getString( "number" )</option>
                 <option value="string" #if( $patientAttribute.valueType == 'string' ) selected="selected" #end>$i18n.getString( "text" )</option>
                 <option value="bool" #if( $patientAttribute.valueType == 'bool' ) selected="selected" #end>$i18n.getString( "yes_no" )</option>
-                <option value="date" #if( $patientAttribute.valueType == 'date' ) selected="selected" #end>$i18n.getString( "date" )</option>
+                <option value="trueOnly" #if( $patientAttribute.valueType == 'trueOnly' ) selected="selected" #end >$i18n.getString( "yes_only" )</option>
+				<option value="date" #if( $patientAttribute.valueType == 'date' ) selected="selected" #end>$i18n.getString( "date" )</option>
                 <option value="combo" #if( $patientAttribute.valueType == 'combo' ) selected="selected" #end>$i18n.getString( "attribute_combo_type" )</option>
             </select>
         </td>

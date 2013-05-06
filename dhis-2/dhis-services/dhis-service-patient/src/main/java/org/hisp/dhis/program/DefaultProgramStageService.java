@@ -29,11 +29,9 @@ package org.hisp.dhis.program;
 import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 import java.util.Collection;
+import java.util.List;
 
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.i18n.I18nService;
-import org.hisp.dhis.program.ProgramStage;
-import org.hisp.dhis.program.ProgramStageService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -48,9 +46,9 @@ public class DefaultProgramStageService
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private GenericIdentifiableObjectStore<ProgramStage> programStageStore;
+    private ProgramStageStore programStageStore;
 
-    public void setProgramStageStore( GenericIdentifiableObjectStore<ProgramStage> programStageStore )
+    public void setProgramStageStore( ProgramStageStore programStageStore )
     {
         this.programStageStore = programStageStore;
     }
@@ -86,9 +84,14 @@ public class DefaultProgramStageService
         return i18n( i18nService, programStageStore.getByUid( uid ) );
     }
 
-    public ProgramStage getProgramStageByName( String name )
+    public List<ProgramStage> getProgramStageByName( String name )
     {
-        return i18n( i18nService, programStageStore.getByName( name ) );
+        return programStageStore.getAllEqName( name );
+    }
+
+    public ProgramStage getProgramStageByName( String name, Program program )
+    {
+        return i18n( i18nService, programStageStore.getByNameAndProgram( name, program ) );
     }
 
     public void updateProgramStage( ProgramStage programStage )
@@ -101,8 +104,4 @@ public class DefaultProgramStageService
         return i18n( i18nService, programStageStore.getAll() );
     }
 
-    public Collection<ProgramStage> getProgramStages( Program program )
-    {
-        return i18n( i18nService, program.getProgramStages() );
-    }
 }

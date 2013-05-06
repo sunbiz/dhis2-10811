@@ -62,7 +62,6 @@ import org.hisp.dhis.user.CurrentUserService;
 
 /**
  * @author Chau Thu Tran
- * 
  * @version $GenerateTabularReportAction.java Feb 29, 2012 10:15:05 AM$
  */
 public class GenerateTabularReportAction
@@ -130,6 +129,13 @@ public class GenerateTabularReportAction
     public List<PatientIdentifierType> getIdentifierTypes()
     {
         return identifierTypes;
+    }
+
+    private Boolean anonynousEntryForm;
+
+    public void setAnonynousEntryForm( Boolean anonynousEntryForm )
+    {
+        this.anonynousEntryForm = anonynousEntryForm;
     }
 
     private List<PatientAttribute> patientAttributes = new ArrayList<PatientAttribute>();
@@ -307,6 +313,11 @@ public class GenerateTabularReportAction
     public String execute()
         throws Exception
     {
+        if ( programStageId == null )
+        {
+            return INPUT;
+        }
+
         // ---------------------------------------------------------------------
         // Get user orgunits
         // ---------------------------------------------------------------------
@@ -393,21 +404,21 @@ public class GenerateTabularReportAction
         {
             if ( type == null ) // Tabular report
             {
-                totalRecords = programStageInstanceService.getTabularReportCount( programStage, columns,
+                totalRecords = programStageInstanceService.getTabularReportCount( anonynousEntryForm, programStage, columns,
                     organisationUnits, level, useCompletedEvents, startValue, endValue );
 
                 total = getNumberOfPages( totalRecords );
 
                 this.paging = createPaging( totalRecords );
 
-                grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
+                grid = programStageInstanceService.getTabularReport( anonynousEntryForm, programStage, columns, organisationUnits, level,
                     startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, accessPrivateInfo, getStartPos(),
                     paging.getPageSize(), i18n );
             }
             // Download as Excel
             else
             {
-                grid = programStageInstanceService.getTabularReport( programStage, columns, organisationUnits, level,
+                grid = programStageInstanceService.getTabularReport( anonynousEntryForm, programStage, columns, organisationUnits, level,
                     startValue, endValue, !orderByOrgunitAsc, useCompletedEvents, accessPrivateInfo, null, null, i18n );
             }
         }

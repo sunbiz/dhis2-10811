@@ -351,14 +351,12 @@ public class MobileOrganisationUnitController
         return activityReportingService.findPatient( keyword, id );
     }
 
-    @RequestMapping( method = RequestMethod.POST, value = "{clientVersion}/LWUIT/orgUnits/{id}/uploadProgramStage" )
+    @RequestMapping( method = RequestMethod.POST, value = "{clientVersion}/LWUIT/orgUnits/{id}/uploadProgramStage/{patientId}" )
     @ResponseBody
-    public String saveProgramStage( @PathVariable
-    int id, @RequestBody
-    ProgramStage programStage )
+    public String saveProgramStage( @PathVariable int patientId, @PathVariable int id, @RequestBody ProgramStage programStage )
         throws NotAllowedException
     {
-        return activityReportingService.saveProgramStage( programStage, id );
+        return activityReportingService.saveProgramStage( programStage, patientId, id );
     }
 
     @RequestMapping( method = RequestMethod.GET, value = "{clientVersion}/LWUIT/orgUnits/{id}/enrollProgram" )
@@ -368,7 +366,7 @@ public class MobileOrganisationUnitController
     String enrollInfo )
         throws NotAllowedException
     {
-        return activityReportingService.enrollProgram( enrollInfo, id );
+        return activityReportingService.enrollProgram( enrollInfo );
     }
 
     @RequestMapping( method = RequestMethod.POST, value = "{clientVersion}/LWUIT/orgUnits/{id}/addRelationship" )
@@ -552,5 +550,15 @@ public class MobileOrganisationUnitController
 
         return patientIdentifierAndAttribute;
 
+    }
+    
+    @RequestMapping( method = RequestMethod.GET, value = "{clientVersion}/LWUIT/orgUnits/{id}/findLatestPerson" )
+    @ResponseBody
+    public Patient findLatestPerson( @PathVariable
+    int id, @RequestHeader( "name" )
+    String keyword )
+        throws NotAllowedException
+    {
+        return activityReportingService.findPatient( keyword, id );
     }
 }

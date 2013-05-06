@@ -36,7 +36,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * @author Torgeir Lorange Ostby
- * @version $Id: ValidateNewParentOrganisationUnitAction.java 1232 2006-01-30 06:29:30Z torgeilo $
  */
 public class ValidateNewParentOrganisationUnitAction
     implements Action

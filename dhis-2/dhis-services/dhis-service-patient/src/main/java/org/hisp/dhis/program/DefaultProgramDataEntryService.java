@@ -44,7 +44,6 @@ import org.hisp.dhis.patientdatavalue.PatientDataValueService;
 /**
  * @author Chau Thu Tran
  * @version $ DefaultProgramDataEntryService.java May 26, 2011 3:59:43 PM $
- * 
  */
 public class DefaultProgramDataEntryService
     implements ProgramDataEntryService
@@ -139,7 +138,7 @@ public class DefaultProgramDataEntryService
             String inputHTML = dataElementMatcher.group( 1 );
 
             Matcher identifierMatcher = IDENTIFIER_PATTERN_FIELD.matcher( inputHTML );
-            
+
             if ( identifierMatcher.find() && identifierMatcher.groupCount() > 0 )
             {
                 // -------------------------------------------------------------
@@ -198,7 +197,7 @@ public class DefaultProgramDataEntryService
                 {
                     Collection<PatientDataValue> patientDataValues = mapDataValue.get( programStageUid );
 
-                    if ( patientDataValues == null )
+                    if ( patientDataValues == null && programStageInstance != null )
                     {
                         ProgramStage otherProgramStage = programStageService.getProgramStage( programStageUid );
                         ProgramStageInstance otherProgramStageInstance = programStageInstanceService
@@ -723,6 +722,11 @@ public class DefaultProgramDataEntryService
      */
     private PatientDataValue getValue( Collection<PatientDataValue> dataValues, String dataElementUid )
     {
+        if ( dataValues == null )
+        {
+            return null;
+        }
+
         for ( PatientDataValue dataValue : dataValues )
         {
             if ( dataValue.getDataElement().getUid().equals( dataElementUid ) )
@@ -758,9 +762,9 @@ public class DefaultProgramDataEntryService
 
     /**
      * Replaces i18n string in the custom form code.
-     * 
+     *
      * @param dataEntryFormCode the data entry form html.
-     * @param i18n the I18n object.
+     * @param i18n              the I18n object.
      * @return internationalized data entry form html.
      */
     private String populateI18nStrings( String dataEntryFormCode, I18n i18n )

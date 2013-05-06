@@ -60,6 +60,8 @@ import org.hisp.dhis.system.util.CollectionUtils;
 import org.hisp.dhis.system.util.ReflectionUtils;
 import org.hisp.dhis.system.util.functional.Function1;
 import org.hisp.dhis.user.User;
+import org.hisp.dhis.user.UserAuthorityGroup;
+import org.hisp.dhis.user.UserGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -142,7 +144,7 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
         private Set<DataElementOperand> greyedFields = new HashSet<DataElementOperand>();
 
         private DataEntryForm dataEntryForm;
-        
+
         public void extract( T object )
         {
             attributeValues = extractAttributeValues( object );
@@ -436,6 +438,14 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
      */
     protected boolean updateObject( User user, T object, T persistedObject )
     {
+        if ( newOnly( object ) )
+        {
+            summaryType.getImportConflicts().add(
+                new ImportConflict( ImportUtils.getDisplayName( object ), "This object type only allows creation of new objects." ) );
+
+            return false;
+        }
+
         if ( !SharingUtils.canUpdate( user, persistedObject ) )
         {
             summaryType.getImportConflicts().add(
@@ -537,6 +547,12 @@ public class DefaultIdentifiableObjectImporter<T extends BaseIdentifiableObject>
     //-------------------------------------------------------------------------------------------------------
     // Helpers
     //-------------------------------------------------------------------------------------------------------
+
+    // until we have proper update of UserGroup/UserAuthorityGroup, only allow new instances to be created
+    private boolean newOnly( T object )
+    {
+        return UserGroup.class.isInstance( object ) || UserAuthorityGroup.class.isInstance( object );
+    }
 
     private void importObjectLocal( User user, T object )
     {

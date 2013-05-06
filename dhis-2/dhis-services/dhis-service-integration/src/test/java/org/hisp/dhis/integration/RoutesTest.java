@@ -27,9 +27,12 @@ package org.hisp.dhis.integration;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.CODE;
+import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
+import static org.junit.Assert.assertNotNull;
+
 import org.hisp.dhis.DhisTest;
 import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.CompleteDataSetRegistrationService;
@@ -43,14 +46,9 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-
-import static org.hisp.dhis.common.IdentifiableObject.IdentifiableProperty.CODE;
-import static org.hisp.dhis.importexport.ImportStrategy.NEW_AND_UPDATES;
-import static org.junit.Assert.assertNotNull;
 
 public class RoutesTest
     extends DhisTest
@@ -87,7 +85,6 @@ public class RoutesTest
     private OrganisationUnit ouB;
     private Period peA;
     private Period peB;
-    private DataElementCategoryOptionCombo optionComboA;
 
     @Override
     public boolean emptyDatabaseAfterTest()
@@ -106,7 +103,6 @@ public class RoutesTest
         ouB = createOrganisationUnit( 'B' );
         peA = createPeriod( getDate( 2012, 1, 1 ), getDate( 2012, 1, 31 ) );
         peB = createPeriod( getDate( 2012, 2, 1 ), getDate( 2012, 2, 29 ) );
-        optionComboA = categoryService.getDefaultDataElementCategoryOptionCombo();
 
         deA.setUid( "f7n9E0hX8qk" );
         deB.setUid( "Ix2HsbDMLea" );

@@ -57,10 +57,10 @@ public interface ActivityReportingService
     public Patient findPatient( String name, int orgUnitId )
         throws NotAllowedException;
 
-    public String saveProgramStage( ProgramStage programStage, int orgUnitId )
+    public String saveProgramStage( ProgramStage programStage, int patientId, int orgUnitId )
         throws NotAllowedException;
 
-    public Patient enrollProgram( String enrollInfo, int orgUnitId )
+    public Patient enrollProgram( String enrollInfo )
         throws NotAllowedException;
 
     public Collection<PatientIdentifierType> getIdentifierTypes();

@@ -27,14 +27,13 @@ package org.hisp.dhis.report;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import net.sf.jasperreports.engine.JasperPrint;
+import org.hisp.dhis.i18n.I18nFormat;
+import org.hisp.dhis.period.Period;
+
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
-
-import net.sf.jasperreports.engine.JasperPrint;
-
-import org.hisp.dhis.i18n.I18nFormat;
-import org.hisp.dhis.period.Period;
 
 /**
  * @author Lars Helge Overland
@@ -52,29 +51,29 @@ public interface ReportService
     final String PARAM_ORGANISATIONUNIT_LEVEL_COLUMN = "organisationunit_level_column";
     final String PARAM_ORGANISATIONUNIT_COLUMN_NAME = "organisationunit_name";
     final String PARAM_PERIOD_NAME = "period_name";
-    
+
     /**
-     * Renders a Jasper Report. 
-     * 
+     * Renders a Jasper Report.
+     * <p/>
      * Will make the following params available:
-     * 
+     * <p/>
      * "periods" String of relative period ids (String)
      * "organisationunits" String of selected organisation unit ids (String)
      * "period_name" Name of the selected period (String)
      * "organisationunit_name" Name of the selected organisation unit (String)
      * "organisationunit_level" Level of the selected organisation unit (int)
-     * "organisationunit_level_column" Name of the relevant level column in 
-     *     table _orgunitstructure (String)
-     * 
-     * @param out the OutputStream to write the report to.
-     * @param reportUid the uid of the report to render.
-     * @param period the period to use as parameter.
+     * "organisationunit_level_column" Name of the relevant level column in
+     * table _orgunitstructure (String)
+     *
+     * @param out                 the OutputStream to write the report to.
+     * @param reportUid           the uid of the report to render.
+     * @param period              the period to use as parameter.
      * @param organisationUnitUid the uid of the org unit to use as parameter.
-     * @param type the type of the report, can be "xls" and "pdf".
-     * @param format the I18nFormat to use.
+     * @param type                the type of the report, can be "xls" and "pdf".
+     * @param format              the I18nFormat to use.
      */
     JasperPrint renderReport( OutputStream out, String reportUid, Period period,
-                       String organisationUnitUid, String type, I18nFormat format );
+        String organisationUnitUid, String type, I18nFormat format );
 
     /**
      * Saves a Report.
@@ -101,11 +100,12 @@ public interface ReportService
     Report getReport( String uid );
 
     /**
-     * Returns the total number of reports. 
+     * Returns the total number of reports.
+     *
      * @return the total number of reports.
      */
     int getReportCount();
-    
+
     /**
      * Returns the number of reports which names are like the given name.
      * Returns the number of reports which names are like the given name.
@@ -115,9 +115,9 @@ public interface ReportService
     /**
      * Retrieves the given number of maximum reports starting at the given start
      * index. Reports are sorted on the name property.
-     * 
+     *
      * @param first the start index.
-     * @param max the maximum number of reports.
+     * @param max   the maximum number of reports.
      * @return a collection of reports.
      */
     List<Report> getReportsBetween( int first, int max );
@@ -125,9 +125,9 @@ public interface ReportService
     /**
      * Retrieves the given number of maximum reports starting at the given start
      * index. Reports are sorted on the name property.
-     * 
+     *
      * @param first the start index.
-     * @param max the maximum number of reports.
+     * @param max   the maximum number of reports.
      * @return a collection of reports.
      */
     List<Report> getReportsBetweenByName( String name, int first, int max );

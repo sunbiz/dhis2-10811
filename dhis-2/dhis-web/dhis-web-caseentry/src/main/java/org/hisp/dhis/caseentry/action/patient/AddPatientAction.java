@@ -29,6 +29,7 @@ package org.hisp.dhis.caseentry.action.patient;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -135,39 +136,40 @@ public class AddPatientAction
 
         Patient patient = new Patient();
 
-        verified = (verified == null) ? false : verified;
-
         // ---------------------------------------------------------------------
         // Set FirstName, MiddleName, LastName by FullName
         // ---------------------------------------------------------------------
 
-        fullName = fullName.trim();
-
-        int startIndex = fullName.indexOf( ' ' );
-        int endIndex = fullName.lastIndexOf( ' ' );
-
-        String firstName = fullName.toString();
-        String middleName = "";
-        String lastName = "";
-
-        if ( fullName.indexOf( ' ' ) != -1 )
+        if ( fullName != null )
         {
-            firstName = fullName.substring( 0, startIndex );
-            if ( startIndex == endIndex )
-            {
-                middleName = "";
-                lastName = fullName.substring( startIndex + 1, fullName.length() );
-            }
-            else
-            {
-                middleName = fullName.substring( startIndex + 1, endIndex );
-                lastName = fullName.substring( endIndex + 1, fullName.length() );
-            }
-        }
+            fullName = fullName.trim();
 
-        patient.setFirstName( firstName );
-        patient.setMiddleName( middleName );
-        patient.setLastName( lastName );
+            int startIndex = fullName.indexOf( ' ' );
+            int endIndex = fullName.lastIndexOf( ' ' );
+
+            String firstName = fullName.toString();
+            String middleName = "";
+            String lastName = "";
+
+            if ( fullName.indexOf( ' ' ) != -1 )
+            {
+                firstName = fullName.substring( 0, startIndex );
+                if ( startIndex == endIndex )
+                {
+                    middleName = "";
+                    lastName = fullName.substring( startIndex + 1, fullName.length() );
+                }
+                else
+                {
+                    middleName = fullName.substring( startIndex + 1, endIndex );
+                    lastName = fullName.substring( endIndex + 1, fullName.length() );
+                }
+            }
+
+            patient.setFirstName( firstName );
+            patient.setMiddleName( middleName );
+            patient.setLastName( lastName );
+        }
 
         // ---------------------------------------------------------------------
         // Set Other information for patient
@@ -184,32 +186,50 @@ public class AddPatientAction
             deathDate = deathDate.trim();
             patient.setDeathDate( format.parseDate( deathDate ) );
         }
-        
+
         if ( healthWorker != null )
         {
             patient.setHealthWorker( userService.getUser( healthWorker ) );
         }
 
-        Character dobType = (verified) ? 'V' : 'D';
-
-        if ( !verified && age != null )
+        Date _birthDate = new Date();
+        if ( birthDate != null || age != null )
         {
-            dobType = 'A';
+            verified = (verified == null) ? false : verified;
+
+            Character dobType = (verified) ? 'V' : 'D';
+
+            if ( !verified && age != null )
+            {
+                dobType = 'A';
+            }
+
+            if ( dobType == Patient.DOB_TYPE_VERIFIED || dobType == Patient.DOB_TYPE_DECLARED )
+            {
+                birthDate = birthDate.trim();
+                patient.setBirthDate( format.parseDate( birthDate ) );
+            }
+            else
+            {
+                patient.setBirthDateFromAge( age.intValue(), Patient.AGE_TYPE_YEAR );
+            }
+
+            _birthDate = patient.getBirthDate();
+            patient.setDobType( dobType );
         }
 
-        if ( dobType == Patient.DOB_TYPE_VERIFIED || dobType == Patient.DOB_TYPE_DECLARED )
+        // -----------------------------------------------------------------------------
+        // Registration Date
+        // -----------------------------------------------------------------------------
+
+        if ( registrationDate == null )
         {
-            birthDate = birthDate.trim();
-            patient.setBirthDate( format.parseDate( birthDate ) );
+            patient.setRegistrationDate( new Date() );
         }
         else
         {
-            patient.setBirthDateFromAge( age.intValue(), Patient.AGE_TYPE_YEAR );
+            patient.setRegistrationDate( format.parseDate( registrationDate ) );
         }
-
-        patient.setDobType( dobType );
-
-        patient.setRegistrationDate( format.parseDate( registrationDate ) );
 
         // -----------------------------------------------------------------------------
         // Prepare Patient Identifiers
@@ -247,7 +267,11 @@ public class AddPatientAction
         // PatientIdentifierType will be null
         // --------------------------------------------------------------------------------
 
-        String identifier = PatientIdentifierGenerator.getNewIdentifier( patient.getBirthDate(), patient.getGender() );
+        if ( gender == null )
+        {
+            gender = Patient.FEMALE;
+        }
+        String identifier = PatientIdentifierGenerator.getNewIdentifier( _birthDate, gender );
 
         PatientIdentifier systemGenerateIdentifier = patientIdentifierService.get( null, identifier );
         while ( systemGenerateIdentifier != null )

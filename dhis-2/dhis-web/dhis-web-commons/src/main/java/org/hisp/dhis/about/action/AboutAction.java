@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.external.location.LocationManager;
 import org.hisp.dhis.external.location.LocationManagerException;
@@ -45,6 +46,7 @@ import org.hisp.dhis.system.database.DatabaseInfoProvider;
 import org.hisp.dhis.system.util.SystemUtils;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.util.ContextUtils;
+import org.springframework.core.io.ClassPathResource;
 
 import com.opensymphony.xwork2.Action;
 
@@ -192,25 +194,32 @@ public class AboutAction
         // Version
         // ---------------------------------------------------------------------
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-        InputStream in = classLoader.getResourceAsStream( "build.properties" );
-
-        if ( in != null )
+        ClassPathResource resource = new ClassPathResource( "build.properties" );
+        
+        if ( resource.isReadable() )
         {
-            Properties properties = new Properties();
+            InputStream in = resource.getInputStream();
+            
+            try
+            {
+                Properties properties = new Properties();
+        
+                properties.load( in );
+        
+                version = properties.getProperty( "build.version" );
+        
+                revision = properties.getProperty( "build.revision" );
+        
+                String buildTime = properties.getProperty( "build.time" );
     
-            properties.load( in );
+                DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
     
-            version = properties.getProperty( "build.version" );
-    
-            revision = properties.getProperty( "build.revision" );
-    
-            String buildTime = properties.getProperty( "build.time" );
-
-            DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-
-            this.buildTime = dateFormat.parse( buildTime );
+                this.buildTime = dateFormat.parse( buildTime );
+            }
+            finally
+            {
+                IOUtils.closeQuietly( in );
+            }
         }
         
         HttpServletRequest request = ServletActionContext.getRequest();

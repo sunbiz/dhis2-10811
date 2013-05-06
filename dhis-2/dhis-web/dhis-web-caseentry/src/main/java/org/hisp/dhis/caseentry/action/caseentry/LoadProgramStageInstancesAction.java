@@ -139,7 +139,7 @@ public class LoadProgramStageInstancesAction
         if ( program.getType() == Program.MULTIPLE_EVENTS_WITH_REGISTRATION)
         {
             programInstances = new ArrayList<ProgramInstance>( programInstanceService.getProgramInstances( patient,
-                program, false ) );
+                program, ProgramInstance.STATUS_ACTIVE ) );
         }
         else if ( program.getType() == Program.SINGLE_EVENT_WITH_REGISTRATION )
         {

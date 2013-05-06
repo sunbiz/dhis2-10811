@@ -30,6 +30,7 @@
 	<thead>
 		<tr>
 			<th>#</th>
+			<th>$i18n.getString('followup')</th>
 			<th>$i18n.getString('date_scheduled')</th>
 			<th>$i18n.getString('full_name')</th>
 			<th>$i18n.getString('phone_number')</th>
@@ -46,7 +47,14 @@
 				#set( $nr = ( ( $paging.getCurrentPage() - 1  ) * $paging.pageSize ) + $velocityCount )
 				$nr
 			</td>
-			
+			<td>
+				#set( $comment = $!programStageInstance.programInstance.patientComment.commentText )
+				#if( $!programStageInstance.programInstance.followup=='true')
+					<img src='../images/marked.png' title='$!comment'>
+				#else
+					<img src='../images/unmarked.png' title='$!comment'>
+				#end
+			</td>
 			<td>
 				#if($!programStageInstance.executionDate)
 					$format.formatDate($!programStageInstance.executionDate)

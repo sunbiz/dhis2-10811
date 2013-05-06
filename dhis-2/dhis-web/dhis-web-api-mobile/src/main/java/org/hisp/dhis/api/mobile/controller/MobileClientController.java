@@ -127,6 +127,7 @@ public class MobileClientController
         orgUnit.setAddRelationshipUrl( getUrl( request, unit.getId(), "addRelationship" ) );
         orgUnit.setDownloadAnonymousProgramUrl( getUrl( request, unit.getId(), "downloadAnonymousProgramUrl" ) );
         orgUnit.setFindProgramUrl( getUrl( request, unit.getId(), "findProgram" ) );
+        orgUnit.setFindLatestPersonUrl( getUrl( request, unit.getId(), "findLatestPerson" ) );
 
         // generate URL for download new version
         String full = UrlUtils.buildFullRequestUrl( request );

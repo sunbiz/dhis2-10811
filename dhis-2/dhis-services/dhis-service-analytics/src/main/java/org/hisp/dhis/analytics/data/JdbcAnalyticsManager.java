@@ -63,6 +63,7 @@ import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.MathUtils;
 import org.hisp.dhis.system.util.SqlHelper;
 import org.hisp.dhis.system.util.TextUtils;
+import org.hisp.dhis.system.util.Timer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -112,7 +113,7 @@ public class JdbcAnalyticsManager
         
         sql += getGroupByClause( params );
     
-        log.info( sql );
+        log.debug( sql );
 
         Map<String, Double> map = null;
         
@@ -300,7 +301,11 @@ public class JdbcAnalyticsManager
     {
         Map<String, Double> map = new HashMap<String, Double>();
         
+        Timer t = new Timer().start();
+        
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet( sql );
+        
+        t.getTime( "Analytics SQL: " + sql );
         
         while ( rowSet.next() )
         {

@@ -80,6 +80,8 @@ public class MobileOrgUnitLinks
 
     private String getVariesInfoUrl;
 
+    private String findLatestPersonUrl;
+
     @XmlAttribute
     public int getId()
     {
@@ -282,6 +284,16 @@ public class MobileOrgUnitLinks
         this.findProgramUrl = findProgramUrl;
     }
 
+    public String getFindLatestPersonUrl()
+    {
+        return findLatestPersonUrl;
+    }
+
+    public void setFindLatestPersonUrl( String findLatestPersonUrl )
+    {
+        this.findLatestPersonUrl = findLatestPersonUrl;
+    }
+
     public void serialize( DataOutputStream dataOutputStream )
 
         throws IOException
@@ -305,6 +317,7 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.addRelationshipUrl );
         dataOutputStream.writeUTF( this.downloadAnonymousProgramUrl );
         dataOutputStream.writeUTF( this.findProgramUrl );
+        dataOutputStream.writeUTF( this.findLatestPersonUrl );
     }
 
     public void deSerialize( DataInputStream dataInputStream )
@@ -329,6 +342,7 @@ public class MobileOrgUnitLinks
         this.addRelationshipUrl = dataInputStream.readUTF();
         this.downloadAnonymousProgramUrl = dataInputStream.readUTF();
         this.findProgramUrl = dataInputStream.readUTF();
+        this.findLatestPersonUrl = dataInputStream.readUTF();
     }
 
     @Override
@@ -386,5 +400,6 @@ public class MobileOrgUnitLinks
         dataOutputStream.writeUTF( this.addRelationshipUrl );
         dataOutputStream.writeUTF( this.downloadAnonymousProgramUrl );
         dataOutputStream.writeUTF( this.findProgramUrl );
+        dataOutputStream.writeUTF( this.findLatestPersonUrl );
     }
 }

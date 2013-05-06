@@ -27,14 +27,12 @@ package org.hisp.dhis.datavalue;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.dataelement.DataElement.AGGREGATION_OPERATOR_AVERAGE;
+import static org.hisp.dhis.system.util.ValidationUtils.dataValueIsValid;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementOperand;
@@ -52,8 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultDataValueService
     implements DataValueService
 {
-    private static final Log log = LogFactory.getLog( DefaultDataValueService.class );
-
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
@@ -71,7 +67,7 @@ public class DefaultDataValueService
 
     public void addDataValue( DataValue dataValue )
     {
-        if ( !dataValue.isNullValue() && isSignificant( dataValue ) )
+        if ( !dataValue.isNullValue() && dataValueIsValid( dataValue.getValue(), dataValue.getDataElement() ) == null )
         {
             dataValueStore.addDataValue( dataValue );
         }
@@ -81,9 +77,9 @@ public class DefaultDataValueService
     {
         if ( dataValue.isNullValue() )
         {
-            this.deleteDataValue( dataValue );
+            deleteDataValue( dataValue );
         }
-        else if ( isSignificant( dataValue ) )
+        else if ( dataValueIsValid( dataValue.getValue(), dataValue.getDataElement() ) == null )
         {
             dataValueStore.updateDataValue( dataValue );
         }
@@ -176,23 +172,10 @@ public class DefaultDataValueService
         return dataValueStore.getDataValues( dataElement );
     }
 
-    @Override
     public DataValue getLatestDataValues( DataElement dataElement, PeriodType periodType,
         OrganisationUnit organisationUnit )
     {
         return dataValueStore.getLatestDataValues( dataElement, periodType, organisationUnit );
-    }
-
-    private boolean isSignificant( DataValue dataValue )
-    {
-        if ( dataValue.isZero() && !dataValue.getDataElement().isZeroIsSignificant()
-            && !dataValue.getDataElement().getAggregationOperator().equals( AGGREGATION_OPERATOR_AVERAGE ) )
-        {
-            log.debug( "DataValue was ignored as zero values are insignificant for this data element: "
-                + dataValue.getDataElement() );
-            return false;
-        }
-        return true;
     }
 
     public int getDataValueCount( int days )

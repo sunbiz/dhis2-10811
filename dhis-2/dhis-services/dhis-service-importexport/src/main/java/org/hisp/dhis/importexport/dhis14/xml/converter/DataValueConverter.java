@@ -41,14 +41,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.amplecode.quick.BatchHandler;
-import org.amplecode.quick.StatementManager;
 import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.dataelement.DataElement;
-import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
-import org.hisp.dhis.period.Period;
-import org.hisp.dhis.period.PeriodService;
+import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DeflatedDataValue;
 import org.hisp.dhis.importexport.CSVConverter;
@@ -57,10 +54,11 @@ import org.hisp.dhis.importexport.ImportDataValue;
 import org.hisp.dhis.importexport.ImportObjectService;
 import org.hisp.dhis.importexport.ImportParams;
 import org.hisp.dhis.importexport.analysis.ImportAnalyser;
+import org.hisp.dhis.importexport.dhis14.util.Dhis14TypeHandler;
 import org.hisp.dhis.importexport.importer.DataValueImporter;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.importexport.dhis14.util.Dhis14TypeHandler;
-
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.system.util.MimicingHashMap;
 import org.hisp.dhis.system.util.StreamUtils;
@@ -81,8 +79,6 @@ public class DataValueConverter
 
     private PeriodService periodService;
 
-    private StatementManager statementManager;
-
     private DataElementService dataElementService;
 
     // -------------------------------------------------------------------------
@@ -100,11 +96,10 @@ public class DataValueConverter
     // -------------------------------------------------------------------------
 
     public DataValueConverter( PeriodService periodService, AggregatedDataValueService aggregatedDataValueService,
-        StatementManager statementManager, DataElementService dataElementService )
+         DataElementService dataElementService )
     {
         this.periodService = periodService;
         this.aggregatedDataValueService = aggregatedDataValueService;
-        this.statementManager = statementManager;
         this.dataElementService = dataElementService;
     }
 
@@ -163,8 +158,6 @@ public class DataValueConverter
                     Collection<Period> periods = periodService.getIntersectingPeriods( params.getStartDate(),
                         params.getEndDate() );
 
-                    statementManager.initialise();
-
                     for ( final Integer element : params.getDataElements() )
                     {
                         for ( final Period period : periods )
@@ -190,8 +183,6 @@ public class DataValueConverter
                             }
                         }
                     }
-
-                    statementManager.destroy();
                 }
             }
 

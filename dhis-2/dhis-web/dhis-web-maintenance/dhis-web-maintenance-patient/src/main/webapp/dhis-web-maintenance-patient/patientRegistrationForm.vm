@@ -8,24 +8,6 @@
 			#set($display = 'none')
 		#end
 	#end
-	<tr>
-		<td>
-			<label>$i18n.getString('program')</label>
-			<select name="programId" id="programId" style="width:20em" >
-				#if( $display == 'block' )
-				<option value=''>[$i18n.getString('All')]</option>
-				#end
-				#foreach($program in $programs)
-					<option value='$program.id'>$encoder.htmlEncode($program.displayName)</option>
-				#end
-			</select>
-		</td>
-		#if($programs.size() > 0 || $display == 'block' )
-		<td align="right">
-			<input type="button" value="$i18n.getString( 'add_new' )" onclick="addNewForm();" style="width:70px;">
-		</td>
-		#end
-  </tr>
   <tr>
     <td style="vertical-align:top" colspan='2'>
 		
@@ -35,28 +17,53 @@
 			  <col width="40">
 			<thead>			  
 			  <tr>            
-				<th>$i18n.getString( "name" )</th>
 				<th>$i18n.getString( "program" )</th>
+				<th>$i18n.getString( "data_entry" )</th>
 				<th class="{sorter: false}">$i18n.getString( "operations" )</th>
 			  </tr>
 			</thead>
 			  <tbody class="list">
+				#set($hasCommonForm = 'false')
 				#foreach( $registrationForm in $registrationForms )
-				  <tr id="tr${registrationForm.id}">
-					<td>$encoder.htmlEncode( $registrationForm.dataEntryForm.name )</td>  
+				  <tr id="tr${registrationForm.program.id}">
 					<td>
 						#if($registrationForm.program)
 							$encoder.htmlEncode( $registrationForm.program.name )
 						#else
 							$i18n.getString('all')
+							#set($hasCommonForm = 'true')
 						#end	
+					</td>  
+					<td>
+						$encoder.htmlEncode( $registrationForm.dataEntryForm.name )
 					</td>   					
 					<td style="text-align:center">
 					  <a href="javascript:updateNewForm($registrationForm.id, '$!registrationForm.program.id')" title="$i18n.getString( 'edit' )"><img src="../images/edit.png" alt="$i18n.getString( 'edit' )"></a>
-					  <a href="javascript:removeRegistrationForm( '$registrationForm.id', '$encoder.jsEncode( $registrationForm.dataEntryForm.name )', '$!registrationForm.program.id', '$encoder.jsEncode( $!registrationForm.program.name )' )" title="$i18n.getString( "remove" )"><img src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
+					  <a href="javascript:removeRegistrationForm( '$!registrationForm.program.id', '$!encoder.jsEncode( $registrationForm.program.name )')" title="$i18n.getString( "remove" )"><img id='active_$registrationForm.program.id' src="../images/delete.png" alt="$i18n.getString( 'remove' )"></a>
+					  <img id='define_$registrationForm.program.id' style='display:none;' src='../images/delete-denied.png' title='$i18n.getString("remove")'>
 					</td>
 					
 				  </tr>
+				#end
+				#foreach($program in $programs)
+				<tr id="tr${registrationForm.id}">
+					<td>$encoder.htmlEncode( $program.name )</td>  
+					<td>[$i18n.getString('none')]</td>   					
+					<td style="text-align:center">
+					  <a href="javascript:addNewForm($program.id)" title="$i18n.getString( 'design_data_entry_form' )"><img src="../images/add.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>
+					  <img src='../images/delete-denied.png' title='$i18n.getString("remove")'>
+					</td>
+				</tr>
+				#end
+				#if($hasCommonForm=='false')
+				 <tr id="tr${registrationForm.id}">
+					<td>$i18n.getString('all')</td>  
+					<td>[$i18n.getString('none')]</td>   					
+					<td style="text-align:center">
+					  <a href="javascript:addNewForm('')" title="$i18n.getString( 'design_data_entry_form' )"><img src="../images/add.png" alt="$i18n.getString( 'design_data_entry_form' )"></a>
+					  <img src='../images/delete-denied.png' title='$i18n.getString("remove")'>
+					</td>
+				</tr>
 				#end
 			  </tbody>
         </table>

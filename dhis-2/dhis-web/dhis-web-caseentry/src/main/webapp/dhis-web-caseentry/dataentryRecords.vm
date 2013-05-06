@@ -28,8 +28,14 @@
 		<tr>
 			<th>#</th>
 			<th>$i18n.getString('date_scheduled')</th>
+			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
 			<th>$i18n.getString('full_name')</th>
 			<th>$i18n.getString('phone_number')</th>
+			#else
+			<th>$i18n.getString('system_identifier')</th>
+			#end
+			
 			<th>$i18n.getString( "program_stage" )</th>
 			<th>$i18n.getString( "operations" )</th>
 		</tr>
@@ -52,6 +58,7 @@
 				#end
 			</td>
 			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
 			<td><a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )">
 				#set($value="")
 				#foreach( $identifierType in $identifierTypes)
@@ -69,6 +76,19 @@
 			</a></td>
 			
 			<td>$!patient.phoneNumber</td>
+			
+			#else
+				#set($value="")
+				#foreach( $identifier in $patient.identifiers)
+					#if($!identifier.identifierType)
+					#else
+						#set($value=$identifier.identifier)
+					#end
+				#end
+				<td><a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )">
+					$value
+				</a></td>
+			#end
 			
 			<td><a href="javascript:loadDataEntryDialog( $programStageInstance.id );">$programStageInstance.programStage.displayName</a></td>
 			

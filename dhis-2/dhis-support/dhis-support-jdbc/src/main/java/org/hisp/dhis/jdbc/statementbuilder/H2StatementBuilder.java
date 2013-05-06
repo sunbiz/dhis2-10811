@@ -46,6 +46,12 @@ public class H2StatementBuilder
     {
         return null;
     }
+
+    @Override
+    public String getRegexpMatch()
+    {
+        return "regexp";
+    }
     
     @Override
     public String getDeleteZeroDataValues()
@@ -161,143 +167,10 @@ public class H2StatementBuilder
     }
 
     @Override
-    public String archiveData( String startDate, String endDate )
-    {
-       return "DELETE FROM datavalue AS a " +
-            "WHERE EXISTS (" +
-            "SELECT 1 FROM period AS p " +
-            "WHERE a.periodid=p.periodid " +
-            "AND p.startdate>='" + startDate + "' " +
-            "AND p.enddate<='" + endDate + "')";
-    }
-
-    @Override
-    public String unArchiveData( String startDate, String endDate )
-    {
-       return "DELETE FROM datavaluearchive AS a " +
-           "WHERE EXISTS (" +
-           "SELECT 1 FROM period AS p " +
-           "WHERE a.periodid=p.periodid " +
-           "AND p.startdate>='" + startDate + "' " +
-           "AND p.enddate<='" + endDate + "')";
-    }
-
-    @Override
-    public String deleteRegularOverlappingData()
-    {       
-       return "DELETE FROM datavalue AS d " +
-           "WHERE EXISTS (" +
-           "SELECT 1 FROM datavaluearchive AS a " +
-           "WHERE d.dataelementid=a.dataelementid " +
-           "AND d.periodid=a.periodid " +
-           "AND d.sourceid=a.sourceid " +
-           "AND d.categoryoptioncomboid=a.categoryoptioncomboid)";
-
-    }
-
-    @Override
-    public String deleteArchivedOverlappingData()
-    {
-       return "DELETE FROM datavaluearchive AS a " +
-           "WHERE EXISTS (" +
-           "SELECT 1 FROM datavalue AS d " +
-           "WHERE a.dataelementid=d.dataelementid " +
-           "AND a.periodid=d.periodid " +
-           "AND a.sourceid=d.sourceid " +
-           "AND a.categoryoptioncomboid=d.categoryoptioncomboid)";
-    }
-
-    @Override
-    public String deleteOldestOverlappingDataValue()
-    {       
-       return "DELETE FROM datavalue AS d " +
-           "WHERE EXISTS (" +
-           "SELECT 1 FROM datavaluearchive AS a " +
-           "WHERE d.dataelementid=a.dataelementid " +
-           "AND d.periodid=a.periodid " +
-           "AND d.sourceid=a.sourceid " +
-           "AND d.categoryoptioncomboid=a.categoryoptioncomboid " +
-           "AND d.lastupdated<a.lastupdated)";
-    }
-
-    @Override
-    public String deleteOldestOverlappingArchiveData()
-    {       
-       return "DELETE FROM datavaluearchive AS a " +
-           "WHERE EXISTS (" +
-           "SELECT 1 FROM datavalue AS d " +
-           "WHERE a.dataelementid=d.dataelementid " +
-           "AND a.periodid=d.periodid " +
-           "AND a.sourceid=d.sourceid " +
-           "AND a.categoryoptioncomboid=d.categoryoptioncomboid " +
-           "AND a.lastupdated<=d.lastupdated)";
-    }
-
-    @Override
-    public String archivePatientData ( String startDate, String endDate )
-    {
-        return "DELETE FROM patientdatavalue AS pdv " 
-            + "USING programstageinstance AS psi ,  programinstance AS pi "
-            + "WHERE pdv.programstageinstanceid = psi.programstageinstanceid "
-            + "AND pi.programinstanceid = psi.programinstanceid "
-            + "WHERE pi.enddate >= '" + startDate + "' "
-            + "AND pi.enddate <= '" +  endDate + "';";
-    }
-
-    @Override
-    public String unArchivePatientData ( String startDate, String endDate )
-    {
-        return "DELETE FROM patientdatavaluearchive AS pdv " 
-            + "USING programstageinstance AS psi ,  programinstance AS pi "
-            + "WHERE pdv.programstageinstanceid = psi.programstageinstanceid "
-            + "AND pi.programinstanceid = psi.programinstanceid "
-            + "WHERE pi.enddate >= '" + startDate + "' "
-            + "AND pi.enddate <= '" +  endDate + "';";
-    }
-
-    @Override
-    public String deleteRegularOverlappingPatientData()
-    {
-        return "DELETE FROM patientdatavalue AS d " +
-            "USING patientdatavaluearchive AS a " +
-            "WHERE d.programstageinstanceid=a.programstageinstanceid " +
-            "AND d.dataelementid=a.dataelementid " +
-            "AND d.timestamp<a.timestamp;";
-    }
-
-    @Override
-    public String deleteArchivedOverlappingPatientData()
-    {
-        return "DELETE FROM patientdatavaluearchive AS a " +
-            "USING patientdatavalue AS d " +
-            "WHERE d.programstageinstanceid=a.programstageinstanceid " +
-            "AND d.dataelementid=a.dataelementid ";
-    }
-
-    @Override
-    public String deleteOldestOverlappingPatientDataValue()
-    {
-        return "DELETE FROM patientdatavalue AS d " +
-            "USING patientdatavaluearchive AS a " +
-            "WHERE d.programstageinstanceid=a.programstageinstanceid " +
-            "AND d.dataelementid=a.dataelementid " +
-            "AND d.timestamp<a.timestamp;";
-    }
-
-    @Override
-    public String deleteOldestOverlappingPatientArchiveData()
-    {
-        return "DELETE FROM patientdatavalue AS d " +
-            "USING patientdatavaluearchive AS a " +
-            "WHERE d.programstageinstanceid=a.programstageinstanceid " +
-            "AND d.dataelementid=a.dataelementid " +
-            "AND a.timestamp<=d.timestamp;";
-    }
-
-    @Override
     public String queryDataElementStructureForOrgUnit()
     {
         StringBuffer sqlsb = new StringBuffer();
+        
         sqlsb.append( "(SELECT DISTINCT de.dataelementid, (de.name || ' ' || cc.categoryoptioncomboname) AS DataElement " );
         sqlsb.append( "FROM dataelement AS de " );
         sqlsb.append( "INNER JOIN categorycombos_optioncombos cat_opts on de.categorycomboid = cat_opts.categorycomboid ");

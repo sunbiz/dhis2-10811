@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
@@ -50,6 +52,13 @@ public class DefineProgramAssociationsAction
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
+
+    private OrganisationUnitGroupService organisationUnitGroupService;
+
+    public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
+    {
+        this.organisationUnitGroupService = organisationUnitGroupService;
+    }
 
     private SelectionTreeManager selectionTreeManager;
 
@@ -76,6 +85,13 @@ public class DefineProgramAssociationsAction
         this.id = id;
     }
 
+    private Collection<Integer> orgunitGroupIds = new HashSet<Integer>();
+
+    public void setOrgunitGroupIds( Collection<Integer> orgunitGroupIds )
+    {
+        this.orgunitGroupIds = orgunitGroupIds;
+    }
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -83,7 +99,6 @@ public class DefineProgramAssociationsAction
     public String execute()
         throws Exception
     {
-
         Collection<OrganisationUnit> rootUnits = selectionTreeManager.getRootOrganisationUnits();
 
         Set<OrganisationUnit> unitsInTheTree = new HashSet<OrganisationUnit>();
@@ -96,12 +111,23 @@ public class DefineProgramAssociationsAction
 
         assignedUnits.removeAll( convert( unitsInTheTree ) );
 
-        Collection<OrganisationUnit> selectedOrganisationUnits = selectionTreeManager.getReloadedSelectedOrganisationUnits();
+        Collection<OrganisationUnit> selectedOrganisationUnits = selectionTreeManager
+            .getReloadedSelectedOrganisationUnits();
 
         assignedUnits.addAll( convert( selectedOrganisationUnits ) );
 
         program.setOrganisationUnits( assignedUnits );
-
+        
+        if ( orgunitGroupIds != null )
+        {
+            Set<OrganisationUnitGroup> orgunitGroups = new HashSet<OrganisationUnitGroup>();
+            for ( Integer orgunitGroupId : orgunitGroupIds )
+            {
+                orgunitGroups.add( organisationUnitGroupService.getOrganisationUnitGroup( orgunitGroupId ) );
+            }
+            program.setOrganisationUnitGroups( orgunitGroups );
+        }
+        
         programService.updateProgram( program );
 
         return SUCCESS;

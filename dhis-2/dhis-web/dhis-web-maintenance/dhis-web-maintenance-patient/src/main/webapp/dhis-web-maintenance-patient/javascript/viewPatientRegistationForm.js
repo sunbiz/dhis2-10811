@@ -1,3 +1,5 @@
+var isSave;
+var interval = 60000;
 
 $( document ).ready( function() 
 {
@@ -29,7 +31,7 @@ $( document ).ready( function()
 	
 	if( autoSave )
 	{
-		timeOut = window.setTimeout( "validateRegistrationFormTimeout( false );", 60000 );
+		timeOut = window.setTimeout( "validateRegistrationFormTimeout( false );", interval );
 	}
 });
 	
@@ -119,97 +121,133 @@ function programAttrOnClick()
 function getRequiredFields()
 {
 	var requiredFields = {};
-	
-	requiredFields['fixedattributeid=registrationDate'] = i18n_registration_date;
-	requiredFields['fixedattributeid=fullName'] = i18n_full_name;
-	requiredFields['fixedattributeid=gender'] = i18n_gender;
-	requiredFields['fixedattributeid=birthDate'] = i18n_date_of_birth;
-		
-	jQuery('#identifiersSelector option').each(function() {
-		var item = jQuery(this);
-		if( item.attr('mandatory')=='true'){
-			requiredFields['identifierid=' + item.val()] = item.text();
-		}
-	});
+	if( getFieldValue("disableRegistrationFields")!='true' )
+	{
+		requiredFields['fixedattributeid=registrationDate'] = i18n_registration_date;
+		requiredFields['fixedattributeid=fullName'] = i18n_full_name;
+		requiredFields['fixedattributeid=gender'] = i18n_gender;
+		requiredFields['fixedattributeid=birthDate'] = i18n_date_of_birth;
+			
+		jQuery('#identifiersSelector option').each(function() {
+			var item = jQuery(this);
+			if( item.attr('mandatory')=='true'){
+				requiredFields['identifierid=' + item.val()] = item.text();
+			}
+		});
 
-	jQuery('#attributesSelector option').each(function() {
-		var item = jQuery(this);
-		if( item.attr('mandatory')=='true'){
-			requiredFields['attributeid=' + item.val()] = item.text();
+		jQuery('#attributesSelector option').each(function() {
+			var item = jQuery(this);
+			if( item.attr('mandatory')=='true'){
+				requiredFields['attributeid=' + item.val()] = item.text();
+			}
+		});
+		
+		jQuery('#programAttrSelector option').each(function() {
+			var item = jQuery(this);
+			if( item.attr('mandatory')=='true'){
+				requiredFields['attributeid=' + item.val()] = item.text();
+			}
+		});
+		
+		var html = jQuery("#designTextarea").ckeditorGet().getData();
+		var input = jQuery( html ).find("input");
+		if( input.length > 0 )
+		{
+			input.each( function(i, item){	
+				var key = "";
+				var inputKey = jQuery(item).attr('fixedattributeid');
+				if( inputKey!=undefined)
+				{
+					key = 'fixedattributeid=' + inputKey
+				}
+				else if( jQuery(item).attr('identifierid')!=undefined ){
+					inputKey = jQuery(item).attr('identifierid');
+					key = 'identifierid=' + inputKey
+				}
+				else if( jQuery(item).attr('attributeid')!=undefined ){
+					inputKey = jQuery(item).attr('attributeid');
+					key = 'attributeid=' + inputKey
+				}
+				else if( jQuery(item).attr('programid')!=undefined ){
+					inputKey = jQuery(item).attr('programid');
+					key = 'programid=' + inputKey
+				}
+					
+				for (var idx in requiredFields){
+					if( key == idx)
+					{
+						delete requiredFields[idx];
+					}
+				}
+			});
 		}
-	});
 	
+	}
 	return requiredFields;
 }
 
-function validateForm()
+function validateFormOnclick()
 {
-	var result = false;
-	var html = jQuery("#designTextarea").ckeditorGet().getData();
-	requiredFields = getRequiredFields();
-	
-	var input = jQuery( html ).find("input");
-	if( input.length > 0 )
+	var requiredFields = getRequiredFields();
+	var violate = "";
+	if( Object.keys(requiredFields).length > 0 )
 	{
-		input.each( function(i, item){	
-			var key = "";
-			var inputKey = jQuery(item).attr('fixedattributeid');
-			if( inputKey!=undefined)
-			{
-				key = 'fixedattributeid=' + inputKey
-			}
-			else if( jQuery(item).attr('identifierid')!=undefined ){
-				inputKey = jQuery(item).attr('identifierid');
-				key = 'identifierid=' + inputKey
-			}
-			else if( jQuery(item).attr('attributeid')!=undefined ){
-				inputKey = jQuery(item).attr('attributeid');
-				key = 'attributeid=' + inputKey
-			}
-			else if( jQuery(item).attr('programid')!=undefined ){
-				inputKey = jQuery(item).attr('programid');
-				key = 'programid=' + inputKey
-			}
-			
-			for (var idx in requiredFields){
-				if( key == idx)
-				{
-					delete requiredFields[idx];
-				}
-			}
-		});
-	
-	}
-	if( Object.keys(requiredFields).length > 0 ) {
-		setFieldValue('requiredField','');
-		var violate = '<h3>' + i18n_please_insert_all_required_fields + '<h3>';
+		violate = '<h3>' + i18n_please_insert_all_required_fields + '<h3>';
 		for (var idx in requiredFields){
 			violate += " - " + requiredFields[idx] + '<br>';
 		}
-		
-		setInnerHTML('validateDiv', violate);
-		jQuery('#validateDiv').dialog({
-			title:i18n_required_fields_valivation,
-			maximize:true, 
-			closable:true,
-			modal:false,
-			overlay:{background:'#000000', opacity:0.1},
-			width:500,
-			height:300
-		});
-		
-		return false;
 	}
-	else{
-		setFieldValue('requiredField','everything_is_ok');
-		setInnerHTML( 'designTextarea' , jQuery("#designTextarea").ckeditorGet().getData() );
-		if(getFieldValue('autoSave')=='true'){
-			autoSavePatientRegistrationForm();
+	else
+	{
+		violate = '<h3>' + i18n_validate_success + '<h3>';
+	}
+	
+	setInnerHTML('validateDiv', violate);
+	jQuery('#validateDiv').dialog({
+		title:i18n_required_fields_valivation,
+		maximize:true, 
+		closable:true,
+		modal:false,
+		overlay:{background:'#000000', opacity:0.1},
+		width:500,
+		height:300
+	});
+}
+
+function validateForm( checkViolate )
+{
+	requiredFields = getRequiredFields();
+	
+	if( Object.keys(requiredFields).length > 0 )
+	{
+		if ( byId('autoSave').checked )
+		{
+			setHeaderMessage( i18n_save_unsuccess_please_insert_all_required_fields );
 		}
 		else
 		{
-			byId('saveDataEntryForm').submit();
+			var violate = '<h3>' + i18n_please_insert_all_required_fields + '<h3>';
+			for (var idx in requiredFields){
+				violate += " - " + requiredFields[idx] + '<br>';
+			}
+			
+			setInnerHTML('validateDiv', violate);
+			jQuery('#validateDiv').dialog({
+				title:i18n_required_fields_valivation,
+				maximize:true, 
+				closable:true,
+				modal:false,
+				overlay:{background:'#000000', opacity:0.1},
+				width:500,
+				height:300
+			});
+			
 		}
+		return false;
+	}
+	else
+	{
+		return true;
 	}
 }
 
@@ -329,23 +367,24 @@ function setAutoSaveRegistrationSetting(_autoSave)
 function validateRegistrationFormTimeout()
 {
 	validateDataEntryForm();
-	timeOut = window.setTimeout( "validateRegistrationFormTimeout();", 60000 );
+	timeOut = window.setTimeout( "validateRegistrationFormTimeout();", interval );
 }
 
-function validateDataEntryForm()
+function validateDataEntryForm(form)
 {
 	var name = getFieldValue('name');
 	if( name =='' || name.length<4 || name.length > 150 )
 	{
 		setHeaderDelayMessage( i18n_enter_a_name );
+		return false;
 	}
 	else if ( !validateForm() )
 	{
-		return;
+		return false;
 	}
 	else
 	{
-		$.post( 'validateDataEntryForm.action',
+		$.postUTF8( 'validateDataEntryForm.action',
 		{
 			name: getFieldValue('name'),
 			dataEntryFormId: getFieldValue('dataEntryFormId')
@@ -354,7 +393,14 @@ function validateDataEntryForm()
 		{
 			if ( json.response == 'success' )
 			{
-				autoSavePatientRegistrationForm();
+				if( form != undefined)
+				{
+					form.submit();
+				}
+				else
+				{
+					autoSavePatientRegistrationForm();
+				}
 			}
 			else if ( json.response = 'error' )
 			{
@@ -375,6 +421,17 @@ function autoSavePatientRegistrationForm()
 	},
 	function( json ) 
 	{
+		setFieldValue('dataEntryFormId', json.message);
+		showById('deleteButton');
 		setHeaderDelayMessage( i18n_save_success ); 
 	} );
+}
+
+function deleteRegistrationFormFromView()
+{
+	var result = window.confirm( i18n_confirm_delete + '\n\n' + name );
+	if ( result )
+	{
+		window.location.href = 'delRegistrationEntryFormAction.action?id=' + id;
+	}
 }

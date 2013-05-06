@@ -92,27 +92,25 @@ public class ExportImageAction
     protected String execute( HttpServletResponse response, OutputStream out )
         throws Exception
     {
-        if ( svg != null && type != null )
+        if ( svg != null )
         {
-            if ( type.equals( TYPE_PNG ) )
+            if ( type == null || TYPE_PNG.equals( type ) )
             {
                 convertToPNG( new StringBuffer( doctype + svg ), out );
             }
-
-            else if ( type.equals( TYPE_PDF ) )
+            else if ( TYPE_PDF.equals( type ) )
             {
                 convertToPDF( new StringBuffer( doctype + svg ), out );
             }
-
-            return SUCCESS;
         }
-
         else
         {
             log.info( "svg = " + svg + ", type = " + type );
 
             return NONE;
         }
+
+        return SUCCESS;
     }
 
     public void convertToPNG( StringBuffer buffer, OutputStream out )
@@ -152,7 +150,7 @@ public class ExportImageAction
     {
         String t = title != null ? CodecUtils.filenameEncode( title ) : "";
 
-        return "dhis2_dv_" + t + "." + CodecUtils.filenameEncode( type );
+        return "dhis2_chart_" + t + "." + CodecUtils.filenameEncode( type );
     }
 
     @Override

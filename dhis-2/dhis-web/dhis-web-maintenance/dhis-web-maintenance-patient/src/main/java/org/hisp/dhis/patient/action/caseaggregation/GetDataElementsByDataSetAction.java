@@ -110,7 +110,7 @@ public class GetDataElementsByDataSetAction
         dataElements = new ArrayList<DataElement>( dataElementService.getDataElements( dataSet, query,
             MAX_DATAELEMENTS_DISPLAYED ) );
 
-        Collections.sort( dataElements, new IdentifiableObjectNameComparator() );
+        Collections.sort( dataElements, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

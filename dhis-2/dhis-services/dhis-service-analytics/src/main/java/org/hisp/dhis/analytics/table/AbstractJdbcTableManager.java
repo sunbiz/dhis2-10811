@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.analytics.AnalyticsIndex;
 import org.hisp.dhis.analytics.AnalyticsTableManager;
 import org.hisp.dhis.common.CodeGenerator;
+import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.jdbc.StatementBuilder;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
@@ -55,8 +56,6 @@ public abstract class AbstractJdbcTableManager
     public static final String PREFIX_ORGUNITLEVEL = "uidlevel";
     public static final String PREFIX_INDEX = "in_";
     
-    private static final String TABLE_TEMP_SUFFIX = "_temp";
-    
     @Autowired
     protected OrganisationUnitService organisationUnitService;
     
@@ -65,6 +64,9 @@ public abstract class AbstractJdbcTableManager
     
     @Autowired
     protected OrganisationUnitGroupService organisationUnitGroupService;
+    
+    @Autowired
+    protected DataElementCategoryService categoryService;
    
     @Autowired
     protected StatementBuilder statementBuilder;

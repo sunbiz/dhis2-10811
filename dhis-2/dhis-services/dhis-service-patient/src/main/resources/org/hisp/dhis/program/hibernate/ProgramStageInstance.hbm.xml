@@ -40,5 +40,9 @@
     
     <property name="coordinates" type="text" />
     
+    <property name="completedUser" />
+     
+    <property name="completedDate" />
+    
   </class>
 </hibernate-mapping>

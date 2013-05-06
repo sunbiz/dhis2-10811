@@ -95,6 +95,7 @@
 	"deSumName": #if($!aggregateReport.deSum) "$!encoder.jsonEncode( ${aggregateReport.deSum.displayName})" #else "" #end,
 	"aggregateType": "${aggregateReport.aggregateType}",
 	"useCompletedEvents": "$!aggregateReport.useCompletedEvents",
+	"displayTotals": "$!aggregateReport.displayTotals",
 	"userOrganisationUnit": "$!aggregateReport.userOrganisationUnit",
 	"userOrganisationUnitChildren": "$!aggregateReport.userOrganisationUnitChildren"
 }

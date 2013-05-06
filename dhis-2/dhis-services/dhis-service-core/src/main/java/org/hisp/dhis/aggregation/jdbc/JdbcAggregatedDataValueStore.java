@@ -37,7 +37,6 @@ import java.util.Collection;
 
 import org.amplecode.quick.StatementHolder;
 import org.amplecode.quick.StatementManager;
-import org.amplecode.quick.mapper.ObjectMapper;
 import org.amplecode.quick.mapper.RowMapper;
 import org.hisp.dhis.aggregation.AggregatedDataValue;
 import org.hisp.dhis.aggregation.AggregatedDataValueStore;
@@ -487,30 +486,13 @@ public class JdbcAggregatedDataValueStore
     
     public DataValue getDataValue( int dataElementId, int categoryOptionComboId, int periodId, int sourceId ) //TODO remove
     {
-        final StatementHolder holder = statementManager.getHolder();
+        final String sql =
+            "SELECT * FROM datavalue " +
+            "WHERE dataelementid = " + dataElementId + " " +
+            "AND categoryoptioncomboid = " + categoryOptionComboId + " " +
+            "AND periodid = " + periodId + " " +
+            "AND sourceid = " + sourceId;
         
-        final ObjectMapper<DataValue> mapper = new ObjectMapper<DataValue>();
-        
-        try
-        {
-            final String sql =
-                "SELECT * FROM datavalue " +
-                "WHERE dataelementid = " + dataElementId + " " +
-                "AND categoryoptioncomboid = " + categoryOptionComboId + " " +
-                "AND periodid = " + periodId + " " +
-                "AND sourceid = " + sourceId;
-            
-            final ResultSet resultSet = holder.getStatement().executeQuery( sql );
-            
-            return mapper.getObject( resultSet, new DataValueRowMapper() );
-        }
-        catch ( SQLException ex )
-        {
-            throw new RuntimeException( "Failed to get deflated data values", ex );
-        }
-        finally
-        {
-            holder.close();
-        }
+        return jdbcTemplate.queryForObject( sql, new DataValueRowMapper() );
     }
 }

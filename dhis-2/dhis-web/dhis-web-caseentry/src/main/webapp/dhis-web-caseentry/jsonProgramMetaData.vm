@@ -1,17 +1,33 @@
 { "metaData": {
+"optionSets": [#foreach( $os in $optionSets )"$encoder.jsonEncode( $os )"#if( $velocityCount < $optionSets.size() ),#end#end],
+"usernames": $usernames,
 "programs": {
 #set( $psize = $programs.size() )
 #foreach( $program in $programs )
 "${program.id}":{
-"name":"$encoder.jsonEncode( ${program.displayName} )",
-"description":"$encoder.jsonEncode( ${program.description} )",
-"enrollmentDescription":"$encoder.jsonEncode( ${program.dateOfEnrollmentDescription} )",
-"incidentDescription":"$encoder.jsonEncode( ${program.dateOfIncidentDescription} )",
-"programStages":[#set( $pssize = $program.programStages.size() )
-#foreach( $ps in $program.programStages )
-{ "id": "${ps.id}", "name": "$encoder.jsonEncode( ${ps.displayName} )", "reportDateDescription": "$encoder.jsonEncode( ${ps.reportDateDescription} )" }#if( $velocityCount < $pssize ),#end
-#end],
-"programAssociations": $programAssociations.get(${program.id})
+    "id":"${program.id}",
+    "name":"$encoder.jsonEncode( ${program.displayName} )",
+    "uid":"$encoder.jsonEncode( ${program.uid} )",
+    "description":"$encoder.jsonEncode( ${program.description} )",
+    "enrollmentDescription":"$encoder.jsonEncode( ${program.dateOfEnrollmentDescription} )",
+    "incidentDescription":"$encoder.jsonEncode( ${program.dateOfIncidentDescription} )",
+    "type": "$!program.type",
+    "blockEntryForm": $!program.blockEntryForm,
+    "remindCompleted": $!program.remindCompleted,
+    "programStages":[#set( $pssize = $program.programStages.size() )
+    #foreach( $ps in $program.programStages )
+    {
+        "id": "${ps.id}",
+        "uid": "$encoder.jsonEncode( $!ps.uid )",
+        "name": "$encoder.jsonEncode( ${ps.displayName} )",
+        "reportDateDescription": "$encoder.jsonEncode( ${ps.reportDateDescription} )",
+        "irregular": $!ps.irregular,
+        "displayGenerateEventBox": $!ps.displayGenerateEventBox,
+        "validCompleteOnly": $!ps.validCompleteOnly,
+        "captureCoordinates": $!ps.captureCoordinates
+    }#if( $velocityCount < $pssize ),#end
+    #end],
+    "programAssociations": $programAssociations.get(${program.id})
 }#if( $velocityCount < $psize ),#end
 #end }
 }}

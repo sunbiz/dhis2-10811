@@ -47,7 +47,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 /**
  * @author Chau Thu Tran
  * 
- * @version RunCaseAggregateConditionTask.java 9:52:10 AM Oct 10, 2012 $
+ * @version CaseAggregateConditionTask.java 9:52:10 AM Oct 10, 2012 $
  */
 public class CaseAggregateConditionTask
     implements Runnable

@@ -214,7 +214,7 @@ public class UpdateProgramStageAction
     {
         minDaysFromStart = (minDaysFromStart == null) ? 0 : minDaysFromStart;
         irregular = (irregular == null) ? false : irregular;
-        autoGenerateEvent = (autoGenerateEvent == null) ? false : autoGenerateEvent;
+        autoGenerateEvent = (autoGenerateEvent == null) ? true : autoGenerateEvent;
         validCompleteOnly = (validCompleteOnly == null) ? false : validCompleteOnly;
         displayGenerateEventBox = (displayGenerateEventBox == null) ? false : displayGenerateEventBox;
 
@@ -237,6 +237,7 @@ public class UpdateProgramStageAction
         {
             PatientReminder reminder = new PatientReminder( "", daysAllowedSendMessages.get( i ),
                 templateMessages.get( i ) );
+            reminder.setDateToCompare( PatientReminder.DUE_DATE_TO_COMPARE );
             patientReminders.add( reminder );
         }
         programStage.setPatientReminders( patientReminders );

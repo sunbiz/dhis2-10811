@@ -60,12 +60,15 @@ div.inputSection {
 <h3 id="dataset_report_header">$i18n.getString( "dataset_report" ) #openHelp( "dataset_reports" )</h3>
 
 <div id="control">
-<input type="button" value='$i18n.getString( "data" )' style="width:120px" onclick="showCriteria()" />
+<input type="button" value='$i18n.getString( "data" )' style="width:140px" onclick="showCriteria()">
 <input type="button" class="downloadButton" value="$i18n.getString( 'get_report_as_xls' )" onclick="exportDataSetReport( 'xls' )" style="width:140px; display:none;">
 <input type="button" class="downloadButton" value="$i18n.getString( 'get_report_as_pdf' )" onclick="exportDataSetReport( 'pdf' )" style="width:140px; display:none;">
+<input type="button" class="downloadButton" value="$i18n.getString( 'print' )" onclick="window.print()" style="width:140px; display:none;">
 </div>
 
-<div id="criteria" class="inputCriteria" style="width:360px;height:450px;">
+<!-- Data set -->
+
+<div id="criteria" class="inputCriteria" style="width:360px;">
 <div class="inputSection">
 <label>$i18n.getString( "dataset" )</label><br>
 <select id="dataSetId" name="dataSetId" style="width:330px">
@@ -75,6 +78,8 @@ div.inputSection {
   #end
 </select>
 </div>
+
+<!-- Period -->
 
 <div class="inputSection">
 <label>$i18n.getString( "report_period" )</label><br>
@@ -91,6 +96,8 @@ div.inputSection {
 </select>
 </div>
 
+<!-- Organisation unit -->
+
 <div class="inputSection">
 <label>$i18n.getString( "use_data_for_selected_unit_only" )</label>
 <input type="checkbox" id="selectedUnitOnly" name="selectedUnitOnly" value="true">
@@ -98,8 +105,22 @@ div.inputSection {
 
 <div class="inputSection">
 <label>$i18n.getString( "report_organisation_unit" )</label><br>
-<div id="selectionTree" style="width:328px;height:200px;overflow:auto;border:1px solid #cccccc"></div>
+<div id="selectionTree" style="width:328px; height:200px; overflow:auto; border:1px solid #ccc; margin-bottom: 8px;"></div>
 </div>
+
+<!-- Org unit group sets -->
+
+<div id="advancedOptions" style="display:none">
+#foreach( $groupSet in $groupSets )
+<select name="groupSet" data-uid="${groupSet.uid}" style="width:330px" class="advanced">
+    <option value="">[ $i18n.getString( "select" ) $encoder.htmlEncode( $groupSet.name ) / $i18n.getString( "view_all" ) ]</option>
+    #foreach( $group in $groupSet.organisationUnitGroups )
+    <option value="${group.uid}">$encoder.htmlEncode( $group.name )</option>
+    #end
+</select><br>
+#end </div>
+
+<div id="advancedOptionsLink" style="padding: 8px 0;"><a href="javascript:showAdvancedOptions()">$i18n.getString( "more_options" )</a></div>
 
 <div class="inputSection">
 <input type="button" value='$i18n.getString( "get_report" )' style="width:120px" onclick="validateDataSetReport()">

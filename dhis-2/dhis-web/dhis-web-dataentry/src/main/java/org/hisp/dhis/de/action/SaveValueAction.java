@@ -41,6 +41,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
+import org.hisp.dhis.system.util.ValidationUtils;
 import org.hisp.dhis.user.CurrentUserService;
 
 import java.util.Date;
@@ -200,6 +201,17 @@ public class SaveValueAction
         if ( value != null )
         {
             value = value.trim();
+        }
+
+        // ---------------------------------------------------------------------
+        // Validate value according to type from data element
+        // ---------------------------------------------------------------------
+
+        String valid = ValidationUtils.dataValueIsValid( value, dataElement );
+        
+        if ( valid != null )
+        {
+            return logError( valid, 3 );
         }
 
         // ---------------------------------------------------------------------

@@ -28,6 +28,8 @@ package org.hisp.dhis.api.utils;
  */
 
 import javassist.util.proxy.ProxyObject;
+
+import org.apache.commons.io.IOUtils;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dxf2.metadata.ExchangeClasses;
 import org.hisp.dhis.setting.SystemSettingManager;
@@ -181,15 +183,21 @@ public class ContextUtils
         response.setStatus( statusCode );
         response.setContentType( CONTENT_TYPE_TEXT );
 
+        PrintWriter writer = null;
+        
         try
         {
-            PrintWriter writer = response.getWriter();
+            writer = response.getWriter();
             writer.println( message );
             writer.flush();
         }
         catch ( IOException ex )
         {
             // Ignore
+        }
+        finally
+        {
+            IOUtils.closeQuietly( writer );
         }
     }
 

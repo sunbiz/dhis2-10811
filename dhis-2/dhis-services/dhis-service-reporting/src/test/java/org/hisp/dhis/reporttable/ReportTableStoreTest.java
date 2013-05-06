@@ -125,7 +125,7 @@ public class ReportTableStoreTest
         
         indicatorService.addIndicatorType( indicatorType );
         
-        periodType = MonthlyPeriodType.getPeriodTypeByName( MonthlyPeriodType.NAME );
+        periodType = PeriodType.getPeriodTypeByName( MonthlyPeriodType.NAME );
 
         dataElementA = createDataElement( 'A' );
         dataElementB = createDataElement( 'B' );

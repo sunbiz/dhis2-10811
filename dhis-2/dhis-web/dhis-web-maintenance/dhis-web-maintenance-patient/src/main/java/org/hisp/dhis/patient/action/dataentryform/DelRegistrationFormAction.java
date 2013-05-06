@@ -29,6 +29,8 @@ package org.hisp.dhis.patient.action.dataentryform;
 
 import org.hisp.dhis.patient.PatientRegistrationForm;
 import org.hisp.dhis.patient.PatientRegistrationFormService;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -51,6 +53,13 @@ public class DelRegistrationFormAction
         this.patientRegistrationFormService = patientRegistrationFormService;
     }
 
+    private ProgramService programService;
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
+
     // -------------------------------------------------------------------------
     // Getters & setters
     // -------------------------------------------------------------------------
@@ -61,7 +70,7 @@ public class DelRegistrationFormAction
     {
         this.id = id;
     }
-    
+
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -69,10 +78,20 @@ public class DelRegistrationFormAction
     public String execute()
         throws Exception
     {
-        PatientRegistrationForm registrationForm = patientRegistrationFormService.getPatientRegistrationForm( id );
+        PatientRegistrationForm registrationForm = null;
+        if ( id != null )
+        {
+            Program program = programService.getProgram( id );
+
+            registrationForm = patientRegistrationFormService.getPatientRegistrationForm( program );
+        }
+        else
+        {
+            registrationForm = patientRegistrationFormService.getCommonPatientRegistrationForm();
+        }
 
         patientRegistrationFormService.deletePatientRegistrationForm( registrationForm );
-        
+
         return SUCCESS;
     }
 }

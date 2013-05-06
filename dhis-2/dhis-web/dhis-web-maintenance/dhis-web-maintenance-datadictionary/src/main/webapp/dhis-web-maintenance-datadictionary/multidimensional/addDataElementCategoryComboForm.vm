@@ -27,7 +27,7 @@
 
 <h3>$i18n.getString( "create_new_data_element_category_combo" )</h3>
 
-<form id="addDataElementCategoryComboForm" name="addDataElementCategoryComboForm" action="addDataElementCategoryCombo.action" method="post" >
+<form id="addDataElementCategoryComboForm" name="addDataElementCategoryComboForm" action="addDataElementCategoryCombo.action" method="post" class="inputForm">
   <table id="detailsList">
     <thead>
       <tr>
@@ -37,17 +37,12 @@
     <tbody>
       <tr>
         <td style="width:120px"><label>$i18n.getString( "name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
-        <td><input type="text" id="name" name="name" style="width:20em"/></td>
+        <td><input type="text" id="name" name="name" /></td>
       </tr>
       <tr>
-      	<td><label>$i18n.getString( "skip_total_in_reports" )</label></td>
-      	<td>
-            <select id="skipTotal" name="skipTotal">
-                <option value="false" selected="selected">$i18n.getString( "no" )</option>
-                <option value="true" >$i18n.getString( "yes" )</option>
-            </select>
-            </td>
-        </tr>
+      	<td><label for="skipTotal">$i18n.getString( "skip_total_in_reports" )</label></td>
+      	<td><input type="checkbox" id="skipTotal" name="skipTotal" value="true" /></td>
+      </tr>
       </tr>  
       <tr>
       	<td colspan="2" style="height:15px"></td>

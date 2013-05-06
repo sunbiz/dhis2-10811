@@ -1,5 +1,3 @@
-PT = {};
-
 PT.core = {};
 
 Ext.onReady( function() {
@@ -43,7 +41,7 @@ PT.core.getConfigs = function() {
         dimension: {
             data: {
                 value: 'data',
-                name: 'Data', //i18n PT.i18n.data,
+                name: PT.i18n.data,
                 dimensionName: 'dx',
                 objectName: 'dx',
                 warning: {
@@ -51,31 +49,31 @@ PT.core.getConfigs = function() {
 				}
             },
             category: {
-				name: 'Categories',
+				name: PT.i18n.categories,
 				dimensionName: 'co',
                 objectName: 'co',
 			},
             indicator: {
                 value: 'indicators',
-                name: 'Indicators', //i18n PT.i18n.indicator,
+                name: PT.i18n.indicators,
                 dimensionName: 'dx',
                 objectName: 'in'
             },
             dataElement: {
                 value: 'dataElements',
-                name: 'Data elements', //i18n PT.i18n.data_element,
+                name: PT.i18n.data_elements,
                 dimensionName: 'dx',
                 objectName: 'de'
             },
             dataSet: {
 				value: 'dataSets',
-                name: 'Data sets', //i18n PT.i18n.dataset,
+                name: PT.i18n.data_sets,
                 dimensionName: 'dx',
                 objectName: 'ds'
 			},
             period: {
                 value: 'period',
-                name: 'Periods', //i18n PT.i18n.period,
+                name: PT.i18n.periods,
                 dimensionName: 'pe',
                 objectName: 'pe',
                 warning: {
@@ -90,11 +88,9 @@ PT.core.getConfigs = function() {
 			},
             organisationUnit: {
                 value: 'organisationUnits',
-                name: 'Organisation units', //i18n PT.i18n.organisation_unit,
+                name: PT.i18n.organisation_units,
                 dimensionName: 'ou',
                 objectName: 'ou',
-                userOrganisationUnit: 'USER_ORGUNIT',
-                userOrganisationUnitChildren: 'USER_ORGUNIT_CHILDREN',
                 warning: {
 					filter: '...'//PT.i18n.wm_multiple_filter_orgunit
 				}
@@ -216,7 +212,7 @@ PT.core.getConfigs = function() {
         west_maxheight_accordion_dataset: 400,
         west_maxheight_accordion_period: 513,
         west_maxheight_accordion_organisationunit: 900,
-        west_maxheight_accordion_group: 298,
+        west_maxheight_accordion_group: 340,
         west_maxheight_accordion_options: 449,
         west_scrollbarheight_accordion_indicator: 300,
         west_scrollbarheight_accordion_dataelement: 300,
@@ -1779,7 +1775,7 @@ PT.core.getAPI = function(pt) {
 				dimConf = pt.conf.finals.dimension;
 
 			if (!(col || row)) {
-				alert('At least one dimension must be specified as row or column'); //i18n
+				alert(PT.i18n.at_least_one_dimension_must_be_specified_as_row_or_column);
 				return;
 			}
 
@@ -1791,7 +1787,7 @@ PT.core.getAPI = function(pt) {
 			}
 
 			if (!Ext.Array.contains(dimensionNames, dimConf.period.dimensionName)) {
-				alert('At least one period must be specified as column, row or filter');
+				alert(PT.i18n.at_least_one_period_must_be_specified_as_column_row_or_filter);
 				return;
 			}
 
@@ -1802,7 +1798,7 @@ PT.core.getAPI = function(pt) {
 			var obj = {};
 
 			if (!(config && Ext.isObject(config))) {
-				alert('Layout config is not an object'); //i18n
+				console.log('Layout config is not an object');
 				return;
 			}
 

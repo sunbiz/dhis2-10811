@@ -10,7 +10,7 @@
 					 "localid": "$orgunit.id",
 					 "name": "$!encoder.jsonEncode( ${orgunit.name} )",
 					 "leaf": !$orgunit.hasChild()
-			   }#if( $velocityCount < $programs.size() ),#end
+			   }#if( $velocityCount < $currentUser.organisationUnits.size() ),#end
 			#end
 		]
 	},

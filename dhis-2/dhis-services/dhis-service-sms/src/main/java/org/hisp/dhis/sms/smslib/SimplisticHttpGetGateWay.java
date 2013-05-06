@@ -36,7 +36,6 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.smslib.AGateway;
 import org.smslib.GatewayException;
@@ -72,6 +71,7 @@ import org.springframework.web.client.RestTemplate;
  * </ul>
  * 
  */
+
 public class SimplisticHttpGetGateWay
     extends AGateway
 {

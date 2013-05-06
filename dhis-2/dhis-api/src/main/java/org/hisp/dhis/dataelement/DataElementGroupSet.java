@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
@@ -56,7 +57,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
  */
 @JacksonXmlRootElement( localName = "dataElementGroupSet", namespace = DxfNamespaces.DXF_2_0)
 public class DataElementGroupSet
-    extends BaseIdentifiableObject
+    extends DimensionalObject
 {
     /**
      * Determines if a de-serialized file is compatible with this class.
@@ -172,6 +173,11 @@ public class DataElementGroupSet
         return sortedGroups;
     }
 
+    public List<IdentifiableObject> getDimensionItems()
+    {
+        return new ArrayList<IdentifiableObject>( members );
+    }
+    
     // -------------------------------------------------------------------------
     // equals and hashCode
     // -------------------------------------------------------------------------

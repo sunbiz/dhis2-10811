@@ -36,6 +36,8 @@ import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.dataelement.DataElementGroupSet;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.i18n.I18nFormat;
+import org.hisp.dhis.mapping.MapLegendSet;
+import org.hisp.dhis.mapping.MappingService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
@@ -83,6 +85,13 @@ public class InitializeAction
     public void setPeriodService( PeriodService periodService )
     {
         this.periodService = periodService;
+    }
+    
+    private MappingService mappingService;
+
+    public void setMappingService( MappingService mappingService )
+    {
+        this.mappingService = mappingService;
     }
 
     private I18nFormat format;
@@ -193,6 +202,13 @@ public class InitializeAction
     {
         return last5Years;
     }
+
+    private Collection<MapLegendSet> legendSets;
+
+    public Collection<MapLegendSet> getLegendSets()
+    {
+        return legendSets;
+    }
     
     // -------------------------------------------------------------------------
     // Action implementation
@@ -245,6 +261,8 @@ public class InitializeAction
 
         rp.clear().setLast5Years( true );
         last5Years = periodService.reloadPeriods( setNames( rp.getRelativePeriods() ) );
+        
+        legendSets = mappingService.getAllMapLegendSets();
 
         return SUCCESS;
     }

@@ -1,6 +1,5 @@
 package org.hisp.dhis.sqlview;
 
-import java.util.List;
 import java.util.Map;
 
 import org.hisp.dhis.common.Grid;
@@ -13,15 +12,9 @@ public interface SqlViewExpandStore
 {
     String ID = SqlViewExpandStore.class.getName();
 
-    // -------------------------------------------------------------------------
-    // SqlView expanded
-    // -------------------------------------------------------------------------
+    boolean viewTableExists( String viewTableName );
 
-    List<String> getAllSqlViewNames();
-
-    boolean isViewTableExists( String viewTableName );
-
-    String createView( SqlView sqlViewInstance );
+    String createViewTable( SqlView sqlViewInstance );
 
     void dropViewTable( String sqlViewName );
 

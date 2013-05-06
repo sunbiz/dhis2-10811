@@ -20,7 +20,7 @@
         <td>
     	    <select id="availableOperands" name="availableOperands" size="15" style="width:325px" multiple="multiple" ondblclick="moveSelectedById( 'availableOperands', 'selectedOperands' )">
     	    #foreach( $operand in $availableOperands )
-    	    	<option value="${operand.operandId}">$encoder.htmlEncode( $!operand.operandName )</option>
+    	    	<option value="${operand.operandExpression}">$encoder.htmlEncode( $!operand.operandName )</option>
     	    #end
    	        </select>
     	</td>
@@ -32,7 +32,7 @@
         <td>
             <select id="selectedOperands" name="selectedOperands" size="15" style="width:325px" multiple="multiple" ondblclick="moveSelectedById( 'selectedOperands', 'availableOperands' )">
             #foreach( $operand in $selectedOperands )
-                <option value="${operand.persistedId}">$encoder.htmlEncode( $!operand.getPrettyName() )</option>
+                <option value="${operand.operandExpression}">$encoder.htmlEncode( $!operand.getPrettyName() )</option>
             #end
             </select>
         </td>        

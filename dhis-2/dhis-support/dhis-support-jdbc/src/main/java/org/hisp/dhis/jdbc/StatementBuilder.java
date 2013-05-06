@@ -66,6 +66,12 @@ public interface StatementBuilder
     String getDoubleColumnType();
     
     /**
+     * Returns the value used to match a column to a regular expression.
+     * @return the value used to match a column to a regular expression.
+     */
+    String getRegexpMatch();
+    
+    /**
      * Creates a SELECT statement returning the identifier of the given Period.
      * 
      * @param period the Period to use in the statement. 
@@ -135,37 +141,7 @@ public interface StatementBuilder
     
     String getPatientFullName();
 
-    //--------------------------------------------------------------------------
-    // Archiving
-    //--------------------------------------------------------------------------
-
-    String archiveData( String startDate, String endDate );
-    
-    String unArchiveData( String startDate, String endDate );
-    
-    String deleteRegularOverlappingData();
-    
-    String deleteArchivedOverlappingData();
-    
-    String deleteOldestOverlappingDataValue();
-    
-    String deleteOldestOverlappingArchiveData();
-    
-    String archivePatientData ( String startDate, String endDate );
-    
-    String unArchivePatientData ( String startDate, String endDate );
-    
-    String deleteRegularOverlappingPatientData();
-    
-    String deleteArchivedOverlappingPatientData();
-    
-    String deleteOldestOverlappingPatientDataValue();
-    
-    String deleteOldestOverlappingPatientArchiveData();
-    
     String queryDataElementStructureForOrgUnit();
 
-    String queryRawDataElementsForOrgUnitBetweenPeriods( Integer orgUnitId, List<Integer> betweenPeriodIds);
-
-  
+    String queryRawDataElementsForOrgUnitBetweenPeriods( Integer orgUnitId, List<Integer> betweenPeriodIds );
 }

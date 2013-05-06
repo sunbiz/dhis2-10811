@@ -27,13 +27,18 @@ package org.hisp.dhis.system.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.validator.DateValidator;
-import org.apache.commons.validator.EmailValidator;
-import org.apache.commons.validator.UrlValidator;
+import org.apache.commons.validator.routines.DateValidator;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.hisp.dhis.dataelement.DataElement;
+
+import static org.hisp.dhis.dataelement.DataElement.*;
 
 /**
  * @author Lars Helge Overland
@@ -204,4 +209,75 @@ public class ValidationUtils
     {
         return "[" + longitude + "," + latitude + "]";
     }
+    
+    /**
+     * Checks if the given data value is valid according to the value type of the
+     * given data element. Considers the value to be valid if null or empty.
+     * Returns a string if the valid is invalid, possible
+     * values are:
+     * 
+     * <ul>
+     * <li>value_null_or_empty</li>
+     * <li>data_element_or_type_null_or_empty</li>
+     * <li>value_length_greater_than_max_length</li>
+     * <li>value_not_numeric</li>
+     * <li>value_not_integer</li>
+     * <li>value_not_positive_integer</li>
+     * <li>value_not_negative_integer</li>
+     * <li>value_is_zero_and_not_zero_significant</li>
+     * </ul>
+     * 
+     * @param value the data value.
+     * @param dataElement the data element.
+     * @return null if the value is valid, a string if not.
+     */
+    public static String dataValueIsValid( String value, DataElement dataElement )
+    {
+        if ( value == null || value.trim().isEmpty() )
+        {
+            return null;
+        }
+        
+        if ( dataElement == null || dataElement.getType() == null || dataElement.getType().isEmpty() )
+        {
+            return "data_element_or_type_null_or_empty";
+        }
+        
+        List<String> types = Arrays.asList( VALUE_TYPE_STRING, VALUE_TYPE_INT, VALUE_TYPE_NUMBER, VALUE_TYPE_POSITIVE_INT, VALUE_TYPE_NEGATIVE_INT );
+        
+        String type = dataElement.getDetailedNumberType();
+        
+        if ( types.contains( type ) && value.length() > 255 )
+        {
+            return "value_length_greater_than_max_length";
+        }
+        
+        if ( VALUE_TYPE_NUMBER.equals( type ) && !MathUtils.isNumeric( value ) )
+        {
+            return "value_not_numeric";
+        }
+        
+        if ( VALUE_TYPE_INT.equals( type ) && !MathUtils.isInteger( value ) )
+        {
+            return "value_not_integer";
+        }
+        
+        if ( VALUE_TYPE_POSITIVE_INT.equals( type ) && !MathUtils.isPositiveInteger( value ) )
+        {
+            return "value_not_positive_integer";
+        }
+        
+        if ( VALUE_TYPE_NEGATIVE_INT.equals( type ) && !MathUtils.isNegativeInteger( value ) )
+        {
+            return "value_not_negative_integer";
+        }
+        
+        if ( VALUE_TYPE_INT.equals( dataElement.getType() ) && MathUtils.isZero( value ) && 
+            !dataElement.isZeroIsSignificant() && !AGGREGATION_OPERATOR_AVERAGE.equals( dataElement.getAggregationOperator() ) )
+        {
+            return "value_is_zero_and_not_zero_significant";
+        }
+        
+        return null;
+    }    
 }

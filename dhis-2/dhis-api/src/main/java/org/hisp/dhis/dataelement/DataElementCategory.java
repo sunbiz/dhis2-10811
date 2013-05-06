@@ -27,14 +27,11 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.annotation.Scanned;
@@ -42,8 +39,13 @@ import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.concept.Concept;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * A Category is a dimension of a data element. DataElements can have sets of
@@ -55,7 +57,7 @@ import java.util.List;
  */
 @JacksonXmlRootElement( localName = "category", namespace = DxfNamespaces.DXF_2_0)
 public class DataElementCategory
-    extends BaseIdentifiableObject
+    extends DimensionalObject
 {
     /**
      * Determines if a de-serialized file is compatible with this class.
@@ -64,6 +66,8 @@ public class DataElementCategory
 
     public static final String DEFAULT_NAME = "default";
 
+    private boolean dataDimension;
+    
     private Concept concept;
 
     @Scanned
@@ -134,6 +138,11 @@ public class DataElementCategory
         return null;
     }
 
+    public List<IdentifiableObject> getDimensionItems()
+    {
+        return new ArrayList<IdentifiableObject>( categoryOptions );
+    }
+    
     // -------------------------------------------------------------------------
     // hashCode, equals and toString
     // -------------------------------------------------------------------------
@@ -174,7 +183,7 @@ public class DataElementCategory
     }
 
     // ------------------------------------------------------------------------
-    // Getters and setters
+    // Logic
     // ------------------------------------------------------------------------
 
     @Override
@@ -183,25 +192,27 @@ public class DataElementCategory
         return name != null && name.equals( DEFAULT_NAME );
     }
 
+    // ------------------------------------------------------------------------
+    // Getters and setters
+    // ------------------------------------------------------------------------
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public boolean isDataDimension()
+    {
+        return dataDimension;
+    }
+
+    public void setDataDimension( boolean dataDimension )
+    {
+        this.dataDimension = dataDimension;
+    }
+
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlElementWrapper( localName = "categoryOptions", namespace = DxfNamespaces.DXF_2_0)
-    @JacksonXmlProperty( localName = "categoryOption", namespace = DxfNamespaces.DXF_2_0)
-    public List<DataElementCategoryOption> getCategoryOptions()
-    {
-        return categoryOptions;
-    }
-
-    public void setCategoryOptions( List<DataElementCategoryOption> categoryOptions )
-    {
-        this.categoryOptions = categoryOptions;
-    }
-
-    @JsonProperty
-    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
     @JsonInclude( JsonInclude.Include.NON_NULL )
     public Concept getConcept()
     {
@@ -211,6 +222,21 @@ public class DataElementCategory
     public void setConcept( Concept concept )
     {
         this.concept = concept;
+    }
+
+    @JsonProperty
+    @JsonSerialize( contentAs = BaseIdentifiableObject.class )
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "categoryOptions", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "categoryOption", namespace = DxfNamespaces.DXF_2_0 )
+    public List<DataElementCategoryOption> getCategoryOptions()
+    {
+        return categoryOptions;
+    }
+
+    public void setCategoryOptions( List<DataElementCategoryOption> categoryOptions )
+    {
+        this.categoryOptions = categoryOptions;
     }
 
     @Override

@@ -32,20 +32,24 @@
 
 <h3>$i18n.getString( "create_new_data_element_category" )</h3>
 
-<form id="addDataElementCategoryForm" name="addDataElementCategoryForm" action="addDataElementCategory.action" method="post">
+<form id="addDataElementCategoryForm" name="addDataElementCategoryForm" action="addDataElementCategory.action" method="post" class="inputForm">
   <table>
     <tr>
-      <th colspan="4">$i18n.getString( "details" )</th>      
+      <th colspan="2">$i18n.getString( "details" )</th>      
     </tr>
     <tr>
       <td><label>$i18n.getString( "name" ) <em title="$i18n.getString( "required" )" class="required">*</em></label></td>
-      <td colspan="3"><input type="text" id="name" name="name" style="width:25em"/></td>
-    </tr>      
+      <td><input type="text" id="name" name="name"/></td>
+    </tr>
+    <tr>
+      <td><label for="dataDimension">$i18n.getString( "use_as_data_dimension" )</label></td>
+      <td><input type="checkbox" id="dataDimension" name="dataDimension" value="true" /></td>
+    </tr>
     <tr>
       <td><label>$i18n.getString( "concept_name" ) <em title="$i18n.getString( 'required' )" class="required">*</em></label></td>
       <td colspan="3">
 		<div style="inline">
-			<select id="conceptId" name="conceptId" style="width:305px">				
+			<select id="conceptId" name="conceptId">				
 				#foreach( $concept in $concepts )
 				<option value="$concept.id">$concept.name</option>
 				#end
@@ -54,7 +58,7 @@
 	  </td>
     </tr>   
     <tr>
-      <td colspan="4" style="height:15px"></td>
+      <td colspan="2" style="height:15px"></td>
     </tr>
   </table>  
   

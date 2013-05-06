@@ -53,7 +53,6 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
-import org.junit.Test;
 
 /**
  * @author joakibj, briane, eivinhb
@@ -154,17 +153,17 @@ public abstract class DataBrowserTest
         // Setup DataElements
         // ---------------------------------------------------------------------
 
-        dataElementA = super.createDataElement( 'A', DataElement.VALUE_TYPE_INT, DataElement.AGGREGATION_OPERATOR_SUM,
+        dataElementA = createDataElement( 'A', DataElement.VALUE_TYPE_INT, DataElement.AGGREGATION_OPERATOR_SUM,
             categoryCombo );
-        dataElementB = super.createDataElement( 'B', DataElement.VALUE_TYPE_BOOL, DataElement.AGGREGATION_OPERATOR_SUM,
+        dataElementB = createDataElement( 'B', DataElement.VALUE_TYPE_BOOL, DataElement.AGGREGATION_OPERATOR_SUM,
             categoryCombo );
-        dataElementC = super.createDataElement( 'C', DataElement.VALUE_TYPE_STRING, DataElement.AGGREGATION_OPERATOR_SUM,
+        dataElementC = createDataElement( 'C', DataElement.VALUE_TYPE_STRING, DataElement.AGGREGATION_OPERATOR_SUM,
             categoryCombo );
-        dataElementD = super.createDataElement( 'D', DataElement.VALUE_TYPE_INT, DataElement.AGGREGATION_OPERATOR_SUM,
+        dataElementD = createDataElement( 'D', DataElement.VALUE_TYPE_INT, DataElement.AGGREGATION_OPERATOR_SUM,
             categoryCombo );
-        dataElementE = super.createDataElement( 'E', DataElement.VALUE_TYPE_BOOL, DataElement.AGGREGATION_OPERATOR_SUM,
+        dataElementE = createDataElement( 'E', DataElement.VALUE_TYPE_BOOL, DataElement.AGGREGATION_OPERATOR_SUM,
             categoryCombo );
-        dataElementF = super.createDataElement( 'F', DataElement.VALUE_TYPE_STRING, DataElement.AGGREGATION_OPERATOR_SUM,
+        dataElementF = createDataElement( 'F', DataElement.VALUE_TYPE_STRING, DataElement.AGGREGATION_OPERATOR_SUM,
             categoryCombo );
 
         dataElementIds.add( dataElementService.addDataElement( dataElementA ) );
@@ -198,17 +197,17 @@ public abstract class DataBrowserTest
         PeriodType periodTypeA = periodTypeIt.next(); // Daily
         PeriodType periodTypeB = periodTypeIt.next(); // Weekly
 
-        Date mar01 = super.getDate( 2005, 3, 1 );
-        Date mar31 = super.getDate( 2005, 3, 31 );
-        Date apr01 = super.getDate( 2005, 4, 1 );
-        Date apr30 = super.getDate( 2005, 4, 30 );
-        Date may01 = super.getDate( 2005, 5, 1 );
-        Date may31 = super.getDate( 2005, 5, 31 );
+        Date mar01 = getDate( 2005, 3, 1 );
+        Date mar31 = getDate( 2005, 3, 31 );
+        Date apr01 = getDate( 2005, 4, 1 );
+        Date apr30 = getDate( 2005, 4, 30 );
+        Date may01 = getDate( 2005, 5, 1 );
+        Date may31 = getDate( 2005, 5, 31 );
 
-        periodA = super.createPeriod( periodTypeA, mar01, mar31 );
-        periodB = super.createPeriod( periodTypeA, apr01, apr30 );
-        periodC = super.createPeriod( periodTypeB, mar01, may31 );
-        periodD = super.createPeriod( periodTypeB, may01, may31 );
+        periodA = createPeriod( periodTypeA, mar01, mar31 );
+        periodB = createPeriod( periodTypeA, apr01, apr30 );
+        periodC = createPeriod( periodTypeB, mar01, may31 );
+        periodD = createPeriod( periodTypeB, may01, may31 );
 
         periodIds.add( periodService.addPeriod( periodA ) );
         periodIds.add( periodService.addPeriod( periodB ) );
@@ -219,9 +218,9 @@ public abstract class DataBrowserTest
         // Setup DataSets
         // ---------------------------------------------------------------------
 
-        dataSetA = super.createDataSet( 'A', periodTypeA );
-        dataSetB = super.createDataSet( 'B', periodTypeB );
-        dataSetC = super.createDataSet( 'C', periodTypeB );
+        dataSetA = createDataSet( 'A', periodTypeA );
+        dataSetB = createDataSet( 'B', periodTypeB );
+        dataSetC = createDataSet( 'C', periodTypeB );
 
         dataSetA.setDataElements( dataElementsA );
         dataSetB.setDataElements( dataElementsB );
@@ -235,13 +234,13 @@ public abstract class DataBrowserTest
         // Setup DataElementGroups
         // ---------------------------------------------------------------------
 
-        dataElementGroupA = super.createDataElementGroup( 'A' );
-        dataElementGroupB = super.createDataElementGroup( 'B' );
-        dataElementGroupC = super.createDataElementGroup( 'C' );
+        dataElementGroupA = createDataElementGroup( 'A' );
+        dataElementGroupB = createDataElementGroup( 'B' );
+        dataElementGroupC = createDataElementGroup( 'C' );
 
-        dataElementGroupA.setMembers( (Set<DataElement>) dataElementsA );
-        dataElementGroupB.setMembers( (Set<DataElement>) dataElementsB );
-        dataElementGroupC.setMembers( (Set<DataElement>) dataElementsC );
+        dataElementGroupA.setMembers( dataElementsA );
+        dataElementGroupB.setMembers( dataElementsB );
+        dataElementGroupC.setMembers( dataElementsC );
 
         dataElementGroupIds.add( dataElementService.addDataElementGroup( dataElementGroupA ) );
         dataElementGroupIds.add( dataElementService.addDataElementGroup( dataElementGroupB ) );
@@ -251,15 +250,15 @@ public abstract class DataBrowserTest
         // Setup OrganisationUnits
         // ---------------------------------------------------------------------
 
-        unitA = super.createOrganisationUnit( 'A' );
-        unitB = super.createOrganisationUnit( 'B', unitA );
-        unitC = super.createOrganisationUnit( 'C', unitA );
-        unitD = super.createOrganisationUnit( 'D', unitB );
-        unitE = super.createOrganisationUnit( 'E', unitB );
-        unitF = super.createOrganisationUnit( 'F', unitB );
-        unitG = super.createOrganisationUnit( 'G', unitF );
-        unitH = super.createOrganisationUnit( 'H', unitF );
-        unitI = super.createOrganisationUnit( 'I' );
+        unitA = createOrganisationUnit( 'A' );
+        unitB = createOrganisationUnit( 'B', unitA );
+        unitC = createOrganisationUnit( 'C', unitA );
+        unitD = createOrganisationUnit( 'D', unitB );
+        unitE = createOrganisationUnit( 'E', unitB );
+        unitF = createOrganisationUnit( 'F', unitB );
+        unitG = createOrganisationUnit( 'G', unitF );
+        unitH = createOrganisationUnit( 'H', unitF );
+        unitI = createOrganisationUnit( 'I' );
 
         organisationUnitIds.add( organisationUnitService.addOrganisationUnit( unitA ) );
         organisationUnitIds.add( organisationUnitService.addOrganisationUnit( unitB ) );
@@ -287,8 +286,8 @@ public abstract class DataBrowserTest
         orgUnitsB.add( unitE );
         orgUnitsB.add( unitF );
 
-        unitGroupA = super.createOrganisationUnitGroup( 'A' );
-        unitGroupB = super.createOrganisationUnitGroup( 'B' );
+        unitGroupA = createOrganisationUnitGroup( 'A' );
+        unitGroupB = createOrganisationUnitGroup( 'B' );
         
         unitGroupA.setMembers( (Set<OrganisationUnit>) orgUnitsA );
         unitGroupB.setMembers( (Set<OrganisationUnit>) orgUnitsB );
@@ -300,75 +299,70 @@ public abstract class DataBrowserTest
         // Setup DataValues
         // ---------------------------------------------------------------------
 
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodA, unitC, "90", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodA, unitD, "10", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodA, unitE, "35", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodA, unitF, "25", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodA, unitG, "20", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodA, unitH, "60", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodA, unitC, "90", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodA, unitD, "10", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodA, unitE, "35", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodA, unitF, "25", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodA, unitG, "20", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodA, unitH, "60", categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodB, unitC, "70", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodB, unitD, "40", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodB, unitE, "65", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodB, unitF, "55", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodB, unitG, "20", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodB, unitH, "15", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodB, unitC, "70", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodB, unitD, "40", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodB, unitE, "65", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodB, unitF, "55", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodB, unitG, "20", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodB, unitH, "15", categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodC, unitC, "95", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodC, unitD, "40", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodC, unitE, "45", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodC, unitF, "30", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodC, unitG, "50", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementA, periodC, unitH, "70", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodC, unitC, "95", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodC, unitD, "40", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodC, unitE, "45", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodC, unitF, "30", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodC, unitG, "50", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementA, periodC, unitH, "70", categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodA, unitC, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodA, unitD, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodA, unitE, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodA, unitF, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodA, unitG, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodA, unitH, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodA, unitC, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodA, unitD, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodA, unitE, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodA, unitF, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodA, unitG, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodA, unitH, T, categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodB, unitC, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodB, unitD, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodB, unitE, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodB, unitF, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodB, unitG, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodB, unitH, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodB, unitC, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodB, unitD, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodB, unitE, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodB, unitF, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodB, unitG, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodB, unitH, T, categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodC, unitC, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodC, unitD, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodC, unitE, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodC, unitF, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodC, unitG, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementB, periodC, unitH, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodC, unitC, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodC, unitD, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodC, unitE, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodC, unitF, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodC, unitG, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementB, periodC, unitH, T, categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementC, periodD, unitC, "String1", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementC, periodD, unitD, "String2", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementC, periodD, unitE, "String3", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementC, periodD, unitC, "String1", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementC, periodD, unitD, "String2", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementC, periodD, unitE, "String3", categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementD, periodA, unitC, "10", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementD, periodA, unitD, "20", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementD, periodA, unitE, "30", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementD, periodA, unitC, "10", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementD, periodA, unitD, "20", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementD, periodA, unitE, "30", categoryOptionCombo ) );
         
-        dataValueService.addDataValue( super.createDataValue( dataElementD, periodB, unitF, "40", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementD, periodB, unitG, "50", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementD, periodB, unitH, "60", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementD, periodB, unitF, "40", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementD, periodB, unitG, "50", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementD, periodB, unitH, "60", categoryOptionCombo ) );
         
-        dataValueService.addDataValue( super.createDataValue( dataElementE, periodC, unitC, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementE, periodC, unitD, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementE, periodC, unitE, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementE, periodC, unitC, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementE, periodC, unitD, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementE, periodC, unitE, T, categoryOptionCombo ) );
         
-        dataValueService.addDataValue( super.createDataValue( dataElementE, periodD, unitF, T, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementE, periodD, unitG, F, categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementE, periodD, unitH, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementE, periodD, unitF, T, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementE, periodD, unitG, F, categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementE, periodD, unitH, T, categoryOptionCombo ) );
 
-        dataValueService.addDataValue( super.createDataValue( dataElementF, periodA, unitC, "String4", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementF, periodA, unitD, "String5", categoryOptionCombo ) );
-        dataValueService.addDataValue( super.createDataValue( dataElementF, periodA, unitE, "String6", categoryOptionCombo ) );        
-    }
-    
-    @Test
-    public void test()
-    {
+        dataValueService.addDataValue( createDataValue( dataElementF, periodA, unitC, "String4", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementF, periodA, unitD, "String5", categoryOptionCombo ) );
+        dataValueService.addDataValue( createDataValue( dataElementF, periodA, unitE, "String6", categoryOptionCombo ) );        
     }
 }

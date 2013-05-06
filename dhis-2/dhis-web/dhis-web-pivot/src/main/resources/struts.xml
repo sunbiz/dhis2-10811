@@ -27,6 +27,12 @@
 			<result name="success" type="velocity-json">
 				/dhis-web-pivot/jsonminOrganisationUnitChildren.vm</result>
 		</action>
-
-	</package>
+	
+	    <!-- i18n -->
+	
+	    <action name="i18n" class="org.hisp.dhis.pivot.action.NoAction">
+			<result name="success" type="velocity-javascript">/dhis-web-pivot/i18n.vm</result>
+	    </action>
+	
+		</package>
 </struts>

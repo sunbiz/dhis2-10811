@@ -5,11 +5,16 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
     <!-- Store definitions -->
-
+	
+	<bean id="org.hisp.dhis.program.ProgramIndicatorStore"
+		class="org.hisp.dhis.program.hibernate.HibernateProgramIndicatorStore">
+	<property name="clazz" value="org.hisp.dhis.program.ProgramIndicator" />
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
 	<bean id="org.hisp.dhis.caseaggregation.CaseAggregationConditionManager"
 		class="org.hisp.dhis.caseaggregation.jdbc.JdbcCaseAggregationConditionManager">
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
-		<property name="statementBuilder" ref="statementBuilder" />
 	</bean>
 	
 	<bean id="org.hisp.dhis.caseaggregation.CaseAggregationConditionStore"
@@ -52,13 +57,13 @@
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageStore" 
-		class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
+		class="org.hisp.dhis.program.hibernate.HibernateProgramStageStore">
 		<property name="clazz" value="org.hisp.dhis.program.ProgramStage" />
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<bean id="org.hisp.dhis.program.ProgramStageSectionStore" 
-		class="org.hisp.dhis.common.hibernate.HibernateIdentifiableObjectStore">
+		class="org.hisp.dhis.program.hibernate.HibernateProgramStageSectionStore">
 		<property name="clazz" value="org.hisp.dhis.program.ProgramStageSection" />
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
@@ -175,15 +180,10 @@
 		<property name="aggregationConditionManager"
 			ref="org.hisp.dhis.caseaggregation.CaseAggregationConditionManager" />
 		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
-		<property name="patientService" ref="org.hisp.dhis.patient.PatientService" />
-		<property name="dataValueService"
-			ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
 		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 		<property name="patientAttributeService"
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
 		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
 	</bean>
 
@@ -328,6 +328,16 @@
 		<property name="patientAuditStore" ref="org.hisp.dhis.patient.PatientAuditStore" />
 	</bean>
 
+	<bean id="org.hisp.dhis.program.ProgramIndicatorService"
+		class="org.hisp.dhis.program.DefaultProgramIndicatorService">
+		<property name="programIndicatorStore" ref="org.hisp.dhis.program.ProgramIndicatorStore" />
+		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
+		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
+		<property name="patientDataValueService" ref="org.hisp.dhis.patientdatavalue.PatientDataValueService" />
+		<property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
+		<property name="i18nService" ref="org.hisp.dhis.i18n.I18nService" />
+	</bean>
+	
 	<!-- DeletionHandlers -->
 
 	<bean id="org.hisp.dhis.patient.PatientIdentifierDeletionHandler"
@@ -447,6 +457,8 @@
 		class="org.hisp.dhis.patient.scheduling.SendScheduledMessageTask">
 		<property name="programStageInstanceService" ref="org.hisp.dhis.program.ProgramStageInstanceService" />
         <property name="outboundSmsService" ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />
+        <property name="programInstanceService" ref="org.hisp.dhis.program.ProgramInstanceService" />
+        <property name="notifier" ref="notifier" />
         <property name="jdbcTemplate" ref="jdbcTemplate" />
     </bean>
 
@@ -519,7 +531,7 @@
 		<property name="dataElementService"
 			ref="org.hisp.dhis.dataelement.DataElementService" />
 		<property name="dataEntryFormService"
-			ref="org.hisp.dhis.dataentryform.DataEntryFormService" />		
+			ref="org.hisp.dhis.dataentryform.DataEntryFormService" />
 	</bean>
 
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

@@ -31,6 +31,8 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
 import net.sf.jasperreports.engine.JRDataSource;
 
 /**
@@ -257,6 +259,13 @@ public interface Grid
      * @param rs the result set.
      */
     Grid addHeaders( ResultSet rs );
+
+    /**
+     * Adds a set of headers based on the column names of the given SQL row set.
+     * 
+     * @param rs the result set.
+     */
+    Grid addHeaders( SqlRowSet rs );
     
     /**
      * Moves the cursor the next row and adds values for each column of the given
@@ -265,4 +274,12 @@ public interface Grid
      * @param rs the result set.
      */
     Grid addRows( ResultSet rs );
+    
+    /**
+     * Moves the cursor the next row and adds values for each column of the given
+     * SQL row set.
+     * 
+     * @param rs the row set.
+     */
+    Grid addRows( SqlRowSet rs );
 }

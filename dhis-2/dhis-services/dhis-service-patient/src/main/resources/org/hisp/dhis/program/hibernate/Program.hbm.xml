@@ -19,9 +19,9 @@
 
     <property name="version" />
 
-    <property name="dateOfEnrollmentDescription" type="text" not-null="true" />
+    <property name="dateOfEnrollmentDescription" type="text" />
 
-    <property name="dateOfIncidentDescription" type="text" not-null="true" />
+    <property name="dateOfIncidentDescription" type="text" />
 
     <set name="programStages" order-by="mindaysfromstart" cascade="all">
       <key column="programid" />
@@ -73,7 +73,21 @@
 		<many-to-many class="org.hisp.dhis.user.UserAuthorityGroup"
 			column="userroleid" foreign-key="fk_program_userroles"/>
 	</set>
-		
+			
+ 	<property name="remindCompleted" />
+ 
+ 	<set name="patientReminders" order-by="daysAllowedSendMessage" cascade="all">
+      <key column="programid" />
+      <one-to-many class="org.hisp.dhis.patient.PatientReminder" />
+    </set>
+    
+    <property name="disableRegistrationFields" />
+    
+    <set name="organisationUnitGroups" table="orgunitgroupprograms">
+	  <key column="programid" />
+	  <many-to-many class="org.hisp.dhis.organisationunit.OrganisationUnitGroup" column="orgunitgroupid"/>
+	</set>
+	
 	<!-- Access properties -->
 	
     <many-to-one name="user" class="org.hisp.dhis.user.User" column="userid" foreign-key="fk_program_userid" />

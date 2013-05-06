@@ -286,7 +286,7 @@ public class GetPatientProgramListAction
         Collection<Program> programByCurrentUser = programService.getProgramsByCurrentUser();
         for ( ProgramInstance programInstance : programInstanceService.getProgramInstances( patient ) )
         {
-            if ( !programInstance.isCompleted() && programByCurrentUser.contains( programInstance.getProgram() ) )
+            if ( programInstance.getStatus() == ProgramInstance.STATUS_ACTIVE && programByCurrentUser.contains( programInstance.getProgram() ) )
             {
                 programInstances.add( programInstance );
             }
@@ -318,7 +318,7 @@ public class GetPatientProgramListAction
 
         for ( ProgramInstance each : listOfProgramInstance )
         {
-            if ( each.isCompleted() )
+            if ( each.getStatus() == ProgramInstance.STATUS_COMPLETED )
             {
                 this.listOfCompletedProgram.add( each );
             }
@@ -342,13 +342,13 @@ public class GetPatientProgramListAction
             }
             else if ( !program.isSingleEvent() )
             {
-                if ( programInstanceService.getProgramInstances( patient, program, false ).size() == 0 )
+                if ( programInstanceService.getProgramInstances( patient, program, ProgramInstance.STATUS_ACTIVE ).size() == 0 )
                 {
                     programs.add( program );
                 }
                 else if ( programInstanceService.getProgramInstances( patient, program ).size() > 0
                     && !program.getOnlyEnrollOnce()
-                    && programInstanceService.getProgramInstances( patient, program, false ).size() == 0 )
+                    && programInstanceService.getProgramInstances( patient, program, ProgramInstance.STATUS_ACTIVE ).size() == 0 )
                 {
                     programs.add( program );
                 }

@@ -1,4 +1,7 @@
 { "patientProperties": [
+	
+  #if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
+  
   {
 	"id": "fixedAttr_firstName",
 	"name": "$i18n.getString('first_name')",
@@ -57,6 +60,7 @@
 					"${patientAttribute.valueType}"
 				 #end
   }#if( $velocityCount < $size ),#end
+  #end
   #end
   ]
 }

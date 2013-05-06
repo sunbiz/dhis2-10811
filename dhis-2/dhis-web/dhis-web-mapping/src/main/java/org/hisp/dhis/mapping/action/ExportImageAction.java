@@ -40,6 +40,7 @@ import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fop.svg.PDFTranscoder;
 import org.hisp.dhis.system.util.CodecUtils;
 import org.hisp.dhis.util.ContextUtils;
 import org.hisp.dhis.util.StreamActionSupport;
@@ -54,16 +55,13 @@ public class ExportImageAction
 {
     private static final Log log = LogFactory.getLog( ExportImageAction.class );
 
+    private static final String TYPE_PNG = "png";
+
+    private static final String TYPE_PDF = "pdf";
+    
     // -------------------------------------------------------------------------
     // Input & Output
     // -------------------------------------------------------------------------
-
-    private String svg;
-
-    public void setSvg( String svg )
-    {
-        this.svg = svg;
-    }
 
     private String title;
 
@@ -71,17 +69,42 @@ public class ExportImageAction
     {
         this.title = title;
     }
+    
+    private String svg;
+
+    public void setSvg( String svg )
+    {
+        this.svg = svg;
+    }
+    
+    private String type;
+
+    public void setType( String type )
+    {
+        this.type = type;
+    }
 
     @Override
     protected String execute( HttpServletResponse response, OutputStream out )
         throws Exception
     {
-        if ( svg == null )
+        if ( svg != null )
         {
-            log.info( "Error: SVG is empty" );
+            if ( type == null || TYPE_PNG.equals( type ) )
+            {
+                convertToPNG( new StringBuffer( this.svg ), out );
+            }
+            else if ( TYPE_PDF.equals( type ) )
+            {
+                convertToPDF( new StringBuffer( this.svg ), out );
+            }
         }
+        else
+        {
+            log.info( "svg = " + svg + ", type = " + type );
 
-        convertToPNG( new StringBuffer( this.svg ), out );
+            return NONE;
+        }
 
         return SUCCESS;
     }
@@ -95,7 +118,7 @@ public class ExportImageAction
     @Override
     protected String getFilename()
     {
-        return "dhis2-gis_" + CodecUtils.filenameEncode( this.title ) + ".png";
+        return "dhis2_map_" + CodecUtils.filenameEncode( this.title ) + "." + CodecUtils.filenameEncode( type );
     }
 
     public void convertToPNG( StringBuffer buffer, OutputStream out )
@@ -104,6 +127,18 @@ public class ExportImageAction
         PNGTranscoder t = new PNGTranscoder();
 
         t.addTranscodingHint( ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE );
+
+        TranscoderInput input = new TranscoderInput( new StringReader( buffer.toString() ) );
+
+        TranscoderOutput output = new TranscoderOutput( out );
+
+        t.transcode( input, output );
+    }
+
+    public void convertToPDF( StringBuffer buffer, OutputStream out )
+        throws TranscoderException
+    {
+        PDFTranscoder t = new PDFTranscoder();
 
         TranscoderInput input = new TranscoderInput( new StringReader( buffer.toString() ) );
 

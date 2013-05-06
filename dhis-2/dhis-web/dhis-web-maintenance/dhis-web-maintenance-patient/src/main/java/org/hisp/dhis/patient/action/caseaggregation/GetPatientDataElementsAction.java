@@ -28,10 +28,12 @@
 package org.hisp.dhis.patient.action.caseaggregation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramService;
@@ -124,6 +126,8 @@ public class GetPatientDataElementsAction
             dataElements = new ArrayList<DataElement>( programStageDataElementService
                 .getListDataElement( programStageService.getProgramStage( programStageId ) ) );
         }
+        
+        Collections.sort( dataElements, IdentifiableObjectNameComparator.INSTANCE );
 
         return SUCCESS;
     }

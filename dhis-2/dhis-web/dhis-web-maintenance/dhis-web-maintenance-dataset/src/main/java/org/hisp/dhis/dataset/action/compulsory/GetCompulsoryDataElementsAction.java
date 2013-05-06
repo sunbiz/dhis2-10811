@@ -108,22 +108,28 @@ public class GetCompulsoryDataElementsAction
 
         selectedOperands = new ArrayList<DataElementOperand>( dataSet.getCompulsoryDataElementOperands() );
 
-        availableOperands = new ArrayList<DataElementOperand>( dataElementCategoryService.getOperands( dataSet
-            .getDataElements() ) );
+        availableOperands = new ArrayList<DataElementOperand>( dataElementCategoryService.getOperands( dataSet.getDataElements() ) );
         
-        for ( DataElementOperand selectedOperand : selectedOperands )
+        Iterator<DataElementOperand> availableIter = availableOperands.iterator();
+
+        // ---------------------------------------------------------------------
+        // Remove already selected operands - must check manually since selected
+        // operands are persisted while available operands are generated
+        // ---------------------------------------------------------------------
+
+        while ( availableIter.hasNext() )
         {
-            Iterator<DataElementOperand> availableIter = availableOperands.iterator();
-        
-            while ( availableIter.hasNext() )
+            DataElementOperand availableOperand = availableIter.next();
+            
+            for ( DataElementOperand selectedOperand : selectedOperands )
             {
-                if ( selectedOperand.getPersistedId().equals( availableIter.next().getOperandId() ) )
+                if ( availableOperand.getOperandExpression().equals( selectedOperand.getOperandExpression() ) )
                 {
                     availableIter.remove();
                 }
             }
         }
-
+        
         Collections.sort( availableOperands, new DataElementOperandNameComparator() );
 
         return SUCCESS;

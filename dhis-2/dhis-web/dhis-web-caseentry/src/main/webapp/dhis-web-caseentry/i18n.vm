@@ -186,4 +186,6 @@ prev: '$encoder.jsEscape($i18n.getString( 'prev' ) , "'")',
 next: '$encoder.jsEscape($i18n.getString( 'next' ) , "'")',
 confirm_delete_favorite: '$encoder.jsEscape($i18n.getString( 'confirm_delete_favorite' ) , "'")',
 home: '$encoder.jsEscape($i18n.getString( 'home' ) , "'")',
+aggregate_options: '$encoder.jsEscape($i18n.getString( 'aggregate_options' ) , "'")',
+display_totals: '$encoder.jsEscape($i18n.getString( 'display_totals' ) , "'")',
 };

@@ -29,18 +29,21 @@ package org.hisp.dhis.program.hibernate;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hisp.dhis.hibernate.HibernateGenericStore;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.patient.PatientReminder;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceStore;
+import org.hisp.dhis.program.SchedulingProgramObject;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author Abyot Asalefew
@@ -64,11 +67,11 @@ public class HibernateProgramInstanceStore
     // -------------------------------------------------------------------------
     // Implemented methods
     // -------------------------------------------------------------------------
-    
+
     @SuppressWarnings( "unchecked" )
-    public Collection<ProgramInstance> get( boolean completed )
+    public Collection<ProgramInstance> get( Integer status )
     {
-        return getCriteria( Restrictions.eq( "completed", completed ) ).list();
+        return getCriteria( Restrictions.eq( "status", status ) ).list();
     }
 
     @SuppressWarnings( "unchecked" )
@@ -84,15 +87,15 @@ public class HibernateProgramInstanceStore
     }
 
     @SuppressWarnings( "unchecked" )
-    public Collection<ProgramInstance> get( Program program, boolean completed )
+    public Collection<ProgramInstance> get( Program program, Integer status )
     {
-        return getCriteria( Restrictions.eq( "program", program ), Restrictions.eq( "completed", completed ) ).list();
+        return getCriteria( Restrictions.eq( "program", program ), Restrictions.eq( "status", status ) ).list();
     }
 
     @SuppressWarnings( "unchecked" )
-    public Collection<ProgramInstance> get( Collection<Program> programs, boolean completed )
+    public Collection<ProgramInstance> get( Collection<Program> programs, Integer status )
     {
-        return getCriteria( Restrictions.in( "program", programs ), Restrictions.eq( "completed", completed ) ).list();
+        return getCriteria( Restrictions.in( "program", programs ), Restrictions.eq( "status", status ) ).list();
     }
 
     @SuppressWarnings( "unchecked" )
@@ -102,9 +105,9 @@ public class HibernateProgramInstanceStore
     }
 
     @SuppressWarnings( "unchecked" )
-    public Collection<ProgramInstance> get( Patient patient, boolean completed )
+    public Collection<ProgramInstance> get( Patient patient, Integer status )
     {
-        return getCriteria( Restrictions.eq( "patient", patient ), Restrictions.eq( "completed", completed ) ).list();
+        return getCriteria( Restrictions.eq( "patient", patient ), Restrictions.eq( "status", status ) ).list();
     }
 
     @SuppressWarnings( "unchecked" )
@@ -114,10 +117,10 @@ public class HibernateProgramInstanceStore
     }
 
     @SuppressWarnings( "unchecked" )
-    public Collection<ProgramInstance> get( Patient patient, Program program, boolean completed )
+    public Collection<ProgramInstance> get( Patient patient, Program program, Integer status )
     {
         return getCriteria( Restrictions.eq( "patient", patient ), Restrictions.eq( "program", program ),
-            Restrictions.eq( "completed", completed ) ).list();
+            Restrictions.eq( "status", status ) ).list();
     }
 
     @SuppressWarnings( "unchecked" )
@@ -176,57 +179,94 @@ public class HibernateProgramInstanceStore
         return rs != null ? rs.intValue() : 0;
     }
 
-    public int count( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate, boolean completed )
+    public int countByStatus( Integer status, Program program, Collection<Integer> orgunitIds, Date startDate,
+        Date endDate )
     {
-        Criteria criteria = getCriteria( Restrictions.eq( "program", program ) );
-        criteria.createAlias( "patient", "patient" ).createAlias( "patient.organisationUnit", "organisationUnit" )
-            .add( Restrictions.in( "organisationUnit.id", orgunitIds ) )
-            .add( Restrictions.eq( "completed", completed ) );
-        if ( completed )
-        {
-            criteria.add( Restrictions.between( "endDate", startDate, endDate ) );
-        }
-        else
-        {
-            criteria.add( Restrictions.between( "enrollmentDate", startDate, endDate ) );
-        }
+        Number rs = (Number) getCriteria( Restrictions.eq( "program", program ),
+            Restrictions.between( "endDate", startDate, endDate ) ).createAlias( "patient", "patient" )
+            .createAlias( "patient.organisationUnit", "organisationUnit" )
+            .add( Restrictions.in( "organisationUnit.id", orgunitIds ) ).add( Restrictions.eq( "status", status ) )
+            .setProjection( Projections.projectionList().add( Projections.countDistinct( "id" ) ) ).uniqueResult();
 
-        Number rs = (Number) criteria.setProjection( Projections.rowCount() ).uniqueResult();
         return rs != null ? rs.intValue() : 0;
     }
 
     @SuppressWarnings( "unchecked" )
-    public Collection<ProgramInstance> getUnenrollment( Program program, Collection<Integer> orgunitIds,
+    public Collection<ProgramInstance> getByStatus( Integer status, Program program, Collection<Integer> orgunitIds,
         Date startDate, Date endDate )
     {
-        return getCriteria( Restrictions.eq( "program", program ), Restrictions.ge( "enrollmentDate", startDate ),
-            Restrictions.le( "enrollmentDate", endDate ) ).createAlias( "patient", "patient" )
-            .createAlias( "programStageInstances", "programStageInstance" )
-            .createAlias( "patient.organisationUnit", "organisationUnit" )
-            .add( Restrictions.in( "organisationUnit.id", orgunitIds ) ).add( Restrictions.eq( "completed", true ) )
-            .add( Restrictions.eq( "programStageInstance.completed", false ) ).list();
-    }
-
-    public int countUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate )
-    {
-        Number rs = (Number) getCriteria( Restrictions.eq( "program", program ),
-            Restrictions.ge( "endDate", startDate ), Restrictions.le( "endDate", endDate ) )
-            .createAlias( "patient", "patient" ).createAlias( "programStageInstances", "programStageInstance" )
-            .createAlias( "patient.organisationUnit", "organisationUnit" )
-            .add( Restrictions.in( "organisationUnit.id", orgunitIds ) ).add( Restrictions.eq( "completed", true ) )
-            .add( Restrictions.eq( "programStageInstance.completed", false ) )
-            .setProjection( Projections.projectionList().add( Projections.countDistinct( "id" ) ) ).uniqueResult();
-
-        return rs != null ? rs.intValue() : 0;
+        return getCriteria( Restrictions.eq( "program", program ), Restrictions.between( "endDate", startDate, endDate ) )
+            .createAlias( "patient", "patient" ).createAlias( "patient.organisationUnit", "organisationUnit" )
+            .add( Restrictions.in( "organisationUnit.id", orgunitIds ) ).add( Restrictions.eq( "status", status ) )
+            .list();
     }
 
     public void removeProgramEnrollment( ProgramInstance programInstance )
     {
         String sql = "delete from programstageinstance where programinstanceid=" + programInstance.getId();
         jdbcTemplate.execute( sql );
-        
+
         sql = "delete from programinstance where programinstanceid=" + programInstance.getId();
         jdbcTemplate.execute( sql );
+    }
+
+    public Collection<SchedulingProgramObject> getSendMesssageEvents( String dateToCompare )
+    {
+        String sql = "SELECT pi.programinstanceid, p.phonenumber, prm.templatemessage, "
+            + "         p.firstname, p.middlename, p.lastname, org.name as orgunitName, "
+            + "         pg.name as programName, pi.dateofincident , "
+            + "         pi.enrollmentdate,(DATE(now()) - DATE(pi.enrollmentdate) ) as days_since_erollment_date, "
+            + "         (DATE(now()) - DATE(pi.dateofincident) ) as days_since_incident_date "
+            + "       FROM patient p INNER JOIN programinstance pi "
+            + "              ON p.patientid=pi.patientid INNER JOIN program pg "
+            + "              ON pg.programid=pi.programid INNER JOIN organisationunit org "
+            + "              ON org.organisationunitid = p.organisationunitid INNER JOIN patientreminder prm "
+            + "              ON prm.programid = pi.programid " 
+            + "       WHERE pi.status= " + ProgramInstance.STATUS_ACTIVE
+            + "         and p.phonenumber is not NULL and p.phonenumber != ''   "
+            + "         and prm.templatemessage is not NULL and prm.templatemessage != ''   "
+            + "         and pg.type=1 and prm.daysallowedsendmessage is not null    "
+            + "         and ( DATE(now()) - DATE(pi." + dateToCompare + ") ) = prm.daysallowedsendmessage "
+            + "         and prm.dateToCompare='" + dateToCompare + "'";
+        
+        SqlRowSet rs = jdbcTemplate.queryForRowSet( sql );
+
+        int cols = rs.getMetaData().getColumnCount();
+
+        Collection<SchedulingProgramObject> schedulingProgramObjects = new HashSet<SchedulingProgramObject>();
+
+        while ( rs.next() )
+        {
+            String message = "";
+            for ( int i = 1; i <= cols; i++ )
+            {
+                message = rs.getString( "templatemessage" );
+                String patientName = rs.getString( "firstName" );
+                String organisationunitName = rs.getString( "orgunitName" );
+                String programName = rs.getString( "programName" );
+                String incidentDate = rs.getString( "dateofincident" ).split( " " )[0];// just get date, remove timestamp
+                String daysSinceIncidentDate = rs.getString( "days_since_incident_date" );
+                String erollmentDate = rs.getString( "enrollmentdate" ).split( " " )[0];// just get date, remove timestamp
+                String daysSinceEnrollementDate = rs.getString( "days_since_erollment_date" );
+
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_PATIENT_NAME, patientName );
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_PROGRAM_NAME, programName );
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_ORGUNIT_NAME, organisationunitName );
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_INCIDENT_DATE, incidentDate );
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_ENROLLMENT_DATE, erollmentDate );
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_DAYS_SINCE_ENROLLMENT_DATE, daysSinceEnrollementDate );
+                message = message.replace( PatientReminder.TEMPLATE_MESSSAGE_DAYS_SINCE_INCIDENT_DATE, daysSinceIncidentDate );
+            }
+
+            SchedulingProgramObject schedulingProgramObject = new SchedulingProgramObject();
+            schedulingProgramObject.setProgramInstanceId( rs.getInt( "programinstanceid" ) );
+            schedulingProgramObject.setPhoneNumber( rs.getString( "phonenumber" ) );
+            schedulingProgramObject.setMessage( message );
+
+            schedulingProgramObjects.add( schedulingProgramObject );
+        }
+
+        return schedulingProgramObjects;
     }
 
 }

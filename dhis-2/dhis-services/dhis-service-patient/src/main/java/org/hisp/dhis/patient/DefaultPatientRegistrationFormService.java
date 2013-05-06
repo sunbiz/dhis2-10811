@@ -246,7 +246,6 @@ public class DefaultPatientRegistrationFormService
                 }
                 else
                 {
-
                     // Get value
                     String value = "";
                     if ( patient != null )
@@ -304,7 +303,15 @@ public class DefaultPatientRegistrationFormService
         }
         inputHtml += "}}\" ";
 
-        if ( attribute.getValueType().equals( PatientAttribute.TYPE_BOOL ) )
+        if ( attribute.getValueType().equals( PatientAttribute.TYPE_TRUE_ONLY ) )
+        {
+            inputHtml += " type='checkbox' value='true' ";
+            if ( value.equals( "true" ) )
+            {
+                inputHtml += " checked ";
+            }
+        }
+        else if ( attribute.getValueType().equals( PatientAttribute.TYPE_BOOL ) )
         {
             inputHtml = inputHtml.replaceFirst( "input", "select" ) + ">";
 

@@ -79,6 +79,13 @@ public class UpdateDataElementCategoryAction
         this.name = name;
     }
 
+    private boolean dataDimension;
+
+    public void setDataDimension( boolean dataDimension )
+    {
+        this.dataDimension = dataDimension;
+    }
+
     private Integer conceptId;
 
     public void setConceptId( Integer conceptId )
@@ -101,6 +108,7 @@ public class UpdateDataElementCategoryAction
     {
         DataElementCategory dataElementCategory = dataElementCategoryService.getDataElementCategory( id );
         dataElementCategory.setName( name );
+        dataElementCategory.setDataDimension( dataDimension );
         dataElementCategory.setConcept( conceptService.getConcept( conceptId ) );
 
         List<DataElementCategoryOption> options = new ArrayList<DataElementCategoryOption>();

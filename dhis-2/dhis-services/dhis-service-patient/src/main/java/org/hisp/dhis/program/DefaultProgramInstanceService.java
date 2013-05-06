@@ -41,6 +41,7 @@ import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientIdentifier;
 import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientReminder;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValue;
 import org.hisp.dhis.patientattributevalue.PatientAttributeValueService;
 import org.hisp.dhis.patientdatavalue.PatientDataValue;
@@ -105,9 +106,9 @@ public class DefaultProgramInstanceService
         return programInstanceStore.get( id );
     }
 
-    public Collection<ProgramInstance> getProgramInstances( boolean completed )
+    public Collection<ProgramInstance> getProgramInstances( Integer status )
     {
-        return programInstanceStore.get( completed );
+        return programInstanceStore.get( status );
     }
 
     public void updateProgramInstance( ProgramInstance programInstance )
@@ -125,14 +126,14 @@ public class DefaultProgramInstanceService
         return programInstanceStore.get( programs );
     }
 
-    public Collection<ProgramInstance> getProgramInstances( Collection<Program> programs, boolean completed )
+    public Collection<ProgramInstance> getProgramInstances( Collection<Program> programs, Integer status )
     {
-        return programInstanceStore.get( programs, completed );
+        return programInstanceStore.get( programs, status );
     }
 
-    public Collection<ProgramInstance> getProgramInstances( Program program, boolean completed )
+    public Collection<ProgramInstance> getProgramInstances( Program program, Integer status )
     {
-        return programInstanceStore.get( program, completed );
+        return programInstanceStore.get( program, status );
     }
 
     public Collection<ProgramInstance> getProgramInstances( Patient patient )
@@ -140,9 +141,9 @@ public class DefaultProgramInstanceService
         return programInstanceStore.get( patient );
     }
 
-    public Collection<ProgramInstance> getProgramInstances( Patient patient, boolean completed )
+    public Collection<ProgramInstance> getProgramInstances( Patient patient, Integer status )
     {
-        return programInstanceStore.get( patient, completed );
+        return programInstanceStore.get( patient, status );
     }
 
     public Collection<ProgramInstance> getProgramInstances( Patient patient, Program program )
@@ -150,9 +151,9 @@ public class DefaultProgramInstanceService
         return programInstanceStore.get( patient, program );
     }
 
-    public Collection<ProgramInstance> getProgramInstances( Patient patient, Program program, boolean completed )
+    public Collection<ProgramInstance> getProgramInstances( Patient patient, Program program, Integer status )
     {
-        return programInstanceStore.get( patient, program, completed );
+        return programInstanceStore.get( patient, program, status );
     }
 
     public Collection<ProgramInstance> getProgramInstances( Program program, OrganisationUnit organisationUnit )
@@ -348,24 +349,33 @@ public class DefaultProgramInstanceService
         return grid;
     }
 
-    @Override
-    public Collection<ProgramInstance> getUnenrollment( Program program, Collection<Integer> orgunitIds,
+    public int countProgramInstancesByStatus( Integer status, Program program, Collection<Integer> orgunitIds,
         Date startDate, Date endDate )
     {
-        return programInstanceStore.getUnenrollment( program, orgunitIds, startDate, endDate );
+        return programInstanceStore.countByStatus( status, program, orgunitIds, startDate, endDate );
     }
 
-    @Override
-    public int countUnenrollment( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate )
+    public Collection<ProgramInstance> getProgramInstancesByStatus( Integer status, Program program,
+        Collection<Integer> orgunitIds, Date startDate, Date endDate )
     {
-        return programInstanceStore.countUnenrollment( program, orgunitIds, startDate, endDate );
+        return programInstanceStore.getByStatus( status, program, orgunitIds, startDate, endDate );
     }
 
     public void removeProgramEnrollment( ProgramInstance programInstance )
     {
         programInstanceStore.removeProgramEnrollment( programInstance );
     }
-    
+
+    public Collection<SchedulingProgramObject> getSendMesssageEvents()
+    {
+        Collection<SchedulingProgramObject> result = programInstanceStore
+            .getSendMesssageEvents( PatientReminder.ENROLLEMENT_DATE_TO_COMPARE );
+
+        result.addAll( programInstanceStore.getSendMesssageEvents( PatientReminder.INCIDENT_DATE_TO_COMPARE ) );
+
+        return result;
+    }
+
     // -------------------------------------------------------------------------
     // due-date && report-date
     // -------------------------------------------------------------------------
@@ -424,13 +434,6 @@ public class DefaultProgramInstanceService
                 }
             }
         }
-    }
-
-    @Override
-    public int countProgramInstances( Program program, Collection<Integer> orgunitIds, Date startDate, Date endDate,
-        boolean completed )
-    {
-        return programInstanceStore.count( program, orgunitIds, startDate, endDate, completed );
     }
 
 }

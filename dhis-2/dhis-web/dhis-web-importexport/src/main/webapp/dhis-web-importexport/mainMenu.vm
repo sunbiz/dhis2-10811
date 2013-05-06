@@ -6,6 +6,7 @@
   <li><a href="displayImportDataValueForm.action?importFormat=xml">$i18n.getString( "xml_data_import" )&nbsp;</a></li>
   <li><a href="displayImportDataValueForm.action?importFormat=csv">$i18n.getString( "csv_data_import" )&nbsp;</a></li>
   <li><a href="displayExternalImportMenu.action">$i18n.getString( "dhis14_import" )&nbsp;</a></li>
+  <li><a href="setImportFormat.action?importFormat=DXF">$i18n.getString( "gml_import" )&nbsp;</a></li>
 </ul>
 
 <h2>$i18n.getString( "export" )&nbsp;</h2>
@@ -20,10 +21,5 @@
 
 <ul>
   <li><a href="displayConfigDhis14Form.action">$i18n.getString( "dhis14_file_configuration" )&nbsp;</a></li>
-</ul>
-
-<h2>$i18n.getString( "integration" )&nbsp;</h2>
-
-<ul>
   <li><a href="displayRoutes.action">$i18n.getString( "integration_configuration" )&nbsp;</a></li>
 </ul>

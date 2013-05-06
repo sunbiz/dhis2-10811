@@ -38,4 +38,9 @@ public interface AnalyticsTableService
      * @param taskId the TaskId.
      */
     void update( boolean last3Years, TaskId id );
+    
+    /**
+     * Drops analytics and and temporary analytics tables between 1900 and 2100.
+     */
+    void dropTables();
 }

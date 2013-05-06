@@ -530,6 +530,17 @@
 		class="org.hisp.dhis.light.message.action.SendFeedbackAction" scope="prototype">
 		<property name="messageService" ref="org.hisp.dhis.message.MessageService" />
 	</bean>
+	
+	<!-- Anonymous -->
+	
+	<bean
+		id="org.hisp.dhis.light.anonymous.action.SearchOrgUnitAction"
+		class="org.hisp.dhis.light.anonymous.action.SearchOrgUnitAction"
+		scope="prototype">
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+		<property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+	</bean>
+	
 	<bean
 		id="org.hisp.dhis.light.anonymous.action.GetAllAnonymousProgramAction"
 		class="org.hisp.dhis.light.anonymous.action.GetAllAnonymousProgramAction"

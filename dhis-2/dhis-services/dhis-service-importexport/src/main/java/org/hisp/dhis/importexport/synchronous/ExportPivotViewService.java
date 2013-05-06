@@ -67,7 +67,7 @@ public class ExportPivotViewService
     public enum RequestType
     {
         DATAVALUE, INDICATORVALUE
-    };
+    }
 
     public static int PRECISION = 5;
 

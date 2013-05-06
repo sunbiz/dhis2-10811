@@ -35,12 +35,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts2.StrutsStatics;
 import org.hisp.dhis.light.utils.FormUtils;
+import org.hisp.dhis.light.utils.PatientIdentifierGenerator;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
@@ -59,7 +58,6 @@ import org.hisp.dhis.util.ContextUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -478,7 +476,21 @@ public class SaveBeneficiaryAction
                 }
             }
         }
+        
+        String identifier = PatientIdentifierGenerator.getNewIdentifier( patient.getBirthDate(), gender );
 
+        PatientIdentifier systemGenerateIdentifier = patientIdentifierService.get( null, identifier );
+        while ( systemGenerateIdentifier != null )
+        {
+            identifier = PatientIdentifierGenerator.getNewIdentifier( patient.getBirthDate(), patient.getGender() );
+            systemGenerateIdentifier = patientIdentifierService.get( null, identifier );
+        }
+
+        systemGenerateIdentifier = new PatientIdentifier();
+        systemGenerateIdentifier.setIdentifier( identifier );
+        systemGenerateIdentifier.setPatient( patient );
+        patient.getIdentifiers().add( systemGenerateIdentifier );
+        
         for ( PatientAttribute patientAttribute : patientAttributes )
         {
             patientAttributeSet.add( patientAttribute );

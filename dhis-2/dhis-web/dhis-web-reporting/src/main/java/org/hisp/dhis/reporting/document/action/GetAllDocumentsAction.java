@@ -38,7 +38,6 @@ import org.hisp.dhis.paging.ActionPagingSupport;
 
 /**
  * @author Lars Helge Overland
- * @version $Id$
  */
 public class GetAllDocumentsAction
     extends ActionPagingSupport<Document>

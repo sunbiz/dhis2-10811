@@ -10,7 +10,7 @@
 				,errorElement:"span"
 				,submitHandler: function(form)
 					{
-						validateAddPatient(isContinue);
+						validateAddPatient(isContinue, '$!program.disableRegistrationFields');
 					}
 				,beforeValidateHandler: function(form)
 					{

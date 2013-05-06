@@ -209,6 +209,22 @@ Ext.onReady( function() {
 								}
 							},
 							{
+								title: GIS.i18n.thematic_layer_3_legend,
+								listeners: {
+									added: function() {
+										gis.layer.thematic3.legendPanel = this;
+									}
+								}
+							},
+							{
+								title: GIS.i18n.thematic_layer_4_legend,
+								listeners: {
+									added: function() {
+										gis.layer.thematic4.legendPanel = this;
+									}
+								}
+							},
+							{
 								title: GIS.i18n.facility_layer_legend,
 								listeners: {
 									added: function() {
@@ -257,6 +273,8 @@ Ext.onReady( function() {
 			GIS.core.createSelectHandlers(gis, gis.layer.boundary);
 			GIS.core.createSelectHandlers(gis, gis.layer.thematic1);
 			GIS.core.createSelectHandlers(gis, gis.layer.thematic2);
+			GIS.core.createSelectHandlers(gis, gis.layer.thematic3);
+			GIS.core.createSelectHandlers(gis, gis.layer.thematic4);
 			GIS.core.createSelectHandlers(gis, gis.layer.facility);
 
 			gis.map = {

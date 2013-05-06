@@ -28,6 +28,8 @@ package org.hisp.dhis.patient.action.programstage;
  */
 
 import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.program.Program;
+import org.hisp.dhis.program.ProgramService;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageService;
 
@@ -53,9 +55,23 @@ public class ValidateProgramStageAction
         this.programStageService = programStageService;
     }
 
+    private ProgramService programService;
+
+    public void setProgramService( ProgramService programService )
+    {
+        this.programService = programService;
+    }
+
     // -------------------------------------------------------------------------
     // Input/Output
     // -------------------------------------------------------------------------
+
+    private Integer programStageId;
+
+    public void setProgramStageId( Integer programStageId )
+    {
+        this.programStageId = programStageId;
+    }
 
     private Integer id;
 
@@ -92,11 +108,13 @@ public class ValidateProgramStageAction
     public String execute()
         throws Exception
     {
-        ProgramStage match = programStageService.getProgramStageByName( name );
+        Program program = programService.getProgram( id );
 
-        if ( match != null && (id == null || match.getId() != id.intValue()) )
+        ProgramStage match = programStageService.getProgramStageByName( name, program );
+
+        if ( match != null && (programStageId == null || match.getId() != programStageId.intValue()) )
         {
-            message = i18n.getString( "duplicate_names" );
+            message = i18n.getString( "name_exists" );
 
             return ERROR;
         }

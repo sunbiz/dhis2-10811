@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import jxl.biff.DataValidation;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +42,7 @@ import org.hisp.dhis.sms.outbound.OutboundSmsTransportService;
 import org.hisp.dhis.smscommand.SMSCode;
 import org.hisp.dhis.smscommand.SMSCommand;
 import org.hisp.dhis.smscommand.SMSCommandService;
+import org.hisp.dhis.system.util.ValidationUtils;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,13 +202,12 @@ public class DefaultParserManager
         {
             if ( parsedMessage.containsKey( code.getCode().toUpperCase() ) )
             {
-                storeDataValue( sender, orgUnit, parsedMessage, code, command, date, command.getDataset(),
-                    formIsComplete( command, parsedMessage ) );
-                valueStored = true;
+                valueStored = storeDataValue( sender, orgUnit, parsedMessage, code, command, date,
+                    command.getDataset(), formIsComplete( command, parsedMessage ) );
             }
         }
 
-        if ( parsedMessage.isEmpty() || !valueStored )
+        if ( parsedMessage.isEmpty() )
         {
             if ( StringUtils.isEmpty( command.getDefaultMessage() ) )
             {
@@ -216,9 +218,12 @@ public class DefaultParserManager
                 throw new SMSParserException( command.getDefaultMessage() );
             }
         }
+        else if ( !valueStored )
+        {
+            throw new SMSParserException( "Wrong format for command '" + command.getName() + "'" );
+        }
 
         markCompleteDataSet( sender, orgUnit, parsedMessage, command, date );
-
         sendSuccessFeedback( sender, command, parsedMessage, date, orgUnit );
 
     }
@@ -382,7 +387,7 @@ public class DefaultParserManager
         return date;
     }
 
-    private void storeDataValue( String sender, OrganisationUnit orgunit, Map<String, String> parsedMessage,
+    private boolean storeDataValue( String sender, OrganisationUnit orgunit, Map<String, String> parsedMessage,
         SMSCode code, SMSCommand command, Date date, DataSet dataSet, boolean completeForm )
     {
         String upperCaseCode = code.getCode().toUpperCase();
@@ -427,6 +432,18 @@ public class DefaultParserManager
                     value = "false";
                 }
             }
+            else if ( StringUtils.equals( dv.getDataElement().getType(), DataElement.VALUE_TYPE_INT ) )
+            {
+                try
+                {
+                    Integer.parseInt( value );
+                }
+                catch ( NumberFormatException e )
+                {
+                    return false;
+                }
+
+            }
 
             dv.setValue( value );
             dv.setTimestamp( new java.util.Date() );
@@ -442,6 +459,7 @@ public class DefaultParserManager
             }
         }
 
+        return true;
     }
 
     /* Checks if all defined data codes have values in the database */
@@ -698,6 +716,11 @@ public class DefaultParserManager
             dv.setValue( value );
             dv.setTimestamp( new java.util.Date() );
             dv.setStoredBy( storedBy );
+
+            if ( ValidationUtils.dataValueIsValid( value, dv.getDataElement() ) != null )
+            {
+                return; // not a valid value for data element
+            }
 
             if ( newDataValue )
             {

@@ -179,6 +179,30 @@ function getParams()
 		});
 }
 
+function getProgramStages()
+{
+	var programId = getFieldValue( 'orgunitProgramId' );
+	if(programId=='') return;
+	
+	clearListById( 'orgunitProgramStageId' );
+	
+	jQuery.getJSON( 'getProgramStages.action',{ id:programId }
+		,function( json ) 
+		{
+			enable('programProperty');
+			var programstage = jQuery('#orgunitProgramStageId');
+			
+			for ( i in json.programStages ) 
+			{ 
+				var id = json.programStages[i].id;
+				var formularId = "[PSIC:" + id + "]";
+				var name = json.programStages[i].name;
+
+				programstage.append( "<option value='" + formularId + "' title='" + name + "'>" + name + "</option>" );
+			}
+		});
+}
+
 //------------------------------------------------------------------------------
 // Get DataElements of Program-Stage
 //------------------------------------------------------------------------------
@@ -186,6 +210,7 @@ function getParams()
 function getPatientDataElements()
 {
 	clearListById( 'dataElements' );
+	clearListById( 'dataElementBackups' );
 	clearListById( 'deSumId' );
 	var programStageId = getFieldValue('programStageId');
 	
@@ -202,11 +227,16 @@ function getPatientDataElements()
 			else{
 				disable('programStageProperty');
 			}
+			
 			var dataElements = jQuery('#dataElements');
+			var dataElementBackups = jQuery('#dataElementBackups');
+			clearListById( 'dataElements' );
+			clearListById( 'dataElementBackups' );
 			var deSumId = jQuery('#deSumId');
 			for ( i in json.dataElements )
 			{ 
-				dataElements.append( "<option value='" + json.dataElements[i].id + "' title='" + json.dataElements[i].name + "' suggested='" + json.dataElements[i].optionset + "'>" + json.dataElements[i].name + "</option>" );
+				dataElements.append( "<option value='" + json.dataElements[i].id + "' title='" + json.dataElements[i].name + "' dename='" + json.dataElements[i].name + "' decode='" + json.dataElements[i].code + "' suggested='" + json.dataElements[i].optionset + "'>" + json.dataElements[i].name + "</option>" );
+				dataElementBackups.append( "<option value='" + json.dataElements[i].id + "' title='" + json.dataElements[i].name + "' dename='" + json.dataElements[i].name + "' decode='" + json.dataElements[i].code + "' suggested='" + json.dataElements[i].optionset + "'>" + json.dataElements[i].name + "</option>" );
 				if( json.dataElements[i].type=='int')
 				{
 					deSumId.append( "<option value='" + json.dataElements[i].id + "' title='" + json.dataElements[i].name + "' suggested='" + json.dataElements[i].optionset + "'>" + json.dataElements[i].name + "</option>" );
@@ -320,12 +350,7 @@ function testCaseAggregationCondition()
 			
 			if ( type == "input" )
 			{
-				if( json.message == '' ){
-					showWarningMessage( i18n_run_fail );
-				}
-				else{
-					showWarningMessage( json.message );
-				}
+				showWarningMessage( json.message );
 			}
 			else
 			{
@@ -416,3 +441,101 @@ function operatorOnchange(operator)
 		disable('deSumId');
 	}
 }
+
+function filterDataElement( event, value, fieldName, backupFieldsName )
+{
+	// Remove all options in data element fields
+	var field = jQuery('#' + fieldName + " option " ).remove();
+	
+	jQuery('#' + backupFieldsName + " option ").each( function(){
+		var option = jQuery(this);
+		if(value.length == 0 )
+		{
+			jQuery('#' + fieldName ).append( "<option value='" + option.attr('value') + "' title='" + option.text() + "' suggested='" + option.attr('optionset') + "'>" + option.text() + "</option>" );				
+		}
+		else if (option.text().toLowerCase().indexOf( value.toLowerCase() ) != -1 )
+		{
+			jQuery('#' + fieldName ).append( "<option value='" + option.attr('value') + "' title='" + option.text() + "' suggested='" + option.attr('optionset') + "'>" + option.text() + "</option>" );				
+		}
+	});
+		    
+}
+
+function sortByOnChange( sortBy )
+{
+	if( sortBy == 1)
+	{
+		jQuery('#dataElements').each(function() {
+
+			// Keep track of the selected option.
+			var selectedValue = $(this).val();
+
+			// sort it out
+			$(this).html($("option", $(this)).sort(function(a, b) { 
+				return $(a).attr('dename') == $(b).attr('dename') ? 0 : $(a).attr('dename') < $(b).attr('dename') ? -1 : 1 
+			}));
+
+			// Select one option.
+			$(this).val(selectedValue);
+
+		});
+	}
+	else
+	{
+		jQuery('#dataElements').each(function() {
+
+			// Keep track of the selected option.
+			var selectedValue = $(this).val();
+
+			// sort it out
+			$(this).html($("option", $(this)).sort(function(a, b) { 
+				return $(a).attr('decode') == $(b).attr('decode') ? 0 : $(a).attr('decode') < $(b).attr('decode') ? -1 : 1 
+			}));
+
+			// Select one option.
+			$(this).val(selectedValue);
+
+		});
+	} 
+}
+
+function displayNameOnChange( displayName )
+{
+	// display - name
+	if(displayName=='1'){
+		jQuery('#dataElements option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('dename');
+			item[0].title = item[0].text;
+		});
+		jQuery('#dataElementBackups option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('dename');
+		});
+	}
+	// display - code
+	else if(displayName=='2'){
+		jQuery('#dataElements option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('decode');
+			item[0].title = item[0].text;
+		});
+		jQuery('#dataElementBackups option').each(function(){
+			var item = jQuery(this);
+			item[0].text = item.attr('decode');
+		});
+	}
+	// display - code and name
+	else{
+		jQuery('#dataElements option').each(function(){
+			var item = jQuery(this);
+			item[0].text = "(" + item.attr('decode') + ") " + item.attr('dename');
+			item[0].title = item[0].text;
+		});
+		jQuery('#dataElementBackups option').each(function(){
+			var item = jQuery(this);
+			item[0].text = "(" + item.attr('decode') + ") " + item.attr('dename');
+		});
+	}
+}
+

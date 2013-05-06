@@ -41,7 +41,6 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
-import org.hisp.dhis.period.PeriodService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.user.CurrentUserService;
 
@@ -82,13 +81,6 @@ public class SaveAggregateDataValueAction
         this.categoryService = categoryService;
     }
 
-    private PeriodService periodService;
-
-    public void setPeriodService( PeriodService periodService )
-    {
-        this.periodService = periodService;
-    }
-
     private DataValueService dataValueService;
 
     public void setDataValueService( DataValueService dataValueService )
@@ -102,14 +94,7 @@ public class SaveAggregateDataValueAction
     {
         this.currentUserService = currentUserService;
     }
-
-    private I18nFormat format;
-
-    public void setFormat( I18nFormat format )
-    {
-        this.format = format;
-    }
-
+    
     // -------------------------------------------------------------------------
     // Input
     // -------------------------------------------------------------------------
@@ -135,17 +120,14 @@ public class SaveAggregateDataValueAction
             // -----------------------------------------------------------------
             // Get params
             // -----------------------------------------------------------------
+            
             String[] info = aggregateValue.split( SEPERATE_SIGN );
 
             int dataElementId = Integer.parseInt( info[0] );
             int optionComboId = Integer.parseInt( info[1] );
-
-            String periodTypeName = info[2];
-            String startDate = info[3];
-
-            int orgunitId = Integer.parseInt( info[4] );
-
-            String resultValue = info[5];
+            String periodIsoId = info[2];
+            int orgunitId = Integer.parseInt( info[3] );
+            String resultValue = info[4];
             
             // -----------------------------------------------------------------
             // Create objects
@@ -154,9 +136,8 @@ public class SaveAggregateDataValueAction
             DataElement dataElement = dataElementService.getDataElement( dataElementId );
             DataElementCategoryOptionCombo optionCombo = categoryService
                 .getDataElementCategoryOptionCombo( optionComboId );
-
-            PeriodType periodType = periodService.getPeriodTypeByName( periodTypeName );
-            Period period = periodType.createPeriod( format.parseDate( startDate ) );
+            
+            Period period = PeriodType.getPeriodFromIsoString( periodIsoId );
 
             OrganisationUnit orgunit = organisationUnitService.getOrganisationUnit( orgunitId );
 

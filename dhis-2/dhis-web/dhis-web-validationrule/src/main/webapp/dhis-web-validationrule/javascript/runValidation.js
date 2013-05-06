@@ -16,13 +16,13 @@ function validateRunValidation()
 	aggregate = $( '#aggregate' ).val();
 	validationRuleGroupId = $( '#validationRuleGroupId' ).val();
 
-    $( '#validateButton' ).attr( 'disabled', true )
-
 	$.getJSON( 'validateRunValidation.action',
 	{ startDate:startDate, endDate:endDate, aggregate:aggregate }, function( json )
 	{
 		if ( json.response == 'success' )
 	    {
+		    $( '#validateButton' ).attr( 'disabled', true )
+
 	        setWaitMessage( i18n_analysing_please_wait );
 
 	        $.get( 'runValidationAction.action', 
@@ -38,7 +38,7 @@ function validateRunValidation()
 	    }
 	    else if ( json.response == 'input' )
 	    {
-	        setMessage( json.message );
+	    	setHeaderDelayMessage( json.message );
 	    }
 	} );
 

@@ -79,7 +79,7 @@ public class CompleteDataSetRegistrationDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM completedatasetregistration where periodid=" + period.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 
     @Override

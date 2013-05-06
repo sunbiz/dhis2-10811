@@ -27,10 +27,13 @@ package org.hisp.dhis.dataadmin.action.maintenance;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import javax.annotation.Resource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.aggregation.AggregatedOrgUnitDataValueService;
+import org.hisp.dhis.analytics.AnalyticsTableService;
 import org.hisp.dhis.common.DeleteNotAllowedException;
 import org.hisp.dhis.completeness.DataSetCompletenessService;
 import org.hisp.dhis.datamart.DataMartManager;
@@ -53,6 +56,15 @@ public class PerformMaintenanceAction
     // -------------------------------------------------------------------------
     // Dependencies
     // -------------------------------------------------------------------------
+
+    @Resource(name="org.hisp.dhis.analytics.AnalyticsTableService")
+    private AnalyticsTableService analyticsTableService;
+
+    @Resource(name="org.hisp.dhis.analytics.CompletenessTableService")
+    private AnalyticsTableService completenessTableService;
+    
+    @Resource(name="org.hisp.dhis.analytics.CompletenessTargetTableService")
+    private AnalyticsTableService completenessTargetTableService;
     
     private MaintenanceService maintenanceService;
 
@@ -107,6 +119,13 @@ public class PerformMaintenanceAction
     // Input
     // -------------------------------------------------------------------------
     
+    private boolean clearAnalytics;
+    
+    public void setClearAnalytics( boolean clearAnalytics )
+    {
+        this.clearAnalytics = clearAnalytics;
+    }
+
     private boolean clearDataMart;
 
     public void setClearDataMart( boolean clearDataMart )
@@ -149,6 +168,13 @@ public class PerformMaintenanceAction
     public String execute() 
         throws Exception
     {
+        if ( clearAnalytics )
+        {
+            analyticsTableService.dropTables();
+            completenessTableService.dropTables();
+            completenessTargetTableService.dropTables();
+        }
+        
         if ( clearDataMart )
         {
             aggregatedDataValueService.deleteAggregatedDataValues();

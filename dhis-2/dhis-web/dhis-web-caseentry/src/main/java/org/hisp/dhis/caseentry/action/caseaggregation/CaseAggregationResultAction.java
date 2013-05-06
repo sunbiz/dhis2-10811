@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.hisp.dhis.caseaggregation.CaseAggregationCondition;
 import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
+import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataset.DataSet;
@@ -52,7 +53,6 @@ import org.hisp.dhis.oust.manager.SelectionTreeManager;
 import org.hisp.dhis.period.CalendarPeriodType;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.program.ProgramStageInstanceService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -102,13 +102,6 @@ public class CaseAggregationResultAction
     public void setOrganisationUnitService( OrganisationUnitService organisationUnitService )
     {
         this.organisationUnitService = organisationUnitService;
-    }
-
-    private ProgramStageInstanceService programStageInstanceService;
-
-    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
-    {
-        this.programStageInstanceService = programStageInstanceService;
     }
 
     private I18nFormat format;
@@ -169,39 +162,11 @@ public class CaseAggregationResultAction
         return autoSave;
     }
 
-    private Map<String, String> mapStatusValues = new HashMap<String, String>();
+    private List<Grid> grids = new ArrayList<Grid>();
 
-    public Map<String, String> getMapStatusValues()
+    public List<Grid> getGrids()
     {
-        return mapStatusValues;
-    }
-
-    private Map<String, Set<DataValue>> mapDataValues = new HashMap<String, Set<DataValue>>();
-
-    public Map<String, Set<DataValue>> getMapDataValues()
-    {
-        return mapDataValues;
-    }
-
-    private Map<DataValue, CaseAggregationCondition> mapCaseAggCondition = new HashMap<DataValue, CaseAggregationCondition>();
-
-    public Map<DataValue, CaseAggregationCondition> getMapCaseAggCondition()
-    {
-        return mapCaseAggCondition;
-    }
-
-    private Collection<OrganisationUnit> orgunits = new HashSet<OrganisationUnit>();
-
-    public Collection<OrganisationUnit> getOrgunits()
-    {
-        return orgunits;
-    }
-
-    private List<Period> periods = new ArrayList<Period>();
-
-    public List<Period> getPeriods()
-    {
-        return periods;
+        return grids;
     }
 
     // -------------------------------------------------------------------------
@@ -229,7 +194,7 @@ public class CaseAggregationResultAction
 
         CalendarPeriodType periodType = (CalendarPeriodType) PeriodType.getPeriodTypeByName( selectedDataSet
             .getPeriodType().getName() );
-
+        List<Period> periods = new ArrayList<Period>();
         periods.addAll( periodType.generatePeriods( sDate, eDate ) );
 
         // ---------------------------------------------------------------------
@@ -261,79 +226,32 @@ public class CaseAggregationResultAction
                 selectedOrgunit.getId() ) );
         }
 
-        orgunitIds.retainAll( programStageInstanceService.getOrganisationUnitIds( sDate, eDate ) );
-        
         // ---------------------------------------------------------------------
         // Aggregation
         // ---------------------------------------------------------------------
+        // for ( Integer orgUnitId : orgunitIds )
+        // {
+        // OrganisationUnit orgUnit =
+        // organisationUnitService.getOrganisationUnit( orgUnitId );
 
-        for ( Integer orgUnitId : orgunitIds )
+        for ( CaseAggregationCondition condition : aggregationConditions )
         {
-            OrganisationUnit orgUnit = organisationUnitService.getOrganisationUnit( orgUnitId );
-            for ( CaseAggregationCondition condition : aggregationConditions )
+            DataElement dElement = condition.getAggregationDataElement();
+            DataElementCategoryOptionCombo optionCombo = condition.getOptionCombo();
+
+            for ( Period period : periods )
             {
-                DataElement dElement = condition.getAggregationDataElement();
-                DataElementCategoryOptionCombo optionCombo = condition.getOptionCombo();
-
-                for ( Period period : periods )
+                if ( autoSave )
                 {
-                    Double resultValue = aggregationConditionService.getAggregateValue( condition, orgUnit, period );
-                    DataValue dataValue = dataValueService.getDataValue( orgUnit, dElement, period, optionCombo );
-
-                    String key = orgUnitId + "-" + format.formatPeriod( period );
-                    String keyStatus = key + "-" + dElement.getId();
-
-                    if ( resultValue != null && resultValue != 0 )
-                    {
-                        if ( dataValue == null )
-                        {
-                            dataValue = new DataValue( dElement, period, orgUnit, "" + resultValue, "", new Date(),
-                                null, optionCombo );
-                            mapStatusValues.put( keyStatus, i18n.getString( ADD_STATUS ) );
-                            if ( autoSave )
-                            {
-                                dataValueService.addDataValue( dataValue );
-                            }
-                        }
-                        else
-                        {
-                            dataValue.setValue( "" + resultValue );
-                            dataValue.setTimestamp( new Date() );
-                            mapStatusValues.put( keyStatus, i18n.getString( UPDATE_STATUS ) );
-                            if ( autoSave )
-                            {
-                                dataValueService.updateDataValue( dataValue );
-                            }
-                        }
-                        mapCaseAggCondition.put( dataValue, condition );
-                    }
-                    else if ( dataValue != null )
-                    {
-                        mapStatusValues.put( keyStatus, i18n.getString( DELETE_STATUS ) );
-                        if ( autoSave )
-                        {
-                            dataValueService.deleteDataValue( dataValue );
-                        }
-                    }
-
-                    if ( dataValue != null )
-                    {
-                        Set<DataValue> dataValues = null;
-                        if ( mapDataValues.containsKey( key ) )
-                        {
-                            dataValues = mapDataValues.get( key );
-                        }
-                        else
-                        {
-                            dataValues = new HashSet<DataValue>();
-                        }
-
-                        dataValues.add( dataValue );
-                        mapDataValues.put( key, dataValues );
-                        orgunits.add( orgUnit );
-                    }
+                    aggregationConditionService.insertAggregateValue( condition, orgunitIds, period );
+                }
+                else
+                {
+                    grids.add( aggregationConditionService.getAggregateValue( condition, orgunitIds, period, format,
+                        i18n ) );
                 }
             }
+            // }
 
         }
         return SUCCESS;

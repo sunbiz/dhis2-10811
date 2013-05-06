@@ -312,7 +312,7 @@ public class SaveAnonymousProgramAction
 
         programInstance.setProgram( program );
 
-        programInstance.setCompleted( true );
+        programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
 
         programInstanceService.addProgramInstance( programInstance );
 

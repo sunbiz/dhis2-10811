@@ -342,7 +342,7 @@ Ext.onReady( function() {
         // Fade in
 		Ext.defer( function() {
 			Ext.getBody().fadeIn({
-				duration: 500
+				duration: 400
 			});
 		}, 500 );
     };

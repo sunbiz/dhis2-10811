@@ -28,6 +28,7 @@
 package org.hisp.dhis.program;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Chau Thu Tran
@@ -50,7 +51,9 @@ public interface ProgramStageSectionService
     
     ProgramStageSection getProgramStageSection( int id );
     
-    ProgramStageSection getProgramStageSectionByName( String name );
+    List<ProgramStageSection> getProgramStageSectionByName( String name );
+    
+    ProgramStageSection getProgramStageSectionByName( String name, ProgramStage programStage );
     
     Collection<ProgramStageSection> getAllProgramStageSections();
     

@@ -214,6 +214,7 @@ function validateAdvancedSearch()
 	}
 }
 
+var followup = false;
 function getSearchParams()
 {
 	var params = "";
@@ -230,7 +231,7 @@ function getSearchParams()
 		params = '&searchTexts=stat_' + getFieldValue('programIdAddPatient') 
 			   + '_' + startDueDate + '_' + endDueDate
 			   + "_" + orgunitid
-			   + '_false_' + statusEvent;
+			   + '_' + followup + '_' + statusEvent;
 	}
 	
 	var flag = false;
@@ -1399,14 +1400,17 @@ function saveEnrollment()
 		});
 }
 
-function unenrollmentForm( programInstanceId )
+function unenrollmentForm( programInstanceId, status )
 {	
-	if( confirm(i18n_incomplete_confirm_message) )
+	var comfirmMessage = i18n_complete_confirm_message;
+	if( status == 2 ) comfirmMessage = i18n_quit_confirm_message;
+	
+	if( confirm(comfirmMessage) )
 	{
 		$.ajax({
 			type: "POST",
 			url: 'setProgramInstanceStatus.action',
-			data: "programInstanceId=" + programInstanceId + "&completed=true",
+			data: "programInstanceId=" + programInstanceId + "&status=" + status,
 			success: function( json ) 
 			{
 				var type=jQuery("#tr1_" + programInstanceId ).attr('type');
@@ -1797,8 +1801,8 @@ function sendSmsOnePatient( field, programStageInstanceId )
 				field.value="";
 				field.style.backgroundColor = SUCCESS_COLOR;
 				
-				jQuery('#enrollmentDate').width('270');
-				jQuery('#dateOfIncident').width('270');
+				jQuery('#enrollmentDate').width('325');
+				jQuery('#dateOfIncident').width('325');
 				jQuery('#removeProgram').remove();
 			}
 			else {
@@ -1817,8 +1821,12 @@ function sendSmsOnePatient( field, programStageInstanceId )
 		});
 }
 
-function keypressOnComent(event, field, programStageInstanceId )
+function keypressOnComment(event, field, programStageInstanceId )
 {
+    if(!programStageInstanceId) {
+        programStageInstanceId = $( "#entryFormContainer input[id='programStageInstanceId']" ).val();
+    }
+
 	var key = getKeyCode( event );
 	if ( key==13 ){ // Enter
 		addComment( field, programStageInstanceId );
@@ -1845,10 +1853,12 @@ function addComment( field, programStageInstanceId )
 			var date = new Date();
 			var currentTime = date.getHours() + ":" + date.getMinutes();
 			var content = "<tr><td>" + getCurrentDate("currentDate") + " " + currentTime + "</td>"
+
 			if(programStageName!=undefined)
 			{
 				content += "<td>" + programStageName + "</td>"
 			}
+
 			content += "<td>" + getFieldValue('currentUsername') + "</td>"
 			content += "<td>" + commentText + "</td></tr>";
 			jQuery('#commentTB').prepend(content);
@@ -1862,8 +1872,8 @@ function addComment( field, programStageInstanceId )
 			else{
 				commentDivToggle(false);
 			}
-			jQuery('#enrollmentDate').width('270');
-			jQuery('#dateOfIncident').width('270');
+			jQuery('#enrollmentDate').width('325');
+			jQuery('#dateOfIncident').width('325');
 			jQuery('#removeProgram').remove();
 		});
 }
@@ -1872,7 +1882,7 @@ function removeComment( programStageInstanceId, commentId )
 {
 	jQuery.postUTF8( 'removePatientComment.action',
 		{
-			programStageInstanceId:programStageInstanceId,
+			programStageInstanceId: programStageInstanceId,
 			id: commentId
 		}, function ( json )
 		{
@@ -1965,12 +1975,13 @@ function refreshZebraStripes( $tbody )
      $tbody.find( 'tr:visible:odd' ).removeClass( 'listRow' ).removeClass( 'listAlternateRow' ).addClass( 'listAlternateRow' );
 }
 
-function saveCoordinatesEvent(programStageInstanceId)
+function saveCoordinatesEvent()
 {
+	var programStageInstanceId = $( "#entryFormContainer input[id='programStageInstanceId']" ).val();
 	var longitude = jQuery.trim(getFieldValue('longitude'));
 	var latitude = jQuery.trim(getFieldValue('latitude'));
 	var isValid = true;
-	
+
 	if(longitude=='' && latitude==''){
 		isValid = true;
 	}
@@ -2012,7 +2023,7 @@ function saveCoordinatesEvent(programStageInstanceId)
 	if( isValid ){
 		jQuery.postJSON( "saveCoordinatesEvent.action",
 			{ 
-				programStageInstanceId:programStageInstanceId,
+				programStageInstanceId: programStageInstanceId,
 				longitude: longitude,
 				latitude: latitude
 			}, 
@@ -2022,4 +2033,43 @@ function saveCoordinatesEvent(programStageInstanceId)
 				 byId('latitude').style.backgroundColor = SUCCESS_COLOR;
 			});
 	}
+}
+
+// ---------------------------------------------------------------------------------
+// Followup program-instance
+// ---------------------------------------------------------------------------------
+
+function markForFollowup( programInstanceId, followup )
+{
+	jQuery.postJSON( "markForFollowup.action",
+		{ 
+			programInstanceId:programInstanceId,
+			followup: followup
+		}, 
+		function( json ) 
+		{   
+			 if( followup )
+			 {
+				showById('imgMarkFollowup');
+				hideById('imgUnmarkFollowup');
+			 }
+			 else
+			 {
+				hideById('imgMarkFollowup');
+				showById('imgUnmarkFollowup');
+			 }
+		});
+}
+
+function saveComment( programInstanceId )
+{
+	jQuery.postJSON( "saveProgramInstanceComment.action",
+		{ 
+			programInstanceId:programInstanceId,
+			comment: getFieldValue('comment')
+		}, 
+		function( json ) 
+		{   
+			 $( '#comment' ).css( 'background-color', COLOR_GREEN );
+		});
 }

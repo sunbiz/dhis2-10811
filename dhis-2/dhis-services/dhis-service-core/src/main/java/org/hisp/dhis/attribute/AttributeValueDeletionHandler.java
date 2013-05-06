@@ -72,7 +72,7 @@ public class AttributeValueDeletionHandler
     {
         String sql = "select count(*) from attributevalue where attributeid=" + attribute.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 
     @Override

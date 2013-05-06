@@ -42,6 +42,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.Action;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class GetReportAndParamsAction
     implements Action
 {

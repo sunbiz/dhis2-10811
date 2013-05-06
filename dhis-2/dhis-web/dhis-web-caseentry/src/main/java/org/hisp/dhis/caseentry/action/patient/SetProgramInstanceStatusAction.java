@@ -28,14 +28,18 @@
 package org.hisp.dhis.caseentry.action.patient;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientService;
+import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceService;
+import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.ProgramStageInstanceService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -54,6 +58,8 @@ public class SetProgramInstanceStatusAction
 
     private ProgramInstanceService programInstanceService;
 
+    private ProgramStageInstanceService programStageInstanceService;
+
     // -------------------------------------------------------------------------
     // Input/Output
     // -------------------------------------------------------------------------
@@ -62,7 +68,7 @@ public class SetProgramInstanceStatusAction
 
     private Collection<Program> programs = new ArrayList<Program>();
 
-    private boolean completed;
+    private int status;
 
     // -------------------------------------------------------------------------
     // Getters && Setters
@@ -78,6 +84,11 @@ public class SetProgramInstanceStatusAction
         this.programInstanceService = programInstanceService;
     }
 
+    public void setProgramStageInstanceService( ProgramStageInstanceService programStageInstanceService )
+    {
+        this.programStageInstanceService = programStageInstanceService;
+    }
+
     public Collection<Program> getPrograms()
     {
         return programs;
@@ -88,9 +99,9 @@ public class SetProgramInstanceStatusAction
         this.programInstanceId = programInstanceId;
     }
 
-    public void setCompleted( boolean completed )
+    public void setStatus( int status )
     {
-        this.completed = completed;
+        this.status = status;
     }
 
     // -------------------------------------------------------------------------
@@ -105,28 +116,56 @@ public class SetProgramInstanceStatusAction
         Patient patient = programInstance.getPatient();
 
         Program program = programInstance.getProgram();
-        programInstance.setCompleted( completed );
-        
-        if ( completed )
+        programInstance.setStatus( status );
+
+        if ( status == ProgramInstance.STATUS_COMPLETED )
         {
             programInstance.setEndDate( new Date() );
-            
+
             if ( !program.getOnlyEnrollOnce() )
             {
                 patient.getPrograms().remove( program );
                 patientService.updatePatient( patient );
             }
         }
+        if ( status == ProgramInstance.STATUS_CANCELLED )
+        {
+            Calendar today = Calendar.getInstance();
+            PeriodType.clearTimeOfDay( today );
+            Date currentDate = today.getTime();
+            
+            programInstance.setEndDate( currentDate );
+
+            for ( ProgramStageInstance programStageInstance : programInstance.getProgramStageInstances() )
+            {
+                if ( programStageInstance.getExecutionDate() == null )
+                {
+                    // Set status as skipped for overdue events
+                    if ( programStageInstance.getDueDate().before( currentDate ) )
+                    {
+                        programStageInstance.setStatus( ProgramStageInstance.SKIPPED_STATUS );
+                        programStageInstanceService.updateProgramStageInstance( programStageInstance );
+                    }
+                    // Delete scheduled events
+                    else
+                    {
+                        programStageInstanceService.deleteProgramStageInstance( programStageInstance );
+                    }
+                }
+            }
+            patient.getPrograms().remove( program );
+            patientService.updatePatient( patient );
+        }
         else
         {
             programInstance.setEndDate( null );
-            
+
             patient.getPrograms().add( program );
             patientService.updatePatient( patient );
         }
 
         programInstanceService.updateProgramInstance( programInstance );
-        
+
         return SUCCESS;
     }
 }

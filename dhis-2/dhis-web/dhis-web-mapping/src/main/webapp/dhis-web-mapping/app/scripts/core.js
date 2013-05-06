@@ -90,12 +90,6 @@ GIS.core.getUtils = function(gis) {
 	var conf = gis.conf,
 		util = {};
 
-	util.google = {};
-
-	util.google.openTerms = function() {
-		window.open('http://www.google.com/intl/en-US_US/help/terms_maps.html', '_blank');
-	};
-
 	util.map = {};
 
 	util.map.getVisibleVectorLayers = function() {
@@ -231,12 +225,16 @@ GIS.core.getOLMap = function(gis) {
 				documentDrag: true
 			}),
 			new OpenLayers.Control.MousePosition({
-				id: 'mouseposition',
 				prefix: '<span class="el-fontsize-10"><span class="text-mouseposition-lonlat">LON </span>',
 				separator: '<span class="text-mouseposition-lonlat">&nbsp;&nbsp;LAT </span>',
-				suffix: '<div id="google-logo" onclick="javascript:gis.util.google.openTerms();"></div></span>'
+				suffix: '<div id="google-logo" name="http://www.google.com/intl/en-US_US/help/terms_maps.html" onclick="window.open(Ext.get(this).dom.attributes.name.nodeValue);"></div></span>'
 			}),
-			new OpenLayers.Control.Permalink()
+			new OpenLayers.Control.Permalink(),
+			new OpenLayers.Control.ScaleLine({
+				geodesic: true,
+				maxWidth: 170,
+				minWidth: 100
+			})
 		],
 		displayProjection: new OpenLayers.Projection('EPSG:4326'),
 		maxExtent: new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508),
@@ -258,6 +256,8 @@ GIS.core.getOLMap = function(gis) {
 		gis.layer.boundary.core.reset();
 		gis.layer.thematic1.core.reset();
 		gis.layer.thematic2.core.reset();
+		gis.layer.thematic3.core.reset();
+		gis.layer.thematic4.core.reset();
 		gis.layer.facility.core.reset();
 	};
 
@@ -305,41 +305,52 @@ GIS.core.getLayers = function(gis) {
 		});
 		layers.googleHybrid.id = 'googleHybrid';
 	}
-	else {
-		layers.openStreetMap = new OpenLayers.Layer.OSM('OpenStreetMap', {
-			layerType: gis.conf.finals.layer.type_base,
-			layerOpacity: 1,
-			setLayerOpacity: function(number) {
-				if (number) {
-					this.layerOpacity = parseFloat(number);
-				}
-				this.setOpacity(this.layerOpacity);
-			}
-		});
-		layers.openStreetMap.id = 'openStreetMap';
-	}
 
-	layers.boundary = GIS.core.VectorLayer(gis, 'boundary', 'Boundary layer', {opacity: 0.8});
+    layers.openStreetMap = new OpenLayers.Layer.OSM.Mapnik('OpenStreetMap', {
+        layerType: gis.conf.finals.layer.type_base,
+        layerOpacity: 1,
+        setLayerOpacity: function(number) {
+            if (number) {
+                this.layerOpacity = parseFloat(number);
+            }
+            this.setOpacity(this.layerOpacity);
+        }
+    });
+    layers.openStreetMap.id = 'openStreetMap';
+
+	layers.facility = GIS.core.VectorLayer(gis, 'facility', GIS.i18n.facility_layer, {opacity: 0.8});
+	layers.facility.core = new mapfish.GeoStat.Facility(gis.olmap, {
+		layer: layers.facility,
+		gis: gis
+	});
+
+	layers.boundary = GIS.core.VectorLayer(gis, 'boundary', GIS.i18n.boundary_layer, {opacity: 0.8});
 	layers.boundary.core = new mapfish.GeoStat.Boundary(gis.olmap, {
 		layer: layers.boundary,
 		gis: gis
 	});
 
-	layers.thematic1 = GIS.core.VectorLayer(gis, 'thematic1', 'Thematic layer 1', {opacity: 0.8});
+	layers.thematic1 = GIS.core.VectorLayer(gis, 'thematic1', GIS.i18n.thematic_layer + ' 1', {opacity: 0.8});
 	layers.thematic1.core = new mapfish.GeoStat.Thematic1(gis.olmap, {
 		layer: layers.thematic1,
 		gis: gis
 	});
 
-	layers.thematic2 = GIS.core.VectorLayer(gis, 'thematic2', 'Thematic layer 2', {opacity: 0.8});
+	layers.thematic2 = GIS.core.VectorLayer(gis, 'thematic2', GIS.i18n.thematic_layer + ' 2', {opacity: 0.8});
 	layers.thematic2.core = new mapfish.GeoStat.Thematic2(gis.olmap, {
 		layer: layers.thematic2,
 		gis: gis
 	});
 
-	layers.facility = GIS.core.VectorLayer(gis, 'facility', 'Facility layer', {opacity: 0.8});
-	layers.facility.core = new mapfish.GeoStat.Facility(gis.olmap, {
-		layer: layers.facility,
+	layers.thematic3 = GIS.core.VectorLayer(gis, 'thematic3', GIS.i18n.thematic_layer + ' 3', {opacity: 0.8});
+	layers.thematic3.core = new mapfish.GeoStat.Thematic3(gis.olmap, {
+		layer: layers.thematic3,
+		gis: gis
+	});
+
+	layers.thematic4 = GIS.core.VectorLayer(gis, 'thematic4', GIS.i18n.thematic_layer + ' 4', {opacity: 0.8});
+	layers.thematic4.core = new mapfish.GeoStat.Thematic4(gis.olmap, {
+		layer: layers.thematic4,
 		gis: gis
 	});
 
@@ -463,82 +474,39 @@ GIS.core.createSelectHandlers = function(gis, layer) {
 								cls: 'gis-container-inner',
 								columnWidth: 0.4,
 								bodyStyle: 'padding-right:4px',
-								items: [
-									{
-										html: GIS.i18n.name,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: feature.attributes.name,
-										cls: 'gis-panel-html'
-									},
-									{
-										cls: 'gis-panel-html-separator'
-									},
-									{
-										html: GIS.i18n.type,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: ou.ty,
-										cls: 'gis-panel-html'
-									},
-									{
-										cls: 'gis-panel-html-separator'
-									},
-									{
-										html: GIS.i18n.code,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: ou.co,
-										cls: 'gis-panel-html'
-									},
-									{
-										cls: 'gis-panel-html-separator'
-									},
-									{
-										html: GIS.i18n.address,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: ou.ad,
-										cls: 'gis-panel-html'
-									},
-									{
-										cls: 'gis-panel-html-separator'
-									},
-									{
-										html: GIS.i18n.contact_person,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: ou.cp,
-										cls: 'gis-panel-html'
-									},
-									{
-										cls: 'gis-panel-html-separator'
-									},
-									{
-										html: GIS.i18n.email,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: ou.em,
-										cls: 'gis-panel-html'
-									},
-									{
-										cls: 'gis-panel-html-separator'
-									},
-									{
-										html: GIS.i18n.phone_number,
-										cls: 'gis-panel-html-title'
-									},
-									{
-										html: ou.pn,
-										cls: 'gis-panel-html'
+								items: function() {
+									var a = [];
+
+									if (feature.attributes.name) {
+										a.push({html: GIS.i18n.name, cls: 'gis-panel-html-title'}, {html: feature.attributes.name, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
 									}
-								]
+
+									if (ou.pa) {
+										a.push({html: GIS.i18n.parent_unit, cls: 'gis-panel-html-title'}, {html: ou.pa, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
+									}
+
+									if (ou.ty) {
+										a.push({html: GIS.i18n.type, cls: 'gis-panel-html-title'}, {html: ou.ty, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
+									}
+
+									if (ou.co) {
+										a.push({html: GIS.i18n.code, cls: 'gis-panel-html-title'}, {html: ou.co, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
+									}
+
+									if (ou.ad) {
+										a.push({html: GIS.i18n.address, cls: 'gis-panel-html-title'}, {html: ou.ad, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
+									}
+
+									if (ou.em) {
+										a.push({html: GIS.i18n.email, cls: 'gis-panel-html-title'}, {html: ou.em, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
+									}
+
+									if (ou.pn) {
+										a.push({html: GIS.i18n.phone_number, cls: 'gis-panel-html-title'}, {html: ou.pn, cls: 'gis-panel-html'}, {cls: 'gis-panel-html-separator'});
+									}
+
+									return a;
+								}()
 							},
 							{
 								xtype: 'form',
@@ -841,10 +809,8 @@ GIS.core.StyleMap = function(id, labelConfig) {
 	}
 
 	return new OpenLayers.StyleMap({
-		'default': new OpenLayers.Style(
-			OpenLayers.Util.applyDefaults(defaults),
-			OpenLayers.Feature.Vector.style['default']),
-		select: new OpenLayers.Style(select)
+		'default': defaults,
+		select: select
 	});
 };
 
@@ -1109,7 +1075,7 @@ GIS.core.LayerLoaderBoundary = function(gis, layer) {
 
     loadData = function(view, features) {
 		view = view || layer.core.view;
-		features = features || layer.features.slice(0);;
+		features = features || layer.features.slice(0);
 
 		for (var i = 0; i < features.length; i++) {
 			features[i].attributes.label = features[i].attributes.name;
@@ -1663,6 +1629,7 @@ GIS.core.LayerLoaderFacility = function(gis, layer) {
 		}
 		if (Ext.isDefined(radius) && radius) {
 			layer.circleLayer = GIS.app.CircleLayer(layer.features, radius);
+			nissa = layer.circleLayer;
 		}
 	};
 
@@ -1740,11 +1707,17 @@ GIS.core.getInstance = function(config) {
 	gis.olmap = GIS.core.getOLMap(gis);
 	gis.layer = GIS.core.getLayers(gis);
 
-	for (var key in gis.layer) {
-		if (gis.layer.hasOwnProperty(key)) {
-			gis.olmap.addLayer(gis.layer[key]);
-		}
-	}
+	gis.olmap.addLayers([
+		gis.layer.googleStreets,
+		gis.layer.googleHybrid,
+		gis.layer.openStreetMap,
+		gis.layer.thematic4,
+		gis.layer.thematic3,
+		gis.layer.thematic2,
+		gis.layer.thematic1,
+		gis.layer.boundary,
+		gis.layer.facility
+	]);
 
 	return gis;
 };

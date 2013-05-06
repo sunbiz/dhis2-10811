@@ -533,3 +533,11 @@ div.link-area-tracking
 .coordinates2{
     width: 150px;
 }
+
+
+.commentHeader
+{
+  color: #606060;
+  font-size: 17px;
+  padding: 5px 0;
+}

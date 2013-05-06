@@ -80,6 +80,10 @@ public class ProgramStageInstance
 
     private String coordinates;
 
+    private String completedUser;
+
+    private Date completedDate;
+
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -188,6 +192,16 @@ public class ProgramStageInstance
         this.programStage = programStage;
     }
 
+    public String getCompletedUser()
+    {
+        return completedUser;
+    }
+
+    public void setCompletedUser( String completedUser )
+    {
+        this.completedUser = completedUser;
+    }
+
     /**
      * @return the dueDate
      */
@@ -266,6 +280,16 @@ public class ProgramStageInstance
         this.patientComments = patientComments;
     }
 
+    public Date getCompletedDate()
+    {
+        return completedDate;
+    }
+
+    public void setCompletedDate( Date completedDate )
+    {
+        this.completedDate = completedDate;
+    }
+
     public Integer getStatus()
     {
         return status;
@@ -316,7 +340,7 @@ public class ProgramStageInstance
             {
                 return ProgramStageInstance.LATE_VISIT_STATUS;
             }
-            
+
             return ProgramStageInstance.FUTURE_VISIT_STATUS;
         }
     }

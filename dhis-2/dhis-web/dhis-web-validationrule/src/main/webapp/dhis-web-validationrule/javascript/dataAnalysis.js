@@ -23,7 +23,7 @@ function validateRunAnalyseData()
             }
             else
             {
-            	setMessage( json.message );
+            	setHeaderDelayMessage( json.message );
                 $( '#startButton').removeAttr( 'disabled' );
             }
         } );
@@ -34,13 +34,13 @@ function analyseDataInvalid()
 {
     if ( $( "#fromDate" ).val().length == 0 )
     {
-        setMessage( i18n_specify_a_start_date );
+    	setHeaderDelayMessage( i18n_specify_a_start_date );
         return false;
     }
 
     if ( $( "#toDate" ).val().length == 0 )
     {
-        setMessage( i18n_specify_an_ending_date );
+    	setHeaderDelayMessage( i18n_specify_an_ending_date );
         return false;
     }
 
@@ -48,7 +48,7 @@ function analyseDataInvalid()
 
     if ( dataSets.options.length == 0 )
     {
-        setMessage( i18n_specify_dataset );
+    	setHeaderDelayMessage( i18n_specify_dataset );
         return false;
     }
 

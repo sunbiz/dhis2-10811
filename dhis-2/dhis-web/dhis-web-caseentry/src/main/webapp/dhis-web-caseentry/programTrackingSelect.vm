@@ -141,7 +141,7 @@
 							+ '$encoder.jsEscape( $i18n.getString( "format_date" ) , "'")' + " '" 
 							+ dateFormat.replace('yy', 'yyyy') + " '" ; 
     var i18n_complete_confirm_message = '$encoder.jsEscape( $i18n.getString( "complete_confirm_message" ) , "'")';
-	var i18n_incomplete_confirm_message = '$encoder.jsEscape( $i18n.getString( "incomplete_confirm_message" ) , "'")';
+	var i18n_quit_confirm_message = '$encoder.jsEscape( $i18n.getString( "quit_confirm_message" ) , "'")';
     var i18n_error_required_field = '$encoder.jsEscape( $i18n.getString( "error_required_field" ) , "'")';
 	var i18n_violate_validation = '$encoder.jsEscape( $i18n.getString( "violate_validation" ) , "'")';
 	var i18n_date_is_greater_then_or_equals_due_date = '$encoder.jsEscape( $i18n.getString( "date_is_greater_then_or_equals_due_date" ) , "'")';

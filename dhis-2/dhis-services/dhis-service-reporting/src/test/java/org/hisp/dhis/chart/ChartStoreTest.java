@@ -64,7 +64,6 @@ public class ChartStoreTest
 
     private OrganisationUnit unitA;
     private OrganisationUnit unitB;
-    private OrganisationUnit unitC;
 
     private Chart chartA;
     private Chart chartB;
@@ -131,11 +130,9 @@ public class ChartStoreTest
 
         unitA = createOrganisationUnit( 'A' );
         unitB = createOrganisationUnit( 'B' );
-        unitC = createOrganisationUnit( 'C' );
 
         organisationUnitService.addOrganisationUnit( unitA );
         organisationUnitService.addOrganisationUnit( unitB );
-        // organisationUnitService.addOrganisationUnit( unitC );
 
         List<OrganisationUnit> units = new ArrayList<OrganisationUnit>();
         units.add( unitA );

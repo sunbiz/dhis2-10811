@@ -27,10 +27,14 @@
 
 package org.hisp.dhis.caseaggregation;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 
+import org.hisp.dhis.common.Grid;
+import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.period.Period;
 
 /**
@@ -45,38 +49,48 @@ public interface CaseAggregationConditionManager
      * datasets which have data elements defined in the formulas
      * 
      * @param caseAggregateSchedule
-     * @param taskStrategy Specify how to get period list based on period type of each
-     *        dataset. There are four options, include last month, last 3 month,
-     *        last 6 month and last 12 month
+     * @param taskStrategy Specify how to get period list based on period type
+     *        of each dataset. There are four options, include last month, last
+     *        3 month, last 6 month and last 12 month
      */
     Future<?> aggregate( ConcurrentLinkedQueue<CaseAggregateSchedule> caseAggregateSchedule, String taskStrategy );
 
     /**
-     * Return a data value aggregated of query builder formula
+     * Return a data value table aggregated of a query builder formula
      * 
-     * @param caseExpression The query builder expression
-     * @param operator There are six operators, includes Number of persons,
-     *        Number of visits, Sum, Average, Minimum and Maximum of data
-     *        element values.
-     * @param deType Aggregate Data element type
-     * @param deSumId The id of aggregate data element which used for aggregate
-     *        data values for operator Sum, Average, Minimum and Maximum of data
-     *        element values. This fill is null for other operators.
-     * @param orgunitId The id of organisation unit where to aggregate data
+     * @param caseAggregationCondition The query builder expression
+     * @param orgunitIds The ids of organisation unit where to aggregate data
+     *        value
+     * @param period The date range for aggregate data value
+     * @param format
+     * @param i18n
+     */
+    Grid getAggregateValue( CaseAggregationCondition caseAggregationCondition, Collection<Integer> orgunitIds,
+        Period period, I18nFormat format, I18n i18n );
+
+    /**
+     * Insert data values into database directly
+     * 
+     * @param caseAggregationCondition The query builder expression
+     * @param orgunitIds The ids of organisation unit where to aggregate data
      *        value
      * @param period The date range for aggregate data value
      */
-    Double getAggregateValue( String caseExpression, String operator, String deType, Integer deSumId,
-        Integer orgunitId, Period period );
+    void insertAggregateValue( CaseAggregationCondition caseAggregationCondition, Collection<Integer> orgunitIds,
+        Period period );
 
     /**
-     * Return standard SQL from query builder formula 
+     * Return standard SQL from query builder formula
      * 
+     * @param isInsert Insert aggregate result into database directly
      * @param caseExpression The query builder expression
      * @param operator There are six operators, includes Number of persons,
      *        Number of visits, Sum, Average, Minimum and Maximum of data
      *        element values.
-     * @param deType Aggregate Data element type
+     * @param aggregateDeId The id of aggregate data element
+     * @param aggregateDeName The name of aggregate data element
+     * @param optionComboId The id of category option combo
+     * @param optionComboName The name of category option combo
      * @param deSumId The id of aggregate data element which used for aggregate
      *        data values for operator Sum, Average, Minimum and Maximum of data
      *        element values. This fill is null for other operators.
@@ -85,7 +99,9 @@ public interface CaseAggregationConditionManager
      * @param startDate Start date
      * @param endDate End date
      */
-    String parseExpressionToSql( String aggregationExpression, String operator, String deType, Integer deSumId,
-        Integer orgunitId, String startDate, String endDate );
+    String parseExpressionToSql( boolean isInsert, String caseExpression, String operator, Integer aggregateDeId,
+        String aggregateDeName, Integer optionComboId, String optionComboName, Integer deSumId,
+        Collection<Integer> orgunitIds, Period period );
 
+    boolean hasOrgunitProgramStageCompleted( String expresstion );
 }

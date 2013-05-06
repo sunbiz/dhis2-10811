@@ -78,6 +78,7 @@ import org.hisp.dhis.scheduling.TaskId;
 import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.util.DateUtils;
 import org.hisp.dhis.system.util.DebugUtils;
+import org.hisp.dhis.system.util.ValidationUtils;
 import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -349,6 +350,14 @@ public class DefaultDataValueSetService
 
             if ( dataValue.getValue() == null && dataValue.getComment() == null )
             {
+                continue;
+            }
+            
+            String valueValid = ValidationUtils.dataValueIsValid( dataValue.getValue(), dataElement );
+            
+            if ( valueValid != null )
+            {
+                summary.getConflicts().add( new ImportConflict( DataValue.class.getSimpleName(), valueValid ) );
                 continue;
             }
 

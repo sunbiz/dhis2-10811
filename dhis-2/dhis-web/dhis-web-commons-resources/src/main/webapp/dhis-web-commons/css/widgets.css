@@ -151,7 +151,7 @@ div#orgUnitTree
   background-color: white;
   overflow: auto;
   width: 233px;
-  height: 304px;
+  height: 298px;
   border: 1px inset #FFFFFF;
 }
 
@@ -278,8 +278,8 @@ span#message
   display: none;
   padding: 1em;
   margin: 1em;
-  background-color: #ffffbf;
-  border: 1px solid #cccc00;
+  background-color: #f9edbe;
+  border: 1px solid #dbae56;
   width: 500px;
   border-radius: 3px;
 }
@@ -328,22 +328,22 @@ div#headerMessage
   left: 155px;
   position: fixed;
   display: none;
-  height: 30px;
+  height: 31px;
   width: 410px;
-  background-color: #ffffbf;
-  border: 1px solid #cccc00;
+  background-color: #f9edbe;
+  border: 1px solid #dbae56;
   z-index: 21;
   font-size: 9pt;
   text-align: center;
   vertical-align: center;
-  line-height: 30px;
+  line-height: 32px;
   border-radius: 3px;
 }
 
 table.notificationTable 
 {
-  background-color: #ffffbf;
-  border: 1px solid #cccc00;
+  background-color: #f9edbe;
+  border: 1px solid #dbae56;
   padding: 6px;
   border-radius: 3px;
 }
@@ -438,12 +438,10 @@ span.error
 div.inputCriteria
 {
   position: relative;
-  width: 400px; /* Override this */
-  height: 400px; /* Override this */
   border: 1px solid #a4d2a3;
   background-color: #d5efd5;
   padding-top: 10px;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
   padding-left: 20px;
   margin-bottom: 15px;
   border-radius: 3px;
@@ -774,4 +772,13 @@ input:-moz-placeholder
 {
     background-color: #f3f3f3;
 	color: #222;
+}
+
+/*----------------------------------------------------------------------------*/
+/* Div                                                                        */
+/*----------------------------------------------------------------------------*/
+
+.tipText
+{
+	color: #777;
 }

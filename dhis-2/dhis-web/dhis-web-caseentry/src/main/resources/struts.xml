@@ -67,6 +67,10 @@
       </result>
     </action>
 
+    <action name="getProgramStageInstance" class="org.hisp.dhis.caseentry.action.caseentry.GetProgramStageInstanceAction">
+      <result name="success" type="velocity-json">/dhis-web-caseentry/jsonProgramStageInstance.vm</result>
+    </action>
+    
     <action name="dataentryform"
       class="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction">
       <result name="success" type="velocity">/content.vm</result>
@@ -157,6 +161,24 @@
       </result>
     </action>
 
+    <action name="uploadAnonymousEvent"
+      class="org.hisp.dhis.caseentry.action.caseentry.UploadAnonymousEventAction">
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+      </result>
+      <result name="error" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseError.vm
+      </result>
+    </action>
+
+    <action name="getOptionSet" class="org.hisp.dhis.caseentry.action.GetOptionSetAction">
+      <result name="success" type="velocity-json">/dhis-web-caseentry/jsonOptionSet.vm</result>
+    </action>
+
+    <action name="getUsernames" class="org.hisp.dhis.caseentry.action.GetUsernamesAction">
+      <result name="success" type="velocity-json">/dhis-web-caseentry/jsonUsers.vm</result>
+    </action>
+
     <action name="removeCurrentEncounter"
       class="org.hisp.dhis.caseentry.action.caseentry.RemoveCurrentEncounterAction">
       <result name="success" type="velocity-json">
@@ -211,6 +233,22 @@
 		<result name="success" type="velocity-json">
 			/dhis-web-caseentry/jsonminOrganisationUnitPaths.vm</result>
 	</action>
+	
+    <action name="markForFollowup"
+      class="org.hisp.dhis.caseentry.action.caseentry.MarkForFollowupAction">
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+      </result>
+      <param name="requiredAuthorities">F_PATIENT_DATAVALUE_ADD,F_PATIENT_DATAVALUE_UPDATE,F_PATIENT_DATAVALUE_DELETE</param>
+    </action>
+	
+	<action name="saveProgramInstanceComment"
+      class="org.hisp.dhis.caseentry.action.caseentry.SaveProgramInstanceCommentAction">
+      <result name="success" type="velocity-json">
+        /dhis-web-commons/ajax/jsonResponseSuccess.vm
+      </result>
+      <param name="requiredAuthorities">F_PATIENT_DATAVALUE_ADD,F_PATIENT_DATAVALUE_UPDATE,F_PATIENT_DATAVALUE_DELETE</param>
+    </action>
 
     <!-- save value -->
 
@@ -277,7 +315,6 @@
       class="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction">
       <result name="success" type="velocity">/content.vm</result>
       <param name="page">/dhis-web-caseentry/reportDataEntryForm.vm</param>
-      <param name="javascripts">javascript/entry.js,../dhis-web-commons/javascripts/date.js</param>
       <param name="stylesheets">style/style.css</param>
     </action>
 
@@ -356,11 +393,12 @@
       <param name="javascripts">javascript/commons.js,javascript/report.js</param>
       <param name="requiredAuthorities">F_GENERATE_PROGRAM_SUMMARY_REPORT</param>
     </action>
-
+	
     <action name="viewRecords"
-      class="org.hisp.dhis.caseentry.action.report.ViewRecordsAction">
+      class="org.hisp.dhis.caseentry.action.caseentry.LoadDataEntryAction">
       <result name="success" type="velocity">/content.vm</result>
-      <param name="page">/dhis-web-caseentry/records.vm</param>
+      <param name="page">/dhis-web-caseentry/reportDataEntryForm.vm</param>
+      <param name="stylesheets">style/style.css</param>
     </action>
 
     <action name="statisticalProgramReportSelect"
@@ -1092,6 +1130,39 @@
       <param name="stylesheets">style/style.css</param>
       <result name="xls" type="gridXlsResult" />
       <result name="pdf" type="gridPdfResult" />
+    </action>
+    
+     <action name="accessPatientAttributes"
+      class="org.hisp.dhis.caseentry.action.NoAction">
+      <result name="success" type="velocity-json">/dhis-web-commons/ajax/jsonResponseSuccess.vm</result>
+      <param name="requiredAuthorities">F_ACCESS_PATIENT_ATTRIBUTES</param>
+    </action>
+
+	
+	<!-- Program-stage-completeness -->
+	
+	  <action name="programStageCompletenessSelect"
+      class="org.hisp.dhis.caseentry.action.caseentry.MultiDataEntrySelectAction">
+      <interceptor-ref name="organisationUnitTreeStack" />
+      <result name="success" type="velocity">/main.vm</result>
+      <param name="page">/dhis-web-caseentry/programStageCompletenessSelect.vm</param>
+      <param name="menu">/dhis-web-caseentry/reportsMenu.vm</param>
+      <param name="stylesheets">style/style.css</param>
+      <param name="javascripts">
+      	../dhis-web-commons/ouwt/ouwt.js,
+      	javascript/commons.js,
+      	javascript/programStageCompleteness.js</param>
+      <param name="requiredAuthorities">F_PROGRAM_STAGE_COMPLETENESS</param>
+    </action>
+    
+	<action name="generateProgramStageCompleteness"
+      class="org.hisp.dhis.caseentry.action.caseentry.ProgramStageInstanceCompletenessAction">
+      <result name="success" type="velocity">/content.vm</result>
+      <param name="page">/dhis-web-caseentry/programStageCompleteness.vm</param>
+      <param name="stylesheets">style/style.css</param>
+      <result name="xls" type="gridXlsResult" />
+      <result name="pdf" type="gridPdfResult" />
+      <param name="requiredAuthorities">F_PROGRAM_STAGE_COMPLETENESS</param>
     </action>
 	
   </package>

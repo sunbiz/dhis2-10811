@@ -65,7 +65,7 @@ public class ProgramStageInstanceDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM programstageinstance WHERE programstageid=" + programStage.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -73,7 +73,7 @@ public class ProgramStageInstanceDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM programstageinstance WHERE programinstanceid=" + programInstance.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
     
     @Override
@@ -81,6 +81,6 @@ public class ProgramStageInstanceDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM programstageinstance psi join programinstance pi on pi.programinstanceid=psi.programinstanceid where pi.programid = " + program.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 }

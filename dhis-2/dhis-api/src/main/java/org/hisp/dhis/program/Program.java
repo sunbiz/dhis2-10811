@@ -37,9 +37,11 @@ import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.view.DetailedView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.patient.Patient;
 import org.hisp.dhis.patient.PatientAttribute;
 import org.hisp.dhis.patient.PatientIdentifierType;
+import org.hisp.dhis.patient.PatientReminder;
 import org.hisp.dhis.user.UserAuthorityGroup;
 import org.hisp.dhis.validation.ValidationCriteria;
 
@@ -109,8 +111,24 @@ public class Program
     private Boolean blockEntryForm = false;
 
     private Set<UserAuthorityGroup> userRoles = new HashSet<UserAuthorityGroup>();
-    
+
     private Boolean onlyEnrollOnce = false;
+
+    /**
+     * Enabled this property to show a pop-up for confirming Complete a program
+     * after to complete a progam-stage
+     * 
+     */
+    private Boolean remindCompleted = false;
+
+    private Set<PatientReminder> patientReminders = new HashSet<PatientReminder>();
+
+    private Boolean disableRegistrationFields = false;
+
+    /**
+     * All OrganisationUnitGroup that register data with this program.
+     */
+    private Set<OrganisationUnitGroup> organisationUnitGroups = new HashSet<OrganisationUnitGroup>();
 
     // -------------------------------------------------------------------------
     // Constructors
@@ -199,6 +217,19 @@ public class Program
     public void setVersion( Integer version )
     {
         this.version = version;
+    }
+
+    @JsonProperty
+    @JsonView( { DetailedView.class, ExportView.class } )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public Boolean getRemindCompleted()
+    {
+        return remindCompleted;
+    }
+
+    public void setRemindCompleted( Boolean remindCompleted )
+    {
+        this.remindCompleted = remindCompleted;
     }
 
     @JsonProperty( value = "organisationUnits" )
@@ -396,7 +427,7 @@ public class Program
             {
                 return programStage;
             }
-            
+
             count++;
         }
 
@@ -470,4 +501,33 @@ public class Program
         this.onlyEnrollOnce = onlyEnrollOnce;
     }
 
+    public Set<PatientReminder> getPatientReminders()
+    {
+        return patientReminders;
+    }
+
+    public void setPatientReminders( Set<PatientReminder> patientReminders )
+    {
+        this.patientReminders = patientReminders;
+    }
+
+    public Boolean getDisableRegistrationFields()
+    {
+        return disableRegistrationFields;
+    }
+
+    public void setDisableRegistrationFields( Boolean disableRegistrationFields )
+    {
+        this.disableRegistrationFields = disableRegistrationFields;
+    }
+
+    public Set<OrganisationUnitGroup> getOrganisationUnitGroups()
+    {
+        return organisationUnitGroups;
+    }
+
+    public void setOrganisationUnitGroups( Set<OrganisationUnitGroup> organisationUnitGroups )
+    {
+        this.organisationUnitGroups = organisationUnitGroups;
+    }
 }

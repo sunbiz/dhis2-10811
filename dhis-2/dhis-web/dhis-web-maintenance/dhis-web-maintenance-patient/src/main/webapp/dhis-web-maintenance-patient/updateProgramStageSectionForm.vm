@@ -10,7 +10,7 @@ jQuery( document ).ready( function()
 		}
 	});
 		
-	checkValueIsExist( "name", "validateProgramStageSection.action", {id:getFieldValue('id')});	
+	checkValueIsExist( "name", "validateProgramStageSection.action", {id:getFieldValue('id'),programStageId:getFieldValue('programStageId')});	
 	byId('name').focus();
 });
 </script>

@@ -79,6 +79,7 @@ import org.hisp.dhis.common.GridHeader;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.constant.ConstantService;
 import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataelement.DataElementCategory;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementGroupSet;
@@ -118,11 +119,10 @@ public class DefaultAnalyticsService
     private static final String VALUE_HEADER_NAME = "Value";
     private static final int PERCENT = 100;
     private static final int MAX_QUERIES = 8;
-    
-    //TODO filter values must be merged if split
-    //TODO completeness on time
+
     //TODO make sure data x dims are successive
-    //TODO optimize when in and de are specified, and in-de is part of de
+    //TODO swith from IdentifiableObject to DimensionalObject
+    //TODO completeness on time
     
     @Autowired
     private AnalyticsManager analyticsManager;
@@ -371,7 +371,7 @@ public class DefaultAnalyticsService
     
     /**
      * Generates a mapping between a dimension key and the aggregated value. The
-     * dimension key is a concatenation of the identifiers in for the dimensions
+     * dimension key is a concatenation of the identifiers of the dimension items
      * separated by "-".
      */
     private Map<String, Double> getAggregatedValueMap( DataQueryParams params, String tableName )        
@@ -627,6 +627,15 @@ public class DefaultAnalyticsService
             return Arrays.asList( new Dimension( dimension, DimensionType.DATAELEMENT_GROUPSET, null, degs.getDisplayName(), des ) );
         }
         
+        DataElementCategory dec = categoryService.getDataElementCategory( dimension );
+        
+        if ( dec != null && dec.isDataDimension() )
+        {
+            List<IdentifiableObject> decos = asList( categoryService.getDataElementCategoriesByUid( options ) );
+            
+            return Arrays.asList( new Dimension( dimension, DimensionType.CATEGORY, null, dec.getDisplayName(), decos ) );
+        }
+        
         throw new IllegalQueryException( "Dimension identifier does not reference any dimension: " + dimension );
     }
         
@@ -672,6 +681,10 @@ public class DefaultAnalyticsService
                 else if ( DimensionType.DATAELEMENT_GROUPSET.equals( dimension.getType() ) )
                 {
                     options = asList( dataElementService.getDataElementGroupSet( dimension.getDimension() ).getMembers() );
+                }
+                else if ( DimensionType.CATEGORY.equals( dimension.getType() ) )
+                {
+                    options = asList( categoryService.getDataElementCategory( dimension.getDimension() ).getCategoryOptions() );
                 }
             }
 

@@ -1,72 +1,64 @@
 <h4> $i18n.getString( "case_aggregation_result" )</h4>
-#if($orgunits.size()>0)
-	<div>
+<div>
 		<input type="button" value="$i18n.getString( 'back' )" onclick="backBtnOnClick();" style="width:10em">
 		<input type='button' value="$i18n.getString( 'save_selected_values' )" onclick='saveAggregateDataValues( false )' >
 		<input type='button' value="$i18n.getString( 'save_all_values' )" onclick='saveAggregateDataValues( true )' >
-	</div>
-	<p></p>
+</div><br>
 
-	#set( $index = 0 )
-	#foreach( $orgunit in $orgunits)
-		<h2>$orgunit.name</h2>
-		#foreach( $period in $periods)
-			#set( $index = $index + 1 )
-			#set( $periodInfo = $orgunit.id + '-' + $index )
-			#set( $periodButton = $periodInfo + "-button")
-			#set( $periodDiv = $periodInfo + "-div")
-			#set( $key = $orgunit.id + '-' + $format.formatPeriod($period) )
-			
-			#if( $!mapDataValues.get( $key ) )
-				<h4>$format.formatPeriod( $period )
-				<img id='$periodButton' src="../images/down.png" onclick="toggleResult('$periodInfo');" style="cursor: pointer;"></h4>
-			
-				#set( $dataValues = $mapDataValues.get( $key ) ) 
-				<table class="formSection mainPageTable hidden" id='$periodDiv'>
-					<col width="40"> 
-					<col>
-					<col>
-					<col>
-					<tbody>
-					#set( $mark = false )
-					#set($no = 1)
-						<tr>
-							<th>#</th>
-							<th><input type='checkbox' onchange="toogleAllCheckBoxes( '$periodDiv', this.checked );"></th>
-							<th>$i18n.getString('name')</th>
-							<th>$i18n.getString('value')</th>
-							<th>$i18n.getString('status')</th>
-							<th>$i18n.getString('operator')</th>
-						</tr>
-						#foreach( $dataValue in $dataValues)
-							#set( $statusKey = $key + '-' + $dataValue.dataElement.id )
-							<tr #alternate( $mark )>
-								<td>$no</td>
-								<td>
-									#set( $item=$dataValue.dataElement.id + '_' + $dataValue.optionCombo.id + '_' + $period.periodType.name + '_' + $format.formatDate($period.startDate) + '_' + $orgunit.id + '_' + $dataValue.value )
-									<input type='checkbox' name='aggregateValues' value='$item'>
-								</td>
-								<td>$dataValue.dataElement.name</td>
-								<td>$dataValue.value</td>
-								<td>$!mapStatusValues.get( $statusKey )</td>
-								<td>
-									#if( $mapCaseAggCondition.get($dataValue).id )
-									<a href='javascript:viewResultDetails($orgunit.id, "$period.periodType.name", "$format.formatDate($period.startDate)",$mapCaseAggCondition.get($dataValue).id)' title="$i18n.getString( 'show_details' )"><img src="../images/information.png" alt="$i18n.getString( 'show_details' )"></a>
-									#end
-								</td>
-							</tr>
-							#set( $mark = !$mark  )
-							#set ($no = $no + 1)
+#set($divIdx=0)
+#set($hashValues=false)
+#foreach( $grid in $grids )
+	#if($grid.getRows().size() > 0)
+	#set($hashValues=true)
+	#set($divIdx=$divIdx+1)
+	<h3>
+		$!encoder.htmlEncode( $grid.title ) - $!encoder.htmlEncode( $grid.subtitle )
+		<img id='$periodButton' src="../images/down.png" onclick="toggleResult('$divIdx');" style="cursor: pointer;"></h4>
+	</h3>
+
+	<h5>
+		</h5>
+	<table class="listTable gridTable" id='div-$divIdx' style='display:none;'>
+		<thead>
+			<tr>
+				<th><input type='checkbox' onchange="toogleAllCheckBoxes( '$divIdx', this.checked );"></th>
+				#foreach( $header in $grid.getVisibleHeaders() )
+				<th #if( $header.meta )style="text-align:left"#end>$!encoder.htmlEncode( $header.name )</th>
+				#end
+			</tr>
+		</thead>
+		<tbody>
+			#foreach( $row in $grid.getRows() )
+				<tr>
+					#foreach( $col in $row )
+						#if($velocityCount==1)
+							#set($dataelementid=$col)
+						#elseif($velocityCount==2)
+							#set($categoryoptioncomboid=$col)
+						#elseif($velocityCount==3)
+							#set($organisationunitid=$col)
+						#elseif($velocityCount==6)
+							#set($periodid=$col)
+						#elseif($velocityCount==$row.size())
+							#set($value=$col)
 						#end
-					</tbody>
-				</table>
+						#set($item=$dataelementid + '_' + $categoryoptioncomboid + '_' + $periodid + '_' + $organisationunitid + '_' + $value)
+					#end
+					<td>
+						<input type='checkbox' name='aggregateValues' value='$item'>
+					</td>
+					
+					#foreach( $col in $row )
+						#if($velocityCount>6) <td>$col</td> #end
+					#end
+				</tr>
 			#end
-		#end
+		</tbody>
+	</table>
 	#end
-	
-	<h2>$i18n.getString('no_aggregate_date_values_are_added_or_update_in_other_facilities')</h2>
-	<div id='contentDetails'></div>
-#else
+#end
+
+#if($hashValues==false)
 	<input type="button" value="$i18n.getString( 'back' )" onclick="backBtnOnClick();" style="width:10em">
 	<h2>$i18n.getString('no_aggregate_date_values_are_added_or_update_in_all_facilities')</h2>
 #end

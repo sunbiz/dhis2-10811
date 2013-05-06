@@ -93,7 +93,7 @@ body div#content ul li
  */
 body div#header
 {
-    height           : 20px;
+    height           : 21px;
     background-color : #1d5288;
     border-bottom    : 2px solid #184572;
     padding-top      : 1px;
@@ -115,6 +115,12 @@ body div#header span
 body div#header a
 {
     border : none;
+}
+
+body img#logo
+{
+    margin-top: 2px;
+    margin-left: 8px;
 }
 
 /*
@@ -241,10 +247,9 @@ body h2
     font-size        : 0.9em;
     padding-left     : 2%;
     padding-right    : 2%;
+	padding-bottom   : 0.2em;
     color            : black;
-    background-color : #F6F6F6;
-    border-top       : 1px solid #D8D8D8;
-    border-bottom    : 2px solid #D8D8D8;
+    border-bottom    : 1px solid #D8D8D8;
     margin-top       : 0;
     margin-bottom    : 0.4em;
     line-height      : normal;

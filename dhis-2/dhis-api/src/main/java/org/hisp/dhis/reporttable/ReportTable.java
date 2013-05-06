@@ -937,9 +937,10 @@ public class ReportTable
 
     public void setDoIndicators( boolean doIndicators )
     {
+        this.columnDimensions.remove( DATA_X_DIM_ID );
+        
         if ( doIndicators )
         {
-            this.columnDimensions.remove( DATA_X_DIM_ID );
             this.columnDimensions.add( DATA_X_DIM_ID );
         }
     }
@@ -951,9 +952,10 @@ public class ReportTable
 
     public void setDoPeriods( boolean doPeriods )
     {
+        this.columnDimensions.remove( PERIOD_DIM_ID );
+        
         if ( doPeriods )
         {
-            this.columnDimensions.remove( PERIOD_DIM_ID );
             this.columnDimensions.add( PERIOD_DIM_ID );
         }
     }
@@ -965,9 +967,10 @@ public class ReportTable
     
     public void setDoUnits( boolean doUnits )
     {
+        this.columnDimensions.remove( ORGUNIT_DIM_ID );
+        
         if ( doUnits )
         {
-            this.columnDimensions.remove( ORGUNIT_DIM_ID );
             this.columnDimensions.add( ORGUNIT_DIM_ID );
         }
     }

@@ -75,43 +75,6 @@ public class TableCreator
         createSilently( "CREATE INDEX crosstab ON datavalue ( periodid, sourceid )", "crosstab" );
         createSilently( "CREATE INDEX messageconversation_lastmessage ON messageconversation (lastmessage)", "messageconversation_lastmessage" );
         createSilently( "CREATE INDEX interpretation_lastupdated ON interpretation (lastupdated)", "interpretation_lastupdated" );
-        
-        final String sqlDataValueArchive = 
-            "CREATE TABLE datavaluearchive ( " +
-            "dataelementid INTEGER NOT NULL, " +
-            "periodid INTEGER NOT NULL, " +
-            "sourceid INTEGER NOT NULL, " +
-            "categoryoptioncomboid INTEGER NOT NULL, " +
-            "value VARCHAR(255), " +
-            "storedby VARCHAR(31), " +
-            "lastupdated TIMESTAMP, " +
-            "comment VARCHAR(360), " +
-            "followup BOOLEAN, " +
-            "CONSTRAINT datavaluearchive_pkey PRIMARY KEY (dataelementid, periodid, sourceid, categoryoptioncomboid), " +
-            "CONSTRAINT fk_datavaluearchive_categoryoptioncomboid FOREIGN KEY (categoryoptioncomboid) " +
-                "REFERENCES categoryoptioncombo (categoryoptioncomboid), " +
-            "CONSTRAINT fk_datavaluearchive_dataelementid FOREIGN KEY (dataelementid) " +
-                "REFERENCES dataelement (dataelementid), " +
-            "CONSTRAINT fk_datavaluearchive_periodid FOREIGN KEY (periodid) " +
-                "REFERENCES period (periodid), " +
-            "CONSTRAINT fk_datavaluearchive_sourceid FOREIGN KEY (sourceid) " +
-                "REFERENCES organisationunit (organisationunitid) );";
-        
-        createSilently( sqlDataValueArchive, "datavaluearchive" );
-
-        final String sqlPatientDataValueArchive = 
-            "CREATE TABLE patientdatavaluearchive ( " +
-             " programstageinstanceid integer NOT NULL, " +
-             " dataelementid integer NOT NULL, " +
-             " organisationunitid integer NOT NULL, " +
-             " value varchar(255) default NULL, " +
-             " providedelsewhere boolean, " +
-             " timestamp TIMESTAMP, " +
-             " PRIMARY KEY  (programstageinstanceid,dataelementid,organisationunitid), " +
-             " CONSTRAINT fk_patientdatavaluearchivepatientdatavaluearchive_organisationunitid FOREIGN KEY (organisationunitid) REFERENCES organisationunit (organisationunitid), " +
-             " CONSTRAINT fk_patientdatavaluearchive_programstageinstanceid FOREIGN KEY (programstageinstanceid) REFERENCES programstageinstance (programstageinstanceid) );";
-        
-        createSilently( sqlPatientDataValueArchive, "patientdatavaluearchive" );
     }
 
     // -------------------------------------------------------------------------

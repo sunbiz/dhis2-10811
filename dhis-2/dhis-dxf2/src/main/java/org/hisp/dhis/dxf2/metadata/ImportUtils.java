@@ -52,15 +52,14 @@ public class ImportUtils
             {
                 return identifiableObject.getName();
             }
-            else if ( identifiableObject.getUid() != null && identifiableObject.getName().length() > 0 )
+            else if ( identifiableObject.getUid() != null && identifiableObject.getUid().length() > 0 )
             {
                 return identifiableObject.getUid();
             }
-            else if ( identifiableObject.getCode() != null && identifiableObject.getName().length() > 0 )
+            else if ( identifiableObject.getCode() != null && identifiableObject.getCode().length() > 0 )
             {
                 return identifiableObject.getCode();
             }
-
         }
 
         return object.getClass().getName();

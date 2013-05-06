@@ -102,24 +102,12 @@ public class ViewPatientRegistrationFormAction
     // -------------------------------------------------------------------------
     // Getters & Setters
     // -------------------------------------------------------------------------
-
-    private Integer id;
-
-    public void setId( Integer id )
-    {
-        this.id = id;
-    }
-
+    
     private Integer programId;
 
     public void setProgramId( Integer programId )
     {
         this.programId = programId;
-    }
-
-    public Integer getProgramId()
-    {
-        return programId;
     }
 
     private Collection<PatientAttribute> attributes = new HashSet<PatientAttribute>();
@@ -175,14 +163,14 @@ public class ViewPatientRegistrationFormAction
 
         programs.removeAll( programService.getPrograms( Program.SINGLE_EVENT_WITHOUT_REGISTRATION ) );
 
-        if ( id != null )
+        if ( programId == null )
         {
-            registrationForm = patientRegistrationFormService.getPatientRegistrationForm( id );
+            registrationForm = patientRegistrationFormService.getCommonPatientRegistrationForm();
         }
-
-        if ( programId != null )
+        else
         {
             program = programService.getProgram( programId );
+            registrationForm = patientRegistrationFormService.getPatientRegistrationForm( program );
         }
 
         // ---------------------------------------------------------------------
@@ -208,7 +196,8 @@ public class ViewPatientRegistrationFormAction
 
         flags = systemSettingManager.getFlags();
 
-        autoSave = (Boolean) userSettingService.getUserSetting( UserSettingService.AUTO_SAVE_PATIENT_REGISTRATION_ENTRY_FORM, false );
+        autoSave = (Boolean) userSettingService.getUserSetting(
+            UserSettingService.AUTO_SAVE_PATIENT_REGISTRATION_ENTRY_FORM, false );
 
         return SUCCESS;
     }

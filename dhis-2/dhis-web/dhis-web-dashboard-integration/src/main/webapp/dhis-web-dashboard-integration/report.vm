@@ -6,7 +6,7 @@
     #foreach ( $report in $reports )
     <tr>
     	<td>
-    		<a href="../dhis-web-reporting/getReportParams.action?uid=${report.uid}&mode=report">$encoder.htmlEncode( $report.name )</a>
+    		<a href="../dhis-web-reporting/getReportParams.action?uid=${report.uid}&mode=report&type=${report.type}">$encoder.htmlEncode( $report.name )</a>
     	</td>
     	<td style="width:10px">
     		<a href="javascript:window.location.href='removeReport.action?id=$report.id'" title="$i18n.getString( 'remove' )">

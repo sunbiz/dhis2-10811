@@ -2,6 +2,10 @@ isAjax = true;
 
 function multiDataEntryOrgunitSelected( orgUnits, orgUnitNames )
 {
+	var width = jQuery('#programIdAddPatient').width();
+	jQuery('#programIdAddPatient').width(width-30);
+	showById( "programLoader" );
+	disable('programIdAddPatient');
 	setFieldValue('orgunitName', orgUnitNames[0]);
 	setFieldValue('orgunitId', orgUnits[0]);
 	hideById("listPatientDiv");
@@ -17,6 +21,9 @@ function multiDataEntryOrgunitSelected( orgUnits, orgUnitNames )
 				}
 			}
 			enableBtn();
+			hideById('programLoader');
+			jQuery('#programIdAddPatient').width(width);
+			enable('programIdAddPatient');
 		});
 }
 
@@ -122,6 +129,7 @@ function loadDataEntryDialog( programStageInstanceId )
 			programStageInstanceId: programStageInstanceId
 		},function()
 		{
+			setFieldValue( 'programStageInstanceId', programStageInstanceId );
 			showById('patientInforTB');
 			showById('postCommentTbl');
 		}).dialog(

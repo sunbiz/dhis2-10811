@@ -11,7 +11,7 @@
 		
 		<table class="listTable" id="listTable">
 			  <col>          
-			  <col width="270">
+			  <col width="300">
 			<thead>			  
 			  <tr>            
 				<th>$i18n.getString( "name" )</th>
@@ -43,6 +43,12 @@
 					  <img src="../images/edit-denied.png">
 					  <img src="images/programstage-denied.png">
 					  <img src="../images/assign_b-denied.png">
+					  #end
+					  
+					  #if( $auth.hasAccess( "dhis-web-maintenance-patient", "programIndicator" ) && $program.type !='3' )
+						<a href="programIndicator.action?programId=$program.id" title="$i18n.getString( 'program_indicator_management_form' )"><img src="images/program_indicator.png" ></a>
+					  #else
+						<img src="images/program_indicator_disabled.png">
 					  #end
 					  
 					  #if ( $security.canManage( $program ) )
@@ -80,15 +86,16 @@
 				</div>				
 				<p><label class="bold">$i18n.getString( "name" ):</label><br><span id="nameField"></span></p>
 				<p><label class="bold">$i18n.getString( "description" ):</label><br><span id="descriptionField"></span></p>				
-				<p><label class="bold">$i18n.getString( "type" ):</label><br><span id="typeField"></span></p>				
+				<p><label class="bold">$i18n.getString( "type" ):</label><br><span id="typeField"></span></p>                           
 				<p><label class="bold">$i18n.getString( "display_provided_other_facility_column" ):</label><br><span id="displayProvidedOtherFacilityField"></span></p>
-				<p><label class="bold">$i18n.getString( "display_date_of_incident" ):</label><br><span id="displayIncidentDateField"></span></p>
-				<p><label class="bold">$i18n.getString( "generated_events_by_enrollment_date" ):</label><br><span id="generatedByEnrollmentDateField"></span></p>
+				<p><label class="bold">$i18n.getString( "display_date_of_incident" ):</label><br><span id="displayIncidentDateField"></span></p>                                 <p><label class="bold">$i18n.getString( "generated_events_by_enrollment_date" ):</label><br><span id="generatedByEnrollmentDateField"></span></p>
 				<p><label class="bold">$i18n.getString( "ignore_to_generate_overdue_events" ):</label><br><span id="ignoreOverdueEventsField"></span></p>
 				<p><label class="bold">$i18n.getString( "only_enroll_once" ):</label><br><span id="onlyEnrollOnceField"></span></p>
 				<p><label class="bold">$i18n.getString( "block_entry_form_after_completed" ):</label><br><span id="blockEntryFormField"></span></p>
-				<p><label class="bold">$i18n.getString( "date_of_enrollment_description" ):</label><br><span id="dateOfEnrollmentDescriptionField"></span></p>				
-				<p><label class="bold">$i18n.getString( "date_of_incident_description" ):</label><br><span id="dateOfIncidentDescriptionField"></span></p>				
+				<p><label class="bold">$i18n.getString( "remind_completing_program_after_program_stage_completed" ):</label><br><span id="remindCompletedField"></span></p>
+				<p><label class="bold">$i18n.getString( "disable_registration_fields" ):</label><br><span id="disableRegistrationFieldsField"></span></p>
+				<p><label class="bold">$i18n.getString( "date_of_enrollment_description" ):</label><br><span id="dateOfEnrollmentDescriptionField"></span></p>                          
+				<p><label class="bold">$i18n.getString( "date_of_incident_description" ):</label><br><span id="dateOfIncidentDescriptionField"></span></p>                              
 				<p><label class="bold">$i18n.getString( "number_of_attributes" ):</label><br><span id="noAttributesField"></span></p>
 				<p><label class="bold">$i18n.getString( "number_of_identifier_types" ):</label><br><span id="noIdentifierTypesField"></span></p>
 			</div>

@@ -292,34 +292,32 @@ public class ActivityReportingServiceImpl
         }
         else
         {
-            if ( patients != null )
+            Iterator<Patient> iterator = patients.iterator();
+
+            while ( iterator.hasNext() )
             {
-                Iterator<Patient> iterator = patients.iterator();
+                Patient patient = iterator.next();
 
-                while ( iterator.hasNext() )
+                List<ProgramStageInstance> programStageInstances = programStageInstanceService
+                    .getProgramStageInstances( patient, false );
+
+                for ( int i = 0; i < programStageInstances.size(); i++ )
                 {
-                    Patient patient = iterator.next();
+                    ProgramStageInstance programStageInstance = programStageInstances.get( i );
 
-                    List<ProgramStageInstance> programStageInstances = programStageInstanceService
-                        .getProgramStageInstances( patient, false );
+                    // expiredDate.setTime( DateUtils.getDateAfterAddition(
+                    // programStageInstance.getDueDate(), 0 ) );
+                    expiredDate.setTime( DateUtils.getDateAfterAddition( programStageInstance.getDueDate(), 30 ) );
 
-                    for ( int i = 0; i < programStageInstances.size(); i++ )
+                    if ( programStageInstance.getDueDate().getTime() <= time
+                        && expiredDate.getTimeInMillis() > time )
                     {
-                        ProgramStageInstance programStageInstance = programStageInstances.get( i );
-
-                        // expiredDate.setTime( DateUtils.getDateAfterAddition(
-                        // programStageInstance.getDueDate(), 0 ) );
-                        expiredDate.setTime( DateUtils.getDateAfterAddition( programStageInstance.getDueDate(), 30 ) );
-
-                        if ( programStageInstance.getDueDate().getTime() <= time
-                            && expiredDate.getTimeInMillis() > time )
-                        {
-                            items.add( getActivity( programStageInstance,
-                                programStageInstance.getDueDate().getTime() < time ) );
-                        }
+                        items.add( getActivity( programStageInstance,
+                            programStageInstance.getDueDate().getTime() < time ) );
                     }
                 }
             }
+                
             return new ActivityPlan( items );
         }
 
@@ -347,7 +345,7 @@ public class ActivityReportingServiceImpl
         ProgramStageSection programStageSection = programStageSectionService
             .getProgramStageSection( programStageSectionId );
 
-        if ( programStageSectionId != null && programStageSectionId != 0 )
+        if ( programStageSectionId != 0 )
         {
             for ( ProgramStageDataElement de : programStageSection.getProgramStageDataElements() )
             {
@@ -372,7 +370,6 @@ public class ActivityReportingServiceImpl
 
         if ( dataElements.size() != dataElementIds.size() )
         {
-            ;
             throw NotAllowedException.INVALID_PROGRAM_STAGE;
         }
 
@@ -449,9 +446,8 @@ public class ActivityReportingServiceImpl
             }
             else
             {
-                org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientMobile = getPatientModel( orgUnitId,
-                    patients.get( 0 ) );
-
+                //org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientMobile = getPatientModel( orgUnitId, patients.get( 0 ) );
+                org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientMobile = getPatientModel( patients.get( 0 ) );
                 return patientMobile;
             }
         }
@@ -459,7 +455,8 @@ public class ActivityReportingServiceImpl
         {
             Patient patient = patientService.getPatient( Integer.parseInt( keyword ) );
 
-            org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientMobile = getPatientModel( orgUnitId, patient );
+            //org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientMobile = getPatientModel( orgUnitId, patient );
+            org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientMobile = getPatientModel( patient );
 
             return patientMobile;
         }
@@ -468,7 +465,7 @@ public class ActivityReportingServiceImpl
 
     @Override
     public String saveProgramStage( org.hisp.dhis.api.mobile.model.LWUITmodel.ProgramStage mobileProgramStage,
-        int orgUnitId )
+        int patientId, int orgUnitId )
         throws NotAllowedException
     {
         if ( mobileProgramStage.isSingleEvent() )
@@ -483,7 +480,7 @@ public class ActivityReportingServiceImpl
 
             programInstance.setProgram( programStage.getProgram() );
 
-            programInstance.setCompleted( true );
+            programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
 
             programInstanceService.addProgramInstance( programInstance );
 
@@ -499,7 +496,14 @@ public class ActivityReportingServiceImpl
 
             programStageInstance.setCompleted( true );
 
-            programStageInstance.setOrganisationUnit( orgUnitService.getOrganisationUnit( orgUnitId ) );
+            if( patientId != 0 )
+            {
+                programStageInstance.setOrganisationUnit( patientService.getPatient( patientId ).getOrganisationUnit() );
+            }
+            else
+            {
+                programStageInstance.setOrganisationUnit( orgUnitService.getOrganisationUnit( orgUnitId ) );
+            }
 
             programStageInstanceService.addProgramStageInstance( programStageInstance );
 
@@ -579,7 +583,7 @@ public class ActivityReportingServiceImpl
                 if ( isAllProgramStageFinished( programStageInstance ) == true )
                 {
                     ProgramInstance programInstance = programStageInstance.getProgramInstance();
-                    programInstance.setCompleted( true );
+                    programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
                     programInstanceService.updateProgramInstance( programInstance );
                 }
 
@@ -610,7 +614,7 @@ public class ActivityReportingServiceImpl
     }
 
     @Override
-    public org.hisp.dhis.api.mobile.model.LWUITmodel.Patient enrollProgram( String enrollInfo, int orgUnitId )
+    public org.hisp.dhis.api.mobile.model.LWUITmodel.Patient enrollProgram( String enrollInfo )
         throws NotAllowedException
     {
         String[] enrollProgramInfos = enrollInfo.split( "-" );
@@ -625,7 +629,7 @@ public class ActivityReportingServiceImpl
         programInstance.setDateOfIncident( new Date() );
         programInstance.setProgram( program );
         programInstance.setPatient( patient );
-        programInstance.setCompleted( false );
+        programInstance.setStatus( ProgramInstance.STATUS_ACTIVE );
         programInstanceService.addProgramInstance( programInstance );
         patient.getPrograms().add( program );
         patientService.updatePatient( patient );
@@ -657,7 +661,8 @@ public class ActivityReportingServiceImpl
 
         }
 
-        return getPatientModel( orgUnitId, patient );
+        //return getPatientModel( orgUnitId, patient );
+        return getPatientModel( patient );
     }
 
     // -------------------------------------------------------------------------
@@ -782,7 +787,8 @@ public class ActivityReportingServiceImpl
     }
 
     // get patient model for LWUIT
-    private org.hisp.dhis.api.mobile.model.LWUITmodel.Patient getPatientModel( int orgUnitId, Patient patient )
+    //private org.hisp.dhis.api.mobile.model.LWUITmodel.Patient getPatientModel( int orgUnitId, Patient patient )
+    private org.hisp.dhis.api.mobile.model.LWUITmodel.Patient getPatientModel( Patient patient )
     {
         org.hisp.dhis.api.mobile.model.LWUITmodel.Patient patientModel = new org.hisp.dhis.api.mobile.model.LWUITmodel.Patient();
         List<PatientAttribute> patientAtts = new ArrayList<PatientAttribute>();
@@ -796,6 +802,7 @@ public class ActivityReportingServiceImpl
 
         Period period = new Period( new DateTime( patient.getBirthDate() ), new DateTime() );
         patientModel.setAge( period.getYears() );
+        patientModel.setOrganisationUnitName( patient.getOrganisationUnit().getName() );
         patientModel.setPhoneNumber( patient.getPhoneNumber() );
 
         this.setSetting( getSettings() );
@@ -910,7 +917,7 @@ public class ActivityReportingServiceImpl
 
         // Set available enrollment programs
         List<Program> enrollmentProgramList = new ArrayList<Program>();
-        enrollmentProgramList = generateEnrollmentProgramList( orgUnitId, patient );
+        enrollmentProgramList = generateEnrollmentProgramList( patient );
         List<org.hisp.dhis.api.mobile.model.LWUITmodel.Program> enrollmentProgramListMobileList = new ArrayList<org.hisp.dhis.api.mobile.model.LWUITmodel.Program>();
 
         for ( Program enrollmentProgram : enrollmentProgramList )
@@ -918,7 +925,7 @@ public class ActivityReportingServiceImpl
             org.hisp.dhis.api.mobile.model.LWUITmodel.Program enrollmentProgramMobile = new org.hisp.dhis.api.mobile.model.LWUITmodel.Program();
             enrollmentProgramMobile.setId( enrollmentProgram.getId() );
             enrollmentProgramMobile.setName( enrollmentProgram.getName() );
-            enrollmentProgramMobile.setCompleted( false );
+            enrollmentProgramMobile.setStatus( ProgramInstance.STATUS_ACTIVE );
             enrollmentProgramMobile.setVersion( enrollmentProgram.getVersion() );
             enrollmentProgramMobile.setProgramStages( null );
             enrollmentProgramListMobileList.add( enrollmentProgramMobile );
@@ -950,7 +957,7 @@ public class ActivityReportingServiceImpl
         mobileProgram.setVersion( programInstance.getProgram().getVersion() );
         mobileProgram.setId( programInstance.getId() );
         mobileProgram.setName( programInstance.getProgram().getName() );
-        mobileProgram.setCompleted( programInstance.isCompleted() );
+        mobileProgram.setStatus( programInstance.getStatus() );
         mobileProgram.setProgramStages( getMobileProgramStages( patient, programInstance ) );
         return mobileProgram;
     }
@@ -1013,9 +1020,8 @@ public class ActivityReportingServiceImpl
 
     private boolean checkIfProgramStageCompleted( Patient patient, Program program, ProgramStage programstage )
     {
-
         Collection<ProgramInstance> programIntances = programInstanceService.getProgramInstances( patient, program,
-            false );
+            ProgramInstance.STATUS_ACTIVE );
         ProgramStageInstance programStageInstance = new ProgramStageInstance();
         if ( programIntances != null && programIntances.size() == 1 )
         {
@@ -1088,11 +1094,12 @@ public class ActivityReportingServiceImpl
         return setting;
     }
 
-    private List<Program> generateEnrollmentProgramList( int orgId, Patient patient )
+    private List<Program> generateEnrollmentProgramList( Patient patient )
     {
         List<Program> programs = new ArrayList<Program>();
-        for ( Program program : programService.getPrograms( orgUnitService.getOrganisationUnit( orgId ) ) )
-
+        
+        //for ( Program program : programService.getPrograms( orgUnitService.getOrganisationUnit( orgId ) ) )
+        for ( Program program : programService.getPrograms( patient.getOrganisationUnit()) )
         {
             if ( (program.isSingleEvent() && program.isRegistration()) || !program.isSingleEvent() )
             {
@@ -1124,74 +1131,83 @@ public class ActivityReportingServiceImpl
         org.hisp.dhis.api.mobile.model.LWUITmodel.Relationship enrollmentRelationship, int orgUnitId )
         throws NotAllowedException
     {
-        String fullName = enrollmentRelationship.getPersonBName();
-        int startIndex = fullName.indexOf( ' ' );
-        int endIndex = fullName.lastIndexOf( ' ' );
-
-        String firstName = fullName.toString();
-        String middleName = " ";
-        String lastName = " ";
-
-        if ( fullName.indexOf( ' ' ) != -1 )
+        Patient patientB;
+        if ( enrollmentRelationship.getPersonBId() != 0 )
         {
-            firstName = fullName.substring( 0, startIndex );
-            if ( startIndex == endIndex )
-            {
-                middleName = "  ";
-                lastName = fullName.substring( startIndex + 1, fullName.length() );
-            }
-            else
-            {
-                middleName = " " + fullName.substring( startIndex + 1, endIndex ) + " ";
-                lastName = fullName.substring( endIndex + 1, fullName.length() );
-            }
-        }
-        List<Patient> patients = (List<Patient>) this.patientService.getPatientByFullname( firstName + middleName
-            + lastName, orgUnitId );
-
-        //remove the own searcher
-        removeIfDuplicated( patients, enrollmentRelationship.getPersonAId());
-        
-        if ( patients.size() > 1 )
-        {
-            String patientsInfo = new String();
-
-            DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-
-            for ( Patient each : patients )
-            {
-                patientsInfo += each.getId() + "/" + each.getFullName() + "/"
-                    + dateFormat.format( each.getBirthDate() ) + "$";
-            }
-
-            throw new NotAllowedException( patientsInfo );
-        }
-        else if ( patients.size() == 0 )
-        {
-            throw NotAllowedException.NO_BENEFICIARY_FOUND;
+            patientB = patientService.getPatient( enrollmentRelationship.getPersonBId() );
         }
         else
         {
-            Patient patientB = patients.get( 0 );
-            Patient patientA = patientService.getPatient( enrollmentRelationship.getPersonAId() );
-            RelationshipType relationshipType = relationshipTypeService.getRelationshipType( enrollmentRelationship
-                .getId() );
-
-            Relationship relationship = new Relationship();
-            relationship.setRelationshipType( relationshipType );
-            if ( enrollmentRelationship.getChosenRelationship().equals( relationshipType.getaIsToB() ) )
+            String fullName = enrollmentRelationship.getPersonBName();
+            int startIndex = fullName.indexOf( ' ' );
+            int endIndex = fullName.lastIndexOf( ' ' );
+    
+            String firstName = fullName.toString();
+            String middleName = " ";
+            String lastName = " ";
+    
+            if ( fullName.indexOf( ' ' ) != -1 )
             {
-                relationship.setPatientA( patientA );
-                relationship.setPatientB( patientB );
+                firstName = fullName.substring( 0, startIndex );
+                if ( startIndex == endIndex )
+                {
+                    middleName = "  ";
+                    lastName = fullName.substring( startIndex + 1, fullName.length() );
+                }
+                else
+                {
+                    middleName = " " + fullName.substring( startIndex + 1, endIndex ) + " ";
+                    lastName = fullName.substring( endIndex + 1, fullName.length() );
+                }
+            }
+            List<Patient> patients = (List<Patient>) this.patientService.getPatientByFullname( firstName + middleName
+                + lastName, orgUnitId );
+    
+            //remove the own searcher
+            patients = removeIfDuplicated( patients, enrollmentRelationship.getPersonAId());
+            
+            if ( patients.size() > 1 )
+            {
+                String patientsInfo = new String();
+    
+                DateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+    
+                for ( Patient each : patients )
+                {
+                    patientsInfo += each.getId() + "/" + each.getFullName() + "/" + dateFormat.format( each.getBirthDate() )
+                        + "$";
+                }
+    
+                throw new NotAllowedException( patientsInfo );
+            }
+            else if ( patients.size() == 0 )
+            {
+                throw NotAllowedException.NO_BENEFICIARY_FOUND;
             }
             else
             {
-                relationship.setPatientA( patientB );
-                relationship.setPatientB( patientA );
+                patientB = patients.get( 0 );
             }
-            relationshipService.saveRelationship( relationship );
-            return getPatientModel( orgUnitId, patientA );
         }
+        Patient patientA = patientService.getPatient( enrollmentRelationship.getPersonAId() );
+        RelationshipType relationshipType = relationshipTypeService.getRelationshipType( enrollmentRelationship
+            .getId() );
+
+        Relationship relationship = new Relationship();
+        relationship.setRelationshipType( relationshipType );
+        if ( enrollmentRelationship.getChosenRelationship().equals( relationshipType.getaIsToB() ) )
+        {
+            relationship.setPatientA( patientA );
+            relationship.setPatientB( patientB );
+        }
+        else
+        {
+            relationship.setPatientA( patientB );
+            relationship.setPatientB( patientA );
+        }
+        relationshipService.saveRelationship( relationship );
+        //return getPatientModel( orgUnitId, patientA );
+        return getPatientModel( patientA );
     }
 
     @Override
@@ -1277,6 +1293,10 @@ public class ActivityReportingServiceImpl
         anonymousProgramMobile.setId( anonymousProgram.getId() );
 
         anonymousProgramMobile.setName( anonymousProgram.getName() );
+        
+        anonymousProgramMobile.setVersion( anonymousProgram.getVersion() );
+
+        anonymousProgramMobile.setStatus( ProgramInstance.STATUS_ACTIVE );
 
         ProgramStage programStage = anonymousProgram.getProgramStages().iterator().next();
 
@@ -1337,17 +1357,18 @@ public class ActivityReportingServiceImpl
 
         return anonymousProgramMobile;
     }
-    
+
     private List<Patient> removeIfDuplicated( List<Patient> patients, int patientId )
     {
-        for ( Patient each : patients )
+        List<Patient> result = new ArrayList<Patient>(patients);
+        for ( int i = 0; i < patients.size(); i++ )
         {
-            if ( each.getId() == patientId )
+            if ( patients.get( i ).getId() == patientId )
             {
-                patients.remove( each );
+                result.remove( i );
             }
         }
-        return patients;
+        return result;
     }
 
     private void saveDataValues( ActivityValue activityValue, ProgramStageInstance programStageInstance,
@@ -1576,6 +1597,10 @@ public class ActivityReportingServiceImpl
         {
             String id = "";
             String idt = identifierType.getName();
+            if ( identifierType.isMandatory() == true )
+            {
+                idt += " (*)";
+            }
             list.add( new org.hisp.dhis.api.mobile.model.PatientIdentifier( idt, id ) );
         }
         return list;
@@ -1588,6 +1613,10 @@ public class ActivityReportingServiceImpl
         for ( org.hisp.dhis.patient.PatientAttribute pa : getPatientAtts() )
         {
             String name = pa.getName();
+            if ( pa.isMandatory() == true )
+            {
+                name += " (*)";
+            }
             String value = "";
             list.add( new PatientAttribute( name, value ) );
         }

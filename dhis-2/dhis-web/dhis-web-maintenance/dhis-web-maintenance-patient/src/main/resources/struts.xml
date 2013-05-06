@@ -498,7 +498,7 @@
 				programStage.action?id=${programId}
 			</result>
 		</action>
-		
+
 		<action name="autoSaveDataEntryForm"
 			class="org.hisp.dhis.patient.action.dataentryform.SaveDataEntryFormAction">
 			<result name="success" type="velocity-json">
@@ -537,7 +537,7 @@
 				/dhis-web-maintenance-patient/dataEntryFormCode.vm
 			</result>
 		</action>
-		
+
 		<action name="setAutoSaveDataEntrySetting"
 			class="org.hisp.dhis.patient.action.dataentryform.SetAutoSaveDataEntrySettingAction">
 			<result name="success" type="velocity-json">
@@ -573,7 +573,7 @@
 			<result name="success" type="redirect">patientRegistrationForm.action
 			</result>
 		</action>
-		
+
 		<action name="autoSavePatientRegistrationForm"
 			class="org.hisp.dhis.patient.action.dataentryform.SavePatientRegistrationFormAction">
 			<result name="success" type="velocity-json">
@@ -587,10 +587,11 @@
 				/dhis-web-commons/ajax/jsonResponseSuccess.vm
 			</result>
 		</action>
-		
+
 		<action name="delRegistrationEntryFormAction"
 			class="org.hisp.dhis.patient.action.dataentryform.DelRegistrationFormAction">
-			<result name="success" type="redirect">patientRegistrationForm.action</result>
+			<result name="success" type="redirect">patientRegistrationForm.action
+			</result>
 		</action>
 
 		<action name="showPatientRegistrationForm"
@@ -599,7 +600,7 @@
 				/dhis-web-maintenance-patient/dataEntryFormCode.vm
 			</result>
 		</action>
-		
+
 		<action name="setAutoSavePatientRegistrationSetting"
 			class="org.hisp.dhis.patient.action.dataentryform.SetAutoSavePatientRegistrationSettingAction">
 			<result name="success" type="velocity-json">
@@ -888,6 +889,14 @@
 			<result name="success" type="velocity">/content.vm</result>
 			<param name="page">/dhis-web-maintenance-patient/caseAggregationList.vm</param>
 		</action>
+		
+		<action name="getProgramStages"
+			class="org.hisp.dhis.patient.action.programstage.GetProgramStageListAction">
+			<result name="success" type="velocity-json">
+				/dhis-web-commons/ajax/jsonProgramStages.vm
+			</result>
+			<param name="onExceptionReturn">plainTextError</param>
+		</action>
 
 		<!-- Validation - PatientValidationCriteria -->
 
@@ -1066,14 +1075,6 @@
 			<param name="requiredAuthorities">F_SCHEDULING_SEND_MESSAGE</param>
 		</action>
 
-		<action name="executeSendMessage"
-			class="org.hisp.dhis.patient.action.schedule.ExecuteSendMessageAction">
-			<result name="success" type="velocity-json">
-				/dhis-web-commons/ajax/jsonResponseSuccess.vm
-			</result>
-			<param name="requiredAuthorities">F_SCHEDULING_SEND_MESSAGE</param>
-		</action>
-
 		<action name="viewScheduledCaseAggCondTasks"
 			class="org.hisp.dhis.patient.action.schedule.GetScheduleAggQueryBuilderParamsAction">
 			<result name="success" type="velocity">/main.vm</result>
@@ -1089,6 +1090,74 @@
 				/dhis-web-maintenance-patient/jsonResponseScheduleTasks.vm
 			</result>
 			<param name="requiredAuthorities">F_SCHEDULING_CASE_AGGREGATE_QUERY_BUILDER</param>
+		</action>
+
+		<!-- Program Indicator -->
+
+		<action name="programIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorListAction">
+			<result name="success" type="velocity">/main.vm</result>
+			<param name="page">/dhis-web-maintenance-patient/programIndicator.vm</param>
+			<param name="menu">/dhis-web-maintenance-patient/menu.vm</param>
+			<param name="javascripts">javascript/programIndicator.js</param>
+			<param name="requiredAuthorities">F_PROGRAM_INDICATOR_MANAGEMENT</param>
+		</action>
+
+		<action name="getProgramIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorAction">
+			<result name="success" type="velocity-json">
+				/dhis-web-commons/ajax/jsonProgramIndicator.vm
+			</result>
+			<param name="onExceptionReturn">plainTextError</param>
+		</action>
+
+		<action name="showAddProgramIndicator"
+			class="org.hisp.dhis.patient.action.program.GetProgramAction">
+			<result name="success" type="velocity">/main.vm</result>
+			<param name="page">/dhis-web-maintenance-patient/addProgramIndicator.vm</param>
+			<param name="javascripts">javascript/programIndicator.js</param>
+			<param name="requiredAuthorities">F_ADD_PROGRAM_INDICATOR</param>
+		</action>
+
+		<action name="addProgramIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.AddProgramIndicatorAction">
+			<result name="success" type="redirect">programIndicator.action?programId=${programId}
+			</result>
+			<param name="requiredAuthorities">F_ADD_PROGRAM_INDICATOR</param>
+		</action>
+
+		<action name="showUpdateProgramIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorAction">
+			<result name="success" type="velocity">/main.vm</result>
+			<param name="page">/dhis-web-maintenance-patient/updateProgramIndicator.vm</param>
+			<param name="javascripts">javascript/programIndicator.js</param>
+			<param name="requiredAuthorities">F_UPDATE_PROGRAM_INDICATOR</param>
+		</action>
+
+		<action name="updateProgramIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.UpdateProgramIndicatorAction">
+			<result name="success" type="redirect">programIndicator.action?programId=${programId}
+			</result>
+			<param name="requiredAuthorities">F_UPDATE_PROGRAM_INDICATOR</param>
+		</action>
+
+		<action name="removeProgramIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.RemoveProgramIndicatorAction">
+			<result name="success" type="velocity-json">
+				/dhis-web-commons/ajax/jsonResponseSuccess.vm
+			</result>
+			<param name="requiredAuthorities">F_ADD_PROGRAM_INDICATOR</param>
+		</action>
+
+		<action name="validateProgramIndicator"
+			class="org.hisp.dhis.patient.action.programtindicator.ValidateProgramIndicatorAction">
+			<result name="success" type="velocity-json">
+				/dhis-web-commons/ajax/jsonResponseSuccess.vm
+			</result>
+			<result name="error" type="velocity-json">
+				/dhis-web-commons/ajax/jsonResponseError.vm
+			</result>
+			<param name="onExceptionReturn">plainTextError</param>
 		</action>
 
 	</package>

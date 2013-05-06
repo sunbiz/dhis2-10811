@@ -212,9 +212,12 @@ function SelectionTree()
 
         for ( var i = 0; i < unitElements.length; ++i )
         {
-            var unitTag = createTreeElementTag( unitElements[i] );
+        	if ( unitIsValid( unitElements[i] ) )
+        	{
+        		var unitTag = createTreeElementTag( unitElements[i] );
             
-            rootsTag.appendChild( unitTag );
+        		rootsTag.appendChild( unitTag );
+        	}
         }
 
         treeTag.appendChild( rootsTag );
@@ -225,7 +228,7 @@ function SelectionTree()
         for ( var i = 0, parentElement; ( parentElement = parentElements[i] ); ++i )
         {
             var parentId = parentElement.getAttribute( 'parentId' );
-            var parentTag = document.getElementById( getTagId( parentId ));
+            var parentTag = document.getElementById( getTagId( parentId ) );
 
             createChildren( parentTag, parentElement );
         }
@@ -242,9 +245,12 @@ function SelectionTree()
 
         for ( var i = 0, child; ( child = children[i] ); ++i )
         {
-            var childTag = createTreeElementTag( child );
+        	if ( unitIsValid( child ) )
+        	{
+        		var childTag = createTreeElementTag( child );
 
-            childrenTag.appendChild( childTag );
+        		childrenTag.appendChild( childTag );
+        	}
         }
 
         setVisible( childrenTag, true );
@@ -374,4 +380,17 @@ function SelectionTree()
     {
         treeTag.style.backgroundImage = 'none';
     }
+
+    function unitIsValid( unit )
+    {
+    	if ( isDefined( unit ) && unit && unit.firstChild )
+    	{
+    		return true;
+    	}
+    	
+    	log( 'Illegal organisation unit' );
+    	log( unit );
+    	
+    	return false;
+    }    
 }

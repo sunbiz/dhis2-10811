@@ -68,7 +68,7 @@ public class PatientDataValueDeletionHandler
     {
         String sql = "SELECT COUNT(*) FROM patientdatavalue where dataelementid=" + dataElement.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PatientDataValueDeletionHandler
             + "ON pdv.programstageinstanceid=psi.programstageinstanceid " + "WHERE psi.programstageid="
             + programStage.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 
     @Override

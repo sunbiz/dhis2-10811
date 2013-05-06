@@ -12,10 +12,25 @@ function showPatientAttributeDetails( patientAttributeId )
 			setInnerHTML( 'mandatoryField', mandatory );
 			var inherit = ( json.patientAttribute.inherit == 'true') ? i18n_yes : i18n_no;
 			setInnerHTML( 'inheritField', inherit );
-			setInnerHTML( 'valueTypeField', json.patientAttribute.valueType );    
+			
+			var valueType = json.patientAttribute.valueType;
+			var typeMap = patientAttributeTypeMap();
+			setInnerHTML( 'valueTypeField', typeMap[valueType] );    
 			
 			showDetails();
 	});
+}
+
+function patientAttributeTypeMap()
+{
+	var typeMap = [];
+	typeMap['number'] = i18n_number;
+	typeMap['string'] = i18n_text;
+	typeMap['bool'] = i18n_yes_no;
+	typeMap['trueOnly'] = i18n_yes_only;
+	typeMap['date'] = i18n_date;
+	typeMap['combo'] = i18n_attribute_combo_type;
+	return typeMap;
 }
 
 // -----------------------------------------------------------------------------

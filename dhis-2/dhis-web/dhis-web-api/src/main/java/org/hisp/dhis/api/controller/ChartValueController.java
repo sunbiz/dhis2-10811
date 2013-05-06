@@ -33,7 +33,7 @@ import org.hisp.dhis.aggregation.AggregatedIndicatorValue;
 import org.hisp.dhis.aggregation.AggregatedOrgUnitDataValueService;
 import org.hisp.dhis.api.utils.ContextUtils;
 import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
-import org.hisp.dhis.api.webdomain.ChartPluginValue;
+import org.hisp.dhis.api.webdomain.ChartValue;
 import org.hisp.dhis.completeness.DataSetCompletenessResult;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
@@ -127,7 +127,7 @@ public class ChartValueController
         @RequestParam( required = false ) boolean rewind,
         RelativePeriods relativePeriods, Model model, HttpServletResponse response ) throws Exception
     {
-        ChartPluginValue chartValue = new ChartPluginValue();
+        ChartValue chartValue = new ChartValue();
 
         I18nFormat format = i18nManager.getI18nFormat();
 

@@ -74,5 +74,5 @@ jQuery( document ).ready( function()
 			}
 		});
 		
-	checkValueIsExist( "name", "validateProgramStage.action");	
+	checkValueIsExist( "name", "validateProgramStage.action",{id: getFieldValue('programId')});	
 });

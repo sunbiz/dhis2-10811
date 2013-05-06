@@ -125,6 +125,6 @@ public class DataElementDeletionHandler
     {
         String sql = "SELECT COUNT(*) " + "FROM dataelement " + "WHERE optionsetid=" + optionSet.getId();
 
-        return jdbcTemplate.queryForInt( sql ) == 0 ? null : ERROR;
+        return jdbcTemplate.queryForObject( sql, Integer.class ) == 0 ? null : ERROR;
     }
 }

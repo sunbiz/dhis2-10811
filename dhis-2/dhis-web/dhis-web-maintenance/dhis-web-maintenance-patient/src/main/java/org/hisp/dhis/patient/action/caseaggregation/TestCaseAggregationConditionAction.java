@@ -29,51 +29,30 @@ package org.hisp.dhis.patient.action.caseaggregation;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
-import org.hisp.dhis.caseaggregation.CaseAggregationCondition;
-import static org.hisp.dhis.caseaggregation.CaseAggregationCondition.AGGRERATION_COUNT;
-import org.hisp.dhis.caseaggregation.CaseAggregationConditionService;
-import org.hisp.dhis.dataelement.DataElementService;
-import org.hisp.dhis.i18n.I18n;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.caseaggregation.CaseAggregationConditionManager;
+import org.hisp.dhis.period.MonthlyPeriodType;
 import org.hisp.dhis.period.Period;
-import org.hisp.dhis.program.Program;
 
 import com.opensymphony.xwork2.Action;
 
 /**
  * @author Chau Thu Tran
- * 
- * @version $Id: TestCaseAggregationConditionAction.java Oct 5, 2011 3:45:20 PM
- *          $
  */
 public class TestCaseAggregationConditionAction
     implements Action
 {
-
     // -------------------------------------------------------------------------
     // Dependency
     // -------------------------------------------------------------------------
 
-    private CaseAggregationConditionService aggregationConditionService;
+    private CaseAggregationConditionManager caseAggregationConditionManager;
 
-    public void setAggregationConditionService( CaseAggregationConditionService aggregationConditionService )
+    public void setCaseAggregationConditionManager( CaseAggregationConditionManager caseAggregationConditionManager )
     {
-        this.aggregationConditionService = aggregationConditionService;
-    }
-
-    private DataElementService dataElementService;
-
-    public void setDataElementService( DataElementService dataElementService )
-    {
-        this.dataElementService = dataElementService;
-    }
-
-    private I18n i18n;
-
-    public void setI18n( I18n i18n )
-    {
-        this.i18n = i18n;
+        this.caseAggregationConditionManager = caseAggregationConditionManager;
     }
 
     // -------------------------------------------------------------------------
@@ -116,40 +95,20 @@ public class TestCaseAggregationConditionAction
     public String execute()
         throws Exception
     {
-        CaseAggregationCondition aggCondition = new CaseAggregationCondition( "", operator, condition, null, null );
-        if ( deSumId != null )
-        {
-            aggCondition.setDeSum( dataElementService.getDataElement( deSumId ) );
-        }
+        Collection<Integer> orgunitIds = new HashSet<Integer>();
+        orgunitIds.add( 0 );
 
-        Collection<Program> programs = aggregationConditionService.getProgramsInCondition( condition );
-
-        if ( operator.equals( AGGRERATION_COUNT ) )
-        {
-            for ( Program program : programs )
-            {
-                if ( program.getType() == Program.SINGLE_EVENT_WITHOUT_REGISTRATION )
-                {
-                    message = i18n.getString( "select_operator_number_of_visits_for_this_condition" );
-                    return INPUT;
-                }
-            }
-        }
-
-        OrganisationUnit orgunit = new OrganisationUnit();
-        orgunit.setId( 1 );
-
+        MonthlyPeriodType periodType = new MonthlyPeriodType();
         Period period = new Period();
         period.setStartDate( new Date() );
         period.setEndDate( new Date() );
+        period.setPeriodType( periodType );
 
-        Double value = aggregationConditionService.getAggregateValue( aggCondition, orgunit, period );
+        String sql = caseAggregationConditionManager.parseExpressionToSql( false, condition, operator, 0,
+            "dataelementname", 0, "optioncomboid", deSumId, orgunitIds, period );
 
-        if ( value == null )
-        {
-            return INPUT;
-        }
-
-        return SUCCESS;
+        List<Integer> ids = caseAggregationConditionManager.executeSQL( sql );
+        
+        return (ids == null) ? INPUT : SUCCESS;
     }
 }

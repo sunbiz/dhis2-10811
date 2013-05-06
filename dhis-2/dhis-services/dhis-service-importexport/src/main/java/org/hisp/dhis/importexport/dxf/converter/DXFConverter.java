@@ -37,7 +37,6 @@ import org.amplecode.staxwax.reader.XMLReader;
 import org.amplecode.staxwax.writer.XMLWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.cache.HibernateCacheManager;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.common.ProcessState;
@@ -58,11 +57,9 @@ import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.CompleteDataSetRegistration;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.DataSetService;
-import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.expression.ExpressionService;
 import org.hisp.dhis.importexport.ExportParams;
 import org.hisp.dhis.importexport.GroupMemberAssociation;
-import org.hisp.dhis.importexport.ImportDataValue;
 import org.hisp.dhis.importexport.ImportObjectService;
 import org.hisp.dhis.importexport.ImportParams;
 import org.hisp.dhis.importexport.XMLConverter;
@@ -95,10 +92,8 @@ import org.hisp.dhis.jdbc.batchhandler.DataElementGroupSetMemberBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.DataSetBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.DataSetMemberBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.DataSetSourceAssociationBatchHandler;
-import org.hisp.dhis.jdbc.batchhandler.DataValueBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.GroupSetBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.GroupSetMemberBatchHandler;
-import org.hisp.dhis.jdbc.batchhandler.ImportDataValueBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.IndicatorBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.IndicatorGroupBatchHandler;
 import org.hisp.dhis.jdbc.batchhandler.IndicatorGroupMemberBatchHandler;
@@ -263,13 +258,6 @@ public class DXFConverter
     public void setChartService( ChartService chartService )
     {
         this.chartService = chartService;
-    }
-
-    private AggregatedDataValueService aggregatedDataValueService;
-
-    public void setAggregatedDataValueService( AggregatedDataValueService aggregatedDataValueService )
-    {
-        this.aggregatedDataValueService = aggregatedDataValueService;
     }
 
     private BatchHandlerFactory batchHandlerFactory;
@@ -1009,32 +997,6 @@ public class DXFConverter
 
                 log.info( "Imported CompleteDataSetRegistrations" );
             }
-            else if ( reader.isStartElement( DataValueConverter.COLLECTION_NAME ) && params.isDataValues() )
-            {
-                log.debug("Starting DataValues import");
-
-                state.setMessage( "importing_data_values" );
-
-                BatchHandler<DataValue> batchHandler = batchHandlerFactory.createBatchHandler(
-                    DataValueBatchHandler.class ).init();
-                BatchHandler<ImportDataValue> importDataValueBatchHandler = batchHandlerFactory.createBatchHandler(
-                    ImportDataValueBatchHandler.class ).init();
-
-                XMLConverter converter = new DataValueConverter( batchHandler, importDataValueBatchHandler,
-                    aggregatedDataValueService, importObjectService, params, objectMappingGenerator
-                        .getDataElementMapping( params.skipMapping() ), objectMappingGenerator.getPeriodMapping( params
-                        .skipMapping() ), objectMappingGenerator.getOrganisationUnitMapping( params.skipMapping() ),
-                    objectMappingGenerator.getCategoryOptionComboMapping( params.skipMapping() ) );
-
-                converterInvoker.invokeRead( converter, reader, params );
-
-                batchHandler.flush();
-
-                importDataValueBatchHandler.flush();
-
-                log.info( "Imported DataValues" );
-            }
-
         }
 
         if ( params.isAnalysis() )

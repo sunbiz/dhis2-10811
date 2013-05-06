@@ -19,3 +19,5 @@ nbactions.xml
 *.ids
 *.iws
 overlays/
+./dhis-2/atlassian-ide-plugin.xml
+./atlassian-ide-plugin.xml

@@ -86,6 +86,8 @@ public interface ChartService
     Chart getChart( int id );
 
     Chart getChart( String uid );
+    
+    Chart getChartNoAcl( String uid );
 
     void deleteChart( Chart chart );
 

@@ -27,9 +27,9 @@ package org.hisp.dhis.help;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.system.util.StreamUtils.ENCODING_UTF;
-
-import java.io.OutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -37,9 +37,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import java.io.OutputStream;
+import java.util.Locale;
 
-import org.hisp.dhis.help.HelpManager;
-import org.springframework.core.io.ClassPathResource;
+import static org.hisp.dhis.system.util.StreamUtils.ENCODING_UTF8;
 
 /**
  * @author Lars Helge Overland
@@ -47,22 +48,26 @@ import org.springframework.core.io.ClassPathResource;
 public class DefaultHelpManager
     implements HelpManager
 {
+    private static final Log log = LogFactory.getLog( DefaultHelpManager.class );
+
     // -------------------------------------------------------------------------
     // HelpManager implementation
     // -------------------------------------------------------------------------
 
-    public void getHelpContent( OutputStream out, String id )
+    public void getHelpContent( OutputStream out, String id, Locale locale )
     {
         try
         {
-            Source source = new StreamSource( new ClassPathResource( "help_content.xml" ).getInputStream(), ENCODING_UTF );
-            
+            ClassPathResource classPathResource = resolveHelpFileResource( locale );
+
+            Source source = new StreamSource( classPathResource.getInputStream(), ENCODING_UTF8 );
+
             Result result = new StreamResult( out );
-            
+
             Transformer transformer = getTransformer( "help_stylesheet.xsl" );
-            
+
             transformer.setParameter( "sectionId", id );
-            
+
             transformer.transform( source, result );
         }
         catch ( Exception ex )
@@ -70,15 +75,17 @@ public class DefaultHelpManager
             throw new RuntimeException( "Failed to get help content", ex );
         }
     }
-    
-    public void getHelpItems( OutputStream out )
+
+    public void getHelpItems( OutputStream out, Locale locale )
     {
         try
         {
-            Source source = new StreamSource( new ClassPathResource( "help_content.xml" ).getInputStream(), ENCODING_UTF );
-            
+            ClassPathResource classPathResource = resolveHelpFileResource( locale );
+
+            Source source = new StreamSource( classPathResource.getInputStream(), ENCODING_UTF8 );
+
             Result result = new StreamResult( out );
-            
+
             getTransformer( "helpitems_stylesheet.xsl" ).transform( source, result );
         }
         catch ( Exception ex )
@@ -94,8 +101,41 @@ public class DefaultHelpManager
     private Transformer getTransformer( String stylesheetName )
         throws Exception
     {
-        Source stylesheet = new StreamSource( new ClassPathResource( stylesheetName ).getInputStream(), ENCODING_UTF );
-        
+        Source stylesheet = new StreamSource( new ClassPathResource( stylesheetName ).getInputStream(), ENCODING_UTF8 );
+
         return TransformerFactory.newInstance().newTransformer( stylesheet );
+    }
+
+    private ClassPathResource resolveHelpFileResource( Locale locale )
+    {
+
+        String helpFile;
+        ClassPathResource classPathResource;
+
+        if ( locale != null && locale.getDisplayLanguage() != null )
+        {
+            helpFile = "help_content_" + locale.getLanguage() + "_" + locale.getCountry() + ".xml";
+
+            log.debug( "Help file: " + helpFile );
+        }
+        else
+        {
+            helpFile = "help_content.xml";
+
+            log.debug( "Help file: " + helpFile );
+        }
+
+        classPathResource = new ClassPathResource( helpFile );
+
+        if ( !classPathResource.exists() )
+        {
+            helpFile = "help_content.xml";
+
+            classPathResource = new ClassPathResource( helpFile );
+
+            log.warn( "Help file: " + helpFile + " not available on classpath" );
+        }
+
+        return classPathResource;
     }
 }

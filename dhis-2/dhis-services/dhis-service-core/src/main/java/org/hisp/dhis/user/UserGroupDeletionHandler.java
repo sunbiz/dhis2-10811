@@ -79,7 +79,7 @@ public class UserGroupDeletionHandler
     @Override
     public String allowDeleteUserGroup( UserGroup group )
     {
-        int count = jdbcTemplate.queryForInt( "select count(*) from usergroupaccess where usergroupid=" + group.getId() );
+        int count = jdbcTemplate.queryForObject( "select count(*) from usergroupaccess where usergroupid=" + group.getId(), Integer.class );
         
         return count == 0 ? null : "";
     }

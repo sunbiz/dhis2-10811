@@ -47,5 +47,4 @@ public class BasicAuthenticationRequiredFilter
 
         super.doFilter( req, res, chain );
     }
-
 }

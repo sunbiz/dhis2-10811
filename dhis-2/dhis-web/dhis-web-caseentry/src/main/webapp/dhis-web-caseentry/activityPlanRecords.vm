@@ -16,8 +16,14 @@
 			<th>#</th>
 			<th>$i18n.getString('date_scheduled')</th>
 			<th>$i18n.getString('orgunit')</th>
+			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
 			<th>$i18n.getString('full_name')</th>
 			<th>$i18n.getString('phone_number')</th>
+			#else
+			<th>$i18n.getString('system_identifier')</th>
+			#end
+			
 			<th>$i18n.getString('program_stage')</th>
 			<th>$i18n.getString('operations')</th>
 		</tr>
@@ -48,6 +54,7 @@
 				#end
 			</td>
 			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
 			<td><a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )">
 				#set($value="")
 				#foreach( $identifierType in $identifierTypes)
@@ -65,12 +72,24 @@
 			</a></td>
 			
 			<td>$!patient.phoneNumber</td>
+			#else
+				#set($value="")
+				#foreach( $identifier in $patient.identifiers)
+					#if($!identifier.identifierType)
+					#else
+						#set($value=$identifier.identifier)
+					#end
+				#end
+				<td><a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )">
+					$value
+				</a></td>
+			#end
 			
-			<td><a href="javascript:loadDataEntryDialog( $programStageInstance.id );">$programStageInstance.programStage.displayName</a></td>
+			<td><a href="javascript:loadDataEntryDialog( $programStageInstance.id, '$programStageInstance.programStage.uid' );">$programStageInstance.programStage.displayName</a></td>
 			
 			<td>
 				<a href="javascript:isDashboard=false;showPatientDashboardForm( '$patient.id' )" title="$i18n.getString( 'patient_dashboard' )"><img src="../images/enroll.png" alt='$i18n.getString( "patient_dashboard" )'></a>
-				<a href="javascript:loadDataEntryDialog( $programStageInstance.id );" title="$i18n.getString( 'data_entry' )"><img src="images/data_entry.png" alt="$i18n.getString( 'data_entry' )"></a>   
+				<a href="javascript:loadDataEntryDialog( $programStageInstance.id, '$programStageInstance.programStage.uid' );" title="$i18n.getString( 'data_entry' )"><img src="images/data_entry.png" alt="$i18n.getString( 'data_entry' )"></a>   
 				<a href="javascript:showPatientHistory('$patient.id')" title='$i18n.getString( "patient_details_and_history" )'><img src="../images/information.png" alt='$i18n.getString( "patient_details_and_history" )'></a>
 			</td>
 			

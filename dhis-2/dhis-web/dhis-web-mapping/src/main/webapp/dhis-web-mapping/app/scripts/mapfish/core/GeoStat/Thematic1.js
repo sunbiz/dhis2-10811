@@ -117,7 +117,7 @@ mapfish.GeoStat.Thematic1 = OpenLayers.Class(mapfish.GeoStat, {
 			orgUnitLevel = this.view.organisationUnitLevel,
 			parent = orgUnit ? orgUnit.name : '',
 			level = orgUnitLevel ? orgUnitLevel.name : '',
-			what = indicator ? indicator.name : (dataElement ? dataElement.name : ''),
+			what = this.view.valueType === this.gis.conf.finals.dimension.indicator.id ? indicator.name : dataElement.name,
 			when = period ? period.id : '',
 			where = parent + ' / ' + level;
 

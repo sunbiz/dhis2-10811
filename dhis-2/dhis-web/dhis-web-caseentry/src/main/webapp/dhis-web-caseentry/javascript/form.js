@@ -25,10 +25,10 @@ function loadDataEntry( programStageInstanceId )
 	showById('dataEntryFormDiv');
 	setFieldValue( 'dueDate', '' );
 	setFieldValue( 'executionDate', '' );
-	disable('validationBtn');
 	disableCompletedButton(true);
 	disable('uncompleteBtn');
-	
+	jQuery( 'input[id=programStageInstanceId]').val(programStageInstanceId );
+			
 	showLoader();	
 	$( '#dataEntryFormDiv' ).load( "dataentryform.action", 
 		{ 
@@ -39,12 +39,7 @@ function loadDataEntry( programStageInstanceId )
 			var completed = jQuery('#entryFormContainer input[id=completed]').val();
 			var irregular = jQuery('#entryFormContainer input[id=irregular]').val();
 			showById('inputCriteriaDiv');
-			enable('validationBtn');
-			if( executionDate == '' )
-			{
-				disable('validationBtn');
-			}
-			else if( executionDate != '' && completed == 'false' )
+			if( executionDate != '' && completed == 'false' )
 			{
 				disableCompletedButton(false);
 			}

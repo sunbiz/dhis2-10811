@@ -30,8 +30,8 @@ package org.hisp.dhis.program;
 import static org.hisp.dhis.i18n.I18nUtils.i18n;
 
 import java.util.Collection;
+import java.util.List;
 
-import org.hisp.dhis.common.GenericIdentifiableObjectStore;
 import org.hisp.dhis.i18n.I18nService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,9 @@ public class DefaultProgramStageSectionService
     // Dependencies
     // -------------------------------------------------------------------------
 
-    private GenericIdentifiableObjectStore<ProgramStageSection> programStageSectionStore;
+    private ProgramStageSectionStore programStageSectionStore;
 
-    public void setProgramStageSectionStore(
-        GenericIdentifiableObjectStore<ProgramStageSection> programStageSectionStore )
+    public void setProgramStageSectionStore( ProgramStageSectionStore programStageSectionStore )
     {
         this.programStageSectionStore = programStageSectionStore;
     }
@@ -92,9 +91,9 @@ public class DefaultProgramStageSectionService
     }
 
     @Override
-    public ProgramStageSection getProgramStageSectionByName( String name )
+    public List<ProgramStageSection> getProgramStageSectionByName( String name )
     {
-        return i18n( i18nService, programStageSectionStore.getByName( name ) );
+        return programStageSectionStore.getAllEqName( name );
     }
 
     @Override
@@ -102,11 +101,16 @@ public class DefaultProgramStageSectionService
     {
         return i18n( i18nService, programStageSectionStore.getAll() );
     }
-    
+
     @Override
     public Collection<ProgramStageSection> getProgramStages( ProgramStage programStage )
     {
         return i18n( i18nService, programStage.getProgramStageSections() );
     }
-    
+
+    @Override
+    public ProgramStageSection getProgramStageSectionByName( String name, ProgramStage programStage )
+    {
+        return i18n( i18nService, programStageSectionStore.getByNameAndProgramStage( name, programStage ) );
+    }
 }

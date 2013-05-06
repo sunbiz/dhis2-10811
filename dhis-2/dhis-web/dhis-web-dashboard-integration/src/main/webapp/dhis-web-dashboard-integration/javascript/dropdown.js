@@ -15,7 +15,7 @@ $( document ).ready( function()
 	$( "#searchField" ).keyup( search );
 	
 	var viewportWidth = parseInt( $( window ).width() );
-	var linkWidth = parseInt( 338 );
+	var linkWidth = parseInt( 334 );
 	var chartWidth = parseInt( 325 );
 	
 	if ( viewportWidth == undefined )
@@ -23,7 +23,7 @@ $( document ).ready( function()
 		viewportWidth = parseInt( 1366 );
 	}
 	
-	var noCharts = 2 * Math.floor( ( viewportWidth - linkWidth ) / chartWidth ); 
+	var noCharts = 2 * Math.floor( ( viewportWidth - linkWidth + 4 ) / chartWidth ); 
 		
 	$( "#contentDiv" ).load( "provideContent.action?noCharts=" + noCharts + "&_dc=" + getRandomNumber() );
 } );

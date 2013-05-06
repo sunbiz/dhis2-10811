@@ -27,10 +27,7 @@ package org.hisp.dhis.message;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_EMAIL_HOST_NAME;
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_EMAIL_PASSWORD;
-import static org.hisp.dhis.setting.SystemSettingManager.KEY_EMAIL_USERNAME;
-import static org.hisp.dhis.user.UserSettingService.*;
+import static org.hisp.dhis.user.UserSettingService.KEY_MESSAGE_EMAIL_NOTIFICATION;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -55,12 +52,9 @@ public class EmailMessageSender
     implements MessageSender
 {
     private static final Log log = LogFactory.getLog( EmailMessageSender.class );
-    private static final int SMTP_PORT = 587;
-    private static final int LOCAL_SMTP_PORT = 25;
     private static final String FROM_ADDRESS = "noreply@dhis2.org";
     private static final String FROM_NAME = "DHIS2 Message [No reply]";
     private static final String SUBJECT_PREFIX = "[DHIS2] ";
-    private static final String LOCALHOST = "localhost";
     private static final String LB = System.getProperty( "line.separator" );
 
     // -------------------------------------------------------------------------
@@ -92,11 +86,13 @@ public class EmailMessageSender
     @Override
     public void sendMessage( String subject, String text, User sender, Set<User> users, boolean forceSend )
     {        
-        String hostName = StringUtils.trimToNull( (String) systemSettingManager.getSystemSetting( KEY_EMAIL_HOST_NAME ) );
-        String username = StringUtils.trimToNull( (String) systemSettingManager.getSystemSetting( KEY_EMAIL_USERNAME ) );
-        String password = StringUtils.trimToNull( (String) systemSettingManager.getSystemSetting( KEY_EMAIL_PASSWORD ) );
+        String hostName = systemSettingManager.getEmailHostName();
+        int port = systemSettingManager.getEmailPort();
+        String username = systemSettingManager.getEmailUsername();
+        String password = systemSettingManager.getEmailPassword();
+        boolean tls = systemSettingManager.getEmailTls();
 
-        if ( hostName == null || username == null || password == null )
+        if ( hostName == null )
         {
             return;
         }
@@ -111,7 +107,7 @@ public class EmailMessageSender
 
         try
         {
-            Email email = getEmail( hostName, username, password );
+            Email email = getEmail( hostName, port, username, password, tls );
             email.setSubject( SUBJECT_PREFIX + subject );
             email.setMsg( text );
             
@@ -127,7 +123,7 @@ public class EmailMessageSender
                 {
                     email.addBcc( user.getEmail() );
                     
-                    log.debug( "Sending email to user: " + user + " with email address: " + user.getEmail() );
+                    log.info( "Sending email to user: " + user + " with email address: " + user.getEmail() );
                     
                     hasRecipients = true;
                 }
@@ -137,7 +133,7 @@ public class EmailMessageSender
             {
                 email.send();
                 
-                log.debug( "Email sent" );
+                log.info( "Email sent using host: " + hostName + " with TLS: " + tls );
             }
         }
         catch ( EmailException ex )
@@ -146,24 +142,20 @@ public class EmailMessageSender
         }
     }
 
-    private Email getEmail( String hostName, String username, String password )
+    private Email getEmail( String hostName, int port, String username, String password, boolean tls )
         throws EmailException
     {
         Email email = new SimpleEmail();
         email.setHostName( hostName );
         email.setFrom( FROM_ADDRESS, FROM_NAME );
-
-        if ( hostName.equals( LOCALHOST ) )
+        email.setSmtpPort( port );
+        email.setTLS( true );
+        
+        if ( username != null && password != null )
         {
-            email.setSmtpPort( LOCAL_SMTP_PORT );
-        }
-        else
-        {
-            email.setSmtpPort( SMTP_PORT );
             email.setAuthenticator( new DefaultAuthenticator( username, password ) );
-            email.setTLS( true );
         }
-
+        
         return email;
     }
 }

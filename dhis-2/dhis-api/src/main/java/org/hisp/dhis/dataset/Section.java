@@ -149,6 +149,11 @@ public class Section
 
         return false;
     }
+    
+    public boolean hasDataElements()
+    {
+        return dataElements != null && !dataElements.isEmpty();
+    }
 
     // -------------------------------------------------------------------------
     // Getters and setters

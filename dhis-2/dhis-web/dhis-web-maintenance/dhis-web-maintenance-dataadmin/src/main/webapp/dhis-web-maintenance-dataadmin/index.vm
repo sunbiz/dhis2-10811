@@ -10,8 +10,6 @@ jQuery(function() {
 <ul class="introList">
     #introListImgItem( "displayDataBrowserForm.action" "data_browser" "databrowser" )
     #introListImgItem( "displayDataIntegrityForm.action" "data_integrity" "dataintegrity" )
-    #introListImgItem( "displayDataArchiveForm.action" "data_archive" "dataarchive" )
-	#introListImgItem( "displayPatientDataArchiveForm.action" "patient_data_archive" "dataarchive" )
     #introListImgItem( "displayMaintenanceForm.action" "maintenance" "maintenance" )
     #introListImgItem( "displayResourceTableForm.action" "resource_table" "resourcetable" )
     #introListImgItem( "showSqlViewListForm.action" "sql_view" "sqlview" )

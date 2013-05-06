@@ -7,6 +7,7 @@
 <div class='dashboard-area'>
 <table>
 <tr>
+#if( $auth.hasAccess( "dhis-web-caseentry", "accessPatientAttributes" ) )
 <td>
 	<div class="link-area">
 		<p class='header'>
@@ -18,22 +19,28 @@
 		</p>
 		<div class="contentProviderTable">
 			<table>
+				#if( $!patient.getFullName()!='' )
 				<tr>
 					<td>$i18n.getString("full_name")</td>
 					<td>$encoder.htmlEncode($!patient.getFullName())</td>
 				</tr>
+				#end
 				<tr>
 					<td>$i18n.getString("location")</td>
 					<td>$encoder.htmlEncode($!patient.organisationUnit.name)</td>
 				</tr>
+				#if( $!patient.gender )
 				<tr>
 					<td>$i18n.getString("gender")</td>
 					<td>$i18n.getString($!patient.gender)</td>
 				</tr>
+				#end
+				#if( $!patient.birthDate )
 				<tr>
 					<td>$i18n.getString("date_of_birth")</td>
 					<td>$format.formatDate( $!patient.birthDate) ($!patient.getAge())</td>
 				</tr>
+				#end
 				<tr>
 					<td>$i18n.getString("phone_number")</td>
 					<td>
@@ -44,6 +51,14 @@
 						#end
 					</td>
 				</tr>
+				
+				#foreach($key in $programIndicatorsMap.keySet())
+				<tr class='bold'>
+					<td>$encoder.htmlEncode($key)</td>
+					<td>$!programIndicatorsMap.get($key)</td>
+				</tr>
+				#end
+				
 				<tr>
 					<td>$i18n.getString("health_worker")</td>
 					<td>
@@ -86,12 +101,17 @@
 	</div>
 
 </td>
+#end
+
 <td>
 	<div class="link-area" id="activeDiv" name="activeDiv">
 		<p class='header'>
 			$i18n.getString("active_programs")
 			&#8226; <a href='javascript:viewPersonProgram( "completedDiv","activeDiv" )'>$i18n.getString("completed_programs")</a>
+			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "showProgramEnrollmentForm" ) )
 			&#8226; <a href='javascript:showProgramEnrollmentForm( "$patient.id" )'>$i18n.getString("enroll")</a>
+			#end
 		</p>
 		<div class="contentProviderTable">
 			<table id='activeTB' name='activeTB' style='cursor:pointer;'>
@@ -104,7 +124,14 @@
 					#end
 					
 					#set($flag = 'false')
+					#set($messages = "")
 					#foreach( $programStageInstance in $programInstance.programStageInstances )
+						<!-- Messages of stage -->
+						#foreach( $comment in $programStageInstance.patientComments )
+							#set($messages = $messages + $format.formatDateTime($comment.createdDate) + ' ' + $comment.creator + ' ' + $comment.commentText + '<br>' )
+							#set( $mark = !$mark )
+						#end
+						
 						#set( $status = $programStageInstance.getEventStatus() )
 						#if( $status!=1 && $status!=5 && $flag=='false')
 							<tr id='tr1_$programInstance.id' type='$programInstance.program.type'
@@ -133,6 +160,12 @@
 						</td>
 					</tr>
 					#end
+					
+					<!-- Fill messages -->
+					#if($messages!='')
+					<tr><td>$messages</td></tr>
+					#end
+					
 				#end
 			</table>
 		</div>
@@ -173,8 +206,14 @@
 	<div class="link-area">
 		<p class='header'>
 			$i18n.getString("relationships")
-			&#8226; <a href="javascript:setFieldValue( 'isShowPatientList', 'false' ); showRelationshipList( '$patient.id' );">$i18n.getString("management")</a>
-			&#8226; <a href="javascript:showAddRelationshipPatient( '$patient.id', false );">$i18n.getString("add_new_patient")</a>
+			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "showRelationshipList" ) )
+				&#8226; <a href="javascript:setFieldValue( 'isShowPatientList', 'false' ); showRelationshipList( '$patient.id' );">$i18n.getString("management")</a>
+			#end
+			
+			#if( $auth.hasAccess( "dhis-web-caseentry", "showAddRelationshipPatient" ) )			
+				&#8226; <a href="javascript:showAddRelationshipPatient( '$patient.id', false );">$i18n.getString("add_new_patient")</a>
+			#end
 		</p>
 		<div class="contentProviderTable">
 			<table>

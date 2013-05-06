@@ -1,32 +1,332 @@
 var DAO = DAO || {};
 
+DAO.store = new dhis2.storage.Store( {
+    name: 'dhis2',
+    adapters: [ dhis2.storage.IndexedDBAdapter, dhis2.storage.DomSessionStorageAdapter, dhis2.storage.InMemoryAdapter ],
+    objectStores: [ 'programs', 'programStages', 'optionSets', 'usernames', {
+        name: 'dataValues',
+        adapters: [ dhis2.storage.IndexedDBAdapter, dhis2.storage.DomLocalStorageAdapter, dhis2.storage.InMemoryAdapter ]
+    } ]
+} );
+
+function loadPrograms() {
+    var def = $.Deferred();
+
+    $.ajax( {
+        url: 'getProgramMetaData.action',
+        dataType: 'json'
+    } ).done(function ( data ) {
+        var programs = _.values( data.metaData.programs );
+        DAO.store.setAll( 'programs', programs ).then( function () {
+            def.resolve( data.metaData );
+        } );
+    } ).fail( function () {
+        def.resolve();
+    } );
+
+    return def.promise();
+}
+
+function loadProgramStages( metaData ) {
+    if ( !metaData ) {
+        return;
+    }
+
+    var deferred1 = $.Deferred();
+    var deferred2 = $.Deferred();
+    var promise = deferred2.promise();
+
+    _.each( _.values( metaData.programs ), function ( el, idx ) {
+        var psid = el.programStages[0].id;
+        var data = createProgramStage( psid );
+
+        promise = promise.then( function () {
+            return $.ajax( {
+                url: 'dataentryform.action',
+                data: data,
+                dataType: 'html'
+            } ).done( function ( data ) {
+                    var obj = {};
+                    obj.id = psid;
+                    obj.form = data;
+                    DAO.store.set( 'programStages', obj );
+                } );
+        } );
+    } );
+
+    promise = promise.then( function () {
+        deferred1.resolve( metaData );
+    } );
+
+    deferred2.resolve();
+
+    return deferred1.promise();
+}
+
+function loadOptionSets( metaData ) {
+    if ( !metaData ) {
+        return;
+    }
+
+    var deferred1 = $.Deferred();
+    var deferred2 = $.Deferred();
+    var promise = deferred2.promise();
+
+    _.each( metaData.optionSets, function ( item, idx ) {
+        promise = promise.then( function () {
+            return $.ajax( {
+                url: 'getOptionSet.action?dataElementUid=' + item,
+                dataType: 'json'
+            } ).done( function ( data ) {
+                var obj = {};
+                obj.id = item;
+                obj.optionSet = data.optionSet;
+                DAO.store.set( 'optionSets', obj );
+            } );
+        } );
+    } );
+
+    if ( metaData.usernames ) {
+        promise = promise.then( function () {
+            return $.ajax( {
+                url: 'getUsernames.action',
+                dataType: 'json'
+            } ).done( function ( data ) {
+                    var obj = {};
+                    obj.id = 'usernames';
+                    obj.usernames = data.usernames;
+                    DAO.store.set( 'usernames', obj );
+                } )
+        } );
+    }
+
+    promise = promise.then( function () {
+        deferred1.resolve( metaData );
+    } );
+
+    deferred2.resolve();
+
+    return deferred1.promise();
+}
+
+function updateOfflineEvents() {
+    var no_offline_template = $( '#no-offline-event-template' );
+    var no_offline_template_compiled = _.template( no_offline_template.html() );
+
+    var offline_template = $( '#offline-event-template' );
+    var offline_template_compiled = _.template( offline_template.html() );
+
+    return DAO.store.getAll( 'dataValues' ).done( function ( arr ) {
+        var orgUnitId = selection.getSelected();
+        var programId = $( '#programId' ).val();
+
+        var target = $( '#offlineEventList' );
+        target.children().remove();
+
+        if ( arr.length > 0 ) {
+            var matched = false;
+
+            $.each( arr, function ( idx, item ) {
+                var event = item.executionDate;
+
+                if ( event.organisationUnitId == orgUnitId && event.programId == programId ) {
+                    event.index = idx + 1;
+                    var html = offline_template_compiled( event );
+                    target.append( html );
+                    matched = true;
+                }
+            } );
+
+            if ( !matched ) {
+                target.append( no_offline_template_compiled() );
+            }
+        } else {
+            target.append( no_offline_template_compiled() );
+        }
+    } );
+}
+
+function showOfflineEvents() {
+    $( "#offlineListDiv table" ).removeClass( 'hidden' );
+}
+
+function hideOfflineEvents() {
+    $( "#offlineListDiv table" ).addClass( 'hidden' );
+}
+
+var haveLocalData = false;
+
+function checkOfflineData( callback ) {
+    return DAO.store.getAll( 'dataValues' ).done( function ( arr ) {
+        haveLocalData = arr.length > 0;
+        if ( callback && typeof callback == 'function' ) callback( haveLocalData );
+    } );
+}
+
+function uploadOfflineData( item ) {
+    $.ajax( {
+        url: 'uploadAnonymousEvent.action',
+        contentType: 'application/json',
+        data: JSON.stringify( item )
+    } ).done( function ( json ) {
+        if ( json.response == 'success' ) {
+            DAO.store.delete( 'dataValues', item.id ).done( function () {
+                updateOfflineEvents();
+                searchEvents( eval( getFieldValue( 'listAll' ) ) );
+            } );
+        }
+    } );
+}
+
+function uploadLocalData() {
+    setHeaderWaitMessage( i18n_uploading_data_notification );
+
+    DAO.store.getAll( 'dataValues' ).done( function ( arr ) {
+        if(arr.length == 0) {
+            setHeaderDelayMessage( i18n_sync_success );
+            return;
+        }
+
+        var deferred = $.Deferred();
+        var promise = deferred.promise();
+
+        $.each(arr, function(idx, item) {
+            promise = promise.pipe(function () {
+                uploadOfflineData( item );
+            });
+        });
+
+        deferred.done(function() {
+            setHeaderDelayMessage( i18n_sync_success );
+        });
+
+        deferred.resolve();
+    });
+}
+
+function sync_failed_button() {
+    var message = i18n_sync_failed
+        + ' <button id="sync_button" type="button">' + i18n_sync_now + '</button>';
+
+    setHeaderMessage( message );
+
+    $( '#sync_button' ).bind( 'click', uploadLocalData );
+}
+
 $( document ).ready( function () {
     $.ajaxSetup( {
         type: 'POST',
         cache: false
     } );
 
-    setHeaderMessage( "Loading.. please wait" );
-
     $( "#orgUnitTree" ).one( "ouwtLoaded", function () {
-        // initialize the stores, and then try and add the data
-        DAO.programs = new dhis2.storage.Store( {name: 'programs', adapter: 'dom-ss'}, function ( store ) {
-            jQuery.getJSON( "getProgramMetaData.action", {},function ( data ) {
-                var keys = _.keys( data.metaData.programs );
-                var objs = _.values( data.metaData.programs );
+        var def = $.Deferred();
+        var promise = def.promise();
+        promise = promise.then( DAO.store.open );
+        promise = promise.then( loadPrograms );
+        promise = promise.then( loadProgramStages );
+        promise = promise.then( loadOptionSets );
+        promise = promise.then( updateOfflineEvents );
+        promise = promise.then( checkOfflineData );
+        promise = promise.then( function () {
+            selection.setListenerFunction( organisationUnitSelected );
 
-                DAO.programs.addAll( keys, objs, function ( store ) {
-                    selection.setListenerFunction( organisationUnitSelected );
-                    hideHeaderMessage();
-                } );
-            } ).fail( function () {
-                selection.setListenerFunction( organisationUnitSelected );
-                hideHeaderMessage();
-            } );
+            dhis2.availability.startAvailabilityCheck();
+            selection.responseReceived();
         } );
+
+        def.resolve();
     } );
 
+    $( document ).bind( 'dhis2.online', function ( event, loggedIn ) {
+        if ( loggedIn ) {
+            checkOfflineData(function(localData) {
+                if ( localData ) {
+                    var message = i18n_need_to_sync_notification
+       	            	+ ' <button id="sync_button" type="button">' + i18n_sync_now + '</button>';
+
+       	            setHeaderMessage( message );
+
+       	            $( '#sync_button' ).bind( 'click', uploadLocalData );
+                } else {
+                    setHeaderDelayMessage( i18n_online_notification );
+                }
+
+                enableFiltering();
+                searchEvents( eval( getFieldValue( 'listAll' ) ) );
+                $('#commentInput').removeAttr('disabled');
+                $('#validateBtn').removeAttr('disabled');
+            });
+
+            hideOfflineEvents();
+        }
+        else {
+            var form = [
+                '<form style="display:inline;">',
+                '<label for="username">Username</label>',
+                '<input name="username" id="username" type="text" style="width: 70px; margin-left: 10px; margin-right: 10px" size="10"/>',
+                '<label for="password">Password</label>',
+                '<input name="password" id="password" type="password" style="width: 70px; margin-left: 10px; margin-right: 10px" size="10"/>',
+                '<button id="login_button" type="button">Login</button>',
+                '</form>'
+            ].join( '' );
+
+            setHeaderMessage( form );
+            ajax_login();
+
+            showOfflineEvents();
+        }
+    } );
+
+    $( document ).bind( 'dhis2.offline', function () {
+        setHeaderMessage( i18n_offline_notification );
+        $('#commentInput').attr('disabled', true);
+        $('#validateBtn').attr('disabled', true);
+        disableFiltering();
+        showOfflineEvents();
+    } );
 } );
+
+function disableFiltering() {
+    $('#listDiv').hide();
+    $('#filterBtn').attr('disabled', true);
+    $('#listBtn').attr('disabled', true);
+    $('#incompleted').attr('disabled', true);
+    $('#removeBtn').attr('disabled', true);
+}
+
+function enableFiltering() {
+    var filtering = getFieldValue( 'programStageId' ) != undefined && getFieldValue( 'programStageId' ).length != 0;
+
+    if ( filtering ) {
+        $( '#filterBtn' ).removeAttr( 'disabled' );
+        $( '#listBtn' ).removeAttr( 'disabled' );
+        $( '#incompleted' ).removeAttr( 'disabled' );
+        $( '#removeBtn' ).removeAttr( 'disabled' );
+    }
+}
+
+function ajax_login()
+{
+    $( '#login_button' ).bind( 'click', function()
+    {
+        var username = $( '#username' ).val();
+        var password = $( '#password' ).val();
+
+        $.post( '../dhis-web-commons-security/login.action', {
+            'j_username' : username,
+            'j_password' : password
+        } ).success( function()
+        {
+            var ret = dhis2.availability.syncCheckAvailability();
+
+            if ( !ret )
+            {
+                alert( i18n_ajax_login_failed );
+            }
+        } );
+    } );
+}
 
 function organisationUnitSelected( orgUnits, orgUnitNames ) {
     showById( 'dataEntryMenu' );
@@ -39,6 +339,8 @@ function organisationUnitSelected( orgUnits, orgUnitNames ) {
     setFieldValue( "listAll", true );
     setFieldValue( "startDate", '' );
     setFieldValue( "endDate", '' );
+    setFieldValue( "programStageId", '' );
+    setFieldValue( "programId", '' );
     jQuery( '#advancedSearchTB [name=searchText]' ).val( '' );
 
     setFieldValue( 'orgunitId', orgUnits[0] );
@@ -46,7 +348,7 @@ function organisationUnitSelected( orgUnits, orgUnitNames ) {
     hideById( 'listDiv' );
     hideById( 'dataEntryInfor' );
 
-    DAO.programs.fetchAll( function ( store, arr ) {
+    DAO.store.getAll( 'programs' ).done( function (arr) {
         var programs = [];
 
         $.each( arr, function ( idx, item ) {
@@ -55,15 +357,10 @@ function organisationUnitSelected( orgUnits, orgUnitNames ) {
             }
         } );
 
-        if( programs.length > 0) {
-            updateProgramList( programs );
-        } else {
-            // if we are online, also check server to see if there are any programs
-            dhis2.storage.Store.plugins['anonymous-online'].call( {}, function ( arr ) {
-                updateProgramList( arr );
-            } );
-        }
+        updateProgramList( programs );
     } );
+
+    updateOfflineEvents();
 }
 
 function updateProgramList( arr ) {
@@ -75,8 +372,15 @@ function updateProgramList( arr ) {
     jQuery( '#programId' ).append( '<option value="" psid="" reportDateDes="' + i18n_report_date + '">[' + i18n_please_select + ']</option>' );
 
     for ( var i = 0; i < arr.length; i++ ) {
-        jQuery( '#programId' ).append( '<option value="' + arr[i].key + '" psid="' + arr[i].programStages[0].id + '" reportDateDes="' +
-            arr[i].programStages[0].reportDateDescription + '">' + arr[i].name + '</option>' );
+        jQuery( '#programId' ).append(
+            '<option value="' + arr[i].id
+            + '" puid="' + arr[i].uid
+            + '" programType="' + arr[i].type
+            + '" psid="' + arr[i].programStages[0].id
+            + '" psuid="' + arr[i].programStages[0].uid
+            + '" reportDateDes="' + arr[i].programStages[0].reportDateDescription + '">'
+            + arr[i].name
+            + '</option>' );
     }
 
     disableCriteriaDiv();
@@ -120,6 +424,7 @@ function getDataElements() {
         enable( 'programId' );
         hideById( 'listDiv' );
         setFieldValue( 'searchText' );
+        updateOfflineEvents();
         return;
     }
 
@@ -136,15 +441,19 @@ function getDataElements() {
 
             jQuery( '[name=searchObjectId]' ).append( '<option value="" >[' + i18n_please_select + ']</option>' );
             for ( i in json.programStageDataElements ) {
-                jQuery( '[name=searchObjectId]' ).append( '<option value="' + json.programStageDataElements[i].id + '" type="' + json.programStageDataElements[i].type + '">' + json.programStageDataElements[i].name + '</option>' );
+                jQuery( '[name=searchObjectId]' ).append( '<option value="' + json.programStageDataElements[i].id + '" uid="' + json.programStageDataElements[i].uid + '" type="' + json.programStageDataElements[i].type + '">' + json.programStageDataElements[i].name + '</option>' );
                 if ( json.programStageDataElements[i].displayInReports == 'true' ) {
-                    jQuery( '#displayInReports' ).append( '<option value="' + json.programStageDataElements[i].id + '"></option>' );
+                    jQuery( '#displayInReports' ).append( '<option value="' + json.programStageDataElements[i].id + '" uid="' + json.programStageDataElements[i].uid + '" ></option>' );
                 }
             }
 
             enableCriteriaDiv();
             validateSearchEvents( true );
-        } );
+        } ).fail(function() {
+            enable( 'addBtn' );
+        });
+
+    updateOfflineEvents();
 }
 
 function dataElementOnChange( this_ ) {
@@ -166,10 +475,10 @@ function dataElementOnChange( this_ ) {
         }
         else if ( valueType == 'optionset' ) {
             element.replaceWith( searchTextBox );
-            autocompletedFilterField( container + " [id=searchText]", jQuery( this_ ).val() );
+            autocompletedFilterField( container + " [id=searchText]", jQuery(this_).find("option:selected").attr('uid') );
         }
         else if ( valueType == 'username' ) {
-            autocompletedUsernameField( jQuery( this ).attr( 'id' ) );
+            autocompletedUsernameField( jQuery( this_ ).attr( 'id' ) );
         }
         else {
             element.replaceWith( searchTextBox );
@@ -364,10 +673,16 @@ function validateSearchEvents( listAll ) {
 }
 
 function searchEvents( listAll ) {
+    var search = getFieldValue( 'programStageId' ) != undefined && getFieldValue( 'programStageId' ).length != 0;
+
+    if ( !search ) {
+        return;
+    }
+
     hideById( 'dataEntryInfor' );
     hideById( 'listDiv' );
 
-    var params = '';
+    var params = 'anonynousEntryForm=true';
     jQuery( '#displayInReports option' ).each( function ( i, item ) {
         var input = jQuery( item );
         params += '&searchingValues=de_' + input.val() + '_false_';
@@ -424,27 +739,34 @@ function searchEvents( listAll ) {
         type: "POST",
         url: 'searchProgramStageInstances.action',
         data: params,
-        success: function ( html ) {
-            hideById( 'dataEntryInfor' );
-            setInnerHTML( 'listDiv', html );
-
-            var searchInfor = (listAll) ? i18n_list_all_events : i18n_search_events_by_dataelements;
-            setInnerHTML( 'searchInforTD', searchInfor );
-
-            if ( !listAll && jQuery( '#filterBtn' ).attr( "disabled" ) == "disabled" ) {
-                showById( 'minimized-advanced-search' );
-                hideById( 'advanced-search' );
-            }
-            else {
-                hideById( 'minimized-advanced-search' );
-                hideById( 'advanced-search' );
-                showById( 'filterBtn' );
+        dataType: 'text',
+        success: function ( data ) {
+            if ( data.indexOf( "<!DOCTYPE" ) != 0 ) {
+                hideById( 'dataEntryInfor' );
+                setInnerHTML( 'listDiv', data );
             }
 
-            showById( 'listDiv' );
-            hideById( 'loaderDiv' );
+            hideLoader();
         }
-    } );
+    } ).fail(function() {
+        hideById( 'dataEntryInfor' );
+    } ).always(function() {
+        var searchInfor = (listAll) ? i18n_list_all_events : i18n_search_events_by_dataelements;
+        setInnerHTML( 'searchInforTD', searchInfor );
+
+        if ( !listAll && jQuery( '#filterBtn' ).attr( "disabled" ) == "disabled" ) {
+            showById( 'minimized-advanced-search' );
+            hideById( 'advanced-search' );
+        }
+        else {
+            hideById( 'minimized-advanced-search' );
+            hideById( 'advanced-search' );
+            showById( 'filterBtn' );
+        }
+
+        showById( 'listDiv' );
+        hideLoader();
+    });
 }
 
 function getValueFormula( value ) {
@@ -477,7 +799,17 @@ function getValueFormula( value ) {
 }
 
 function removeEvent( programStageId ) {
-    removeItem( programStageId, '', i18n_comfirm_delete_event, 'removeCurrentEncounter.action' );
+    var s = "" + programStageId;
+
+    if( s.indexOf("local") != -1) {
+        if ( confirm( i18n_comfirm_delete_event ) ) {
+            DAO.store.delete( 'dataValues', programStageId ).always( function () {
+                updateOfflineEvents();
+            } );
+        }
+    } else {
+        removeItem( programStageId, '', i18n_comfirm_delete_event, 'removeCurrentEncounter.action' );
+    }
 }
 
 function showUpdateEvent( programStageInstanceId ) {
@@ -487,41 +819,12 @@ function showUpdateEvent( programStageInstanceId ) {
     hideById( 'selectDiv' );
     hideById( 'searchDiv' );
     hideById( 'listDiv' );
+    hideById( 'offlineListDiv' );
     setFieldValue( 'programStageInstanceId', programStageInstanceId );
     setInnerHTML( 'dataEntryFormDiv', '' );
     showLoader();
 
-    $( '#dataEntryFormDiv' ).load( "dataentryform.action",
-        {
-            programStageInstanceId: programStageInstanceId
-        }, function () {
-            jQuery( '#inputCriteriaDiv' ).remove();
-            showById( 'programName' );
-            showById( 'actionDiv' );
-            var programName = jQuery( '#programId option:selected' ).text();
-            var programStageId = jQuery( '#programId option:selected' ).attr( 'psid' );
-            jQuery( '.stage-object-selected' ).attr( 'psid', programStageId );
-            setInnerHTML( 'programName', programName );
-            if ( getFieldValue( 'completed' ) == 'true' ) {
-                disable( "completeBtn" );
-                enable( "uncompleteBtn" );
-            }
-            else {
-                enable( "completeBtn" );
-                disable( "uncompleteBtn" );
-            }
-            hideById( 'loaderDiv' );
-            showById( 'dataEntryInfor' );
-            showById( 'entryFormContainer' );
-
-            jQuery( "#entryForm :input" ).each( function () {
-                if ( ( jQuery( this ).attr( 'options' ) != null && jQuery( this ).attr( 'options' ) == 'true' )
-                    || ( jQuery( this ).attr( 'username' ) != null && jQuery( this ).attr( 'username' ) == 'true' ) ) {
-                    var input = jQuery( this );
-                    input.parent().width( input.width() + 200 );
-                }
-            } );
-        } );
+    service.displayProgramStage( getFieldValue( 'programStageId' ), programStageInstanceId, getFieldValue( 'orgunitId' ) );
 }
 
 function backEventList() {
@@ -532,6 +835,9 @@ function backEventList() {
     showById( 'selectDiv' );
     showById( 'searchDiv' );
     showById( 'listDiv' );
+    showById( 'offlineListDiv' );
+
+    updateOfflineEvents();
     searchEvents( eval( getFieldValue( 'listAll' ) ) );
 }
 
@@ -544,6 +850,7 @@ function showAddEventForm() {
     hideById( 'selectDiv' );
     hideById( 'searchDiv' );
     hideById( 'listDiv' );
+    hideById( 'offlineListDiv' );
     showById( 'programName' );
     hideById( 'actionDiv' );
     showById( 'dataEntryInfor' );
@@ -556,26 +863,11 @@ function addNewEvent() {
     var programStageInstanceId = getFieldValue( 'programStageInstanceId' );
     var programId = jQuery( '#programId option:selected' ).val();
     var executionDate = getFieldValue( 'executionDate' );
+    var orgunitId = getFieldValue( 'orgunitId' );
+
     jQuery( "#executionDate" ).css( 'background-color', SAVING_COLOR );
-    jQuery.postJSON( "saveExecutionDate.action",
-        {
-            programStageInstanceId: programStageInstanceId,
-            programId: programId,
-            executionDate: executionDate
-        },
-        function ( json ) {
-            if ( json.response == 'success' ) {
-                jQuery( "#executionDate" ).css( 'background-color', SUCCESS_COLOR );
-                setFieldValue( 'programStageInstanceId', json.message );
-                if ( programStageInstanceId != json.message ) {
-                    showUpdateEvent( json.message );
-                }
-            }
-            else {
-                jQuery( "#executionDate" ).css( 'background-color', ERROR_COLOR );
-                showWarningMessage( json.message );
-            }
-        } );
+
+    service.saveExecutionDate( programId, programStageInstanceId, executionDate, orgunitId );
 }
 
 function completedAndAddNewEvent() {
@@ -643,4 +935,159 @@ function removeAllOption() {
     jQuery( '#searchObjectId' ).val( "" );
     jQuery( '#searchText' ).val( "" );
     searchEvents( eval( getFieldValue( "listAll" ) ) );
+}
+
+function ajaxExecutionDate( programId, programStageInstanceId, executionDate, organisationUnitId ) {
+    return $.ajax( {
+        url: 'saveExecutionDate.action',
+        data: createExecutionDate( programId, programStageInstanceId, executionDate, organisationUnitId ),
+        type: 'POST',
+        dataType: 'json'
+    } );
+}
+
+// execution date module
+var service = (function () {
+    return {
+        saveExecutionDate: function( programId, programStageInstanceId, executionDate, organisationUnitId ) {
+            ajaxExecutionDate(programId, programStageInstanceId, executionDate, organisationUnitId).done(function ( json ) {
+                if ( json.response == 'success' ) {
+                    jQuery( "#executionDate" ).css( 'background-color', SUCCESS_COLOR );
+                    setFieldValue( 'programStageInstanceId', json.message );
+
+                    if ( programStageInstanceId != json.message ) {
+                        showUpdateEvent( json.message );
+                    }
+                }
+                else {
+                    jQuery( "#executionDate" ).css( 'background-color', ERROR_COLOR );
+                    showWarningMessage( json.message );
+                }
+            } ).fail( function () {
+                if(programStageInstanceId == 0) {
+                    DAO.store.getKeys( 'dataValues' ).done( function ( keys ) {
+                        var i = 100;
+
+                        for(; i<10000; i++) {
+                            if( keys.indexOf("local" + i) == -1 ) break;
+                        }
+
+                        programStageInstanceId = "local"+i;
+
+                        setFieldValue( 'programStageInstanceId', programStageInstanceId );
+                        jQuery( "#executionDate" ).css( 'background-color', SUCCESS_COLOR );
+                        showUpdateEvent( programStageInstanceId );
+
+                        var data = {};
+                        data.id = programStageInstanceId;
+                        data.executionDate = createExecutionDate(programId, programStageInstanceId, executionDate, organisationUnitId);
+                        data.executionDate.completed = false;
+
+                        this.set( 'dataValues', data );
+                    });
+                } else {
+                    // if we have a programStageInstanceId, just reuse that one
+                    setFieldValue( 'programStageInstanceId', programStageInstanceId );
+                    jQuery( "#executionDate" ).css( 'background-color', SUCCESS_COLOR );
+                    showUpdateEvent( programStageInstanceId );
+                }
+            } );
+        },
+
+        displayProgramStage: function( programStageId, programStageInstanceId, organisationUnitId ) {
+            loadProgramStage( programStageId, programStageInstanceId, organisationUnitId, function ( data ) {
+                $( '#dataEntryFormDiv' ).html( data );
+                updateDataForm();
+            },function () {
+                $( '#dataEntryFormDiv' ).html( "<div class='message message-info'>Unable to load form.</div>" );
+                hideById( 'loaderDiv' );
+            } );
+        }
+    }
+})();
+
+function updateDataForm() {
+    jQuery( '#inputCriteriaDiv' ).remove();
+    showById( 'programName' );
+    showById( 'actionDiv' );
+    var programName = jQuery( '#programId option:selected' ).text();
+    var programStageId = jQuery( '#programId option:selected' ).attr( 'psid' );
+    jQuery( '.stage-object-selected' ).attr( 'psid', programStageId );
+    setInnerHTML( 'programName', programName );
+    jQuery('#executionDate').css('width',430);
+    jQuery('#executionDate').css('margin-right',30);
+
+    if ( getFieldValue( 'completed' ) == 'true' ) {
+        disable( "completeBtn" );
+        enable( "uncompleteBtn" );
+    }
+    else {
+        enable( "completeBtn" );
+        disable( "uncompleteBtn" );
+    }
+
+    hideById( 'loaderDiv' );
+    showById( 'dataEntryInfor' );
+    showById( 'entryFormContainer' );
+
+    jQuery( "#entryForm :input" ).each( function () {
+        if ( ( jQuery( this ).attr( 'options' ) != null && jQuery( this ).attr( 'options' ) == 'true' )
+            || ( jQuery( this ).attr( 'username' ) != null && jQuery( this ).attr( 'username' ) == 'true' ) ) {
+            var input = jQuery( this );
+            input.parent().width( input.width() + 200 );
+        }
+    } );
+}
+
+function createExecutionDate( programId, programStageInstanceId, executionDate, organisationUnitId ) {
+    var data = {};
+
+    if(programId)
+        data.programId = programId;
+
+    if(programStageInstanceId)
+        data.programStageInstanceId = programStageInstanceId;
+
+    if(executionDate)
+        data.executionDate = executionDate;
+
+    if(organisationUnitId) {
+        data.organisationUnitId = organisationUnitId;
+        data.organisationUnit = organisationUnits[organisationUnitId].n;
+    }
+
+    return data;
+}
+
+function createProgramStage( programStageId, programStageInstanceId, organisationUnitId ) {
+    var data = {};
+
+    if(programStageId)
+        data.programStageId = programStageId;
+
+    if(programStageInstanceId)
+        data.programStageInstanceId = programStageInstanceId;
+
+    if(organisationUnitId)
+        data.organisationUnitId = organisationUnitId;
+
+    return data;
+}
+
+function loadProgramStage( programStageId, programStageInstanceId, organisationUnitId, success, fail ) {
+    var data = createProgramStage( programStageId, programStageInstanceId, organisationUnitId );
+
+    DAO.store.get('programStages', programStageId ).done(function(obj) {
+        if(success) success(obj.form);
+    } ).fail(function() {
+        $.ajax( {
+            url: 'dataentryform.action',
+            data: data,
+            dataType: 'html'
+        } ).done(function(data) {
+            if(success) success(data);
+        } ).fail(function() {
+            if(fail) fail();
+        });
+    });
 }

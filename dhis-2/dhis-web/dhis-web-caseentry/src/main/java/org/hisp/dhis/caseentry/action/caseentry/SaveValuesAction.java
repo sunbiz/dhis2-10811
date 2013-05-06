@@ -160,7 +160,7 @@ public class SaveValuesAction
         programInstance.setEnrollmentDate( currentDate );
         programInstance.setDateOfIncident( currentDate );
         programInstance.setProgram( program );
-        programInstance.setCompleted( true );
+        programInstance.setStatus( ProgramInstance.STATUS_COMPLETED );
         programInstance.setPatient( patient );
 
         patient.getPrograms().add( program );

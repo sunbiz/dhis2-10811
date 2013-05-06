@@ -28,12 +28,14 @@ package org.hisp.dhis.datasetreport;
  */
 
 import java.util.List;
+import java.util.Set;
 
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.i18n.I18n;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.period.Period;
 
 /**
@@ -52,9 +54,19 @@ public interface DataSetReportService
      * @param format the i18n format.
      * @return
      */
-    String getCustomDataSetReport( DataSet dataSet, OrganisationUnit unit, Period period, boolean selectedUnitOnly, I18nFormat format );
-    
-    List<Grid> getCustomDataSetReportAsGrid( DataSet dataSet, OrganisationUnit unit, Period period,
+    String getCustomDataSetReport( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups, boolean selectedUnitOnly, I18nFormat format );
+
+    /**
+     * Generates a list of Grids based on the HTML code for a custom data set report.
+     * 
+     * @param dataSet the data set.
+     * @param unit the organisation unit.
+     * @param period the period.
+     * @param selectedUnitOnly indicates whether to use captured or aggregated data. 
+     * @param format the i18n format.
+     * @return
+     */
+    List<Grid> getCustomDataSetReportAsGrid( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups,
         boolean selectedUnitOnly, I18nFormat format );
     
     /**
@@ -69,7 +81,7 @@ public interface DataSetReportService
      * @param i18n the i18n object.
      * @return a Grid.
      */
-    Grid getDefaultDataSetReport( DataSet dataSet, Period period, OrganisationUnit unit,  boolean selectedUnitOnly, I18nFormat format, I18n i18n );
+    Grid getDefaultDataSetReport( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups,  boolean selectedUnitOnly, I18nFormat format, I18n i18n );
     
     /**
      * Generates a list of Grids representing a data set report. The data elements
@@ -83,5 +95,5 @@ public interface DataSetReportService
      * @param i18n the i18n object.
      * @return a Grid.
      */
-    List<Grid> getSectionDataSetReport( DataSet dataSet, Period period, OrganisationUnit unit, boolean selectedUnitOnly, I18nFormat format, I18n i18n );
+    List<Grid> getSectionDataSetReport( DataSet dataSet, Period period, OrganisationUnit unit, Set<OrganisationUnitGroup> groups, boolean selectedUnitOnly, I18nFormat format, I18n i18n );
 }

@@ -163,7 +163,6 @@
 			ref="org.hisp.dhis.patient.PatientIdentifierTypeService" />
 		<property name="patientAttributeService"
 			ref="org.hisp.dhis.patient.PatientAttributeService" />
-		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.action.program.GetProgramListAction"
@@ -182,6 +181,8 @@
 
 	<bean id="org.hisp.dhis.patient.action.program.GetProgramAction"
 		class="org.hisp.dhis.patient.action.program.GetProgramAction" scope="prototype">
+		<property name="organisationUnitGroupService"
+			ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 		<property name="selectionTreeManager"
 			ref="org.hisp.dhis.oust.manager.SelectionTreeManager" />
@@ -253,6 +254,8 @@
 		id="org.hisp.dhis.patient.action.program.DefineProgramAssociationsAction"
 		class="org.hisp.dhis.patient.action.program.DefineProgramAssociationsAction"
 		scope="prototype">
+		<property name="organisationUnitGroupService"
+			ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
 		<property name="selectionTreeManager"
 			ref="org.hisp.dhis.oust.manager.SelectionTreeManager" />
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
@@ -275,7 +278,6 @@
 		class="org.hisp.dhis.patient.action.programstage.GetProgramStageListAction"
 		scope="prototype">
 		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
-		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
 	</bean>
 
 	<bean id="org.hisp.dhis.patient.action.programstage.GetProgramStageAction"
@@ -314,6 +316,7 @@
 		class="org.hisp.dhis.patient.action.programstage.ValidateProgramStageAction"
 		scope="prototype">
 		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
+		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
 	</bean>
 
 	<!-- Program Stage Section -->
@@ -370,6 +373,7 @@
 		scope="prototype">
 		<property name="programStageSectionService"
 			ref="org.hisp.dhis.program.ProgramStageSectionService" />
+		<property name="programStageService" ref="org.hisp.dhis.program.ProgramStageService" />
 	</bean>
 
 	<bean
@@ -517,6 +521,9 @@
 		<property name="patientRegistrationFormService">
 			<ref bean="org.hisp.dhis.patient.PatientRegistrationFormService" />
 		</property>
+		<property name="programService">
+			<ref bean="org.hisp.dhis.program.ProgramService" />
+		</property>
 	</bean>
 
 	<bean
@@ -566,7 +573,7 @@
 			<ref bean="org.hisp.dhis.user.UserSettingService" />
 		</property>
 	</bean>
-	
+
 	<bean
 		id="org.hisp.dhis.patient.action.dataentryform.SetAutoSavePatientRegistrationSettingAction"
 		class="org.hisp.dhis.patient.action.dataentryform.SetAutoSavePatientRegistrationSettingAction"
@@ -857,11 +864,8 @@
 		id="org.hisp.dhis.patient.action.caseaggregation.TestCaseAggregationConditionAction"
 		class="org.hisp.dhis.patient.action.caseaggregation.TestCaseAggregationConditionAction"
 		scope="prototype">
-		<property name="aggregationConditionService">
-			<ref bean="org.hisp.dhis.caseaggregation.CaseAggregationConditionService" />
-		</property>
-		<property name="dataElementService">
-			<ref bean="org.hisp.dhis.dataelement.DataElementService" />
+		<property name="caseAggregationConditionManager">
+			<ref bean="org.hisp.dhis.caseaggregation.CaseAggregationConditionManager" />
 		</property>
 	</bean>
 
@@ -1037,16 +1041,9 @@
 		<property name="systemSettingManager" ref="org.hisp.dhis.setting.SystemSettingManager" />
 		<property name="schedulingManager"
 			ref="org.hisp.dhis.patient.scheduling.ProgramSchedulingManager" />
-	</bean>
-
-	<bean id="org.hisp.dhis.patient.action.schedule.ExecuteSendMessageAction"
-		class="org.hisp.dhis.patient.action.schedule.ExecuteSendMessageAction"
-		scope="prototype">
-		<property name="programStageInstanceService"
-			ref="org.hisp.dhis.program.ProgramStageInstanceService" />
-		<property name="jdbcTemplate" ref="jdbcTemplate" />
-		<property name="outboundSmsService"
-			ref="org.hisp.dhis.sms.outbound.OutboundSmsService" />
+		<property name="notifier" ref="notifier" />
+		<property name="currentUserService" ref="org.hisp.dhis.user.CurrentUserService" />
+		<property name="sendMessageScheduled" ref="sendMessageScheduled" />
 	</bean>
 
 	<bean
@@ -1074,6 +1071,62 @@
 		</property>
 		<property name="notifier" ref="notifier" />
 		<property name="aggregateConditionTask" ref="aggregateQueryBuilder" />
+	</bean>
+
+	<!-- Program Indicator -->
+
+	<bean
+		id="org.hisp.dhis.patient.action.programtindicator.AddProgramIndicatorAction"
+		class="org.hisp.dhis.patient.action.programtindicator.AddProgramIndicatorAction"
+		scope="prototype">
+		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+		<property name="programIndicatorService">
+			<ref bean="org.hisp.dhis.program.ProgramIndicatorService" />
+		</property>
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.patient.action.programtindicator.RemoveProgramIndicatorAction"
+		class="org.hisp.dhis.patient.action.programtindicator.RemoveProgramIndicatorAction"
+		scope="prototype">
+		<property name="programIndicatorService">
+			<ref bean="org.hisp.dhis.program.ProgramIndicatorService" />
+		</property>
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorAction"
+		class="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorAction"
+		scope="prototype">
+		<property name="programIndicatorService"
+			ref="org.hisp.dhis.program.ProgramIndicatorService" />
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorListAction"
+		class="org.hisp.dhis.patient.action.programtindicator.GetProgramIndicatorListAction"
+		scope="prototype">
+		<property name="programIndicatorService"
+			ref="org.hisp.dhis.program.ProgramIndicatorService" />
+		<property name="programService" ref="org.hisp.dhis.program.ProgramService" />
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.patient.action.programtindicator.UpdateProgramIndicatorAction"
+		class="org.hisp.dhis.patient.action.programtindicator.UpdateProgramIndicatorAction"
+		scope="prototype">
+		<property name="programIndicatorService">
+			<ref bean="org.hisp.dhis.program.ProgramIndicatorService" />
+		</property>
+	</bean>
+
+	<bean
+		id="org.hisp.dhis.patient.action.programtindicator.ValidateProgramIndicatorAction"
+		class="org.hisp.dhis.patient.action.programtindicator.ValidateProgramIndicatorAction"
+		scope="prototype">
+		<property name="programIndicatorService">
+			<ref bean="org.hisp.dhis.program.ProgramIndicatorService" />
+		</property>
 	</bean>
 
 </beans>

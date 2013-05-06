@@ -30,15 +30,14 @@ package org.hisp.dhis.caseaggregation;
 import java.util.Collection;
 import java.util.List;
 
+import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
-import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.patient.Patient;
+import org.hisp.dhis.i18n.I18n;
+import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.patient.PatientAttribute;
-import org.hisp.dhis.patientdatavalue.PatientDataValue;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.program.Program;
-import org.hisp.dhis.program.ProgramStageInstance;
 
 /**
  * @author Chau Thu Tran
@@ -52,33 +51,34 @@ public interface CaseAggregationConditionService
     void updateCaseAggregationCondition( CaseAggregationCondition caseAggregationCondition );
 
     void deleteCaseAggregationCondition( CaseAggregationCondition caseAggregationCondition );
-    
+
     CaseAggregationCondition getCaseAggregationCondition( int id );
-    
-    Collection<CaseAggregationCondition> getAllCaseAggregationCondition( );
-   
+
+    Collection<CaseAggregationCondition> getAllCaseAggregationCondition();
+
     Collection<CaseAggregationCondition> getCaseAggregationCondition( DataElement dataElement );
-    
-    CaseAggregationCondition getCaseAggregationCondition( DataElement dataElement, DataElementCategoryOptionCombo optionCombo );
-    
+
+    CaseAggregationCondition getCaseAggregationCondition( DataElement dataElement,
+        DataElementCategoryOptionCombo optionCombo );
+
     Collection<CaseAggregationCondition> getCaseAggregationCondition( Collection<DataElement> dataElements );
-    
-    Double getAggregateValue( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
-        
-    Collection<PatientDataValue> getPatientDataValues( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
-    
-    Collection<Patient> getPatients( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
-    
-    Collection<ProgramStageInstance> getProgramStageInstances( CaseAggregationCondition aggregationCondition, OrganisationUnit orgunit, Period period );
+
+    Grid getAggregateValue( CaseAggregationCondition aggregationCondition, Collection<Integer> orgunitIds,
+        Period period, I18nFormat format, I18n i18n );
+
+    void insertAggregateValue( CaseAggregationCondition caseAggregationCondition, Collection<Integer> orgunitIds,
+        Period period );
     
     Collection<DataElement> getDataElementsInCondition( String aggregationExpression );
-        
+
     Collection<Program> getProgramsInCondition( String aggregationExpression );
-    
+
     Collection<PatientAttribute> getPatientAttributesInCondition( String aggregationExpression );
-    
+
     String getConditionDescription( String condition );
-    
+
     void aggregate( List<CaseAggregateSchedule> caseAggregateSchedules, String taskStrategy );
+
+    boolean hasOrgunitProgramStageCompleted( String expresstion );
     
 }

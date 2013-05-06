@@ -61,7 +61,7 @@ jQuery( document ).ready( function()
 		});
 	});
 	
-	checkValueIsExist( "name", "validateProgramStage.action", {id:getFieldValue('id')});	
+	checkValueIsExist( "name", "validateProgramStage.action", {id:getFieldValue('programId'), programStageId:getFieldValue('id')});	
 	
 	jQuery("#availableList").dhisAjaxSelect({
 		source: "../dhis-web-commons-ajax-json/getDataElements.action?domain=patient",

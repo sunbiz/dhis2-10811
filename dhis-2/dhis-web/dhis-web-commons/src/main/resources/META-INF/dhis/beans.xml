@@ -287,6 +287,7 @@
   <bean id="org.hisp.dhis.help.action.GetHelpContentAction" class="org.hisp.dhis.help.action.GetHelpContentAction"
     scope="prototype">
     <property name="helpManager" ref="org.hisp.dhis.help.HelpManager" />
+    <property name="localeManager" ref="org.hisp.dhis.i18n.locale.LocaleManager" />
   </bean>
 
   <bean id="org.hisp.dhis.about.action.RedirectAction" class="org.hisp.dhis.about.action.RedirectAction"
@@ -295,6 +296,7 @@
   <bean id="org.hisp.dhis.help.action.GetHelpItemsAction" class="org.hisp.dhis.help.action.GetHelpItemsAction"
     scope="prototype">
     <property name="helpManager" ref="org.hisp.dhis.help.HelpManager" />
+    <property name="localeManager" ref="org.hisp.dhis.i18n.locale.LocaleManager" />
   </bean>
 
   <!-- Common actions -->

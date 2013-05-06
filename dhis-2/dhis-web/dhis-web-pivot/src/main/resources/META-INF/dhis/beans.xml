@@ -17,6 +17,7 @@
     <property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
     <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    <property name="mappingService" ref="org.hisp.dhis.mapping.MappingService" />
   </bean>
 
   <!-- OrganisationUnit -->

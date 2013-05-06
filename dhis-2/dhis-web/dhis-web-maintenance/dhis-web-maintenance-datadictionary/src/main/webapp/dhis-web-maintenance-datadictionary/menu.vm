@@ -8,6 +8,7 @@
     <li><a href="categoryOption.action">$i18n.getString( "data_element_category_option" )&nbsp;</a></li>
     <li><a href="category.action">$i18n.getString( "data_element_category" )&nbsp;</a></li>
     <li><a href="categoryCombo.action">$i18n.getString( "data_element_category_combo" )&nbsp;</a></li>
+    <li><a href="dataDictionary.action">$i18n.getString( "data_dictionary" )&nbsp;</a></li>
 	<li><a href="concept.action">$i18n.getString( "concept" )&nbsp;</a></li>
 </ul>
 
@@ -18,9 +19,4 @@
     <li><a href="indicatorGroup.action">$i18n.getString( "indicator_group" )&nbsp;</a></li>
 	<li><a href="indicatorGroupEditor.action">$i18n.getString( "indicator_group_editor" )&nbsp;</a></li>
 	<li><a href="indicatorGroupSet.action">$i18n.getString( "indicator_group_set" )&nbsp;</a></li>
-</ul>
-  
-<h2>$i18n.getString( "data_dictionary" )&nbsp;</h2>
-<ul>
-	<li><a href="dataDictionary.action">$i18n.getString( "data_dictionary" )&nbsp;</a></li>
 </ul>

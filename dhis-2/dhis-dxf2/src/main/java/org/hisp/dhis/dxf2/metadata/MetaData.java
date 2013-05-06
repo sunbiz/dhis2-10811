@@ -33,6 +33,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.hisp.dhis.attribute.Attribute;
 import org.hisp.dhis.chart.Chart;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.constant.Constant;
@@ -168,6 +169,8 @@ public class MetaData
 
     private List<ProgramStage> programStages = new ArrayList<ProgramStage>();
 
+    private List<DimensionalObject> dimensions = new ArrayList<DimensionalObject>();
+    
     public MetaData()
     {
     }
@@ -717,6 +720,19 @@ public class MetaData
         this.programStages = programStages;
     }
 
+    @JsonProperty
+    @JacksonXmlElementWrapper( localName = "dimensions", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "dimension", namespace = DxfNamespaces.DXF_2_0 )
+    public List<DimensionalObject> getDimensions()
+    {
+        return dimensions;
+    }
+
+    public void setDimensions( List<DimensionalObject> dimensions )
+    {
+        this.dimensions = dimensions;
+    }
+
     @Override
     public String toString()
     {
@@ -761,6 +777,7 @@ public class MetaData
             ", sections=" + sections +
             ", dataSets=" + dataSets +
             ", programs=" + programs +
+            ", dimensions=" + dimensions +
             '}';
     }
 }

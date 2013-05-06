@@ -68,6 +68,7 @@ import org.jfree.chart.plot.MultiplePiePlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.renderer.category.AreaRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
@@ -278,7 +279,7 @@ public class DefaultChartService
         chart.setRelativePeriods( periods );
         chart.setOrganisationUnits( organisationUnits );
         chart.setFormat( format );
-        chart.setName( chart.getTitle() );
+        chart.setName( chart.generateTitle() );
 
         return getJFreeChart( chart, false );
     }
@@ -483,6 +484,23 @@ public class DefaultChartService
     }
 
     /**
+     * Returns an area renderer.
+     * 
+     * TODO centralize these renderer methods.
+     */
+    private AreaRenderer getAreaRenderer()
+    {
+        AreaRenderer renderer = new AreaRenderer();
+
+        for ( int i = 0; i < colors.length; i++ )
+        {
+            renderer.setSeriesPaint( i, colors[i] );
+        }
+
+        return renderer;
+    }
+
+    /**
      * Returns a horizontal line marker for the given x value and label.
      */
     private Marker getMarker( Double value, String label )
@@ -513,7 +531,7 @@ public class DefaultChartService
 
         CategoryDataset[] dataSets = getCategoryDataSet( chart );
 
-        if ( chart.isType( TYPE_LINE ) || chart.isType( TYPE_AREA ) )
+        if ( chart.isType( TYPE_LINE ) )
         {
             plot = new CategoryPlot( dataSets[0], new CategoryAxis(), new NumberAxis(), lineRenderer );
             plot.setOrientation( PlotOrientation.VERTICAL );
@@ -527,6 +545,10 @@ public class DefaultChartService
         {
             plot = new CategoryPlot( dataSets[0], new CategoryAxis(), new NumberAxis(), barRenderer );
             plot.setOrientation( PlotOrientation.HORIZONTAL );
+        }
+        else if ( chart.isType( TYPE_AREA ) )
+        {
+            return getAreaChart( chart, dataSets[0] );
         }
         else if ( chart.isType( TYPE_PIE ) )
         {
@@ -591,6 +613,28 @@ public class DefaultChartService
         return jFreeChart;
     }
 
+    private JFreeChart getAreaChart( Chart chart, CategoryDataset dataSet )
+    {
+        JFreeChart areaChart = ChartFactory.createAreaChart( chart.getName(), chart.getDomainAxisLabel(), 
+            chart.getRangeAxisLabel(), dataSet, PlotOrientation.VERTICAL, true, false, false );
+        
+        CategoryPlot plot = (CategoryPlot) areaChart.getPlot();
+        plot.setBackgroundPaint( Color.WHITE );
+        plot.setOutlinePaint( Color.WHITE );
+        plot.setOrientation( PlotOrientation.VERTICAL );
+        plot.setRenderer( getAreaRenderer() );
+        
+        CategoryAxis xAxis = plot.getDomainAxis();
+        xAxis.setCategoryLabelPositions( CategoryLabelPositions.UP_45 );
+        xAxis.setLabelFont( labelFont );
+        
+        areaChart.getTitle().setFont( titleFont );
+        areaChart.addSubtitle( getSubTitle( chart ) );
+        areaChart.setAntiAlias( true );
+        
+        return areaChart;
+    }
+    
     private JFreeChart getStackedBarChart( Chart chart, CategoryDataset dataSet, boolean horizontal )
     {
         JFreeChart stackedBarChart = null;
@@ -720,7 +764,7 @@ public class DefaultChartService
         TextTitle title = new TextTitle();
 
         title.setFont( subTitleFont );
-        title.setText( chart.getTitle() );
+        title.setText( chart.generateTitle() );
 
         return title;
     }
@@ -747,6 +791,11 @@ public class DefaultChartService
     public Chart getChart( String uid )
     {
         return chartStore.getByUid( uid );
+    }
+    
+    public Chart getChartNoAcl( String uid )
+    {
+        return chartStore.getByUidNoAcl( uid );
     }
 
     public void deleteChart( Chart chart )

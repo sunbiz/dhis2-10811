@@ -1,23 +1,24 @@
 package org.hisp.dhis.databrowser.jdbc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.common.GridHeader;
 import org.hisp.dhis.databrowser.DataBrowserGridStore;
-import org.hisp.dhis.databrowser.util.DataBrowserUtils;
+import org.hisp.dhis.databrowser.MetaValue;
 import org.hisp.dhis.jdbc.StatementBuilder;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.grid.ListGrid;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  * @author joakibj, martinwa, briane, eivinhb
  * @version $Id JDBCDataBrowserStore.java 2010-04-06 jpp, ddhieu$
  */
 public class JDBCDataBrowserStore
-    extends DataBrowserUtils
     implements DataBrowserGridStore
 {
     // -------------------------------------------------------------------------
@@ -47,8 +48,6 @@ public class JDBCDataBrowserStore
 
     // -------------------------------------------------------------------------
     // DataBrowserStore implementation
-    //
-    // Basic
     // -------------------------------------------------------------------------
 
     public Grid getDataSetsBetweenPeriods( List<Integer> betweenPeriodIds, PeriodType periodType, boolean isZeroAdded )
@@ -82,8 +81,7 @@ public class JDBCDataBrowserStore
     {
         StringBuffer sqlsb = new StringBuffer();
 
-        sqlsb
-            .append( "(SELECT d.dataelementgroupid AS ID, d.name AS DataElementGroup, COUNT(*) AS counts_of_aggregated_values " );
+        sqlsb.append( "(SELECT d.dataelementgroupid AS ID, d.name AS DataElementGroup, COUNT(*) AS counts_of_aggregated_values " );
         sqlsb.append( "FROM datavalue dv " );
         sqlsb.append( "JOIN dataelementgroupmembers degm ON (dv.dataelementid = degm.dataelementid)" );
         sqlsb.append( "JOIN dataelementgroup d ON (d.dataelementgroupid = degm.dataelementgroupid) " );
@@ -246,8 +244,7 @@ public class JDBCDataBrowserStore
         {
             i++;
 
-            sqlsb
-                .append( "(SELECT de.dataelementid, de.name AS DataElement, COUNT(dv.value) AS counts_of_aggregated_values, p.periodid AS PeriodId, p.startDate AS ColumnHeader " );
+            sqlsb.append( "(SELECT de.dataelementid, de.name AS DataElement, COUNT(dv.value) AS counts_of_aggregated_values, p.periodid AS PeriodId, p.startDate AS ColumnHeader " );
             sqlsb.append( "FROM dataelement de JOIN datavalue dv ON (de.dataelementid = dv.dataelementid) " );
             sqlsb.append( "JOIN dataelementgroupmembers degm ON (de.dataelementid = degm.dataelementid) " );
             sqlsb.append( "JOIN period p ON (dv.periodid = p.periodid) " );
@@ -271,19 +268,15 @@ public class JDBCDataBrowserStore
         {
             i++;
 
-            sqlsb
-                .append( "(SELECT deg.dataelementgroupid, deg.name, COUNT(dv.value) AS counts_of_aggregated_values, p.periodid AS PeriodId, p.startdate AS ColumnHeader " );
+            sqlsb.append( "(SELECT deg.dataelementgroupid, deg.name, COUNT(dv.value) AS counts_of_aggregated_values, p.periodid AS PeriodId, p.startdate AS ColumnHeader " );
             sqlsb.append( "FROM dataelementgroup AS deg " );
-            sqlsb
-                .append( "INNER JOIN dataelementgroupmembers AS degm ON deg.dataelementgroupid = degm.dataelementgroupid " );
+            sqlsb.append( "INNER JOIN dataelementgroupmembers AS degm ON deg.dataelementgroupid = degm.dataelementgroupid " );
             sqlsb.append( "INNER JOIN datavalue AS dv ON degm.dataelementid = dv.dataelementid " );
             sqlsb.append( "INNER JOIN period AS p ON dv.periodid = p.periodid " );
             sqlsb.append( "INNER JOIN organisationunit AS ou ON dv.sourceid = ou.organisationunitid " );
             sqlsb.append( "INNER JOIN orgunitgroupmembers AS ougm ON ou.organisationunitid = ougm.organisationunitid " );
-            sqlsb
-                .append( "WHERE p.periodid =  '" + periodid + "' AND ougm.orgunitgroupid =  '" + orgUnitGroupId + "' " );
+            sqlsb.append( "WHERE p.periodid =  '" + periodid + "' AND ougm.orgunitgroupid =  '" + orgUnitGroupId + "' " );
             sqlsb.append( "GROUP BY deg.dataelementgroupid,deg.name,p.periodid,p.startdate) " );
-
             sqlsb.append( i == betweenPeriodIds.size() ? "ORDER BY ColumnHeader" : " UNION " );
         }
 
@@ -302,8 +295,6 @@ public class JDBCDataBrowserStore
 
     }
 
-    // This method retrieves raw data for a given orgunit, periods,
-
     public Integer setRawDataElementsForOrgUnitBetweenPeriods( Grid grid, Integer orgUnitId,
         List<Integer> betweenPeriodIds, List<Integer> metaIds, boolean isZeroAdded )
     {
@@ -315,8 +306,108 @@ public class JDBCDataBrowserStore
     }
 
     // -------------------------------------------------------------------------
+    // Private methods
+    // -------------------------------------------------------------------------
+
+    private static void setMetaStructure( Grid grid, StringBuffer sqlsb, List<Integer> metaIds, JdbcTemplate jdbcTemplate )
+    {
+        Integer metaId = null;
+        String metaName = null;
+        SqlRowSet resultSet = jdbcTemplate.queryForRowSet( sqlsb.toString() );
+
+        while ( resultSet.next() )
+        {
+            metaId = resultSet.getInt( 1 );
+            metaName = resultSet.getString( 2 );
+
+            metaIds.add( metaId );
+            grid.addRow().addValue( new MetaValue( metaId, metaName ) );
+        }
+    }
+
+    private static void setHeaderStructure( Grid grid, SqlRowSet resultSet, List<Integer> headerIds, boolean isZeroAdded )
+    {
+        Integer headerId = null;
+        String headerName = null;
+
+        while ( resultSet.next() )
+        {
+            headerId = resultSet.getInt( 4 );
+            headerName = resultSet.getString( 5 );
+
+            GridHeader header = new GridHeader( headerName, headerId + "", String.class.getName(), false, false );
+
+            if ( !headerIds.contains( headerId ) )
+            {
+                headerIds.add( headerId );
+                grid.addHeader( header );
+
+                for ( List<Object> row : grid.getRows() )
+                {
+                    row.add( isZeroAdded ? "0" : "" );
+                }
+            }
+        }
+    }
+
+    private static void fillUpDataBasic( Grid grid, StringBuffer sqlsb, boolean isZeroAdded, JdbcTemplate jdbcTemplate )
+    {
+        SqlRowSet resultSet = jdbcTemplate.queryForRowSet( sqlsb.toString() );
+
+        while ( resultSet.next() )
+        {
+            MetaValue metaValue = new MetaValue( resultSet.getInt( 1 ), resultSet.getString( 2 ) );
+
+            grid.addRow().addValue( metaValue ).addValue( checkValue( resultSet.getString( 3 ), isZeroAdded ) );
+        }
+    }
+
+    private static int fillUpDataAdvance( Grid grid, StringBuffer sqlsb, List<Integer> metaIds, boolean isZeroAdded,
+        JdbcTemplate jdbcTemplate )
+    {
+        int countRows = 0;
+        int rowIndex = -1;
+        int columnIndex = -1;
+        int oldWidth = grid.getWidth();
+
+        SqlRowSet rs = jdbcTemplate.queryForRowSet( sqlsb.toString() );
+
+        List<Integer> headerIds = new ArrayList<Integer>();
+        setHeaderStructure( grid, rs, headerIds, isZeroAdded );
+
+        if ( rs.first() != true )
+        {
+            return countRows;
+        }
+
+        rs.beforeFirst();
+
+        while ( rs.next() )
+        {
+            rowIndex = metaIds.indexOf( rs.getInt( 1 ) );
+            columnIndex = headerIds.indexOf( rs.getInt( 4 ) ) + oldWidth;
+
+            grid.getRow( rowIndex ).set( columnIndex, checkValue( rs.getString( 3 ), isZeroAdded ) );
+
+            countRows++;
+        }
+        
+        return countRows;
+    }
+
+    // -------------------------------------------------------------------------
     // Supportive methods
     // -------------------------------------------------------------------------
+
+    private static String checkValue( String value, boolean isZeroAdded )
+    {
+        if ( value == null )
+        {
+            return "null";
+        }
+        return (value.equals( "0" ) && !isZeroAdded) ? "" : value;
+    }
+    
     /**
      * Splits a list of integers by by comma. Use this method if you have a list
      * that will be used in f.ins. a WHERE xxx IN (list) clause in SQL.
@@ -410,5 +501,4 @@ public class JDBCDataBrowserStore
 
         return desc_query.toString();
     }
-
 }

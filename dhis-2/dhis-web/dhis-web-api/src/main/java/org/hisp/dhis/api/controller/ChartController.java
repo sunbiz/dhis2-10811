@@ -175,7 +175,7 @@ public class ChartController
         @RequestParam( value = "height", defaultValue = "500", required = false ) int height,
         HttpServletResponse response ) throws IOException, I18nManagerException
     {
-        Chart chart = chartService.getChart( uid );
+        Chart chart = chartService.getChartNoAcl( uid );
 
         OrganisationUnit unit = ou != null ? organisationUnitService.getOrganisationUnit( ou ) : null;
         

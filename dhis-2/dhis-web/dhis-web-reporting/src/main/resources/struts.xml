@@ -103,10 +103,6 @@
       <param name="onExceptionReturn">plainTextError</param>
     </action>
 
-    <action name="getReportDesign" class="org.hisp.dhis.reporting.reportviewer.action.GetReportDesignAction">
-      <result name="success" type="outputStreamResult" />
-    </action>
-
     <action name="getReportTemplate" class="org.hisp.dhis.reporting.reportviewer.action.GetReportTemplateAction">
       <result name="success" type="outputStreamResult" />
     </action>
