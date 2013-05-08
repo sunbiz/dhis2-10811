@@ -39,6 +39,9 @@ import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.period.YearlyPeriodType;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class PartitionUtils
 {
     private static final YearlyPeriodType PERIODTYPE = new YearlyPeriodType();

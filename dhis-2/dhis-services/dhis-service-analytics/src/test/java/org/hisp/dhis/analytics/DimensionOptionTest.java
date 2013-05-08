@@ -40,7 +40,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hisp.dhis.analytics.DataQueryParams.*;
 import static org.hisp.dhis.system.util.TextUtils.EMPTY;
+import static org.hisp.dhis.common.DimensionalObject.*;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class DimensionOptionTest
     extends DhisConvenienceTest
 {

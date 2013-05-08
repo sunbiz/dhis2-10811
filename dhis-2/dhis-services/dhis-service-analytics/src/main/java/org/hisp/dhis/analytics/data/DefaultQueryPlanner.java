@@ -31,15 +31,12 @@ import static org.hisp.dhis.analytics.AggregationType.AVERAGE_BOOL;
 import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT;
 import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT_DISAGGREGATION;
 import static org.hisp.dhis.analytics.AggregationType.SUM;
-import static org.hisp.dhis.analytics.DataQueryParams.CATEGORYOPTIONCOMBO_DIM_ID;
-import static org.hisp.dhis.analytics.DataQueryParams.INDICATOR_DIM_ID;
 import static org.hisp.dhis.analytics.DataQueryParams.LEVEL_PREFIX;
 import static org.hisp.dhis.analytics.DataQueryParams.MAX_DIM_OPT_PERM;
-import static org.hisp.dhis.analytics.DataQueryParams.ORGUNIT_DIM_ID;
-import static org.hisp.dhis.analytics.DataQueryParams.PERIOD_DIM_ID;
 import static org.hisp.dhis.dataelement.DataElement.AGGREGATION_OPERATOR_AVERAGE;
 import static org.hisp.dhis.dataelement.DataElement.AGGREGATION_OPERATOR_SUM;
 import static org.hisp.dhis.dataelement.DataElement.VALUE_TYPE_BOOL;
+import static org.hisp.dhis.common.DimensionalObject.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +63,9 @@ import org.hisp.dhis.system.util.MathUtils;
 import org.hisp.dhis.system.util.PaginatedList;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class DefaultQueryPlanner
     implements QueryPlanner
 {
@@ -126,7 +126,7 @@ public class DefaultQueryPlanner
             violation = "Dimensions cannot be specified more than once: " + params.getDuplicateDimensions();
         }
         
-        if ( params.hasDimensionOrFilter( DataQueryParams.DATASET_DIM_ID ) && !params.getDataElementGroupSets().isEmpty() )
+        if ( params.hasDimensionOrFilter( DATASET_DIM_ID ) && !params.getDataElementGroupSets().isEmpty() )
         {
             violation = "Data sets and data element group sets cannot be specified simultaneously";
         }
@@ -201,7 +201,7 @@ public class DefaultQueryPlanner
         // Group by data element
         // ---------------------------------------------------------------------
         
-        queries = splitByDimension( queries, DataQueryParams.DATAELEMENT_DIM_ID, optimalQueries );
+        queries = splitByDimension( queries, DATAELEMENT_DIM_ID, optimalQueries );
 
         if ( queries.size() >= optimalQueries )
         {
@@ -212,7 +212,7 @@ public class DefaultQueryPlanner
         // Group by data set
         // ---------------------------------------------------------------------
         
-        queries = splitByDimension( queries, DataQueryParams.DATASET_DIM_ID, optimalQueries );
+        queries = splitByDimension( queries, DATASET_DIM_ID, optimalQueries );
 
         if ( queries.size() >= optimalQueries )
         {
@@ -223,7 +223,7 @@ public class DefaultQueryPlanner
         // Group by organisation unit
         // ---------------------------------------------------------------------
         
-        queries = splitByDimension( queries, DataQueryParams.ORGUNIT_DIM_ID, optimalQueries );
+        queries = splitByDimension( queries, ORGUNIT_DIM_ID, optimalQueries );
 
         return queries;
     }

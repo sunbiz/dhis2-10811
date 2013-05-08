@@ -29,6 +29,9 @@ package org.hisp.dhis.analytics;
 
 import java.util.List;
 
+/**
+ * @author Lars Helge Overland
+ */
 public interface QueryPlanner
 {
     /**

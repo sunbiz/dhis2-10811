@@ -46,6 +46,9 @@ import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class AnalyticsServiceTest
     extends DhisSpringTest
 {

@@ -47,6 +47,9 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 
+/**
+ * @author Lars Helge Overland
+ */
 public abstract class AbstractJdbcTableManager
     implements AnalyticsTableManager
 {

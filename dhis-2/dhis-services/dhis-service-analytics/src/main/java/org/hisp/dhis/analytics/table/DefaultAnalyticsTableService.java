@@ -52,6 +52,9 @@ import org.hisp.dhis.system.util.ConcurrentUtils;
 import org.hisp.dhis.system.util.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class DefaultAnalyticsTableService
     implements AnalyticsTableService
 {

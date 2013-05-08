@@ -32,7 +32,7 @@
 
     <property name="category" />
 
-    <list name="filters" table="chart_filters">
+    <list name="filterDimensions" table="chart_filters">
       <cache usage="read-write" />
       <key column="chartid" />
       <list-index column="sort_order" base="0" />

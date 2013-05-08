@@ -311,18 +311,13 @@ Ext.onReady( function() {
                 var selected = a.getValue();
 				if( selected.length > 0 )
 				{
-					var idx = a.store.findExact('id', selected);
-					var name = a.store.getAt(idx).data.name;
-					var valueType = a.store.getAt(idx).data.valueType;
+					var array = [];
+					Ext.Array.each(selected, function(item) {
+						var data = a.store.findExact('id', item);
+						array.push({id: item, uid:a.store.getAt(data).data.uid, name: a.store.getAt(data).data.name, compulsory: a.store.getAt(data).data.compulsory, valueType: a.store.getAt(data).data.valueType});
+					});
+					s.store.add(array);
 					
-					if (selected.length) {
-						var array = [];
-						Ext.Array.each(selected, function(item) {
-							var data = a.store.findExact('id', item);
-							array.push({id: item, uid:a.store.getAt(data).data.uid, name: a.store.getAt(data).data.name, compulsory: a.store.getAt(data).data.compulsory, valueType: a.store.getAt(data).data.valueType});
-						});
-						s.store.add(array);
-					}
 					this.filterAvailable(a, s);
 					
 					if(f!=undefined)

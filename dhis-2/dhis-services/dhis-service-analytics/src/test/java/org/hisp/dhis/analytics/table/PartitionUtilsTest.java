@@ -43,6 +43,9 @@ import org.hisp.dhis.period.YearlyPeriodType;
 import org.hisp.dhis.common.ListMap;
 import org.junit.Test;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class PartitionUtilsTest
 {
     private static final String TABLE_NAME_TEMP = ANALYTICS_TABLE_NAME + TABLE_TEMP_SUFFIX;

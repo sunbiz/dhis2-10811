@@ -41,6 +41,9 @@ import org.hisp.dhis.period.PeriodType;
 import org.hisp.dhis.system.util.DateUtils;
 import org.springframework.scheduling.annotation.Async;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class JdbcCompletenessTableManager
     extends AbstractJdbcTableManager
 {

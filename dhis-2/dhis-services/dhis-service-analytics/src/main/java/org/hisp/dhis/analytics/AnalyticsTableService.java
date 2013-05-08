@@ -29,6 +29,9 @@ package org.hisp.dhis.analytics;
 
 import org.hisp.dhis.scheduling.TaskId;
 
+/**
+ * @author Lars Helge Overland
+ */
 public interface AnalyticsTableService
 {
     /**

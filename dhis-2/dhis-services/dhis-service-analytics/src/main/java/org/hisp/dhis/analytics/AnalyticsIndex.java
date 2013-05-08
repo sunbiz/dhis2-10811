@@ -27,6 +27,9 @@ package org.hisp.dhis.analytics;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * @author Lars Helge Overland
+ */
 public class AnalyticsIndex
 {
     private String table;

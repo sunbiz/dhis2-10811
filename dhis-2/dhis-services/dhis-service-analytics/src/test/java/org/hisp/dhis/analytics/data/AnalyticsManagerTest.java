@@ -45,6 +45,9 @@ import org.hisp.dhis.common.ListMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class AnalyticsManagerTest
     extends DhisSpringTest
 {

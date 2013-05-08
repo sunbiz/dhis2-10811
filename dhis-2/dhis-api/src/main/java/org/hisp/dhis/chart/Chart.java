@@ -98,7 +98,7 @@ public class Chart
 
     private String category;
 
-    private List<String> filters = new ArrayList<String>();
+    private List<String> filterDimensions = new ArrayList<String>();
 
     private boolean hideLegend;
 
@@ -180,14 +180,14 @@ public class Chart
 
     public NameableObject filter()
     {
-        List<NameableObject> list = dimensionToList( filters.get( 0 ) ); //TODO
+        List<NameableObject> list = dimensionToList( filterDimensions.get( 0 ) ); //TODO
 
         return list != null && !list.isEmpty() ? list.iterator().next() : null;
     }
 
     public String generateTitle()
     {
-        if ( DIMENSION_PERIOD.equals( filters.get( 0 ) ) )
+        if ( DIMENSION_PERIOD.equals( filterDimensions.get( 0 ) ) )
         {
             return format.formatPeriod( getAllPeriods().get( 0 ) );
         }
@@ -316,8 +316,8 @@ public class Chart
     {
         this.series = series;
         this.category = category;
-        this.filters.clear();
-        this.filters.add( filter ); //TODO
+        this.filterDimensions.clear();
+        this.filterDimensions.add( filter ); //TODO
     }
 
     public boolean hasIndicators()
@@ -439,14 +439,14 @@ public class Chart
         this.category = category;
     }
 
-    public List<String> getFilters()
+    public List<String> getFilterDimensions()
     {
-        return filters;
+        return filterDimensions;
     }
 
-    public void setFilters( List<String> filters )
+    public void setFilterDimensions( List<String> filterDimensions )
     {
-        this.filters = filters;
+        this.filterDimensions = filterDimensions;
     }
 
     @JsonProperty
@@ -454,13 +454,13 @@ public class Chart
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getFilter()
     {
-        return filters.get( 0 ); //TODO
+        return filterDimensions.get( 0 ); //TODO
     }
 
     public void setFilter( String filter )
     {
-        this.filters.clear();
-        this.filters.add( filter ); //TODO
+        this.filterDimensions.clear();
+        this.filterDimensions.add( filter ); //TODO
     }
 
     @JsonProperty

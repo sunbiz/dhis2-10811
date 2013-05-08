@@ -27,6 +27,12 @@ package org.hisp.dhis.analytics;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.common.DimensionalObject.DATAELEMENT_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.PERIOD_DIM_ID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,15 +42,16 @@ import java.util.Map;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.period.Period;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hisp.dhis.analytics.DataQueryParams.*;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class DataQueryParamsTest
 {
     @Test
     public void testGetDimensionFromParam()
     {
-        assertEquals( DataQueryParams.DATAELEMENT_DIM_ID, DataQueryParams.getDimensionFromParam( "de:D348asd782j;kj78HnH6hgT;9ds9dS98s2" ) );
+        assertEquals( DATAELEMENT_DIM_ID, DataQueryParams.getDimensionFromParam( "de:D348asd782j;kj78HnH6hgT;9ds9dS98s2" ) );
     }
     
     @Test

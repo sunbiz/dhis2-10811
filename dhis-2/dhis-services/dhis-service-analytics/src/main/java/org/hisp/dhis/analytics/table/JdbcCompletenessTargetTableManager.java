@@ -38,6 +38,9 @@ import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitLevel;
 import org.springframework.scheduling.annotation.Async;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class JdbcCompletenessTargetTableManager
     extends AbstractJdbcTableManager
 {

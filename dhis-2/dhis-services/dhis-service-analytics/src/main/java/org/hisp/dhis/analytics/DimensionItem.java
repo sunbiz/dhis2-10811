@@ -30,9 +30,13 @@ package org.hisp.dhis.analytics;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.system.util.CollectionUtils;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class DimensionItem
 {
     private String dimension;
@@ -129,7 +133,7 @@ public class DimensionItem
         {
             for ( DimensionItem item : items )
             {
-                if ( DataQueryParams.PERIOD_DIM_ID.equals( item.getDimension() ) )
+                if ( DimensionalObject.PERIOD_DIM_ID.equals( item.getDimension() ) )
                 {
                     return item.getItem();
                 }

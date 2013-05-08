@@ -31,6 +31,13 @@ import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT_DISAGGREGATION
 import static org.hisp.dhis.analytics.DimensionType.DATASET;
 import static org.hisp.dhis.analytics.DimensionType.ORGANISATIONUNIT;
 import static org.hisp.dhis.analytics.DimensionType.ORGANISATIONUNIT_GROUPSET;
+import static org.hisp.dhis.common.DimensionalObject.CATEGORYOPTIONCOMBO_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.DATAELEMENT_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.DATASET_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.DATA_X_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.INDICATOR_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.ORGUNIT_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.PERIOD_DIM_ID;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.asList;
 import static org.hisp.dhis.common.IdentifiableObjectUtils.getList;
 import static org.hisp.dhis.system.util.CollectionUtils.emptyIfNull;
@@ -61,15 +68,11 @@ import org.hisp.dhis.system.util.ListUtils;
 import org.hisp.dhis.system.util.MapMap;
 import org.hisp.dhis.system.util.MathUtils;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class DataQueryParams
 {
-    public static final String DATA_X_DIM_ID = "dx"; // IN, DE, DS
-    public static final String INDICATOR_DIM_ID = "in";
-    public static final String DATAELEMENT_DIM_ID = "de";
-    public static final String DATASET_DIM_ID = "ds";
-    public static final String CATEGORYOPTIONCOMBO_DIM_ID = "co";
-    public static final String PERIOD_DIM_ID = "pe";
-    public static final String ORGUNIT_DIM_ID = "ou";
     public static final String VALUE_ID = "value";    
     public static final String LEVEL_PREFIX = "uidlevel";
     

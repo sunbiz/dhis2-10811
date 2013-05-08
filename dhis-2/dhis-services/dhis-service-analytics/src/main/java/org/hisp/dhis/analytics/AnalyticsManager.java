@@ -33,6 +33,9 @@ import java.util.concurrent.Future;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.ListMap;
 
+/**
+ * @author Lars Helge Overland
+ */
 public interface AnalyticsManager
 {
     /**

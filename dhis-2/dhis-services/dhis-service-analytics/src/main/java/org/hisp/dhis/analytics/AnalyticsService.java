@@ -33,6 +33,9 @@ import java.util.Set;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.i18n.I18nFormat;
 
+/**
+ * @author Lars Helge Overland
+ */
 public interface AnalyticsService
 {
     final String NAMES_META_KEY = "names";

@@ -32,6 +32,9 @@ import java.util.List;
 
 import org.hisp.dhis.common.IdentifiableObject;
 
+/**
+ * @author Lars Helge Overland
+ */
 public class Dimension
 {
     private String dimension;

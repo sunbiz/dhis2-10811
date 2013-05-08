@@ -46,6 +46,22 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 public abstract class DimensionalObject
     extends BaseIdentifiableObject
 {
+    public static final String DATA_X_DIM_ID = "dx"; // in, de, ds
+    public static final String INDICATOR_DIM_ID = "in";
+    public static final String DATAELEMENT_DIM_ID = "de";
+    public static final String DATASET_DIM_ID = "ds";
+    public static final String CATEGORYOPTIONCOMBO_DIM_ID = "co";
+    public static final String PERIOD_DIM_ID = "pe";
+    public static final String ORGUNIT_DIM_ID = "ou";
+    
+    @JsonProperty
+    @JsonView({ DimensionalView.class })
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
+    public String getDimension()
+    {
+        return getUid();
+    }
+    
     @JsonProperty
     @JsonSerialize( contentAs = BaseIdentifiableObject.class )
     @JsonView({ DimensionalView.class })
