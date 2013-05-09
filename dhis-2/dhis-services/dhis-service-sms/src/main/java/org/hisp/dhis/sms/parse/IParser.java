@@ -10,12 +10,11 @@ import java.util.Map;
  *
  * @author Christian
  */
-public interface IParser {
-    
-    static final String DATA_ENTRY_KEYWORD = "DHISDATAENTRYKEYWORD";
+public interface IParser 
+{    
+    final String DATA_ENTRY_KEYWORD = "DHISDATAENTRYKEYWORD";
     
     public Map<String, String> parse(String sms);
     
-    public void setSeparator(String separator);
-    
+    public void setSeparator(String separator);    
 }

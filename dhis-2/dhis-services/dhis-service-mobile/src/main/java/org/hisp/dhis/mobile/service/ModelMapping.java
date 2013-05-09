@@ -47,11 +47,13 @@ public class ModelMapping
         de.setType( dataElement.getType() );
 
         de.setCategoryOptionCombos( getCategoryOptionCombos( dataElement ) );
-        
-        //Limit the optionset transfer to the client
-        if (dataElement.getOptionSet() != null && dataElement.getOptionSet().getOptions().size() <= 50) {
+
+        // Limit the optionset transfer to the client
+        if ( dataElement.getOptionSet() != null && dataElement.getOptionSet().getOptions().size() <= 50 )
+        {
             de.setOptionSet( getOptionSet( dataElement ) );
         }
+        
         return de;
     }
 
@@ -72,7 +74,7 @@ public class ModelMapping
 
         return mobileOptionSet;
     }
-    
+
     public org.hisp.dhis.api.mobile.model.OptionSet getLWUITOptionSet( org.hisp.dhis.dataelement.DataElement dataElement )
     {
         org.hisp.dhis.option.OptionSet dhisOptionSet = dataElement.getOptionSet();
@@ -109,5 +111,4 @@ public class ModelMapping
         }
         return deCateOptCombo;
     }
-
 }

@@ -171,9 +171,6 @@ public class ValidationRuleConverter
 
             validationRule.getLeftSide().setExpression( values.get( FIELD_LEFTSIDE_EXPRESSION ) );
             validationRule.getLeftSide().setDescription( values.get( FIELD_LEFTSIDE_DESCRIPTION ) );
-            System.out.println("exp " + expressionService );
-            System.out.println("val " + validationRule.getLeftSide() );
-            System.out.println("exp " + validationRule.getLeftSide().getExpression());
             
             validationRule.getLeftSide().setDataElementsInExpression(
                 expressionService.getDataElementsInExpression( validationRule.getLeftSide().getExpression() ) );

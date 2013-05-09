@@ -34,7 +34,7 @@ public class SMSParserKeyValue
         {
             String key = m.group( 1 );
             String value = m.group( 2 );
-            System.out.println( "Key: " + key + " Value: " + value );
+            
             if ( !StringUtils.isEmpty( key ) && !StringUtils.isEmpty( value ) )
             {
                 output.put( key.toUpperCase(), value );
@@ -49,5 +49,4 @@ public class SMSParserKeyValue
         String x = "(\\w+)\\s*\\" + separator.trim() + "\\s*([\\w ]+)\\s*(\\" + separator.trim() + "|$)*\\s*";
         pattern = Pattern.compile( x );
     }
-
 }

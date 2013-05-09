@@ -105,5 +105,9 @@ PT.i18n = {
     example5: '$encoder.jsEscape($i18n.getString( 'example5' ) , "'")',
     example6: '$encoder.jsEscape($i18n.getString( 'example6' ) , "'")',
     example7: '$encoder.jsEscape($i18n.getString( 'example7' ) , "'")',
-    example8: '$encoder.jsEscape($i18n.getString( 'example8' ) , "'")'
+    example8: '$encoder.jsEscape($i18n.getString( 'example8' ) , "'")',
+    layout: '$encoder.jsEscape($i18n.getString( 'layout' ) , "'")',
+    options: '$encoder.jsEscape($i18n.getString( 'options' ) , "'")',
+    download: '$encoder.jsEscape($i18n.getString( 'download' ) , "'")',
+    favorites: '$encoder.jsEscape($i18n.getString( 'favorites' ) , "'")'
 };

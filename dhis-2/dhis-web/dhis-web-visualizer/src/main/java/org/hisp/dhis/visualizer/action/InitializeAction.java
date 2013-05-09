@@ -33,10 +33,11 @@ import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
 import org.hisp.dhis.api.utils.ContextUtils;
+import org.hisp.dhis.common.DimensionalObject;
+import org.hisp.dhis.common.DimensionService;
 import org.hisp.dhis.i18n.I18nFormat;
+import org.hisp.dhis.mapping.MapLegendSet;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
@@ -62,18 +63,18 @@ public class InitializeAction
         this.organisationUnitService = organisationUnitService;
     }
 
-    private OrganisationUnitGroupService organisationUnitGroupService;
-
-    public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
-    {
-        this.organisationUnitGroupService = organisationUnitGroupService;
-    }
-
     private PeriodService periodService;
 
     public void setPeriodService( PeriodService periodService )
     {
         this.periodService = periodService;
+    }
+    
+    private DimensionService dimensionService;
+
+    public void setDimensionService( DimensionService dimensionService )
+    {
+        this.dimensionService = dimensionService;
     }
 
     private I18nFormat format;
@@ -99,13 +100,6 @@ public class InitializeAction
     public Collection<OrganisationUnit> getRootNodes()
     {
         return rootNodes;
-    }
-
-    private Collection<OrganisationUnitGroupSet> organisationUnitGroupSets;
-
-    public Collection<OrganisationUnitGroupSet> getOrganisationUnitGroupSets()
-    {
-        return organisationUnitGroupSets;
     }
 
     private List<Period> lastMonth;
@@ -178,6 +172,20 @@ public class InitializeAction
         return last5Years;
     }
     
+    private Collection<DimensionalObject> dimensions;
+
+    public Collection<DimensionalObject> getDimensions()
+    {
+        return dimensions;
+    }
+
+    private Collection<MapLegendSet> legendSets;
+
+    public Collection<MapLegendSet> getLegendSets()
+    {
+        return legendSets;
+    }
+    
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -193,8 +201,6 @@ public class InitializeAction
         {
             rootNodes.add( new OrganisationUnit() );
         }
-
-        organisationUnitGroupSets = organisationUnitGroupService.getAllOrganisationUnitGroupSets();
 
         RelativePeriods rp = new RelativePeriods();
 
@@ -227,6 +233,8 @@ public class InitializeAction
 
         rp.clear().setLast5Years( true );
         last5Years = periodService.reloadPeriods( setNames( rp.getRelativePeriods() ) );
+        
+        dimensions = dimensionService.getAllDimensions();
 
         return SUCCESS;
     }

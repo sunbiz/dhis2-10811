@@ -13,9 +13,9 @@
   <bean id="org.hisp.dhis.visualizer.action.InitializeAction"
     class="org.hisp.dhis.visualizer.action.InitializeAction"
     scope="prototype">
-    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
     <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
-    <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
+    <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+    <property name="dimensionService" ref="org.hisp.dhis.common.DimensionService" />
   </bean>
 
   <!-- OrganisationUnit -->

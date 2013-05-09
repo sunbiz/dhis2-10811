@@ -10,7 +10,6 @@ import org.hisp.dhis.sms.incoming.IncomingSmsStore;
 public class DatabaseSupportedInternalMemoryMessageQueue
     implements MessageQueue
 {
-
     List<IncomingSms> queue = new ArrayList<IncomingSms>();
 
     private IncomingSmsStore smsStore;
@@ -49,5 +48,4 @@ public class DatabaseSupportedInternalMemoryMessageQueue
     {
         this.smsStore = smsStore;
     }
-
 }

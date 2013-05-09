@@ -9,11 +9,7 @@ PT.core.getConfigs = function() {
 	conf.finals = {
         ajax: {
             path_pivot: '../',
-            path_pivot_static: 'dhis-web-pivot/',
             path_api: '../../api/',
-            path_commons: '../../dhis-web-commons-ajax-json/',
-            path_lib: '../../dhis-web-commons/javascripts/',
-            path_images: 'images/',
             initialize: 'initialize.action',
             redirect: 'dhis-web-commons-about/redirect.action',
             data_get: 'chartValues.json',
@@ -288,27 +284,6 @@ PT.core.getUtils = function(pt) {
 		}
 	};
 
-    util.url = {
-		getParam: function(s) {
-			var output = '';
-			var href = window.location.href;
-			if (href.indexOf('?') > -1 ) {
-				var query = href.substr(href.indexOf('?') + 1);
-				var query = query.split('&');
-				for (var i = 0; i < query.length; i++) {
-					if (query[i].indexOf('=') > -1) {
-						var a = query[i].split('=');
-						if (a[0].toLowerCase() === s) {
-							output = a[1];
-							break;
-						}
-					}
-				}
-			}
-			return unescape(output);
-		}
-	};
-
 	util.multiselect = {
 		select: function(a, s) {
 			var selected = a.getValue();
@@ -363,17 +338,6 @@ PT.core.getUtils = function(pt) {
 			for (var i = 0; i < ms.length; i++) {
 				ms[i].setHeight(panel.getHeight() - fill);
 			}
-		}
-	};
-
-	util.treepanel = {
-		getHeight: function() {
-			var h1 = PT.cmp.region.west.getHeight();
-			var h2 = PT.cmp.options.panel.getHeight();
-			var h = h1 - h2 - PT.conf.layout.treepanel_fill_default;
-			var mx = PT.conf.layout.treepanel_maxheight;
-			var mn = PT.conf.layout.treepanel_minheight;
-			return h > mx ? mx : h < mn ? mn : h;
 		}
 	};
 
@@ -543,7 +507,7 @@ PT.core.getUtils = function(pt) {
 	};
 
 	util.pivot = {
-		getTable: function(settings, pt) {
+		createTable: function(settings, pt) {
 			var options = settings.options,
 				extendLayout,
 				getSyncronizedXLayout,
@@ -1733,7 +1697,6 @@ PT.core.getAPI = function(pt) {
 		};
 
 		getValidatedAxis = function(axis) {
-
 			if (!(axis && Ext.isArray(axis) && axis.length)) {
 				return;
 			}

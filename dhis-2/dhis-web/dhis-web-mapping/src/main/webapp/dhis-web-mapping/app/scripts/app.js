@@ -3297,9 +3297,9 @@ Ext.onReady( function() {
 				},
 				listeners: {
 					load: function(s, node, r) {
-						for (var i = 0; i < r.length; i++) {
-							r[i].data.text = gis.util.json.encodeString(r[i].data.text);
-						}
+						//for (var i = 0; i < r.length; i++) {
+							//r[i].data.text = gis.util.json.encodeString(r[i].data.text);
+						//}
 					}
 				}
 			}),
@@ -4022,9 +4022,9 @@ Ext.onReady( function() {
 				},
 				listeners: {
 					load: function(s, node, r) {
-						for (var i = 0; i < r.length; i++) {
-							r[i].data.text = gis.util.json.encodeString(r[i].data.text);
-						}
+						//for (var i = 0; i < r.length; i++) {
+							//r[i].data.text = gis.util.json.encodeString(r[i].data.text);
+						//}
 					}
 				}
 			}),
@@ -4549,9 +4549,9 @@ Ext.onReady( function() {
 				},
 				listeners: {
 					load: function(s, node, r) {
-						for (var i = 0; i < r.length; i++) {
-							r[i].data.text = gis.util.json.encodeString(r[i].data.text);
-						}
+						//for (var i = 0; i < r.length; i++) {
+							//r[i].data.text = gis.util.json.encodeString(r[i].data.text);
+						//}
 					}
 				}
 			}),

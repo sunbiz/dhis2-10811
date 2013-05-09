@@ -1,19 +1,28 @@
 /* General
  *
  * Panel
+ * DV Panel
  * Combobox
- * Grid
- * DV menu grid
- * Treepanel
+ * DV Combobox
  * MultiSelect
+ * DV MultiSelect
  * Checkbox
+ * DV Checkbox
  * Toolbar
+ * DV Toolbar
  * Button
  * Tooltip
+ * LoadMask
+ * DV Grid
+ * DV Window
+ * DV Label
+ * DV Textfield
+ * DV Treepanel
+ * DV Accordion
+ * DV Textarea
+ * DV Tips
  * Menu
- * Window
- * Textfield
- *
+ * DV Menu
 */
 
 /* General */
@@ -45,35 +54,35 @@ body {
 	user-select: none;
 }
 
+body.x-windows {
+	-webkit-text-stroke: 0.2px #888;
+}
+
 	/* Scrollbar Webkit */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 7px;
     border: 0 none;
 }
 
 ::-webkit-scrollbar-track:horizontal {
     background-color: #ddd;
     margin: 0 2px;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid white;
 }
-::-webkit-scrollbar-track:vertical {
-    background-color: #ddd;
-    margin: 2px 0;
-    border-right: 2px solid white;
-    border-left: 2px solid white;
-}
-
 ::-webkit-scrollbar-thumb:horizontal {
 	background-color: #bbb;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid white;
+}
+
+::-webkit-scrollbar-track:vertical {
+    background-color: #e1e1e1;
+    margin: 2px 0;
+    border-right: 2px solid white;
 }
 ::-webkit-scrollbar-thumb:vertical {
 	background-color: #bbb;
     border-right: 2px solid white;
-    border-left: 2px solid white;
 }
 
 	/* Scrollbar */
@@ -86,17 +95,23 @@ body {
 	opacity: 0.4;
 	cursor: default !important;
 }
-
-	/* Options border */
-.dv-accordion-options .x-panel-body-default {
-	border: 0 none;
-}
-
-.x-splitter { /* Splitter column */
+	/* Collapse splitter column */
+.x-splitter {
     display: none;
 }
 
-/* Panel */
+.fixed {
+	position: fixed;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+
+/*----------------------------------------------------------------------------
+ * Panel
+ *--------------------------------------------------------------------------*/
 
 .x-panel-body {
     font-size: 11px;
@@ -105,11 +120,60 @@ body {
     border-style: none;
 }
 
-/* Combobox */
 
-.x-webkit .x-form-empty-field { /* Combobox text position*/
+/*----------------------------------------------------------------------------
+ * DV Panel
+ *--------------------------------------------------------------------------*/
+
+.dv-panel-title-data,
+.dv-panel-title-period,
+.dv-panel-title-organisationunit,
+.dv-panel-title-dimension {
+	height: 17px;
+	background-repeat: no-repeat;
+	padding-left: 20px
+}
+
+.dv-panel-title-data {
+	background-image: url(../images/data.png);
+}
+.dv-panel-title-period {
+	background-image: url(../images/period.png);
+}
+.dv-panel-title-organisationunit {
+	background-image: url(../images/organisationunit.png);
+}
+.dv-panel-title-dimension {
+	background-image: url(../images/dataelementgroupset.png);
+}
+
+
+/*----------------------------------------------------------------------------
+ * Combobox
+ *--------------------------------------------------------------------------*/
+
+	/* Combobox text position*/
+.x-webkit .x-form-empty-field {
     line-height: 14px;
 }
+
+	/* Combobox font size */
+.x-form-text, textarea.x-form-field {
+    font-size: 10px;
+}
+
+	/* Combobox field label font */
+.x-form-item-label {
+    font-size: 11px;
+    color: #111;
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Combobox
+ *--------------------------------------------------------------------------*/
+
+	/* Combobox text position*/
 .dv-combo .x-form-text {
     padding-left: 5px;
 }
@@ -117,22 +181,245 @@ body {
 	padding-top: 2px;
 }
 
-.x-form-text, textarea.x-form-field { /* Combobox font size */
-    font-size: 10px;
-}
-
-.dv-combo input { /* Combobox border-radius */
+	/* Combobox border-radius */
+.dv-combo input {
     border-radius: 2px 0px 0px 0px;
-}
-
-.x-form-item-label { /* Combobox field label font */
-    font-size: 11px;
-    color: #111;
 }
 
 
 /*----------------------------------------------------------------------------
- * PT Grid
+ * Multiselect
+ *--------------------------------------------------------------------------*/
+
+	/* Inner border */
+.x-fit-item {
+    border-style: none;
+}
+
+	/* Boundlist (multiselect, comboboxlist etc) */
+.x-boundlist-item {
+    color: #333;
+    padding: 3px 2px 3px 4px;
+    font-size: 10px;
+    border: 1px solid transparent;
+}
+.x-boundlist-item-over {
+    background-color: #e1e1e1;
+    border-color: #e1e1e1;
+}
+.x-boundlist-selected {
+    background-color: #d3d3d3;
+    border-color: #d3d3d3;
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Multiselect
+ *--------------------------------------------------------------------------*/
+
+.dv-multiselect {
+    color: #111;
+}
+
+.dv-toolbar-multiselect-left .x-docked-top {
+	border-top-left-radius: 2px;
+}
+.dv-toolbar-multiselect-right .x-docked-top {
+	border-top-right-radius: 2px;
+}
+.dv-toolbar-multiselect-leftright .x-docked-top {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+}
+
+	/* Multiselect docked bar font size */
+.dv-toolbar-multiselect-left .dv-toolbar-multiselect-left-label,
+.dv-toolbar-multiselect-right .dv-toolbar-multiselect-right-label,
+.dv-toolbar-multiselect-leftright .dv-toolbar-multiselect-leftright-label {
+    font-size: 11px;
+}
+.dv-toolbar-multiselect-left .dv-toolbar-multiselect-left-label {
+	padding-left: 6px;
+}
+.dv-toolbar-multiselect-right .dv-toolbar-multiselect-right-label {
+    padding-right: 7px;
+}
+.dv-toolbar-multiselect-leftright .dv-toolbar-multiselect-leftright-label {
+    padding-left: 4px;
+}
+
+	/* Multiselect boundlist */
+.dv-toolbar-multiselect-left .x-boundlist-item-over,
+.dv-toolbar-multiselect-right .x-boundlist-item-over {
+    background-color: transparent;
+    border-color: transparent;
+}
+.dv-toolbar-multiselect-left .x-boundlist-selected,
+.dv-toolbar-multiselect-right .x-boundlist-selected {
+    background-color: #e5e5e5;
+    border-color: #e5e5e5;
+}
+
+
+/*----------------------------------------------------------------------------
+ * Checkbox
+ *--------------------------------------------------------------------------*/
+
+	/* Box label */
+.x-form-cb-label-after {
+    padding-left: 1px;
+    font-size: 11px;
+    color: #333;
+}
+
+	/* Icons */
+.x-form-checkbox {
+    background-image: url('../images/checkbox.gif');
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Checkbox
+ *--------------------------------------------------------------------------*/
+
+.dv-checkbox .x-form-item-label {
+    padding-left: 5px;
+}
+.dv-checkbox .x-form-cb-label-after {
+    margin-left: 3px;
+    font-size: 11px;
+}
+
+
+/*----------------------------------------------------------------------------
+ * Toolbar
+ *--------------------------------------------------------------------------*/
+
+	/* Separator */
+.x-toolbar .x-toolbar-separator-horizontal {
+    height: 15px;
+    border-right: 1px solid #f2f2f2;
+}
+
+	/* Background */
+.x-toolbar-default {
+    border-color: #D0D0D0;
+    background-image: none;
+    background-color: #f3f3f3;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f1f1f1), color-stop(100%, #f5f5f5));
+    background-image: -webkit-linear-gradient(top, #f1f1f1,#f5f5f5);
+    background-image: -moz-linear-gradient(top, #f1f1f1,#f5f5f5);
+    background-image: -o-linear-gradient(top, #f1f1f1,#f5f5f5);
+    background-image: -ms-linear-gradient(top, #f1f1f1,#f5f5f5);
+    background-image: linear-gradient(top, #f1f1f1,#f5f5f5);
+}
+.dv-toolbar-main {
+    border-color: #D0D0D0;
+    background-image: none;
+    background-color: #f1f1f1;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e3e3e3), color-stop(100%, #eaeaea));
+    background-image: -webkit-linear-gradient(top, #e3e3e3,#eaeaea);
+    background-image: -moz-linear-gradient(top, #e3e3e3,#eaeaea);
+    background-image: -o-linear-gradient(top, #e3e3e3,#eaeaea);
+    background-image: -ms-linear-gradient(top, #e3e3e3,#eaeaea);
+    background-image: linear-gradient(top, #e3e3e3,#eaeaea);
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Toolbar
+ *--------------------------------------------------------------------------*/
+
+	/* Align menu */
+.dv-toolbar-btn-menu {
+	margin-top: 4px;
+}
+
+
+/*----------------------------------------------------------------------------
+ * Button
+ *--------------------------------------------------------------------------*/
+
+.x-btn-arrow {
+	background-image: url('../images/arrow.png') !important;
+}
+
+.x-btn-default-toolbar-small,
+.x-btn-default-toolbar-small-over,
+.x-btn-default-toolbar-small-pressed {
+	border-radius: 1px;
+}
+.x-btn-default-toolbar-small-over,
+.x-btn-default-toolbar-small-pressed {
+	border-color: #bbb;
+}
+
+	/* Chart image */
+.x-btn-default-toolbar-small-icon button {
+    width: 32px !important;
+}
+.x-btn-default-toolbar-small-icon .x-btn-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.x-btn-default-toolbar-small-pressed {
+	border-color: #bbb;
+    background-image: none;
+    background-color: #d6d6d6;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d1d1d1), color-stop(100%, #e5e5e5));
+    background-image: -webkit-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: -moz-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: -o-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: -ms-linear-gradient(top, #d1d1d1,#e5e5e5);
+    background-image: linear-gradient(top, #d1d1d1,#e5e5e5);
+}
+
+
+/*----------------------------------------------------------------------------
+ * Tooltip
+ *--------------------------------------------------------------------------*/
+
+.x-tip {
+    border-radius: 2px;
+    padding: 1px 4px;
+    border: 1px solid #111;
+    background-color: #111;
+}
+
+.x-tip .x-tip-body {
+	font-size: 10px;
+	color: #fff;
+	-webkit-text-stroke: 0.2px #fff;
+}
+
+.x-tip-anchor {
+	border-top-color: #111;
+}
+
+
+/*----------------------------------------------------------------------------
+ * LoadMask
+ *--------------------------------------------------------------------------*/
+
+.x-mask-msg {
+	padding: 0;
+	border: 0 none;
+	background-image: none;
+	background-color: transparent;
+}
+.x-mask-msg .x-mask-loading {
+	border: 0 none;
+	background-color: #000;
+	color: #fff;
+	border-radius: 2px;
+	padding: 10px 9px 10px 25px;
+	opacity: 0.65;
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Grid
  *--------------------------------------------------------------------------*/
 
 .dv-grid-row-icon-edit,
@@ -208,311 +495,10 @@ body {
 	text-decoration: underline;
 }
 
-/* DV menu grid */
 
-.dv-menugrid .x-grid-row .x-grid-cell, .dv-menugrid .x-grid-row-selected .x-grid-cell {
-    border: 0 none;
-    background: #f5f5f5;
-}
-.dv-menugrid .x-grid-row .x-grid-cell-first,
-.dv-menugrid .x-grid-row-selected .x-grid-cell-first,
-.dv-menugrid .x-grid-row .x-grid-cell-last,
-.dv-menugrid .x-grid-row-selected .x-grid-cell-last {
-	border: 0 none;
-}
-
-.dv-menugrid .x-grid-row-over .x-grid-cell {
-    border: 0 none;
-    background-color: #e4e4e4;
-    background-image: none;
-}
-.dv-menugrid .x-grid-row-over .x-grid-cell-first,
-.dv-menugrid .x-grid-row-over .x-grid-cell-last {
-	border: 0 none;
-}
-
-.dv-menugrid .x-grid-row-focused .x-grid-cell-inner {
-	background-color: #f1f1f1;
-}
-.dv-menugrid .x-grid-row-focused .x-grid-cell {
-	border-color: #f1f1f1;
-}
-
-/* Tree panel */
-
-.dv-tree.x-tree-panel .x-grid-row .x-grid-cell-inner { /* node height, font size */
-    height: 17px;
-    font-size: 10px;
-}
-
-.dv-tree .x-grid-row-selected .x-grid-cell,
-.dv-tree .x-grid-row-selected .x-grid-rowwrap-div { /* Selected row background */
-    background-color: #e0e0e0;
-    border-radius: 2px 2px 2px 2px;
-}
-
-.dv-tree .x-grid-cell { /* Hover row background */
-    border-radius: 2px 2px 2px 2px;
-}
-
-/* Multiselect */
-
-.x-fit-item { /* Inner border */
-    border-style: none;
-}
-
-.dv-multiselect {
-    color: #111;
-}
-
-/* Multiselect dock border radius */
-.dv-toolbar-multiselect-left .x-docked-top {
-	border-top-left-radius: 2px;
-}
-
-.dv-toolbar-multiselect-right .x-docked-top {
-	border-top-right-radius: 2px;
-}
-
-/* Multiselect docked bar font size */
-.dv-toolbar-multiselect-left .dv-toolbar-multiselect-left-label {
-    font-size: 11px;
-    padding-left: 6px;
-}
-.dv-toolbar-multiselect-right .dv-toolbar-multiselect-right-label {
-    font-size: 11px;
-    padding-right: 7px;
-}
-
-/* Multiselect boundlist */
-.dv-toolbar-multiselect-left .x-boundlist-item-over {
-    background-color: transparent;
-    border-color: transparent;
-}
-.dv-toolbar-multiselect-left .x-boundlist-selected {
-    background-color: #e5e5e5;
-    border-color: #e5e5e5;
-}
-
-.dv-toolbar-multiselect-right .x-boundlist-item-over {
-    background-color: transparent;
-    border-color: transparent;
-}
-.dv-toolbar-multiselect-right .x-boundlist-selected {
-    background-color: #e5e5e5;
-    border-color: #e5e5e5;
-}
-
-/* Boundlist (multiselect, comboboxlist etc) */
-.x-boundlist-item {
-    color: #333;
-    padding: 3px 2px 3px 4px;
-    font-size: 10px;
-    border: 1px solid transparent;
-}
-.x-boundlist-item-over {
-    background-color: #e1e1e1;
-    border-color: #e1e1e1;
-}
-.x-boundlist-selected {
-    background-color: #d3d3d3;
-    border-color: #d3d3d3;
-}
-
-/* Checkbox */
-
-.x-form-cb-label-after { /* Box label */
-    padding-left: 1px;
-    font-size: 11px;
-}
-
-.dv-checkbox .x-form-item-label {
-    padding-left: 5px;
-}
-.dv-checkbox .x-form-cb-label-after {
-    margin-left: 3px;
-    font-size: 11px;
-}
-
-.x-form-checkbox { /* Icons */
-    background-image: url('../images/checkbox.gif');
-}
-
-/* Toolbar */
-
-.x-toolbar .x-toolbar-separator-horizontal { /* Separator */
-    height: 15px;
-    border-right: 1px solid #f2f2f2;
-}
-
-.x-toolbar-default { /* Background */
-    border-color: #D0D0D0;
-    background-image: none;
-    background-color: #f3f3f3;
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f1f1f1), color-stop(100%, #f5f5f5));
-    background-image: -webkit-linear-gradient(top, #f1f1f1,#f5f5f5);
-    background-image: -moz-linear-gradient(top, #f1f1f1,#f5f5f5);
-    background-image: -o-linear-gradient(top, #f1f1f1,#f5f5f5);
-    background-image: -ms-linear-gradient(top, #f1f1f1,#f5f5f5);
-    background-image: linear-gradient(top, #f1f1f1,#f5f5f5);
-}
-
-.dv-toolbar-btn-menu { /* Align menu */
-	margin-top: 4px;
-}
-
-/* Button */
-
-.x-btn-arrow {
-	background-image: url('../images/arrow.png') !important;
-}
-
-.x-btn-default-toolbar-small,
-.x-btn-default-toolbar-small-over,
-.x-btn-default-toolbar-small-pressed {
-	border-radius: 1px;
-}
-.x-btn-default-toolbar-small-over,
-.x-btn-default-toolbar-small-pressed {
-	border-color: #bbb;
-}
-
-.x-btn-default-toolbar-small-icon button { /* Chart image */
-    width: 32px !important;
-}
-.x-btn-default-toolbar-small-icon .x-btn-icon {
-    width: 32px;
-    height: 32px;
-}
-
-.x-btn-default-toolbar-small-pressed {
-	border-color: #bbb;
-    background-image: none;
-    background-color: #d6d6d6;
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #d1d1d1), color-stop(100%, #e5e5e5));
-    background-image: -webkit-linear-gradient(top, #d1d1d1,#e5e5e5);
-    background-image: -moz-linear-gradient(top, #d1d1d1,#e5e5e5);
-    background-image: -o-linear-gradient(top, #d1d1d1,#e5e5e5);
-    background-image: -ms-linear-gradient(top, #d1d1d1,#e5e5e5);
-    background-image: linear-gradient(top, #d1d1d1,#e5e5e5);
-}
-
-/* Tooltip */
-
-.x-tip {
-    border-radius: 2px;
-    padding: 1px 4px;
-    border: 1px solid #111;
-    background-color: #111;
-}
-
-.x-tip .x-tip-body {
-	font-size: 10px;
-	color: #fff;
-	-webkit-text-stroke: 0.2px #fff;
-}
-
-.x-tip-anchor {
-	border-top-color: #111;
-}
-
-/* Chart tips (tooltip) */
-.x-tip .x-tip-header .x-box-item {
-    text-align: center;
-}
-
-/* Grid datatable column header */
-.x-column-header-inner .x-column-header-text {
-	font-size: 11px;
-}
-
-/* Grid datatable column chooser */
-.x-column-header-over .x-column-header-trigger, .x-column-header-open .x-column-header-trigger {
-    display: none;
-}
-
-/* Toolbar second bar chart settings */
-#chartsettings_tb {
-    background: #f5f5f5;
-    padding: 5px 0 0 8px;
-    border-style: none;
-    border-top: 1px dashed #ccc;
-}
-
-#chartoptions_tb {
-    background: #f5f5f5;
-	height: 100%;
-    padding: 6px 0 0 8px;
-    border-top: 2px ridge #e1e1e1;
-    border-right: 0 none;
-    border-bottom: 1px solid #ccc;
-    border-left: 0 none;
-}
-
-/* Toolbar favorites */
-#favorite_t, #organisationunit_t {
-    border-bottom-width: 1px !important;
-    border-radius: 2px;
-}
-
-/* Menu */
-
-.x-menu-body {
-    border-color: #bbb;
-    border-radius: 2px;
-}
-
-.x-menu-item-active .x-menu-item-link {
-	border-radius: 0;
-	border-color: #e1e1e1;
-	background-color: #e1e1e1;
-	background-image: none;
-}
-.x-menu-body {
-	padding: 0;
-}
-
-/* Treepanel contextmenu */
-#treepanel-contextmenu {
-    border-radius: 2px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #aaa;
-}
-
-/* Menu item */
-.x-menu-item-link {
-    padding: 4px 5px 4px 28px;
-}
-
-/* Menu item color */
-.x-menu-item-text {
-    color: #111;
-}
-
-/* Chart tips */
-.dv-chart-tips, .dv-chart-tips-pie {
-    border-radius: 2px;
-    padding: 1px 4px 2px;
-    border: 2px solid #777;
-    background-color: #f1f1f1;
-}
-.dv-chart-tips-pie {
-    padding: 3px 4px;
-}
-
-.dv-chart-tips .x-tip-body, .dv-chart-tips-pie .x-tip-body {
-    background-color: #f1f1f1;
-    font-size: 13px;
-    font-weight: normal;
-    color: #444;
-	-webkit-text-stroke: 0;
-}
-.dv-chart-tips-pie .x-tip-body {
-	font-size: 13px;
-}
-
-/* Window */
+/*----------------------------------------------------------------------------
+ * DV Window
+ *--------------------------------------------------------------------------*/
 
 .dv-window-title-favorite {
     padding-left: 19px;
@@ -532,8 +518,21 @@ body {
     background-position-y: 1px;
 }
 
-/* Label heading periods */
-.dv-label-period-heading, .dv-label-period-heading-options {
+	/* Confirm list */
+.dv-window-confirm-list .x-panel-body {
+    color: #444;
+    font-size: 10px;
+    border-style: none;
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Label
+ *--------------------------------------------------------------------------*/
+
+	/* Label heading periods */
+.dv-label-period-heading,
+.dv-label-period-heading-options {
     font-size: 11px;
     font-weight: bold;
     color: #333;
@@ -554,38 +553,9 @@ body {
 	line-height: 21px;
 }
 
-/* Grid datatable first row border top */
-.dv-datatable .x-fit-item {
-    border-top: 1px solid #d0d0d0;
-}
-
-.dv-datatable .x-grid-header-ct {
-	border-top: 0 none;
-	border-right: 0 none;
-	border-left: 0 none;
-}
-
-.dv-datatable .x-grid-cell-inner {
-	font-size: 10px;
-}
-
-/* Menu item icon */
-.dv-menu-item-png {
-    background-image:url('../images/png.png');
-    padding-left: 18px;
-}
-
-.dv-menu-item-pdf {
-    background-image:url('../images/pdf.png');
-    padding-left: 18px;
-}
-
-.dv-menu-item-edit {
-    background-image:url('../images/edit.png');
-    padding-left: 18px;
-}
-
-/* Textfield */
+/*----------------------------------------------------------------------------
+ * DV Textfield
+ *--------------------------------------------------------------------------*/
 
 .dv-textfield .x-form-field, .dv-textfield-alt1 .x-form-field {
     height: 26px;
@@ -603,72 +573,52 @@ body {
     line-height: 8px;
 }
 
-/* DV window confirm list */
-.dv-window-confirm-list .x-panel-body {
-    color: #444;
+
+/*----------------------------------------------------------------------------
+ * DV Treepanel
+ *--------------------------------------------------------------------------*/
+
+	/* Node height */
+.dv-tree.x-tree-panel .x-grid-row .x-grid-cell-inner {
+    height: 17px;
     font-size: 10px;
-    border-style: none;
 }
 
-/* Button DV menu toggle group */
-.dv-radiogroup .x-form-cb-wrap {
-    padding-left: 7px;
-}
-.dv-radiogroup .x-form-cb-label-after {
-    padding-left: 2px;
-    font-size: 10px;
-    color: #444;
-}
-.dv-radiogroup .x-form-radio-group {
-    padding-top: 5px;
+	/* Selected row background */
+.dv-tree .x-grid-row-selected .x-grid-cell,
+.dv-tree .x-grid-row-selected .x-grid-rowwrap-div {
+    background-color: #e0e0e0;
+    border-radius: 2px 2px 2px 2px;
 }
 
-/* DV menu grid icon/text position aligned with menuitem */
-.dv-menugrid .x-grid-cell-inner {
-    padding: 4px 3px 4px 6px;
-    font-size: 10px;
-    color: #444;
-    line-height: 16px;
-    height: 23px;
+	/* Hover row background */
+.dv-tree .x-grid-cell {
+    border-radius: 2px 2px 2px 2px;
 }
 
-/* DV menu grid background now looks like a menu */
-.dv-menugrid .x-grid-view {
-    background-color: #f1f1f1;
+	/* Treepanel contextmenu */
+#treepanel-contextmenu {
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ddd;
+}
+.x-menu-item-link {
+	padding: 4px 2px 4px 28px;
 }
 
-/* DV messagebox alert */
-.dv-messagebox .x-window-body-default {
-	background-color: #fff;
-	padding: 14px 10px 15px 15px;
-	color: #333;
-	font-size: 11px;
-}
 
-.dv-messagebox .x-toolbar-footer-docked-bottom {
-	display: none;
-}
+/*----------------------------------------------------------------------------
+ * DV Accordion
+ *--------------------------------------------------------------------------*/
 
-/* DV statusbar */
-.dv-statusbar .x-panel-body-default {
-	padding: 5px 0 0 6px;
-	border: 0 none;
-	background-color: transparent;
-	color: #111;
-	vertical-align: top;
-	font-size: 10px;
-	line-height: 14px;
-}
-
-/* DV accordion */
-.dv-accordion .x-accordion-item .x-accordion-hd, .dv-accordion .dv-accordion-options .x-accordion-hd { /* accordion title bar, shared */
+	/* accordion title bar, shared */
+.dv-accordion .x-accordion-item .x-accordion-hd {
 	padding: 6px 5px 4px 8px;
 	border: 0 none;
 	cursor: pointer;
 	border-top-left-radius: 1px;
 	border-top-right-radius: 1px;
-}
-.dv-accordion .x-accordion-item .x-accordion-hd { /* accordion title dock, default */
     background-image: none;
     background-color: #e0e0e0;
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #dcdcdc), color-stop(100%, #e5e5e5)) !important;
@@ -678,38 +628,34 @@ body {
     background-image: -ms-linear-gradient(top, #dcdcdc, #e5e5e5) !important;
     background-image: linear-gradient(top, #dcdcdc, #e5e5e5) !important;
 }
-.dv-accordion .dv-accordion-options .x-accordion-hd { /* accordion title dock, options */
-    background-image: none;
-    background-color: #d0d0d0;
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #cccccc), color-stop(100%, #d3d3d3)) !important;
-    background-image: -webkit-linear-gradient(top, #cccccc, #d3d3d3) !important;
-    background-image: -moz-linear-gradient(top, #cccccc, #d3d3d3) !important;
-    background-image: -o-linear-gradient(top, #cccccc, #d3d3d3) !important;
-    background-image: -ms-linear-gradient(top, #cccccc, #d3d3d3) !important;
-    background-image: linear-gradient(top, #cccccc, #d3d3d3) !important;
-}
-.dv-accordion .collapsed .x-accordion-hd { /* accordion title dock, default, collapsed */
+	/* accordion title dock, default, collapsed */
+.dv-accordion .collapsed .x-accordion-hd {
 	padding-bottom: 5px !important;
 }
 
-.dv-accordion .x-accordion-item, .dv-accordion-options .x-accordion-item { /* accordion title dock outer, shared */
+	/* accordion title dock outer, shared */
+.dv-accordion .x-accordion-item {
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
 }
-.dv-accordion .x-accordion-item { /* accordion title dock outer, default */
+	/* accordion title dock outer, default */
+.dv-accordion .x-accordion-item {
 	border: 1px solid #c5c5c5;
 	border-bottom: 0 none;
 }
-.dv-accordion .dv-accordion-options { /* accordion title dock outer, options */
-	border: 1px solid #c0c0c0;
+	/* accordion title dock outer, last */
+.dv-accordion .dv-accordion-last {
+	border: 1px solid #c5c5c5;
 }
 
-.dv-accordion .x-accordion-hd .x-panel-header-text { /* accordion title dock text, shared */
+	/* accordion title dock text, shared */
+.dv-accordion .x-accordion-hd .x-panel-header-text {
 	font-weight: bold;
 	cursor: pointer;
 }
 
-.dv-accordion .x-accordion-body { /* accordion item body */
+	/* accordion item body */
+.dv-accordion .x-accordion-body {
 	padding: 2px 2px 0px;
 	border-top: 1px solid #c5c5c5 !important;
 }
@@ -725,16 +671,131 @@ body {
 	margin-bottom: 0;
 }
 
-.dv-accordion .dv-combo .x-form-text, .dv-accordion .dv-combo .x-form-trigger { /* accordion combo box */
+	/* accordion combo box */
+.dv-accordion .dv-combo .x-form-text, .dv-accordion .dv-combo .x-form-trigger {
 	height: 24px;
 	padding-top: 1px;
 }
-.dv-accordion .dv-combo .x-form-item-label { /* accordion combo box label */
+	/* accordion combo box label */
+.dv-accordion .dv-combo .x-form-item-label {
 	padding: 4px 0 0;
 }
 
-/* DV textarea */
+
+/*----------------------------------------------------------------------------
+ * DV Textarea
+ *--------------------------------------------------------------------------*/
 
 .dv-textarea .x-form-field {
 	font-size: 11px;
 }
+
+
+/*----------------------------------------------------------------------------
+ * DV Tips
+ *--------------------------------------------------------------------------*/
+
+.dv-chart-tips {
+    border-radius: 2px;
+    padding: 1px 4px 2px;
+    border: 2px solid #777;
+    background-color: #f1f1f1;
+}
+
+.dv-chart-tips .x-tip-body {
+    background-color: #f1f1f1;
+    font-size: 13px;
+    font-weight: normal;
+    color: #444;
+	-webkit-text-stroke: 0;
+}
+
+
+/*----------------------------------------------------------------------------
+ * Menu
+ *--------------------------------------------------------------------------*/
+
+.x-menu-body {
+    border-color: #bbb;
+    border-radius: 2px;
+}
+
+.x-menu-item-active .x-menu-item-link {
+	border-radius: 0;
+	border-color: #e1e1e1;
+	background-color: #e1e1e1;
+	background-image: none;
+}
+.x-menu-body {
+	padding: 0;
+}
+
+	/* Menu item */
+.x-menu-item-link {
+    padding: 4px 5px 4px 28px;
+}
+	/* Menu item color */
+.x-menu-item-text {
+    color: #111;
+}
+
+
+/*----------------------------------------------------------------------------
+ * DV Menu
+ *--------------------------------------------------------------------------*/
+
+	/* Menu item icon */
+.dv-menu-item-data {
+    background-image:url('../images/pdf.png');
+    padding-left: 18px;
+}
+.dv-menu-item-image {
+    background-image:url('../images/png.png');
+    padding-left: 18px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.DhisSpringTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class LocationManagerTest
     extends DhisSpringTest
-{    
+{
+    private static final Log log = LogFactory.getLog( LocationManagerTest.class );
+    
     private InputStream in;
     
     private OutputStream out;
@@ -111,7 +115,7 @@ public class LocationManagerTest
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set or the file does not exist" );
+            log.debug( "External directory not set or the file does not exist" );
         }
                 
         try
@@ -139,11 +143,11 @@ public class LocationManagerTest
             
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "File for reading: " + file.getAbsolutePath() );
+            log.debug( "File for reading: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set or the file does not exist" );
+            log.debug( "External directory not set or the file does not exist" );
         }
         
         try
@@ -167,11 +171,11 @@ public class LocationManagerTest
 
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "File for reading with dirs: " + file.getAbsolutePath() );
+            log.debug( "File for reading with dirs: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set or the file does not exist" );
+            log.debug( "External directory not set or the file does not exist" );
         }
                 
         try
@@ -192,11 +196,11 @@ public class LocationManagerTest
         {
             File dir = locationManager.buildDirectory( "test", "dir" );
             
-            System.out.println( "Built directory: " + dir.getAbsolutePath() );
+            log.debug( "Built directory: " + dir.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -215,7 +219,7 @@ public class LocationManagerTest
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -230,7 +234,7 @@ public class LocationManagerTest
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -247,11 +251,11 @@ public class LocationManagerTest
             
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "File for writing: " + file.getAbsolutePath() );
+            log.debug( "File for writing: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
         
         try
@@ -260,11 +264,11 @@ public class LocationManagerTest
             
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "File for writing which does not exist: " + file.getAbsolutePath() );
+            log.debug( "File for writing which does not exist: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -277,11 +281,11 @@ public class LocationManagerTest
             
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "File for writing with dirs: " + file.getAbsolutePath() );
+            log.debug( "File for writing with dirs: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
         
         try
@@ -290,11 +294,11 @@ public class LocationManagerTest
             
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "File for writing with dirs which does not exist: " + file.getAbsolutePath() );
+            log.debug( "File for writing with dirs which does not exist: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -311,11 +315,11 @@ public class LocationManagerTest
 
             assertTrue( file.getAbsolutePath().length() > 0 );
             
-            System.out.println( "External directory: " + file.getAbsolutePath() );
+            log.debug( "External directory: " + file.getAbsolutePath() );
         }
         catch ( LocationManagerException ex )
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -326,11 +330,11 @@ public class LocationManagerTest
         
         if ( set )
         {
-            System.out.println( "External directory set" );
+            log.debug( "External directory set" );
         }
         else
         {
-            System.out.println( "External directory not set" );
+            log.debug( "External directory not set" );
         }
     }
 
@@ -339,6 +343,6 @@ public class LocationManagerTest
     {
         String env = locationManager.getEnvironmentVariable();
         
-        System.out.println( "Environment variable: " + env );
+        log.debug( "Environment variable: " + env );
     }
 }

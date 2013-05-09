@@ -1,8 +1,8 @@
 #set($oucSize = $currentUser.getOrganisationUnit().getSortedChildren().size()){
 "contextPath":"$!{contextPath}",
-"user":{"id":"$!currentUser.id","name":"$currentUser.name","isAdmin":$auth.hasAccess( "dhis-web-visualizer", "addOrUpdateSystemChart" ),
+"user":{"id":"$!currentUser.uid","name":"$currentUser.name","isAdmin":true,
 "ou":{"id":"$currentUser.getOrganisationUnit().uid","name":"$currentUser.getOrganisationUnit().name"},
 "ouc":[#foreach($ou in $currentUser.getOrganisationUnit().getSortedChildren()){"id":"$ou.uid","name":"$ou.name"}#if($velocityCount < $oucSize),#end#end]},
-"system":{"rn":[#foreach($rn in $rootNodes)["$!{rn.uid}","$!encoder.jsonEncode(${rn.name})"]#if($velocityCount<$rootNodes.size()),#end#end],
-"ougs":{#foreach($ougs in $organisationUnitGroupSets)"$!{ougs.uid}":[#foreach($oug in $ougs.getSortedGroups()){"id":"$!{oug.uid}","name":"$!encoder.jsonEncode($!{oug.name})"}#if($velocityCount<$ougs.getSortedGroups().size()),#end#end]#if($velocityCount<$organisationUnitGroupSets.size()),#end#end}}
+"rootNodes":[#foreach($node in $rootNodes){"id": "$!{node.uid}","text": "$!encoder.jsonEncode( ${node.name} )","level": 1,"hasChildrenWithCoordinates": $!{node.hasChildrenWithCoordinates()},"expanded": true}#if($velocityCount<$rootNodes.size()),#end#end],
+"dimensions":[#foreach($dim in $dimensions){"id":"$!{dim.uid}","name":"$!encoder.jsonEncode($!{dim.name})"}#if($velocityCount<$dimensions.size()),#end#end]							
 }

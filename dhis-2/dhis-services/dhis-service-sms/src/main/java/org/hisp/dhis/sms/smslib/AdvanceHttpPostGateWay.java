@@ -47,7 +47,6 @@ import org.smslib.helper.Logger;
 public class AdvanceHttpPostGateWay
     extends AGateway
 {
-
     private static final String SENDER = "sender";
 
     private static final String RECIPIENT = "recipient";

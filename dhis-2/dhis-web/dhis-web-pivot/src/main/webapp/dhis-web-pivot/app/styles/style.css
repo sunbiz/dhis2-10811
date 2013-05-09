@@ -29,8 +29,6 @@
  * PT Label
  * PT Textfield
  * PT Treepanel
- * PT Radiogroup
- * PT Messagebox
  * PT Statusbar
  * PT Accordion
  * PT Textarea
@@ -133,10 +131,6 @@ body.x-windows {
 
 .td-collapsed {
 	display: none;
-}
-
-.opacity-50 {
-	opacity: 0.5;
 }
 
 /*----------------------------------------------------------------------------
@@ -760,39 +754,6 @@ td .bad div {
     border-width: 1px;
     border-style: solid;
     border-color: #ddd;
-}
-
-
-/*----------------------------------------------------------------------------
- * PT Radiogroup
- *--------------------------------------------------------------------------*/
-
-.pt-radiogroup .x-form-cb-wrap {
-    padding-left: 7px;
-}
-.pt-radiogroup .x-form-cb-label-after {
-    padding-left: 2px;
-    font-size: 10px;
-    color: #444;
-}
-.pt-radiogroup .x-form-radio-group {
-    padding-top: 5px;
-}
-
-
-/*----------------------------------------------------------------------------
- * PT Messagebox
- *--------------------------------------------------------------------------*/
-
-.pt-messagebox .x-window-body-default {
-	background-color: #fff;
-	padding: 14px 10px 15px 15px;
-	color: #333;
-	font-size: 11px;
-}
-
-.pt-messagebox .x-toolbar-footer-docked-bottom {
-	display: none;
 }
 
 

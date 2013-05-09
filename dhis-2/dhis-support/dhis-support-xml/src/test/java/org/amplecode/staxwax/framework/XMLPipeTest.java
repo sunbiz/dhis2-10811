@@ -1,6 +1,5 @@
 package org.amplecode.staxwax.framework;
 
-
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,19 +39,23 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- *
+ * 
  * @author bobj
  * @version created 15-Jan-2010
  */
-public class XMLPipeTest extends TestCase
+public class XMLPipeTest
+    extends TestCase
 {
 
     private InputStream inputStreamB;
+
     private InputStream inputStreamDXF;
+
     private InputStream inputStreamDXFcopy;
 
     @Override
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -70,7 +73,8 @@ public class XMLPipeTest extends TestCase
         inputStreamDXFcopy.close();
     }
 
-    public synchronized void testReadWrite() throws XMLStreamException
+    public synchronized void testReadWrite()
+        throws XMLStreamException
     {
         XMLPipe pipe = new XMLPipe();
         XMLEventWriter pipeinput = pipe.getInput();
@@ -83,12 +87,13 @@ public class XMLPipeTest extends TestCase
         {
             events1++;
             XMLEvent ev = reader.nextEvent();
-            // System.out.println( "Got an event " + ev.toString() );
             pipeinput.add( ev );
         }
 
-        // XMLOutputFactory2 factory = (XMLOutputFactory2) XMLOutputFactory.newInstance();
-        // XMLEventWriter stdoutWriter = factory.createXMLEventWriter( System.out );
+        // XMLOutputFactory2 factory = (XMLOutputFactory2)
+        // XMLOutputFactory.newInstance();
+        // XMLEventWriter stdoutWriter = factory.createXMLEventWriter(
+        // System.out );
 
         // read the other end of the pipe
         int events2 = 0;
@@ -100,11 +105,10 @@ public class XMLPipeTest extends TestCase
         }
 
         assertEquals( "Number of events in and out of pipe", events1, events2 );
-        System.out.println( "Number of events : " + events1 );
-
     }
 
-    public void testReadWriteContents() throws XMLStreamException
+    public void testReadWriteContents()
+        throws XMLStreamException
     {
         XMLPipe pipe = new XMLPipe();
         XMLEventWriter pipeinput = pipe.getInput();
@@ -125,20 +129,22 @@ public class XMLPipeTest extends TestCase
         {
             XMLEvent ev = pipeoutput.nextEvent();
             XMLEvent evCopy = dxfCopy.nextEvent();
-            assertEquals(ev.getEventType(), evCopy.getEventType());
-            if (ev.isCharacters()) {
-                assertEquals(ev.asCharacters().getData(), evCopy.asCharacters().getData());
+            assertEquals( ev.getEventType(), evCopy.getEventType() );
+            if ( ev.isCharacters() )
+            {
+                assertEquals( ev.asCharacters().getData(), evCopy.asCharacters().getData() );
             }
-            
+
         }
 
     }
 
-    public synchronized void testMTReadWrite() throws XMLStreamException
+    public synchronized void testMTReadWrite()
     {
 
         // Create a thread to write one end of the pipe
-        class Writer implements Runnable
+        class Writer
+            implements Runnable
         {
 
             protected XMLPipe pipe;
@@ -156,14 +162,13 @@ public class XMLPipeTest extends TestCase
                 {
                     XMLEventReader reader = XMLFactory.getXMLEventReader( inputStreamB ).getXmlEventReader();
 
-                    int events1 = 0;
                     while ( reader.hasNext() )
                     {
-                        events1++;
                         XMLEvent ev = reader.nextEvent();
                         pipe.getInput().add( ev );
                     }
-                } catch ( Exception ex )
+                }
+                catch ( Exception ex )
                 {
                     assertTrue( ex.getMessage(), false );
                 }
@@ -171,8 +176,8 @@ public class XMLPipeTest extends TestCase
             }
         }
 
-
-        class Reader implements Runnable
+        class Reader
+            implements Runnable
         {
 
             protected XMLPipe pipe;
@@ -188,10 +193,6 @@ public class XMLPipeTest extends TestCase
 
                 try
                 {
-//                    XMLOutputFactory2 factory = (XMLOutputFactory2) XMLOutputFactory.newInstance();
-//                    XMLEventWriter stdoutWriter = factory.createXMLEventWriter( System.out );
-
-
                     int events1 = 0;
                     XMLEvent ev = null;
 
@@ -199,13 +200,13 @@ public class XMLPipeTest extends TestCase
                     {
                         events1++;
                         ev = pipe.output.nextEvent();
-//                        stdoutWriter.add( ev );
                     }
                     while ( !ev.isEndDocument() );
 
                     assertEquals( "Number of events in and out of pipe", 80, events1 );
 
-                } catch ( Exception ex )
+                }
+                catch ( Exception ex )
                 {
                     assertTrue( ex.getMessage(), false );
                 }
@@ -218,11 +219,11 @@ public class XMLPipeTest extends TestCase
         XMLPipe pipe = new XMLPipe();
         w.setPipe( pipe );
 
-        // take a nap ...
         try
         {
             Thread.sleep( 1000 );
-        } catch ( InterruptedException ex )
+        }
+        catch ( InterruptedException ex )
         {
             Logger.getLogger( XMLPipeTest.class.getName() ).log( Level.SEVERE, null, ex );
         }

@@ -58,21 +58,10 @@ public class ExportImageAction
     private static final String TYPE_PNG = "png";
 
     private static final String TYPE_PDF = "pdf";
-
-    private static final String doctype = "<?xml version='1.0' encoding='UTF-8'?>"
-        + "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\" ["
-        + "<!ATTLIST svg xmlns:attrib CDATA #IMPLIED> <!ATTLIST path attrib:divname CDATA #IMPLIED>]>";
-
+    
     // -------------------------------------------------------------------------
     // Output & input
     // -------------------------------------------------------------------------
-
-    private String title;
-
-    public void setTitle( String title )
-    {
-        this.title = title;
-    }
 
     private String svg;
 
@@ -87,6 +76,13 @@ public class ExportImageAction
     {
         this.type = type;
     }
+    
+    private String name;
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
 
     @Override
     protected String execute( HttpServletResponse response, OutputStream out )
@@ -96,11 +92,11 @@ public class ExportImageAction
         {
             if ( type == null || TYPE_PNG.equals( type ) )
             {
-                convertToPNG( new StringBuffer( doctype + svg ), out );
+                convertToPNG( new StringBuffer( svg ), out );
             }
             else if ( TYPE_PDF.equals( type ) )
             {
-                convertToPDF( new StringBuffer( doctype + svg ), out );
+                convertToPDF( new StringBuffer( svg ), out );
             }
         }
         else
@@ -148,7 +144,7 @@ public class ExportImageAction
     @Override
     protected String getFilename()
     {
-        String t = title != null ? CodecUtils.filenameEncode( title ) : "";
+        String t = name != null ? CodecUtils.filenameEncode( name ) : "";
 
         return "dhis2_chart_" + t + "." + CodecUtils.filenameEncode( type );
     }

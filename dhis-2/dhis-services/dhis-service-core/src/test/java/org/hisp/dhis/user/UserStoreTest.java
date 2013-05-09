@@ -181,8 +181,6 @@ public class UserStoreTest
         assertEquals( userCredentialsStore.getUserCredentials( user ).getPassword(), iloveyou );
 
         // Test getUserCredentialsByUsername
-        // System.out.println( userStore.getUserCredentialsByUsername( someone
-        // ).getPassword() );
         assertEquals( userCredentialsStore.getUserCredentialsByUsername( someone ).getPassword(), userCredentials.getPassword() );
         assertEquals( userCredentialsStore.getUserCredentialsByUsername( someone ).getClass(), userCredentials.getClass() );
 
@@ -219,9 +217,7 @@ public class UserStoreTest
 
         // Test updateUserSetting
         userSetting.setValue( value1 );
-        // System.out.println( userSetting.getName() );
         userCredentialsStore.updateUserSetting( userSetting );
-        // System.out.println( userSetting.getName() );
         assertEquals( value1, userCredentialsStore.getUserSetting( user, name ).getValue() );
 
         // Test getUserSetting
@@ -233,7 +229,6 @@ public class UserStoreTest
         assertEquals( userCredentialsStore.getAllUserSettings( user ).size(), 1 );
         for ( int i = 1; i <= userCredentialsStore.getAllUserSettings( user ).size(); i++ )
         {
-            // System.out.println( "UserSettings" + i );
             assertEquals( userCredentialsStore.getUserSetting( user, name ).getValue(), "value" + i );
         }
 

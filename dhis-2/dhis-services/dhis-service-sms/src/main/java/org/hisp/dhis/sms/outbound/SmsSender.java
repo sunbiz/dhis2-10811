@@ -24,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.hisp.dhis.sms.outbound;
 
 import java.util.HashSet;
@@ -85,7 +86,7 @@ public class SmsSender
 
         String gatewayId = transportService.getDefaultGateway();
 
-        if ( gatewayId != null || gatewayId.trim().length() != 0 )
+        if ( gatewayId != null && !gatewayId.trim().isEmpty() )
         {
             boolean sendSMSNotification = false;
             for ( User user : users )
@@ -146,7 +147,7 @@ public class SmsSender
 
         text = "From " + name + subject + ": " + text;
 
-        // Simplistic cutoff 160 characters..
+        // Simplistic cutoff 160 characters
         int length = text.length();
 
         return (length > 160) ? text.substring( 0, 157 ) + "..." : text;
@@ -183,7 +184,5 @@ public class SmsSender
         {
             log.warn( "Unable to send message through sms: " + sms, e );
         }
-
     }
-
 }

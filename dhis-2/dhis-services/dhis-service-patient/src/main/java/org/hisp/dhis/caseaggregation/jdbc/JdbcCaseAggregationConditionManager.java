@@ -343,7 +343,7 @@ public class JdbcCaseAggregationConditionManager
         }
 
         sql = sql.replaceAll( "COMBINE", "" );
-        System.out.println( "\n\n ==== \n " + sql );
+        
         return sql;
     }
 

@@ -177,7 +177,9 @@ Ext.onReady( function() {
 				col: [],
 				row: [],
 				filter: [],
-				objects: []
+				objects: [],
+				userOrganisationUnit: false,
+				userOrganisationUnitChildren: false
 			};
 
 			getData = function() {
@@ -280,9 +282,9 @@ Ext.onReady( function() {
 			},
 			listeners: {
 				load: function(s) {
-					s.each( function(r) {
-						r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
-					});
+					//s.each( function(r) {
+						//r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
+					//});
 					pt.util.store.addToStorage(s);
 					pt.util.multiselect.filterAvailable({store: s}, {store: store.indicatorSelected});
 				}
@@ -310,9 +312,9 @@ Ext.onReady( function() {
 			},
 			listeners: {
 				load: function(s) {
-					s.each( function(r) {
-						r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
-					});
+					//s.each( function(r) {
+						//r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
+					//});
 					pt.util.store.addToStorage(s);
 					pt.util.multiselect.filterAvailable({store: s}, {store: store.dataElementSelected});
 				}
@@ -342,9 +344,9 @@ Ext.onReady( function() {
 			listeners: {
 				load: function(s) {
 					this.isLoaded = true;
-					s.each( function(r) {
-						r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
-					});
+					//s.each( function(r) {
+						//r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
+					//});
 					pt.util.store.addToStorage(s);
 					pt.util.multiselect.filterAvailable({store: s}, {store: store.dataSetSelected});
 				}
@@ -3082,9 +3084,9 @@ Ext.onReady( function() {
 					},
 					listeners: {
 						load: function(s, node, r) {
-							for (var i = 0; i < r.length; i++) {
-								r[i].data.text = pt.conf.util.jsonEncodeString(r[i].data.text);
-							}
+							//for (var i = 0; i < r.length; i++) {
+								//r[i].data.text = pt.conf.util.jsonEncodeString(r[i].data.text);
+							//}
 						}
 					}
 				}),
@@ -3228,9 +3230,9 @@ Ext.onReady( function() {
 						listeners: {
 							load: function(s) {
 								s.isLoaded = true;
-								s.each( function(r) {
-									r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
-								});
+								//s.each( function(r) {
+									//r.data.name = pt.conf.util.jsonEncodeString(r.data.name);
+								//});
 								pt.util.store.addToStorage(s);
 							}
 						}
@@ -3477,7 +3479,7 @@ Ext.onReady( function() {
 				}
 
 				if (layout) {
-					pt.util.pivot.getTable(layout, pt);
+					pt.util.pivot.createTable(layout, pt);
 				}
 			};
 
@@ -3661,7 +3663,7 @@ Ext.onReady( function() {
 						{
 							xtype: 'tbseparator',
 							height: 18,
-							style: 'border-color: transparent #d1d1d1 transparent transparent; margin-right: 4px',
+							style: 'border-color:transparent; border-right-color:#d1d1d1; margin-right:4px',
 						},
 						favoriteButton,
 						downloadButton,
@@ -3688,7 +3690,7 @@ Ext.onReady( function() {
 						{
 							xtype: 'tbseparator',
 							height: 18,
-							style: 'border-color: transparent #d1d1d1 transparent transparent; margin-right: 6px; margin-left: 3px',
+							style: 'border-color:transparent; border-right-color:#d1d1d1; margin-right:4px',
 						},
                         {
                             xtype: 'button',

@@ -261,8 +261,6 @@ public class XMLWriterTest
                 int c1 = read( in1 );
                 int c2 = read( in2 );
 
-                // Debug: System.out.println( "'" + (char)c1 + "' '" + (char)c2 + "'" );
-                
                 if ( c1 == -1 && c2 == -1 )
                 {
                     return true;
