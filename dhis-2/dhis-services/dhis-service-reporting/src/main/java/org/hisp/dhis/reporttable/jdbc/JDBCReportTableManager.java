@@ -90,16 +90,8 @@ public class JDBCReportTableManager
     
     public Map<String, Double> getAggregatedValueMap( Chart chart )
     {
-        if ( chart.isOrganisationUnitGroupBased() )
-        {
-            return getAggregatedValueMapOrgUnitGroups( chart.getDataElements(), chart.getIndicators(),
-                chart.getAllPeriods(), chart.getOrganisationUnitGroupSet().getOrganisationUnitGroups(), chart.getFirstOrganisationUnit(), null, false, false );
-        }
-        else
-        {
-            return getAggregatedValueMapOrgUnitHierarchy( chart.getDataElements(), chart.getIndicators(), chart.getDataSets(),
-                chart.getAllPeriods(), chart.getAllOrganisationUnits(), null, false, false );
-        }
+        return getAggregatedValueMapOrgUnitHierarchy( chart.getDataElements(), chart.getIndicators(), chart.getDataSets(),
+            chart.getAllPeriods(), chart.getAllOrganisationUnits(), null, false, false );
     }
 
     // -------------------------------------------------------------------------

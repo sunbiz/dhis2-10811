@@ -39,6 +39,7 @@ import java.util.Set;
 import org.hisp.dhis.aggregation.AggregatedDataValueService;
 import org.hisp.dhis.aggregation.AggregatedOrgUnitDataValueService;
 import org.hisp.dhis.chart.Chart;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.concept.Concept;
 import org.hisp.dhis.constant.Constant;
 import org.hisp.dhis.constant.ConstantService;
@@ -851,7 +852,7 @@ public abstract class DhisConvenienceTest
         chart.setIndicators( indicators );
         chart.setPeriods( periods );
         chart.setOrganisationUnits( units );
-        chart.setDimensions( Chart.DIMENSION_DATA, Chart.DIMENSION_PERIOD, Chart.DIMENSION_ORGANISATIONUNIT );
+        chart.setDimensions( DimensionalObject.DATA_X_DIM_ID, DimensionalObject.PERIOD_DIM_ID, DimensionalObject.ORGUNIT_DIM_ID );
 
         return chart;
     }

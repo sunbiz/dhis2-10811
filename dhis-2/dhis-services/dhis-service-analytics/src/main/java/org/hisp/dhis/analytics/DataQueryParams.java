@@ -28,9 +28,9 @@ package org.hisp.dhis.analytics;
  */
 
 import static org.hisp.dhis.analytics.AggregationType.AVERAGE_INT_DISAGGREGATION;
-import static org.hisp.dhis.analytics.DimensionType.DATASET;
-import static org.hisp.dhis.analytics.DimensionType.ORGANISATIONUNIT;
-import static org.hisp.dhis.analytics.DimensionType.ORGANISATIONUNIT_GROUPSET;
+import static org.hisp.dhis.common.DimensionType.DATASET;
+import static org.hisp.dhis.common.DimensionType.ORGANISATIONUNIT;
+import static org.hisp.dhis.common.DimensionType.ORGANISATIONUNIT_GROUPSET;
 import static org.hisp.dhis.common.DimensionalObject.CATEGORYOPTIONCOMBO_DIM_ID;
 import static org.hisp.dhis.common.DimensionalObject.DATAELEMENT_DIM_ID;
 import static org.hisp.dhis.common.DimensionalObject.DATASET_DIM_ID;
@@ -54,6 +54,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.hisp.dhis.common.CombinationGenerator;
+import org.hisp.dhis.common.DimensionType;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataelement.DataElementCategory;

@@ -101,6 +101,7 @@ public class Period
         this.endDate = endDate;
     }
 
+    @Deprecated
     public Period( String externalId )
     {
         final String[] id = externalId.split( SEPARATOR );

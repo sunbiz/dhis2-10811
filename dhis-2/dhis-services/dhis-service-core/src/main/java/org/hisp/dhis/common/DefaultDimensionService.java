@@ -28,13 +28,13 @@ package org.hisp.dhis.common;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hisp.dhis.dataelement.DataElementCategory;
-import org.hisp.dhis.dataelement.DataElementCategoryService;
 import org.hisp.dhis.dataelement.DataElementGroupSet;
-import org.hisp.dhis.dataelement.DataElementService;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,32 +45,26 @@ public class DefaultDimensionService
     implements DimensionService
 {
     @Autowired
-    private DataElementService dataElementService;
-    
-    @Autowired
-    private OrganisationUnitGroupService organisationUnitGroupService;
-    
-    @Autowired
-    private DataElementCategoryService categoryService;
+    private IdentifiableObjectManager identifiableObjectManager;
     
     @Override
     public DimensionalObject getDimension( String uid )
-    {
-        DataElementGroupSet degs = dataElementService.getDataElementGroupSet( uid );
+    {        
+        DataElementGroupSet degs = identifiableObjectManager.get( DataElementGroupSet.class, uid );
         
         if ( degs != null )
         {
             return degs;
         }
         
-        OrganisationUnitGroupSet ougs = organisationUnitGroupService.getOrganisationUnitGroupSet( uid );
+        OrganisationUnitGroupSet ougs = identifiableObjectManager.get( OrganisationUnitGroupSet.class, uid );
         
         if ( ougs != null )
         {
             return ougs;
         }
         
-        DataElementCategory cat = categoryService.getDataElementCategory( uid );
+        DataElementCategory cat = identifiableObjectManager.get( DataElementCategory.class, uid );
         
         if ( cat != null )
         {
@@ -79,15 +73,55 @@ public class DefaultDimensionService
         
         return null;
     }
+    
+    public DimensionType getDimensionType( String uid )
+    {
+        DataElementGroupSet degs = identifiableObjectManager.get( DataElementGroupSet.class, uid );
+        
+        if ( degs != null )
+        {
+            return DimensionType.DATAELEMENT_GROUPSET;
+        }
+        
+        OrganisationUnitGroupSet ougs = identifiableObjectManager.get( OrganisationUnitGroupSet.class, uid );
+        
+        if ( ougs != null )
+        {
+            return DimensionType.ORGANISATIONUNIT_GROUPSET;
+        }
+        
+        DataElementCategory cat = identifiableObjectManager.get( DataElementCategory.class, uid );
+        
+        if ( cat != null )
+        {
+            return DimensionType.CATEGORY;
+        }
 
+        final Map<String, DimensionType> dimObjectTypeMap = new HashMap<String, DimensionType>();
+        
+        dimObjectTypeMap.put( DimensionalObject.DATA_X_DIM_ID, DimensionType.DATA_X );
+        dimObjectTypeMap.put( DimensionalObject.INDICATOR_DIM_ID, DimensionType.INDICATOR );
+        dimObjectTypeMap.put( DimensionalObject.DATAELEMENT_DIM_ID, DimensionType.DATAELEMENT );
+        dimObjectTypeMap.put( DimensionalObject.DATASET_DIM_ID, DimensionType.DATASET );
+        dimObjectTypeMap.put( DimensionalObject.DATAELEMENT_OPERAND_ID, DimensionType.DATAELEMENT_OPERAND );
+        dimObjectTypeMap.put( DimensionalObject.PERIOD_DIM_ID, DimensionType.PERIOD );
+        dimObjectTypeMap.put( DimensionalObject.ORGUNIT_DIM_ID, DimensionType.ORGANISATIONUNIT );
+        
+        return dimObjectTypeMap.get( uid );
+    }
+    
     @Override
     public List<DimensionalObject> getAllDimensions()
     {
-        List<DimensionalObject> dimensions = new ArrayList<DimensionalObject>();
+        Collection<DataElementGroupSet> degs = identifiableObjectManager.getAll( DataElementGroupSet.class );
+        Collection<OrganisationUnitGroupSet> ougs = identifiableObjectManager.getAll( OrganisationUnitGroupSet.class );
+        Collection<DataElementCategory> dcs = identifiableObjectManager.getAll( DataElementCategory.class );
+
+        final List<DimensionalObject> dimensions = new ArrayList<DimensionalObject>();
         
-        dimensions.addAll( dataElementService.getAllDataElementGroupSets() );
-        dimensions.addAll( organisationUnitGroupService.getAllOrganisationUnitGroupSets() );
-        dimensions.addAll( categoryService.getDataDimensionDataElementCategories() );
+        dimensions.addAll( degs );
+        dimensions.addAll( ougs );
+        dimensions.addAll( dcs );
         
         return dimensions;
     }

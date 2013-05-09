@@ -333,6 +333,7 @@ public class TableAlteror
         executeSql( "ALTER TABLE chart DROP COLUMN last12individualmonths" );
         executeSql( "ALTER TABLE chart DROP COLUMN individualmonthsthisyear" );
         executeSql( "ALTER TABLE chart DROP COLUMN individualquartersthisyear" );
+        executeSql( "ALTER TABLE chart DROP COLUMN organisationunitgroupsetid" );
 
         // remove source
 
@@ -458,9 +459,19 @@ public class TableAlteror
         executeSql( "update chart set userorganisationunitchildren = false where userorganisationunitchildren is null" );
         executeSql( "update chart set userorganisationunit = false where userorganisationunit is null" );
         
+        executeSql( "update chart set series = 'dx' where series = 'data'" );
+        executeSql( "update chart set series = 'pe' where series = 'period'" );
+        executeSql( "update chart set series = 'ou' where series = 'organisationunit'" );
+        executeSql( "update chart set category = 'dx' where category = 'data'" );
+        executeSql( "update chart set category = 'pe' where category = 'period'" );
+        executeSql( "update chart set category = 'ou' where category = 'organisationunit'" );
+        executeSql( "update chart_filters set filter = 'dx' where filter = 'data'" );
+        executeSql( "update chart_filters set filter = 'pe' where filter = 'period'" );
+        executeSql( "update chart_filters set filter = 'ou' where filter = 'organisationunit'" );
+        
         executeSql( "insert into chart_filters (chartid, sort_order, filter) select chartid, 0, filter from chart" );
         executeSql( "alter table chart drop column filter" );
-        
+                
         executeSql( "update users set selfregistered = false where selfregistered is null" );
         executeSql( "update users set disabled = false where disabled is null" );
         executeSql( "update dataentryform set format = 1 where format is null" );

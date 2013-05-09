@@ -1680,6 +1680,18 @@ public class ReportTable
         this.categoryOptionCombos = categoryOptionCombos;
     }
 
+    @JsonProperty
+    @JsonView({ DetailedView.class, ExportView.class })
+    public Map<String, String> getParentGraphMap()
+    {
+        return parentGraphMap;
+    }
+
+    public void setParentGraphMap( Map<String, String> parentGraphMap )
+    {
+        this.parentGraphMap = parentGraphMap;
+    }
+
     @Override
     public void mergeWith( IdentifiableObject other )
     {
@@ -1735,17 +1747,5 @@ public class ReportTable
             removeAllFilterDimensions();
             filterDimensions.addAll( reportTable.getFilterDimensions() );
         }
-    }
-
-    @JsonProperty
-    @JsonView({ DetailedView.class, ExportView.class })
-    public Map<String, String> getParentGraphMap()
-    {
-        return parentGraphMap;
-    }
-
-    public void setParentGraphMap( Map<String, String> parentGraphMap )
-    {
-        this.parentGraphMap = parentGraphMap;
     }
 }

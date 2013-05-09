@@ -30,6 +30,7 @@ package org.hisp.dhis.analytics;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hisp.dhis.common.DimensionType;
 import org.hisp.dhis.common.IdentifiableObject;
 
 /**

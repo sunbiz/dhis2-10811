@@ -65,7 +65,7 @@ import org.hisp.dhis.analytics.AnalyticsService;
 import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.analytics.Dimension;
 import org.hisp.dhis.analytics.DimensionItem;
-import org.hisp.dhis.analytics.DimensionType;
+import org.hisp.dhis.common.DimensionType;
 import org.hisp.dhis.analytics.IllegalQueryException;
 import org.hisp.dhis.analytics.QueryPlanner;
 import org.hisp.dhis.common.Grid;

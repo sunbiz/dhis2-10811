@@ -27,28 +27,44 @@ package org.hisp.dhis.chart;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.common.DimensionalObject.DATAELEMENT_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.DATASET_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.DATA_X_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.INDICATOR_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.ORGUNIT_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.PERIOD_DIM_ID;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hisp.dhis.common.BaseDimensionalObject;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.BaseNameableObject;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.DxfNamespaces;
 import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.common.NameableObject;
 import org.hisp.dhis.common.adapter.JacksonPeriodDeserializer;
 import org.hisp.dhis.common.adapter.JacksonPeriodSerializer;
 import org.hisp.dhis.common.annotation.Scanned;
 import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.common.view.DimensionalView;
 import org.hisp.dhis.common.view.ExportView;
 import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
+import org.hisp.dhis.period.ConfigurablePeriod;
 import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.RelativePeriodEnum;
 import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.period.comparator.AscendingPeriodEndDateComparator;
 
@@ -83,10 +99,6 @@ public class Chart
     public static final String TYPE_LINE = "line";
     public static final String TYPE_AREA = "area";
     public static final String TYPE_PIE = "pie";
-
-    public static final String DIMENSION_DATA = "data";
-    public static final String DIMENSION_PERIOD = "period";
-    public static final String DIMENSION_ORGANISATIONUNIT = "organisationunit";
 
     private String domainAxisLabel;
 
@@ -131,6 +143,12 @@ public class Chart
     
     private RelativePeriods relatives;
 
+    @Scanned
+    private List<DataElementGroup> dataElementGroups = new ArrayList<DataElementGroup>();
+
+    @Scanned
+    private List<OrganisationUnitGroup> organisationUnitGroups = new ArrayList<OrganisationUnitGroup>();
+
     private boolean userOrganisationUnit;
 
     private boolean userOrganisationUnitChildren;
@@ -138,8 +156,6 @@ public class Chart
     private boolean showData;
 
     private boolean rewindRelativePeriods;
-
-    private OrganisationUnitGroupSet organisationUnitGroupSet;
 
     // -------------------------------------------------------------------------
     // Transient properties
@@ -151,6 +167,18 @@ public class Chart
 
     private transient List<OrganisationUnit> relativeOrganisationUnits = new ArrayList<OrganisationUnit>();
 
+    // -------------------------------------------------------------------------
+    // Web domain properties
+    // -------------------------------------------------------------------------
+
+    private transient List<DimensionalObject> columns = new ArrayList<DimensionalObject>();
+    
+    private transient List<DimensionalObject> rows = new ArrayList<DimensionalObject>();
+    
+    private transient List<DimensionalObject> filters = new ArrayList<DimensionalObject>();
+    
+    private Map<String, String> parentGraphMap = new HashMap<String, String>();
+    
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
@@ -184,10 +212,92 @@ public class Chart
 
         return list != null && !list.isEmpty() ? list.iterator().next() : null;
     }
+        
+    public void populateWebDomainProperties()
+    {
+        columns.addAll( getDimensionalObjectList( series ) );
+        rows.addAll( getDimensionalObjectList( category ) );
+        
+        for ( String filter : filterDimensions )
+        {
+            filters.addAll( getDimensionalObjectList( filter ) );
+        }
+        
+        for ( OrganisationUnit organisationUnit : organisationUnits )
+        {
+            parentGraphMap.put( organisationUnit.getUid(), organisationUnit.getParentGraph() );
+        }
+    }
+    
+    private List<DimensionalObject> getDimensionalObjectList( String dimension )
+    {
+        List<DimensionalObject> objects = new ArrayList<DimensionalObject>();
+        
+        if ( DATA_X_DIM_ID.equals( dimension ) )
+        {
+            if ( !indicators.isEmpty() )
+            {
+                objects.add( new BaseDimensionalObject( INDICATOR_DIM_ID, indicators ) );
+            }
+            
+            if ( !dataElements.isEmpty() )
+            {
+                objects.add( new BaseDimensionalObject( DATAELEMENT_DIM_ID, dataElements ) );
+            }
+            
+            if ( !dataSets.isEmpty() )
+            {
+                objects.add( new BaseDimensionalObject( DATASET_DIM_ID, dataSets ) );
+            }
+        }        
+        else if ( PERIOD_DIM_ID.equals( dimension ) && ( !periods.isEmpty() || hasRelativePeriods() ) )
+        {
+            List<IdentifiableObject> periodList = new ArrayList<IdentifiableObject>( periods );
+            
+            if ( hasRelativePeriods() )
+            {
+                List<RelativePeriodEnum> list = relatives.getRelativePeriodEnums();
 
+                for ( RelativePeriodEnum period : list )
+                {
+                    periodList.add( new ConfigurablePeriod( period.toString(), null, null ) );
+                }
+            }
+            
+            objects.add( new BaseDimensionalObject( dimension, periodList ) );
+        }        
+        else if ( ORGUNIT_DIM_ID.equals( dimension ) && !organisationUnits.isEmpty() )
+        {
+            objects.add( new BaseDimensionalObject( dimension, organisationUnits ) );
+        }
+        else // Dynamic dimension
+        {
+            ListMap<String, IdentifiableObject> listMap = new ListMap<String, IdentifiableObject>();
+            
+            for ( DataElementGroup group : dataElementGroups )
+            {
+                listMap.putValue( group.getGroupSet().getDimension(), group );
+            }
+            
+            for ( OrganisationUnitGroup group : organisationUnitGroups )
+            {
+                listMap.putValue( group.getGroupSet().getUid(), group );
+            }
+            
+            //TODO categories
+            
+            if ( listMap.containsKey( dimension ) )
+            {
+                objects.add( new BaseDimensionalObject( dimension, listMap.get( dimension ) ) );
+            }
+        }
+                
+        return objects;
+    }
+    
     public String generateTitle()
     {
-        if ( DIMENSION_PERIOD.equals( filterDimensions.get( 0 ) ) )
+        if ( PERIOD_DIM_ID.equals( filterDimensions.get( 0 ) ) )
         {
             return format.formatPeriod( getAllPeriods().get( 0 ) );
         }
@@ -234,29 +344,22 @@ public class Chart
     {
         List<NameableObject> list = new ArrayList<NameableObject>();
 
-        if ( DIMENSION_DATA.equals( dimension ) )
+        if ( DATA_X_DIM_ID.equals( dimension ) )
         {
             list.addAll( dataElements );
             list.addAll( indicators );
             list.addAll( dataSets );
         }
-        else if ( DIMENSION_PERIOD.equals( dimension ) )
+        else if ( PERIOD_DIM_ID.equals( dimension ) )
         {
             List<Period> periods = getAllPeriods();
             namePeriods( periods, format );
             Collections.sort( periods, PERIOD_COMPARATOR );
             list.addAll( periods );
         }
-        else if ( DIMENSION_ORGANISATIONUNIT.equals( dimension ) )
+        else if ( ORGUNIT_DIM_ID.equals( dimension ) )
         {
-            if ( isOrganisationUnitGroupBased() )
-            {
-                list.addAll( organisationUnitGroupSet.getOrganisationUnitGroups() );
-            }
-            else
-            {
-                list.addAll( getAllOrganisationUnits() );
-            }
+            list.addAll( getAllOrganisationUnits() );
         }
 
         return list;
@@ -271,15 +374,6 @@ public class Chart
         }
     }
 
-    /**
-     * Indicates whether this report table is based on organisation unit groups
-     * or the organisation unit hierarchy.
-     */
-    public boolean isOrganisationUnitGroupBased()
-    {
-        return organisationUnitGroupSet != null && organisationUnitGroupSet.getOrganisationUnitGroups() != null;
-    }
-    
     public void removeAllDataElements()
     {
         dataElements.clear();
@@ -371,11 +465,11 @@ public class Chart
     }
     
     // -------------------------------------------------------------------------
-    // Getters and setters
+    // Getters and setters properties
     // -------------------------------------------------------------------------
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getDomainAxisLabel()
     {
@@ -388,7 +482,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getRangeAxisLabel()
     {
@@ -401,7 +495,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getType()
     {
@@ -439,6 +533,10 @@ public class Chart
         this.category = category;
     }
 
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "filterDimensions", namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "filterDimension", namespace = DxfNamespaces.DXF_2_0 )
     public List<String> getFilterDimensions()
     {
         return filterDimensions;
@@ -450,21 +548,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
-    public String getFilter()
-    {
-        return filterDimensions.get( 0 ); //TODO
-    }
-
-    public void setFilter( String filter )
-    {
-        this.filterDimensions.clear();
-        this.filterDimensions.add( filter ); //TODO
-    }
-
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isHideLegend()
     {
@@ -477,7 +561,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isRegression()
     {
@@ -490,7 +574,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Double getTargetLineValue()
     {
@@ -503,7 +587,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getTargetLineLabel()
     {
@@ -516,7 +600,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public Double getBaseLineValue()
     {
@@ -529,7 +613,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public String getBaseLineLabel()
     {
@@ -542,7 +626,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isHideSubtitle()
     {
@@ -645,6 +729,34 @@ public class Chart
 
     @JsonProperty
     @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "dataElementGroups", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "dataElementGroup", namespace = DxfNamespaces.DXF_2_0)
+    public List<DataElementGroup> getDataElementGroups()
+    {
+        return dataElementGroups;
+    }
+
+    public void setDataElementGroups( List<DataElementGroup> dataElementGroups )
+    {
+        this.dataElementGroups = dataElementGroups;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
+    @JacksonXmlElementWrapper( localName = "organisationUnitGroups", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "organisationUnitGroup", namespace = DxfNamespaces.DXF_2_0)
+    public List<OrganisationUnitGroup> getOrganisationUnitGroups()
+    {
+        return organisationUnitGroups;
+    }
+
+    public void setOrganisationUnitGroups( List<OrganisationUnitGroup> organisationUnitGroups )
+    {
+        this.organisationUnitGroups = organisationUnitGroups;
+    }
+
+    @JsonProperty
+    @JsonView( {DetailedView.class, ExportView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isUserOrganisationUnit()
     {
@@ -670,7 +782,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isShowData()
     {
@@ -683,7 +795,7 @@ public class Chart
     }
 
     @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
+    @JsonView( {DetailedView.class, ExportView.class, DimensionalView.class} )
     @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
     public boolean isRewindRelativePeriods()
     {
@@ -695,28 +807,17 @@ public class Chart
         this.rewindRelativePeriods = rewindRelativePeriods;
     }
 
-    @JsonProperty
-    @JsonView( {DetailedView.class, ExportView.class} )
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0)
-    public OrganisationUnitGroupSet getOrganisationUnitGroupSet()
-    {
-        return organisationUnitGroupSet;
-    }
-
-    public void setOrganisationUnitGroupSet( OrganisationUnitGroupSet organisationUnitGroupSet )
-    {
-        this.organisationUnitGroupSet = organisationUnitGroupSet;
-    }
-
     // -------------------------------------------------------------------------
-    // Getters and setters for transient fields
+    // Getters and setters for transient properties
     // -------------------------------------------------------------------------
 
+    @JsonIgnore
     public I18nFormat getFormat()
     {
         return format;
     }
 
+    @JsonIgnore
     public void setFormat( I18nFormat format )
     {
         this.format = format;
@@ -746,6 +847,74 @@ public class Chart
         this.relativeOrganisationUnits = relativeOrganisationUnits;
     }
 
+    // -------------------------------------------------------------------------
+    // Web domain properties
+    // -------------------------------------------------------------------------
+
+    @JsonProperty
+    @JsonDeserialize( contentAs = BaseDimensionalObject.class )
+    @JsonSerialize( contentAs = BaseDimensionalObject.class )
+    @JsonView( {DimensionalView.class} )
+    @JacksonXmlElementWrapper( localName = "columns", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "column", namespace = DxfNamespaces.DXF_2_0)
+    public List<DimensionalObject> getColumns()
+    {
+        return columns;
+    }
+
+    public void setColumns( List<DimensionalObject> columns )
+    {
+        this.columns = columns;
+    }
+
+    @JsonProperty
+    @JsonDeserialize( contentAs = BaseDimensionalObject.class )
+    @JsonSerialize( contentAs = BaseDimensionalObject.class )
+    @JsonView( {DimensionalView.class} )
+    @JacksonXmlElementWrapper( localName = "rows", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "row", namespace = DxfNamespaces.DXF_2_0)
+    public List<DimensionalObject> getRows()
+    {
+        return rows;
+    }
+
+    public void setRows( List<DimensionalObject> rows )
+    {
+        this.rows = rows;
+    }
+
+    @JsonProperty
+    @JsonDeserialize( contentAs = BaseDimensionalObject.class )
+    @JsonSerialize( contentAs = BaseDimensionalObject.class )
+    @JsonView( {DimensionalView.class} )
+    @JacksonXmlElementWrapper( localName = "filters", namespace = DxfNamespaces.DXF_2_0)
+    @JacksonXmlProperty( localName = "filter", namespace = DxfNamespaces.DXF_2_0)
+    public List<DimensionalObject> getFilters()
+    {
+        return filters;
+    }
+
+    public void setFilters( List<DimensionalObject> filters )
+    {
+        this.filters = filters;
+    }
+
+    @JsonProperty
+    @JsonView({ DetailedView.class, ExportView.class })
+    public Map<String, String> getParentGraphMap()
+    {
+        return parentGraphMap;
+    }
+
+    public void setParentGraphMap( Map<String, String> parentGraphMap )
+    {
+        this.parentGraphMap = parentGraphMap;
+    }
+
+    // -------------------------------------------------------------------------
+    // Merge with
+    // -------------------------------------------------------------------------
+
     @Override
     public void mergeWith( IdentifiableObject other )
     {
@@ -759,8 +928,7 @@ public class Chart
             rangeAxisLabel = chart.getRangeAxisLabel() == null ? rangeAxisLabel : chart.getRangeAxisLabel();
             type = chart.getType() == null ? type : chart.getType();
             series = chart.getSeries() == null ? series : chart.getSeries();
-            category = chart.getCategory() == null ? category : chart.getCategory();            
-            setFilter( chart.getFilter() == null ? getFilter() : chart.getFilter() ); //TODO
+            category = chart.getCategory() == null ? category : chart.getCategory();
             hideLegend = chart.isHideLegend();
             regression = chart.isRegression();
             hideSubtitle = chart.isHideSubtitle();
@@ -773,9 +941,11 @@ public class Chart
             showData = chart.isShowData();
             rewindRelativePeriods = chart.isRewindRelativePeriods();
             
+            filters.clear();
+            filters.addAll( chart.getFilters() );
+            
             relatives = chart.getRelatives() == null ? relatives : chart.getRelatives();
             user = chart.getUser() == null ? user : chart.getUser();
-            organisationUnitGroupSet = chart.getOrganisationUnitGroupSet() == null ? organisationUnitGroupSet : chart.getOrganisationUnitGroupSet();
 
             removeAllIndicators();
             indicators.addAll( chart.getIndicators() );

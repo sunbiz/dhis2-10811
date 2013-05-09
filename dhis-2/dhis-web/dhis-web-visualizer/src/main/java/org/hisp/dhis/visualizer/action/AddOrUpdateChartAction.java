@@ -99,13 +99,6 @@ public class AddOrUpdateChartAction
         this.organisationUnitService = organisationUnitService;
     }
 
-    private OrganisationUnitGroupService organisationUnitGroupService;
-
-    public void setOrganisationUnitGroupService( OrganisationUnitGroupService organisationUnitGroupService )
-    {
-        this.organisationUnitGroupService = organisationUnitGroupService;
-    }
-
     private CurrentUserService currentUserService;
 
     public void setCurrentUserService( CurrentUserService currentUserService )
@@ -159,7 +152,7 @@ public class AddOrUpdateChartAction
         this.category = category;
     }
 
-    private String filter;
+    private String filter; //TODO fix
 
     public void setFilter( String filter )
     {
@@ -276,13 +269,6 @@ public class AddOrUpdateChartAction
     public void setOrganisationUnitIds( List<String> organisationUnitIds )
     {
         this.organisationUnitIds = organisationUnitIds;
-    }
-
-    private String organisationUnitGroupSetId;
-
-    public void setOrganisationUnitGroupSetId( String organisationUnitGroupSetId )
-    {
-        this.organisationUnitGroupSetId = organisationUnitGroupSetId;
     }
 
     private Boolean system;
@@ -410,7 +396,7 @@ public class AddOrUpdateChartAction
         chart.setType( type );
         chart.setSeries( series );
         chart.setCategory( category );
-        chart.setFilter( filter );
+        // chart.setFilter( filter );
 
         chart.getIndicators().clear();
 
@@ -486,9 +472,6 @@ public class AddOrUpdateChartAction
                 chart.getOrganisationUnits().add( organisationUnitService.getOrganisationUnit( id ) );
             }
         }
-
-        chart.setOrganisationUnitGroupSet( organisationUnitGroupSetId != null ? organisationUnitGroupService
-            .getOrganisationUnitGroupSet( organisationUnitGroupSetId ) : null );
 
         chart.setUser( system == null ? currentUserService.getCurrentUser() : null );
 

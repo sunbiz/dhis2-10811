@@ -772,11 +772,88 @@ public class RelativePeriods
         map.put( RelativePeriodEnum.THIS_FINANCIAL_YEAR, new RelativePeriods().setThisFinancialYear( true ).getRelativePeriods( format, dynamicNames ) );
         map.put( RelativePeriodEnum.LAST_FINANCIAL_YEAR, new RelativePeriods().setLastFinancialYear( true ).getRelativePeriods( format, dynamicNames ) );
         map.put( RelativePeriodEnum.LAST_5_FINANCIAL_YEARS, new RelativePeriods().setLast5FinancialYears( true ).getRelativePeriods( format, dynamicNames ) );
+        map.put( RelativePeriodEnum.LAST_WEEK, new RelativePeriods().setLast4Weeks( true ).getRelativePeriods( format, dynamicNames ) );
         map.put( RelativePeriodEnum.LAST_4_WEEKS, new RelativePeriods().setLast4Weeks( true ).getRelativePeriods( format, dynamicNames ) );
         map.put( RelativePeriodEnum.LAST_12_WEEKS, new RelativePeriods().setLast12Weeks( true ).getRelativePeriods( format, dynamicNames ) );
         map.put( RelativePeriodEnum.LAST_52_WEEKS, new RelativePeriods().setLast52Weeks( true ).getRelativePeriods( format, dynamicNames ) );
         
         return map.get( relativePeriod );
+    }
+    
+    /**
+     * Returns a list of RelativePeriodEnums based on the state of this RelativePeriods.
+     * 
+     * @return a list of RelativePeriodEnums.
+     */
+    public List<RelativePeriodEnum> getRelativePeriodEnums()
+    {
+        List<RelativePeriodEnum> list = new ArrayList<RelativePeriodEnum>();
+        
+        add( list, RelativePeriodEnum.LAST_MONTH, reportingMonth );
+        add( list, RelativePeriodEnum.LAST_BIMONTH, reportingBimonth );
+        add( list, RelativePeriodEnum.LAST_QUARTER, reportingQuarter );
+        add( list, RelativePeriodEnum.LAST_SIX_MONTH, lastSixMonth );
+        add( list, RelativePeriodEnum.MONTHS_THIS_YEAR, monthsThisYear );
+        add( list, RelativePeriodEnum.QUARTERS_THIS_YEAR, quartersThisYear );
+        add( list, RelativePeriodEnum.THIS_YEAR, thisYear );
+        add( list, RelativePeriodEnum.MONTHS_LAST_YEAR, monthsLastYear );
+        add( list, RelativePeriodEnum.QUARTERS_LAST_YEAR, quartersLastYear );
+        add( list, RelativePeriodEnum.LAST_YEAR, lastYear );
+        add( list, RelativePeriodEnum.LAST_5_YEARS, last5Years );
+        add( list, RelativePeriodEnum.LAST_12_MONTHS, last12Months );
+        add( list, RelativePeriodEnum.LAST_3_MONTHS, last3Months );
+        add( list, RelativePeriodEnum.LAST_6_BIMONTHS, last6BiMonths );
+        add( list, RelativePeriodEnum.LAST_4_QUARTERS, last4Quarters );
+        add( list, RelativePeriodEnum.LAST_2_SIXMONTHS, last2SixMonths );
+        add( list, RelativePeriodEnum.THIS_FINANCIAL_YEAR, thisFinancialYear );
+        add( list, RelativePeriodEnum.LAST_FINANCIAL_YEAR, lastFinancialYear );
+        add( list, RelativePeriodEnum.LAST_5_FINANCIAL_YEARS, last5FinancialYears );
+        add( list, RelativePeriodEnum.LAST_WEEK, lastWeek );
+        add( list, RelativePeriodEnum.LAST_4_WEEKS, last4Weeks );
+        add( list, RelativePeriodEnum.LAST_12_WEEKS, last12Weeks );
+        add( list, RelativePeriodEnum.LAST_52_WEEKS, last52Weeks );
+        
+        return list;
+    }
+    
+    public RelativePeriods setRelativePeriodsFromEnums( List<RelativePeriodEnum> relativePeriods )
+    {
+        if ( relativePeriods != null )
+        {
+            reportingMonth = relativePeriods.contains( RelativePeriodEnum.LAST_MONTH );
+            reportingBimonth = relativePeriods.contains( RelativePeriodEnum.LAST_BIMONTH );
+            reportingQuarter = relativePeriods.contains( RelativePeriodEnum.LAST_QUARTER );
+            lastSixMonth = relativePeriods.contains( RelativePeriodEnum.LAST_SIX_MONTH );
+            monthsThisYear = relativePeriods.contains( RelativePeriodEnum.MONTHS_THIS_YEAR );
+            quartersThisYear = relativePeriods.contains( RelativePeriodEnum.QUARTERS_THIS_YEAR );
+            thisYear = relativePeriods.contains( RelativePeriodEnum.THIS_YEAR );
+            monthsLastYear = relativePeriods.contains( RelativePeriodEnum.MONTHS_LAST_YEAR );
+            quartersLastYear = relativePeriods.contains( RelativePeriodEnum.QUARTERS_LAST_YEAR );
+            lastYear = relativePeriods.contains( RelativePeriodEnum.LAST_YEAR );
+            last5Years = relativePeriods.contains( RelativePeriodEnum.LAST_5_YEARS );
+            last12Months = relativePeriods.contains( RelativePeriodEnum.LAST_12_MONTHS );
+            last3Months = relativePeriods.contains( RelativePeriodEnum.LAST_3_MONTHS );
+            last6BiMonths = relativePeriods.contains( RelativePeriodEnum.LAST_6_BIMONTHS );
+            last4Quarters = relativePeriods.contains( RelativePeriodEnum.LAST_4_QUARTERS );
+            last2SixMonths = relativePeriods.contains( RelativePeriodEnum.LAST_2_SIXMONTHS );
+            thisFinancialYear = relativePeriods.contains( RelativePeriodEnum.THIS_FINANCIAL_YEAR );
+            lastFinancialYear = relativePeriods.contains( RelativePeriodEnum.LAST_FINANCIAL_YEAR );
+            last5FinancialYears = relativePeriods.contains( RelativePeriodEnum.LAST_5_FINANCIAL_YEARS );
+            lastWeek = relativePeriods.contains( RelativePeriodEnum.LAST_WEEK );
+            last4Weeks = relativePeriods.contains( RelativePeriodEnum.LAST_4_WEEKS );
+            last12Weeks = relativePeriods.contains( RelativePeriodEnum.LAST_12_WEEKS );
+            last52Weeks = relativePeriods.contains( RelativePeriodEnum.LAST_52_WEEKS );
+        }
+        
+        return this;
+    }
+    
+    private static <T> void add( List<T> list, T element, boolean add )
+    {
+        if ( add )
+        {
+            list.add( element );
+        }
     }
 
     // -------------------------------------------------------------------------

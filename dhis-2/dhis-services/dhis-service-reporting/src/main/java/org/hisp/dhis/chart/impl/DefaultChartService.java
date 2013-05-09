@@ -35,6 +35,7 @@ import org.apache.commons.math.stat.regression.SimpleRegression;
 import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.chart.ChartStore;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.NameableObject;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
@@ -229,7 +230,7 @@ public class DefaultChartService
         }
 
         chart.setType( TYPE_LINE );
-        chart.setDimensions( Chart.DIMENSION_DATA, Chart.DIMENSION_PERIOD, Chart.DIMENSION_ORGANISATIONUNIT );
+        chart.setDimensions( DimensionalObject.DATA_X_DIM_ID, DimensionalObject.PERIOD_DIM_ID, DimensionalObject.ORGUNIT_DIM_ID );
         chart.setHideLegend( true );
         chart.getIndicators().add( indicator );
         chart.setRelativePeriods( periods );
@@ -253,7 +254,7 @@ public class DefaultChartService
         }
 
         chart.setType( TYPE_COLUMN );
-        chart.setDimensions( Chart.DIMENSION_DATA, Chart.DIMENSION_ORGANISATIONUNIT, Chart.DIMENSION_PERIOD );
+        chart.setDimensions( DimensionalObject.DATA_X_DIM_ID, DimensionalObject.ORGUNIT_DIM_ID, DimensionalObject.PERIOD_DIM_ID );
         chart.setHideLegend( true );
         chart.getIndicators().add( indicator );
         chart.setRelativePeriods( periods );

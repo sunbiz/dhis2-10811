@@ -135,7 +135,7 @@ public class DefaultPeriodService
 
         return periods;
     }
-
+    
     public Collection<Period> getPeriodsByPeriodType( PeriodType periodType )
     {
         return periodStore.getPeriodsByPeriodType( periodType );

@@ -180,7 +180,7 @@ public class DefaultIdentifiableObjectManager
 
         return object;
     }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getAll( Class<T> clazz )
