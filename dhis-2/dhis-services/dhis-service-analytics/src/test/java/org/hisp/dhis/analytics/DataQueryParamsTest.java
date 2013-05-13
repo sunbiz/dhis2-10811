@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hisp.dhis.common.BaseDimensionalObject;
 import org.hisp.dhis.common.DimensionType;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.period.Period;
@@ -82,7 +83,7 @@ public class DataQueryParamsTest
         
         List<IdentifiableObject> periods = new ArrayList<IdentifiableObject>();
         
-        params.getDimensions().add( new Dimension( PERIOD_DIM_ID, DimensionType.PERIOD, periods ) );
+        params.getDimensions().add( new BaseDimensionalObject( PERIOD_DIM_ID, DimensionType.PERIOD, periods ) );
         
         assertFalse( params.hasPeriods() );
         
@@ -91,7 +92,7 @@ public class DataQueryParamsTest
         assertFalse( params.hasPeriods() );
         
         periods.add( new Period() );
-        params.getDimensions().add( new Dimension( PERIOD_DIM_ID, DimensionType.PERIOD, periods ) );
+        params.getDimensions().add( new BaseDimensionalObject( PERIOD_DIM_ID, DimensionType.PERIOD, periods ) );
         
         assertTrue( params.hasPeriods() );
     }

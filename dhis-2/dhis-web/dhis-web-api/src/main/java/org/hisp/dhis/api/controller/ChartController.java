@@ -27,26 +27,11 @@ package org.hisp.dhis.api.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.common.DimensionType.DATAELEMENT;
-import static org.hisp.dhis.common.DimensionType.DATAELEMENT_GROUPSET;
-import static org.hisp.dhis.common.DimensionType.DATASET;
-import static org.hisp.dhis.common.DimensionType.INDICATOR;
-import static org.hisp.dhis.common.DimensionType.ORGANISATIONUNIT;
-import static org.hisp.dhis.common.DimensionType.ORGANISATIONUNIT_GROUPSET;
-import static org.hisp.dhis.common.DimensionType.PERIOD;
-import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
-import static org.hisp.dhis.organisationunit.OrganisationUnit.KEY_USER_ORGUNIT;
-import static org.hisp.dhis.organisationunit.OrganisationUnit.KEY_USER_ORGUNIT_CHILDREN;
-import static org.hisp.dhis.common.DimensionalObject.DATA_X_DIMS;
-import static org.hisp.dhis.common.DimensionalObject.DATA_X_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObjectUtils.toDimension;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,10 +41,7 @@ import org.hisp.dhis.api.utils.ContextUtils.CacheStrategy;
 import org.hisp.dhis.chart.Chart;
 import org.hisp.dhis.chart.ChartService;
 import org.hisp.dhis.common.DimensionService;
-import org.hisp.dhis.common.DimensionType;
 import org.hisp.dhis.common.DimensionalObject;
-import org.hisp.dhis.dataelement.DataElementService;
-import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.dxf2.utils.JacksonUtils;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.i18n.I18nManager;
@@ -67,13 +49,8 @@ import org.hisp.dhis.i18n.I18nManagerException;
 import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
-import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
-import org.hisp.dhis.period.PeriodService;
-import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.period.RelativePeriodEnum;
-import org.hisp.dhis.period.RelativePeriods;
 import org.hisp.dhis.system.util.CodecUtils;
 import org.hisp.dhis.user.UserService;
 import org.jfree.chart.ChartUtilities;
@@ -103,15 +80,6 @@ public class ChartController
     private ChartService chartService;
 
     @Autowired
-    private DataElementService dataElementService;
-
-    @Autowired
-    private DataSetService dataSetService;
-
-    @Autowired
-    private PeriodService periodService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -120,9 +88,6 @@ public class ChartController
     @Autowired
     private OrganisationUnitService organisationUnitService;
 
-    @Autowired
-    private OrganisationUnitGroupService organisationUnitGroupService;
-    
     @Autowired
     private DimensionService dimensionService;
     
@@ -243,7 +208,12 @@ public class ChartController
     @Override
     public void postProcessEntity( Chart chart ) throws Exception
     {
-        chart.populateWebDomainProperties();
+        chart.populateAnalyticalProperties();
+        
+        for ( OrganisationUnit organisationUnit : chart.getOrganisationUnits() )
+        {
+            chart.getParentGraphMap().put( organisationUnit.getUid(), organisationUnit.getParentGraph() );
+        }
         
         I18nFormat format = i18nManager.getI18nFormat();
         
@@ -262,24 +232,9 @@ public class ChartController
 
     private void mergeChart( Chart chart )
     {
-        chart.getIndicators().clear();
-        chart.getDataElements().clear();
-        chart.getDataSets().clear();
-        chart.getPeriods().clear();
-        chart.setRelatives( null );
-        chart.getOrganisationUnits().clear();
-        chart.getDataElementGroups().clear();
-        chart.getOrganisationUnitGroups().clear();
         chart.getFilterDimensions().clear();
-        
-        if ( chart.getUser() != null )
-        {
-            chart.setUser( userService.getUser( chart.getUser().getUid() ) );
-        }
-        
-        mergeDimensionalObjects( chart, chart.getColumns() );
-        mergeDimensionalObjects( chart, chart.getRows() );
-        mergeDimensionalObjects( chart, chart.getFilters() );
+                
+        dimensionService.mergeAnalyticalObject( chart );
         
         chart.setSeries( toDimension( chart.getColumns().get( 0 ).getDimension() ) );
         chart.setCategory( toDimension( chart.getRows().get( 0 ).getDimension() ) );
@@ -288,100 +243,5 @@ public class ChartController
         {
             chart.getFilterDimensions().add( toDimension( dimension.getDimension() ) );
         }
-    }
-    
-    private void mergeDimensionalObjects( Chart chart, List<DimensionalObject> dimensions )
-    {
-        for ( DimensionalObject dimension : dimensions )
-        {
-            DimensionType type = dimensionService.getDimensionType( dimension.getDimension() );
-            
-            List<String> uids = getUids( dimension.getItems() );
-            
-            if ( INDICATOR.equals( type ) )
-            {
-                chart.getIndicators().addAll( indicatorService.getIndicatorsByUid( uids ) );
-            }
-            else if ( DATAELEMENT.equals( type ) )
-            {
-                chart.getDataElements().addAll( dataElementService.getDataElementsByUid( uids ) );
-            }
-            else if ( DATASET.equals( type ) )
-            {
-                chart.getDataSets().addAll( dataSetService.getDataSetsByUid( uids ) );
-            }
-            else if ( PERIOD.equals( type ) )
-            {
-                List<RelativePeriodEnum> enums = new ArrayList<RelativePeriodEnum>();                
-                Set<Period> periods = new HashSet<Period>();
-                
-                for ( String isoPeriod : uids )
-                {
-                    if ( RelativePeriodEnum.contains( isoPeriod ) )
-                    {
-                        enums.add( RelativePeriodEnum.valueOf( isoPeriod ) );
-                    }
-                    else
-                    {
-                        Period period = PeriodType.getPeriodFromIsoString( isoPeriod );
-                    
-                        if ( period != null )
-                        {
-                            periods.add( period );
-                        }
-                    }
-                }
-
-                chart.setRelatives( new RelativePeriods().setRelativePeriodsFromEnums( enums ) );
-                chart.setPeriods( periodService.reloadPeriods( new ArrayList<Period>( periods ) ) );
-            }
-            else if ( ORGANISATIONUNIT.equals( type ) )
-            {
-                List<OrganisationUnit> ous = new ArrayList<OrganisationUnit>();
-                
-                for ( String ou : uids )
-                {
-                    if ( KEY_USER_ORGUNIT.equals( ou ) )
-                    {
-                        chart.setUserOrganisationUnit( true );
-                    }
-                    else if ( KEY_USER_ORGUNIT_CHILDREN.equals( ou ) )
-                    {
-                        chart.setUserOrganisationUnitChildren( true );
-                    }
-                    else
-                    {
-                        OrganisationUnit unit = organisationUnitService.getOrganisationUnit( ou );
-                        
-                        if ( unit != null )
-                        {
-                            ous.add( unit );
-                        }
-                    }
-                }
-                
-                chart.setOrganisationUnits( ous );
-            }
-            else if ( DATAELEMENT_GROUPSET.equals( type ) )
-            {
-                chart.getDataElementGroups().addAll( dataElementService.getDataElementGroupsByUid( uids ) );
-            }
-            else if ( ORGANISATIONUNIT_GROUPSET.equals( type ) )
-            {
-                chart.getOrganisationUnitGroups().addAll( organisationUnitGroupService.getOrganisationUnitGroupsByUid( uids ) );
-            }
-                        
-            //TODO categories and operands
-        }
-    }
-    
-    private static String toDimension( String object )
-    {
-        if ( DATA_X_DIMS.contains( object ) )
-        {
-            return DATA_X_DIM_ID;
-        }
-        
-        return object;
     }
 }

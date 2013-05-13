@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -209,6 +210,20 @@ public class DefaultIdentifiableObjectManager
         return (Collection<T>) store.getAllOrderedName();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends IdentifiableObject> List<T> getByUid( Class<T> clazz, Collection<String> uids )
+    {
+        GenericIdentifiableObjectStore<IdentifiableObject> store = getIdentifiableObjectStore( clazz );
+
+        if ( store == null )
+        {
+            return new ArrayList<T>();
+        }
+
+        return (List<T>) store.getByUid( uids );        
+    }
+    
     @Override
     @SuppressWarnings("unchecked")
     public <T extends IdentifiableObject> Collection<T> getLikeName( Class<T> clazz, String name )

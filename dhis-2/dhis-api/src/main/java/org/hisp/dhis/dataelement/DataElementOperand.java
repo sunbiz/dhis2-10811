@@ -27,39 +27,38 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-
-import org.apache.commons.lang.StringUtils;
-import org.hisp.dhis.common.BaseIdentifiableObject;
-import org.hisp.dhis.common.DxfNamespaces;
-import org.hisp.dhis.common.view.DetailedView;
-import org.hisp.dhis.common.view.ExportView;
-import org.hisp.dhis.expression.ExpressionService;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import org.apache.commons.lang.StringUtils;
+import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DxfNamespaces;
+import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.common.view.DetailedView;
+import org.hisp.dhis.common.view.ExportView;
+import org.hisp.dhis.expression.ExpressionService;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 /**
  * This object can act both as a hydrated persisted object and as a wrapper
  * object (but not both at the same time).
+ * 
+ * This object implements IdentifiableObject but does not have any UID. Instead
+ * the UID is generated based on the data element and category option combo which
+ * this object is based on.
  *
  * @author Abyot Asalefew
  */
 @JacksonXmlRootElement( localName = "dataElementOperand", namespace = DxfNamespaces.DXF_2_0)
 public class DataElementOperand
-    implements Serializable, Comparable<DataElementOperand>
+    extends BaseIdentifiableObject
 {
-    /**
-     * Determines if a de-serialized file is compatible with this class.
-     */
-    private static final long serialVersionUID = 2490172100580528479L;
-
     public static final String SEPARATOR = ".";
     public static final String NAME_TOTAL = "(Total)";
 
@@ -73,8 +72,6 @@ public class DataElementOperand
     // -------------------------------------------------------------------------
     // Persisted properties
     // -------------------------------------------------------------------------
-
-    private int id;
 
     private DataElement dataElement;
 
@@ -150,6 +147,42 @@ public class DataElementOperand
     // Logic
     // -------------------------------------------------------------------------
 
+    @Override
+    public String getUid()
+    {
+        String uid = null;
+        
+        if ( dataElement != null )
+        {
+            uid = dataElement.getUid();
+        }
+        
+        if ( categoryOptionCombo != null )
+        {
+            uid += SEPARATOR + categoryOptionCombo.getUid();
+        }
+        
+        return uid;
+    }
+
+    @Override
+    public String getName()
+    {
+        String name = null;
+        
+        if ( dataElement != null )
+        {
+            name = dataElement.getName();
+        }
+        
+        if ( categoryOptionCombo != null )
+        {
+            name += SPACE + categoryOptionCombo.getName();
+        }
+        
+        return name;
+    }
+    
     /**
      * Tests whether the operand has any aggregation levels.
      */
@@ -211,7 +244,7 @@ public class DataElementOperand
      * @return the id.
      */
     @Deprecated
-    public String getPersistedId()
+    public String getPersistedId() //TODO remove
     {
         return dataElement.getId() + SEPARATOR + categoryOptionCombo.getId();
     }
@@ -352,16 +385,6 @@ public class DataElementOperand
     // -------------------------------------------------------------------------
     // Getters & setters
     // -------------------------------------------------------------------------
-
-    public int getId()
-    {
-        return id;
-    }
-
-    public void setId( int id )
-    {
-        this.id = id;
-    }
 
     @JsonProperty
     @JsonSerialize( as = BaseIdentifiableObject.class )
@@ -597,8 +620,11 @@ public class DataElementOperand
         return true;
     }
 
-    public int compareTo( DataElementOperand other )
+    @Override
+    public int compareTo( IdentifiableObject object )
     {
+        DataElementOperand other = (DataElementOperand) object;
+        
         if ( this.dataElementId.compareTo( other.dataElementId ) != 0 )
         {
             return this.dataElementId.compareTo( other.dataElementId );

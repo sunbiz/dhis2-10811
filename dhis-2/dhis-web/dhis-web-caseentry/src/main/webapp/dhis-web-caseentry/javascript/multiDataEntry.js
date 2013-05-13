@@ -2,6 +2,9 @@ isAjax = true;
 
 function multiDataEntryOrgunitSelected( orgUnits, orgUnitNames )
 {
+	hideById('patientDashboard');
+	showById('searchDiv');
+	showById('mainLinkLbl');
 	var width = jQuery('#programIdAddPatient').width();
 	jQuery('#programIdAddPatient').width(width-30);
 	showById( "programLoader" );

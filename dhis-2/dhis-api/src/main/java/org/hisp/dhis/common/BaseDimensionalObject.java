@@ -44,17 +44,92 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 public class BaseDimensionalObject
     extends BaseIdentifiableObject implements DimensionalObject
 {
+    /**
+     * The type of this dimension.
+     */
+    private DimensionType type;
+
+    /**
+     * The name of this dimension. For the dynamic dimensions this will be equal
+     * to dimension identifier. For the period dimension, this will reflect the
+     * period type. For the org unit dimension, this will reflect the level.
+     */
+    private String dimensionName;
+
+    /**
+     * The dimensional items for this dimension.
+     */
     private List<IdentifiableObject> items = new ArrayList<IdentifiableObject>();
+    
+    //--------------------------------------------------------------------------
+    // Constructors
+    //--------------------------------------------------------------------------
 
     public BaseDimensionalObject()
     {        
     }
-    
-    public BaseDimensionalObject( String dimension, List<? extends IdentifiableObject> items )
+
+    public BaseDimensionalObject( String dimension )
     {
         this.uid = dimension;
+    }
+    
+    public BaseDimensionalObject( String dimension, DimensionType type, List<? extends IdentifiableObject> items )
+    {
+        this.uid = dimension;
+        this.type = type;
         this.items = new ArrayList<IdentifiableObject>( items );        
     }
+
+    public BaseDimensionalObject( String dimension, DimensionType type, String dimensionName, List<IdentifiableObject> items )
+    {
+        this.uid = dimension;
+        this.type = type;
+        this.dimensionName = dimensionName;
+        this.items = items;
+    }
+
+    public BaseDimensionalObject( String dimension, DimensionType type, String dimensionName, String displayName, List<IdentifiableObject> items )
+    {
+        this.uid = dimension;
+        this.type = type;
+        this.dimensionName = dimensionName;
+        this.displayName = displayName;
+        this.items = items;
+    }
+
+    // -------------------------------------------------------------------------
+    // Logic
+    // -------------------------------------------------------------------------
+    
+    /**
+     * Indicates whether this dimension should use all dimension items. All
+     * dimension options is represented as an option list of zero elements.
+     */
+    public boolean isAllItems()
+    {
+        return items != null && items.isEmpty();
+    }
+
+    /**
+     * Indicates whether this dimension has any dimension items.
+     */
+    public boolean hasItems()
+    {
+        return items != null && !items.isEmpty();
+    }
+    
+    /**
+     * Returns dimension name with fall back to dimension.
+     */
+    public String getDimensionName()
+    {
+        return dimensionName != null ? dimensionName : uid;
+    }
+    
+    //--------------------------------------------------------------------------
+    // Getters and setters
+    //--------------------------------------------------------------------------
 
     @JsonProperty
     @JsonView( {DimensionalView.class} )
@@ -67,6 +142,29 @@ public class BaseDimensionalObject
     public void setDimension( String dimension )
     {
         this.uid = dimension;
+    }
+
+    @JsonProperty
+    @JsonView( {DimensionalView.class} )
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public DimensionType getType()
+    {
+        return type;
+    }
+
+    public void setType( DimensionType type )
+    {
+        this.type = type;
+    }
+
+    public String getDisplayName()
+    {
+        return displayName;
+    }
+
+    public void setDisplayName( String displayName )
+    {
+        this.displayName = displayName;
     }
 
     @Override
@@ -84,5 +182,15 @@ public class BaseDimensionalObject
     public void setItems( List<IdentifiableObject> items )
     {
         this.items = items;
+    }
+
+    //--------------------------------------------------------------------------
+    // Supportive methods
+    //--------------------------------------------------------------------------
+
+    @Override
+    public String toString()
+    {
+        return "[" + uid + ", type: " + type  + ", " + items + "]";
     }
 }

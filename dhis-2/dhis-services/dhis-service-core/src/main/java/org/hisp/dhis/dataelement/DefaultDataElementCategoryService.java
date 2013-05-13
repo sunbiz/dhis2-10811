@@ -235,6 +235,11 @@ public class DefaultDataElementCategoryService
             } );
     }
 
+    public Collection<DataElementCategoryOption> getDataElementCategoryOptionsByUid( Collection<String> uids )
+    {
+        return dataElementCategoryOptionStore.getByUid( uids );
+    }
+
     public Collection<DataElementCategoryOption> getAllDataElementCategoryOptions()
     {
         return i18n( i18nService, dataElementCategoryOptionStore.getAll() );

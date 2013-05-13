@@ -23,6 +23,8 @@
   <cache name="org.hisp.dhis.dataelement.DataElementCategoryOption" maxElementsInMemory="400" />
 
   <cache name="org.hisp.dhis.dataelement.DataElementCategoryOptionCombo" maxElementsInMemory="800" />
+  
+  <cache name="org.hisp.dhis.dataelement.DataElementCategoryDimension" maxElementsInMemory="2000" />
 
   <cache name="org.hisp.dhis.dataelement.DataElementGroup" maxElementsInMemory="200" />
 
@@ -177,12 +179,20 @@
   <cache name="org.hisp.dhis.reporttable.ReportTable.organisationUnitGroups" maxElementsInMemory="500" />
 
   <cache name="org.hisp.dhis.chart.Chart.dataElements" maxElementsInMemory="2000" />
+  
+  <cache name="org.hisp.dhis.chart.Chart.dataElementOperands" maxElementsInMemory="2000" />
 
   <cache name="org.hisp.dhis.chart.Chart.indicators" maxElementsInMemory="2000" />
 
   <cache name="org.hisp.dhis.chart.Chart.periods" maxElementsInMemory="200" />
 
   <cache name="org.hisp.dhis.chart.Chart.organisationUnits" maxElementsInMemory="2000" />
+  
+  <cache name="org.hisp.dhis.chart.Chart.dataElementGroups" maxElementsInMemory="2000" />
+  
+  <cache name="org.hisp.dhis.chart.Chart.categoryDimensions" maxElementsInMemory="2000" />
+  
+  <cache name="org.hisp.dhis.chart.Chart.organisationUnitGroups" maxElementsInMemory="2000" />
   
   <cache name="org.hisp.dhis.chart.Chart.dataSets" maxElementsInMemory="200" />
 

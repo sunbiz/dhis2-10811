@@ -53,8 +53,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.hisp.dhis.common.BaseDimensionalObject;
 import org.hisp.dhis.common.CombinationGenerator;
 import org.hisp.dhis.common.DimensionType;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataelement.DataElementCategory;
@@ -96,9 +98,9 @@ public class DataQueryParams
     private static final DimensionItem[] DIM_OPT_ARR = new DimensionItem[0];
     private static final DimensionItem[][] DIM_OPT_2D_ARR = new DimensionItem[0][];
     
-    private List<Dimension> dimensions = new ArrayList<Dimension>();
+    private List<DimensionalObject> dimensions = new ArrayList<DimensionalObject>();
     
-    private List<Dimension> filters = new ArrayList<Dimension>();
+    private List<DimensionalObject> filters = new ArrayList<DimensionalObject>();
 
     private AggregationType aggregationType;
     
@@ -128,8 +130,8 @@ public class DataQueryParams
     
     public DataQueryParams( DataQueryParams params )
     {
-        this.dimensions = new ArrayList<Dimension>( params.getDimensions() );
-        this.filters = new ArrayList<Dimension>( params.getFilters() );
+        this.dimensions = new ArrayList<DimensionalObject>( params.getDimensions() );
+        this.filters = new ArrayList<DimensionalObject>( params.getFilters() );
         this.aggregationType = params.getAggregationType();
         this.measureCriteria = params.getMeasureCriteria();
         
@@ -151,9 +153,9 @@ public class DataQueryParams
      */
     public DataQueryParams conform()
     {
-        if ( !dimensions.contains( new Dimension( DATAELEMENT_DIM_ID ) ) ||
-            dimensions.contains( new Dimension( INDICATOR_DIM_ID ) ) ||
-            dimensions.contains( new Dimension( DATASET_DIM_ID ) ) )
+        if ( !dimensions.contains( new BaseDimensionalObject( DATAELEMENT_DIM_ID ) ) ||
+            dimensions.contains( new BaseDimensionalObject( INDICATOR_DIM_ID ) ) ||
+            dimensions.contains( new BaseDimensionalObject( DATASET_DIM_ID ) ) )
         {
             removeDimension( CATEGORYOPTIONCOMBO_DIM_ID );
         }
@@ -203,11 +205,11 @@ public class DataQueryParams
      * Creates a mapping between dimension identifiers and filter dimensions. Filters 
      * are guaranteed not to be null.
      */
-    public ListMap<String, Dimension> getDimensionFilterMap()
+    public ListMap<String, DimensionalObject> getDimensionFilterMap()
     {
-        ListMap<String, Dimension> map = new ListMap<String, Dimension>();
+        ListMap<String, DimensionalObject> map = new ListMap<String, DimensionalObject>();
         
-        for ( Dimension filter : filters )
+        for ( DimensionalObject filter : filters )
         {
             if ( filter != null )
             {
@@ -224,24 +226,24 @@ public class DataQueryParams
      * data x dimension. If the category option combo dimension is given but
      * not the data element dimension, the former will be removed.
      */
-    public List<Dimension> getHeaderDimensions()
+    public List<DimensionalObject> getHeaderDimensions()
     {
-        List<Dimension> list = new ArrayList<Dimension>( dimensions );
+        List<DimensionalObject> list = new ArrayList<DimensionalObject>( dimensions );
         
-        ListIterator<Dimension> iter = list.listIterator();
+        ListIterator<DimensionalObject> iter = list.listIterator();
         
         dimensions : while ( iter.hasNext() )
         {
             if ( DATA_DIMS.contains( iter.next().getDimension() ) )
             {
-                iter.set( new Dimension( DATA_X_DIM_ID, DimensionType.DATA_X, null, DISPLAY_NAME_DATA_X, new ArrayList<IdentifiableObject>() ) );
+                iter.set( new BaseDimensionalObject( DATA_X_DIM_ID, DimensionType.DATA_X, null, DISPLAY_NAME_DATA_X, new ArrayList<IdentifiableObject>() ) );
                 break dimensions;
             }
         }
         
-        list.remove( new Dimension( INDICATOR_DIM_ID ) );
-        list.remove( new Dimension( DATAELEMENT_DIM_ID ) );
-        list.remove( new Dimension( DATASET_DIM_ID ) );
+        list.remove( new BaseDimensionalObject( INDICATOR_DIM_ID ) );
+        list.remove( new BaseDimensionalObject( DATAELEMENT_DIM_ID ) );
+        list.remove( new BaseDimensionalObject( DATASET_DIM_ID ) );
         
         return list;
     }
@@ -249,11 +251,11 @@ public class DataQueryParams
     /**
      * Creates a list of dimensions used to query. 
      */
-    public List<Dimension> getQueryDimensions()
+    public List<DimensionalObject> getQueryDimensions()
     {
-        List<Dimension> list = new ArrayList<Dimension>( dimensions );
+        List<DimensionalObject> list = new ArrayList<DimensionalObject>( dimensions );
         
-        list.remove( new Dimension( INDICATOR_DIM_ID ) );
+        list.remove( new BaseDimensionalObject( INDICATOR_DIM_ID ) );
         
         return list;
     }
@@ -299,7 +301,7 @@ public class DataQueryParams
      */
     public DataQueryParams removeDimension( String dimension )
     {
-        this.dimensions.remove( new Dimension( dimension ) );
+        this.dimensions.remove( new BaseDimensionalObject( dimension ) );
         
         return this;
     }
@@ -309,7 +311,7 @@ public class DataQueryParams
      */
     public DataQueryParams removeFilter( String filter )
     {
-        this.filters.remove( new Dimension( filter ) );
+        this.filters.remove( new BaseDimensionalObject( filter ) );
         
         return this;
     }
@@ -358,7 +360,7 @@ public class DataQueryParams
      * Returns the dimensions which are part of dimensions and filters. If any
      * such dimensions exist this object is in an illegal state.
      */
-    public Collection<Dimension> getDimensionsAsFilters()
+    public Collection<DimensionalObject> getDimensionsAsFilters()
     {
         return CollectionUtils.intersection( dimensions, filters );
     }
@@ -385,7 +387,7 @@ public class DataQueryParams
         
         DataQueryParams query = new DataQueryParams( this );
         
-        query.getDimensions().add( new Dimension( DATA_X_DIM_ID ) );
+        query.getDimensions().add( new BaseDimensionalObject( DATA_X_DIM_ID ) );
         
         query.getDimension( DATA_X_DIM_ID ).getItems().addAll( emptyIfNull( query.getDimensionOptions( INDICATOR_DIM_ID ) ) );
         query.getDimension( DATA_X_DIM_ID ).getItems().addAll( emptyIfNull( query.getDimensionOptions( DATAELEMENT_DIM_ID ) ) );
@@ -395,7 +397,7 @@ public class DataQueryParams
         query.removeDimension( DATAELEMENT_DIM_ID );
         query.removeDimension( DATASET_DIM_ID );
         
-        for ( Dimension dim : query.getDimensions() )
+        for ( DimensionalObject dim : query.getDimensions() )
         {
             total *= Math.max( dim.getItems().size(), 1 );
         }
@@ -406,12 +408,12 @@ public class DataQueryParams
     /**
      * Returns a list of dimensions which occur more than once.
      */
-    public List<Dimension> getDuplicateDimensions()
+    public List<DimensionalObject> getDuplicateDimensions()
     {
-        Set<Dimension> dims = new HashSet<Dimension>();
-        List<Dimension> duplicates = new ArrayList<Dimension>();
+        Set<DimensionalObject> dims = new HashSet<DimensionalObject>();
+        List<DimensionalObject> duplicates = new ArrayList<DimensionalObject>();
         
-        for ( Dimension dim : dimensions )
+        for ( DimensionalObject dim : dimensions )
         {
             if ( !dims.add( dim ) )
             {
@@ -446,7 +448,7 @@ public class DataQueryParams
      */
     public Integer getCocIndex()
     {
-        int index = dimensions.indexOf( new Dimension( CATEGORYOPTIONCOMBO_DIM_ID ) );
+        int index = dimensions.indexOf( new BaseDimensionalObject( CATEGORYOPTIONCOMBO_DIM_ID ) );
         
         return index == -1 ? null : index;
     }
@@ -513,7 +515,7 @@ public class DataQueryParams
         
         List<String> ignoreDims = Arrays.asList( DATAELEMENT_DIM_ID, CATEGORYOPTIONCOMBO_DIM_ID, INDICATOR_DIM_ID );
         
-        for ( Dimension dimension : dimensions )
+        for ( DimensionalObject dimension : dimensions )
         {
             if ( !ignoreDims.contains( dimension.getDimension() ) )
             {
@@ -573,7 +575,7 @@ public class DataQueryParams
      */
     public List<IdentifiableObject> getDimensionOptions( String dimension )
     {
-        int index = dimensions.indexOf( new Dimension( dimension ) );
+        int index = dimensions.indexOf( new BaseDimensionalObject( dimension ) );
         
         return index != -1 ? dimensions.get( index ).getItems() : null;
     }
@@ -581,9 +583,9 @@ public class DataQueryParams
     /**
      * Retrieves the dimension with the given dimension identifier.
      */
-    public Dimension getDimension( String dimension )
+    public DimensionalObject getDimension( String dimension )
     {
-        int index = dimensions.indexOf( new Dimension( dimension ) );
+        int index = dimensions.indexOf( new BaseDimensionalObject( dimension ) );
         
         return index != -1 ? dimensions.get( index ) : null;
     }
@@ -593,15 +595,15 @@ public class DataQueryParams
      */
     public DataQueryParams setDimensionOptions( String dimension, DimensionType type, String dimensionName, List<IdentifiableObject> options )
     {
-        int index = dimensions.indexOf( new Dimension( dimension ) );
+        int index = dimensions.indexOf( new BaseDimensionalObject( dimension ) );
         
         if ( index != -1 )
         {
-            dimensions.set( index, new Dimension( dimension, type, dimensionName, options ) );
+            dimensions.set( index, new BaseDimensionalObject( dimension, type, dimensionName, options ) );
         }
         else
         {
-            dimensions.add( new Dimension( dimension, type, dimensionName, options ) );
+            dimensions.add( new BaseDimensionalObject( dimension, type, dimensionName, options ) );
         }
         
         return this;
@@ -612,7 +614,7 @@ public class DataQueryParams
      */
     public List<IdentifiableObject> getFilterOptions( String filter )
     {
-        int index = filters.indexOf( new Dimension( filter ) );
+        int index = filters.indexOf( new BaseDimensionalObject( filter ) );
         
         return index != -1 ? filters.get( index ).getItems() : null;
     }
@@ -620,9 +622,9 @@ public class DataQueryParams
     /**
      * Retrieves the filter with the given filter identifier.
      */
-    public Dimension getFilter( String filter )
+    public DimensionalObject getFilter( String filter )
     {
-        int index = filters.indexOf( new Dimension( filter ) );
+        int index = filters.indexOf( new BaseDimensionalObject( filter ) );
         
         return index != -1 ? filters.get( index ) : null;
     }
@@ -632,15 +634,15 @@ public class DataQueryParams
      */
     public DataQueryParams setFilterOptions( String filter, DimensionType type, String dimensionName, List<IdentifiableObject> options )
     {
-        int index = filters.indexOf( new Dimension( filter ) );
+        int index = filters.indexOf( new BaseDimensionalObject( filter ) );
         
         if ( index != -1 )
         {
-            filters.set( index, new Dimension( filter, type, dimensionName, options ) );
+            filters.set( index, new BaseDimensionalObject( filter, type, dimensionName, options ) );
         }
         else
         {
-            filters.add( new Dimension( filter, type, dimensionName, options ) );
+            filters.add( new BaseDimensionalObject( filter, type, dimensionName, options ) );
         }
         
         return this;
@@ -651,13 +653,13 @@ public class DataQueryParams
      */
     public DataQueryParams updateFilterOptions( String filter, List<IdentifiableObject> options )
     {
-        int index = filters.indexOf( new Dimension( filter ) );
+        int index = filters.indexOf( new BaseDimensionalObject( filter ) );
         
         if ( index != -1 )
         {
-            Dimension existing = filters.get( index );
+            DimensionalObject existing = filters.get( index );
             
-            filters.set( index, new Dimension( existing.getDimension(), existing.getType(), existing.getDimensionName(), options ) );
+            filters.set( index, new BaseDimensionalObject( existing.getDimension(), existing.getType(), existing.getDimensionName(), options ) );
         }
         
         return this;
@@ -739,14 +741,14 @@ public class DataQueryParams
      * Indicates whether at least one of the given dimenions has at least one
      * item.
      */
-    public static boolean anyDimensionHasItems( Collection<Dimension> dimensions )
+    public static boolean anyDimensionHasItems( Collection<DimensionalObject> dimensions )
     {
         if ( dimensions == null || dimensions.isEmpty() )
         {
             return false;
         }
         
-        for ( Dimension dim : dimensions )
+        for ( DimensionalObject dim : dimensions )
         {
             if ( dim.hasItems() )
             {
@@ -765,7 +767,7 @@ public class DataQueryParams
     {
         List<String> list = new ArrayList<String>();
         
-        for ( Dimension dimension : dimensions )
+        for ( DimensionalObject dimension : dimensions )
         {
             list.add( dimension.getDimension() );
         }
@@ -844,22 +846,22 @@ public class DataQueryParams
     // Get and set methods for serialize properties
     // -------------------------------------------------------------------------
 
-    public List<Dimension> getDimensions()
+    public List<DimensionalObject> getDimensions()
     {
         return dimensions;
     }
 
-    public void setDimensions( List<Dimension> dimensions )
+    public void setDimensions( List<DimensionalObject> dimensions )
     {
         this.dimensions = dimensions;
     }
 
-    public List<Dimension> getFilters()
+    public List<DimensionalObject> getFilters()
     {
         return filters;
     }
 
-    public void setFilters( List<Dimension> filters )
+    public void setFilters( List<DimensionalObject> filters )
     {
         this.filters = filters;
     }
@@ -949,7 +951,7 @@ public class DataQueryParams
     
     public boolean hasDimensionOrFilter( String key )
     {
-        return dimensions.indexOf( new Dimension( key ) ) != -1 || filters.indexOf( new Dimension( key ) ) != -1;
+        return dimensions.indexOf( new BaseDimensionalObject( key ) ) != -1 || filters.indexOf( new BaseDimensionalObject( key ) ) != -1;
     }
     
     // -------------------------------------------------------------------------
@@ -1006,11 +1008,11 @@ public class DataQueryParams
         setDimensionOptions( ORGUNIT_DIM_ID, DimensionType.ORGANISATIONUNIT, null, asList( organisationUnits ) );
     }
     
-    public List<Dimension> getDataElementGroupSets()
+    public List<DimensionalObject> getDataElementGroupSets()
     {
-        List<Dimension> list = new ArrayList<Dimension>();
+        List<DimensionalObject> list = new ArrayList<DimensionalObject>();
         
-        for ( Dimension dimension : dimensions )
+        for ( DimensionalObject dimension : dimensions )
         {
             if ( DimensionType.DATAELEMENT_GROUPSET.equals( dimension.getType() ) )
             {
@@ -1018,7 +1020,7 @@ public class DataQueryParams
             }
         }
         
-        for ( Dimension filter : filters )
+        for ( DimensionalObject filter : filters )
         {
             if ( DimensionType.DATAELEMENT_GROUPSET.equals( filter.getType() ) )
             {

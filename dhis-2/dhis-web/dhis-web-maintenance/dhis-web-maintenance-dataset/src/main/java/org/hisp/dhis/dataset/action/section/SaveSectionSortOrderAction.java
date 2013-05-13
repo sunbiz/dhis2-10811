@@ -29,6 +29,8 @@ package org.hisp.dhis.dataset.action.section;
 
 import java.util.List;
 
+import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.dataset.Section;
 import org.hisp.dhis.dataset.SectionService;
 
@@ -40,11 +42,33 @@ import com.opensymphony.xwork2.Action;
 public class SaveSectionSortOrderAction
     implements Action
 {
+    // -------------------------------------------------------------------------
+    // Dependencies
+    // -------------------------------------------------------------------------
+
     private SectionService sectionService;
 
     public void setSectionService( SectionService sectionService )
     {
         this.sectionService = sectionService;
+    }
+    
+    private DataSetService dataSetService;
+
+    public void setDataSetService( DataSetService dataSetService )
+    {
+        this.dataSetService = dataSetService;
+    }
+
+    // -------------------------------------------------------------------------
+    // Input
+    // -------------------------------------------------------------------------
+
+    private int dataSetId;
+    
+    public void setDataSetId( int dataSetId )
+    {
+        this.dataSetId = dataSetId;
     }
 
     private List<String> sections;
@@ -53,20 +77,45 @@ public class SaveSectionSortOrderAction
     {
         this.sections = sections;
     }
-    
+
+    // -------------------------------------------------------------------------
+    // Action implementation
+    // -------------------------------------------------------------------------
+
     @Override
     public String execute()
         throws Exception
     {
-        int sortOrder = 1;
+        DataSet dataSet = dataSetService.getDataSet( dataSetId );
+        
+        if ( dataSet == null || dataSet.getSections() == null )
+        {
+            return SUCCESS;
+        }
+        
+        boolean update = false;
+
+        int sortOrder = 0;
         
         for ( String id : sections )
         {
+            sortOrder++;
+            
             Section section = sectionService.getSection( Integer.parseInt( id ) );
+
+            if ( sortOrder != section.getSortOrder() )
+            {
+                update = true;
+            }
             
             section.setSortOrder( sortOrder++ );
             
             sectionService.updateSection( section );
+        }
+        
+        if ( update )
+        {
+            dataSetService.updateDataSet( dataSet.increaseVersion() );
         }
         
         return SUCCESS;

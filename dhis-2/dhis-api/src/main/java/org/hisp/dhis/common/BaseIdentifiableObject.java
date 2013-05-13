@@ -128,6 +128,13 @@ public class BaseIdentifiableObject
         this.uid = uid;
         this.name = name;
     }
+    
+    public BaseIdentifiableObject( String uid, String code, String name )
+    {
+        this.uid = uid;
+        this.code = code;
+        this.name = name;
+    }
 
     public BaseIdentifiableObject( IdentifiableObject identifiableObject )
     {
@@ -455,5 +462,6 @@ public class BaseIdentifiableObject
         this.code = other.getCode() == null ? this.code : other.getCode();
         this.lastUpdated = other.getLastUpdated() == null ? this.lastUpdated : other.getLastUpdated();
         this.created = other.getCreated() == null ? this.created : other.getCreated();
+        this.user = other.getUser() == null ? this.user : other.getUser();
     }
 }

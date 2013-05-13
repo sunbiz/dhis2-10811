@@ -46,11 +46,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.analytics.AggregationType;
 import org.hisp.dhis.analytics.DataQueryParams;
-import org.hisp.dhis.analytics.Dimension;
 import org.hisp.dhis.common.DimensionType;
 import org.hisp.dhis.analytics.IllegalQueryException;
 import org.hisp.dhis.analytics.QueryPlanner;
 import org.hisp.dhis.analytics.table.PartitionUtils;
+import org.hisp.dhis.common.BaseDimensionalObject;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataelement.DataElement;
@@ -106,12 +107,12 @@ public class DefaultQueryPlanner
             violation = "At least one period must be specified as dimension or filter";
         }
         
-        if ( params.getFilters().contains( new Dimension( INDICATOR_DIM_ID ) ) )
+        if ( params.getFilters().contains( new BaseDimensionalObject( INDICATOR_DIM_ID ) ) )
         {
             violation = "Indicators cannot be specified as filter";
         }
         
-        if ( params.getFilters().contains( new Dimension( CATEGORYOPTIONCOMBO_DIM_ID ) ) )
+        if ( params.getFilters().contains( new BaseDimensionalObject( CATEGORYOPTIONCOMBO_DIM_ID ) ) )
         {
             violation = "Category option combos cannot be specified as filter";
         }
@@ -248,7 +249,7 @@ public class DefaultQueryPlanner
         
         for ( DataQueryParams query : queries )
         {
-            Dimension dim = query.getDimension( dimension );
+            DimensionalObject dim = query.getDimension( dimension );
 
             List<IdentifiableObject> values = null;
 
@@ -348,7 +349,7 @@ public class DefaultQueryPlanner
         }
         else if ( params.getFilterPeriods() != null && !params.getFilterPeriods().isEmpty() )
         {
-            Dimension filter = params.getFilter( PERIOD_DIM_ID );
+            DimensionalObject filter = params.getFilter( PERIOD_DIM_ID );
             
             ListMap<String, IdentifiableObject> periodTypePeriodMap = getPeriodTypePeriodMap( filter.getItems() );
             
@@ -356,7 +357,7 @@ public class DefaultQueryPlanner
             
             for ( String periodType : periodTypePeriodMap.keySet() )
             {
-                params.getFilters().add( new Dimension( filter.getDimension(), filter.getType(), periodType, periodTypePeriodMap.get( periodType ) ) );
+                params.getFilters().add( new BaseDimensionalObject( filter.getDimension(), filter.getType(), periodType, periodTypePeriodMap.get( periodType ) ) );
             }
             
             queries.add( params );
@@ -393,7 +394,7 @@ public class DefaultQueryPlanner
         }
         else if ( params.getFilterOrganisationUnits() != null && !params.getFilterOrganisationUnits().isEmpty() )
         {
-            Dimension filter = params.getFilter( ORGUNIT_DIM_ID );
+            DimensionalObject filter = params.getFilter( ORGUNIT_DIM_ID );
             
             ListMap<Integer, IdentifiableObject> levelOrgUnitMap = getLevelOrgUnitMap( params.getFilterOrganisationUnits() );
             
@@ -401,7 +402,7 @@ public class DefaultQueryPlanner
             
             for ( Integer level : levelOrgUnitMap.keySet() )
             {
-                params.getFilters().add( new Dimension( filter.getDimension(), filter.getType(), LEVEL_PREFIX + level, levelOrgUnitMap.get( level ) ) );
+                params.getFilters().add( new BaseDimensionalObject( filter.getDimension(), filter.getType(), LEVEL_PREFIX + level, levelOrgUnitMap.get( level ) ) );
             }
             
             queries.add( params );
@@ -461,7 +462,7 @@ public class DefaultQueryPlanner
         }
         else if ( params.getDataElementGroupSets() != null && !params.getDataElementGroupSets().isEmpty() )
         {
-            Dimension degs = params.getDataElementGroupSets().get( 0 );
+            DimensionalObject degs = params.getDataElementGroupSets().get( 0 );
             DataElementGroup deg = (DataElementGroup) ( degs.hasItems() ? degs.getItems().get( 0 ) : null );
             
             DataQueryParams query = new DataQueryParams( params );

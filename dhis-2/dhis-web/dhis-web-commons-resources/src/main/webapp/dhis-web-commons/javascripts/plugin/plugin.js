@@ -10,7 +10,7 @@ DHIS.chart.conf = {
         ajax: {
             data_get: 'api/chartValues.jsonp',
             favorite_get: 'api/charts/'
-        },        
+        },
         dimension: {
             data: {
                 value: 'data',
@@ -69,7 +69,7 @@ DHIS.chart.conf = {
 };
 
 Ext.onReady( function() {
-	
+
     DHIS.chart.initialize = function() {
         DHIS.chart.store.column = DHIS.chart.store.defaultChartStore;
         DHIS.chart.store.stackedcolumn = DHIS.chart.store.defaultChartStore;
@@ -77,13 +77,13 @@ Ext.onReady( function() {
         DHIS.chart.store.line = DHIS.chart.store.defaultChartStore;
         DHIS.chart.store.area = DHIS.chart.store.defaultChartStore;
         DHIS.chart.store.pie = DHIS.chart.store.defaultChartStore;
-        
+
         DHIS.getChart = DHIS.chart.exe.addToQueue;
         DHIS.destroyChart = DHIS.chart.exe.destroy;
     };
-    
+
     DHIS.chart.projects = {};
-    
+
     DHIS.chart.plugin = {
 		SimpleRegression: function SimpleRegression() {
 			var sumX = 0;
@@ -93,7 +93,7 @@ Ext.onReady( function() {
 			var n = 0;
 			var xbar = 0;
 			var ybar = 0;
-			
+
 			this.addData = function(x, y) {
 				if ( n == 0 ) {
 					xbar = x;
@@ -107,30 +107,30 @@ Ext.onReady( function() {
 					xbar += dx / ( n + 1 );
 					ybar += dy / ( n + 1 );
 				}
-				
+
 				sumX += x;
 				sumY += y;
 				n++;
 			};
-			
+
 			this.predict = function( x ) {
-				var b1 = this.getSlope();				
+				var b1 = this.getSlope();
 				return this.getIntercept( b1 ) + b1 * x;
 			};
-			
+
 			this.getSlope = function() {
 				if ( n < 2 ) {
 					return Number.NaN;
-				}				
+				}
 				return sumXY / sumXX;
 			};
-			
+
 			this.getIntercept = function( slope ) {
 				return ( sumY - slope * sumX ) / n;
 			};
 		}
 	};
-    
+
     DHIS.chart.util = {
         dimension: {
             indicator: {
@@ -206,7 +206,7 @@ Ext.onReady( function() {
 						animate: !project.state.conf.skipAnimation,
 						store: project.store,
 						shadow: false,
-						insetPadding: DHIS.chart.conf.chart.style.inset,						
+						insetPadding: DHIS.chart.conf.chart.style.inset,
 						items: project.state.conf.hideSubtitle ? false : DHIS.chart.util.chart.def.getTitle(project),
 						legend: project.state.conf.hideLegend ? false : DHIS.chart.util.chart.def.getLegend(project.store.range.length),
 						width: project.state.conf.width || elWidth,
@@ -287,7 +287,7 @@ Ext.onReady( function() {
 									fill: '#fefefe',
 									stroke: '#aaa',
 									'stroke-width': 0.1
-								},									
+								},
 								even: {
 									opacity: 1,
 									fill: '#f1f1f1',
@@ -360,7 +360,7 @@ Ext.onReady( function() {
 							title: title
 						};
 					},
-					getTrendLineArray: function(project) {						
+					getTrendLineArray: function(project) {
 						var a = [];
 						for (var i = 0; i < project.trendline.length; i++) {
 							a.push({
@@ -386,10 +386,10 @@ Ext.onReady( function() {
 						var colors = DHIS.chart.conf.chart.theme.dv1.slice(0, project.state.series.names.length);
 						if (project.state.conf.targetLineValue || project.state.conf.baseLineValue) {
 							colors.push('#051a2e');
-						}					
+						}
 						if (project.state.conf.targetLineValue) {
 							colors.push('#051a2e');
-						}					
+						}
 						if (project.state.conf.baseLineValue) {
 							colors.push('#051a2e');
 						}
@@ -541,7 +541,7 @@ Ext.onReady( function() {
                             x: 28,
                             y: 36
                         }
-                    ];                        
+                    ];
                 },
                 series: {
 					getTips: function(project) {
@@ -570,8 +570,8 @@ Ext.onReady( function() {
         number: {
             isInteger: function(n) {
                 var str = new String(n);
-                if (str.indexOf('.') > -1) {
-                    var d = str.substr(str.indexOf('.') + 1);
+                if (str.indexOf('-') > -1) {
+                    var d = str.substr(str.indexOf('-') + 1);
                     return (d.length === 1 && d == '0');
                 }
                 return false;
@@ -602,11 +602,11 @@ Ext.onReady( function() {
             	if (expression && expression == true) {
             		url = Ext.String.urlAppend(url, param + '=true');
             	}
-            	return url;            	
+            	return url;
             }
         },
         value: {
-            jsonfy: function(r) {                
+            jsonfy: function(r) {
                 var object = {
                     values: [],
                     periods: r.p,
@@ -630,17 +630,17 @@ Ext.onReady( function() {
                 return object;
             },
             isDefined: function(variable) {
-            	return (typeof(variable) !== 'undefined'); 
+            	return (typeof(variable) !== 'undefined');
             }
         }
     };
-    
+
     DHIS.chart.store = {
         getChartStore: function(project) {
-            var keys = [];            
+            var keys = [];
             Ext.Array.each(project.data, function(item) {
                 keys = Ext.Array.merge(keys, Ext.Object.getKeys(item));
-            });            
+            });
             project.store = Ext.create('Ext.data.Store', {
                 fields: keys,
                 data: project.data
@@ -651,11 +651,11 @@ Ext.onReady( function() {
                     project.store.range.splice(i, 1);
                 }
             }
-            
+
 			DHIS.chart.chart.getChart(project);
         }
     };
-    
+
     DHIS.chart.state = {
         state: null,
         getState: function(conf) {
@@ -677,7 +677,7 @@ Ext.onReady( function() {
                     }
                 }
             };
-            
+
             var defaultConf = {
                 type: 'column',
                 stacked: false,
@@ -705,28 +705,28 @@ Ext.onReady( function() {
                 rangeAxisLabel: null,
                 url: ''
             };
-            
+
             project.state.conf = Ext.applyIf(conf, defaultConf);
             project.state.conf.type = project.state.conf.type.toLowerCase();
             project.state.conf.series = project.state.conf.series.toLowerCase();
             project.state.conf.category = project.state.conf.category.toLowerCase();
             project.state.conf.filter = project.state.conf.filter.toLowerCase();
-            
+
             project.state.conf[project.state.conf.series] = DHIS.chart.conf.finals.chart.series;
             project.state.conf[project.state.conf.category] = DHIS.chart.conf.finals.chart.category;
             project.state.conf[project.state.conf.filter] = DHIS.chart.conf.finals.chart.filter;
-            
+
             project.state.type = project.state.conf.type;
             project.state.series.dimension = project.state.conf.series;
             project.state.category.dimension = project.state.conf.category;
             project.state.filter.dimension = project.state.conf.filter;
-            
+
             DHIS.chart.state.state = project.state;
-            
+
 			DHIS.chart.value.getValues(project);
         },
         setState: function(conf) {
-            if (conf.uid) {            	
+            if (conf.uid) {
             	var options = {
                     url: conf.url + DHIS.chart.conf.finals.ajax.favorite_get + conf.uid + '.jsonp',
                     scope: this,
@@ -736,7 +736,7 @@ Ext.onReady( function() {
                             alert('Invalid uid');
                             return;
                         }
-                        
+
                         conf.type = r.type.toLowerCase();
                         conf.periods = DHIS.chart.util.dimension.period.getRelativesFromObject(r.relativePeriods);
                         conf.organisationunits = DHIS.chart.util.dimension.organisationunit.getIdsFromObjects(r.organisationUnits);
@@ -755,108 +755,108 @@ Ext.onReady( function() {
 						conf.baseLineLabel = r.baseLineLabel || null;
 						conf.domainAxisLabel = r.domainAxisLabel || null;
                         conf.rangeAxisLabel = r.rangeAxisLabel || null;
-                        
+
                         if (r.indicators) {
                             conf.indicators = DHIS.chart.util.dimension.indicator.getIdsFromObjects(r.indicators);
                         }
                         if (r.dataElements) {
                             conf.dataelements = DHIS.chart.util.dimension.dataelement.getIdsFromObjects(r.dataElements);
                         }
-                        
-                        this.getState(conf);                        
+
+                        this.getState(conf);
                     }
                 };
-                
+
                 if (DHIS.chart.util.value.isDefined(conf.callbackName)) {
-            	    options.callbackName = conf.callbackName;            	
+            	    options.callbackName = conf.callbackName;
                 }
-            
+
                 Ext.data.JsonP.request( options );
             }
         }
     };
-    
+
     DHIS.chart.value = {
         getValues: function(project) {
-            var params = [];                
+            var params = [];
             params = params.concat(DHIS.chart.util.dimension[project.state.series.dimension].getUrl());
             params = params.concat(DHIS.chart.util.dimension[project.state.category.dimension].getUrl());
             params = params.concat(DHIS.chart.util.dimension[project.state.filter.dimension].getUrl(true));
-                        
+
             var baseUrl = DHIS.chart.util.string.extendUrl(project.state.conf.url) + DHIS.chart.conf.finals.ajax.data_get;
             baseUrl = DHIS.chart.util.string.appendUrlIfTrue(baseUrl, DHIS.chart.conf.finals.chart.orgUnitIsParent, project.state.conf.orgUnitIsParent);
-            
+
             Ext.Array.each(params, function(item) {
                 baseUrl = Ext.String.urlAppend(baseUrl, item);
             });
-            
+
             if (project.state.conf.userOrganisationUnit) {
 				baseUrl = Ext.String.urlAppend(baseUrl, 'userOrganisationUnit=true');
 			}
 			if (project.state.conf.userOrganisationUnitChildren) {
 				baseUrl = Ext.String.urlAppend(baseUrl, 'userOrganisationUnitChildren=true');
 			}
-            
+
             var options = {
                 url: baseUrl,
                 disableCaching: false,
                 success: function(r) {
                     var json = DHIS.chart.util.value.jsonfy(r);
                     project.values = json.values;
-                    
+
                     if (!project.values.length) {
                         alert('No data values');
                         return;
                     }
-                    
+
                     for (var i = 0; i < project.values.length; i++) {
                         project.values[i][DHIS.chart.conf.finals.dimension.data.value] = DHIS.chart.util.string.getEncodedString(project.values[i][DHIS.chart.conf.finals.dimension.data.value]);
                         project.values[i][DHIS.chart.conf.finals.dimension.period.value] = DHIS.chart.util.string.getEncodedString(project.values[i][DHIS.chart.conf.finals.dimension.period.value]);
                         project.values[i][DHIS.chart.conf.finals.dimension.organisationunit.value] = DHIS.chart.util.string.getEncodedString(project.values[i][DHIS.chart.conf.finals.dimension.organisationunit.value]);
                     }
-                    
+
                     project.state[project.state.conf.data].names = json.datanames;
                     project.state[project.state.conf.organisationunit].names = json.organisationunitnames;
-                    Ext.Array.each(project.values, function(item) {						
+                    Ext.Array.each(project.values, function(item) {
                         Ext.Array.include(project.state[project.state.conf.period].names, DHIS.chart.util.string.getEncodedString(item[project.state[project.state.conf.period].dimension]));
                         item.v = parseFloat(item.v);
                     });
-                    
+
                     for (var k in project.state.conf) {
                         if (project.state.conf[k] == 'period') {
                             project.state[k].names = json.periods;
                         }
                     }
-                    
+
                     DHIS.chart.state.state = project.state;
 					DHIS.chart.chart.getData(project);
                 }
             };
-            
+
             if (DHIS.chart.util.value.isDefined(project.state.conf.callbackName)) {
-            	options.callbackName = project.state.conf.callbackName;            	
+            	options.callbackName = project.state.conf.callbackName;
             }
-            
+
             Ext.data.JsonP.request(options);
         }
     };
-    
+
     DHIS.chart.chart = {
         getData: function(project) {
             project.data = [];
-			
+
             Ext.Array.each(project.state.category.names, function(item) {
                 var obj = {};
                 obj[DHIS.chart.conf.finals.data.domain] = item;
                 project.data.push(obj);
             });
-            
+
             Ext.Array.each(project.data, function(item) {
                 for (var i = 0; i < project.state.series.names.length; i++) {
                     item[project.state.series.names[i]] = 0;
                 }
             });
-            
+
             Ext.Array.each(project.data, function(item) {
                 for (var i = 0; i < project.state.series.names.length; i++) {
                     for (var j = 0; j < project.values.length; j++) {
@@ -867,7 +867,7 @@ Ext.onReady( function() {
                     }
                 }
             });
-            
+
 			if (project.state.conf.trendLine) {
 				project.trendline = [];
 				for (var i = 0; i < project.state.series.names.length; i++) {
@@ -899,7 +899,7 @@ Ext.onReady( function() {
 					item[DHIS.chart.conf.finals.data.baseline] = project.state.conf.baseLineValue;
 				});
 			}
-                
+
 			DHIS.chart.store.getChartStore(project);
         },
         el: null,
@@ -938,15 +938,15 @@ Ext.onReady( function() {
 			if (project.state.conf.baseLineValue) {
 				series.push(DHIS.chart.util.chart.def.series.getBaseLine(project));
 			}
-			
+
 			var axes = [];
 			var numeric = DHIS.chart.util.chart.def.axis.getNumeric(project, isStacked);
 			axes.push(numeric);
 			axes.push(DHIS.chart.util.chart.def.axis.getCategory(project));
-			
+
 			DHIS.chart.util.chart.def.series.setTheme(project);
 			project.chart = DHIS.chart.util.chart.def.getChart(project, axes, series, this.el.getWidth(), this.el.getHeight());
-			
+
             DHIS.chart.projects[project.state.conf.el] = project;
         },
         stackedcolumn: function(project) {
@@ -982,15 +982,15 @@ Ext.onReady( function() {
 			if (project.state.conf.baseLineValue) {
 				series.push(DHIS.chart.util.chart.bar.series.getBaseLine(project));
 			}
-			
+
 			var axes = [];
 			var numeric = DHIS.chart.util.chart.bar.axis.getNumeric(project, isStacked);
 			axes.push(numeric);
 			axes.push(DHIS.chart.util.chart.bar.axis.getCategory(project));
-			
+
 			DHIS.chart.util.chart.def.series.setTheme(project);
 			project.chart = DHIS.chart.util.chart.def.getChart(project, axes, series, this.el.getWidth(), this.el.getHeight());
-			
+
             DHIS.chart.projects[project.state.conf.el] = project;
         },
         stackedbar: function(project) {
@@ -1003,24 +1003,24 @@ Ext.onReady( function() {
 				for (var i = 0; i < a.length; i++) {
 					series.push(a[i]);
 				}
-			}	
+			}
 			series = series.concat(DHIS.chart.util.chart.line.series.getArray(project));
-			
+
 			if (project.state.conf.targetLineValue) {
 				series.push(DHIS.chart.util.chart.def.series.getTargetLine(project));
 			}
 			if (project.state.conf.baseLineValue) {
 				series.push(DHIS.chart.util.chart.def.series.getBaseLine(project));
 			}
-			
+
 			var axes = [];
 			var numeric = DHIS.chart.util.chart.def.axis.getNumeric(project);
 			axes.push(numeric);
 			axes.push(DHIS.chart.util.chart.def.axis.getCategory(project));
-			
+
 			DHIS.chart.util.chart.line.series.setTheme(project);
 			project.chart = DHIS.chart.util.chart.def.getChart(project, axes, series, this.el.getWidth(), this.el.getHeight());
-            
+
             DHIS.chart.projects[project.state.conf.el] = project;
         },
         area: function(project) {
@@ -1035,15 +1035,15 @@ Ext.onReady( function() {
 					stroke: '#555'
 				}
 			});
-			
+
 			var axes = [];
 			var numeric = DHIS.chart.util.chart.def.axis.getNumeric(project);
 			axes.push(numeric);
 			axes.push(DHIS.chart.util.chart.def.axis.getCategory(project));
-			
+
 			DHIS.chart.util.chart.line.series.setTheme(project);
 			project.chart = DHIS.chart.util.chart.def.getChart(project, axes, series, this.el.getWidth(), this.el.getHeight());
-            
+
             DHIS.chart.projects[project.state.conf.el] = project;
         },
         pie: function(project) {
@@ -1078,11 +1078,11 @@ Ext.onReady( function() {
                 }],
                 theme: project.state.conf.el
             });
-            
+
             DHIS.chart.projects[project.state.conf.el] = project;
         }
     };
-    
+
     DHIS.chart.exe = {
         allow: true,
         queue: [],
@@ -1114,7 +1114,7 @@ Ext.onReady( function() {
 			}
 		}
     };
-    
+
     DHIS.chart.initialize();
 });
 
@@ -1126,7 +1126,7 @@ DHIS.table.finals = {
 	data: 'data',
 	periods: 'periods',
 	orgunits: 'orgunits',
-	crosstab: 'crosstab',            
+	crosstab: 'crosstab',
 	orgUnitIsParent: 'orgUnitIsParent',
 	defaultConf: {
 		indicators: [],
@@ -1151,14 +1151,14 @@ DHIS.table.utils = {
     	if (expression && expression == true) {
     		url = Ext.String.urlAppend(url, param + '=true');
     	}
-    	return url;            	
+    	return url;
     },
     destroy: function(el) {
     	if (DHIS.table.tables[el]) {
     		DHIS.table.tables[el].destroy();
     	}
     },
-    getDataQuery: function(conf, url) {    	
+    getDataQuery: function(conf, url) {
     	Ext.Array.each(conf.indicators, function(item) {
 			url = Ext.String.urlAppend(url, 'in=' + item);
 		});
@@ -1178,7 +1178,7 @@ DHIS.table.utils = {
 			url = Ext.String.urlAppend(url, 'crosstab=' + item);
 		});
 		url = DHIS.table.utils.appendUrlIfTrue(url, DHIS.table.finals.orgUnitIsParent, conf.orgUnitIsParent);
-		
+
 		return url;
     },
     getTableDataUrl: function(conf) {
@@ -1186,11 +1186,11 @@ DHIS.table.utils = {
 		return this.getDataQuery(conf, url);
 	},
 	getDynamicDataUrl: function(conf) {
-		var url = conf.url + DHIS.table.finals.dynamicDataGet + '.' + conf.format;
+		var url = conf.url + DHIS.table.finals.dynamicDataGet + '-' + conf.format;
 		return this.getDataQuery(conf, url);
 	},
 	isDefined: function(variable) {
-		return (typeof(variable) !== 'undefined'); 
+		return (typeof(variable) !== 'undefined');
 	}
 };
 
@@ -1231,11 +1231,11 @@ DHIS.table.grid = {
 				});
 			}
 		};
-		
+
         if (DHIS.table.utils.isDefined(conf.callbackName)) {
-        	options.callbackName = conf.callbackName;            	
+        	options.callbackName = conf.callbackName;
         }
-        
+
 		Ext.data.JsonP.request(options);
 	}
 };
@@ -1244,31 +1244,31 @@ DHIS.table.plain = {
 	getMarkup: function(conf, data) {
 		var html = '<table><tr>';
 		var classMap = []; /* Col index -> class markup */
-		
+
 		Ext.Array.each(data.headers, function(header, index) {
 			if (!Ext.Array.contains(conf.hiddenCols, index)) {
-				var clazz = !header.meta ? ' class=\"val\"' : '';	
+				var clazz = !header.meta ? ' class=\"val\"' : '';
 				classMap[index] = clazz;
 				html += '<th' + clazz + '>' + header.name + '<\/th>';
-			}	
+			}
 		});
-		
+
 		html += '<\/tr>';
-		
+
 		Ext.Array.each(data.rows, function(row) {
 			html += '<tr>';
 			Ext.Array.each(row, function(field, index) {
 				if (!Ext.Array.contains(conf.hiddenCols, index)) {
-					var clazz = classMap[index];				
+					var clazz = classMap[index];
 					html += '<td' + clazz + '>' + field + '<\/td>';
 				}
 			});
 			html += '<\/tr>';
 		});
-		
+
 		html += '<\/table>';
 		return html;
-	},	
+	},
 	render: function(conf) {
 		var options = {
 			url: DHIS.table.utils.getTableDataUrl(conf),
@@ -1278,11 +1278,11 @@ DHIS.table.plain = {
 				Ext.get(conf.el).update(html);
 			}
 		};
-		
+
         if (DHIS.table.utils.isDefined(conf.callbackName)) {
-        	options.callbackName = conf.callbackName;            	
+        	options.callbackName = conf.callbackName;
         }
-        
+
 		Ext.data.JsonP.request(options);
 	}
 };

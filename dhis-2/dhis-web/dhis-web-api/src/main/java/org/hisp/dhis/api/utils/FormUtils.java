@@ -37,8 +37,6 @@ import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.Section;
 import org.hisp.dhis.datavalue.DataValue;
-import org.hisp.dhis.system.util.CollectionUtils;
-import org.hisp.dhis.system.util.functional.Predicate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,19 +60,28 @@ public class FormUtils
         {
             for ( Section section : dataSet.getSections() )
             {
-                Group s = new Group();
-                s.setLabel( section.getDisplayName() );
-                s.setFields( inputsFromDataElements( section.getDataElements(), new ArrayList<DataElementOperand>( section.getGreyedFields() ) ) );
-                form.getGroups().add( s );
+                List<Field> fields = inputsFromDataElements( new ArrayList<DataElement>( section.getDataElements() ), new ArrayList<DataElementOperand>( section.getGreyedFields() ) );
+
+                if ( !fields.isEmpty() )
+                {
+                    Group s = new Group();
+                    s.setLabel( section.getDisplayName() );
+                    s.setFields( fields );
+                    form.getGroups().add( s );
+                }
             }
         }
         else
         {
-            Group s = new Group();
-            s.setLabel( "default" );
-            s.setFields( inputsFromDataElements( new ArrayList<DataElement>( dataSet.getDataElements() ) ) );
+            List<Field> fields = inputsFromDataElements( new ArrayList<DataElement>( dataSet.getDataElements() ) );
 
-            form.getGroups().add( s );
+            if ( !fields.isEmpty() )
+            {
+                Group s = new Group();
+                s.setLabel( "default" );
+                s.setFields( fields );
+                form.getGroups().add( s );
+            }
         }
 
         return form;
@@ -90,39 +97,11 @@ public class FormUtils
     {
         List<Field> fields = new ArrayList<Field>();
 
-        CollectionUtils.filter( dataElements, new Predicate<DataElement>()
-        {
-            @Override
-            public boolean evaluate( DataElement dataElement )
-            {
-                for ( DataElementOperand operand : greyedFields )
-                {
-                    if ( dataElement == operand.getDataElement() && dataElement.getCategoryCombo() == operand.getCategoryOptionCombo().getCategoryCombo() )
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-        } );
-
         for ( DataElement dataElement : dataElements )
         {
-            if ( dataElement.getCategoryCombo().isDefault() )
+            for ( DataElementCategoryOptionCombo categoryOptionCombo : dataElement.getCategoryCombo().getSortedOptionCombos() )
             {
-                Field field = new Field();
-
-                field.setLabel( dataElement.getDisplayName() );
-                field.setDataElement( dataElement.getUid() );
-                field.setCategoryOptionCombo( dataElement.getCategoryCombo().getSortedOptionCombos().get( 0 ).getUid() );
-                field.setType( inputTypeFromDataElement( dataElement ) );
-
-                fields.add( field );
-            }
-            else
-            {
-                for ( DataElementCategoryOptionCombo categoryOptionCombo : dataElement.getCategoryCombo().getSortedOptionCombos() )
+                if ( !isDisabled( dataElement, categoryOptionCombo, greyedFields ) )
                 {
                     Field field = new Field();
 
@@ -137,6 +116,20 @@ public class FormUtils
         }
 
         return fields;
+    }
+
+    private static boolean isDisabled( DataElement dataElement, DataElementCategoryOptionCombo dataElementCategoryOptionCombo, List<DataElementOperand> greyedFields )
+    {
+        for ( DataElementOperand operand : greyedFields )
+        {
+            if ( dataElement.getUid().equals( operand.getDataElement().getUid() )
+                && dataElementCategoryOptionCombo.getUid().equals( operand.getCategoryOptionCombo().getUid() ) )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static InputType inputTypeFromDataElement( DataElement dataElement )

@@ -45,10 +45,11 @@ import java.util.Map;
 
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.analytics.DataQueryParams;
-import org.hisp.dhis.analytics.Dimension;
 import org.hisp.dhis.analytics.DimensionItem;
 import org.hisp.dhis.analytics.IllegalQueryException;
 import org.hisp.dhis.analytics.QueryPlanner;
+import org.hisp.dhis.common.BaseDimensionalObject;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.dataelement.DataElement;
@@ -172,10 +173,10 @@ public class QueryPlannerTest
     @Test
     public void testGetHeaderDimensions()
     {
-        List<Dimension> expected = new ArrayList<Dimension>();
-        expected.add( new Dimension( DATA_X_DIM_ID ) );
-        expected.add( new Dimension( ORGUNIT_DIM_ID ) );
-        expected.add( new Dimension( PERIOD_DIM_ID ) );
+        List<DimensionalObject> expected = new ArrayList<DimensionalObject>();
+        expected.add( new BaseDimensionalObject( DATA_X_DIM_ID ) );
+        expected.add( new BaseDimensionalObject( ORGUNIT_DIM_ID ) );
+        expected.add( new BaseDimensionalObject( PERIOD_DIM_ID ) );
         
         DataQueryParams params = new DataQueryParams();
         params.setDataElements( getList( deA, deB ) );
@@ -192,9 +193,9 @@ public class QueryPlannerTest
 
         assertEquals( expected, params.getHeaderDimensions() );
         
-        expected = new ArrayList<Dimension>();
-        expected.add( new Dimension( ORGUNIT_DIM_ID ) );
-        expected.add( new Dimension( PERIOD_DIM_ID ) );
+        expected = new ArrayList<DimensionalObject>();
+        expected.add( new BaseDimensionalObject( ORGUNIT_DIM_ID ) );
+        expected.add( new BaseDimensionalObject( PERIOD_DIM_ID ) );
 
         params = new DataQueryParams();
         params.setOrganisationUnits( getList( ouA, ouB ) );
@@ -676,12 +677,12 @@ public class QueryPlannerTest
     
     private static void assertDimensionNameNotNull( DataQueryParams params )
     {
-        for ( Dimension dim : params.getDimensions() )
+        for ( DimensionalObject dim : params.getDimensions() )
         {
             assertNotNull( dim.getDimensionName() );
         }
         
-        for ( Dimension filter : params.getFilters() )
+        for ( DimensionalObject filter : params.getFilters() )
         {
             assertNotNull( filter.getDimensionName() );
         }

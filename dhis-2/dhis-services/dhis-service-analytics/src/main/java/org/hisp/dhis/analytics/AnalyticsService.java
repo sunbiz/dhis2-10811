@@ -30,6 +30,7 @@ package org.hisp.dhis.analytics;
 import java.util.Map;
 import java.util.Set;
 
+import org.hisp.dhis.common.BaseAnalyticalObject;
 import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.i18n.I18nFormat;
 
@@ -80,4 +81,13 @@ public interface AnalyticsService
      */
     DataQueryParams getFromUrl( Set<String> dimensionParams, Set<String> filterParams, 
         AggregationType aggregationType, String measureCriteria, I18nFormat format );
+    
+    /**
+     * Creates a data query parameter object from the given BaseAnalyticalObject.
+     * 
+     * @param object the BaseAnalyticalObject
+     * @param format the i18n format.
+     * @return a data query parameter object created based on the given BaseAnalyticalObject.
+     */
+    DataQueryParams getFromAnalyticalObject( BaseAnalyticalObject object, I18nFormat format );
 }

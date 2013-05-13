@@ -62,6 +62,11 @@ public class GetSectionListSortOrderAction
 
     private Integer dataSetId;
 
+    public Integer getDataSetId()
+    {
+        return dataSetId;
+    }
+
     public void setDataSetId( Integer dataSetId )
     {
         this.dataSetId = dataSetId;

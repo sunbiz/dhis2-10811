@@ -28,6 +28,7 @@ package org.hisp.dhis.analytics.data;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +37,8 @@ import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.analytics.AnalyticsService;
 import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.analytics.IllegalQueryException;
+import org.hisp.dhis.chart.Chart;
+import org.hisp.dhis.common.DimensionalObject;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
@@ -43,6 +46,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
+import org.hisp.dhis.period.PeriodType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -68,7 +72,7 @@ public class AnalyticsServiceTest
     private OrganisationUnitGroup ouGroupC;
     
     private OrganisationUnitGroupSet ouGroupSetA;
-    
+        
     @Autowired
     private AnalyticsService analyticsService;
     
@@ -105,12 +109,18 @@ public class AnalyticsServiceTest
         organisationUnitService.addOrganisationUnit( ouC );
         organisationUnitService.addOrganisationUnit( ouD );
         organisationUnitService.addOrganisationUnit( ouE );
+
+        ouGroupSetA = createOrganisationUnitGroupSet( 'A' );
+        
+        organisationUnitGroupService.addOrganisationUnitGroupSet( ouGroupSetA );
         
         ouGroupA = createOrganisationUnitGroup( 'A' );
         ouGroupB = createOrganisationUnitGroup( 'B' );
         ouGroupC = createOrganisationUnitGroup( 'C' );
         
-        ouGroupSetA = createOrganisationUnitGroupSet( 'A' );
+        ouGroupA.setGroupSet( ouGroupSetA );
+        ouGroupB.setGroupSet( ouGroupSetA );
+        ouGroupC.setGroupSet( ouGroupSetA );
         
         organisationUnitGroupService.addOrganisationUnitGroup( ouGroupA );
         organisationUnitGroupService.addOrganisationUnitGroup( ouGroupB );
@@ -120,7 +130,7 @@ public class AnalyticsServiceTest
         ouGroupSetA.getOrganisationUnitGroups().add( ouGroupB );
         ouGroupSetA.getOrganisationUnitGroups().add( ouGroupC );
         
-        organisationUnitGroupService.addOrganisationUnitGroupSet( ouGroupSetA );
+        organisationUnitGroupService.updateOrganisationUnitGroupSet( ouGroupSetA );
     }
     
     @Test
@@ -195,5 +205,60 @@ public class AnalyticsServiceTest
         dimensionParams.add( "yebo:2012,2012S1,2012S2" );
         
         analyticsService.getFromUrl( dimensionParams, null, null, null, null );        
-    }    
+    }
+    
+    @Test
+    public void testGetFromAnalyticalObjectA()
+    {
+        Chart chart = new Chart();
+        chart.setSeries( DimensionalObject.DATA_X_DIM_ID );
+        chart.setCategory( DimensionalObject.ORGUNIT_DIM_ID );
+        chart.getFilterDimensions().add( DimensionalObject.PERIOD_DIM_ID );
+        
+        chart.getDataElements().add( deA );
+        chart.getDataElements().add( deB );
+        chart.getDataElements().add( deC );
+        
+        chart.getOrganisationUnits().add( ouA );
+        chart.getOrganisationUnits().add( ouB );
+        
+        chart.getPeriods().add( PeriodType.getPeriodFromIsoString( "2012" ) );
+        
+        DataQueryParams params = analyticsService.getFromAnalyticalObject( chart, null );
+        
+        assertNotNull( params );
+        assertEquals( 3, params.getDataElements().size() );
+        assertEquals( 2, params.getOrganisationUnits().size() );
+        assertEquals( 1, params.getFilterPeriods().size() );
+        assertEquals( 2, params.getDimensions().size() );
+        assertEquals( 1, params.getFilters().size() );
+    }
+    
+    @Test
+    public void testGetFromAnalyticalObjectB()
+    {
+        Chart chart = new Chart();
+        chart.setSeries( DimensionalObject.DATA_X_DIM_ID );
+        chart.setCategory( ouGroupSetA.getUid() );
+        chart.getFilterDimensions().add( DimensionalObject.PERIOD_DIM_ID );
+        
+        chart.getDataElements().add( deA );
+        chart.getDataElements().add( deB );
+        chart.getDataElements().add( deC );
+        
+        chart.getOrganisationUnitGroups().add( ouGroupA );
+        chart.getOrganisationUnitGroups().add( ouGroupB );
+        chart.getOrganisationUnitGroups().add( ouGroupC );
+        
+        chart.getPeriods().add( PeriodType.getPeriodFromIsoString( "2012" ) );
+        
+        DataQueryParams params = analyticsService.getFromAnalyticalObject( chart, null );
+        
+        assertNotNull( params );
+        assertEquals( 3, params.getDataElements().size() );
+        assertEquals( 1, params.getFilterPeriods().size() );
+        assertEquals( 2, params.getDimensions().size() );
+        assertEquals( 1, params.getFilters().size() );
+        assertEquals( 3, params.getDimensionOptions( ouGroupSetA.getUid() ).size() );
+    }
 }

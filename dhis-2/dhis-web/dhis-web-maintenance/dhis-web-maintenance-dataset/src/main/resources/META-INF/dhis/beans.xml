@@ -70,6 +70,7 @@
   <bean id="org.hisp.dhis.dataset.action.section.SaveSectionSortOrderAction" class="org.hisp.dhis.dataset.action.section.SaveSectionSortOrderAction"
     scope="prototype">
     <property name="sectionService" ref="org.hisp.dhis.dataset.SectionService" />
+    <property name="dataSetService" ref="org.hisp.dhis.dataset.DataSetService" />
   </bean>
 
   <bean id="org.hisp.dhis.dataset.action.section.GetSectionListSortOrderAction" class="org.hisp.dhis.dataset.action.section.GetSectionListSortOrderAction"

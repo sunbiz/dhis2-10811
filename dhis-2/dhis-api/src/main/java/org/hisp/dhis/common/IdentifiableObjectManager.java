@@ -32,6 +32,7 @@ import org.hisp.dhis.common.NameableObject.NameableProperty;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +56,8 @@ public interface IdentifiableObjectManager
     <T extends IdentifiableObject> Collection<T> getAll( Class<T> clazz );
 
     <T extends IdentifiableObject> Collection<T> getAllSorted( Class<T> clazz );
+    
+    <T extends IdentifiableObject> List<T> getByUid( Class<T> clazz, Collection<String> uids );
 
     <T extends IdentifiableObject> Collection<T> getLikeName( Class<T> clazz, String name );
 

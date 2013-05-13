@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Inherits getName() and getDisplayName().
+ * 
 * @author Lars Helge Overland
 */
 public interface DimensionalObject
@@ -39,7 +41,7 @@ public interface DimensionalObject
     final String INDICATOR_DIM_ID = "in";
     final String DATAELEMENT_DIM_ID = "de";
     final String DATASET_DIM_ID = "ds";
-    final String DATAELEMENT_OPERAND_ID = "do";
+    final String DATAELEMENT_OPERAND_ID = "dc";
     final String CATEGORYOPTIONCOMBO_DIM_ID = "co";
     final String PERIOD_DIM_ID = "pe";
     final String ORGUNIT_DIM_ID = "ou";
@@ -48,5 +50,15 @@ public interface DimensionalObject
     
     String getDimension();
     
+    DimensionType getType();
+    
+    String getDimensionName();
+    
+    String getDisplayName();
+        
     List<IdentifiableObject> getItems();
+    
+    boolean isAllItems();
+    
+    boolean hasItems();
 }

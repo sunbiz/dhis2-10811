@@ -67,10 +67,12 @@ public interface ExpressionService
     final String SPACE = " ";
 
     final String OPERAND_EXPRESSION = "#\\{(\\w+)\\.?(\\w*)\\}";
+    final String OPERAND_UID_EXPRESSION = "(\\w+)\\.?(\\w*)";
     final String CONSTANT_EXPRESSION = "C\\{(\\w+)\\}";
     final String DAYS_EXPRESSION = "\\[days\\]";
 
     final Pattern OPERAND_PATTERN = Pattern.compile( OPERAND_EXPRESSION );
+    final Pattern OPERAND_UID_PATTERN = Pattern.compile( OPERAND_UID_EXPRESSION );
     final Pattern CONSTANT_PATTERN = Pattern.compile( CONSTANT_EXPRESSION );
     final Pattern DAYS_PATTERN = Pattern.compile( DAYS_EXPRESSION );
 

@@ -27,7 +27,6 @@ package org.hisp.dhis.dataelement;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -42,7 +41,6 @@ import org.junit.Test;
 
 /**
  * @author Kristian Nordal
- * @version $Id: DataElementServiceTest.java 5742 2008-09-26 11:37:35Z larshelg $
  */
 public class DataElementServiceTest
     extends DhisSpringTest

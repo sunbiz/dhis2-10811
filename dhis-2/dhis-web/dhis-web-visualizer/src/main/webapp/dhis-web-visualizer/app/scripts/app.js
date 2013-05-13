@@ -1047,42 +1047,7 @@ Ext.onReady( function() {
 
 		NameWindow = function(id) {
 			var window,
-				bodify,
 				record = dv.store.charts.getById(id);
-
-			bodify = function(xLayout) {
-				if (xLayout.extended.objectNameRecordsMap[dv.conf.finals.dimension.operand.objectName]) {
-					for (var i = 0, id; i < xLayout.columns[0].items.length; i++) {
-						id = xLayout.columns[0].items[i].id;
-						if (id.indexOf('-') !== -1) {
-							xLayout.columns[0].items[i].id = id.substr(0, id.indexOf('-'));
-							console.log(xLayout.columns[0].items[i].id);
-						}
-					}
-
-					for (var i = 0, dim; i < xLayout.rows.length; i++) {
-						dim = xLayout.rows[i];
-						for (var j = 0, id; j < dim.items.length; j++) {
-							id = dim.items[j].id;
-							if (id.indexOf('-') !== -1) {
-								id = id.substr(0, id.indexOf('-'));
-							}
-						}
-					}
-
-					for (var i = 0, dim; i < xLayout.filters.length; i++) {
-						dim = xLayout.filters[i];
-						for (var j = 0, id; j < dim.items.length; j++) {
-							id = dim.items[j].id;
-							if (id.indexOf('-') !== -1) {
-								id = id.substr(0, id.indexOf('-'));
-							}
-						}
-					}
-				}
-
-				return xLayout;
-			};
 
 			nameTextfield = Ext.create('Ext.form.field.Text', {
 				height: 26,
@@ -1101,12 +1066,12 @@ Ext.onReady( function() {
 			createButton = Ext.create('Ext.button.Button', {
 				text: 'Create', //i18n
 				handler: function() {
-					var favorite = bodify(Ext.clone(dv.xLayout));
+					var favorite = Ext.clone(dv.xLayout);
 					favorite.name = nameTextfield.getValue();
 
 					if (favorite && favorite.name) {
 
-						// Server sync
+						// Server sync: property names
 						favorite.showData = favorite.showValues;
 						favorite.targetLineLabel = favorite.targetLineTitle;
 						favorite.baseLineLabel = favorite.baseLineTitle;
@@ -1120,6 +1085,36 @@ Ext.onReady( function() {
 						delete favorite.rangeAxisTitle;
 
 						delete favorite.extended;
+
+						// Server sync: operand ids
+						for (var i = 0, item; i < favorite.columns[0].items.length; i++) {
+							favorite.columns[0].items[i].id = dv.util.str.replaceAll(favorite.columns[0].items[i].id, '-', '.');
+						}
+						for (var i = 0, item; i < favorite.rows[0].items.length; i++) {
+							favorite.rows[0].items[i].id = dv.util.str.replaceAll(favorite.rows[0].items[i].id, '-', '.');
+						}
+						for (var i = 0, dim; i < favorite.filters.length; i++) {
+							dim = favorite.filters[i];
+							for (var j = 0; j < dim.items.length; j++) {
+								dim.items[j].id = dv.util.str.replaceAll(dim.items[j].id, '-', '.');
+							}
+						}
+
+						// Server sync: user orgunit
+						if (favorite.userOrganisationUnit || favorite.userOrganisationUnitChildren) {
+							var dimensions = [].concat(favorite.columns, favorite.rows, favorite.filters);
+
+							for (var i = 0; i < dimensions.length; i++) {
+								if (dimensions[i].dimension === dv.conf.finals.dimension.organisationUnit.objectName) {
+									if (favorite.userOrganisationUnit) {
+										dimensions[i].items.push({id: 'USER_ORGUNIT'});
+									}
+									if (favorite.userOrganisationUnitChildren) {
+										dimensions[i].items.push({id: 'USER_ORGUNIT_CHILDREN'});
+									}
+								}
+							}
+						}
 
 						// Request
 						Ext.Ajax.request({
@@ -3450,8 +3445,18 @@ Ext.onReady( function() {
 							items: []
 						};
 
-					for (var i = 0; i < r.length; i++) {
-						data.items.push({id: r[i].data.id});
+					if (userOrganisationUnit.getValue() || userOrganisationUnitChildren.getValue()) {
+						if (userOrganisationUnit.getValue()) {
+							data.items.push({id: 'USER_ORGUNIT'});
+						}
+						if (userOrganisationUnitChildren.getValue()) {
+							data.items.push({id: 'USER_ORGUNIT_CHILDREN'});
+						}
+					}
+					else {
+						for (var i = 0; i < r.length; i++) {
+							data.items.push({id: r[i].data.id});
+						}
 					}
 
 					return data.items.length ? data : null;
@@ -3710,7 +3715,13 @@ Ext.onReady( function() {
 			};
 
 			validateSpecialCases = function(layout) {
-				var dimConf = dv.conf.finals.dimension;
+				var dimConf = dv.conf.finals.dimension,
+					dimensions = [].concat(layout.columns, layout.rows, layout.filters),
+					objectNameDimensionMap = {};
+
+				for (var i = 0; i < dimensions.length; i++) {
+					objectNameDimensionMap[dimensions[i].dimension] = dimensions[i];
+				}
 
 				// Indicator as filter
 				for (var i = 0; i < layout.filters.length; i++) {
@@ -3718,6 +3729,18 @@ Ext.onReady( function() {
 						alert(DV.i18n.indicators_cannot_be_specified_as_filter);
 						return;
 					}
+				}
+
+				// dc and in
+				if (objectNameDimensionMap[dimConf.operand.objectName] && objectNameDimensionMap[dimConf.indicator.objectName]) {
+					alert('Indicators and detailed data elements cannot be specified together');
+					return;
+				}
+
+				// dc and de
+				if (objectNameDimensionMap[dimConf.operand.objectName] && objectNameDimensionMap[dimConf.dataElement.objectName]) {
+					alert('Detailed data elements and totals cannot be specified together');
+					return;
 				}
 
 				// Categories as filter
@@ -3998,7 +4021,6 @@ Ext.onReady( function() {
 					objectName,
 					periodRecords,
 					fixedPeriodRecords = [];
-console.log("xLayout", xLayout);
 
 				// Type
 				dv.viewport.chartType.setChartType(xLayout.type);
@@ -4076,18 +4098,27 @@ console.log("xLayout", xLayout);
 				}
 
 				// Options
-				//var showTrendLine,
-			//targetLineValue,
-			//targetLineTitle,
-			//baseLineValue,
-			//baseLineTitle,
-
-			//showValues,
-			//hideLegend,
-			//hideTitle,
-			//title,
-			//domainAxisTitle,
-			//rangeAxisTitle,
+				if (Ext.isNumber(xLayout.targetLineValue)) {
+					dv.viewport.targetLineValue.setValue(xLayout.targetLineValue);
+				}
+				if (Ext.isString(xLayout.targetLineTitle)) {
+					dv.viewport.targetLineTitle.setValue(xLayout.targetLineTitle);
+				}
+				if (Ext.isNumber(xLayout.baseLineValue)) {
+					dv.viewport.baseLineValue.setValue(xLayout.baseLineValue);
+				}
+				if (Ext.isString(xLayout.baseLineTitle)) {
+					dv.viewport.baseLineTitle.setValue(xLayout.baseLineTitle);
+				}
+				if (Ext.isString(xLayout.title)) {
+					dv.viewport.title.setValue(xLayout.title);
+				}
+				if (Ext.isString(xLayout.domainAxisTitle)) {
+					dv.viewport.domainAxisTitle.setValue(xLayout.domainAxisTitle);
+				}
+				if (Ext.isString(xLayout.rangeAxisTitle)) {
+					dv.viewport.rangeAxisTitle.setValue(xLayout.rangeAxisTitle);
+				}
 
 				if (Ext.isBoolean(xLayout.regression)) {
 					dv.viewport.showTrendLine.setValue(xLayout.regression);
@@ -4101,14 +4132,6 @@ console.log("xLayout", xLayout);
 				if (Ext.isBoolean(xLayout.hideTitle)) {
 					dv.viewport.hideTitle.setValue(xLayout.hideTitle);
 				}
-
-
-
-
-
-
-
-
 
 				// Organisation units
 				userOrganisationUnit.setValue(xLayout.userOrganisationUnit);

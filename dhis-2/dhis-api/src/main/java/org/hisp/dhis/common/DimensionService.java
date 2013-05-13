@@ -39,4 +39,6 @@ public interface DimensionService
     DimensionType getDimensionType( String uid );
     
     List<DimensionalObject> getAllDimensions();
+    
+    void mergeAnalyticalObject( BaseAnalyticalObject object );
 }

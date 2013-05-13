@@ -381,8 +381,8 @@ DV.core.getUtil = function(dv) {
 	util.number = {
 		isInteger: function(n) {
 			var str = new String(n);
-			if (str.indexOf('.') > -1) {
-				var d = str.substr(str.indexOf('.') + 1);
+			if (str.indexOf('-') > -1) {
+				var d = str.substr(str.indexOf('-') + 1);
 				return (d.length === 1 && d == '0');
 			}
 			return false;
@@ -672,6 +672,40 @@ DV.core.getUtil = function(dv) {
 				}
 
 				return paramString;
+			};
+
+			getSyncronizedXLayout = function(xLayout, response) {
+				var dimensions = [].concat(xLayout.columns, xLayout.rows, xLayout.filters),
+					xOuDimension = xLayout.extended.objectNameDimensionMap[dimConf.organisationUnit.objectName],
+					isUserOrgunit = Ext.Array.contains(xOuDimension.items, 'USER_ORGUNIT'),
+					isUserOrgunitChildren = Ext.Array.contains(xOuDimension.items, 'USER_ORGUNIT_CHILDREN'),
+					items = [],
+					isDirty = false;
+
+				// Add user orgunits
+				if (xOuDimension && (isUserOrgunit || isUserOrgunitChildren)) {
+					if (isUserOrgunit) {
+						items.push(Ext.clone(dv.init.user.ou));
+					}
+					if (isUserOrgunitChildren) {
+						items = items.concat(Ext.clone(dv.init.user.ouc));
+					}
+
+					for (var i = 0; i < dimensions.length; i++) {
+						if (dimensions[i].dimension === dimConf.organisationUnit.objectName) {
+							dimensions[i].items = items;
+						}
+					}
+
+					isDirty = true;
+				}
+
+				if (isDirty) {
+					delete xLayout.extended;
+					xLayout = dv.util.chart.extendLayout(xLayout);
+				}
+
+				return xLayout;
 			};
 
 			validateResponse = function(response) {
@@ -1177,8 +1211,9 @@ console.log("baseLineFields", store.baseLineFields);
 
 			getDefaultChartTitle = function(store, xResponse, xLayout) {
 				var filterItems = xLayout.extended.filterItems,
+					a = [],
 					text = '';
-
+console.log("filterItems", filterItems);
 				if (Ext.isArray(filterItems) && filterItems.length) {
 					for (var i = 0; i < filterItems.length; i++) {
 						text += xResponse.metaData.names[filterItems[i]];
@@ -1481,7 +1516,7 @@ console.log("baseLineFields", store.baseLineFields);
 					series = getDefaultSeries(store, xResponse, xLayout);
 
 				series.type = 'area';
-				series.style.opacity = 0.55;
+				series.style.opacity = 0.7;
 				series.style.lineWidth = 0;
 				delete series.label;
 				delete series.tips;
@@ -1608,12 +1643,12 @@ console.log("baseLineFields", store.baseLineFields);
 							return;
 						}
 
-						//xLayout = getSyncronizedXLayout(xLayout, response);
+						xLayout = getSyncronizedXLayout(xLayout, response);
 
-						//if (!xLayout) {
-							//dv.util.mask.hideMask();
-							//return;
-						//}
+						if (!xLayout) {
+							dv.util.mask.hideMask();
+							return;
+						}
 
 						xResponse = extendResponse(response, xLayout);
 
@@ -1727,6 +1762,10 @@ DV.core.getAPI = function(dv) {
 
 					if (!(Ext.isObject(dim) && Ext.isString(dim.dimension) && Ext.isArray(dim.items) && dim.items.length)) {
 						return;
+					}
+
+					for (var j = 0; j < dim.items.length; j++) {
+						dim.items[j].id = dim.items[j].id.replace('.', '-');
 					}
 				}
 

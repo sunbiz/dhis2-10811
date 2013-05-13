@@ -175,6 +175,14 @@ public interface DataElementCategoryService
     Collection<DataElementCategoryOption> getDataElementCategoryOptions( Collection<Integer> identifiers );
 
     /**
+     * Retrieves the DataElementCategoryOptions with the given uids.
+     *
+     * @param uids the uids of the DataElementCategoryOption to retrieve.
+     * @return a Collection of DataElementCategoryOptions.
+     */
+    Collection<DataElementCategoryOption> getDataElementCategoryOptionsByUid( Collection<String> uids );
+    
+    /**
      * Retrieves the DataElementCategoryOption with the given name.
      *
      * @param name the name.

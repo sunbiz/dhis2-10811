@@ -40,6 +40,7 @@ import org.hisp.dhis.dataelement.DataElementCategoryOption;
 import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.dataelement.DataElementGroupSet;
+import org.hisp.dhis.dataelement.DataElementOperand;
 import org.hisp.dhis.dataset.DataSet;
 import org.hisp.dhis.dataset.Section;
 import org.hisp.dhis.document.Document;
@@ -117,6 +118,8 @@ final public class ExchangeClasses
         allExportClasses.put( DataElement.class, "dataElements" );
         allExportClasses.put( DataElementGroup.class, "dataElementGroups" );
         allExportClasses.put( DataElementGroupSet.class, "dataElementGroupSets" );
+        
+        allExportClasses.put( DataElementOperand.class, "dataElementOperands" );
 
         allExportClasses.put( IndicatorType.class, "indicatorTypes" );
         allExportClasses.put( Indicator.class, "indicators" );
@@ -165,6 +168,10 @@ final public class ExchangeClasses
         exportClasses.remove( ProgramStage.class );
         importClasses.remove( Program.class );
         importClasses.remove( ProgramStage.class );
+        
+        // special class which is created on demand in association with other objects
+        exportClasses.remove( DataElementOperand.class );
+        importClasses.remove( DataElementOperand.class );
     }
 
     public static Map<Class<? extends IdentifiableObject>, String> getAllExportMap()

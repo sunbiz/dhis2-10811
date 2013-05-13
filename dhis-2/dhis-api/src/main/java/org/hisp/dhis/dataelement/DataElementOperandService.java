@@ -28,6 +28,7 @@ package org.hisp.dhis.dataelement;
  */
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Abyot Asalefew
@@ -42,6 +43,10 @@ public interface DataElementOperandService
     void deleteDataElementOperand( DataElementOperand dataElementOperand );
 
     DataElementOperand getDataElementOperand( int id );
+    
+    DataElementOperand getDataElementOperandByUid( String uid );
+    
+    List<DataElementOperand> getDataElementOperandsByUid( Collection<String> uids );
 
     DataElementOperand getDataElementOperand( DataElementOperand dataElementOperand );
 
@@ -50,5 +55,4 @@ public interface DataElementOperandService
     Collection<DataElementOperand> getDataElementOperandByDataElements( Collection<DataElement> dataElements );
 
     Collection<DataElementOperand> getDataElementOperandByOptionCombos( Collection<DataElementCategoryOptionCombo> optionCombos );
-
 }
